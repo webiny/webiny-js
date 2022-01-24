@@ -3,17 +3,25 @@ import { useUi } from "@webiny/app/hooks/useUi";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/hooks/use-confirmation-dialog");
 
-type Args = {
+interface Params {
     title?: React.ReactNode;
     message?: React.ReactNode;
     [key: string]: any;
-};
+}
 
-const useConfirmationDialog = ({ title, message, ...options }: Args = {}) => {
+interface UseConfirmationDialogResponse {
+    showConfirmation: (onAccept: () => void, onCancel: () => void) => void;
+}
+
+const useConfirmationDialog = ({
+    title,
+    message,
+    ...options
+}: Params = {}): UseConfirmationDialogResponse => {
     const ui = useUi();
 
     return {
-        showConfirmation: (onAccept, onCancel = null) => {
+        showConfirmation: (onAccept, onCancel) => {
             ui.setState(ui => {
                 return {
                     ...ui,

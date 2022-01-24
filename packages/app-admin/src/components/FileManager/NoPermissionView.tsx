@@ -47,7 +47,7 @@ const styles = css({
     }
 });
 
-const NoPermissionView = () => {
+const NoPermissionView: React.FC = () => {
     return (
         <div className={styles}>
             <div className={"outer-container"}>

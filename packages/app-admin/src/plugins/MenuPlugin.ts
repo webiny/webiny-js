@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins";
 
-export type MenuProps = {
+export interface MenuProps {
     name: string;
     label: React.ReactNode;
     icon: React.ReactElement;
     children: React.ReactNode;
     onClick?: (toggleSection: () => void) => void;
-};
+}
 
 export interface SectionProps {
     label: React.ReactNode;
@@ -46,7 +46,7 @@ export class MenuPlugin extends Plugin {
         return this._config.order;
     }
 
-    render(props): React.ReactNode {
+    render(props: Props): React.ReactNode {
         return this._config.render(props);
     }
 }

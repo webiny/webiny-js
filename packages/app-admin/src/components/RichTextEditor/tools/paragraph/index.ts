@@ -1,33 +1,35 @@
-import { API } from "@editorjs/editorjs";
+import { API, PasteEvent } from "@editorjs/editorjs";
 import { Alignment, ALIGNMENTS, TextAlign, ALIGNMENT_ICONS } from "../utils";
+import { HTMLPasteEventDetail } from "@editorjs/editorjs/types/tools/paste-events";
 
 /**
  * @typedef {object} ParagraphConfig
  * @property {string} placeholder - placeholder for the empty paragraph
  * @property {boolean} preserveBlank - Whether or not to keep blank paragraphs when saving editor data`
  */
-type ParagraphConfig = {
+interface ParagraphConfig {
     placeholder: string;
     preserveBlank: boolean;
     typography?: Typography;
-};
+}
 /**
  * @typedef {Object} ParagraphData
  * @description Tool's input and output data format
  * @property {String} text — Paragraph's content. Can include HTML tags: <a><b><i>
  */
-type ParagraphData = {
+interface ParagraphData {
     text: string;
     textAlign: TextAlign;
-};
+    className?: string;
+}
 
-type Typography = {
+interface Typography {
     [key: string]: {
         label: string;
         component: string;
         className: string;
     };
-};
+}
 
 interface ParagraphArgs {
     data: ParagraphData;
@@ -36,17 +38,17 @@ interface ParagraphArgs {
     readOnly: boolean;
 }
 class Paragraph {
-    api: API;
-    readOnly: boolean;
-    _CSS: any;
-    _settings: any;
-    _data: any;
-    _element: any;
-    _placeholder: string;
-    _preserveBlank: boolean;
-    alignments: Alignment[];
-    settingsButtons: HTMLElement[];
-    typography: Typography;
+    private readonly api: API;
+    private readonly readOnly: boolean;
+    private readonly _CSS: any;
+    // private readonly _settings: any;
+    private _data: ParagraphData;
+    private readonly _element: any;
+    private readonly _placeholder: string;
+    private readonly _preserveBlank: boolean;
+    private readonly alignments: Alignment[];
+    private readonly settingsButtons: HTMLElement[];
+    private readonly typography: Typography;
 
     /**
      * Render plugin`s main Element and fill it with saved data
@@ -83,7 +85,7 @@ class Paragraph {
         this.settingsButtons = [];
         this.alignments = ALIGNMENTS;
 
-        this.data = this.normalizeData(data);
+        // this.data = this.normalizeData(data);
     }
 
     /**
@@ -92,7 +94,7 @@ class Paragraph {
      * @return {string}
      * @constructor
      */
-    static get DEFAULT_PLACEHOLDER() {
+    static get DEFAULT_PLACEHOLDER(): string {
         return "";
     }
 
@@ -122,7 +124,7 @@ class Paragraph {
      *
      * @return {boolean}
      */
-    static get isReadOnlySupported() {
+    static get isReadOnlySupported(): boolean {
         return true;
     }
 
@@ -131,7 +133,7 @@ class Paragraph {
      * @returns {ParagraphData} Current data
      * @private
      */
-    get data() {
+    get data(): ParagraphData {
         const text = this._element.innerHTML;
 
         // this._data.text = text;
@@ -150,8 +152,8 @@ class Paragraph {
      * @param {ParagraphData} data — data to set
      * @private
      */
-    set data(data) {
-        this._data = data || {};
+    set data(data: ParagraphData) {
+        this._data = data || ({} as ParagraphData);
 
         this._element.innerHTML = this._data.text || "";
 
@@ -206,7 +208,7 @@ class Paragraph {
      *
      * @returns {alignment}
      */
-    get currentAlignment() {
+    get currentAlignment(): Alignment {
         let alignment = this.alignments.find(alignment => alignment.name === this._data.textAlign);
 
         if (!alignment) {
@@ -222,7 +224,7 @@ class Paragraph {
      *
      * @param {KeyboardEvent} e - key up event
      */
-    onKeyUp(e) {
+    onKeyUp(e: KeyboardEvent): void {
         if (e.code !== "Backspace" && e.code !== "Delete") {
             return;
         }
@@ -239,7 +241,7 @@ class Paragraph {
      * @return {HTMLElement}
      * @private
      */
-    drawView() {
+    drawView(): HTMLElement {
         const div = document.createElement("DIV");
         div.classList.add(this._CSS.wrapper, this._CSS.block);
         // Add custom className to view.
@@ -262,7 +264,7 @@ class Paragraph {
      *
      * @returns {HTMLDivElement}
      */
-    render() {
+    render(): HTMLDivElement {
         return this._element;
     }
 
@@ -271,7 +273,7 @@ class Paragraph {
      *
      * @returns {HTMLElement}
      */
-    renderSettings() {
+    renderSettings(): HTMLElement {
         const holder = document.createElement("DIV");
 
         // Add alignment selectors
@@ -356,8 +358,9 @@ class Paragraph {
      * @param {ParagraphData} data
      * @public
      */
-    merge(data) {
+    merge(data: ParagraphData): void {
         this.data = {
+            ...this.data,
             text: this.data.text + data.text
         };
     }
@@ -370,7 +373,7 @@ class Paragraph {
      * @returns {boolean} false if saved data is not correct, otherwise true
      * @public
      */
-    validate(savedData) {
+    public validate(savedData: ParagraphData): boolean {
         return !(savedData.text.trim() === "" && !this._preserveBlank);
     }
 
@@ -380,7 +383,7 @@ class Paragraph {
      * @returns {ParagraphData} - saved data
      * @public
      */
-    save(toolsContent) {
+    save(toolsContent: HTMLElement) {
         return {
             text: toolsContent.innerHTML,
             textAlign: this.getTextAlign(toolsContent.className),
@@ -394,7 +397,7 @@ class Paragraph {
      * @param {string} className - heading element className
      * @returns {TextAlign} textAlign
      */
-    getTextAlign(className) {
+    getTextAlign(className: string) {
         let textAlign = TextAlign.START;
         // Match className with alignment
         this.alignments.forEach(alignment => {
@@ -410,12 +413,12 @@ class Paragraph {
      *
      * @param {PasteEvent} event - event with pasted data
      */
-    onPaste(event) {
-        const data = {
-            text: event.detail.data.innerHTML
+    onPaste(event: PasteEvent): void {
+        const detail = event.detail as HTMLPasteEventDetail;
+        this.data = {
+            ...this.data,
+            text: detail.data.innerHTML
         };
-
-        this.data = data;
     }
 
     /**
@@ -423,7 +426,7 @@ class Paragraph {
      *
      * @param {number} alignment - level to set
      */
-    setAlignment(alignment) {
+    setAlignment(alignment: Alignment) {
         this.data = {
             textAlign: alignment.name,
             text: this.data.text
@@ -461,8 +464,8 @@ class Paragraph {
      * @returns {HeaderData}
      * @private
      */
-    normalizeData(data) {
-        const newData: any = {};
+    normalizeData(data?: Partial<ParagraphData>): ParagraphData {
+        const newData: Partial<ParagraphData> = {};
 
         if (typeof data !== "object") {
             data = {};
@@ -472,7 +475,7 @@ class Paragraph {
         newData.textAlign = data.textAlign || TextAlign.START;
         newData.className = data.className || "";
 
-        return newData;
+        return newData as ParagraphData;
     }
 }
 

@@ -51,7 +51,17 @@ const Tag = styled("div")({
     }
 });
 
-function LeftSidebar({ toggleTag, queryParams: { tags } }) {
+interface LeftSidebarProps {
+    toggleTag: (item: string) => void;
+    queryParams: {
+        tags: string[];
+    };
+}
+const LeftSidebar: React.FC<LeftSidebarProps> = props => {
+    const {
+        toggleTag,
+        queryParams: { tags }
+    } = props;
     const activeTags = Array.isArray(tags) ? tags : [];
 
     const { data } = useQuery(LIST_TAGS);
@@ -85,6 +95,6 @@ function LeftSidebar({ toggleTag, queryParams: { tags } }) {
             </TagList>
         </div>
     );
-}
+};
 
 export default LeftSidebar;

@@ -43,14 +43,14 @@ const styles = css({
     }
 });
 
-export type DropFilesHereProps = {
+export interface DropFilesHereProps {
     onDragLeave?: (event?: React.DragEvent<HTMLElement>) => void;
     onDrop?: (event?: React.DragEvent<HTMLElement>) => void;
     empty?: boolean;
     onClick?: (event?: React.MouseEvent<HTMLElement>) => void;
-};
+}
 
-export default function DropFilesHere({ onDrop, onDragLeave, empty, onClick }: DropFilesHereProps) {
+const DropFilesHere: React.FC<DropFilesHereProps> = ({ onDrop, onDragLeave, empty, onClick }) => {
     return (
         <div
             className={classNames(styles, { empty })}
@@ -66,4 +66,5 @@ export default function DropFilesHere({ onDrop, onDragLeave, empty, onClick }: D
             </div>
         </div>
     );
-}
+};
+export default DropFilesHere;

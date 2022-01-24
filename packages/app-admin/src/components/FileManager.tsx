@@ -3,20 +3,28 @@ import ReactDOM from "react-dom";
 import FileManagerView from "./FileManager/FileManagerView";
 import pick from "lodash/pick";
 import { FileManagerProvider } from "./FileManager/FileManagerContext";
+import { FileItem } from "./FileManager/types";
 
-type FileManagerProps = {
+interface ShowFileManagerCallable {
+    (onChange?: () => void): void;
+}
+interface FileManagerPropsChildren {
+    showFileManager: ShowFileManagerCallable;
+}
+
+interface FileManagerProps {
     onChange?: Function;
     onChangePick?: string[];
     images?: boolean;
     multiple?: boolean;
     accept?: Array<string>;
-    children: ({ showFileManager: Function }) => React.ReactNode;
+    children: (params: FileManagerPropsChildren) => React.ReactNode;
     maxSize?: number | string;
     multipleMaxCount?: number;
     multipleMaxSize?: number | string;
     onClose?: Function;
     onUploadCompletion?: Function;
-};
+}
 
 type FileManagerPortalProps = Omit<FileManagerProps, "children">;
 
@@ -24,7 +32,7 @@ const { useState, useRef, useCallback, useEffect } = React;
 
 class FileManagerPortal extends React.Component<FileManagerPortalProps> {
     container: Element;
-    constructor(props) {
+    constructor(props: FileManagerPortalProps) {
         super(props);
 
         if (!window) {
@@ -57,7 +65,7 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
 
         const container = this.container;
 
-        const handleFileOnChange = files => {
+        const handleFileOnChange = (files: FileItem[]) => {
             const fields = Array.isArray(onChangePick)
                 ? onChangePick
                 : ["id", "name", "key", "src", "size", "type"];

@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { UIElement, UIElementConfig } from "~/ui/UIElement";
+import { UIElement, UIElementConfig, UiElementRenderProps } from "~/ui/UIElement";
 
 const FormContainerWrapper = styled("div")({
     position: "relative",
@@ -21,7 +21,7 @@ export class FormContainerElement extends UIElement<FormContainerConfig> {
         this.useGrid(false);
     }
 
-    render(props) {
+    render(props: UiElementRenderProps) {
         const children = super.render(props);
 
         return (

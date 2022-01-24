@@ -1,8 +1,8 @@
 import React from "react";
 import mime from "mime/lite";
 import styled from "@emotion/styled";
-import SupportedFileTypes from "./BottomInfoBar/SupportedFileTypes";
-import UploadStatus from "./BottomInfoBar/UploadStatus";
+import SupportedFileTypes, { SupportedFileTypesProps } from "./BottomInfoBar/SupportedFileTypes";
+import UploadStatus, { UploadStatusProps } from "./BottomInfoBar/UploadStatus";
 
 mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
@@ -28,7 +28,7 @@ const BottomInfoBarWrapper = styled("div")({
     }
 });
 
-const BottomInfoBar = props => {
+const BottomInfoBar: React.FC<SupportedFileTypesProps & UploadStatusProps> = props => {
     return (
         <BottomInfoBarWrapper>
             <div>

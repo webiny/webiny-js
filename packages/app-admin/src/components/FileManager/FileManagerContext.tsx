@@ -1,4 +1,5 @@
 import React from "react";
+import { FileItem } from "./types";
 
 enum ListFilesSort {
     CREATED_ON_ASC,
@@ -7,7 +8,23 @@ enum ListFilesSort {
     SIZE_DESC
 }
 
-function init({ accept }) {
+interface InitParams {
+    accept: string[];
+}
+interface StateQueryParams {
+    types: string[];
+    limit: number;
+    sort: number;
+}
+interface State {
+    showingFileDetails: string;
+    selected: FileItem[];
+    hasPreviouslyUploadedFiles: boolean;
+    queryParams: StateQueryParams;
+    dragging: boolean;
+    uploading: boolean;
+}
+const init = ({ accept }: InitParams): State => {
     return {
         showingFileDetails: null,
         selected: [],
@@ -16,12 +33,34 @@ function init({ accept }) {
             types: accept,
             limit: 50,
             sort: ListFilesSort.CREATED_ON_DESC
-        }
+        },
+        dragging: false,
+        uploading: false
     };
+};
+
+interface Action {
+    type:
+        | "toggleSelected"
+        | "queryParams"
+        | "showFileDetails"
+        | "dragging"
+        | "hasPreviouslyUploadedFiles"
+        | "uploading";
+    file: FileItem;
+    queryParams: StateQueryParams;
+    src: string;
+    state: boolean;
+    hasPreviouslyUploadedFiles: boolean;
+}
+interface Reducer {
+    (prev: State, action: Action): State;
 }
 
-function fileManagerReducer(state, action) {
-    const next = { ...state };
+const fileManagerReducer: Reducer = (state: State, action) => {
+    const next: State = {
+        ...state
+    };
     switch (action.type) {
         case "toggleSelected": {
             const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
@@ -62,11 +101,11 @@ function fileManagerReducer(state, action) {
     }
 
     return next;
-}
+};
 
 const FileManagerContext = React.createContext({});
 
-function FileManagerProvider({ children, ...props }) {
+const FileManagerProvider: React.FC = ({ children, ...props }) => {
     const [state, dispatch] = React.useReducer(fileManagerReducer, props, init);
 
     const value = React.useMemo(() => {
@@ -81,7 +120,7 @@ function FileManagerProvider({ children, ...props }) {
             {children}
         </FileManagerContext.Provider>
     );
-}
+};
 
 function useFileManager() {
     const context: any = React.useContext(FileManagerContext);
@@ -92,18 +131,18 @@ function useFileManager() {
     const { state, dispatch } = context;
     return {
         selected: state.selected,
-        toggleSelected(file) {
+        toggleSelected(file: FileItem) {
             dispatch({
                 type: "toggleSelected",
                 file
             });
         },
         hasPreviouslyUploadedFiles: state.hasPreviouslyUploadedFiles,
-        setHasPreviouslyUploadedFiles(hasPreviouslyUploadedFiles) {
+        setHasPreviouslyUploadedFiles(hasPreviouslyUploadedFiles: boolean) {
             dispatch({ type: "hasPreviouslyUploadedFiles", hasPreviouslyUploadedFiles });
         },
         queryParams: state.queryParams,
-        setQueryParams(queryParams) {
+        setQueryParams(queryParams: StateQueryParams) {
             dispatch({ type: "queryParams", queryParams });
         },
         setDragging(state = true) {
@@ -120,7 +159,7 @@ function useFileManager() {
             });
         },
         uploading: state.uploading,
-        showFileDetails(src) {
+        showFileDetails(src: string) {
             dispatch({ type: "showFileDetails", src });
         },
         hideFileDetails() {

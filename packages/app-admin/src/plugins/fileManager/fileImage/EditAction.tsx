@@ -1,20 +1,29 @@
 import * as React from "react";
+/**
+ * Package react-hotkeyz has no types.
+ */
+// @ts-ignore
 import { Hotkeys } from "react-hotkeyz";
+/**
+ * Package dataurl-to-blob has no types.
+ */
+// @ts-ignore
 import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import outputFileSelectionError from "../../../components/FileManager/outputFileSelectionError";
-import { useSnackbar } from "../../../hooks/useSnackbar";
+import { useSnackbar } from "~/hooks/useSnackbar";
 import { ReactComponent as EditIcon } from "../icons/edit.svg";
+import { FileItem } from "~/components/FileManager/types";
 
-function toDataUrl(url) {
-    return new Promise(resolve => {
+function toDataUrl(url: string): Promise<string> {
+    return new Promise((resolve: (value: string) => void) => {
         const xhr = new window.XMLHttpRequest();
         xhr.onload = function () {
             const reader = new window.FileReader();
             reader.onloadend = function () {
-                resolve(reader.result);
+                resolve(reader.result as string);
             };
             reader.readAsDataURL(xhr.response);
         };
@@ -23,10 +32,20 @@ function toDataUrl(url) {
         xhr.send();
     });
 }
-
-const initialState = { showImageEditor: false, dataUrl: null };
-const reducer = (state, action) => {
-    const next = { ...state };
+interface State {
+    showImageEditor: boolean;
+    dataUrl: string;
+}
+interface Action {
+    type: "setDataUrl" | "hideImageEditor";
+    dataUrl?: string;
+}
+const initialState: State = {
+    showImageEditor: false,
+    dataUrl: null
+};
+const reducer = (state: State, action: Action): State => {
+    const next: State = { ...state };
 
     switch (action.type) {
         case "setDataUrl":
@@ -43,12 +62,12 @@ const reducer = (state, action) => {
 };
 
 // TODO: @adrian
-type EditActionProps = {
-    file: any;
-    uploadFile: any;
-    validateFiles: any;
-    canEdit: (file: any) => boolean;
-};
+interface EditActionProps {
+    file: FileItem;
+    uploadFile: (file: FileItem) => void;
+    validateFiles: (blobs: any[]) => Error[];
+    canEdit: (file: FileItem) => boolean;
+}
 
 const EditAction: React.FC<EditActionProps> = props => {
     const { file, uploadFile, validateFiles, canEdit } = props;
@@ -66,7 +85,8 @@ const EditAction: React.FC<EditActionProps> = props => {
                     data-testid={"fm-edit-image-button"}
                     icon={<EditIcon style={{ margin: "0 8px 0 0" }} />}
                     onClick={async () => {
-                        dispatch({ type: "setDataUrl", dataUrl: await toDataUrl(file.src) });
+                        const dataUrl = await toDataUrl(file.src);
+                        dispatch({ type: "setDataUrl", dataUrl });
                     }}
                 />
             </Tooltip>

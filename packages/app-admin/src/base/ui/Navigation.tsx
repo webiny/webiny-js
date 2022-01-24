@@ -12,6 +12,7 @@ import { makeComposable, Plugins } from "@webiny/app-admin-core";
 import { MenuData, MenuProps, AddMenu as Menu, Tags } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
+import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
 
 export interface NavigationContext {
     menuItems: MenuData[];
@@ -29,9 +30,9 @@ export function useNavigation() {
 // IMPORTANT! The following component is for BACKWARDS COMPATIBILITY purposes only!
 // It is not a public component, and is not even exported from this file. We need it to take care of
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
-const LegacyMenu = props => {
+const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
     return (
-        <Menu {...props} name={props.name || nanoid()} label={props.label}>
+        <Menu {...props} name={(props as MenuProps).name || nanoid()} label={props.label as string}>
             {props.children}
         </Menu>
     );
@@ -61,11 +62,11 @@ const LegacyMenuPlugins = () => {
     return menus;
 };
 
-export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
+export const NavigationProvider = (Component: React.ComponentType<unknown>): React.FC => {
     return function NavigationProvider({ children }) {
-        const [menuItems, setState] = useState([]);
+        const [menuItems, setState] = useState<MenuData[]>([]);
 
-        const mergeMenuItems = (item1: MenuData, item2: MenuData) => {
+        const mergeMenuItems = (item1: MenuData, item2: MenuData): MenuData => {
             return {
                 ...item1,
                 label: item2.label ?? item1.label,
@@ -85,7 +86,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
             };
         };
 
-        const setMenu = (id, menuItem) => {
+        const setMenu = (id: string, menuItem: MenuData): void => {
             setState(state => {
                 const index = state.findIndex(m => m.name === id);
 

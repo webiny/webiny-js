@@ -69,7 +69,10 @@ export const AddMenu = ({ children, ...props }: MenuProps) => {
                 }
                 return {
                     ...menu,
-                    children: set(menu.children, childIndex, curr => ({ ...curr, ...props }))
+                    children: set(menu.children, childIndex, (curr: Record<string, any>) => ({
+                        ...curr,
+                        ...props
+                    }))
                 };
             });
         }
