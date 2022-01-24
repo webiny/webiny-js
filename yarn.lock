@@ -7483,6 +7483,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/is-number@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "@types/is-number@npm:7.0.2"
+  checksum: 9d7ddc7a5227638ff431e0904c3242c254a9c42b656efd4b4476a14a20242652eda7c9bb6c0111e19424fc1a3a4a76f24a81c366eeed8b374b2dbc8a5c59c797
+  languageName: node
+  linkType: hard
+
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.0, @types/istanbul-lib-coverage@npm:^2.0.1":
   version: 2.0.4
   resolution: "@types/istanbul-lib-coverage@npm:2.0.4"
@@ -7579,6 +7586,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: b5f8aa592cc21c16d99e69aec0976f12b893b055e4456d90148a610a6b6088e297b2ba5f38f8c8280cef006cfd8f9ec99e069905020882619dc5fc8aa46f5f27
+  languageName: node
+  linkType: hard
+
+"@types/lodash.debounce@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "@types/lodash.debounce@npm:4.0.6"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 54b181c65009d2523ad13a608e1db22950467573bf6e10adaccdf46b5c2c68e7d109ff352e7e95c0035a6dd30eafd06f59356c893373098c4fb60db368158595
   languageName: node
   linkType: hard
 
@@ -9810,6 +9826,7 @@ __metadata:
     "@babel/preset-react": ^7.0.0
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@types/lodash.debounce": ^4.0.6
     "@types/react": ^16.14.0
     "@webiny/app": ^5.21.0
     "@webiny/cli": ^5.21.0
@@ -11099,6 +11116,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
+    "@types/is-number": ^7.0.2
     "@webiny/cli": ^5.21.0
     "@webiny/db": ^5.21.0
     "@webiny/error": ^5.21.0
