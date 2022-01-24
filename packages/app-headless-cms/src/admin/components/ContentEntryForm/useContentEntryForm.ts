@@ -26,6 +26,7 @@ export interface UseContentEntryFormParams {
     entry?: { [key: string]: any };
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
+    addEntryToListCache: boolean;
 }
 
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
@@ -83,7 +84,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                         return;
                     }
                     resetInvalidFieldValues();
-                    if (typeof params.onSubmit !== "function") {
+                    if (params.addEntryToListCache) {
                         GQLCache.addEntryToListCache(
                             contentModel,
                             cache,
@@ -110,7 +111,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             }
             return entry;
         },
-        [contentModel.modelId, listQueryVariables]
+        [contentModel.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
     );
 
     const updateContent = useCallback(
