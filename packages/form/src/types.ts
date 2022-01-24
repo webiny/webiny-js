@@ -1,3 +1,5 @@
+import { Form } from "./Form";
+
 export type BindComponentRenderPropValidation = {
     isValid: boolean;
     message: string;
@@ -22,15 +24,15 @@ export type BindComponentRenderProp = {
     validation: BindComponentRenderPropValidation;
 };
 
-export type BindComponentProps = {
+export interface BindComponentProps {
     name: string;
-    beforeChange?: Function;
-    afterChange?: Function;
+    beforeChange?: (value: string | string[], cb: (value: string | string[]) => void) => void;
+    afterChange?: (value: string | string[], form: Form) => void;
     defaultValue?: any;
     validators?: Function | Array<Function>;
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
     validate?: Function;
-};
+}
 
 export type BindComponent = (props: BindComponentProps) => React.ReactElement;
 
@@ -52,7 +54,7 @@ export type FormData = { [key: string]: any };
 
 export type Validation = { [key: string]: any };
 
-export type FormOnSubmit = (data: FormData, form?: any) => void;
+export type FormOnSubmit = (data: FormData, form?: Form) => void;
 
 export type FormProps = {
     invalidFields?: { [key: string]: any };
