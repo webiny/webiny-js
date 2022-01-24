@@ -35,16 +35,16 @@ export interface ContentEntryContext extends ContentEntriesContext {
 
 export const Context = React.createContext<ContentEntryContext>(null);
 
-export interface ContentEntryContextProviderProps extends GetContentEntryFormType {
+export interface ContentEntryContextProviderProps extends UseContentEntryProviderProps {
     children: React.ReactNode;
 }
 
-interface GetContentEntryFormType {
+interface UseContentEntryProviderProps {
     getContentId?: () => string | null;
     isNewEntry?: () => boolean;
 }
 
-export const useContentEntryProviderProps = (): GetContentEntryFormType => {
+export const useContentEntryProviderProps = (): UseContentEntryProviderProps => {
     const { location } = useRouter();
     const query = new URLSearchParams(location.search);
 
