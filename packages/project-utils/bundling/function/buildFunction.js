@@ -9,7 +9,7 @@ async function injectHandlerTelemetry() {
 
     fs.copyFileSync(
         path.join(cwd, "build", "handler.js"),
-        path.join(cwd, "build", "handler.original.js")
+        path.join(cwd, "build", "_handler.js")
     );
 
     // Create a new handler.js.
@@ -81,11 +81,7 @@ module.exports = async options => {
     const includesGraphQl = handlerFile.includes("handler-graphql");
 
     if (includesGraphQl) {
-        try {
-            await injectHandlerTelemetry();
-        } catch (err) {
-            throw new Error(err);
-        }
+        await injectHandlerTelemetry();
     }
 
     return result;

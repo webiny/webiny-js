@@ -1,4 +1,4 @@
-const { handler } = require("./handler.original.js");
+const { handler } = require("./_handler.js");
 const https = require("https");
 const packageData = require("../../package.json");
 const AWS = require("aws-sdk");
