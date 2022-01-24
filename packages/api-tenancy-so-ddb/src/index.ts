@@ -8,20 +8,21 @@ import { createTenantEntity } from "~/definitions/tenantEntity";
 import { createSystemEntity } from "~/definitions/systemEntity";
 import { createDomainEntity } from "~/definitions/domainEntity";
 import { CreateTenancyStorageOperations, ENTITIES } from "~/types";
-import { System, Tenant, TenantDomain } from "@webiny/api-tenancy/types";
+import { ListTenantsParams, System, Tenant, TenantDomain } from "@webiny/api-tenancy/types";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 
-const isReserved = name => {
-    if (reservedFields.includes(name)) {
-        throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
-            name
-        });
+const isReserved = (name: string): void => {
+    if (reservedFields.includes(name) === false) {
+        return;
     }
+    throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
+        name
+    });
 };
 
 export const createStorageOperations: CreateTenancyStorageOperations = params => {
-    const { table, documentClient, attributes = {} } = params;
+    const { table, documentClient, attributes } = params;
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -35,17 +36,17 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         tenants: createTenantEntity({
             entityName: ENTITIES.TENANT,
             table: tableInstance,
-            attributes: attributes[ENTITIES.TENANT]
+            attributes: attributes[ENTITIES.TENANT] || {}
         }),
         domains: createDomainEntity({
             entityName: ENTITIES.DOMAIN,
             table: tableInstance,
-            attributes: attributes[ENTITIES.DOMAIN]
+            attributes: attributes[ENTITIES.DOMAIN] || {}
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table: tableInstance,
-            attributes: attributes[ENTITIES.SYSTEM]
+            attributes: attributes[ENTITIES.SYSTEM] || {}
         })
     };
 
@@ -137,7 +138,9 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             return cleanupItems(entities.tenants, tenants);
         },
 
-        async listTenants<TTenant extends Tenant = Tenant>({ parent }): Promise<TTenant[]> {
+        async listTenants<TTenant extends Tenant = Tenant>({
+            parent
+        }: ListTenantsParams): Promise<TTenant[]> {
             const tenants = await queryAll<TTenant>({
                 entity: entities.tenants,
                 partitionKey: `T#${parent}`,
