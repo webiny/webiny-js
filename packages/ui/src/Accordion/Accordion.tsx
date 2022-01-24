@@ -5,7 +5,7 @@ import { Elevation } from "../Elevation";
 import { css } from "emotion";
 import classNames from "classnames";
 
-export type AccordionProps = {
+export interface AccordionProps {
     /**
      * Element displayed when accordion is expanded.
      */
@@ -20,7 +20,7 @@ export type AccordionProps = {
      * Append a class name
      */
     className?: string;
-};
+}
 
 const listStyle = css({
     "&.mdc-list": {
@@ -28,7 +28,7 @@ const listStyle = css({
     }
 });
 
-const Accordion = (props: AccordionProps) => {
+const Accordion: React.FC<AccordionProps> = props => {
     const { children, elevation = 2, className, ...other } = props;
     return (
         <Elevation z={elevation} className={classNames("webiny-ui-accordion", className)}>

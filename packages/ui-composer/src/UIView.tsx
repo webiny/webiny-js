@@ -16,11 +16,16 @@ export interface UIElementWrapper {
     (props: UIElementWrapperProps): React.ReactElement;
 }
 
+export interface UIViewProps {
+    render: () => void;
+    [key: string]: any;
+}
+
 export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
     private _events = new Map();
     private _hookDefinitions: Record<string, Function> = {};
     private _hookValues: Record<string, any> = {};
-    private _props: { render: Function; [key: string]: any };
+    private _props: UIViewProps;
     private _isRendered = false;
     private _wrappers: UIElementWrapper[] = [];
 
@@ -92,7 +97,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         return pWaitFor(() => this._isRendered, { interval: 50 });
     }
 
-    render(props?: any): React.ReactNode {
+    render(props?: UIViewProps): React.ReactNode {
         // We want to keep track of props that triggered the render cycle.
         this._props = props;
 
@@ -102,10 +107,11 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         return <UIViewID key={this.id}>{super.render(props)}</UIViewID>;
     }
 
-    refresh() {
-        if (this._props && typeof this._props.render === "function") {
-            this._props.render();
+    refresh(): void {
+        if (!this._props || typeof this._props.render !== "function") {
+            return;
         }
+        this._props.render();
     }
 }
 

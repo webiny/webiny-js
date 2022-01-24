@@ -15,8 +15,7 @@ export interface RenderChildren {
 }
 
 export abstract class UIRenderer<TElement, TProps = any> {
-    // eslint-disable-next-line
-    canRender(_: TElement, __: TProps) {
+    public canRender(_: TElement, __: TProps) {
         return true;
     }
 

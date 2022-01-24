@@ -5,7 +5,7 @@ import { Icon, IconProps } from "../Icon/Icon";
 import classNames from "classnames";
 import { SyntheticEvent } from "react";
 
-export type ButtonProps = {
+export interface ButtonProps {
     // Make button flat (only applicable to Primary button).
     flat?: boolean;
 
@@ -29,7 +29,7 @@ export type ButtonProps = {
 
     // For testing purposes.
     "data-testid"?: string;
-};
+}
 
 /**
  * Shows a default button, used typically when action is not of high priority.
@@ -37,7 +37,7 @@ export type ButtonProps = {
  * @returns {*}
  * @constructor
  */
-export const ButtonDefault = (props: ButtonProps) => {
+export const ButtonDefault: React.FC<ButtonProps> = props => {
     const { disabled, onClick, children, small, ripple = true, className = "", style } = props;
 
     return (
@@ -61,7 +61,7 @@ export const ButtonDefault = (props: ButtonProps) => {
  * @returns {*}
  * @constructor
  */
-export const ButtonPrimary = (props: ButtonProps) => {
+export const ButtonPrimary: React.FC<ButtonProps> = props => {
     const {
         disabled,
         onClick,
@@ -95,7 +95,7 @@ export const ButtonPrimary = (props: ButtonProps) => {
  * @returns {*}
  * @constructor
  */
-export const ButtonSecondary = (props: ButtonProps) => {
+export const ButtonSecondary: React.FC<ButtonProps> = props => {
     const {
         disabled,
         onClick,
@@ -136,7 +136,7 @@ export type ButtonFloatingProps = ButtonProps &
  * @returns {*}
  * @constructor
  */
-export const ButtonFloating = (props: ButtonFloatingProps) => {
+export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
     const {
         disabled,
         icon,
@@ -168,4 +168,4 @@ export const ButtonFloating = (props: ButtonFloatingProps) => {
  * @returns {*}
  * @constructor
  */
-export const ButtonIcon = (props: IconProps) => <Icon {...props} />;
+export const ButtonIcon: React.FC<IconProps> = props => <Icon {...props} />;
