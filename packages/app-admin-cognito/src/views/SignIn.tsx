@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -13,7 +13,7 @@ import { useSignIn } from "@webiny/app-cognito-authenticator/hooks/useSignIn";
 import StateContainer from "./StateContainer";
 import { alignRight, alignCenter, InnerContent, Title, errorMessage } from "./StyledComponents";
 
-const SignIn = () => {
+const SignIn: React.FC = () => {
     const { message, changeState, checkingUser } = useAuthenticator();
     const { signIn, loading, error, shouldRender } = useSignIn();
 

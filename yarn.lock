@@ -7835,6 +7835,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-helmet@npm:^6.1.5":
+  version: 6.1.5
+  resolution: "@types/react-helmet@npm:6.1.5"
+  dependencies:
+    "@types/react": "*"
+  checksum: d059cc084d3b3071cce3421bb1170dd42819cf39b81afe60d4fbd66c5ef9ffeaadf1802df80efd9553258f621678f69ceb5a21d73df0d8539d40ae9a0f995485
+  languageName: node
+  linkType: hard
+
 "@types/react-router-dom@npm:^5.1.5":
   version: 5.3.2
   resolution: "@types/react-router-dom@npm:5.3.2"
@@ -9920,6 +9929,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@emotion/styled": ^10.0.27
     "@types/react": ^16.14.0
+    "@types/react-helmet": ^6.1.5
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
     "@webiny/app-security": ^5.21.0

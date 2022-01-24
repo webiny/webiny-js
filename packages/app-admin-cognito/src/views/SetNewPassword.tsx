@@ -12,7 +12,7 @@ import { alignRight, InnerContent, Title, errorMessage } from "./StyledComponent
 import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
 import { useSetNewPassword } from "@webiny/app-cognito-authenticator/hooks/useSetNewPassword";
 
-const SetNewPassword = () => {
+const SetNewPassword: React.FC = () => {
     const { checkingUser, changeState } = useAuthenticator();
     const { shouldRender, setPassword, error, loading } = useSetNewPassword();
 
