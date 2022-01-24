@@ -30,7 +30,7 @@ interface NavigationContext {
 const NavigationContext = React.createContext<NavigationContext>(null);
 NavigationContext.displayName = "NavigationContext";
 
-export function useNavigation() {
+export function useNavigation(): NavigationContext {
     return useContext(NavigationContext);
 }
 
@@ -45,7 +45,8 @@ const BrandImpl: HigherOrderComponent = Brand => {
     };
 };
 
-const NavigationProvider = Component => {
+const NavigationProvider = (Component: React.FC): React.FC => {
+    // TODO @ts-refactor
     return function NavigationProvider(props: unknown) {
         const [visible, setVisible] = useState(false);
 
@@ -59,7 +60,7 @@ const NavigationProvider = Component => {
     };
 };
 
-export const NavigationImpl = () => {
+export const NavigationImpl = (): React.FC => {
     return function Navigation() {
         const { menuItems } = useAdminNavigation();
         const { visible, setVisible } = useNavigation();
@@ -103,7 +104,7 @@ export const NavigationImpl = () => {
     };
 };
 
-const menuSorter = (a: MenuData, b: MenuData) => {
+const menuSorter = (a: MenuData, b: MenuData): number => {
     if (a.pin === b.pin) {
         return a.label.localeCompare(b.label);
     }
@@ -125,7 +126,7 @@ const SortedMenuItems: HigherOrderComponent<MenuItemsProps> = MenuItems => {
     };
 };
 
-export const Navigation = () => {
+export const Navigation: React.FC = () => {
     return (
         <Fragment>
             <Provider hoc={NavigationProvider} />

@@ -5,7 +5,7 @@ import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from 
 
 export const DialogContainer: React.FC = () => {
     const ui = useUi();
-    const message = get(ui, "dialog.message");
+    const message: React.ReactNode = get(ui, "dialog.message");
     const {
         dataTestId,
         title,
