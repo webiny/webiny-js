@@ -2,11 +2,11 @@ import { HttpContext } from "@webiny/handler-http/types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 
-const lowercaseKeys = obj => {
+const lowercaseKeys = (obj: Record<string, string>) => {
     return Object.keys(obj).reduce((acc, key) => {
         acc[key.toLowerCase()] = obj[key];
         return acc;
-    }, {});
+    }, {} as Record<string, string>);
 };
 
 export default {
