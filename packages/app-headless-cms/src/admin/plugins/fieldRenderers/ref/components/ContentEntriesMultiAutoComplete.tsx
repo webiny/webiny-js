@@ -36,13 +36,12 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
 
     const refEntryOnChange = useCallback(
         value => {
-            if (Array.isArray(value)) {
-                onChange(value.map(entry => ({ ...entry, modelId: refModelId })));
-            } else {
-                onChange([{ ...value, modelId: refModelId }]);
-            }
+            /**
+             * Append new selected entry at the end of existing entries.
+             */
+            onChange([...entries, { ...value, modelId: refModelId }]);
         },
-        [refModelId, onChange]
+        [refModelId, onChange, entries]
     );
 
     if (renderNewEntryModal) {
