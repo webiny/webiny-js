@@ -1,5 +1,5 @@
 import { createModelField } from "./utils";
-import { stepTitleField, stepTypeField, stepSlugField, stepReviewersField } from "./workflow.model";
+import { stepTitleField, stepTypeField, stepIdField, stepReviewersField } from "./workflow.model";
 
 const contentField = fields =>
     createModelField({
@@ -191,7 +191,7 @@ export const createContentReviewModelDefinition = ({ reviewerModelId }) => ({
         stepsField([
             stepTitleField(),
             stepTypeField(),
-            stepSlugField(),
+            stepIdField(),
             stepReviewersField(reviewerModelId),
             stepStatusField(),
             stepPendingChangeRequests(),

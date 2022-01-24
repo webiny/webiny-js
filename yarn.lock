@@ -8576,6 +8576,7 @@ __metadata:
     jest: ^26.6.3
     lodash: ^4.5.0
     mdbid: ^1.0.0
+    nanoid: ^3.1.20
     prettier: ^2.3.2
     rimraf: ^3.0.2
     sinon: ^9.0.2

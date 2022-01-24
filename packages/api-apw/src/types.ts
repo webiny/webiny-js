@@ -184,7 +184,7 @@ export interface ApwWorkflowStep {
     title: string;
     type: ApwWorkflowStepTypes;
     reviewers: ApwReviewer[];
-    slug: string;
+    id: string;
 }
 
 export interface ApwContentReviewStep extends ApwWorkflowStep {

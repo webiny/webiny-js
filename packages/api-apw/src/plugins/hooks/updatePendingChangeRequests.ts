@@ -16,11 +16,11 @@ const updatePendingChangeRequests = async ({
     changeRequest,
     delta
 }: UpdatePendingChangeRequestsParams): Promise<void> => {
-    const { step: stepSlug } = changeRequest;
+    const { step } = changeRequest;
     /*
      * Get associated content review entry.
      */
-    const [entryId, version, slug] = stepSlug.split("#");
+    const [entryId, version, stepId] = step.split("#");
     const revisionId = `${entryId}#${version}`;
 
     let contentReviewEntry: ApwContentReview;
@@ -37,7 +37,7 @@ const updatePendingChangeRequests = async ({
          */
         await contentReviewMethods.update(contentReviewEntry.id, {
             steps: contentReviewEntry.steps.map(step => {
-                if (step.slug === slug) {
+                if (step.id === stepId) {
                     return {
                         ...step,
                         pendingChangeRequests: step.pendingChangeRequests + delta

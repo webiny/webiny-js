@@ -30,9 +30,9 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
 
         type ApwWorkflowStep {
-            title: String
-            slug: String
-            type: ApwWorkflowStepTypes
+            title: String!
+            id: String!
+            type: ApwWorkflowStepTypes!
             reviewers: [ApwRefField!]
         }
 
@@ -94,15 +94,15 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
 
         input ApwCreateWorkflowStepInput {
+            id: String!
             title: String!
-            slug: String!
             type: ApwWorkflowStepTypes!
             reviewers: [ApwRefFieldInput!]!
         }
 
         input ApwUpdateWorkflowStepInput {
+            id: String!
             title: String!
-            slug: String!
             type: ApwWorkflowStepTypes!
             reviewers: [ApwRefFieldInput!]
         }

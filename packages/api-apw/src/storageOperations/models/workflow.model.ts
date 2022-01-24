@@ -67,9 +67,9 @@ export const stepTypeField = () =>
         ]
     });
 
-export const stepSlugField = () =>
+export const stepIdField = () =>
     createModelField({
-        label: "Slug",
+        label: "Id",
         type: "text",
         parent: "workflow steps",
         validation: [
@@ -217,7 +217,7 @@ export const createWorkflowModelDefinition = ({ reviewerModelId }) => ({
         stepsField([
             stepTitleField(),
             stepTypeField(),
-            stepSlugField(),
+            stepIdField(),
             stepReviewersField(reviewerModelId)
         ]),
         scopeField([

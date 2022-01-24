@@ -98,10 +98,10 @@ export function createContentReviewMethods({
 
             return true;
         },
-        async provideSignOff(id, stepSlug) {
+        async provideSignOff(id, stepId) {
             const entry: ApwContentReview = await this.get(id);
             const { steps } = entry;
-            const stepIndex = steps.findIndex(step => step.slug === stepSlug);
+            const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
             const previousStep = steps[stepIndex - 1];
 
@@ -116,7 +116,7 @@ export function createContentReviewMethods({
              *  Check whether the sign-off is requested by a reviewer.
              */
             if (!hasPermission) {
-                throw new NotAuthorizedError({ entry, input: { id, step: stepSlug } });
+                throw new NotAuthorizedError({ entry, input: { id, step: stepId } });
             }
             /**
              *  Don't allow sign off, if previous step is of "mandatory_blocking" type and undone.
@@ -126,19 +126,19 @@ export function createContentReviewMethods({
                 previousStep.status !== ApwContentReviewStepStatus.DONE &&
                 previousStep.type === ApwWorkflowStepTypes.MANDATORY_BLOCKING
             ) {
-                throw new StepMissingError({ entry, input: { id, step: stepSlug } });
+                throw new StepMissingError({ entry, input: { id, step: stepId } });
             }
             /**
              *  Don't allow sign off, if there are pending change requests.
              */
             if (currentStep.pendingChangeRequests > 0) {
-                throw new PendingChangeRequestsError({ entry, input: { id, step: stepSlug } });
+                throw new PendingChangeRequestsError({ entry, input: { id, step: stepId } });
             }
             /**
              *  Don't allow sign off, if current step is not in "active" state.
              */
             if (currentStep.status !== ApwContentReviewStepStatus.ACTIVE) {
-                throw new StepInActiveError({ entry, input: { id, step: stepSlug } });
+                throw new StepInActiveError({ entry, input: { id, step: stepId } });
             }
             let previousStepStatus;
             /*
@@ -177,10 +177,10 @@ export function createContentReviewMethods({
             });
             return true;
         },
-        async retractSignOff(id, stepSlug) {
+        async retractSignOff(id, stepId) {
             const entry: ApwContentReview = await this.get(id);
             const { steps } = entry;
-            const stepIndex = steps.findIndex(step => step.slug === stepSlug);
+            const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
 
             const identity = getIdentity();
@@ -195,13 +195,13 @@ export function createContentReviewMethods({
              *  Check whether the retract sign-off is requested by a reviewer.
              */
             if (!hasPermission) {
-                throw new NotAuthorizedError({ entry, input: { id, step: stepSlug } });
+                throw new NotAuthorizedError({ entry, input: { id, step: stepId } });
             }
             /**
              *  Don't allow, if step in not "done" i.e. no sign-off was provided for it.
              */
             if (currentStep.status !== ApwContentReviewStepStatus.DONE) {
-                throw new NoSignOffProvidedError({ entry, input: { id, step: stepSlug } });
+                throw new NoSignOffProvidedError({ entry, input: { id, step: stepId } });
             }
             let previousStepStatus;
 

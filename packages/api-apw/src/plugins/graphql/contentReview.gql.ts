@@ -57,7 +57,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         type ApwContentReviewStep {
             status: ApwContentReviewStepStatus
-            slug: String
+            id: String
             pendingChangeRequests: Int
             signOffProvidedOn: DateTime
             signOffProvidedBy: ApwCreatedBy

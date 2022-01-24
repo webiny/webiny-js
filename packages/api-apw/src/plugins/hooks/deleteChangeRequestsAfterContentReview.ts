@@ -10,7 +10,7 @@ export const deleteChangeRequestsWithContentReview = ({ apw }: LifeCycleHookCall
          * For each step get associated change requests and delete them.
          */
         for (let i = 0; i < steps.length; i++) {
-            const { slug } = steps[i];
+            const { id: stepId } = steps[i];
 
             let meta = {
                 hasMoreItems: true,
@@ -27,7 +27,7 @@ export const deleteChangeRequestsWithContentReview = ({ apw }: LifeCycleHookCall
                 try {
                     [changeRequests, meta] = await apw.changeRequest.list({
                         where: {
-                            step: `${contentReview.id}#${slug}`
+                            step: `${contentReview.id}#${stepId}`
                         },
                         after: meta.cursor
                     });
