@@ -21,7 +21,7 @@ const isReserved = (name: string): void => {
 export const createPrerenderingServiceStorageOperations: PrerenderingServiceFactory = (
     params: PrerenderingServiceFactoryParams
 ) => {
-    const { attributes = {}, table, documentClient } = params;
+    const { attributes, table, documentClient } = params;
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -35,17 +35,17 @@ export const createPrerenderingServiceStorageOperations: PrerenderingServiceFact
         render: createRenderEntity({
             entityName: ENTITIES.RENDER,
             table: tableInstance,
-            attributes: attributes[ENTITIES.RENDER]
+            attributes: attributes[ENTITIES.RENDER] || {}
         }),
         queueJob: createQueueJobEntity({
             entityName: ENTITIES.QUEUE_JOB,
             table: tableInstance,
-            attributes: attributes[ENTITIES.QUEUE_JOB]
+            attributes: attributes[ENTITIES.QUEUE_JOB] || {}
         }),
         tagUrlLink: createTagUrlLinkEntity({
             entityName: ENTITIES.TAG_URL_LINK,
             table: tableInstance,
-            attributes: attributes[ENTITIES.TAG_URL_LINK]
+            attributes: attributes[ENTITIES.TAG_URL_LINK] || {}
         })
     };
 
