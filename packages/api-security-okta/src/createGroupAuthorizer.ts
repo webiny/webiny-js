@@ -19,7 +19,7 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
             const tenant = context.tenancy.getCurrentTenant();
 
             if (!identity) {
-                return;
+                return null;
             }
 
             // If `identityType` is specified, we'll only execute this authorizer for a matching identity.
@@ -50,7 +50,7 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
                 return group ? group.permissions : undefined;
             }
 
-            return undefined;
+            return null;
         });
     });
 };
