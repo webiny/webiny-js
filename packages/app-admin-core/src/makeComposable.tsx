@@ -3,9 +3,9 @@ import debounce from "lodash.debounce";
 import { useAdmin } from "./admin";
 import { ComponentType } from "react";
 
-const useComponent = Component => {
+const useComponent = (Component: ComponentType): ComponentType => {
     const { wrappers } = useAdmin();
-    const recipe = wrappers.get(Component);
+    const recipe = wrappers.get(Component) as { component: ComponentType };
 
     if (!recipe) {
         return Component;
@@ -27,7 +27,7 @@ function useComposableParents() {
 }
 
 const createEmptyRenderer = (name: string) => {
-    return function EmptyRenderer() {
+    return function EmptyRenderer(): null {
         useEffect(() => {
             // We need to debounce the log, as it sometimes only requires a single tick to get the new
             // composed component to render, and we don't want to scare developers for no reason.
@@ -51,7 +51,7 @@ type ComposableFC<TProps> = FC<TProps> & {
     originalName: string;
 };
 
-export function makeComposable<TProps>(name, Component?: ComponentType<TProps>) {
+export function makeComposable<TProps>(name: string, Component?: ComponentType<TProps>) {
     if (!Component) {
         Component = createEmptyRenderer(name);
     }

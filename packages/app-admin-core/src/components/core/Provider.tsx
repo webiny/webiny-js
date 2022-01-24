@@ -11,7 +11,7 @@ export interface ProviderProps {
  * @param hoc
  * @constructor
  */
-export const Provider = ({ hoc }: ProviderProps) => {
+export const Provider: React.FC<ProviderProps> = ({ hoc }) => {
     const { addProvider } = useAdmin();
 
     useEffect(() => {
