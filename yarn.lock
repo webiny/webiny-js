@@ -7331,6 +7331,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bytes@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@types/bytes@npm:3.1.1"
+  checksum: 29c543019d810fbb4465662cd5eec4dc0fd1e1d5466abe256edf75e47575721b398df82676d550e29be02de55c487f7fb4d870d4262b22e33433d5bab2077fa2
+  languageName: node
+  linkType: hard
+
 "@types/cacheable-request@npm:^6.0.1":
   version: 6.0.2
   resolution: "@types/cacheable-request@npm:6.0.2"
@@ -7402,6 +7409,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: d076bb61f45d0fc42dee496ef8b1c2f8742e15d5e47e90e20d0243386e426c04d4efd408a48875ab432f7960b4ce3414db20ed0fbbfc7bcc89d84e574f6e045a
+  languageName: node
+  linkType: hard
+
+"@types/graphlib@npm:^2.1.8":
+  version: 2.1.8
+  resolution: "@types/graphlib@npm:2.1.8"
+  checksum: ca0285c30e76626c7d63942057e21d45a6c85a4f1b7add5ed892b6a02bad12ce3c7e927c7d56fbb7daf3ff286eae2dcc8e0f475a6c6104b99ae49b888d2fa883
   languageName: node
   linkType: hard
 
@@ -7957,6 +7971,13 @@ __metadata:
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
   checksum: 205fdbe3326b7046d7eaf5e494d8084f2659086a266f3f9cf00bccc549c8e36e407f88168ad4383c8b07099957ad669f75f2532ed4bc70be2b037330f7bae019
+  languageName: node
+  linkType: hard
+
+"@types/store@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@types/store@npm:2.0.2"
+  checksum: aa548e117f9a1e2b1ff0263f3261ad7066b885ed32c05019832e4cbf91bf09f5f5891cccfb4e001a6cdc87d306b1d6376b20bdf8976dfced38b18db3c9c6fef3
   languageName: node
   linkType: hard
 
@@ -9981,8 +10002,11 @@ __metadata:
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
     "@svgr/webpack": ^6.1.1
+    "@types/bytes": ^3.1.1
+    "@types/graphlib": ^2.1.8
     "@types/mime": ^2.0.3
     "@types/react": ^16.14.0
+    "@types/store": ^2.0.2
     "@webiny/app": ^5.21.0
     "@webiny/app-admin-core": ^5.21.0
     "@webiny/app-security": ^5.21.0
