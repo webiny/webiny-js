@@ -1,16 +1,17 @@
 import S3 from "aws-sdk/clients/s3";
 import path from "path";
 import WebinyError from "@webiny/error";
-import getStorageName from "~/utils/getStorageName";
-import getStorageFolder from "~/utils/getStorageFolder";
-import getDbNamespace from "~/utils/getDbNamespace";
-import getRenderUrl from "~/utils/getRenderUrl";
-import { HandlerPlugin, Configuration, FlushHookPlugin } from "./types";
-import { HandlerResponse, PrerenderingServiceStorageOperations } from "~/types";
+import { getDbNamespace, getStorageFolder, getStorageName, getRenderUrl } from "~/utils";
+import { HandlerPlugin, FlushHookPlugin } from "./types";
+import { Configuration, HandlerResponse, PrerenderingServiceStorageOperations } from "~/types";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-const deleteFile = ({ key, storageName }) => {
+interface DeleteFileParams {
+    key: string;
+    storageName: string;
+}
+const deleteFile = ({ key, storageName }: DeleteFileParams) => {
     return s3
         .deleteObject({
             Bucket: storageName,

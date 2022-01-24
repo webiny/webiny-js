@@ -1,6 +1,10 @@
 import chromium from "chrome-aws-lambda";
 import posthtml from "posthtml";
 import { noopener } from "posthtml-noopener";
+/**
+ * Package posthtml-plugin-link-preload has no types.
+ */
+// @ts-ignore
 import posthtmlPluginLinkPreload from "posthtml-plugin-link-preload";
 import injectApolloState from "./injectApolloState";
 import injectRenderId from "./injectRenderId";
@@ -9,9 +13,11 @@ import injectTenantLocale from "./injectTenantLocale";
 import injectNotFoundPageFlag from "./injectNotFoundPageFlag";
 import getPsTags from "./getPsTags";
 import shortid from "shortid";
-import { Args as BaseHandlerArgs, Configuration, HandlerContext } from "./types";
+import { HandlerContext } from "./types";
+import { Browser, Page } from "puppeteer";
+import { Args as BaseHandlerArgs, Configuration } from "~/types";
 
-const windowSet = (page, name, value) => {
+const windowSet = (page: Page, name: string, value: string | boolean) => {
     page.evaluateOnNewDocument(`
     Object.defineProperty(window, '${name}', {
       get() {
@@ -99,7 +105,7 @@ export default async (url: string, args: Params): Promise<[File[], Meta]> => {
     ];
 };
 
-let browser;
+let browser: Browser;
 
 export interface RenderResult {
     content: string;
@@ -119,6 +125,12 @@ export interface Meta {
     ts: number;
     render: RenderResult;
     args: Params;
+}
+
+interface GraphQLCache {
+    query: any;
+    variables: Record<string, any>;
+    data: Record<string, any>;
 }
 
 export const defaultRenderUrlFunction = async (
@@ -162,7 +174,7 @@ export const defaultRenderUrlFunction = async (
     const skipResources = ["image", "stylesheet"];
     await browserPage.setRequestInterception(true);
 
-    const gqlCache = [];
+    const gqlCache: GraphQLCache[] = [];
 
     browserPage.on("request", request => {
         if (skipResources.includes(request.resourceType())) {
@@ -177,7 +189,7 @@ export const defaultRenderUrlFunction = async (
         const request = response.request();
         const url = request.url();
         if (url.includes("/graphql") && request.method() === "POST") {
-            const responses = await response.json();
+            const responses: Record<string, any> = await response.json();
             const postData = JSON.parse(request.postData());
             const operations = Array.isArray(postData) ? postData : [postData];
 

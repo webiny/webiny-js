@@ -1,26 +1,10 @@
 import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
+import { Args as BaseArgs, Configuration as BaseConfiguration } from "~/types";
 
-export interface Configuration {
-    website?: {
-        url?: string;
-    };
-    db?: {
-        namespace?: string;
-    };
-    storage?: {
-        name?: string;
-        folder?: string;
-    };
-    meta?: Record<string, any>;
-}
-
-export interface Args {
-    configuration?: Configuration;
-    url?: string;
-    path?: string;
-}
+export interface Configuration extends BaseConfiguration {}
+export interface Args extends BaseArgs {}
 
 export type HandlerArgs = Args | Args[];
 export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
