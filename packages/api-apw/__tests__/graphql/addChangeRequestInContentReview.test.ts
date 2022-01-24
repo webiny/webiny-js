@@ -77,7 +77,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequestMock.createChangeRequestInput({
-                step: `${contentReview.id}#${step1.slug}`
+                step: `${contentReview.id}#${step1.id}`
             })
         });
         const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
@@ -99,7 +99,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 const [entry] = response.data.apw.listContentReviews.data;
                 return (
                     entry &&
-                    entry.steps.find(step => step.slug === step1.slug).pendingChangeRequests === 1
+                    entry.steps.find(step => step.id === step1.id).pendingChangeRequests === 1
                 );
             },
             {
@@ -112,7 +112,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const [listChangeRequestsResponse] = await listChangeRequestsQuery({
             where: {
-                step: `${contentReview.id}#${step1.slug}`
+                step: `${contentReview.id}#${step1.id}`
             }
         });
         expect(listChangeRequestsResponse).toEqual({
@@ -150,7 +150,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
                 data: changeRequestMock.createChangeRequestInput({
-                    step: `${contentReview.id}#${step2.slug}`,
+                    step: `${contentReview.id}#${step2.id}`,
                     title: "Please make change in heading-" + i
                 })
             });
@@ -163,7 +163,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                     const [entry] = response.data.apw.listContentReviews.data;
                     return (
                         entry &&
-                        entry.steps.find(step => step.slug === step2.slug).pendingChangeRequests ===
+                        entry.steps.find(step => step.id === step2.id).pendingChangeRequests ===
                             i + 1
                     );
                 },
@@ -179,7 +179,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             () =>
                 listChangeRequestsQuery({
                     where: {
-                        step: `${contentReview.id}#${step2.slug}`
+                        step: `${contentReview.id}#${step2.id}`
                     }
                 }).then(([data]) => data),
             response => {
@@ -196,7 +196,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const [listChangeRequestsResponse2] = await listChangeRequestsQuery({
             where: {
-                step: `${contentReview.id}#${step2.slug}`
+                step: `${contentReview.id}#${step2.id}`
             }
         });
         expect(listChangeRequestsResponse2).toEqual({
@@ -317,21 +317,21 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                             },
                             steps: [
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 1,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 2,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
@@ -366,7 +366,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             for (let j = 0; j < 2; j++) {
                 const [createCommentResponse] = await createChangeRequestMutation({
                     data: changeRequestMock.createChangeRequestInput({
-                        step: `${contentReview.id}#${contentReview.steps[0].slug}`,
+                        step: `${contentReview.id}#${contentReview.steps[0].id}`,
                         title: `Please change heading-${i}-${j}`
                     })
                 });
@@ -483,7 +483,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         [listChangeRequestsResponse] = await listChangeRequestsQuery({
             where: {
-                step: `${contentReviews[0].id}#${contentReviews[0].steps[0].slug}`
+                step: `${contentReviews[0].id}#${contentReviews[0].steps[0].id}`
             }
         });
         expect(listChangeRequestsResponse).toEqual({

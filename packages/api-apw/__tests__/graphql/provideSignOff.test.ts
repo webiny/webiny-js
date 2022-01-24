@@ -48,7 +48,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         let [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step3.slug
+            step: step3.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -70,7 +70,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -129,7 +129,7 @@ describe("Provide sign off for a step in content review process", function () {
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.DONE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: expect.stringMatching(/^20/),
                                     signOffProvidedBy: {
@@ -139,14 +139,14 @@ describe("Provide sign off for a step in content review process", function () {
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
@@ -204,7 +204,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         const [provideSignOffResponse] = await gqlHandlerForIdentityA.provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -254,7 +254,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         let [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step2.slug
+            step: step2.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -275,7 +275,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
 
         await until(
@@ -301,7 +301,7 @@ describe("Provide sign off for a step in content review process", function () {
 
         [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step3.slug
+            step: step3.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -319,7 +319,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step2.slug
+            step: step2.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {

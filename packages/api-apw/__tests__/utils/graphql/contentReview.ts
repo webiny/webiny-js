@@ -16,7 +16,7 @@ const getDataFields = (fields = "") => `{
     status
     steps {
         status
-        slug
+        id
         pendingChangeRequests
         signOffProvidedOn
         signOffProvidedBy {

@@ -21,7 +21,7 @@ const getDataFields = (fields = "") => `{
     }
     steps {
         title
-        slug
+        id
         type
         reviewers {
             id

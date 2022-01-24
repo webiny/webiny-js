@@ -54,7 +54,7 @@ describe("Retract sign off for a step in content review process", function () {
          */
         let [retractSignOffResponse] = await retractSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(retractSignOffResponse).toEqual({
             data: {
@@ -76,7 +76,7 @@ describe("Retract sign off for a step in content review process", function () {
          */
         const [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -135,7 +135,7 @@ describe("Retract sign off for a step in content review process", function () {
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.DONE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: expect.stringMatching(/^20/),
                                     signOffProvidedBy: {
@@ -145,14 +145,14 @@ describe("Retract sign off for a step in content review process", function () {
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
@@ -170,7 +170,7 @@ describe("Retract sign off for a step in content review process", function () {
          */
         [retractSignOffResponse] = await retractSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(retractSignOffResponse).toEqual({
             data: {
@@ -228,21 +228,21 @@ describe("Retract sign off for a step in content review process", function () {
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.INACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.INACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
@@ -294,7 +294,7 @@ describe("Retract sign off for a step in content review process", function () {
 
         await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
 
         /**
@@ -302,7 +302,7 @@ describe("Retract sign off for a step in content review process", function () {
          */
         const [retractSignOffResponse] = await gqlHandlerForIdentityA.retractSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(retractSignOffResponse).toEqual({
             data: {

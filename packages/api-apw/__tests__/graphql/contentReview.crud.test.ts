@@ -57,7 +57,7 @@ describe("Content Review crud test", () => {
                                     index === 0
                                         ? ApwContentReviewStepStatus.ACTIVE
                                         : ApwContentReviewStepStatus.INACTIVE,
-                                slug: expect.any(String),
+                                id: expect.any(String),
                                 pendingChangeRequests: 0,
                                 signOffProvidedOn: null,
                                 signOffProvidedBy: null
@@ -107,7 +107,7 @@ describe("Content Review crud test", () => {
                                     index === 0
                                         ? ApwContentReviewStepStatus.ACTIVE
                                         : ApwContentReviewStepStatus.INACTIVE,
-                                slug: expect.any(String),
+                                id: expect.any(String),
                                 pendingChangeRequests: 0,
                                 signOffProvidedOn: null,
                                 signOffProvidedBy: null
@@ -159,7 +159,7 @@ describe("Content Review crud test", () => {
                                         index === 0
                                             ? ApwContentReviewStepStatus.ACTIVE
                                             : ApwContentReviewStepStatus.INACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null

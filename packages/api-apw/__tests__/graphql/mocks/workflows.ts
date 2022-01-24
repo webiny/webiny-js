@@ -1,4 +1,5 @@
 import { ApwWorkflowStepTypes } from "~/types";
+import { getNanoid } from "~/plugins/utils";
 
 interface CreateWorkflowParams {
     title?: string;
@@ -11,7 +12,7 @@ interface CreateWorkflowParams {
 
 interface CreateWorkflowStepParams {
     title: string;
-    slug: string;
+    id: string;
     type: ApwWorkflowStepTypes;
     reviewers: Array<{ id: string }>;
 }
@@ -30,8 +31,8 @@ export default {
         title: "Main workflow",
         steps: [
             {
+                id: getNanoid(),
                 title: "Legal Review",
-                slug: "legal-review",
                 type: "mandatoryBlocking",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
@@ -50,8 +51,8 @@ export default {
         title: "Main workflow",
         steps: [
             {
+                id: getNanoid(),
                 title: "Legal Review",
-                slug: "legal-review",
                 type: "mandatoryBlocking",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
@@ -59,8 +60,8 @@ export default {
                 }))
             },
             {
+                id: getNanoid(),
                 title: "Design Review",
-                slug: "design-review",
                 type: "mandatoryNonBlocking",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
@@ -68,8 +69,8 @@ export default {
                 }))
             },
             {
+                id: getNanoid(),
                 title: "Copy Review",
-                slug: "copy-review",
                 type: "notMandatory",
                 reviewers: reviewers.map(reviewer => ({
                     modelId: "apwReviewerModelDefinition",
@@ -134,14 +135,14 @@ export default {
         title: "Main review workflow",
         steps: [
             {
+                id: getNanoid(),
                 title: "Legal Review",
-                slug: "legal-review",
                 type: "mandatoryBlocking",
                 reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
             },
             {
+                id: getNanoid(),
                 title: "Design Review",
-                slug: "design-review",
                 type: "mandatoryBlocking",
                 reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
             }
