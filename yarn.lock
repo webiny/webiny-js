@@ -35814,7 +35814,7 @@ __metadata:
     classnames: ^2.2.6
     emotion: ^10.0.17
     graphql: ^15.7.2
-    graphql-tag: 2.12.6
+    graphql-tag: ^2.12.6
     invariant: ^2.2.4
     lodash.get: ^4.4.2
     react: 16.14.0
