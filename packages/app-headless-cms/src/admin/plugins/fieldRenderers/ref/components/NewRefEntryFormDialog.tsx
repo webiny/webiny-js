@@ -52,6 +52,7 @@ const EntryForm = ({ onCreate }) => {
             onSubmit={onCreate}
             onForm={form => setFormRef(form)}
             entry={{}}
+            addEntryToListCache={false}
         />
     );
 };
