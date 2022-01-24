@@ -24,6 +24,7 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
+    "@types/is-number": "^7.0.2",
     "@webiny/cli": "^5.21.0",
     "@webiny/project-utils": "^5.21.0",
     "dynamodb-toolbox": "^0.3.4",

@@ -1,7 +1,16 @@
 import createKeyConditionExpressionArgs from "./statements/createKeyConditionExpressionArgs";
+import { Query, QueryKey, QueryKeyField, QueryKeys, QuerySort } from "~/types";
 
+interface GenerateParams {
+    query: Query;
+    keys: QueryKeys;
+    sort: QuerySort;
+    limit: number;
+    tableName: string;
+}
 class QueryGenerator {
-    generate({ query, keys, sort, limit, tableName }) {
+    generate(params: GenerateParams) {
+        const { query, keys, sort, limit, tableName } = params;
         // 1. Which key can we use in this query operation?
         const key = this.findQueryKey(query, keys);
 
@@ -10,10 +19,10 @@ class QueryGenerator {
         }
 
         // 2. Now that we know the key, let's separate the key attributes from the rest.
-        const keyAttributesValues = {},
-            nonKeyAttributesValues = {};
+        const keyAttributesValues: Record<string, string> = {};
+        const nonKeyAttributesValues: Record<string, string> = {};
         for (const queryKey in query) {
-            if (key.fields.find(item => item.name === queryKey)) {
+            if (key.fields.find((item: QueryKeyField) => item.name === queryKey)) {
                 keyAttributesValues[queryKey] = query[queryKey];
             } else {
                 nonKeyAttributesValues[queryKey] = query[queryKey];
@@ -29,7 +38,7 @@ class QueryGenerator {
         return { ...keyConditionExpression, TableName: tableName, Limit: limit };
     }
 
-    findQueryKey(query = {}, keys = []) {
+    findQueryKey(query: Query = {}, keys: QueryKeys = []): QueryKey | null {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             let hasAllFields = true;
@@ -45,6 +54,7 @@ class QueryGenerator {
                 return key;
             }
         }
+        return null;
     }
 }
 

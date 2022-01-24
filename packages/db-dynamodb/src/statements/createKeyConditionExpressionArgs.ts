@@ -1,7 +1,20 @@
 import processStatement from "./processStatement";
+import { ProcessStatementArgsParam, Query, QueryKey, QuerySort } from "~/types";
 
-export default ({ query, sort, key }) => {
-    const args = {
+interface Output {
+    KeyConditionExpression: string;
+    ExpressionAttributeNames: Record<string, any>;
+    ExpressionAttributeValues: Record<string, any>;
+    ScanIndexForward: boolean;
+    IndexName: string;
+}
+interface Params {
+    query: Query;
+    sort: QuerySort;
+    key: QueryKey;
+}
+export default ({ query, sort, key }: Params): Output => {
+    const args: ProcessStatementArgsParam = {
         expression: "",
         attributeNames: {},
         attributeValues: {}
@@ -9,7 +22,7 @@ export default ({ query, sort, key }) => {
 
     processStatement({ args, query: { $and: query } });
 
-    const output = {
+    const output: Output = {
         KeyConditionExpression: args.expression,
         ExpressionAttributeNames: args.attributeNames,
         ExpressionAttributeValues: args.attributeValues,

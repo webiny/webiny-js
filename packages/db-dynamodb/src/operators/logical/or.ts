@@ -1,7 +1,16 @@
-import { Operator } from "../../types";
+import {
+    Operator,
+    ProcessStatementArgsParam,
+    ProcessStatementCallable,
+    ProcessStatementQueryParam
+} from "~/types";
 
-const processQuery = (query, orArgs, processStatement) => {
-    const args = {
+const processQuery = (
+    query: ProcessStatementQueryParam,
+    orArgs: ProcessStatementArgsParam,
+    processStatement: ProcessStatementCallable
+) => {
+    const args: ProcessStatementArgsParam = {
         expression: "",
         attributeNames: {},
         attributeValues: {}
@@ -24,7 +33,7 @@ const or: Operator = {
         return key === "$or";
     },
     process: ({ value, args, processStatement }) => {
-        const orArgs = {
+        const orArgs: ProcessStatementArgsParam = {
             expression: "",
             attributeNames: {},
             attributeValues: {}
