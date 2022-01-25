@@ -155,7 +155,7 @@ export interface ApwWorkflow extends BaseFields {
     title: string;
     steps: ApwWorkflowStep[];
     scope: ApwWorkflowScope;
-    app: string;
+    app: ApwWorkflowApplications;
 }
 
 interface ApwWorkflowScope {
@@ -180,10 +180,10 @@ export enum ApwContentReviewStatus {
     PUBLISHED = "published"
 }
 
-export interface ApwWorkflowStep {
+export interface ApwWorkflowStep<TReviewer = ApwReviewer> {
     title: string;
     type: ApwWorkflowStepTypes;
-    reviewers: ApwReviewer[];
+    reviewers: TReviewer[];
     id: string;
 }
 
@@ -192,17 +192,17 @@ export interface ApwContentReviewStep extends ApwWorkflowStep {
     pendingChangeRequests: number;
 }
 
-interface CreateApwWorkflowParams {
+export interface CreateApwWorkflowParams<TReviewer = string> {
     app: ApwWorkflowApplications;
     title: string;
     scope: ApwWorkflowScope;
-    steps: ApwWorkflowStep[];
+    steps: ApwWorkflowStep<TReviewer>[];
 }
 
-interface UpdateApwWorkflowParams {
+export interface UpdateApwWorkflowParams<TReviewer = string> {
     title?: string;
     scope?: ApwWorkflowScope;
-    steps?: ApwWorkflowStep[];
+    steps?: ApwWorkflowStep<TReviewer>[];
 }
 
 export interface ListWorkflowsParams extends ListParams {

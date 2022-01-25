@@ -24,16 +24,11 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             meta: ApwMeta
         }
 
-        type ApwWorkflowReviewer {
-            id: ID
-            displayName: String
-        }
-
         type ApwWorkflowStep {
             title: String!
             id: String!
             type: ApwWorkflowStepTypes!
-            reviewers: [ApwRefField!]
+            reviewers: [ID!]
         }
 
         type ApwWorkflowScope {
@@ -97,14 +92,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             id: String!
             title: String!
             type: ApwWorkflowStepTypes!
-            reviewers: [ApwRefFieldInput!]!
+            reviewers: [ID!]!
         }
 
         input ApwUpdateWorkflowStepInput {
             id: String!
             title: String!
             type: ApwWorkflowStepTypes!
-            reviewers: [ApwRefFieldInput!]
+            reviewers: [ID!]
         }
 
         input ApwWorkflowScopeInput {
@@ -157,6 +152,11 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
     `,
     resolvers: {
+        ApwWorkflowStep: {
+            reviewers: parent => {
+                return parent.reviewers.map(({ id }) => id);
+            }
+        },
         ApwQuery: {
             getWorkflow: async (_, args, context) => {
                 return resolve(() => context.apw.workflow.get(args.id));
