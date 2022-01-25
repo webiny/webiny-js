@@ -1,12 +1,11 @@
-// @ts-nocheck
 import React from "react";
+import { makeComposable } from "@webiny/app-serverless-cms";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ReactComponent as SignOutIcon } from "~/assets/icons/round-lock_open-24px.svg";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SignOut: React.FC = () => {
+export const SignOut = makeComposable("SignOut", () => {
     const { identity } = useSecurity();
 
     if (!identity) {
@@ -24,16 +23,4 @@ const SignOut: React.FC = () => {
             Sign out
         </ListItem>
     );
-};
-
-export default () => {
-    return { type: "dummy" };
-
-    // return new UIViewPlugin<AdminView>(AdminView, view => {
-    //     const userMenu = view.getElement<UserMenuElement>("userMenu");
-    //     if (userMenu) {
-    //         const signOut = new GenericElement("signOut", () => <SignOut />);
-    //         signOut.moveToTheEndOf(userMenu);
-    //     }
-    // });
-};
+});

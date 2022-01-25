@@ -87,12 +87,12 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             this: Security,
             permission: string
         ): Promise<TPermission | null> {
-            // We must resolve permissions first
-            const perms = await this.getPermissions();
-
             if (!performAuthorization) {
                 return { name: "*" } as TPermission;
             }
+
+            // We must resolve permissions first
+            const perms = await this.getPermissions();
 
             const exactMatch = (perms || []).find(p => p.name === permission);
             if (exactMatch) {

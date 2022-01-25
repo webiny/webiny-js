@@ -6,6 +6,7 @@ const fields: string = `
     slug
     description
     permissions
+    system
     createdOn
 `;
 
@@ -14,11 +15,7 @@ export const LIST_GROUPS = gql`
         security {
             groups: listGroups {
                 data {
-                    id
-                    slug
-                    name
-                    description
-                    createdOn
+                    ${fields}
                 }
             }
         }

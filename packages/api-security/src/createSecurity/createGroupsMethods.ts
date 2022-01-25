@@ -129,8 +129,8 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             const group: Group = {
                 id: mdbid(),
                 tenant: currentTenant,
-                system: false,
                 ...input,
+                system: input.system === true,
                 webinyVersion: process.env.WEBINY_VERSION,
                 createdOn: new Date().toISOString(),
                 createdBy: identity

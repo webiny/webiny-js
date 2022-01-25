@@ -5,6 +5,7 @@ export interface Group {
     name: string;
     description: string;
     slug: string;
+    system?: boolean;
 }
 export interface ApiKey {
     id: string;

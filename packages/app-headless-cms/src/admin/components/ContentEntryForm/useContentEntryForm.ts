@@ -102,7 +102,14 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                         return;
                     }
                     resetInvalidFieldValues();
-                    GQLCache.addEntryToListCache(contentModel, cache, entry, listQueryVariables);
+                    if (typeof params.onSubmit !== "function") {
+                        GQLCache.addEntryToListCache(
+                            contentModel,
+                            cache,
+                            entry,
+                            listQueryVariables
+                        );
+                    }
                 }
             });
             setLoading(false);
@@ -115,7 +122,11 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             }
             resetInvalidFieldValues();
             showSnackbar(`${contentModel.name} entry created successfully!`);
-            goToRevision(entry.id);
+            if (typeof params.onSubmit === "function") {
+                params.onSubmit(entry);
+            } else {
+                goToRevision(entry.id);
+            }
             return entry;
         },
         [contentModel.modelId, listQueryVariables]
@@ -166,12 +177,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
 
                     showSnackbar("A new revision was created!");
-
-                    history.push(
-                        `/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(
-                            newRevision.id
-                        )}`
-                    );
+                    goToRevision(newRevision.id);
                 }
             });
             setLoading(false);

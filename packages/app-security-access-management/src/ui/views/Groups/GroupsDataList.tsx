@@ -175,7 +175,7 @@ export const GroupsDataList: React.FC<GroupsDataListProps> = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    {item.slug !== "full-access" ? (
+                                    {!item.system ? (
                                         <DeleteIcon
                                             onClick={() => deleteItem(item)}
                                             data-testid={"default-data-list.delete"}

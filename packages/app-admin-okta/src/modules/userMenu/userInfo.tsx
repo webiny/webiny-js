@@ -1,10 +1,10 @@
-// @ts-nocheck
 import React from "react";
 import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
+import { makeComposable } from "@webiny/app-serverless-cms";
 
 const avatarImage = css({
     height: "40px !important",
@@ -58,8 +58,7 @@ const linkStyles = css({
     }
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const UserInfo: React.FC = () => {
+export const UserInfo = makeComposable("UserInfo", () => {
     const security = useSecurity();
 
     if (!security || !security.identity) {
@@ -88,18 +87,4 @@ const UserInfo: React.FC = () => {
             </ListItem>
         </div>
     );
-};
-
-export default () => {
-    return { type: "dummy" };
-    // return new UIViewPlugin<AdminView>(AdminView, view => {
-    //     const userMenu = view.getElement("userMenu");
-    //     if (!userMenu) {
-    //         return;
-    //     }
-    //
-    //     const userInfo = new GenericElement("userInfo", () => <UserInfo />);
-    //     userInfo.moveToTheBeginningOf(userMenu);
-    //     view.refresh();
-    // });
-};
+});

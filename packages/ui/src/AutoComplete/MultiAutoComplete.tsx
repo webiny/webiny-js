@@ -92,6 +92,9 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
      * Render list item when `useMultipleSelectionList` is used.
      */
     renderListItemLabel?: Function;
+
+    /* A component that renders supporting UI in case of no result found. */
+    noResultFound?: Function;
     /**
      * Value is an array of strings. But can be undefined.
      */
@@ -295,6 +298,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                     >
                         <li>
                             <Typography use={"body2"}>No results.</Typography>
+                            {this.props.noResultFound}
                         </li>
                     </ul>
                 </Elevation>

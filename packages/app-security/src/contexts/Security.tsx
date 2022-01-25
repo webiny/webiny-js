@@ -2,16 +2,15 @@ import minimatch from "minimatch";
 import React, { useState, useMemo, Dispatch, SetStateAction, useCallback } from "react";
 import { SecurityIdentity, SecurityPermission } from "~/types";
 
-export const SecurityContext = React.createContext<SecurityContextValue>(null);
-
-export interface SecurityContextValue {
+export interface SecurityContext {
     identity: SecurityIdentity | null;
     setIdentity: Dispatch<SetStateAction<SecurityIdentity>>;
     getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T;
 }
 
-export interface SecurityProviderProps {}
-export const SecurityProvider: React.FC<SecurityProviderProps> = props => {
+export const SecurityContext = React.createContext<SecurityContext>(null);
+
+export const SecurityProvider: React.FC = props => {
     const [identity, setIdentity] = useState<SecurityIdentity>(null);
 
     const getPermission = useCallback(
