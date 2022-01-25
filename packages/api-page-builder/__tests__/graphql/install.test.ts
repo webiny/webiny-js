@@ -104,7 +104,7 @@ describe("Install Test", () => {
         // 2. Only homepage should be visible in published and latest pages.
         const [listPagesAfterInstallResponse] = await until(
             listPages,
-            ([res]) => {
+            ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPages;
                 return data.length === 1 && data[0].status === "published";
             },
@@ -121,7 +121,7 @@ describe("Install Test", () => {
 
         const [listPublishedPagesAfterInstallResponse] = await until(
             listPublishedPages,
-            ([res]) => {
+            ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPublishedPages;
                 return data.length === 1 && data[0].status === "published";
             },

@@ -3,6 +3,8 @@ import graphqlHandler from "@webiny/handler-graphql";
 import pageBuilderPlugins from "../../src/updateSettings";
 import { createTenancyAndSecurity } from "../tenancySecurity";
 import { getStorageOperations } from "../storageOperations";
+import { ContextPlugin } from "@webiny/handler";
+import { PbContext } from "~/graphql/types";
 
 interface Params {
     plugins?: any;
@@ -17,21 +19,19 @@ export default (params: Params = {}) => {
         ...ops.plugins,
         graphqlHandler(),
         ...createTenancyAndSecurity(),
-        {
-            type: "context",
-            apply: context => {
-                if (context.i18nContent) {
-                    return;
-                }
-                context.i18nContent = {
-                    getLocale: () => {
-                        return {
-                            code: "en-US"
-                        };
-                    }
-                };
+        new ContextPlugin<PbContext>(async context => {
+            if (context.i18nContent) {
+                return;
             }
-        },
+            context.i18nContent = {
+                ...(context.i18nContent || ({} as any)),
+                getLocale: () => {
+                    return {
+                        code: "en-US"
+                    };
+                }
+            };
+        }),
         pageBuilderPlugins({
             storageOperations: ops.storageOperations
         }),
