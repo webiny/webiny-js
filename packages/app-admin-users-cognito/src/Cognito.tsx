@@ -6,7 +6,8 @@ import {
     AddMenu as Menu,
     AddUserMenuItem,
     AddRoute,
-    Layout
+    Layout,
+    HigherOrderComponent
 } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-security";
@@ -23,11 +24,11 @@ import installation from "./plugins/installation";
 import permissionRenderer from "./plugins/permissionRenderer";
 import cognito from "./plugins/cognito";
 
-const LoginScreen = createAuthentication();
+const LoginScreen: React.FC = createAuthentication();
 
-const CognitoLoginScreen = () => LoginScreen;
+const CognitoLoginScreen: HigherOrderComponent = () => LoginScreen;
 
-const CognitoIdP = () => {
+const CognitoIdP: React.FC = () => {
     plugins.register([globalSearchUsers, installation, permissionRenderer, cognito()]);
 
     return (

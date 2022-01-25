@@ -10,10 +10,14 @@ export interface PasswordPolicy {
 
 export const createPasswordValidator =
     (policy: PasswordPolicy) =>
-    (value: any): void => {
+    (value?: string): void => {
         if (!value) {
             return;
         }
+        /**
+         * TODO @ts-refactor
+         * @pavel expl
+         */
         value = value + "";
 
         const requireSymbols = /([=+\-^$*.\[\]{}()?"!@#%&/,><':;|_~`])+/;
@@ -42,6 +46,4 @@ export const createPasswordValidator =
         if (policy.requireSymbols && !requireSymbols.test(value)) {
             throw new ValidationError("Value must contain a special character.");
         }
-
-        return;
     };

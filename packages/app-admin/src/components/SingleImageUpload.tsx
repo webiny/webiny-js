@@ -23,7 +23,7 @@ const ImageUploadWrapper = styled("div")({
     }
 });
 
-interface SingleImageUploadProps extends FormComponentProps {
+export interface SingleImageUploadProps extends FormComponentProps {
     // Accept types
     accept?: string[];
 

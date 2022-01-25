@@ -10,7 +10,8 @@ export interface SecurityContextValue {
     getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T;
 }
 
-export const SecurityProvider: React.FC = props => {
+export interface SecurityProviderProps {}
+export const SecurityProvider: React.FC<SecurityProviderProps> = props => {
     const [identity, setIdentity] = useState<SecurityIdentity>(null);
 
     const getPermission = useCallback(

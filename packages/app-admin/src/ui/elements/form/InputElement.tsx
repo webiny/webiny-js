@@ -6,6 +6,7 @@ import {
     FormFieldElementRenderProps
 } from "~/ui/elements/form/FormFieldElement";
 
+export interface InputElementRenderProps extends FormFieldElementRenderProps {}
 export class InputElement extends FormFieldElement {
     constructor(id: string, config: FormFieldElementConfig) {
         super(id, config);

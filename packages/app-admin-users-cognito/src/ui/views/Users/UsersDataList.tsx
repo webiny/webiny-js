@@ -30,6 +30,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { DELETE_USER, LIST_USERS } from "./graphql";
 import { serializeSorters, deserializeSorters } from "../utils";
+import { UserItem } from "~/UserItem";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
 
@@ -52,7 +53,7 @@ const SORTERS = [
     }
 ];
 
-const UsersDataList = () => {
+const UsersDataList: React.FC = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { identity } = useSecurity();
@@ -164,7 +165,7 @@ const UsersDataList = () => {
                 />
             }
         >
-            {({ data }) => (
+            {({ data }: { data: UserItem[] }) => (
                 <ScrollList twoLine avatarList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === id}>
