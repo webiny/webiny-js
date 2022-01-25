@@ -8,12 +8,13 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useI18N } from "~/hooks/useI18N";
 import { LIST_LOCALES, DELETE_LOCALE } from "./graphql";
 import { useCurrentLocale } from "./useCurrentLocale";
+import { I18NLocaleItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/data-list");
 
-const serializeSorters = data => {
+const serializeSorters = (data?: Record<string, string>): string | undefined => {
     if (!data) {
-        return data;
+        return data as undefined;
     }
     const [[key, value]] = Object.entries(data);
     return `${key}:${value}`;
@@ -50,8 +51,8 @@ interface UseLocalesListHook {
         sort: string;
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
-        editLocale: (code: string) => void;
-        deleteLocale: (code: string) => void;
+        editLocale: (code: I18NLocaleItem) => void;
+        deleteLocale: (code: I18NLocaleItem) => void;
     };
 }
 
@@ -93,7 +94,7 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
     const data = listQuery.loading ? [] : listQuery.data.i18n.listI18NLocales.data;
 
     const deleteLocale = useCallback(
-        item => {
+        (item: I18NLocaleItem) => {
             showConfirmation(async () => {
                 const response = await deleteIt({
                     variables: item
@@ -130,8 +131,8 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
 
     const createLocale = useCallback(() => history.push("/i18n/locales?new=true"), []);
 
-    const editLocale = useCallback(code => {
-        history.push(`/i18n/locales?code=${code}`);
+    const editLocale = useCallback((item: I18NLocaleItem) => {
+        history.push(`/i18n/locales?code=${item.code}`);
     }, []);
 
     return {

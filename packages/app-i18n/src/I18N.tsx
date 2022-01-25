@@ -8,7 +8,7 @@ import { Layout } from "@webiny/app-admin";
 import { LocalesView } from "./admin/views/locales";
 import i18nPlugins from "./admin/plugins";
 
-const I18NProviderHOC = Component => {
+const I18NProviderHOC = (Component: React.FC): React.FC => {
     return function I18NProvider({ children }) {
         return (
             <ContextProvider>
@@ -18,7 +18,7 @@ const I18NProviderHOC = Component => {
     };
 };
 
-const I18NExtension = () => {
+const I18NExtension: React.FC = () => {
     plugins.register(i18nPlugins());
 
     return (

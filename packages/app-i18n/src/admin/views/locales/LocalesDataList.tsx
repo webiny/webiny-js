@@ -20,6 +20,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { useLocalesList } from "./hooks/useLocalesList";
+import { I18NLocaleItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/data-list");
 
@@ -34,7 +35,7 @@ const SORTERS = [
     }
 ];
 
-const LocalesDataList = () => {
+const LocalesDataList: React.FC = () => {
     const {
         locales,
         loading,
@@ -90,11 +91,11 @@ const LocalesDataList = () => {
             modalOverlay={localesDataListModalOverlay}
             modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
-            {({ data }) => (
+            {({ data }: { data: I18NLocaleItem[] }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.code} selected={item.code === currentLocaleCode}>
-                            <ListItemText onClick={() => editLocale(item.code)}>
+                            <ListItemText onClick={() => editLocale(item)}>
                                 {item.code}
                                 <ListItemTextSecondary>
                                     {item.default && t`Default locale`}

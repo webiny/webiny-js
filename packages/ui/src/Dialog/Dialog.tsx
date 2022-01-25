@@ -18,8 +18,6 @@ import { getClasses } from "~/Helpers";
 export type DialogOnClose = (event: DialogOnCloseEventT) => void;
 
 export type DialogProps = RmwcDialogProps & {
-    children: any;
-
     className?: string;
 
     // Component's custom in-line styles.
