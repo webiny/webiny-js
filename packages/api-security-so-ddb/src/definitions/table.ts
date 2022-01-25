@@ -1,12 +1,12 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
 
-export interface Params {
+export interface CreateTableParams {
     table: string;
     documentClient: DocumentClient;
 }
 
-export const createTable = ({ table, documentClient }: Params) => {
+export const createTable = ({ table, documentClient }: CreateTableParams) => {
     return new Table({
         name: table || process.env.DB_TABLE,
         partitionKey: "PK",
