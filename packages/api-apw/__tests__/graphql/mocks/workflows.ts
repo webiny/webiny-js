@@ -12,33 +12,28 @@ interface CreateWorkflowParams {
 
 interface CreateWorkflowStepParams {
     title: string;
-    id: string;
     type: ApwWorkflowStepTypes;
     reviewers: Array<{ id: string }>;
 }
 
+const createWorkflowStep = (params: CreateWorkflowStepParams) => ({
+    ...params,
+    id: getNanoid(),
+    reviewers: params.reviewers.map(reviewer => reviewer.id)
+});
+
 export default {
     reviewerModelId: "apwReviewerModelDefinition",
-    createWorkflowStep: (params: CreateWorkflowStepParams) => ({
-        ...params,
-        reviewers: params.reviewers.map(reviewer => ({
-            modelId: "apwReviewerModelDefinition",
-            id: reviewer.id
-        }))
-    }),
+    createWorkflowStep,
     createWorkflow: (params: CreateWorkflowParams, reviewers) => ({
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
-            {
-                id: getNanoid(),
+            createWorkflowStep({
                 title: "Legal Review",
-                type: "mandatoryBlocking",
-                reviewers: reviewers.map(reviewer => ({
-                    modelId: "apwReviewerModelDefinition",
-                    id: reviewer.id
-                }))
-            }
+                type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                reviewers
+            })
         ],
         scope: {
             type: "default",
@@ -50,33 +45,21 @@ export default {
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
-            {
-                id: getNanoid(),
+            createWorkflowStep({
                 title: "Legal Review",
-                type: "mandatoryBlocking",
-                reviewers: reviewers.map(reviewer => ({
-                    modelId: "apwReviewerModelDefinition",
-                    id: reviewer.id
-                }))
-            },
-            {
-                id: getNanoid(),
-                title: "Design Review",
-                type: "mandatoryNonBlocking",
-                reviewers: reviewers.map(reviewer => ({
-                    modelId: "apwReviewerModelDefinition",
-                    id: reviewer.id
-                }))
-            },
-            {
-                id: getNanoid(),
+                type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                reviewers
+            }),
+            createWorkflowStep({
+                title: "Legal Review",
+                type: ApwWorkflowStepTypes.MANDATORY_NON_BLOCKING,
+                reviewers
+            }),
+            createWorkflowStep({
                 title: "Copy Review",
-                type: "notMandatory",
-                reviewers: reviewers.map(reviewer => ({
-                    modelId: "apwReviewerModelDefinition",
-                    id: reviewer.id
-                }))
-            }
+                type: ApwWorkflowStepTypes.NON_MANDATORY,
+                reviewers
+            })
         ],
         scope: {
             type: "default",
@@ -134,18 +117,16 @@ export default {
         app: "pageBuilder",
         title: "Main review workflow",
         steps: [
-            {
-                id: getNanoid(),
+            createWorkflowStep({
                 title: "Legal Review",
-                type: "mandatoryBlocking",
-                reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
-            },
-            {
-                id: getNanoid(),
+                type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                reviewers: [{ id: "12345678#0001" }]
+            }),
+            createWorkflowStep({
                 title: "Design Review",
-                type: "mandatoryBlocking",
-                reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
-            }
+                type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                reviewers: [{ id: "12345678#0001" }]
+            })
         ],
         scope: {
             type: "pb",

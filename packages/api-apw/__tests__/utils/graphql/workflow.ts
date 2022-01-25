@@ -23,10 +23,7 @@ const getDataFields = (fields = "") => `{
         title
         id
         type
-        reviewers {
-            id
-            modelId
-        }
+        reviewers
     }
     ${fields}
 }`;

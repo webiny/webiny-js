@@ -43,12 +43,7 @@ describe("Workflow crud test", () => {
         return reviewer;
     };
 
-    const expectedReviewers = expect.arrayContaining([
-        expect.objectContaining({
-            modelId: expect.any(String),
-            id: expect.any(String)
-        })
-    ]);
+    const expectedReviewers = expect.arrayContaining([expect.any(String)]);
 
     test("should able to create, update, get, list and delete a workflow", async () => {
         const reviewer = await setupReviewer();
@@ -164,7 +159,6 @@ describe("Workflow crud test", () => {
          * Let's update the entry.
          */
         const designReviewStep = mocks.createWorkflowStep({
-            id: "12345678",
             title: "Design review",
             type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
             reviewers: [
