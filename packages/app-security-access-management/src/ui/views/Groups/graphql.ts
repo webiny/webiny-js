@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-const fields = `
+const fields: string = `
     id
     name
     slug
@@ -9,7 +9,7 @@ const fields = `
     createdOn
 `;
 
-export const LIST_GROUPS: any = gql`
+export const LIST_GROUPS = gql`
     query listGroups {
         security {
             groups: listGroups {
@@ -25,7 +25,7 @@ export const LIST_GROUPS: any = gql`
     }
 `;
 
-export const READ_GROUP: any = gql`
+export const READ_GROUP = gql`
     query getGroup($id: ID!) {
         security {
             group: getGroup(where: { id: $id }){
@@ -41,7 +41,7 @@ export const READ_GROUP: any = gql`
     }
 `;
 
-export const CREATE_GROUP: any = gql`
+export const CREATE_GROUP = gql`
     mutation createGroup($data: SecurityGroupCreateInput!){
         security {
             group: createGroup(data: $data) {
@@ -58,7 +58,7 @@ export const CREATE_GROUP: any = gql`
     }
 `;
 
-export const UPDATE_GROUP: any = gql`
+export const UPDATE_GROUP = gql`
     mutation updateGroup($id: ID!, $data: SecurityGroupUpdateInput!){
         security {
             group: updateGroup(id: $id, data: $data) {
@@ -75,7 +75,7 @@ export const UPDATE_GROUP: any = gql`
     }
 `;
 
-export const DELETE_GROUP: any = gql`
+export const DELETE_GROUP = gql`
     mutation deleteGroup($id: ID!) {
         security {
             deleteGroup(id: $id) {

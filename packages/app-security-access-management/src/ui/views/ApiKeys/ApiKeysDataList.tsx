@@ -25,6 +25,7 @@ import * as GQL from "./graphql";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { serializeSorters, deserializeSorters } from "../utils";
+import { ApiKey } from "~/types";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
 
@@ -46,8 +47,8 @@ const SORTERS = [
         sorters: { name: "desc" }
     }
 ];
-
-const ApiKeysDataList = () => {
+export interface ApiKeysDataListProps {}
+export const ApiKeysDataList: React.FC<ApiKeysDataListProps> = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history, location } = useRouter();
@@ -160,7 +161,7 @@ const ApiKeysDataList = () => {
                 />
             }
         >
-            {({ data }) => (
+            {({ data }: { data: ApiKey[] }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === id}>
@@ -188,5 +189,3 @@ const ApiKeysDataList = () => {
         </DataList>
     );
 };
-
-export default ApiKeysDataList;

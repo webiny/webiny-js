@@ -1,6 +1,6 @@
-export const serializeSorters = data => {
+export const serializeSorters = (data?: Record<string, string>): string | undefined => {
     if (!data) {
-        return data;
+        return data as undefined;
     }
     const [[key, value]] = Object.entries(data);
     return `${key}:${value}`;

@@ -7,6 +7,11 @@ import { Groups } from "~/ui/views/Groups";
 import { ApiKeys } from "~/ui/views/ApiKeys";
 import accessManagementPugins from "./plugins";
 
+/**
+ * TODO @ts-refactor
+ * Find out why is there empty default export
+ */
+// @ts-ignore
 export default () => [];
 
 export const AccessManagementExtension = () => {

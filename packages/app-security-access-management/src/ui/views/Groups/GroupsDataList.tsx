@@ -26,6 +26,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { deserializeSorters, serializeSorters } from "../utils";
+import { Group } from "~/types";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
 
@@ -48,7 +49,8 @@ const SORTERS = [
     }
 ];
 
-const GroupsDataList = () => {
+export interface GroupsDataListProps {}
+export const GroupsDataList: React.FC<GroupsDataListProps> = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history, location } = useRouter();
@@ -158,7 +160,7 @@ const GroupsDataList = () => {
                 />
             }
         >
-            {({ data }) => (
+            {({ data }: { data: Group[] }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === id}>
@@ -195,5 +197,3 @@ const GroupsDataList = () => {
         </DataList>
     );
 };
-
-export default GroupsDataList;

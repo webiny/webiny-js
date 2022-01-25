@@ -1,9 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import GroupsDataList from "./GroupsDataList";
-import GroupsForm from "./GroupsForm";
+import { GroupsDataList, GroupsDataListProps } from "./GroupsDataList";
+import { GroupsForm, GroupsFormProps } from "./GroupsForm";
 
-const Groups = ({ formProps, listProps }: any) => {
+export interface GroupsProps {
+    listProps?: GroupsDataListProps;
+    formProps?: GroupsFormProps;
+}
+export const Groups: React.FC<GroupsProps> = ({ formProps = {}, listProps = {} }) => {
     return (
         <SplitView>
             <LeftPanel>
@@ -15,5 +19,3 @@ const Groups = ({ formProps, listProps }: any) => {
         </SplitView>
     );
 };
-
-export default Groups;

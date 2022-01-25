@@ -1,9 +1,13 @@
 import * as React from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import ApiKeysDataList from "./ApiKeysDataList";
-import ApiKeyForm from "./ApiKeyForm";
+import { ApiKeysDataList, ApiKeysDataListProps } from "./ApiKeysDataList";
+import { ApiKeyForm, ApiKeyFormProps } from "./ApiKeyForm";
 
-const ApiKeys = ({ formProps, listProps }: any) => {
+export interface ApiKeysProps {
+    listProps?: ApiKeysDataListProps;
+    formProps?: ApiKeyFormProps;
+}
+export const ApiKeys: React.FC<ApiKeysProps> = ({ formProps = {}, listProps = {} }) => {
     return (
         <SplitView>
             <LeftPanel>
@@ -15,5 +19,3 @@ const ApiKeys = ({ formProps, listProps }: any) => {
         </SplitView>
     );
 };
-
-export default ApiKeys;
