@@ -6,6 +6,12 @@ const ERROR_FIELDS = `{
     data
 }`;
 
+const META_FIELDS = `{
+    totalCount
+    hasMoreItems
+    cursor
+}`;
+
 const getDataFields = (fields = "") => `{
     id
     createdOn
@@ -150,6 +156,68 @@ export const LIST_REVIEWS_QUERY = /* GraphQL */ gql`
                     totalCount
                     cursor
                 }
+            }
+        }
+    }
+`;
+
+const CATEGORIES_BASE_FIELDS = `
+    {
+        slug
+        name
+        layout
+        url
+        createdOn
+        createdBy {
+            id
+            displayName
+        }
+    }
+`;
+
+export const LIST_CATEGORIES = gql`
+    query ListCategories {
+        pageBuilder {
+            listCategories {
+                data ${CATEGORIES_BASE_FIELDS}
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const LIST_PAGES_DATA_FIELDS = `
+    id
+    pid
+    status
+    title
+    version
+    savedOn
+    category {
+        name
+        slug
+    }
+    createdBy {
+        id
+        displayName
+    }
+`;
+
+export const LIST_PAGES = gql`
+    query PbListPages(
+        $where: PbListPagesWhereInput
+        $sort: [PbListPagesSort!]
+        $search: PbListPagesSearchInput
+        $limit: Int
+        $after: String
+    ) {
+        pageBuilder {
+            listPages(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
+                data {
+                    ${LIST_PAGES_DATA_FIELDS}
+                }
+                meta ${META_FIELDS}
+                error ${ERROR_FIELDS}
             }
         }
     }

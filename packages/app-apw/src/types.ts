@@ -76,3 +76,12 @@ export interface ApwReviewer extends BaseFields {
     displayName: string;
     type: string;
 }
+
+export interface PbCategory {
+    slug: string;
+    name: string;
+}
+export interface PbPage {
+    id: string;
+    title: string;
+}
