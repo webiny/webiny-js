@@ -13,7 +13,7 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
-import { usePublishingWorkflowForm } from "./hooks/usePublishingWorkflowForm";
+import { usePublishingWorkflowForm, getInitialStepData } from "./hooks/usePublishingWorkflowForm";
 
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as WorkflowScopeIcon } from "~/admin/assets/icons/workflow-scope.svg";
@@ -33,12 +33,6 @@ const ButtonWrapper = styled("div")({
 const formFooterStyle = css`
     border-top: none;
 `;
-
-const initialStepData = {
-    title: "",
-    type: "",
-    reviewers: []
-};
 
 const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
 
@@ -61,7 +55,7 @@ const PublishingWorkflowForm = () => {
     return (
         <Form data={workflow} onSubmit={onSubmit}>
             {({ data, form, Bind, setValue }) => {
-                const addStep = () => setValue("steps", [...data.steps, initialStepData]);
+                const addStep = () => setValue("steps", [...data.steps, getInitialStepData()]);
                 const removeStep = (index: number) =>
                     setValue("steps", [
                         ...data.steps.slice(0, index),

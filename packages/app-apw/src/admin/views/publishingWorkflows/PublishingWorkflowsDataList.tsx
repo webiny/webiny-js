@@ -72,7 +72,7 @@ const PublishingWorkflowsDataList = () => {
     const {
         workflows,
         loading,
-        currentLocaleCode,
+        currentWorkflowId,
         createPublishingWorkflow,
         editPublishingWorkflow,
         deletePublishingWorkflow
@@ -93,7 +93,7 @@ const PublishingWorkflowsDataList = () => {
                 <>
                     <ScrollList data-testid="default-data-list" className={listStyles}>
                         {data.map(item => (
-                            <ListItem key={item.id} selected={item.id === currentLocaleCode}>
+                            <ListItem key={item.id} selected={item.id === currentWorkflowId}>
                                 <ListItemText>
                                     {item.title}
                                     <ListItemTextSecondary>
@@ -108,12 +108,14 @@ const PublishingWorkflowsDataList = () => {
                                 <ListItemMeta>
                                     <ListActions>
                                         <DeleteIcon
-                                            onClick={() => deletePublishingWorkflow(item)}
+                                            onClick={() => deletePublishingWorkflow(item.id)}
                                             data-testid={"default-data-list.delete"}
                                         />
                                         <IconButton
                                             icon={<EditIcon />}
-                                            onClick={() => editPublishingWorkflow(item.code)}
+                                            onClick={() =>
+                                                editPublishingWorkflow(item.id, item.app)
+                                            }
                                         />
                                     </ListActions>
                                 </ListItemMeta>
