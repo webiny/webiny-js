@@ -13,3 +13,16 @@ export type PermissionRendererFileManager = Plugin & {
     label: string;
     render: PermissionRendererPluginRenderFunctionType;
 };
+
+export interface Settings {
+    uploadMinFileSize: string;
+    uploadMaxFileSize: string;
+}
+export interface QueryGetSettingsResult {
+    fileManager: {
+        getSettings: {
+            data: Settings;
+            error: Error | null;
+        };
+    };
+}

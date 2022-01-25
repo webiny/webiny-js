@@ -18,10 +18,30 @@ const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
-export const FileManagerPermissions = ({ value, onChange }) => {
+interface FileManagerPermission {
+    name: string;
+    own?: boolean;
+    rwd?: string;
+}
+interface FileManagerPermissionItem {
+    settingsAccessScope?: string;
+    filesAccessScope?: string;
+    accessLevel?: string;
+    name?: string;
+    filesRWD?: string;
+}
+interface FileManagerPermissionsProps {
+    value: FileManagerPermissionItem;
+    onChange: (value: FileManagerPermissionItem[]) => void;
+}
+
+export const FileManagerPermissions: React.FC<FileManagerPermissionsProps> = ({
+    value,
+    onChange
+}) => {
     const onFormChange = useCallback(
-        data => {
-            let newValue = [];
+        (data: FileManagerPermissionItem) => {
+            let newValue: FileManagerPermissionItem[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `file-manager*` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(FILE_MANAGER));
@@ -42,7 +62,7 @@ export const FileManagerPermissions = ({ value, onChange }) => {
 
             // Files first.
             if (data.filesAccessScope && data.filesAccessScope !== NO_ACCESS) {
-                const permission = {
+                const permission: FileManagerPermission = {
                     name: FILE_MANAGER_ACCESS_FILE,
                     own: false,
                     rwd: undefined
@@ -67,7 +87,7 @@ export const FileManagerPermissions = ({ value, onChange }) => {
         [value]
     );
 
-    const formData = useMemo(() => {
+    const formData = useMemo((): FileManagerPermissionItem => {
         if (!Array.isArray(value)) {
             return { accessLevel: NO_ACCESS };
         }
@@ -84,7 +104,7 @@ export const FileManagerPermissions = ({ value, onChange }) => {
             return { accessLevel: NO_ACCESS };
         }
 
-        const data = {
+        const data: FileManagerPermissionItem = {
             accessLevel: CUSTOM_ACCESS,
             filesAccessScope: NO_ACCESS,
             settingsAccessScope: NO_ACCESS,
