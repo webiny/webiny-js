@@ -5,20 +5,25 @@ import { Form } from "@webiny/form";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 
-export const ContentPermissions = ({ value, onChange }) => {
+interface ContentPermissionsProps {
+    value: SecurityPermission[];
+    onChange: (value: SecurityPermission[]) => void;
+}
+export const ContentPermissions: React.FC<ContentPermissionsProps> = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
-    const onFormChange = useCallback(formData => {
-        let newValue = [];
+    const onFormChange = useCallback((formData: SecurityPermission) => {
+        let newValue: SecurityPermission[] = [];
         if (Array.isArray(value)) {
             // Let's just filter out the `content*` permission objects, it's easier to build new ones from scratch.
             newValue = value.filter(item => !item.name.startsWith("content"));
         }
 
-        const permission = { name: "content.i18n", locales: undefined };
+        const permission: SecurityPermission = { name: "content.i18n", locales: undefined };
         if (formData.level === "locales") {
             permission.locales = Array.isArray(formData.locales) ? formData.locales : [];
         }
@@ -26,9 +31,12 @@ export const ContentPermissions = ({ value, onChange }) => {
         onChange(newValue);
     }, []);
 
-    const formData = useMemo(() => {
-        const defaultData = { level: undefined, locales: [] };
-        if (!Array.isArray(value)) {
+    const formData = useMemo((): Partial<SecurityPermission> => {
+        const defaultData: Omit<SecurityPermission, "name"> = {
+            level: undefined,
+            locales: []
+        };
+        if (Array.isArray(value) === false) {
             return defaultData;
         }
 
