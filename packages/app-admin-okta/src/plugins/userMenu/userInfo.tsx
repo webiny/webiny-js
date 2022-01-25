@@ -59,7 +59,7 @@ const linkStyles = css({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const UserInfo = () => {
+const UserInfo: React.FC = () => {
     const security = useSecurity();
 
     if (!security || !security.identity) {

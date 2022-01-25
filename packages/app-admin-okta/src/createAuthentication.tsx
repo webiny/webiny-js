@@ -12,14 +12,19 @@ import { useSecurity } from "@webiny/app-security";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 
 import OktaSignInWidget from "./OktaSignInWidget";
-import { createGetIdentityData, LOGIN_MT, LOGIN_ST } from "./createGetIdentityData";
+import {
+    createGetIdentityData,
+    GetIdentityDataCallable,
+    LOGIN_MT,
+    LOGIN_ST
+} from "./createGetIdentityData";
 import { useTenancy, withTenant } from "@webiny/app-tenancy";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
 
 export interface Config {
-    getIdentityData?: any;
+    getIdentityData?: GetIdentityDataCallable;
     loginMutation?: DocumentNode;
     oktaAuth: OktaAuth;
     oktaSignIn: OktaSignIn;
@@ -30,9 +35,17 @@ export interface Props {
     children: React.ReactNode;
 }
 
+interface WithGetIdentityDataProps {
+    getIdentityData: GetIdentityDataCallable;
+}
+
+interface AuthState {
+    isAuthenticated?: boolean;
+}
+
 export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config) => {
-    const withGetIdentityData = Component => {
-        const WithGetIdentityData = ({ children }) => {
+    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>) => {
+        const WithGetIdentityData: React.FC<WithGetIdentityDataProps> = ({ children }) => {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
@@ -43,7 +56,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config
         return WithGetIdentityData;
     };
 
-    const Authentication = ({ getIdentityData, children }: Props) => {
+    const Authentication: React.FC<Props> = ({ getIdentityData, children }) => {
         const timerRef = useRef(null);
         const apolloClient = useApolloClient();
         const { identity, setIdentity } = useSecurity();
@@ -91,7 +104,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config
             );
         }, []);
 
-        const authStateChanged = useCallback(async authState => {
+        const authStateChanged = useCallback(async (authState: AuthState) => {
             setIsAuthenticated(authState.isAuthenticated);
             if (authState.isAuthenticated) {
                 try {

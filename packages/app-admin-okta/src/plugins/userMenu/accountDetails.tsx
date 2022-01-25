@@ -1,3 +1,7 @@
+/**
+ * TODO @ts-refactor
+ * @pavel Why is there AccountDetails that is not used?
+ */
 // @ts-nocheck
 import React from "react";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
@@ -7,7 +11,7 @@ import { useSecurity } from "@webiny/app-security";
 import { useTenancy } from "@webiny/app-tenancy";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const AccountDetails = () => {
+const AccountDetails: React.FC = () => {
     const security = useSecurity();
     const tenancy = useTenancy();
 

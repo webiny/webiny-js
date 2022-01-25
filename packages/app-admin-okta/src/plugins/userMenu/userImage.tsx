@@ -4,7 +4,7 @@ import { Avatar } from "@webiny/ui/Avatar";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const UserImage = () => {
+const UserImage: React.FC = () => {
     const { identity } = useSecurity();
 
     if (!identity) {

@@ -6,7 +6,7 @@ import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ReactComponent as SignOutIcon } from "~/assets/icons/round-lock_open-24px.svg";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SignOut = () => {
+const SignOut: React.FC = () => {
     const { identity } = useSecurity();
 
     if (!identity) {
