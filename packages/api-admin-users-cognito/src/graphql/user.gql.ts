@@ -1,3 +1,7 @@
+/**
+ * Package md5 does not have types.
+ */
+// @ts-ignore
 import md5 from "md5";
 import {
     Response,
