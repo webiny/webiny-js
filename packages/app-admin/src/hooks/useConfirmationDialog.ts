@@ -10,7 +10,7 @@ interface Params {
 }
 
 interface UseConfirmationDialogResponse {
-    showConfirmation: (onAccept: () => void, onCancel: () => void) => void;
+    showConfirmation: (onAccept: () => void, onCancel?: () => void) => void;
 }
 
 const useConfirmationDialog = ({

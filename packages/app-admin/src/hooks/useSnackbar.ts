@@ -2,7 +2,7 @@ import React from "react";
 import { useUi } from "@webiny/app/hooks/useUi";
 
 interface UseSnackbarResponse {
-    showSnackbar: (message: React.ReactNode, options?: Record<string, string>) => void;
+    showSnackbar: (message: React.ReactNode, options?: Record<string, React.ReactNode>) => void;
     hideSnackbar: () => void;
 }
 export const useSnackbar = (): UseSnackbarResponse => {
