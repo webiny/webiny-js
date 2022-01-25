@@ -1,9 +1,13 @@
 import { useCallback, useState } from "react";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
-import { useQuery } from "@apollo/react-hooks";
-import { useCurrentApp } from "./useLocationSearch";
-import { LIST_WORKFLOWS_QUERY } from "./graphql";
+import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useCurrentWorkflowId } from "./useLocationSearch";
+import { DELETE_WORKFLOW_MUTATION, LIST_WORKFLOWS_QUERY } from "./graphql";
+import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { i18n } from "@webiny/app/i18n";
+
+const t = i18n.ns("app-apw/admin/publishing-workflows/data-list");
 
 const serializeSorters = data => {
     if (!data) {
@@ -26,15 +30,15 @@ interface UsePublishingWorkflowsListHook {
             createdOn: string;
             [key: string]: any;
         }>;
-        currentLocaleCode: string;
+        currentWorkflowId: string;
         createPublishingWorkflow: (app: string) => void;
         filter: string;
         setFilter: (filter: string) => void;
         sort: string;
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
-        editPublishingWorkflow: (code: string) => void;
-        deletePublishingWorkflow: (code: string) => void;
+        editPublishingWorkflow: (id: string, app: string) => void;
+        deletePublishingWorkflow: (id: string) => void;
     };
 }
 
@@ -42,11 +46,16 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
     const defaultSorter = config.sorters.length ? config.sorters[0].sorters : null;
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(serializeSorters(defaultSorter));
-
+    const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const currentLocaleCode = useCurrentApp();
+    const currentWorkflowId = useCurrentWorkflowId();
     const listQuery = useQuery(LIST_WORKFLOWS_QUERY);
+    const [deleteWorkflow] = useMutation(DELETE_WORKFLOW_MUTATION);
+
+    const { showConfirmation } = useConfirmationDialog({
+        dataTestId: "default-data-list.delete-dialog"
+    });
 
     const data = listQuery.loading ? [] : get(listQuery, "data.apw.listWorkflows.data");
 
@@ -59,18 +68,31 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
         []
     );
 
-    const editPublishingWorkflow = useCallback(code => {
-        history.push(`${baseUrl}?code=${code}`);
+    const editPublishingWorkflow = useCallback((id, app) => {
+        history.push(`${baseUrl}?id=${encodeURIComponent(id)}&app=${app}`);
     }, []);
 
-    const deletePublishingWorkflow = useCallback(() => {
-        console.log("Delete...");
+    const deletePublishingWorkflow = useCallback(id => {
+        showConfirmation(async () => {
+            const response = await deleteWorkflow({ variables: { id } });
+
+            const error = get(response, "data.apw.deleteWorkflow.error");
+            if (error) {
+                return showSnackbar(error.message);
+            }
+
+            showSnackbar(t`Workflow "{id}" deleted.`({ id }));
+
+            if (currentWorkflowId === id) {
+                history.push(baseUrl);
+            }
+        });
     }, []);
 
     return {
         workflows: data,
         loading,
-        currentLocaleCode,
+        currentWorkflowId,
         createPublishingWorkflow,
         filter,
         setFilter,
