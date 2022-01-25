@@ -9,13 +9,11 @@ interface UseAutocompleteHook {
 
 interface Props {
     query: DocumentNode;
-    search: string | (() => void);
+    search?: string | (() => void);
 }
 
-export const useAutocomplete = (props: Partial<Props>): UseAutocompleteHook => {
-    const useDataListProps = (props.query ? props : { query: props, search: undefined }) as Props;
-
-    const dataList = useDataList({ useRouter: false, ...useDataListProps });
+export const useAutocomplete = (props: Props): UseAutocompleteHook => {
+    const dataList = useDataList({ useRouter: false, ...props });
 
     return {
         options: dataList.data || [],

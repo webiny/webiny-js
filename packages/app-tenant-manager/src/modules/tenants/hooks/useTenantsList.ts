@@ -10,9 +10,9 @@ import { useCurrentTenantId } from "./useCurrentTenantId";
 
 const t = i18n.ns("app-tenant-manager/tenants/data-list");
 
-const serializeSorters = data => {
+const serializeSorters = (data?: Record<string, string>): string | undefined => {
     if (!data) {
-        return data;
+        return data as undefined;
     }
     const [[key, value]] = Object.entries(data);
     return `${key}:${value}`;

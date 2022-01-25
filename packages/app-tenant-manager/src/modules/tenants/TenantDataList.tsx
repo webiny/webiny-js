@@ -21,6 +21,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { ReactComponent as LoginIcon } from "~/assets/login_black_24dp.svg";
 import { useTenantsList } from "./hooks/useTenantsList";
 import { useTenancy } from "@webiny/app-tenancy";
+import { TenantItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/data-list");
 
@@ -35,7 +36,7 @@ const SORTERS = [
     }
 ];
 
-const TenantDataList = () => {
+const TenantDataList: React.FC = () => {
     const {
         tenants,
         loading,
@@ -93,7 +94,7 @@ const TenantDataList = () => {
             modalOverlay={tenantsDataListModalOverlay}
             modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
-            {({ data }) => (
+            {({ data }: { data: TenantItem[] }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === currentTenantId}>

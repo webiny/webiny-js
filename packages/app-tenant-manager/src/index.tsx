@@ -5,7 +5,7 @@ import { CurrentTenant } from "./components/CurrentTenant";
 import { DomainsModule } from "./modules/domains";
 import { TenantsModule } from "./modules/tenants";
 
-const TenantIndicator = LocaleSelector => {
+const TenantIndicator = (LocaleSelector: React.FC): React.FC => {
     return function TenantIndicator() {
         return (
             <Fragment>
@@ -16,7 +16,7 @@ const TenantIndicator = LocaleSelector => {
     };
 };
 
-const TenantManagerExtension = () => {
+const TenantManagerExtension: React.FC = () => {
     return (
         <Fragment>
             <Compose component={LocaleSelector} with={TenantIndicator} />
@@ -26,7 +26,7 @@ const TenantManagerExtension = () => {
     );
 };
 
-export const TenantManager = memo(TenantManagerExtension);
+export const TenantManager: React.FC = memo(TenantManagerExtension);
 
 export { useCurrentTenant } from "./hooks/useCurrentTenant";
 export { IsRootTenant, IsNotRootTenant, IsTenant } from "./components/IsRootTenant";
