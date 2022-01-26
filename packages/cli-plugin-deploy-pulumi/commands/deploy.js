@@ -90,7 +90,9 @@ module.exports = async (inputs, context) => {
     context.info(continuing);
     console.log();
 
-    await stack.refresh({ onOutput: console.info });
+    if (inputs.refresh) {
+        await stack.refresh({ onOutput: console.info });
+    }
 
     let result;
     if (inputs.preview) {

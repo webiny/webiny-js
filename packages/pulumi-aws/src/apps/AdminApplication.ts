@@ -24,11 +24,10 @@ export const AdminApplication = defineApp({
         const bucket = app.addModule(AppBucket);
         const cloudfront = app.addModule(AdminCloudfront);
 
-        app.addOutput("appStorage", bucket.bucket.output.id);
-        app.addOutput(
-            "appUrl",
-            cloudfront.output.domainName.apply(value => `https://${value}`)
-        );
+        app.addOutputs({
+            appStorage: bucket.bucket.output.id,
+            appUrl: cloudfront.output.domainName.apply(value => `https://${value}`)
+        });
 
         return {
             ...bucket,

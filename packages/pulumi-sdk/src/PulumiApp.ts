@@ -51,6 +51,10 @@ export class PulumiApp {
         this.outputs[name] = output;
     }
 
+    public addOutputs(outputs: Record<string, unknown>) {
+        Object.assign(this.outputs, outputs);
+    }
+
     public addModule<TModule>(def: PulumiAppModuleDefinition<TModule, void>): TModule;
     public addModule<TModule, TConfig>(
         def: PulumiAppModuleDefinition<TModule, TConfig>,
