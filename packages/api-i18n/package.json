@@ -34,6 +34,7 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
+    "@types/accept-language-parser": "^1.5.3",
     "@webiny/api-security-so-ddb": "^5.17.0-beta.1",
     "@webiny/api-tenancy-so-ddb": "^5.17.0-beta.1",
     "@webiny/cli": "^5.22.0",

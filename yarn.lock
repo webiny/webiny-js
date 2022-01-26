@@ -7255,6 +7255,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/accept-language-parser@npm:^1.5.3":
+  version: 1.5.3
+  resolution: "@types/accept-language-parser@npm:1.5.3"
+  checksum: ceecd89b2f5ce85c44fa2dd8b8b729c6871ed068b5137afbcaca5469eb7cfea0bc87ad2204ad89cbcc5df3abe2b7c005cf5f29b75150aa9086a52e097a53d944
+  languageName: node
+  linkType: hard
+
 "@types/accounting@npm:^0.4.2":
   version: 0.4.2
   resolution: "@types/accounting@npm:0.4.2"
@@ -8724,8 +8731,7 @@ __metadata:
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.4
-    lodash.clonedeep: ^4.5.0
-    lodash.flatten: ^4.4.0
+    lodash: ^4.5.0
     md5: ^2.3.0
     mdbid: ^1.0.0
     rimraf: ^3.0.2
@@ -9352,6 +9358,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@types/accept-language-parser": ^1.5.3
     "@webiny/api-security": ^5.22.0
     "@webiny/api-security-so-ddb": ^5.17.0-beta.1
     "@webiny/api-tenancy": ^5.22.0

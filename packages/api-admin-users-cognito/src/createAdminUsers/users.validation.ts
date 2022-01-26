@@ -1,4 +1,12 @@
+/**
+ * Package @commodo/fields does not have types
+ */
+// @ts-ignore
 import { string, withFields } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import { AdminUsers } from "~/types";

@@ -13,10 +13,9 @@ import {
 import { AdminUser, AdminUsersContext, CreateUserInput, UpdateUserInput } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
-export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & TenancyContext>({
+export default new GraphQLSchemaPlugin<AdminUsersContext>({
     typeDefs: /* GraphQL */ `
         type AdminUserIdentity implements SecurityIdentity {
             id: ID!
