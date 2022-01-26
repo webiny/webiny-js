@@ -1,0 +1,25 @@
+{
+  "name": "@webiny/ioc",
+  "version": "5.21.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Michał Kędrzyński <michal@webiny.com>"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@webiny/project-utils": "^5.21.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+}

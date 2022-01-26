@@ -11274,6 +11274,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/ioc@workspace:packages/ioc":
+  version: 0.0.0-use.local
+  resolution: "@webiny/ioc@workspace:packages/ioc"
+  dependencies:
+    "@webiny/project-utils": ^5.21.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/plugins@^5.17.0-beta.1, @webiny/plugins@^5.21.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"

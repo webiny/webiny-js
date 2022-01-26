@@ -92,11 +92,14 @@ module.exports = async (inputs, context) => {
 
     await stack.refresh({ onOutput: console.info });
 
+    let result;
     if (inputs.preview) {
-        await stack.preview({ onOutput: console.info });
+        result = await stack.preview({ onOutput: console.info });
     } else {
-        await stack.up({ onOutput: console.info });
+        result = await stack.up({ onOutput: console.info });
     }
+
+    console.log(result);
 
     const duration = getDuration();
     if (inputs.preview) {

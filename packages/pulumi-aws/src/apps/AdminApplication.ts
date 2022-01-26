@@ -2,7 +2,7 @@ import * as aws from "@pulumi/aws";
 import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 import { CloudFrontBucket } from "../components/CloudFrontBucket";
-import { ResourceOverride } from "../createResource";
+import { ResourceOverride } from "../PulumiResource";
 import { ApplicationConfig } from "./ApplicationConfig";
 import { createGenericApplication } from "./GenericApplication";
 
