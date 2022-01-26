@@ -61,7 +61,7 @@ type Props = {
     closeDialog: (e: SyntheticEvent) => void;
 };
 
-const Slide7 = (props: Props) => {
+const Slide7: React.FC<Props> = props => {
     return (
         <SlideContainer>
             <Logo>

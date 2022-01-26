@@ -9,22 +9,28 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import { GET_PAGE, CREATE_PAGE_FROM } from "./graphql";
+import {
+    PageBuilderGetPageDataResponse,
+    PageBuilderGetPageResponse,
+    PbError,
+    PbPageData
+} from "~/types";
 
-const extractPageGetPage = (data: any): any => {
+const extractPageGetPage = (data: PageBuilderGetPageResponse): PageBuilderGetPageDataResponse => {
     return data.pageBuilder?.getPage || {};
 };
 
-const extractPageData = (data: any): any => {
+const extractPageData = (data: PageBuilderGetPageResponse): PbPageData => {
     const getPageData = extractPageGetPage(data);
     return getPageData.data;
 };
 
-const extractPageErrorData = (data: any): any => {
+const extractPageErrorData = (data: PageBuilderGetPageResponse): PbError | null => {
     const getPageData = extractPageGetPage(data);
-    return getPageData.error || {};
+    return getPageData.error || null;
 };
 
-const Editor: React.FunctionComponent = () => {
+const Editor: React.FC = () => {
     const { match, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const ready = useSavedElements();
@@ -72,11 +78,10 @@ const Editor: React.FunctionComponent = () => {
         fetchPolicy: "network-only",
         onCompleted: async data => {
             const errorData = extractPageErrorData(data);
-            const error = errorData.message;
-            if (error) {
+            if (errorData) {
                 setLoading(false);
                 history.push(`/page-builder/pages`);
-                showSnackbar(error);
+                showSnackbar(errorData.message);
                 return;
             }
 

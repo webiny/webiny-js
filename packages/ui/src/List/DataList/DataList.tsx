@@ -131,7 +131,7 @@ const dataListContent = css({
 });
 
 // This was copied from "./types" so that it can be outputted in docs.
-interface Props {
+interface DataListProps {
     // Pass a function to take full control of list render.
     children?: Function;
 
@@ -139,7 +139,7 @@ interface Props {
     title?: React.ReactNode;
 
     // FormData that needs to be shown in the list.
-    data?: Object[];
+    data?: Record<string, any>[];
 
     // A callback that must refresh current view by repeating the previous query.
     refresh?: Function;
@@ -198,7 +198,7 @@ interface Props {
     perPageOptions?: number[];
 }
 
-const MultiSelectAll: React.FC<Props> = props => {
+const MultiSelectAll: React.FC<DataListProps> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -224,7 +224,7 @@ const MultiSelectAll: React.FC<Props> = props => {
     );
 };
 
-const MultiSelectActions: React.FC<Props> = props => {
+const MultiSelectActions: React.FC<DataListProps> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -233,7 +233,7 @@ const MultiSelectActions: React.FC<Props> = props => {
     return <ListHeaderItem>{multiSelectActions}</ListHeaderItem>;
 };
 
-const RefreshButton: React.FC<Props> = props => {
+const RefreshButton: React.FC<DataListProps> = props => {
     const refresh = props.refresh;
     if (!refresh) {
         return null;
@@ -246,7 +246,7 @@ const RefreshButton: React.FC<Props> = props => {
     );
 };
 
-const Sorters: React.FC<Props> = props => {
+const Sorters: React.FC<DataListProps> = props => {
     const sorters = props.sorters;
     if (!sorters) {
         return null;
@@ -272,7 +272,7 @@ const Sorters: React.FC<Props> = props => {
     );
 };
 
-const Filters: React.FC<Props> = props => {
+const Filters: React.FC<DataListProps> = props => {
     const filters = props.filters;
     if (!filters) {
         return null;
@@ -285,7 +285,7 @@ const Filters: React.FC<Props> = props => {
     );
 };
 
-const Pagination: React.FC<Props> = props => {
+const Pagination: React.FC<DataListProps> = props => {
     const { pagination } = props;
     if (!pagination) {
         return null;
@@ -346,14 +346,14 @@ const Pagination: React.FC<Props> = props => {
     );
 };
 
-const Search: React.FC<Props> = props => {
+const Search: React.FC<DataListProps> = props => {
     if (!props.search) {
         return null;
     }
     return <Cell span={7}>{React.cloneElement(props.search, props)}</Cell>;
 };
 
-export const DataList: React.FC<Props> = props => {
+export const DataList: React.FC<DataListProps> = props => {
     let render = null;
 
     if (props.loading) {

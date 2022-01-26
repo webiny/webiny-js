@@ -7,7 +7,7 @@ import { Slider } from "@webiny/ui/Slider";
 import { useRecoilValue } from "recoil";
 import InputField from "./InputField";
 
-type SliderWithInputPropsType = {
+interface SliderWithInputPropsType {
     icon: React.ReactElement;
     valueKey: string;
     placeholder?: string;
@@ -18,8 +18,8 @@ type SliderWithInputPropsType = {
     label?: string;
     step?: number;
     max?: number;
-};
-const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
+}
+const SliderWithInput: React.FC<SliderWithInputPropsType> = ({
     icon,
     placeholder,
     updateValue,

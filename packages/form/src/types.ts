@@ -1,3 +1,4 @@
+import React from "react";
 import { Form } from "./Form";
 
 export type BindComponentRenderPropValidation = {
@@ -8,8 +9,8 @@ export type BindComponentRenderPropValidation = {
 
 export type BindComponentRenderPropOnChange = (value: any) => Promise<void>;
 
-export interface FormAPI {
-    data: { [key: string]: any };
+export interface FormAPI<T extends Record<string, any> = Record<string, any>> {
+    data: T;
     submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
     setValue: FormSetValue;
     validate: () => void;

@@ -13,7 +13,7 @@ import {
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
-} from "../../../../types";
+} from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import {
@@ -43,10 +43,6 @@ const classes = {
     })
 };
 
-type IconsType = {
-    [key: string]: React.ReactElement;
-};
-
 enum AlignTypesEnum {
     start = "flex-start",
     center = "center",
@@ -54,14 +50,14 @@ enum AlignTypesEnum {
 }
 
 // Icons map for dynamic render
-const icons: IconsType = {
+const icons: Record<string, React.ReactElement> = {
     [AlignTypesEnum.start]: <AlignTopIcon />,
     [AlignTypesEnum.center]: <AlignCenterIcon />,
     [AlignTypesEnum.end]: <AlignBottomIcon />
 };
 const alignments = Object.keys(icons);
 
-const iconDescriptions = {
+const iconDescriptions: Record<string, string> = {
     [AlignTypesEnum.start]: "Align top",
     [AlignTypesEnum.center]: "Align center",
     [AlignTypesEnum.end]: "Align bottom"
@@ -69,9 +65,9 @@ const iconDescriptions = {
 
 const DATA_NAMESPACE = "data.settings.verticalAlign";
 
-const VerticalAlignSettings: React.FunctionComponent<
-    PbEditorPageElementSettingsRenderComponentProps
-> = ({ defaultAccordionValue }) => {
+const VerticalAlignSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const propName = `${DATA_NAMESPACE}.${displayMode}`;
     const handler = useEventActionHandler();

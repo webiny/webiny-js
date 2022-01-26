@@ -24,9 +24,12 @@ const noActiveElementWrapper = css({
     }
 });
 
-type NoActiveElementProp = { message: string; icon?: ReactElement };
+interface NoActiveElementProps {
+    message: string;
+    icon?: ReactElement;
+}
 
-const NoActiveElement = ({ message, icon }: NoActiveElementProp) => {
+const NoActiveElement: React.FC<NoActiveElementProps> = ({ message, icon }) => {
     return (
         <div className={noActiveElementWrapper}>
             {icon && React.cloneElement(icon, { className: "icon" })}

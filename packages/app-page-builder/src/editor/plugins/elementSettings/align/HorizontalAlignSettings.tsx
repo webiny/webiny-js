@@ -35,18 +35,15 @@ const classes = {
     })
 };
 
-type IconsType = {
-    [key: string]: React.ReactElement;
-};
 // Icons map for dynamic render
-const icons: IconsType = {
+const icons: Record<string, React.ReactElement> = {
     left: <AlignTextLeftIcon />,
     center: <AlignTextCenterIcon />,
     right: <AlignTextRightIcon />,
     justify: <AlignTextJustifyIcon />
 };
 
-const iconDescriptions = {
+const iconDescriptions: Record<string, string> = {
     left: "Align left",
     center: "Align center",
     right: "Align right",

@@ -1,9 +1,11 @@
 import { findIndex, each } from "lodash";
-
 /**
  * Recursively search for an object with given ID in the given source array.
+ *
+ * TODO @ts-refactor
+ * try to find some better types
  */
-const findObject = (source: Array<any>, id: string): any => {
+const findObject = (source: any[], id: string): any => {
     const index = findIndex(source, { id });
     if (index >= 0) {
         return { source, index, item: source[index] };

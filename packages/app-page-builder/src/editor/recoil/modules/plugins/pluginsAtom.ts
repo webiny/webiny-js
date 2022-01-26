@@ -1,13 +1,15 @@
 import { atom } from "recoil";
 
-export type PluginsAtomPluginParamsType = {
+export interface PluginsAtomPluginParamsType {
     [key: string]: any;
-};
-export type PluginsAtomPluginType = {
+}
+export interface PluginsAtomPluginType {
     name: string;
     params?: PluginsAtomPluginParamsType;
-};
-export type PluginsAtomType = Record<string, PluginsAtomPluginType[]>;
+}
+export interface PluginsAtomType {
+    [key: string]: PluginsAtomPluginType[];
+}
 export const pluginsAtom = atom<PluginsAtomType>({
     key: "pluginsAtom",
     default: {}

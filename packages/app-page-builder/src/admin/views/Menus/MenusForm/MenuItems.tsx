@@ -13,6 +13,7 @@ import MenuItemForm from "./MenuItems/MenuItemForm";
 import findObject from "./MenuItems/findObject";
 import { PbMenuItemPlugin } from "~/types";
 import { Typography } from "@webiny/ui/Typography";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
 
 const leftPanel = css({
     padding: 25,
@@ -34,34 +35,34 @@ const AddMenu = styled("div")({
     margin: "25px auto 0 auto"
 });
 
-type Props = {
+interface Props {
     canSave: boolean;
-    onChange: Function;
-    value: any;
-};
+    onChange: (items: MenuTreeItem[]) => void;
+    value: MenuTreeItem[];
+}
 
-type State = {
-    currentMenuItem?: Object;
-};
+interface State {
+    currentMenuItem?: MenuTreeItem;
+}
 
 class MenuItems extends React.Component<Props, State> {
     form = React.createRef();
-    state = {
+    state: State = {
         currentMenuItem: null
     };
 
     addItem = (plugin: PbMenuItemPlugin) => {
         const { onChange, value } = this.props;
-        const newItem = { type: plugin.menuItem.type, id: uniqid(), __new: true };
+        const newItem: MenuTreeItem = { type: plugin.menuItem.type, id: uniqid(), __new: true };
         onChange([...value, newItem]);
         this.editItem(newItem);
     };
 
-    editItem = data => {
+    editItem = (data: MenuTreeItem) => {
         this.setState({ currentMenuItem: data });
     };
 
-    deleteItem = item => {
+    deleteItem = (item: MenuTreeItem) => {
         const { value, onChange } = this.props;
         const target = findObject(value, item.id);
         target && target.source.splice(target.index, 1);

@@ -8,10 +8,11 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { GET_PAGE } from "../../../../admin/graphql/pages";
+import { GET_PAGE } from "~/admin/graphql/pages";
 import { pageAtom } from "../../../recoil/modules";
 import { PUBLISH_PAGE } from "./PublishPageButton/graphql";
 import usePermission from "../../../../hooks/usePermission";
+import { PbPageData, PbPageRevision } from "~/types";
 
 const PublishPageButton: React.FunctionComponent = () => {
     const page = useRecoilValue(pageAtom);
@@ -26,7 +27,7 @@ const PublishPageButton: React.FunctionComponent = () => {
             }
 
             // Update revisions
-            let pageFromCache;
+            let pageFromCache: PbPageData;
             try {
                 pageFromCache = cloneDeep(
                     cache.readQuery({
@@ -40,17 +41,17 @@ const PublishPageButton: React.FunctionComponent = () => {
             }
 
             const revisions = get(pageFromCache, "pageBuilder.getPage.data.revisions", []);
-            revisions.forEach(r => {
+            revisions.forEach((revision: PbPageRevision) => {
                 // Update published/locked fields on the revision that was just published.
-                if (r.id === page.id) {
-                    r.status = "published";
-                    r.locked = true;
+                if (revision.id === page.id) {
+                    revision.status = "published";
+                    revision.locked = true;
                     return;
                 }
 
                 // Unpublish other published revisions
-                if (r.status === "published") {
-                    r.status = "unpublished";
+                if (revision.status === "published") {
+                    revision.status = "unpublished";
                 }
             });
 

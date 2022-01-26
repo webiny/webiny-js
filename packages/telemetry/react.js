@@ -3,7 +3,12 @@ const baseSendEvent = require("./sendEvent");
 const setProperties = data => {
     return sendEvent("$identify", data);
 };
-
+/**
+ *
+ * @param event {String}
+ * @param data {Record<string, string>}
+ * @return {Promise<T>}
+ */
 const sendEvent = (event, data = {}) => {
     if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
         return;

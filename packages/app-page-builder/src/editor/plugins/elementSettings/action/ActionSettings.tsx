@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
@@ -38,9 +38,9 @@ const classes = {
     })
 };
 
-type ActionSettingsPropsType = {
+interface ActionSettingsPropsType {
     element: PbEditorElement;
-};
+}
 const ActionSettingsComponent: React.FunctionComponent<
     ActionSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ element, defaultAccordionValue }) => {
@@ -60,20 +60,26 @@ const ActionSettingsComponent: React.FunctionComponent<
 
     const { clickHandler, actionType, variables } = element.data?.action || {};
 
-    const updateElement = (element: PbEditorElement) => {
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element,
-                history: true
-            })
-        );
-    };
+    const updateElement = useCallback(
+        (element: PbEditorElement) => {
+            handler.trigger(
+                new UpdateElementActionEvent({
+                    element,
+                    history: true
+                })
+            );
+        },
+        [handler]
+    );
 
-    const updateSettings = data => {
-        const attrKey = `data.action`;
-        const newElement: PbEditorElement = merge(element, attrKey, data);
-        updateElement(newElement);
-    };
+    const updateSettings = useCallback(
+        data => {
+            const attrKey = `data.action`;
+            const newElement: PbEditorElement = merge(element, attrKey, data);
+            updateElement(newElement);
+        },
+        [updateElement]
+    );
 
     const clickHandlers = useMemo(
         () =>
@@ -147,7 +153,14 @@ const ActionSettingsComponent: React.FunctionComponent<
                                     >
                                         <Bind name="variables" defaultValue={{}}>
                                             <DelayedOnChange>
-                                                {({ value, onChange }) => {
+                                                {({
+                                                    value,
+                                                    onChange
+                                                }: /**
+                                                 * Figure out better way to type the callable arguments
+                                                 */
+                                                // TODO @ts-refactor
+                                                any) => {
                                                     if (!selectedHandler?.variables) {
                                                         return (
                                                             <Typography use="body2">
@@ -167,7 +180,7 @@ const ActionSettingsComponent: React.FunctionComponent<
                                                                         className={
                                                                             classes.bottomMargin
                                                                         }
-                                                                        onChange={val =>
+                                                                        onChange={(val: string) =>
                                                                             onChange({
                                                                                 ...value,
                                                                                 [variable.name]: val

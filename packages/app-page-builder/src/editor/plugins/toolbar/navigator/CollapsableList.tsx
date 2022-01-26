@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { EmptyBlock, Collapsable, ArrowRight, HighlightItem } from "./StyledComponents";
 import { NavigatorContext } from "./Navigator";
 
-type CollapsableListProps = {
+interface CollapsableListProps {
     children: ReactElement | ReactElement[];
     header: ReactElement;
     level: number;
@@ -13,9 +13,9 @@ type CollapsableListProps = {
     headerStyle?: React.CSSProperties;
     inActivePath: boolean;
     highlightItem: HighlightItem;
-};
+}
 
-const CollapsableList = ({
+const CollapsableList: React.FC<CollapsableListProps> = ({
     children,
     header,
     level,
@@ -25,7 +25,7 @@ const CollapsableList = ({
     headerStyle,
     inActivePath,
     highlightItem
-}: CollapsableListProps) => {
+}) => {
     const [isOpen, setOpen] = useState(true);
     const { expandAll } = useContext(NavigatorContext);
     const list = Array.from(new Array(level)).map((_, i) => i);
@@ -63,7 +63,7 @@ const CollapsableList = ({
                 {header}
             </div>
             <div className={`collapsable__content ${isOpen ? "" : "collapsed"}`}>
-                {React.Children.map(children, content =>
+                {React.Children.map(children, (content: React.ReactElement) =>
                     React.cloneElement(content, {
                         className: "collapsable__content-item"
                     })

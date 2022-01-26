@@ -15,6 +15,7 @@ import {
     FormElementRenderProps
 } from "@webiny/app-admin/ui/elements/form/FormElement";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
+import { SplitViewPanelElement } from "@webiny/app-admin/ui/views/SplitView/SplitViewPanelElement";
 
 export class PageSettingsView extends OverlayView {
     private _splitView: SplitView;
@@ -22,7 +23,7 @@ export class PageSettingsView extends OverlayView {
     private _tabs: PageSettingsTabsElement;
     private _form: FormElement;
 
-    constructor() {
+    public constructor() {
         super("PageSettingsView");
 
         this.addHookDefinition("pageSettings", usePageSettings);
@@ -42,15 +43,15 @@ export class PageSettingsView extends OverlayView {
         this.isRendered().then(() => this.setIsVisible(true));
     }
 
-    getLeftPanel() {
+    public getLeftPanel(): SplitViewPanelElement {
         return this._splitView.getLeftPanel();
     }
 
-    getRightPanel() {
+    public getRightPanel(): SplitViewPanelElement {
         return this._splitView.getRightPanel();
     }
 
-    addSection(section: PageSettingsTabElementConfig) {
+    public addSection(section: PageSettingsTabElementConfig): void {
         this._sections.set(section.id, section);
 
         this._tabs.addElement(new PageSettingsTabElement(section.id, section));
@@ -69,7 +70,7 @@ export class PageSettingsView extends OverlayView {
         );
     }
 
-    getActiveSection(): PageSettingsTabElementConfig {
+    public getActiveSection(): PageSettingsTabElementConfig {
         const { activeSection } = this.getPageSettingsHook();
         if (!activeSection) {
             return this._sections.values().next().value;
@@ -77,7 +78,7 @@ export class PageSettingsView extends OverlayView {
         return this._sections.get(activeSection);
     }
 
-    getPageSettingsHook() {
+    public getPageSettingsHook(): UsePageSettings {
         return this.getHook<UsePageSettings>("pageSettings");
     }
 

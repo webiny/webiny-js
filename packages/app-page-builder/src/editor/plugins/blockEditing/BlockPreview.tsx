@@ -10,12 +10,19 @@ import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/delete-24dpx.svg";
 import * as Styled from "./StyledComponents";
 import kebabCase from "lodash/kebabCase";
+import { PbEditorBlockPlugin } from "~/types";
 
-const BlockPreview = props => {
+interface BlockPreviewProps {
+    plugin: PbEditorBlockPlugin;
+    addBlockToContent: (plugin: PbEditorBlockPlugin) => void;
+    onEdit: (ev: React.MouseEvent) => void;
+    onDelete: (ev: React.MouseEvent) => void;
+}
+const BlockPreview: React.FC<BlockPreviewProps> = props => {
     const { plugin, addBlockToContent, onEdit, onDelete } = props;
-    const onClickToAddHandler = ev => {
+    const onClickToAddHandler = (ev: React.MouseEvent) => {
         addBlockToContent(plugin);
-        if (ev.shitfKey) {
+        if (ev.shiftKey) {
             return;
         }
         // eventActionHandler.trigger(new TogglePluginEventAction({

@@ -16,10 +16,7 @@ const DEFAULT_EDITOR_OPTIONS: CoreOptions = {
     }
 };
 
-const Paragraph: React.FunctionComponent<PbEditorTextElementProps> = ({
-    elementId,
-    mediumEditorOptions
-}) => {
+const Paragraph: React.FC<PbEditorTextElementProps> = ({ elementId, mediumEditorOptions }) => {
     return (
         <Text
             elementId={elementId}

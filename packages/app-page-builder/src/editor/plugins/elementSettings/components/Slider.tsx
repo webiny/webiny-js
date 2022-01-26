@@ -3,7 +3,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Slider as SliderCmp } from "@webiny/ui/Slider";
 
-type SliderPropsType = {
+interface SliderPropsType {
     label: string;
     value: string | number;
     updatePreview(value: any): void;
@@ -11,9 +11,9 @@ type SliderPropsType = {
     min?: number;
     max?: number;
     step?: number;
-};
+}
 
-const Slider: React.FunctionComponent<SliderPropsType> = ({
+const Slider: React.FC<SliderPropsType> = ({
     label,
     value,
     updatePreview,

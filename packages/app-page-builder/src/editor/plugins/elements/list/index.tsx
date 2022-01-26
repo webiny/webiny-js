@@ -1,6 +1,13 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
+import {
+    DisplayMode,
+    PbEditorElement,
+    PbEditorPageElementPlugin,
+    PbEditorPageElementPluginSettings,
+    PbEditorPageElementPluginToolbar,
+    PbEditorTextElementPluginsArgs
+} from "~/types";
 import List, { className } from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
@@ -8,7 +15,7 @@ import { createInitialPerDeviceSettingValue } from "../../elementSettings/elemen
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const elementType = kebabCase(args.elementType || "list");
 
-    const defaultToolbar = {
+    const defaultToolbar: PbEditorPageElementPluginToolbar = {
         title: "List",
         group: "pb-editor-element-group-basic",
         preview() {
@@ -24,7 +31,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         }
     };
 
-    const defaultSettings = [
+    const defaultSettings: PbEditorPageElementPluginSettings = [
         "pb-editor-page-element-style-settings-text",
         "pb-editor-page-element-style-settings-background",
         "pb-editor-page-element-style-settings-border",
@@ -52,7 +59,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
                     <li>List item 3</li>
                 </ul>`;
 
-            const defaultValue = {
+            const defaultValue: Partial<PbEditorElement> = {
                 type: this.elementType,
                 elements: [],
                 data: {

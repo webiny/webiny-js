@@ -9,7 +9,7 @@ interface UseAutocompleteHook {
 
 interface Props {
     query: DocumentNode;
-    search?: string | (() => void);
+    search?: string | ((value: string) => string);
 }
 
 export const useAutocomplete = (props: Props): UseAutocompleteHook => {

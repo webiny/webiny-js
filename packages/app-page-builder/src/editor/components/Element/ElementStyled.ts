@@ -1,6 +1,6 @@
 // TODO remove
 // @ts-nocheck
-import React from "react";
+import React, { CSSProperties } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 
@@ -138,7 +138,7 @@ export const defaultStyle = {
     willChange: "opacity, transform"
 };
 
-export const transitionStyles = {
+export const transitionStyles: Record<string, any> = {
     entering: { opacity: 0, transform: "scale(0.5)" },
     entered: { opacity: 1, transform: "scale(1)" }
 };

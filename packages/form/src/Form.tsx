@@ -37,6 +37,9 @@ export interface Validation {
 export interface FormOnSubmit {
     (data: FormData, form?: Form): void;
 }
+export interface FormOnCancel {
+    (): void;
+}
 
 export interface FormProps {
     invalidFields?: {

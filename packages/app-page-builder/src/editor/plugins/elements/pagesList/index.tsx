@@ -7,7 +7,7 @@ import {
     PbEditorPageElementAdvancedSettingsPlugin,
     DisplayMode,
     PbEditorElementPluginArgs
-} from "../../../../types";
+} from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
 import PagesList from "./PagesList";
@@ -24,7 +24,7 @@ export default (args: PbEditorElementPluginArgs = {}): PluginCollection => {
         }
     });
 
-    const elementType = kebabCase(args.elementType || "pages-list");
+    const elementType: string = kebabCase(args.elementType || "pages-list");
 
     const defaultToolbar = {
         title: "List of pages",
@@ -38,7 +38,7 @@ export default (args: PbEditorElementPluginArgs = {}): PluginCollection => {
         }
     };
 
-    const defaultSettings = ["pb-editor-page-element-settings-delete"];
+    const defaultSettings: string[] = ["pb-editor-page-element-settings-delete"];
 
     return [
         {
@@ -76,7 +76,8 @@ export default (args: PbEditorElementPluginArgs = {}): PluginCollection => {
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
             render({ element }) {
-                return <PagesList data={element.data} />;
+                // TODO @ts-refactor figure out correct type
+                return <PagesList data={element.data as any} />;
             }
         } as PbEditorPageElementPlugin,
         {

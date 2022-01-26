@@ -1,3 +1,7 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import uniqid from "uniqid";
 import lodashGet from "lodash/get";
@@ -579,7 +583,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             checkOwnPermissions(identity, permission, page, "ownedBy");
 
             const settings = await this.getCurrentSettings();
-            const pages = settings && settings.pages ? settings.pages : {};
+            const pages: Record<string, string> = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 // We don't allow delete operation for "published" version of special pages.
                 if (pages[key] === page.pid && page.status === "published") {
@@ -841,7 +845,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
 
             const settings = await this.getCurrentSettings();
-            const pages = settings && settings.pages ? settings.pages : {};
+            const pages: Record<string, string> = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 if (pages[key] === original.pid) {
                     throw new WebinyError(

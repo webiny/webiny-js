@@ -1,11 +1,11 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import OEmbed from "../../../../components/OEmbed";
-import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../../types";
+import { OEmbed, OEmbedProps } from "~/render/components/OEmbed";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
 import YoutubeEmbed from "./YoutubeEmbed";
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
-    const renderEmbed = props => {
+    const renderEmbed: OEmbedProps["renderEmbed"] = props => {
         return <YoutubeEmbed {...props} />;
     };
 

@@ -3,11 +3,12 @@ import { uiAtom } from "../recoil/modules";
 import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
 import { useRecoilValue } from "recoil";
 
-type DefaultVisibilityPropType = {
+interface DefaultVisibilityPropType {
     type: string;
     isDragging: boolean;
+    // TODO @ts-refactor
     item: any;
-};
+}
 const defaultVisibility = ({ type, isDragging, item }: DefaultVisibilityPropType): boolean => {
     const target = (item && item.target) || [];
 
@@ -31,21 +32,21 @@ export type DroppableIsVisiblePropType = (params: {
     item: any;
     isDragging: boolean;
 }) => boolean;
-export type DragObjectWithTypeWithTarget = DragObjectWithType & {
+export interface DragObjectWithTypeWithTarget extends DragObjectWithType {
     id?: string;
     type: string;
     target: string[];
-};
+}
 export type DroppableOnDropPropType = (item: DragObjectWithTypeWithTarget) => void;
-export type DroppableProps = {
+export interface DroppableProps {
     type: string;
     children: DroppableChildrenFunction;
     isDroppable?: DroppableIsDroppablePropType;
     isVisible: DroppableIsVisiblePropType;
     onDrop: DroppableOnDropPropType;
-};
+}
 
-const Droppable = (props: DroppableProps) => {
+const Droppable: React.FC<DroppableProps> = props => {
     const { type, children, isDroppable = () => true, onDrop } = props;
     let { isVisible } = props;
 

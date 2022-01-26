@@ -14,17 +14,17 @@ const enabled = css({
 
 const cellStyle = { marginBottom: 0 };
 
-const getValue = (value, side) => {
+const getValue = (value: Record<string, boolean>, side: string): boolean => {
     const enabled = value[side];
     return typeof enabled === "undefined" ? true : enabled;
 };
 
-type SelectorPropsType = {
+interface SelectorPropsType {
     label: string;
-    value: object;
+    value: Record<string, boolean>;
     updateValue: (value: any) => void;
-};
-const Selector: React.FunctionComponent<SelectorPropsType> = ({ label, value, updateValue }) => {
+}
+const Selector: React.FC<SelectorPropsType> = ({ label, value, updateValue }) => {
     const top = getValue(value, "top");
     const right = getValue(value, "right");
     const bottom = getValue(value, "bottom");

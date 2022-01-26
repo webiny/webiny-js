@@ -11,11 +11,11 @@ const InnerDiv = styled("div")({
     display: "none"
 });
 
-type OuterDiv = {
+interface OuterDiv {
     isOver: boolean;
     below: boolean;
     children: React.ReactNode;
-};
+}
 
 const OuterDiv = React.memo<OuterDiv>(
     styled("div")(
@@ -41,14 +41,14 @@ const OuterDiv = React.memo<OuterDiv>(
     )
 );
 
-export type HorizontalPropsType = {
+export interface HorizontalPropsType {
     type: string;
     onDrop: DroppableOnDropPropType;
     below?: boolean;
     isVisible?: DroppableIsVisiblePropType;
-};
+}
 
-const HorizontalComponent = ({ below, onDrop, isVisible, type }: HorizontalPropsType) => {
+const HorizontalComponent: React.FC<HorizontalPropsType> = ({ below, onDrop, isVisible, type }) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (

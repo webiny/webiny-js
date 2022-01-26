@@ -1,14 +1,25 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { usePageBuilder } from "../../../../hooks/usePageBuilder";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { plugins } from "@webiny/plugins";
 import { get } from "lodash";
-import { PbPageElementPagesListComponentPlugin } from "../../../../types";
+import { PbPageElementPagesListComponentPlugin } from "~/types";
 import { useRecoilValue } from "recoil";
 import { pageAtom } from "../../../recoil/modules";
 
-const PagesList = props => {
+interface PagesListProps {
+    data: {
+        component: string;
+        sortBy: string;
+        sortDirection: "asc" | "desc";
+        category: string;
+        tags: string;
+        tagsRule: "any" | "all";
+        resultsPerPage: string;
+    };
+}
+const PagesList: React.FC<PagesListProps> = props => {
     const { component, ...vars } = props.data;
     const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"

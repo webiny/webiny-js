@@ -5,7 +5,7 @@ import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 
 const { Group, Element } = AddPbWebsiteSettings;
 
-export const FaviconAndLogo = () => {
+export const FaviconAndLogo: React.FC = () => {
     return (
         <Group name={"faviconAndLogo"} label={"Favicon and Logo"}>
             <Element>

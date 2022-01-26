@@ -7,20 +7,24 @@ import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
 import { withActiveElement } from "../../../components";
 import { Form } from "@webiny/form";
-import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "../../../../types";
+import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "~/types";
+import { FormData } from "@webiny/form/Form";
 
-const emptyElement = { data: {}, type: null };
-
-type AdvancedSettingsPropsType = {
-    element: PbEditorElement;
+const emptyElement: Partial<PbEditorElement> = {
+    data: {},
+    type: null
 };
+
+interface AdvancedSettingsPropsType {
+    element: PbEditorElement;
+}
 const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ element }) => {
     const { data, type } = element || cloneDeep(emptyElement);
 
     const eventActionHandler = useEventActionHandler();
 
     // Get element settings plugins
-    const advancedSettingsPlugin = useMemo(() => {
+    const advancedSettingsPlugin = useMemo((): PbEditorPageElementAdvancedSettingsPlugin[] => {
         return plugins
             .byType<PbEditorPageElementAdvancedSettingsPlugin>(
                 "pb-editor-page-element-advanced-settings"

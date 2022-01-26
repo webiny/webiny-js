@@ -7262,6 +7262,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/aos@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "@types/aos@npm:3.0.4"
+  checksum: 55c54865df6e0758a32c8ab9a617b63318e0d8a7f7f0b6d02747aa541aa2638e3fd57a8d6f3a4277fcf9a0bffabf9d4e8c95b1d7b54f88859a85fbbd7e10bf2a
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^4.2.0":
   version: 4.2.2
   resolution: "@types/aria-query@npm:4.2.2"
@@ -7494,6 +7501,13 @@ __metadata:
   version: 1.0.1
   resolution: "@types/is-function@npm:1.0.1"
   checksum: dfbb591936dfebd4686b109603bc3e2d23a17087d6ec913fb35cd6b5a4ef908ed68ab93cb27d508f1546d312edf03e663cb6738d3b67d420c68da961ac2b3d1f
+  languageName: node
+  linkType: hard
+
+"@types/is-hotkey@npm:^0.1.7":
+  version: 0.1.7
+  resolution: "@types/is-hotkey@npm:0.1.7"
+  checksum: bce7c8874b30f346f20cf6cfcf4a10372962924f0e1b1a925a279004faeb276242ebfbfee47bd48df57e1021f2e3078c34e25837e226960c418d5f78f83dacea
   languageName: node
   linkType: hard
 
@@ -7761,6 +7775,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/platform@npm:^1.3.4":
+  version: 1.3.4
+  resolution: "@types/platform@npm:1.3.4"
+  checksum: dce83952e6af3e488fb2a3c7c7ec226cef4a8606ab63bd40301fe7883ff0c434512210497d6cb79adc4c8e671648ed3e7035438a40f41a5f395c60d2bfb6390d
+  languageName: node
+  linkType: hard
+
 "@types/pluralize@npm:^0.0.29":
   version: 0.0.29
   resolution: "@types/pluralize@npm:0.0.29"
@@ -7853,6 +7874,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-images@npm:^0.5.3":
+  version: 0.5.3
+  resolution: "@types/react-images@npm:0.5.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: 1a60c885f46148c59fa8588d6c7b14b71d6f0c1b31f5b7a921f1d29cec722b5305eda4563735c41d263ab8bc11581a5812db286793eb3ce3eca9aa8327fe5c40
+  languageName: node
+  linkType: hard
+
 "@types/react-router-dom@npm:^5.1.5":
   version: 5.3.3
   resolution: "@types/react-router-dom@npm:5.3.3"
@@ -7898,6 +7928,16 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 86e9ff9731798e12bc2afe0304678918769633b531dcf6397f86af81718fb7930ef8648e894eeb3718fc6eab6eb885cfb9b82a44d1d74e10951ee11ebc4643ae
+  languageName: node
+  linkType: hard
+
+"@types/react-virtualized@npm:^9.21.16":
+  version: 9.21.16
+  resolution: "@types/react-virtualized@npm:9.21.16"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/react": "*"
+  checksum: 4769c7ba7877bd52d00aceed5847c8e0ad2ed3e5a3520f936433609ba5df3c5533a79c6a4a023a08043683a6b81f28bfa0ebf0556a36781484337843e39460c8
   languageName: node
   linkType: hard
 
@@ -10455,9 +10495,15 @@ __metadata:
     "@fortawesome/react-fontawesome": ^0.1.3
     "@rmwc/menu": ^5.6.0
     "@svgr/webpack": ^6.1.1
+    "@types/aos": ^3.0.4
+    "@types/is-hotkey": ^0.1.7
     "@types/medium-editor": ^5.0.3
+    "@types/platform": ^1.3.4
     "@types/react": ^16.14.0
+    "@types/react-images": ^0.5.3
+    "@types/react-virtualized": ^9.21.16
     "@types/resize-observer-browser": ^0.1.4
+    "@types/store": ^2.0.2
     "@webiny/app": ^5.22.0
     "@webiny/app-admin": ^5.22.0
     "@webiny/app-i18n": ^5.22.0
@@ -10490,10 +10536,8 @@ __metadata:
     invariant: ^2.2.4
     is-hotkey: ^0.1.3
     lodash: ^4.17.10
-    lodash.pick: ^4.4.0
     medium-editor: ^5.23.3
     nanoid: ^3.1.20
-    object.pick: ^1.3.0
     platform: ^1.3.5
     prop-types: ^15.7.2
     react: 16.14.0
@@ -26233,13 +26277,6 @@ __metadata:
   version: 4.2.1
   resolution: "lodash.partialright@npm:4.2.1"
   checksum: cfae6034743d50280483eb62a76d263ec70ed5d9da3e4a8236ddb2c964280119cf54768bd6550e50e68169340c0aa7ce2e60bd9a0c9d065f8602e92c4b85ae74
-  languageName: node
-  linkType: hard
-
-"lodash.pick@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "lodash.pick@npm:4.4.0"
-  checksum: 2c36cab7da6b999a20bd3373b40e31a3ef81fa264f34a6979c852c5bc8ac039379686b27380f0cb8e3781610844fafec6949c6fbbebc059c98f8fa8570e3675f
   languageName: node
   linkType: hard
 

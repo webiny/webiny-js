@@ -1,6 +1,6 @@
 import orderBy from "lodash/orderBy";
 import { plugins } from "@webiny/plugins";
-import { PbRenderResponsiveModePlugin } from "../types";
+import { PbRenderResponsiveModePlugin } from "~/types";
 
 type ApplyStyle = ({
     fallbackMode,
@@ -10,7 +10,7 @@ type ApplyStyle = ({
     displayMode: string;
 }) => void;
 
-export const applyPerDeviceStyleWithFallback = (applyStyle: ApplyStyle) => {
+export const applyPerDeviceStyleWithFallback = (applyStyle: ApplyStyle): void => {
     // Get display modes
     const displayModeConfigs = plugins
         .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")

@@ -9,10 +9,14 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useMutation } from "@apollo/react-hooks";
 import usePermission from "~/hooks/usePermission";
+import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 
-const EditRevision = props => {
+interface EditRevisionProps {
+    page: PbPageData;
+}
+const EditRevision: React.FC<EditRevisionProps> = props => {
     const { page } = props;
     const { canEdit } = usePermission();
     const { history } = useRouter();

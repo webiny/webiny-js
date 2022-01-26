@@ -1,6 +1,6 @@
 import React from "react";
 import gql from "graphql-tag";
-import { pageAtom } from "../../../recoil/modules";
+import { pageAtom, PageAtomType } from "../../../recoil/modules";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { MenuItem } from "@webiny/ui/Menu";
@@ -10,7 +10,7 @@ import { ReactComponent as HomeIcon } from "../../../../admin/assets/round-home-
 import { useMutation } from "@apollo/react-hooks";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useRecoilValue } from "recoil";
-import { usePageBuilderSettings } from "../../../../admin/hooks/usePageBuilderSettings";
+import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 
 const PUBLISH_PAGE = gql`
     mutation PbPublishPage($id: ID!) {
@@ -32,7 +32,7 @@ const PUBLISH_PAGE = gql`
 `;
 
 const SetAsHomepageButton: React.FunctionComponent = () => {
-    const page = useRecoilValue(pageAtom);
+    const page = useRecoilValue(pageAtom) as Required<PageAtomType>;
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const publishPageMutation = useMutation(PUBLISH_PAGE);

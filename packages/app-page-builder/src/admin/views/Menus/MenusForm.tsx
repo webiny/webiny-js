@@ -19,7 +19,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import MenuItems from "./MenusForm/MenuItems";
 import { useSecurity } from "@webiny/app-security";
-import pick from "object.pick";
+import pick from "lodash/pick";
 import get from "lodash/get";
 import set from "lodash/set";
 import isEmpty from "lodash/isEmpty";
@@ -33,10 +33,10 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-type MenusFormProps = {
+interface MenusFormProps {
     canCreate: boolean;
-};
-const MenusForm = ({ canCreate }: MenusFormProps) => {
+}
+const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -115,7 +115,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
         return identity.getPermission("pb.menu");
     }, []);
 
-    const canSave = useMemo(() => {
+    const canSave = useMemo((): boolean => {
         // User should be able to save the form
         // if it's a new entry and user has the "own" permission set.
         if (!loadedMenu.slug && pbMenuPermission.own) {

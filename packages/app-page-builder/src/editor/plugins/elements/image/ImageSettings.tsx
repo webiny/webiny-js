@@ -1,20 +1,19 @@
 import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
+import { activeElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
+import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
-import Accordion from "../../elementSettings/components/Accordion";
-import Wrapper from "../../elementSettings/components/Wrapper";
-import InputField from "../../elementSettings/components/InputField";
-import SpacingPicker from "../../elementSettings/components/SpacingPicker";
-import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
-import { justifySelfEndStyle } from "../../elementSettings/components/StyledComponents";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
-
+import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
+import Wrapper from "~/editor/plugins/elementSettings/components/Wrapper";
+import InputField from "~/editor/plugins/elementSettings/components/InputField";
+import SpacingPicker from "~/editor/plugins/elementSettings/components/SpacingPicker";
+import useUpdateHandlers from "~/editor/plugins/elementSettings/useUpdateHandlers";
+import { justifySelfEndStyle } from "~/editor/plugins/elementSettings/components/StyledComponents";
 import {
     WIDTH_UNIT_OPTIONS,
     HEIGHT_UNIT_OPTIONS
-} from "../../elementSettings/elementSettingsUtils";
+} from "~/editor/plugins/elementSettings/elementSettingsUtils";
 
 const classes = {
     grid: css({
@@ -32,7 +31,7 @@ const spacingPickerStyle = css({
     }
 });
 
-const ImageSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+const ImageSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue = false
 }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
@@ -59,7 +58,7 @@ const ImageSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCo
                     rightCellClassName={justifySelfEndStyle}
                 >
                     <SpacingPicker
-                        value={image?.width || ""}
+                        value={(image?.width as string) || ""}
                         onChange={updateWidth}
                         options={WIDTH_UNIT_OPTIONS}
                         useDefaultStyle={false}
@@ -72,7 +71,7 @@ const ImageSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCo
                     rightCellClassName={justifySelfEndStyle}
                 >
                     <SpacingPicker
-                        value={image?.height || ""}
+                        value={(image?.height as string) || ""}
                         onChange={updateHeight}
                         options={HEIGHT_UNIT_OPTIONS}
                         useDefaultStyle={false}

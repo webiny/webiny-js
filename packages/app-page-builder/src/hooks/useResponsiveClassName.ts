@@ -1,14 +1,15 @@
 import React from "react";
 import { plugins } from "@webiny/plugins";
 import kebabCase from "lodash/kebabCase";
-import { PbRenderResponsiveModePlugin } from "../types";
+import { PbRenderResponsiveModePlugin } from "~/types";
 import { PageBuilderContext, PageBuilderContextValue } from "../contexts/PageBuilder";
 
 const useResponsiveClassName = () => {
     const {
         responsiveDisplayMode: { displayMode, setDisplayMode }
     } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
-    const ref = React.useRef();
+    const ref = React.useRef<HTMLElement>();
+
     // Get "responsive-mode" plugins
     const responsiveModeConfigs = React.useMemo(() => {
         return plugins
@@ -25,22 +26,23 @@ const useResponsiveClassName = () => {
         });
     }, []);
 
-    const pageElementRef = React.useCallback(node => {
+    const pageElementRef = React.useCallback((node: HTMLElement): void => {
         if (ref.current) {
             // Make sure to cleanup any events/references added to the last instance
             resizeObserver.disconnect();
         }
-        if (node) {
-            // Add resize observer
-            resizeObserver.observe(node);
-            // Save a reference to the node
-            ref.current = node;
+        if (!node) {
+            return;
         }
+        // Add resize observer
+        resizeObserver.observe(node);
+        // Save a reference to the node
+        ref.current = node;
     }, []);
 
     // Handle document resize
     const handlerResize = React.useCallback(
-        ({ width }) => {
+        ({ width }: { width: number; height: number }): void => {
             let mode = "desktop";
             responsiveModeConfigs.forEach(config => {
                 if (width <= config.minWidth) {

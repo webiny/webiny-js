@@ -57,12 +57,12 @@ const drawerStyle = css({
         }
     }
 });
-type ToolbarDrawerProps = {
+interface ToolbarDrawerProps {
     name: string;
     active: boolean;
     children: React.ReactNode;
     drawerClassName?: string;
-};
+}
 const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
     name,
     active,

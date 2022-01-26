@@ -171,15 +171,20 @@ const styles = {
     })
 };
 
-type ColorPickerProps = {
+interface ColorPickerProps {
     value: string;
     onChange: Function;
     onChangeComplete: Function;
     compact?: boolean;
     handlerClassName?: string;
-};
+}
 
-const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: ColorPickerProps) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({
+    value,
+    onChange,
+    onChangeComplete,
+    compact = false
+}) => {
     const [showPicker, setShowPicker] = useState(false);
 
     const getColorValue = useCallback(rgb => {

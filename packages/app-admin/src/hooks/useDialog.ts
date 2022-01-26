@@ -1,8 +1,12 @@
+import React from "react";
 import { useUi } from "@webiny/app/hooks/useUi";
 
+// TODO @ts-refactor
+interface UseDialogResponseShowDialogOptions {
+    [key: string]: any;
+}
 interface UseDialogResponse {
-    // TODO @ts-refactor
-    showDialog: (message: string, options: Record<string, string>) => void;
+    showDialog: (message: React.ReactNode, options?: UseDialogResponseShowDialogOptions) => void;
     hideDialog: () => void;
 }
 const useDialog = (): UseDialogResponse => {

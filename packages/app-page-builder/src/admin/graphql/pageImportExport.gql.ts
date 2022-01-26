@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { PageBuilderImportExportSubTask } from "~/types";
 
 const ERROR = `
 error {   
@@ -88,6 +89,19 @@ export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
         }
     }
 `;
+
+export interface ListPageImportExportSubTasksResponse {
+    pageBuilder: {
+        listPageImportExportSubTask: {
+            data: PageBuilderImportExportSubTask[];
+            error?: {
+                message: string;
+                code: string;
+                data: Record<string, any>;
+            };
+        };
+    };
+}
 
 export const LIST_PAGE_IMPORT_EXPORT_SUB_TASKS = gql`
     query PbPageListPageImportExportSubTask($id: ID!, $status: PbPageImportExportTaskStatus, $limit: Int) {

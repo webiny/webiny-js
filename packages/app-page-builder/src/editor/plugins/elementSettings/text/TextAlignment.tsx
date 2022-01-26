@@ -40,13 +40,11 @@ const alignments = Object.keys(icons);
 
 type AlignTypesType = "left" | "center" | "right" | "justify";
 
-type HorizontalAlignActionPropsType = {
-    value: any;
-    onChange: any;
-};
-const TextAlignment: React.FunctionComponent<
-    HorizontalAlignActionPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = ({ value, onChange }) => {
+interface HorizontalAlignActionPropsType extends PbEditorPageElementSettingsRenderComponentProps {
+    value: string;
+    onChange: (type: AlignTypesType) => void;
+}
+const TextAlignment: React.FC<HorizontalAlignActionPropsType> = ({ value, onChange }) => {
     return (
         <ContentWrapper>
             {alignments.map(type => (

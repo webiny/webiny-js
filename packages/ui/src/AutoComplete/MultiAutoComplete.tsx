@@ -23,7 +23,7 @@ import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 
 import { css } from "emotion";
 import { ListItemGraphic } from "~/List";
-import { Props } from "~/AutoComplete/AutoComplete";
+import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
 const style = {
     pagination: {
         bar: css({
@@ -164,7 +164,7 @@ function paginateMultipleSelection(
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
-    options: Props["options"];
+    options: AutoCompleteProps["options"];
     unique: boolean;
 }
 

@@ -32,19 +32,19 @@ export enum Placement {
     bottom = "bottom"
 }
 
-export type Props = AutoCompleteBaseProps & {
+export interface AutoCompleteProps extends Omit<AutoCompleteBaseProps, "onChange"> {
     /* Placement position of dropdown menu, can be either `top` or `bottom`. */
     placement?: Placement;
 
     /* A callback that is executed each time a value is changed. */
-    onChange?: (value: any, selection: any) => void;
+    onChange?: (value: any, selection?: any) => void;
 
     /* If true, will show a loading spinner on the right side of the input. */
     loading?: boolean;
 
     /* A component that renders supporting UI in case of no result found. */
     noResultFound?: Function;
-};
+}
 
 type State = {
     inputValue: string;
@@ -56,12 +56,12 @@ function Spinner() {
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
-    options: Props["options"];
-    placement: Props["placement"];
+    options: AutoCompleteProps["options"];
+    placement: AutoCompleteProps["placement"];
 }
 
-class AutoComplete extends React.Component<Props, State> {
-    static defaultProps: Partial<Props> = {
+class AutoComplete extends React.Component<AutoCompleteProps, State> {
+    static defaultProps: Partial<AutoCompleteProps> = {
         valueProp: "id",
         textProp: "name",
         options: [],

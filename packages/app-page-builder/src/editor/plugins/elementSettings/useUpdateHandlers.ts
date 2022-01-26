@@ -30,7 +30,7 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
         handler.trigger(new UpdateElementActionEvent(args));
     };
     const updateSettings = useHandler(props, ({ element, dataNamespace, postModifyElement }) => {
-        const historyUpdated = {};
+        const historyUpdated: Record<string, string> = {};
         return (name: string, newValue: any, history = false) => {
             const propName = `${dataNamespace}.${name}`;
 
@@ -61,7 +61,7 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
     });
 
     const getUpdateValue = useMemo(() => {
-        const handlers = {};
+        const handlers: Record<string, HandlerUpdateCallableType> = {};
         return (name: string) => {
             if (!handlers[name]) {
                 handlers[name] = value => updateSettings(name, value, true);
@@ -72,7 +72,7 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
     }, [updateSettings]);
 
     const getUpdatePreview = useMemo(() => {
-        const handlers = {};
+        const handlers: Record<string, HandlerUpdateCallableType> = {};
         return (name: string) => {
             if (!handlers[name]) {
                 handlers[name] = value => updateSettings(name, value, false);

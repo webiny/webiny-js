@@ -1,9 +1,10 @@
 import { UIElement } from "@webiny/app-admin/ui/UIElement";
 import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { PageSettingsView } from "../PageSettingsView";
+import { UsePageSettings } from "~/editor/hooks/usePageSettings";
 
 export class PageSettingsFormView extends FormView {
-    constructor(id) {
+    constructor(id: string) {
         super(id, { setupForm: false });
 
         this.getSubmitButtonElement().setLabel("Save Settings");
@@ -13,11 +14,11 @@ export class PageSettingsFormView extends FormView {
     /**
      * Add a field to form content.
      */
-    addField<TElement extends UIElement = UIElement>(element: TElement): TElement {
+    public addField<TElement extends UIElement = UIElement>(element: TElement): TElement {
         return this.getFormContentElement().addElement<TElement>(element);
     }
 
-    getPageSettingsHook() {
+    public getPageSettingsHook(): UsePageSettings {
         const parent = this.getParentByType<PageSettingsView>(PageSettingsView);
         return parent.getPageSettingsHook();
     }

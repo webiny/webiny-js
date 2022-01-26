@@ -58,11 +58,14 @@ const classes = {
 const TEXT_SETTINGS_COUNT = 4;
 const DATA_NAMESPACE = "data.text";
 
-const TextSettings: React.FunctionComponent<
-    PbEditorPageElementSettingsRenderComponentProps & {
-        options: any;
-    }
-> = ({ defaultAccordionValue, options }) => {
+interface TextSettingsPropsOptions {
+    useCustomTag?: boolean;
+    tags: string[];
+}
+interface TextSettingsProps extends PbEditorPageElementSettingsRenderComponentProps {
+    options: TextSettingsPropsOptions;
+}
+const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
 
@@ -82,10 +85,15 @@ const TextSettings: React.FunctionComponent<
     }, [displayMode]);
 
     const themeTypographyOptions = useMemo(() => {
-        const { types } = theme.elements[element.type] || { types: [] };
+        const { types = [] } = theme.elements[element.type];
         const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
 
         return [
+            /**
+             * remove ts-ignore when determined types for the PbTheme.elements
+             * TODO @ts-refactor
+             */
+            // @ts-ignore
             ...types.map(el => (
                 <option value={el.className} key={el.label}>
                     {el.label}

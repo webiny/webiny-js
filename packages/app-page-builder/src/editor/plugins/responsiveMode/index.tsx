@@ -11,7 +11,7 @@ const rotateStyle = css({
     transform: "rotate(90deg)"
 });
 
-export default () => [
+export default (): PbEditorResponsiveModePlugin[] => [
     {
         type: "pb-editor-responsive-mode",
         name: "pb-editor-responsive-mode-desktop",
@@ -26,7 +26,7 @@ export default () => [
             },
             icon: <DesktopIcon />
         }
-    } as PbEditorResponsiveModePlugin,
+    },
     {
         type: "pb-editor-responsive-mode",
         name: "pb-editor-responsive-mode-tablet",
@@ -40,7 +40,7 @@ export default () => [
             },
             icon: <TabletIcon />
         }
-    } as PbEditorResponsiveModePlugin,
+    },
     {
         type: "pb-editor-responsive-mode",
         name: "pb-editor-responsive-mode-mobile-landscape",
@@ -54,7 +54,7 @@ export default () => [
             },
             icon: <MobileIcon className={rotateStyle} />
         }
-    } as PbEditorResponsiveModePlugin,
+    },
     {
         type: "pb-editor-responsive-mode",
         name: "pb-editor-responsive-mode-mobile-portrait",
@@ -67,5 +67,5 @@ export default () => [
             },
             icon: <MobileIcon />
         }
-    } as PbEditorResponsiveModePlugin
+    }
 ];

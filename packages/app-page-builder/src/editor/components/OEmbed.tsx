@@ -1,3 +1,8 @@
+/**
+ * This file has some parts of code as the one
+ * packages/app-page-builder/src/render/components/OEmbed.tsx
+ * TODO @ts-refactor
+ */
 import React, { useCallback, useEffect, ReactElement, useState } from "react";
 import gql from "graphql-tag";
 import { css } from "emotion";
@@ -6,10 +11,10 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
 import { useEventActionHandler } from "../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../recoil/actions";
-import { PbEditorElement } from "../../types";
+import { PbEditorElement } from "~/types";
 import useRenderEmptyEmbed from "../plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
-function appendSDK(props) {
+function appendSDK(props: OEmbedProps) {
     const { sdk, global, element } = props;
     const { url } = element?.data?.source || {};
 
@@ -28,7 +33,7 @@ function appendSDK(props) {
     });
 }
 
-function initEmbed(props) {
+function initEmbed(props: OEmbedProps) {
     const { sdk, init, element } = props;
     if (sdk && element?.data?.source?.url) {
         const node = document.getElementById(element.id);
@@ -66,13 +71,20 @@ const errorElementStyle = css({
     }
 });
 
-export type OEmbedProps = {
+interface OEmbedPropsInitParams {
+    props: OEmbedProps;
+    node: HTMLElement;
+}
+export interface OEmbedProps {
     element: PbEditorElement;
     onData?: (data: { [key: string]: any }) => { [key: string]: any };
     renderEmbed?: (props: OEmbedProps) => ReactElement;
     data?: any;
-};
-const OEmbedComponent = (props: OEmbedProps) => {
+    sdk?: string;
+    global?: keyof Window;
+    init?: (params: OEmbedPropsInitParams) => void;
+}
+const OEmbedComponent: React.FC<OEmbedProps> = props => {
     const [errorMessage, setErrorMessage] = useState(null);
     const eventActionHandler = useEventActionHandler();
     const { showSnackbar } = useSnackbar();

@@ -1,7 +1,7 @@
 import { SaveRevisionActionEvent, ToggleSaveRevisionStateActionEvent } from "./event";
 import { saveRevisionAction } from "./saveRevisionAction";
 import { toggleSaveRevisionStateAction } from "./toggleSaveRevisionStateAction";
-import { PbEditorEventActionPlugin } from "../../../../types";
+import { PbEditorEventActionPlugin } from "~/types";
 
 export default (): PbEditorEventActionPlugin[] => [
     {

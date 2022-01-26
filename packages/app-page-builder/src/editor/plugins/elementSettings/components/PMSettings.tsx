@@ -14,18 +14,24 @@ import { ReactComponent as BorderTopIcon } from "../../../assets/icons/border_to
 import { ReactComponent as BorderBottomIcon } from "../../../assets/icons/border_bottom.svg";
 import { useRecoilValue } from "recoil";
 
+interface UpdateSettingsCallable {
+    (name: string, newValue: string | number, history: boolean): void;
+}
+interface HandlerUpdateCallable {
+    (value: string): void;
+}
 /**
  * PMSettings (Padding/Margin settings).
  * This component is reused in Padding and Margin plugins since the behavior of both CSS attributes is the same.
  */
 
-type PMSettingsPropsType = {
+interface PMSettingsPropsType {
     styleAttribute: string;
     // TODO check - not used anywhere
     title?: string;
-};
+}
 
-const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribute }) => {
+const PMSettings: React.FC<PMSettingsPropsType> = ({ styleAttribute }) => {
     const handler = useEventActionHandler();
 
     const valueKey = `data.settings.${styleAttribute}`;
@@ -35,11 +41,11 @@ const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribu
 
     const [tabIndex, setTabIndex] = useState<number>(0);
 
-    const updateSettings = (name: string, newValue: any, history = false) => {
+    const updateSettings: UpdateSettingsCallable = (name, newValue, history = false) => {
         const propName = `${valueKey}.${name}`;
 
         if (name !== "advanced") {
-            newValue = parseInt(newValue) || 0;
+            newValue = parseInt(newValue as string) || 0;
         }
 
         let newElement = set(element, propName, newValue);
@@ -64,7 +70,7 @@ const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribu
     };
 
     const getUpdateValue = useMemo(() => {
-        const handlers = {};
+        const handlers: Record<string, HandlerUpdateCallable> = {};
         return (name: string) => {
             if (!handlers[name]) {
                 handlers[name] = value => updateSettings(name, value, true);
@@ -75,7 +81,7 @@ const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribu
     }, [updateSettings]);
 
     const getUpdatePreview = useMemo(() => {
-        const handlers = {};
+        const handlers: Record<string, HandlerUpdateCallable> = {};
         return (name: string) => {
             if (!handlers[name]) {
                 handlers[name] = value => updateSettings(name, value, false);

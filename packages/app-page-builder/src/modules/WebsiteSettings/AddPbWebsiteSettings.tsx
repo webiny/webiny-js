@@ -10,24 +10,31 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { SettingsFields } from "./WebsiteSettingsView";
 import { DocumentNode } from "graphql";
 
-const GroupContext = createContext(null);
-
-interface Props {
-    name: string;
+interface GroupContextValue {
+    /**
+     * Need to figure out better element type.
+     * @param element
+     */
+    // TODO @ts-refactor
+    addElement: (element: any) => void;
 }
+const GroupContext = createContext<GroupContextValue>(null);
 
 const VIEW_NAME = "PbWebsiteSettings";
 
-const tracker = {};
+const tracker: Record<string, boolean> = {};
 
-const GenerateElements = memo(({ name }: Props) => {
+interface GenerateElementsProps {
+    name: string;
+}
+const GenerateElementsComponent: React.FC<GenerateElementsProps> = ({ name }) => {
     if (tracker[name]) {
         return null;
     }
 
     tracker[name] = true;
 
-    const ElementsHOC = Fields => {
+    const ElementsHOC = (Fields: React.FC): React.FC => {
         return function Elements() {
             const { getViewElement } = useViewComposition();
             const element = getViewElement(VIEW_NAME, name);
@@ -55,7 +62,9 @@ const GenerateElements = memo(({ name }: Props) => {
     };
 
     return <Compose component={SettingsFields} with={ElementsHOC} />;
-});
+};
+
+const GenerateElements: React.FC<GenerateElementsProps> = memo(GenerateElementsComponent);
 
 GenerateElements.displayName = "GenerateElements";
 
@@ -69,7 +78,7 @@ const Group: FC<GroupProps> = ({ name, label, querySelection, children }) => {
     const viewComposition = useViewComposition();
 
     const context = useMemo(
-        () => ({
+        (): GroupContextValue => ({
             addElement(element) {
                 viewComposition.setViewElement(VIEW_NAME, name, existing => {
                     return {
@@ -107,7 +116,7 @@ const Group: FC<GroupProps> = ({ name, label, querySelection, children }) => {
     );
 };
 
-const Element = ({ children }) => {
+const Element: React.FC = ({ children }) => {
     const { addElement } = useContext(GroupContext);
 
     useEffect(() => {

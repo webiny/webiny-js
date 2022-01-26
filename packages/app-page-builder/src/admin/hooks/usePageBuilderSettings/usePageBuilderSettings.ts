@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { get } from "lodash";
 import { useTenancy } from "@webiny/app-tenancy/hooks/useTenancy";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { PbPageData } from "~/types";
 
 const DATA_FIELDS = /* GraphQL */ `
     {
@@ -69,14 +70,17 @@ export function usePageBuilderSettings() {
     const settings = get(getSettingsQuery, "data.pageBuilder.getSettings.data") || {};
     const defaultSettings = get(getSettingsQuery, "data.pageBuilder.getDefaultSettings.data") || {};
 
-    const getWebsiteUrl = (preview = false) => {
+    const getWebsiteUrl = (preview: boolean = false): string => {
         if (preview) {
             return settings.websitePreviewUrl || defaultSettings.websitePreviewUrl;
         }
         return settings.websiteUrl || defaultSettings.websiteUrl;
     };
 
-    const getPageUrl = (page, preview = false) => {
+    const getPageUrl = (
+        page: Pick<PbPageData, "id" | "status" | "path">,
+        preview: boolean = false
+    ): string => {
         const url = getWebsiteUrl(preview) + page.path;
         if (!preview || page.status === "published") {
             return url;
@@ -92,7 +96,7 @@ export function usePageBuilderSettings() {
         return url + "?" + query.filter(Boolean).join("&");
     };
 
-    const isSpecialPage = (page, type: "home" | "notFound") => {
+    const isSpecialPage = (page: Pick<PbPageData, "pid">, type: "home" | "notFound"): boolean => {
         if (!settings.pages?.[type]) {
             return false;
         }

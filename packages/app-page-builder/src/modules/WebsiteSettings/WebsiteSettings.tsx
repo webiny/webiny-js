@@ -8,7 +8,7 @@ import { WebsiteSettingsView } from "./WebsiteSettingsView";
 import { FaviconAndLogo } from "./settingsGroups/FaviconAndLogo";
 import { SocialMedia } from "./settingsGroups/SocialMedia";
 
-export const WebsiteSettings = () => {
+export const WebsiteSettings: React.FC = () => {
     return (
         <Fragment>
             <HasPermission name={"pb.settings"}>

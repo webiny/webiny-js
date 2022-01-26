@@ -7,6 +7,7 @@ import { Select } from "@webiny/ui/Select";
 import RenderElement from "../../../../render/components/Element";
 import useResponsiveClassName from "../../../../hooks/useResponsiveClassName";
 import Zoom from "./Zoom";
+import { PbPageData } from "~/types";
 
 const pageInnerWrapper = css({
     overflowY: "scroll",
@@ -49,12 +50,12 @@ const PagePreviewToolbar = styled("div")({
     }
 });
 
-type PagePreviewProps = {
-    page: Record<string, any>;
+interface PagePreviewProps {
+    page: PbPageData;
     getPageQuery: Function;
-};
+}
 
-const PagePreview = ({ page }: PagePreviewProps) => {
+const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
     const { pageElementRef, responsiveClassName } = useResponsiveClassName();
 
     return (

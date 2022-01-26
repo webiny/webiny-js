@@ -6,13 +6,20 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
+import { FormOnCancel, FormOnSubmit } from "@webiny/form/Form";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
 
 const menuFolderFormStyle = {
     color: "var(--mdc-theme-on-surface)",
     backgroundColor: "var(--mdc-theme-background) !important"
 };
 
-const FolderForm = ({ data, onSubmit, onCancel }) => {
+interface FolderFormProps {
+    data: MenuTreeItem;
+    onSubmit: FormOnSubmit;
+    onCancel: FormOnCancel;
+}
+const FolderForm: React.FC<FolderFormProps> = ({ data, onSubmit, onCancel }) => {
     return (
         <Elevation z={4} css={menuFolderFormStyle}>
             <Form data={data} onSubmit={onSubmit}>

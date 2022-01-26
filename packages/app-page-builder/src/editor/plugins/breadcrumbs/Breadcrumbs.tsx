@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilCallback, useRecoilSnapshot, useRecoilState, useRecoilValue } from "recoil";
-import { PbEditorElement } from "../../../types";
+import { PbEditorElement } from "~/types";
 import {
     activeElementAtom,
     elementByIdSelector,
@@ -18,7 +18,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
     const snapshot = useRecoilSnapshot();
     const lazyHighlight = useRecoilCallback(
         ({ set }) =>
-            async (id: string) => {
+            async (id: string): Promise<void> => {
                 if (highlightElementAtomValue) {
                     // Update the element that is currently highlighted
                     set(elementsAtom(highlightElementAtomValue), prevValue => {
@@ -44,17 +44,17 @@ const Breadcrumbs: React.FunctionComponent = () => {
     );
 
     const highlightElement = useCallback(
-        (id: string) => {
+        (id: string): void => {
             lazyHighlight(id);
         },
         [lazyHighlight]
     );
 
-    const activateElement = useCallback((id: string) => {
+    const activateElement = useCallback((id: string): void => {
         setActiveElementAtomValue(id);
     }, []);
 
-    const createBreadCrumbs = async (activeElement: PbEditorElement) => {
+    const createBreadCrumbs = async (activeElement: PbEditorElement): Promise<void> => {
         const list = [];
         let element = activeElement;
         while (element.parent) {
@@ -72,7 +72,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
         setItems(list.reverse());
     };
 
-    useEffect(() => {
+    useEffect((): void => {
         if (element) {
             createBreadCrumbs(element);
         }
