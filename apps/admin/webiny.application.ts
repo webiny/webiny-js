@@ -16,12 +16,10 @@ export default createAdminApplication({
             deploy: false
         }
     },
-    resources: {
-        bucket(config) {
-            config.versioning = {
-                enabled: true
-            };
-        }
+    config(app) {
+        app.bucket.config.versioning = {
+            enabled: true
+        };
     },
     beforeBuild() {
         console.log("BEFORE BUILD");

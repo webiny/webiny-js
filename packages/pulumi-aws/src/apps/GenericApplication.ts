@@ -1,8 +1,9 @@
-import { PulumiFn, LocalWorkspace } from "@pulumi/pulumi/automation";
+import { LocalWorkspace } from "@pulumi/pulumi/automation";
+import { PulumiApp } from "@webiny/pulumi-sdk";
 import { ApplicationConfig, ApplicationHook } from "./ApplicationConfig";
 
 export interface GenericApplicationConfig extends ApplicationConfig {
-    readonly pulumiProgram: PulumiFn;
+    app: PulumiApp;
 }
 
 interface StackArgs {
@@ -41,7 +42,7 @@ export class GenericApplication implements Readonly<ApplicationConfig> {
             {
                 projectName: this.config.name,
                 stackName: args.env,
-                program: this.config.pulumiProgram
+                program: () => this.config.app.run()
             },
             {
                 workDir: args.root,
@@ -51,8 +52,11 @@ export class GenericApplication implements Readonly<ApplicationConfig> {
                     description: this.config.description
                 },
                 secretsProvider: PULUMI_SECRETS_PROVIDER,
-                envVars: process.env,
-                pulumiHome: args.pulumiCli
+                pulumiHome: args.pulumiCli,
+                envVars: {
+                    // Add Pulumi CLI path to env variable, so the CLI would be properly resolved.
+                    PATH: `${args.pulumiCli};${process.env.PATH ?? ""}`
+                }
             }
         );
     }

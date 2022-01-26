@@ -66,6 +66,10 @@ export class PulumiApp {
         return module;
     }
 
+    public addHandler(handler: () => Promise<void> | void) {
+        this.handlers.push(handler);
+    }
+
     public getModule<TConfig, TModule>(def: PulumiAppModuleDefinition<TModule, TConfig>): TModule;
     public getModule<TConfig, TModule>(
         def: PulumiAppModuleDefinition<TModule, TConfig>,
@@ -102,15 +106,19 @@ export class PulumiApp {
     }
 }
 
-export interface PulumiAppModuleParams<TModule, TConfig> {
-    name: string;
-    run(app: PulumiApp, config: TConfig): TModule;
+export interface PulumiAppModuleCallback<TModule, TConfig> {
+    (this: void, app: PulumiApp, config: TConfig): TModule;
 }
 
-class PulumiAppModuleDefinition<TModule, TConfig> {
+export interface PulumiAppModuleParams<TModule, TConfig> {
+    name: string;
+    run: PulumiAppModuleCallback<TModule, TConfig>;
+}
+
+export class PulumiAppModuleDefinition<TModule, TConfig> {
     public readonly symbol = Symbol();
     public readonly name: string;
-    public readonly run: (app: PulumiApp, config: TConfig) => TModule;
+    public readonly run: PulumiAppModuleCallback<TModule, TConfig>;
     constructor(params: PulumiAppModuleParams<TModule, TConfig>) {
         this.name = params.name;
         this.run = params.run;
@@ -121,4 +129,23 @@ export function defineAppModule<TModule, TConfig = void>(
     params: PulumiAppModuleParams<TModule, TConfig>
 ) {
     return new PulumiAppModuleDefinition(params);
+}
+
+export interface CreateAppParams<TOutput extends Record<string, unknown>> {
+    name: string;
+    config(app: PulumiApp): TOutput;
+}
+
+export function defineApp<TOutput extends Record<string, unknown>>(
+    params: CreateAppParams<TOutput>
+) {
+    const appDef = class App extends PulumiApp {
+        constructor() {
+            super({ name: params.name });
+            const output = params.config(this);
+            Object.assign(this, output);
+        }
+    };
+
+    return appDef as new () => PulumiApp & TOutput;
 }
