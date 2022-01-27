@@ -34,6 +34,15 @@ const formFooterStyle = css`
     border-top: none;
 `;
 
+/**
+ * Override Icon styles which are messing up the svg icon.
+ */
+const accordionIconStyle = css`
+    &.mdc-button__icon {
+        fill: none;
+    }
+`;
+
 const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
 
 const PublishingWorkflowForm = () => {
@@ -74,6 +83,7 @@ const PublishingWorkflowForm = () => {
                                     icon={<WorkflowStepIcon />}
                                     title={t`Workflow steps`}
                                     description={workflowStepsDescription}
+                                    iconClassName={accordionIconStyle}
                                 >
                                     <Bind name={"steps"}>
                                         {({ value }) =>
@@ -100,6 +110,7 @@ const PublishingWorkflowForm = () => {
                                     icon={<WorkflowScopeIcon />}
                                     title={t`Scope`}
                                     description={t`Define the conditions when this workflow applies.`}
+                                    iconClassName={accordionIconStyle}
                                 >
                                     <WorkflowScope
                                         Bind={Bind}
