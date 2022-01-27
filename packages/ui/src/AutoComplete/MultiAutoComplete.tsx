@@ -1,5 +1,5 @@
 import * as React from "react";
-import Downshift, { ControllerStateAndHelpers } from "downshift";
+import Downshift, { ControllerStateAndHelpers, PropGetters } from "downshift";
 import MaterialSpinner from "react-spinner-material";
 import { Input } from "~/Input";
 import { Chips, Chip } from "../Chips";
@@ -105,6 +105,7 @@ function Spinner() {
 }
 
 const DEFAULT_PER_PAGE = 10;
+
 function paginateMultipleSelection(multipleSelection, limit, page, search) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
@@ -153,6 +154,23 @@ interface RenderOptionsParams
     options: Props["options"];
     unique: boolean;
 }
+
+interface OptionsListProps {
+    getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
+}
+
+const OptionsList: React.FC<OptionsListProps> = ({ getMenuProps, children }) => {
+    return (
+        <Elevation z={1}>
+            <ul
+                className={classNames("multi-autocomplete__options-list", listStyles)}
+                {...getMenuProps()}
+            >
+                {children}
+            </ul>
+        </Elevation>
+    );
+};
 
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
     static defaultProps = {
@@ -268,6 +286,19 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         const { options, isOpen, highlightedIndex, getMenuProps, getItemProps } = params;
         if (!isOpen) {
             return null;
+        }
+
+        /**
+         * Suggest user to start typing when there are no options available to choose from.
+         */
+        if (!this.state.inputValue && !options.length) {
+            return (
+                <OptionsList getMenuProps={getMenuProps}>
+                    <li>
+                        <Typography use={"body2"}>Start typing to find entry</Typography>
+                    </li>
+                </OptionsList>
+            );
         }
 
         if (!options.length) {
