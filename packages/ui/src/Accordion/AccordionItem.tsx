@@ -112,6 +112,10 @@ export type AccordionItemProps = {
      * For testing purpose
      */
     "data-testid"?: string;
+    /**
+     * Append a class name to Icon
+     */
+    iconClassName?: string;
 };
 
 const AccordionItem = (props: AccordionItemProps) => {
@@ -138,7 +142,7 @@ const AccordionItem = (props: AccordionItemProps) => {
             >
                 {props.icon && (
                     <ListItemGraphic>
-                        <Icon icon={props.icon} />
+                        <Icon icon={props.icon} className={props.iconClassName} />
                     </ListItemGraphic>
                 )}
 
