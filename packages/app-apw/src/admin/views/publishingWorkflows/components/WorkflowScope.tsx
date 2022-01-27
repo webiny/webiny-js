@@ -1,4 +1,6 @@
 import React from "react";
+import get from "lodash/get";
+import isEmpty from "lodash/isEmpty";
 import { css } from "emotion";
 import classNames from "classnames";
 import { Typography } from "@webiny/ui/Typography";
@@ -10,7 +12,7 @@ import { CheckboxWrapper, restGridStyles } from "./Styled";
 import { BindComponent } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
 import { validation } from "@webiny/validation";
-import { ApwWorkflowScopeTypes } from "~/types";
+import { ApwWorkflowScope, ApwWorkflowScopeTypes } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import PbScopeSettings from "./PbScopeSettings";
 
@@ -61,10 +63,13 @@ export const ListItemWithRemove: React.FC<ListItemWithRemoveProps> = ({ label, o
 
 interface WorkflowScopeProps {
     Bind: BindComponent;
-    type: ApwWorkflowScopeTypes;
+    value: ApwWorkflowScope;
 }
 
-function WorkflowScope({ Bind, type }: WorkflowScopeProps) {
+function WorkflowScope({ Bind, value }: WorkflowScopeProps) {
+    const type = get(value, "type");
+    const noPages = isEmpty(get(value, "data.pages"));
+    const noCategories = isEmpty(get(value, "data.categories"));
     return (
         <Stack space={6}>
             <Box>
@@ -76,7 +81,11 @@ function WorkflowScope({ Bind, type }: WorkflowScopeProps) {
                     </Select>
                 </Bind>
             </Box>
-            <Box>{type === ApwWorkflowScopeTypes.PB && <PbScopeSettings Bind={Bind} />}</Box>
+            <Box>
+                {type === ApwWorkflowScopeTypes.PB && (
+                    <PbScopeSettings Bind={Bind} runValidation={noPages && noCategories} />
+                )}
+            </Box>
         </Stack>
     );
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import noop from "lodash/noop";
 import { css } from "emotion";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { Typography } from "@webiny/ui/Typography";
@@ -11,6 +12,7 @@ import { Box, Stack } from "~/admin/components/Layout";
 import { ListItemWithCheckbox } from "~/admin/views/publishingWorkflows/components/ReviewersList";
 import { usePbCategories } from "~/admin/views/publishingWorkflows/hooks/usePbCategories";
 import { usePbPages } from "~/admin/views/publishingWorkflows/hooks/usePbPages";
+import { validation } from "@webiny/validation";
 
 const textStyle = css`
     color: var(--mdc-theme-text-secondary-on-background);
@@ -30,11 +32,9 @@ const tabStyles = css`
     }
 `;
 
-interface PbCategoriesProps {
-    Bind: BindComponent;
-}
+type PbCategoriesProps = PbScopeSettingsProps;
 
-const PbCategories: React.FC<PbCategoriesProps> = ({ Bind }) => {
+const PbCategories: React.FC<PbCategoriesProps> = ({ Bind, runValidation }) => {
     const { categories, loading } = usePbCategories();
     return (
         <Stack space={3} padding={6}>
@@ -45,7 +45,10 @@ const PbCategories: React.FC<PbCategoriesProps> = ({ Bind }) => {
                 >{`This workflow will apply to all pages inside the selected categories, unless a page has a specific workflow applied to it.`}</Typography>
             </Box>
             <Box>
-                <Bind name={"scope.data.categories"}>
+                <Bind
+                    name={"scope.data.categories"}
+                    validators={runValidation ? validation.create("minLength:1") : noop}
+                >
                     <CheckboxGroup>
                         {({ getValue, onChange }) => (
                             <Scrollbar style={{ width: "100%", height: "160px" }}>
@@ -70,11 +73,9 @@ const PbCategories: React.FC<PbCategoriesProps> = ({ Bind }) => {
     );
 };
 
-interface PbPagesListProps {
-    Bind: BindComponent;
-}
+type PbPagesListProps = PbScopeSettingsProps;
 
-const PbPagesList: React.FC<PbPagesListProps> = ({ Bind }) => {
+const PbPagesList: React.FC<PbPagesListProps> = ({ Bind, runValidation }) => {
     const { loading, setQuery, options } = usePbPages();
     return (
         <Stack space={6} padding={6}>
@@ -85,7 +86,10 @@ const PbPagesList: React.FC<PbPagesListProps> = ({ Bind }) => {
                 >{`This workflow applies to specific pages only.`}</Typography>
             </Box>
             <Box>
-                <Bind name={"scope.data.pages"}>
+                <Bind
+                    name={"scope.data.pages"}
+                    validators={runValidation ? validation.create("minLength:1") : noop}
+                >
                     {bind => (
                         <MultiAutoComplete
                             {...bind}
@@ -105,18 +109,19 @@ const PbPagesList: React.FC<PbPagesListProps> = ({ Bind }) => {
 };
 
 interface PbScopeSettingsProps {
-    Bind: any;
+    Bind: BindComponent;
+    runValidation: boolean;
 }
 
-const PbScopeSettings: React.FC<PbScopeSettingsProps> = ({ Bind }) => {
+const PbScopeSettings: React.FC<PbScopeSettingsProps> = ({ Bind, runValidation }) => {
     return (
         <Elevation z={1}>
             <Tabs className={tabStyles}>
                 <Tab label={"Page Categories"}>
-                    <PbCategories Bind={Bind} />
+                    <PbCategories Bind={Bind} runValidation={runValidation} />
                 </Tab>
                 <Tab label={"Specific Pages"}>
-                    <PbPagesList Bind={Bind} />
+                    <PbPagesList Bind={Bind} runValidation={runValidation} />
                 </Tab>
             </Tabs>
         </Elevation>

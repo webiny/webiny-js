@@ -112,10 +112,7 @@ const PublishingWorkflowForm = () => {
                                     description={t`Define the conditions when this workflow applies.`}
                                     iconClassName={accordionIconStyle}
                                 >
-                                    <WorkflowScope
-                                        Bind={Bind}
-                                        type={get(data, "scope.type", null)}
-                                    />
+                                    <WorkflowScope Bind={Bind} value={get(data, "scope")} />
                                 </AccordionItem>
                             </Accordion>
                         </SimpleFormContent>
