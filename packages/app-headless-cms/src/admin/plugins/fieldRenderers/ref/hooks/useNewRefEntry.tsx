@@ -1,6 +1,9 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Context as ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { CmsEditorField } from "~/types";
+import MissingEntryHelpText, {
+    ReferenceMultipleModelsHelpText
+} from "../components/MissingEntryHelpText";
 
 interface UseNewRefEntryParams {
     field: CmsEditorField;
@@ -8,12 +11,13 @@ interface UseNewRefEntryParams {
 
 interface UseNewRefEntry {
     renderNewEntryModal: boolean;
-    renderedInPreviewTab: boolean;
     refModelId: string;
+    helpText: React.ReactElement;
 }
 
 export const useNewRefEntry = ({ field }: UseNewRefEntryParams): UseNewRefEntry => {
-    const refModelId = field.settings.models[0].modelId;
+    const [{ modelId: refModelId }] = field.settings.models;
+    const referenceMultipleModels = field.settings.models.length > 1;
 
     const contentEntriesContextValue = useContext(ContentEntriesContext);
 
@@ -26,18 +30,32 @@ export const useNewRefEntry = ({ field }: UseNewRefEntryParams): UseNewRefEntry 
      */
     const renderedInPreviewTab = contentEntriesContextValue === null;
 
+    /**
+     * Set "renderNewEntryModal" value.
+     */
     let renderNewEntryModal;
 
     if (renderedInPreviewTab) {
+        renderNewEntryModal = false;
+    } else if (referenceMultipleModels) {
         renderNewEntryModal = false;
     } else {
         const { insideDialog } = contentEntriesContextValue;
         renderNewEntryModal = !insideDialog;
     }
+    /**
+     * Set "helpText" value.
+     */
+    let helpText = null;
+    if (referenceMultipleModels) {
+        helpText = <ReferenceMultipleModelsHelpText />;
+    } else {
+        helpText = <MissingEntryHelpText refModelId={refModelId} />;
+    }
 
     return {
         renderNewEntryModal,
-        renderedInPreviewTab,
-        refModelId
+        refModelId,
+        helpText
     };
 };
