@@ -15,8 +15,6 @@ type Context = SecurityContext;
 export interface AuthenticatorConfig {
     // Okta issuer endpoint
     issuer: string;
-    // Okta client ID
-    clientId: string;
     // Create an identity object using the verified idToken
     getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
 }

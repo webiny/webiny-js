@@ -39,9 +39,9 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
             /**
              * Append new selected entry at the end of existing entries.
              */
-            onChange([...entries, { ...value, modelId: refModelId }]);
+            onChange([...entries, value]);
         },
-        [refModelId, onChange, entries]
+        [onChange, entries]
     );
 
     if (renderNewEntryModal) {
