@@ -1,15 +1,14 @@
 import React from "react";
 import { css } from "emotion";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
-import { Box, Stack } from "~/admin/components/Layout";
 import { Typography } from "@webiny/ui/Typography";
 import { CheckboxGroup } from "@webiny/ui/Checkbox";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
-import { ListItemWithCheckbox } from "~/admin/views/publishingWorkflows/components/ReviewersList";
-import { InputField } from "~/admin/views/publishingWorkflows/components/Styled";
+import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { BindComponent } from "@webiny/form";
-import { ListItemWithRemove } from "./WorkflowScope";
+import { Box, Stack } from "~/admin/components/Layout";
+import { ListItemWithCheckbox } from "~/admin/views/publishingWorkflows/components/ReviewersList";
 import { usePbCategories } from "~/admin/views/publishingWorkflows/hooks/usePbCategories";
 import { usePbPages } from "~/admin/views/publishingWorkflows/hooks/usePbPages";
 
@@ -75,8 +74,8 @@ interface PbPagesListProps {
     Bind: BindComponent;
 }
 
-const PbPagesList: React.FC<PbPagesListProps> = () => {
-    const { pages, loading, query, setQuery } = usePbPages();
+const PbPagesList: React.FC<PbPagesListProps> = ({ Bind }) => {
+    const { loading, setQuery, options } = usePbPages();
     return (
         <Stack space={6} padding={6}>
             <Box>
@@ -85,36 +84,22 @@ const PbPagesList: React.FC<PbPagesListProps> = () => {
                     className={textStyle}
                 >{`This workflow applies to specific pages only.`}</Typography>
             </Box>
-            <Stack space={3.5}>
-                <Box>
-                    <InputField
-                        type={"text"}
-                        placeholder={"Search pages"}
-                        value={query}
-                        onChange={({ target: { value } }) => setQuery(value)}
-                    />
-                </Box>
-                <Box>
-                    <Scrollbar
-                        style={{
-                            width: "100%",
-                            height: "180px"
-                        }}
-                    >
-                        {loading ? (
-                            <Typography use={"overline"}>Loading pages...</Typography>
-                        ) : (
-                            pages.map((page, index) => (
-                                <ListItemWithRemove
-                                    key={index}
-                                    label={page.title}
-                                    order={`#${index + 1}.`}
-                                />
-                            ))
-                        )}
-                    </Scrollbar>
-                </Box>
-            </Stack>
+            <Box>
+                <Bind name={"scope.data.pages"}>
+                    {bind => (
+                        <MultiAutoComplete
+                            {...bind}
+                            label={"Pages"}
+                            options={options}
+                            useMultipleSelectionList={true}
+                            useSimpleValues={false}
+                            loading={loading}
+                            textProp={"title"}
+                            onInput={search => setQuery(search)}
+                        />
+                    )}
+                </Bind>
+            </Box>
         </Stack>
     );
 };

@@ -1,15 +1,15 @@
 import { useMemo, useState, useEffect } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
+import pick from "lodash/pick";
 import debounce from "lodash/debounce";
 import { LIST_PAGES } from "./graphql";
-import { PbPage } from "~/types";
 
 interface UsePbPagesResult {
-    pages: PbPage[];
     loading: boolean;
     query: string;
     setQuery: (query: string) => void;
+    options: Record<string, any>[];
 }
 
 export const usePbPages = (): UsePbPagesResult => {
@@ -34,8 +34,11 @@ export const usePbPages = (): UsePbPagesResult => {
         }
     });
 
+    const pagesList = get(data, "pageBuilder.listPages.data", []);
+    const options = useMemo(() => pagesList.map(page => pick(page, ["title", "id"])), [pagesList]);
+
     return {
-        pages: get(data, "pageBuilder.listPages.data", []),
+        options,
         loading,
         query,
         setQuery
