@@ -52,6 +52,7 @@ const EntryForm = ({ onCreate }) => {
             onSubmit={onCreate}
             onForm={form => setFormRef(form)}
             entry={{}}
+            addEntryToListCache={false}
         />
     );
 };
@@ -109,13 +110,21 @@ const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, 
 
     const onCreate = useCallback(
         entry => {
-            onChange(entry);
+            onChange({
+                ...entry,
+                /*
+                 * Format data for AutoComplete.
+                 */
+                published: get(entry, "meta.status") === "published",
+                modelId: contentModel.modelId,
+                modelName: contentModel.name
+            });
             /* 
             Close the modal
              */
             setOpen(false);
         },
-        [modelId, onChange]
+        [onChange, contentModel]
     );
 
     if (!contentModel) {
