@@ -10,12 +10,20 @@ const t = i18n.ns("app-headless-cms/admin/fields/ref");
 const missingEntryLabel = t`If you can't find the intended reference value in the target model,
          please close this dialog and populate the {newEntryLink} in the target model first.`;
 
+const referenceMultipleModelsLabel = t`The creation of reference values from within this view is only supported
+ when a single reference model is selected. To reference values from multiple models
+ please make sure the referenced values exist before setting the reference`;
+
 const HelpTextTypography = styled(Typography)`
     & {
         display: inline-block;
         color: var(--mdc-theme-text-secondary-on-background) !important;
     }
 `;
+
+export const ReferenceMultipleModelsHelpText = () => {
+    return <HelpTextTypography use={"caption"}>{referenceMultipleModelsLabel}</HelpTextTypography>;
+};
 
 const MissingEntryHelpText: React.FC<{ refModelId: string }> = ({ refModelId }) => {
     return (

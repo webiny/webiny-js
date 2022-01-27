@@ -3,9 +3,11 @@ import debounce from "lodash/debounce";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
+import { useNewRefEntry } from "../hooks/useNewRefEntry";
 import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
+import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -28,6 +30,34 @@ function ContentEntriesAutocomplete({ bind, field }) {
             here: <Link to={link}>{t`here`}</Link>
         });
     }
+    const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
+
+    /*
+     * Wrap AutoComplete input in NewRefEntry modal.
+     */
+    if (renderNewEntryModal) {
+        return (
+            <NewRefEntryFormDialog modelId={refModelId} onChange={entry => onChange(entry, entry)}>
+                <AutoComplete
+                    {...bind}
+                    renderItem={renderItem}
+                    onChange={onChange}
+                    loading={loading}
+                    value={value ? value.id : null}
+                    options={options}
+                    label={field.label}
+                    description={
+                        <>
+                            {field.helpText}
+                            {entryInfo}
+                        </>
+                    }
+                    onInput={debounce(search => setSearch(search), 250)}
+                    noResultFound={<NewEntryButton />}
+                />
+            </NewRefEntryFormDialog>
+        );
+    }
 
     return (
         <AutoComplete
@@ -45,6 +75,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
                 </>
             }
             onInput={debounce(search => setSearch(search), 250)}
+            noResultFound={helpText}
         />
     );
 }
