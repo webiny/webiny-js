@@ -11,8 +11,8 @@ const missingEntryLabel = t`If you can't find the intended reference value in th
          please close this dialog and populate the {newEntryLink} in the target model first.`;
 
 const referenceMultipleModelsLabel = t`The creation of reference values from within this view is only supported
- when a single reference model is selected. To reference values from multiple models
- please make sure the referenced values exist before setting the reference`;
+ when a single reference model is selected. To reference values from multiple models,
+ please make sure the referenced values exist before setting the reference.`;
 
 const HelpTextTypography = styled(Typography)`
     & {
