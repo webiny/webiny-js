@@ -23,6 +23,7 @@ import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 
 import { css } from "emotion";
 import { ListItemGraphic } from "../List";
+
 const style = {
     pagination: {
         bar: css({
@@ -101,7 +102,14 @@ function Spinner() {
 }
 
 const DEFAULT_PER_PAGE = 10;
-function paginateMultipleSelection(multipleSelection, limit, page, search) {
+
+function paginateMultipleSelection(
+    multipleSelection: Record<string, any> | Record<string, any>[],
+    limit: number,
+    page: number,
+    search: string,
+    textProp: string
+) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
         ? multipleSelection.map((item, index) => ({ ...item, index }))
@@ -110,8 +118,8 @@ function paginateMultipleSelection(multipleSelection, limit, page, search) {
     if (typeof search === "string" && search) {
         data = data.filter(item => {
             return (
-                typeof item.name === "string" &&
-                item.name.toLowerCase().includes(search.toLowerCase())
+                typeof item[textProp] === "string" &&
+                item[textProp].toLowerCase().includes(search.toLowerCase())
             );
         });
     }
@@ -319,7 +327,8 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
             disabled,
             useMultipleSelectionList,
             description,
-            renderListItemLabel
+            renderListItemLabel,
+            textProp
         } = this.props;
 
         if (useMultipleSelectionList) {
@@ -327,7 +336,8 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                 value,
                 DEFAULT_PER_PAGE,
                 this.state.multipleSelectionPage,
-                this.state.multipleSelectionSearch
+                this.state.multipleSelectionSearch,
+                textProp
             );
 
             return (
