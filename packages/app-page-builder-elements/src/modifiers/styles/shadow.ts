@@ -3,7 +3,7 @@ import { ElementStylesModifier } from "~/types";
 const shadow: ElementStylesModifier = ({ element }) => {
     const { shadow } = element.data.settings;
     if (!shadow) {
-        return;
+        return null;
     }
 
     const { horizontal, vertical, blur, spread, color } = shadow;

@@ -354,11 +354,12 @@ function FileManagerView(props: FileManagerViewProps) {
         setTimeout(() => showSnackbar(t`File upload complete.`), 750);
         if (typeof onUploadCompletion === "function") {
             // We wait 750ms, just for everything to settle down a bit.
-            setTimeout(() => {
+            return setTimeout(() => {
                 onUploadCompletion(uploadedFiles);
                 onClose();
             }, 750);
         }
+        return null;
     };
 
     const renderUploadFileAction = useCallback(

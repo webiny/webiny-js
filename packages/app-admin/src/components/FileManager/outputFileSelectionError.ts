@@ -26,4 +26,5 @@ export default errors => {
         case "multipleNotAllowed":
             return "Only one file allowed.";
     }
+    return null;
 };

@@ -12,7 +12,7 @@ export default () => {
             }
 
             if (security.getIdentity()) {
-                return;
+                return null;
             }
 
             // We assume that all other authorization plugins have already been executed.

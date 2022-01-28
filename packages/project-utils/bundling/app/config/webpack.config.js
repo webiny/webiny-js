@@ -539,6 +539,7 @@ module.exports = function (webpackEnv, { paths, options }) {
             {
                 loader: require.resolve("css-loader"),
                 options: {
+                    esModule: false,
                     sourceMap: isEnvProduction && shouldUseSourceMap,
                     // for some wacky reason css-loader tries to resolve inline images
                     // like url("data:image/svg+xml;base64,PHN2ZyB4d3dy53My5...")

@@ -13,7 +13,7 @@ export const createValidators = validation => {
             );
 
             if (!validatorPlugin || typeof validatorPlugin.validator.validate !== "function") {
-                return;
+                return null;
             }
 
             return async value => {

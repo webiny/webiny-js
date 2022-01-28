@@ -4,7 +4,7 @@ const text: ElementStylesModifier = ({ element, theme }) => {
     const { text } = element.data;
     // Here we have data and display modes in the same object.
     if (!text) {
-        return;
+        return null;
     }
 
     return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {

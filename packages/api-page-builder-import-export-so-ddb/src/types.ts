@@ -10,12 +10,6 @@ export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | Entity
 
 export type Attributes = Record<string, AttributeDefinition>;
 
-export interface PartitionKeyOptions {
-    tenant: string;
-    locale: string;
-    id?: string;
-}
-
 export interface CreateStorageOperations {
     (params: {
         documentClient: DocumentClient;

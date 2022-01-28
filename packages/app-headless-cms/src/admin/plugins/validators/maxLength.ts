@@ -6,11 +6,12 @@ export default {
     name: "cms-model-field-validator-max-length",
     validator: {
         name: "maxLength",
-        validate: (value, validator) => {
+        validate: async (value, validator) => {
             const maxLengthValue = validator.settings.value;
-            if (typeof maxLengthValue !== "undefined") {
-                return validation.validate(value, `maxLength:${maxLengthValue}`);
+            if (typeof maxLengthValue === "undefined") {
+                return true;
             }
+            return validation.validate(value, `maxLength:${maxLengthValue}`);
         }
     }
 } as CmsModelFieldValidatorPlugin;

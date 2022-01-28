@@ -1,9 +1,9 @@
 import * as React from "react";
-import Downshift from "downshift";
-import { Input } from "../Input";
+import Downshift, { ControllerStateAndHelpers, PropGetters } from "downshift";
+import { Input } from "~/Input";
 import classNames from "classnames";
-import { Elevation } from "../Elevation";
-import { Typography } from "../Typography";
+import { Elevation } from "~/Elevation";
+import { Typography } from "~/Typography";
 import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
@@ -41,6 +41,9 @@ export type Props = AutoCompleteBaseProps & {
 
     /* If true, will show a loading spinner on the right side of the input. */
     loading?: boolean;
+
+    /* A component that renders supporting UI in case of no result found. */
+    noResultFound?: Function;
 };
 
 type State = {
@@ -51,14 +54,50 @@ function Spinner() {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
 
+interface RenderOptionsParams
+    extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
+    options: Props["options"];
+    placement: Props["placement"];
+}
+
+interface OptionsListProps {
+    placement: Placement;
+    getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
+}
+
+const OptionsList: React.FC<OptionsListProps> = ({ placement, getMenuProps, children }) => {
+    return (
+        <Elevation
+            z={1}
+            className={classNames({
+                [menuStyles]: placement === Placement.top
+            })}
+        >
+            <ul
+                className={classNames("autocomplete__options-list", listStyles)}
+                {...getMenuProps()}
+            >
+                {children}
+            </ul>
+        </Elevation>
+    );
+};
+
 class AutoComplete extends React.Component<Props, State> {
     static defaultProps = {
         valueProp: "id",
         textProp: "name",
         options: [],
         placement: Placement.bottom,
+        /**
+         * We cast this as AutoComplete because renderItem() is executed via .call() where AutoComplete instance is assigned as this.
+         */
         renderItem(item: any) {
-            return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
+            return (
+                <Typography use={"body2"}>
+                    {getOptionText(item, (this as unknown as AutoComplete).props)}
+                </Typography>
+            );
         }
     };
 
@@ -105,9 +144,21 @@ class AutoComplete extends React.Component<Props, State> {
         getMenuProps,
         getItemProps,
         placement
-    }: any) {
+    }: RenderOptionsParams) {
         if (!isOpen) {
             return null;
+        }
+        /**
+         * Suggest user to start typing when there are no options available to choose from.
+         */
+        if (!this.state.inputValue && !options.length) {
+            return (
+                <OptionsList placement={placement} getMenuProps={getMenuProps}>
+                    <li>
+                        <Typography use={"body2"}>Start typing to find entry</Typography>
+                    </li>
+                </OptionsList>
+            );
         }
 
         const { renderItem } = this.props;
@@ -129,64 +180,47 @@ class AutoComplete extends React.Component<Props, State> {
 
         if (!filtered.length) {
             return (
-                <Elevation
-                    z={1}
-                    className={classNames({
-                        [menuStyles]: placement === Placement.top
-                    })}
-                >
-                    <ul
-                        className={classNames("autocomplete__options-list", listStyles)}
-                        {...getMenuProps()}
-                    >
-                        <li>
-                            <Typography use={"body2"}>No results.</Typography>
-                        </li>
-                    </ul>
-                </Elevation>
+                <OptionsList placement={placement} getMenuProps={getMenuProps}>
+                    <li>
+                        <Typography use={"body2"}>No results.</Typography>
+                        {this.props.noResultFound}
+                    </li>
+                </OptionsList>
             );
         }
 
         return (
-            <Elevation z={1} className={classNames({ [menuStyles]: placement === Placement.top })}>
-                <ul
-                    className={classNames("autocomplete__options-list", listStyles)}
-                    {...getMenuProps()}
-                >
-                    {filtered.map((item, index) => {
-                        const itemValue = getOptionValue(item, this.props);
+            <OptionsList placement={placement} getMenuProps={getMenuProps}>
+                {filtered.map((item, index) => {
+                    const itemValue = getOptionValue(item, this.props);
 
-                        // Base classes.
-                        const itemClassNames = {
-                            [suggestionList]: true,
-                            highlighted: highlightedIndex === index,
-                            selected: false
-                        };
+                    // Base classes.
+                    const itemClassNames = {
+                        [suggestionList]: true,
+                        highlighted: highlightedIndex === index,
+                        selected: false
+                    };
 
-                        // Add "selected" class if the item is selected.
-                        if (
-                            selectedItem &&
-                            getOptionValue(selectedItem, this.props) === itemValue
-                        ) {
-                            itemClassNames.selected = true;
-                        }
+                    // Add "selected" class if the item is selected.
+                    if (selectedItem && getOptionValue(selectedItem, this.props) === itemValue) {
+                        itemClassNames.selected = true;
+                    }
 
-                        // Render the item.
-                        return (
-                            <li
-                                key={itemValue}
-                                {...getItemProps({
-                                    index,
-                                    item,
-                                    className: classNames(itemClassNames)
-                                })}
-                            >
-                                {renderItem.call(this, item, index)}
-                            </li>
-                        );
-                    })}
-                </ul>
-            </Elevation>
+                    // Render the item.
+                    return (
+                        <li
+                            key={itemValue}
+                            {...getItemProps({
+                                index,
+                                item,
+                                className: classNames(itemClassNames)
+                            })}
+                        >
+                            {renderItem.call(this, item, index)}
+                        </li>
+                    );
+                })}
+            </OptionsList>
         );
     }
 
@@ -282,7 +316,11 @@ class AutoComplete extends React.Component<Props, State> {
                             />
                             {!otherInputProps.disabled &&
                                 !otherInputProps.readOnly &&
-                                this.renderOptions({ ...rest, options, placement })}
+                                this.renderOptions({
+                                    ...rest,
+                                    options,
+                                    placement
+                                })}
                         </div>
                     )}
                 </Downshift>

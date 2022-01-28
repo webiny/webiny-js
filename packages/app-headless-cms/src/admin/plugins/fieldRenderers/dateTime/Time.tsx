@@ -26,7 +26,7 @@ export const Time: React.FC<Props> = props => {
             bind={{
                 ...bind,
                 value: time,
-                onChange: (value: string) => {
+                onChange: async (value: string): Promise<void> => {
                     if (!value) {
                         if (bind.value) {
                             return;

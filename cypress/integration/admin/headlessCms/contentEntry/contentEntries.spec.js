@@ -91,6 +91,9 @@ describe("Headless CMS - Content Entries", () => {
                     });
             });
 
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
+
             // Publish entry
             cy.findByText(/save & publish/i).click();
             cy.findByTestId("cms-confirm-save-and-publish").within(() => {
@@ -122,6 +125,9 @@ describe("Headless CMS - Content Entries", () => {
                         cy.findByText(/\(v2\)/i).should("exist");
                     });
             });
+
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
 
             // Publish entry
             cy.findByText(/save & publish/i).click();

@@ -6,10 +6,10 @@ export default (): CmsModelFieldValidatorPlugin => ({
     name: "cms-model-field-validator-date-lte",
     validator: {
         name: "dateLte",
-        validate: (value, validator) => {
+        validate: async (value, validator) => {
             const { value: lteValue, type } = validator.settings;
             if (typeof lteValue === "undefined") {
-                return;
+                return true;
             } else if (type === "time") {
                 return validation.validate(value, `timeLte:${lteValue}`);
             }

@@ -161,7 +161,9 @@ export interface Group {
     webinyVersion: string;
 }
 
-export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions" | "system">;
+export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions"> & {
+    system?: boolean;
+};
 
 export interface GetGroupParams {
     where: GetGroupWhere;

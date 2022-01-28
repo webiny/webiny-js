@@ -7,13 +7,6 @@ type Context = SecurityContext & TenancyContext;
 
 export default new GraphQLSchemaPlugin<Context>({
     typeDefs: /* GraphQL */ `
-        interface SecurityIdentity {
-            id: ID!
-            type: String!
-            displayName: String!
-            permissions: [JSON!]!
-        }
-
         type SecurityIdentityLoginResponse {
             data: SecurityIdentity
             error: SecurityError

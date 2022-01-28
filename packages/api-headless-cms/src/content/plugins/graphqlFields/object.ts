@@ -39,10 +39,16 @@ const typeFromField = ({
     const replace = new RegExp(`${mTypeName}_`, "g");
 
     for (const f of fields) {
-        const { fields, typeDefs } =
+        const result =
             typeOfType === "type"
                 ? renderField({ field: f, type, model, fieldTypePlugins })
                 : renderInputField({ field: f, model, fieldTypePlugins });
+
+        if (!result) {
+            continue;
+        }
+
+        const { fields, typeDefs } = result;
 
         typeFields.push(fields.replace(replace, `${fieldTypeName}_`));
         if (typeDefs) {

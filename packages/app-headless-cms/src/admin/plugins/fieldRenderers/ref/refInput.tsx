@@ -2,6 +2,7 @@ import React from "react";
 import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import ContentEntriesAutocomplete from "./components/ContentEntriesAutocomplete";
+import { NewRefEntryDialogContextProvider } from "./hooks/useNewRefEntryDialog";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -17,7 +18,15 @@ const plugin: CmsEditorFieldRendererPlugin = {
         },
         render(props) {
             const Bind = props.getBind();
-            return <Bind>{bind => <ContentEntriesAutocomplete {...props} bind={bind} />}</Bind>;
+            return (
+                <Bind>
+                    {bind => (
+                        <NewRefEntryDialogContextProvider>
+                            <ContentEntriesAutocomplete {...props} bind={bind} />
+                        </NewRefEntryDialogContextProvider>
+                    )}
+                </Bind>
+            );
         }
     }
 };
