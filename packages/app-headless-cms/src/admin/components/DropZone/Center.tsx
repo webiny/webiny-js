@@ -1,7 +1,6 @@
 import React, { CSSProperties } from "react";
 import styled from "@emotion/styled";
-import Droppable from "./../Droppable";
-import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
+import { Droppable, OnDropCallable } from "./../Droppable";
 
 // @ts-ignore
 const Container = styled("div")(({ isOver }: { isOver: boolean }) => ({
@@ -28,16 +27,16 @@ const Add = styled("div")(({ isOver }: { isOver: boolean }) => ({
     color: isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)"
 }));
 
-type Props = {
+interface CenterProps {
     type?: string;
-    onDrop(item: DragSource): void;
+    onDrop: OnDropCallable;
     children: React.ReactNode;
     active?: boolean;
     highlight?: boolean;
     style?: CSSProperties;
-};
+}
 
-export default function Center({ onDrop, children, style }: Props) {
+const Center: React.FC<CenterProps> = ({ onDrop, children, style }) => {
     return (
         <Droppable onDrop={onDrop}>
             {({ isOver, drop }) => (
@@ -53,4 +52,6 @@ export default function Center({ onDrop, children, style }: Props) {
             )}
         </Droppable>
     );
-}
+};
+
+export default Center;

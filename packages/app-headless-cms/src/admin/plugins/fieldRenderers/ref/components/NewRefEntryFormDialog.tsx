@@ -21,7 +21,7 @@ import { useQuery } from "~/admin/hooks";
 import { GET_CONTENT_MODEL } from "~/admin/graphql/contentModels";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { useNewRefEntryDialog } from "../hooks/useNewRefEntryDialog";
-import { FormOnSubmit } from "@webiny/form/Form";
+import { CmsEditorContentEntry } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -32,11 +32,11 @@ const dialogContentStyles = css`
 const dialogContainerStyles = css`
     /*
 * By default, a Dialog component has the "z-index" value of 20.
-* As we are rendering the content entry form in a "Dialog", the File Manager view triggered by a "file" field 
+* As we are rendering the content entry form in a "Dialog", the File Manager view triggered by a "file" field
 * will render below the source form, rendering it useless for the user.
 *
 * To fix that issue, we're setting the "z-index" CSS property for this particular Dialog to less than 18,
-* which is the "z-index" value assigned to File Manager view, so that it will render below the File Manager view as expected.  
+* which is the "z-index" value assigned to File Manager view, so that it will render below the File Manager view as expected.
 */
 
     &.mdc-dialog {
@@ -45,7 +45,7 @@ const dialogContainerStyles = css`
 `;
 
 interface EntryFormProps {
-    onCreate: FormOnSubmit;
+    onCreate: (entry: CmsEditorContentEntry) => void;
 }
 const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     const { setFormRef, contentModel } = useContentEntry();
@@ -56,11 +56,12 @@ const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
             onSubmit={onCreate}
             onForm={form => setFormRef(form)}
             entry={{}}
+            addEntryToListCache={false}
         />
     );
 };
 
-const DialogSaveButton: React.FC = () => {
+const DialogSaveButton = () => {
     const { form } = useContentEntry();
 
     return <DialogButton onClick={() => form.current.submit()}>{t`Save`}</DialogButton>;
@@ -70,8 +71,7 @@ const DefaultButton = styled(ButtonDefault)`
     margin-left: 32px;
 `;
 
-// TODO @ts-refactor verify that this component is not used
-export const NewEntryButton: React.FC = () => {
+export const NewEntryButton = () => {
     const { setOpen } = useNewRefEntryDialog();
     return (
         <DefaultButton small={true} onClick={() => setOpen(true)}>
@@ -84,7 +84,7 @@ export const NewEntryButton: React.FC = () => {
 interface NewRefEntryProps {
     modelId: string;
     children: React.ReactElement;
-    onChange: Function;
+    onChange: (entry: CmsEditorContentEntry) => void;
 }
 
 const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, onChange }) => {
@@ -113,14 +113,22 @@ const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, 
     const hideDialog = useCallback(() => setOpen(false), []);
 
     const onCreate = useCallback(
-        entry => {
-            onChange(entry);
-            /* 
+        (entry: CmsEditorContentEntry) => {
+            onChange({
+                ...entry,
+                /*
+                 * Format data for AutoComplete.
+                 */
+                published: get(entry, "meta.status") === "published",
+                modelId: contentModel.modelId,
+                modelName: contentModel.name
+            });
+            /*
             Close the modal
              */
             setOpen(false);
         },
-        [modelId, onChange]
+        [onChange, contentModel]
     );
 
     if (!contentModel) {

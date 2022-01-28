@@ -6,7 +6,7 @@ export type IconProps = {
     /**
      * SvgComponent containing the svg icon
      */
-    icon: React.ReactElement<any>;
+    icon: React.ReactElement;
 
     /**
      * Optional onclick handler
@@ -35,11 +35,8 @@ const webinyIcon = css(
 
 /**
  * Use Icon component to display an icon.
- * @param props
- * @returns {*}
- * @constructor
  */
-const Icon = (props: IconProps) => {
+const Icon: React.FC<IconProps> = props => {
     return React.cloneElement(props.icon, {
         "data-testid": props["data-testid"],
         className: classNames("mdc-button__icon webiny-ui-icon", webinyIcon, props.className),

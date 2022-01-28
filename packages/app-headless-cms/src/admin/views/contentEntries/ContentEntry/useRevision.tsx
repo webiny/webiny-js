@@ -21,19 +21,19 @@ import {
 } from "~/admin/graphql/contentEntries";
 
 interface CreateRevisionHandler {
-    (): Promise<void>;
+    (id?: string): Promise<void>;
 }
 interface EditRevisionHandler {
-    (): void;
+    (id?: string): void;
 }
 interface DeleteRevisionHandler {
-    (): Promise<void>;
+    (id?: string): Promise<void>;
 }
 interface PublishRevisionHandler {
-    (): Promise<void>;
+    (id?: string): Promise<void>;
 }
 interface UnpublishRevisionHandler {
-    (): Promise<void>;
+    (id?: string): Promise<void>;
 }
 interface RequestReviewHandler {
     (id?: string): Promise<void>;
@@ -92,44 +92,52 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
     } = useHandlers<UseRevisionHandlers>(
         { entry },
         {
-            createRevision: (): CreateRevisionHandler => async (): Promise<void> => {
-                setLoading(true);
-                const { data: res } = await client.mutate({
-                    mutation: CREATE_REVISION,
-                    variables: {
-                        revision: revision.id
-                    },
-                    update(cache, { data }) {
-                        const newRevision = data.content.data;
+            createRevision:
+                (): CreateRevisionHandler =>
+                async (id): Promise<void> => {
+                    setLoading(true);
+                    const { data: res } = await client.mutate({
+                        mutation: CREATE_REVISION,
+                        variables: {
+                            revision: id || revision.id
+                        },
+                        update(cache, { data }) {
+                            const newRevision = data.content.data;
 
-                        GQLCache.updateLatestRevisionInListCache(
-                            contentModel,
-                            cache,
-                            newRevision,
-                            listQueryVariables
-                        );
-                        GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
+                            GQLCache.updateLatestRevisionInListCache(
+                                contentModel,
+                                cache,
+                                newRevision,
+                                listQueryVariables
+                            );
+                            GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
+                        }
+                    });
+
+                    setLoading(false);
+
+                    const { data, error } = res.content;
+
+                    if (error) {
+                        return showSnackbar(error.message);
                     }
-                });
 
-                setLoading(false);
-
-                const { data, error } = res.content;
-
-                if (error) {
-                    return showSnackbar(error.message);
-                }
-
-                history.push(`/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`);
-            },
-            editRevision: (): EditRevisionHandler => (): void => {
-                history.push(
-                    `/cms/content-entries/${modelId}/?id=${encodeURIComponent(revision.id)}`
-                );
-            },
+                    history.push(
+                        `/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`
+                    );
+                },
+            editRevision:
+                (): EditRevisionHandler =>
+                (id): void => {
+                    history.push(
+                        `/cms/content-entries/${modelId}/?id=${encodeURIComponent(
+                            id || revision.id
+                        )}`
+                    );
+                },
             deleteRevision:
                 ({ entry }): DeleteRevisionHandler =>
-                async (): Promise<void> => {
+                async (id): Promise<void> => {
                     setLoading(true);
                     await client.mutate<
                         CmsEntryDeleteMutationResponse,
@@ -137,7 +145,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                     >({
                         mutation: DELETE_REVISION,
                         variables: {
-                            revision: revision.id
+                            revision: id || revision.id
                         },
                         update: (cache, { data }) => {
                             const { error } = data.content;
@@ -170,14 +178,16 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
                     setLoading(false);
                 },
-            publishRevision: (): PublishRevisionHandler => async () => {
+            publishRevision: (): PublishRevisionHandler => async id => {
                 setLoading(true);
                 await client.mutate<
                     CmsEntryPublishMutationResponse,
                     CmsEntryPublishMutationVariables
                 >({
                     mutation: PUBLISH_REVISION,
-                    variables: { revision: revision.id },
+                    variables: {
+                        revision: id || revision.id
+                    },
                     update(cache, { data }) {
                         const { data: published, error } = data.content;
                         if (error) {
@@ -201,35 +211,38 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
                 setLoading(false);
             },
-            unpublishRevision: (): UnpublishRevisionHandler => async (): Promise<void> => {
-                setLoading(true);
-                const { data } = await client.mutate<
-                    CmsEntryUnpublishMutationResponse,
-                    CmsEntryUnpublishMutationVariables
-                >({
-                    mutation: UNPUBLISH_REVISION,
-                    variables: {
-                        revision: revision.id
+            unpublishRevision:
+                (): UnpublishRevisionHandler =>
+                async (id): Promise<void> => {
+                    setLoading(true);
+                    const { data } = await client.mutate<
+                        CmsEntryUnpublishMutationResponse,
+                        CmsEntryUnpublishMutationVariables
+                    >({
+                        mutation: UNPUBLISH_REVISION,
+                        variables: {
+                            revision: id || revision.id
+                        }
+                    });
+
+                    setLoading(false);
+
+                    const { error } = data.content;
+                    if (error) {
+                        showSnackbar(error.message);
+                        return;
                     }
-                });
 
-                setLoading(false);
-
-                const { error } = data.content;
-                if (error) {
-                    showSnackbar(error.message);
-                    return;
-                }
-
-                showSnackbar(
-                    <span>
-                        Successfully unpublished revision <strong>#{revision.meta.version}</strong>!
-                    </span>
-                );
-            },
+                    showSnackbar(
+                        <span>
+                            Successfully unpublished revision{" "}
+                            <strong>#{revision.meta.version}</strong>!
+                        </span>
+                    );
+                },
             requestReview:
                 (): RequestReviewHandler =>
-                async (id?: string): Promise<void> => {
+                async (id): Promise<void> => {
                     setLoading(true);
                     await client.mutate<
                         CmsEntryRequestReviewMutationResponse,
@@ -253,7 +266,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                 },
             requestChanges:
                 (): RequestChangesHandler =>
-                async (id?: string): Promise<void> => {
+                async (id): Promise<void> => {
                     setLoading(true);
                     await client.mutate<
                         CmsEntryRequestChangesMutationResponse,

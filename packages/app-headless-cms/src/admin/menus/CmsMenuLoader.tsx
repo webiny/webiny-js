@@ -5,7 +5,7 @@ import GlobalSearchPlugins from "./GlobalSearchPlugins";
 import usePermission from "~/admin/hooks/usePermission";
 import { ContentGroupsMenuItems } from "./ContentGroupsMenuItems";
 
-export const CmsMenuLoader = React.memo(() => {
+const CmsMenuLoaderComponent: React.FC = () => {
     const {
         canAccessManageEndpoint,
         canReadContentModels,
@@ -47,6 +47,8 @@ export const CmsMenuLoader = React.memo(() => {
             <GlobalSearchPlugins />
         </Fragment>
     );
-});
+};
+
+export const CmsMenuLoader: React.FC = React.memo(CmsMenuLoaderComponent);
 
 CmsMenuLoader.displayName = "CmsMenuLoader";

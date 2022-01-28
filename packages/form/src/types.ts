@@ -41,7 +41,7 @@ export type BindComponent = (props: BindComponentProps) => React.ReactElement;
 
 export type FormRenderPropParamsSubmit = (event?: React.SyntheticEvent<any, any>) => Promise<void>;
 
-export type FormSetValue<T = any> = (name: string, value: T) => void;
+export type FormSetValue = <T = any>(name: string, value: T) => void;
 
 export interface FormRenderPropParams<T = Record<string, any>> {
     form: FormAPI;

@@ -38,7 +38,7 @@ const SortableItem = sortable(Item);
 
 interface ImagesListImagesSettingsProps {
     Bind: BindComponent;
-    submit: (event: React.MouseEvent) => void;
+    submit: () => void;
 }
 const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props => {
     const { Bind, submit } = props;
@@ -46,7 +46,7 @@ const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props 
         <Accordion title={"Images"} defaultValue={true}>
             <Grid className={classes.simpleGrid}>
                 <Cell span={12}>
-                    <Bind name={"images"} afterChange={submit}>
+                    <Bind name={"images"} afterChange={() => submit()}>
                         {({ onChange, value: images }) => {
                             /**
                              * We're creating a fresh copy of value here because all of sudden

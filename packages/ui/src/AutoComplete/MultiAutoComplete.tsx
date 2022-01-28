@@ -23,7 +23,7 @@ import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 
 import { css } from "emotion";
 import { ListItemGraphic } from "~/List";
-import { Props } from "~/AutoComplete/AutoComplete";
+import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
 const style = {
     pagination: {
         bar: css({
@@ -62,7 +62,12 @@ const listStyles = css({
     }
 });
 
-export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
+interface SelectionItem {
+    name: string;
+}
+type MultiAutoCompletePropsValue = SelectionItem[];
+
+export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "value"> {
     /**
      * Prevents adding the same item to the list twice.
      */
@@ -90,7 +95,11 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
 
     /* A component that renders supporting UI in case of no result found. */
     noResultFound?: Function;
-};
+    /**
+     * Value is an array of strings. But can be undefined.
+     */
+    value?: MultiAutoCompletePropsValue;
+}
 
 type State = {
     inputValue: string;
@@ -106,7 +115,12 @@ function Spinner() {
 
 const DEFAULT_PER_PAGE = 10;
 
-function paginateMultipleSelection(multipleSelection, limit, page, search) {
+function paginateMultipleSelection(
+    multipleSelection: MultiAutoCompletePropsValue,
+    limit: number,
+    page: number,
+    search: string
+) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
         ? multipleSelection.map((item, index) => ({ ...item, index }))
@@ -151,12 +165,17 @@ function paginateMultipleSelection(multipleSelection, limit, page, search) {
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
-    options: Props["options"];
+    options: AutoCompleteProps["options"];
     unique: boolean;
 }
 
 interface OptionsListProps {
     getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
+}
+
+interface AssignedValueAfterClearing {
+    set: boolean;
+    selection: string | null;
 }
 
 const OptionsList: React.FC<OptionsListProps> = ({ getMenuProps, children }) => {
@@ -173,7 +192,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ getMenuProps, children }) => 
 };
 
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
-    static defaultProps = {
+    static defaultProps: Partial<MultiAutoCompleteProps> = {
         valueProp: "id",
         textProp: "name",
         unique: true,
@@ -198,7 +217,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         }
     };
 
-    state = {
+    public state: State = {
         inputValue: "",
         multipleSelectionPage: 0,
         multipleSelectionSearch: "",
@@ -209,18 +228,18 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
     /**
      * Helps us trigger some of the downshift's methods (eg. clearSelection) and helps us to avoid adding state.
      */
-    downshift = React.createRef<any>();
+    private downshift = React.createRef<any>();
 
-    assignedValueAfterClearing = {
+    private assignedValueAfterClearing: AssignedValueAfterClearing = {
         set: false,
         selection: null
     };
 
-    setMultipleSelectionPage = multipleSelectionPage => {
+    setMultipleSelectionPage = (multipleSelectionPage: number): void => {
         this.setState({ multipleSelectionPage });
     };
 
-    setMultipleSelectionSearch = multipleSelectionSearch => {
+    setMultipleSelectionSearch = (multipleSelectionSearch: string): void => {
         this.setState({ multipleSelectionSearch });
     };
 
@@ -550,16 +569,16 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         const {
             props,
             props: {
-                options: rawOptions, // eslint-disable-line
-                allowFreeInput, // eslint-disable-line
-                useSimpleValues, // eslint-disable-line
+                options: rawOptions,
+                allowFreeInput,
+                useSimpleValues,
                 unique,
                 value,
                 onChange,
-                valueProp, // eslint-disable-line
-                textProp, // eslint-disable-line
+                valueProp,
+                textProp,
                 onInput,
-                validation = { isValid: null },
+                validation = { isValid: null, message: null },
                 useMultipleSelectionList,
                 description,
                 ...otherInputProps

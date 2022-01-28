@@ -32,19 +32,19 @@ export enum Placement {
     bottom = "bottom"
 }
 
-export type Props = AutoCompleteBaseProps & {
+export interface AutoCompleteProps extends Omit<AutoCompleteBaseProps, "onChange"> {
     /* Placement position of dropdown menu, can be either `top` or `bottom`. */
     placement?: Placement;
 
     /* A callback that is executed each time a value is changed. */
-    onChange?: (value: any, selection: any) => void;
+    onChange?: (value: any, selection?: any) => void;
 
     /* If true, will show a loading spinner on the right side of the input. */
     loading?: boolean;
 
     /* A component that renders supporting UI in case of no result found. */
     noResultFound?: Function;
-};
+}
 
 type State = {
     inputValue: string;
@@ -56,8 +56,8 @@ function Spinner() {
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
-    options: Props["options"];
-    placement: Props["placement"];
+    options: AutoCompleteProps["options"];
+    placement: AutoCompleteProps["placement"];
 }
 
 interface OptionsListProps {
@@ -83,8 +83,8 @@ const OptionsList: React.FC<OptionsListProps> = ({ placement, getMenuProps, chil
     );
 };
 
-class AutoComplete extends React.Component<Props, State> {
-    static defaultProps = {
+class AutoComplete extends React.Component<AutoCompleteProps, State> {
+    static defaultProps: Partial<AutoCompleteProps> = {
         valueProp: "id",
         textProp: "name",
         options: [],
@@ -101,7 +101,7 @@ class AutoComplete extends React.Component<Props, State> {
         }
     };
 
-    state = {
+    state: State = {
         inputValue: ""
     };
 
@@ -229,11 +229,11 @@ class AutoComplete extends React.Component<Props, State> {
             className,
             options,
             onChange,
-            value, // eslint-disable-line
-            valueProp, // eslint-disable-line
-            textProp, // eslint-disable-line
+            value,
+            valueProp,
+            textProp,
             onInput,
-            validation = { isValid: null },
+            validation = { isValid: null, message: null },
             placement,
             ...otherInputProps
         } = this.props;
@@ -241,9 +241,9 @@ class AutoComplete extends React.Component<Props, State> {
         // Downshift related props.
         const downshiftProps = {
             className: autoCompleteStyle,
-            itemToString: item => getOptionText(item, this.props),
+            itemToString: (item: any) => getOptionText(item, this.props),
             defaultSelectedItem: value,
-            onChange: selection => {
+            onChange: (selection: string) => {
                 if (!selection || !onChange) {
                     return;
                 }

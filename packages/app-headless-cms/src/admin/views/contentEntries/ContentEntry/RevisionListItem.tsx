@@ -120,7 +120,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                         >
                             {canEdit(entry, "cms.contentEntry") && (
                                 <MenuItem
-                                    onClick={createRevision}
+                                    onClick={() => createRevision(revision.id)}
                                     data-testid={"cms.revision.create-revision"}
                                 >
                                     <ListItemGraphic>
@@ -159,7 +159,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                             {revision.meta.status === "published" &&
                                 canUnpublish("cms.contentEntry") && (
                                     <MenuItem
-                                        onClick={unpublishRevision}
+                                        onClick={() => unpublishRevision(revision.id)}
                                         data-testid={"cms.revision.unpublish"}
                                     >
                                         <ListItemGraphic>

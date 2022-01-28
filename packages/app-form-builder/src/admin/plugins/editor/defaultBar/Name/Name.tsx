@@ -2,7 +2,11 @@ import React, { useCallback, useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { useFormEditor } from "../../../../components/FormEditor/Context";
+import { useFormEditor } from "~/admin/components/FormEditor";
+/**
+ * Package react-hotkeyz does not have types.
+ */
+// @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import {
     FormMeta,
@@ -21,7 +25,7 @@ declare global {
     }
 }
 
-export const Name = () => {
+export const Name: React.FC = () => {
     const { state, setData } = useFormEditor();
     const [localName, setLocalName] = useState(null);
     const [editingEnabled, setEditing] = useState(false);
@@ -36,8 +40,8 @@ export const Name = () => {
     }
 
     const saveTitle = useCallback(
-        e => {
-            e.preventDefault();
+        (event: React.SyntheticEvent) => {
+            event.preventDefault();
             setData(data => {
                 data.name = localName;
                 return data;
@@ -58,8 +62,8 @@ export const Name = () => {
         zIndex: 101,
         disabled: !editingEnabled,
         keys: {
-            esc: e => {
-                e.preventDefault();
+            esc: (event: React.KeyboardEvent) => {
+                event.preventDefault();
                 cancelChanges();
             },
             enter: saveTitle

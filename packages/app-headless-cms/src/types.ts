@@ -331,22 +331,23 @@ export interface CmsEditorFieldValidator {
     settings: any;
 }
 
+export interface CmsEditorFieldValidatorPluginValidator {
+    name: string;
+    label: string;
+    description: string;
+    defaultMessage: string;
+    defaultSettings?: Record<string, any>;
+    renderSettings?: (props: {
+        field: CmsEditorField;
+        Bind: BindComponent;
+        setValue: (name: string, value: any) => void;
+        setMessage: (message: string) => void;
+        data: CmsEditorFieldValidator;
+    }) => React.ReactElement;
+}
 export interface CmsEditorFieldValidatorPlugin extends Plugin {
     type: "cms-editor-field-validator";
-    validator: {
-        name: string;
-        label: string;
-        description: string;
-        defaultMessage: string;
-        defaultSettings?: Record<string, any>;
-        renderSettings?: (props: {
-            field: CmsEditorField;
-            Bind: BindComponent;
-            setValue: (name: string, value: any) => void;
-            setMessage: (message: string) => void;
-            data: CmsEditorFieldValidator;
-        }) => React.ReactElement;
-    };
+    validator: CmsEditorFieldValidatorPluginValidator;
 }
 
 export type CmsEditorContentTab = React.FunctionComponent<{ activeTab: boolean }>;

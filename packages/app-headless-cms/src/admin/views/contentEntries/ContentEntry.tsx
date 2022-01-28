@@ -95,6 +95,7 @@ const ContentEntry: React.FC = () => {
                                     contentModel={contentModel}
                                     entry={entry}
                                     onForm={form => setFormRef(form)}
+                                    addEntryToListCache={true}
                                 />
                             </Elevation>
                         </RenderBlock>

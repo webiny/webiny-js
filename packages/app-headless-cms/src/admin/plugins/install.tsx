@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy } from "react";
+import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -121,30 +121,30 @@ const plugin: AdminInstallationPlugin = {
         return <CMSInstaller onInstalled={onInstalled} />;
     },
     upgrades: [
-        {
-            version: "5.0.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.0.0"));
-            }
-        },
-        {
-            version: "5.5.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.5.0"));
-            }
-        },
-        {
-            version: "5.8.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.8.0"));
-            }
-        },
-        {
-            version: "5.19.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.19.0"));
-            }
-        }
+        // {
+        //     version: "5.0.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.0.0"));
+        //     }
+        // },
+        // {
+        //     version: "5.5.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.5.0"));
+        //     }
+        // },
+        // {
+        //     version: "5.8.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.8.0"));
+        //     }
+        // },
+        // {
+        //     version: "5.19.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.19.0"));
+        //     }
+        // }
     ]
 };
 

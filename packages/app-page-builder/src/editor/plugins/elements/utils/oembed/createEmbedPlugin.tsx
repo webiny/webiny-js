@@ -1,5 +1,4 @@
 import * as React from "react";
-import { BindComponent } from "@webiny/form";
 import OEmbed, { OEmbedProps } from "../../../../components/OEmbed";
 import {
     PbEditorElement,
@@ -95,7 +94,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
 
 type EmbedPluginSidebarConfig = {
     type: string;
-    render(params?: { Bind: BindComponent; submit: () => void }): React.ReactElement;
+    render: PbEditorPageElementAdvancedSettingsPlugin["render"];
 };
 
 export const createEmbedSettingsPlugin = ({

@@ -4,7 +4,7 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
-import { BindComponent } from "@webiny/form/Bind";
+import { BindComponent } from "@webiny/form/types";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permission-renderer");
 

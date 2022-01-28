@@ -20,6 +20,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { FormOnSubmit } from "@webiny/form/Form";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -30,17 +31,24 @@ const dialogBody = css({
     }
 });
 
-type EditFieldDialogProps = {
+interface EditFieldDialogProps {
     field: CmsEditorField;
-    onClose: Function;
-    onSubmit: (data: any) => void;
-};
+    onClose: () => void;
+    onSubmit: FormOnSubmit;
+}
 
+interface Validator {
+    optional: boolean;
+    validator: CmsEditorFieldValidatorPlugin["validator"];
+}
 const getValidators = (
     fieldPlugin: CmsEditorFieldTypePlugin,
-    key: string,
+    /**
+     * We only have validators and listValidators, thats why the strict string types
+     */
+    key: "validators" | "listValidators",
     defaultValidators: string[] = []
-) => {
+): Validator[] => {
     return plugins
         .byType<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
         .map(plugin => plugin.validator)
@@ -92,7 +100,7 @@ const fieldEditorDialog = css({
     }
 });
 
-const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
+const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
     const [current, setCurrent] = useState(null);
 
     const { getFieldPlugin } = useFieldEditor();
