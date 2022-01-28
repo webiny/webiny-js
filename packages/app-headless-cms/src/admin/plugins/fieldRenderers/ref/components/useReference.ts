@@ -2,14 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import * as GQL from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorField, CmsModel } from "~/types";
-import {
-    CmsEntryGetQueryResponse,
-    CmsEntryGetQueryVariables,
-    CmsEntryQueryResponseDataEntry,
-    CmsEntrySearchQueryResponse,
-    CmsEntrySearchQueryVariables
-} from "./graphql";
+import { CmsEditorField } from "~/types";
 
 interface ValueEntry {
     id: string;
@@ -18,10 +11,22 @@ interface ValueEntry {
     published: boolean;
     name: string;
 }
+
+interface DataEntry {
+    id: string;
+    model: {
+        modelId: string;
+        name: string;
+    };
+    status: "published" | "draft";
+    title: string;
+}
+
 interface UseReferenceHookArgs {
     bind: any;
     field: CmsEditorField;
 }
+
 interface UseReferenceHookValue {
     onChange: (value: any, entry: ValueEntry) => void;
     setSearch: (value: string) => void;
@@ -29,20 +34,19 @@ interface UseReferenceHookValue {
     loading: boolean;
     options: ValueEntry[];
 }
+
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
-type EntryCollection = Record<string, CmsEntryQueryResponseDataEntry>;
+type EntryCollection = Record<string, DataEntry>;
 
-export const convertQueryDataToEntryList = (
-    data: CmsEntryQueryResponseDataEntry[]
-): EntryCollection => {
+const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
     return data.reduce((collection, entry) => {
         collection[entry.id] = entry;
         return collection;
-    }, {} as Record<string, CmsEntryQueryResponseDataEntry>);
+    }, {});
 };
 
-export const convertValueEntryToData = (entry: ValueEntry): CmsEntryQueryResponseDataEntry => {
+const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
     return {
         id: entry.id,
         model: {
@@ -54,7 +58,7 @@ export const convertValueEntryToData = (entry: ValueEntry): CmsEntryQueryRespons
     };
 };
 
-export const convertDataEntryToValue = (entry: CmsEntryQueryResponseDataEntry): ValueEntry => {
+const convertDataEntryToValue = (entry: DataEntry): ValueEntry => {
     return {
         id: entry.id,
         modelId: entry.model.modelId,
@@ -80,7 +84,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const [latestEntries, setLatestEntries] = useState<EntryCollection>({});
     const [valueEntry, setValueEntry] = useState<ValueEntry>(null);
 
-    const models = field.settings.models as Pick<CmsModel, "modelId">[];
+    const { models } = field.settings;
     const modelsHash = models.join(",");
 
     const value = bind.value;
@@ -92,10 +96,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         }
 
         setLoading(true);
-        const { data } = await client.query<
-            CmsEntrySearchQueryResponse,
-            CmsEntrySearchQueryVariables
-        >({
+        const { data } = await client.query({
             query: GQL.SEARCH_CONTENT_ENTRIES,
             variables: { modelIds: models.map(m => m.modelId), query: search }
         });
@@ -115,13 +116,18 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
 
     useEffect(() => {
         client
-            .query<CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables>({
+            .query({
                 query: GQL.SEARCH_CONTENT_ENTRIES,
                 variables: {
                     modelIds: models.map(m => m.modelId),
                     query: "__latest__",
                     limit: 10
-                }
+                },
+                /**
+                 * We cannot update this query response in cache after a reference entry being created/deleted,
+                 * which result in cached response being stale, therefore, we're setting the fetchPolicy to "network-only" to by passing cache.
+                 */
+                fetchPolicy: "network-only"
             })
             .then(({ data }) => {
                 const latestEntryData = convertQueryDataToEntryList(data.content.data);
@@ -149,13 +155,13 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
 
         setLoading(true);
         client
-            .query<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>({
+            .query({
                 query: GQL.GET_CONTENT_ENTRY,
                 variables: { entry: { modelId: value.modelId, id: value.id } }
             })
             .then(res => {
                 setLoading(false);
-                const dataEntry = res.data.content.data;
+                const dataEntry: DataEntry | null = res.data.content.data;
                 if (!dataEntry) {
                     return;
                 }
@@ -173,7 +179,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             });
     }, [valueHash, modelsHash]);
 
-    const onChange = useCallback((value: string, entry: ValueEntry) => {
+    const onChange = useCallback((value, entry) => {
         if (value !== null) {
             setSearch("");
 

@@ -1,4 +1,3 @@
-// TODO @ts-refactor verify that this component is not used
 import React from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
@@ -11,6 +10,10 @@ const t = i18n.ns("app-headless-cms/admin/fields/ref");
 const missingEntryLabel = t`If you can't find the intended reference value in the target model,
          please close this dialog and populate the {newEntryLink} in the target model first.`;
 
+const referenceMultipleModelsLabel = t`The creation of reference values from within this view is only supported
+ when a single reference model is selected. To reference values from multiple models,
+ please make sure the referenced values exist before setting the reference.`;
+
 const HelpTextTypography = styled(Typography)`
     & {
         display: inline-block;
@@ -18,10 +21,11 @@ const HelpTextTypography = styled(Typography)`
     }
 `;
 
-interface MissingEntryHelpTextProps {
-    refModelId: string;
-}
-const MissingEntryHelpText: React.FC<MissingEntryHelpTextProps> = ({ refModelId }) => {
+export const ReferenceMultipleModelsHelpText = () => {
+    return <HelpTextTypography use={"caption"}>{referenceMultipleModelsLabel}</HelpTextTypography>;
+};
+
+const MissingEntryHelpText: React.FC<{ refModelId: string }> = ({ refModelId }) => {
     return (
         <HelpTextTypography use={"caption"}>
             {missingEntryLabel({

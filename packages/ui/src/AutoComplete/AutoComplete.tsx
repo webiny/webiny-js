@@ -1,5 +1,5 @@
 import * as React from "react";
-import Downshift, { ControllerStateAndHelpers } from "downshift";
+import Downshift, { ControllerStateAndHelpers, PropGetters } from "downshift";
 import { Input } from "~/Input";
 import classNames from "classnames";
 import { Elevation } from "~/Elevation";
@@ -32,19 +32,19 @@ export enum Placement {
     bottom = "bottom"
 }
 
-export interface AutoCompleteProps extends Omit<AutoCompleteBaseProps, "onChange"> {
+export type Props = AutoCompleteBaseProps & {
     /* Placement position of dropdown menu, can be either `top` or `bottom`. */
     placement?: Placement;
 
     /* A callback that is executed each time a value is changed. */
-    onChange?: (value: any, selection?: any) => void;
+    onChange?: (value: any, selection: any) => void;
 
     /* If true, will show a loading spinner on the right side of the input. */
     loading?: boolean;
 
     /* A component that renders supporting UI in case of no result found. */
     noResultFound?: Function;
-}
+};
 
 type State = {
     inputValue: string;
@@ -56,12 +56,35 @@ function Spinner() {
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
-    options: AutoCompleteProps["options"];
-    placement: AutoCompleteProps["placement"];
+    options: Props["options"];
+    placement: Props["placement"];
 }
 
-class AutoComplete extends React.Component<AutoCompleteProps, State> {
-    static defaultProps: Partial<AutoCompleteProps> = {
+interface OptionsListProps {
+    placement: Placement;
+    getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
+}
+
+const OptionsList: React.FC<OptionsListProps> = ({ placement, getMenuProps, children }) => {
+    return (
+        <Elevation
+            z={1}
+            className={classNames({
+                [menuStyles]: placement === Placement.top
+            })}
+        >
+            <ul
+                className={classNames("autocomplete__options-list", listStyles)}
+                {...getMenuProps()}
+            >
+                {children}
+            </ul>
+        </Elevation>
+    );
+};
+
+class AutoComplete extends React.Component<Props, State> {
+    static defaultProps = {
         valueProp: "id",
         textProp: "name",
         options: [],
@@ -125,6 +148,18 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         if (!isOpen) {
             return null;
         }
+        /**
+         * Suggest user to start typing when there are no options available to choose from.
+         */
+        if (!this.state.inputValue && !options.length) {
+            return (
+                <OptionsList placement={placement} getMenuProps={getMenuProps}>
+                    <li>
+                        <Typography use={"body2"}>Start typing to find entry</Typography>
+                    </li>
+                </OptionsList>
+            );
+        }
 
         const { renderItem } = this.props;
 
@@ -145,65 +180,47 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
 
         if (!filtered.length) {
             return (
-                <Elevation
-                    z={1}
-                    className={classNames({
-                        [menuStyles]: placement === Placement.top
-                    })}
-                >
-                    <ul
-                        className={classNames("autocomplete__options-list", listStyles)}
-                        {...getMenuProps()}
-                    >
-                        <li>
-                            <Typography use={"body2"}>No results.</Typography>
-                            {this.props.noResultFound}
-                        </li>
-                    </ul>
-                </Elevation>
+                <OptionsList placement={placement} getMenuProps={getMenuProps}>
+                    <li>
+                        <Typography use={"body2"}>No results.</Typography>
+                        {this.props.noResultFound}
+                    </li>
+                </OptionsList>
             );
         }
 
         return (
-            <Elevation z={1} className={classNames({ [menuStyles]: placement === Placement.top })}>
-                <ul
-                    className={classNames("autocomplete__options-list", listStyles)}
-                    {...getMenuProps()}
-                >
-                    {filtered.map((item, index) => {
-                        const itemValue = getOptionValue(item, this.props);
+            <OptionsList placement={placement} getMenuProps={getMenuProps}>
+                {filtered.map((item, index) => {
+                    const itemValue = getOptionValue(item, this.props);
 
-                        // Base classes.
-                        const itemClassNames = {
-                            [suggestionList]: true,
-                            highlighted: highlightedIndex === index,
-                            selected: false
-                        };
+                    // Base classes.
+                    const itemClassNames = {
+                        [suggestionList]: true,
+                        highlighted: highlightedIndex === index,
+                        selected: false
+                    };
 
-                        // Add "selected" class if the item is selected.
-                        if (
-                            selectedItem &&
-                            getOptionValue(selectedItem, this.props) === itemValue
-                        ) {
-                            itemClassNames.selected = true;
-                        }
+                    // Add "selected" class if the item is selected.
+                    if (selectedItem && getOptionValue(selectedItem, this.props) === itemValue) {
+                        itemClassNames.selected = true;
+                    }
 
-                        // Render the item.
-                        return (
-                            <li
-                                key={itemValue}
-                                {...getItemProps({
-                                    index,
-                                    item,
-                                    className: classNames(itemClassNames)
-                                })}
-                            >
-                                {renderItem.call(this, item, index)}
-                            </li>
-                        );
-                    })}
-                </ul>
-            </Elevation>
+                    // Render the item.
+                    return (
+                        <li
+                            key={itemValue}
+                            {...getItemProps({
+                                index,
+                                item,
+                                className: classNames(itemClassNames)
+                            })}
+                        >
+                            {renderItem.call(this, item, index)}
+                        </li>
+                    );
+                })}
+            </OptionsList>
         );
     }
 
@@ -212,11 +229,11 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
             className,
             options,
             onChange,
-            value,
-            valueProp,
-            textProp,
+            value, // eslint-disable-line
+            valueProp, // eslint-disable-line
+            textProp, // eslint-disable-line
             onInput,
-            validation = { isValid: null } as { isValid: boolean },
+            validation = { isValid: null },
             placement,
             ...otherInputProps
         } = this.props;
@@ -224,9 +241,9 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         // Downshift related props.
         const downshiftProps = {
             className: autoCompleteStyle,
-            itemToString: (item: Record<string, string>) => getOptionText(item, this.props),
+            itemToString: item => getOptionText(item, this.props),
             defaultSelectedItem: value,
-            onChange: (selection: string) => {
+            onChange: selection => {
                 if (!selection || !onChange) {
                     return;
                 }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import Downshift, { ControllerStateAndHelpers } from "downshift";
+import Downshift, { ControllerStateAndHelpers, PropGetters } from "downshift";
 import MaterialSpinner from "react-spinner-material";
 import { Input } from "~/Input";
 import { Chips, Chip } from "../Chips";
@@ -23,7 +23,7 @@ import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 
 import { css } from "emotion";
 import { ListItemGraphic } from "~/List";
-import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
+import { Props } from "~/AutoComplete/AutoComplete";
 const style = {
     pagination: {
         bar: css({
@@ -62,11 +62,6 @@ const listStyles = css({
     }
 });
 
-interface SelectionItem {
-    name: string;
-}
-type MultiAutoCompletePropsValue = SelectionItem[];
-
 export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
     /**
      * Prevents adding the same item to the list twice.
@@ -95,31 +90,23 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
 
     /* A component that renders supporting UI in case of no result found. */
     noResultFound?: Function;
-    /**
-     * Value is an array of strings. But can be undefined.
-     */
-    value?: MultiAutoCompletePropsValue;
 };
 
-interface State {
+type State = {
     inputValue: string;
     multipleSelectionPage: number;
     multipleSelectionSearch: string;
     reorderFormVisible: string;
     reorderFormValue: string;
-}
+};
 
 function Spinner() {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
 
 const DEFAULT_PER_PAGE = 10;
-function paginateMultipleSelection(
-    multipleSelection: MultiAutoCompletePropsValue,
-    limit: number,
-    page: number,
-    search: string
-) {
+
+function paginateMultipleSelection(multipleSelection, limit, page, search) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
         ? multipleSelection.map((item, index) => ({ ...item, index }))
@@ -164,17 +151,29 @@ function paginateMultipleSelection(
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
-    options: AutoCompleteProps["options"];
+    options: Props["options"];
     unique: boolean;
 }
 
-interface AssignedValueAfterClearing {
-    set: boolean;
-    selection: string | null;
+interface OptionsListProps {
+    getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
 }
 
+const OptionsList: React.FC<OptionsListProps> = ({ getMenuProps, children }) => {
+    return (
+        <Elevation z={1}>
+            <ul
+                className={classNames("multi-autocomplete__options-list", listStyles)}
+                {...getMenuProps()}
+            >
+                {children}
+            </ul>
+        </Elevation>
+    );
+};
+
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
-    static defaultProps: Partial<MultiAutoCompleteProps> = {
+    static defaultProps = {
         valueProp: "id",
         textProp: "name",
         unique: true,
@@ -199,7 +198,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         }
     };
 
-    public state: State = {
+    state = {
         inputValue: "",
         multipleSelectionPage: 0,
         multipleSelectionSearch: "",
@@ -212,16 +211,16 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
      */
     downshift = React.createRef<any>();
 
-    public assignedValueAfterClearing: AssignedValueAfterClearing = {
+    assignedValueAfterClearing = {
         set: false,
         selection: null
     };
 
-    setMultipleSelectionPage = (multipleSelectionPage: number) => {
+    setMultipleSelectionPage = multipleSelectionPage => {
         this.setState({ multipleSelectionPage });
     };
 
-    setMultipleSelectionSearch = (multipleSelectionSearch: string) => {
+    setMultipleSelectionSearch = multipleSelectionSearch => {
         this.setState({ multipleSelectionSearch });
     };
 
@@ -287,6 +286,19 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         const { options, isOpen, highlightedIndex, getMenuProps, getItemProps } = params;
         if (!isOpen) {
             return null;
+        }
+
+        /**
+         * Suggest user to start typing when there are no options available to choose from.
+         */
+        if (!this.state.inputValue && !options.length) {
+            return (
+                <OptionsList getMenuProps={getMenuProps}>
+                    <li>
+                        <Typography use={"body2"}>Start typing to find entry</Typography>
+                    </li>
+                </OptionsList>
+            );
         }
 
         if (!options.length) {
@@ -518,7 +530,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
 
         return (
             <Chips disabled={disabled}>
-                {(value as MultiAutoCompletePropsValue).map((item, index) => (
+                {value.map((item, index) => (
                     <Chip
                         label={getOptionText(item, this.props)}
                         key={`${getOptionValue(item, this.props)}-${index}`}
@@ -538,16 +550,16 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         const {
             props,
             props: {
-                options: rawOptions,
-                allowFreeInput,
-                useSimpleValues,
+                options: rawOptions, // eslint-disable-line
+                allowFreeInput, // eslint-disable-line
+                useSimpleValues, // eslint-disable-line
                 unique,
                 value,
                 onChange,
-                valueProp,
-                textProp,
+                valueProp, // eslint-disable-line
+                textProp, // eslint-disable-line
                 onInput,
-                validation = { isValid: null } as { isValid: boolean },
+                validation = { isValid: null },
                 useMultipleSelectionList,
                 description,
                 ...otherInputProps
