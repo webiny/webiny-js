@@ -5,6 +5,7 @@ import { BindComponent, FormRenderPropParams, FormAPI } from "@webiny/form/types
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/components/ContentEntryForm/Label";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 interface QueryFieldParams {
     field: CmsEditorField;
@@ -272,11 +273,8 @@ export type CmsEditorFieldId = string;
 export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
 
 export interface CmsEditorContentModel {
-    id: CmsEditorFieldId;
-    group: {
-        id: string;
-        name: string;
-    };
+    id: string;
+    group: Pick<CmsGroup, "id" | "name">;
     description?: string;
     version: number;
     layout?: CmsEditorFieldsLayout;
@@ -285,15 +283,24 @@ export interface CmsEditorContentModel {
     name: string;
     modelId: string;
     titleFieldId: string;
-    settings: any;
+    settings: {
+        [key: string]: any;
+    };
     status: string;
     savedOn: string;
     meta: any;
+    createdBy: CmsCreatedBy;
+    /**
+     * If model is a plugin one (it cannot be changed/deleted)
+     */
+    plugin?: boolean;
 }
 
 export interface CmsEditorContentEntry {
     id: string;
     savedOn: string;
+    modelId: string;
+    createdBy: CmsCreatedBy;
     [key: string]: any;
     meta: {
         title: string;
@@ -307,6 +314,8 @@ export interface CmsEditorContentEntry {
 export interface CmsContentEntryRevision {
     id: string;
     savedOn: string;
+    modelId: string;
+    createdBy: CmsCreatedBy;
     meta: {
         title: string;
         publishedOn: string;
@@ -372,11 +381,11 @@ export interface CmsFieldValidator {
     settings: any;
 }
 
-export interface CmsModelFieldValidatorPlugin extends Plugin {
+export interface CmsModelFieldValidatorPlugin<T = any> extends Plugin {
     type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: any, validator: CmsFieldValidator | any) => Promise<any>;
+        validate: (value: T, validator: CmsFieldValidator) => Promise<any>;
     };
 }
 
@@ -504,4 +513,59 @@ export interface CmsContentFormRendererPlugin extends Plugin {
          */
         fields: Record<string, React.ReactElement>;
     }): React.ReactNode;
+}
+/**
+ * #########################
+ * Data types
+ * #########################
+ */
+export interface CmsSecurityPermission extends SecurityPermission {
+    accessLevel?: "full" | "no" | "custom";
+    models?: Record<string, string>;
+    groups?: Record<string, string>;
+}
+export interface CmsCreatedBy {
+    id: string;
+    displayName: string;
+    type: string;
+}
+/**
+ * @category GraphQL
+ * @category Model
+ */
+export interface CmsModel extends CmsEditorContentModel {}
+/**
+ * @category GraphQL
+ * @category Group
+ */
+export interface CmsGroup {
+    id: string;
+    name: string;
+    slug: string;
+    icon?: string;
+    description?: string;
+    contentModels: CmsModel[];
+    createdBy: CmsCreatedBy;
+    /**
+     * Tells if this group is a plugin one (cannot be changed/deleted)
+     */
+    plugin?: boolean;
+}
+/**
+ * @category GraphQL
+ * @category Error
+ */
+export interface CmsErrorResponse {
+    message: string;
+    code: string;
+    data: Record<string, any>;
+}
+/**
+ * @category GraphQL
+ * @category Meta
+ */
+export interface CmsMetaResponse {
+    totalCount: number;
+    cursor: string | null;
+    hasMoreItems: boolean;
 }

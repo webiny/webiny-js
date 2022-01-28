@@ -6,7 +6,7 @@ import { FileManagerProvider } from "./FileManager/FileManagerContext";
 import { FileItem } from "./FileManager/types";
 
 export interface ShowFileManagerCallable {
-    (onChange?: () => void): void;
+    (onChange?: (file?: FileItem | FileItem[]) => void): void;
 }
 export interface FileManagerPropsChildren {
     showFileManager: ShowFileManagerCallable;

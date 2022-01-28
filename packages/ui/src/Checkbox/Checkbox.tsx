@@ -3,7 +3,7 @@ import { Checkbox as RmwcCheckbox } from "@rmwc/checkbox";
 import { FormElementMessage } from "~/FormElementMessage";
 import { FormComponentProps } from "~/types";
 
-type Props = FormComponentProps & {
+interface Props extends FormComponentProps {
     // Component label.
     label?: React.ReactNode;
 
@@ -11,14 +11,14 @@ type Props = FormComponentProps & {
     disabled?: boolean;
 
     // onClick callback.
-    onClick?: Function;
+    onClick?: (value: boolean) => void;
 
     // Use when checkbox is not checked nor unchecked.
     indeterminate?: boolean;
 
     // Description beneath the checkbox.
     description?: string;
-};
+}
 
 /**
  * Single Checkbox component can be used to store simple boolean values.

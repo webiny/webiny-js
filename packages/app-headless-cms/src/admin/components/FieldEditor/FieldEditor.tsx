@@ -16,7 +16,7 @@ const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
 const fieldTypes = ["field", "newField"];
 
-const Editor = () => {
+const Editor: React.FC = () => {
     const {
         parent,
         depth,
@@ -178,7 +178,7 @@ export interface FieldEditorProps {
     onChange: (params: { fields: CmsEditorField[]; layout: CmsEditorFieldsLayout }) => void;
 }
 
-export const FieldEditor = (props: FieldEditorProps) => {
+export const FieldEditor: React.FC<FieldEditorProps> = props => {
     return (
         <FieldEditorProvider {...props}>
             <Editor />

@@ -1,7 +1,13 @@
 import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
 import pluralize from "pluralize";
-import { CmsEditorContentModel } from "~/types";
+import {
+    CmsContentEntryRevision,
+    CmsEditorContentEntry,
+    CmsEditorContentModel,
+    CmsErrorResponse,
+    CmsMetaResponse
+} from "~/types";
 import { createFieldsList } from "./createFieldsList";
 
 const ERROR_FIELD = /* GraphQL */ `
@@ -19,6 +25,19 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
     locked
     status
 `;
+/**
+ * ############################################
+ * Get CMS Entry Query
+ */
+export interface CmsEntryGetQueryResponse {
+    content: {
+        data: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryGetQueryVariables {
+    revision: string;
+}
 
 export const createReadQuery = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
@@ -42,7 +61,20 @@ export const createReadQuery = (model: CmsEditorContentModel) => {
         }
     `;
 };
-
+/**
+ * ############################################
+ * List CMS Entry Revisions Query
+ */
+export interface CmsEntriesListRevisionsQueryResponse {
+    revisions: {
+        data: CmsContentEntryRevision[];
+        error?: CmsErrorResponse;
+        meta: CmsMetaResponse;
+    };
+}
+export interface CmsEntriesListRevisionsQueryVariables {
+    id: string;
+}
 export const createRevisionsQuery = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -68,6 +100,27 @@ const getModelTitleFieldId = (model: CmsEditorContentModel): string => {
     }
     return model.titleFieldId;
 };
+
+/**
+ * ############################################
+ * List CMS Entries Query
+ */
+export interface CmsEntriesListQueryResponse {
+    content: {
+        data: CmsEditorContentEntry[];
+        error?: CmsErrorResponse;
+        meta: CmsMetaResponse;
+    };
+}
+export interface CmsEntriesListQueryVariables {
+    // TODO @ts-refactor better list types
+    where?: {
+        [key: string]: any;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string;
+}
 export const createListQuery = (model: CmsEditorContentModel) => {
     const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
     const ucFirstModelId = upperFirst(model.modelId);
@@ -98,7 +151,19 @@ export const createListQuery = (model: CmsEditorContentModel) => {
         }
     `;
 };
-
+/**
+ * ############################################
+ * Delete Mutation
+ */
+export interface CmsEntryDeleteMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryDeleteMutationVariables {
+    revision: string;
+}
 export const createDeleteMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -111,7 +176,20 @@ export const createDeleteMutation = (model: CmsEditorContentModel) => {
         }
     `;
 };
-
+/**
+ * ############################################
+ * Create Mutation
+ */
+export interface CmsEntryCreateMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryCreateMutationVariables {
+    // TODO @ts-refactor write the types.
+    data: Record<string, any>;
+}
 export const createCreateMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -131,7 +209,21 @@ export const createCreateMutation = (model: CmsEditorContentModel) => {
         }
     `;
 };
-
+/**
+ * ############################################
+ * Create From Mutation
+ */
+export interface CmsEntryCreateFromMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryCreateFromMutationVariables {
+    revision: string;
+    // TODO @ts-refactor write the types.
+    data: Record<string, any>;
+}
 export const createCreateFromMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -150,7 +242,21 @@ export const createCreateFromMutation = (model: CmsEditorContentModel) => {
             }
         }`;
 };
-
+/**
+ * ############################################
+ * Update Mutation
+ */
+export interface CmsEntryUpdateMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryUpdateMutationVariables {
+    revision: string;
+    // TODO @ts-refactor write the types.
+    data: Record<string, any>;
+}
 export const createUpdateMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -170,7 +276,19 @@ export const createUpdateMutation = (model: CmsEditorContentModel) => {
         }
     `;
 };
-
+/**
+ * ############################################
+ * Publish Mutation
+ */
+export interface CmsEntryPublishMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryPublishMutationVariables {
+    revision: string;
+}
 export const createPublishMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -187,7 +305,19 @@ export const createPublishMutation = (model: CmsEditorContentModel) => {
             }
         }`;
 };
-
+/**
+ * ############################################
+ * Unpublish Mutation
+ */
+export interface CmsEntryUnpublishMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryUnpublishMutationVariables {
+    revision: string;
+}
 export const createUnpublishMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -204,7 +334,19 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
             }
         }`;
 };
-
+/**
+ * ############################################
+ * Request Review Mutation
+ */
+export interface CmsEntryRequestReviewMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryRequestReviewMutationVariables {
+    revision: string;
+}
 export const createRequestReviewMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -222,6 +364,19 @@ export const createRequestReviewMutation = (model: CmsEditorContentModel) => {
         }`;
 };
 
+/**
+ * ############################################
+ * Request Changes Mutation
+ */
+export interface CmsEntryRequestChangesMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryRequestChangesMutationVariables {
+    revision: string;
+}
 export const createRequestChangesMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 

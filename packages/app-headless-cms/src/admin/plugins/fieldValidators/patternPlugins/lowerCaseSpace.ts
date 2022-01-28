@@ -1,6 +1,6 @@
 import { CmsEditorFieldValidatorPatternPlugin } from "~/types";
 
-export default {
+const plugin: CmsEditorFieldValidatorPatternPlugin = {
     type: "cms-editor-field-validator-pattern",
     name: "cms-editor-field-validator-pattern-lower-case-space",
     pattern: {
@@ -8,4 +8,5 @@ export default {
         name: "lowerCaseSpace",
         label: "Lower case + space"
     }
-} as CmsEditorFieldValidatorPatternPlugin;
+};
+export default plugin;

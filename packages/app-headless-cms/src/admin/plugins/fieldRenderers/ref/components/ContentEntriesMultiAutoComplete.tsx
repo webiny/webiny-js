@@ -3,18 +3,31 @@ import debounce from "lodash/debounce";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Link } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
-import { useReferences } from "./useReferences";
+import { ReferencedCmsEntry, useReferences } from "./useReferences";
 import { renderItem } from "./renderItem";
+import { CmsEditorField } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const warn = t`Before publishing the main content entry, make sure you publish the following referenced entries: {entries}`;
 
-function ContentEntriesMultiAutocomplete({ bind, field }) {
+interface ContentEntriesMultiAutocompleteProps {
+    bind: any;
+    field: CmsEditorField;
+}
+const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteProps> = ({
+    bind,
+    field
+}) => {
     const { options, setSearch, entries, loading, onChange } = useReferences({ bind, field });
 
-    const entryWarning = ({ id, modelId, name, published }, index) =>
-        !published && (
+    const entryWarning = (entry: ReferencedCmsEntry, index: number) => {
+        const { id, modelId, name, published } = entry;
+        if (published) {
+            return null;
+        }
+
+        return (
             <React.Fragment key={id}>
                 {index > 0 && ", "}
                 <Link to={`/cms/content-entries/${modelId}?id=${encodeURIComponent(id)}`}>
@@ -22,6 +35,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
                 </Link>
             </React.Fragment>
         );
+    };
 
     let warning = entries.filter(item => item.published === false);
     if (warning.length) {
@@ -50,6 +64,6 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
             }
         />
     );
-}
+};
 
 export default ContentEntriesMultiAutocomplete;

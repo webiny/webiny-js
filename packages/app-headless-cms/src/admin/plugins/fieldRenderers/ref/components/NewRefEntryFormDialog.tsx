@@ -21,6 +21,7 @@ import { useQuery } from "~/admin/hooks";
 import { GET_CONTENT_MODEL } from "~/admin/graphql/contentModels";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { useNewRefEntryDialog } from "../hooks/useNewRefEntryDialog";
+import { FormOnSubmit } from "@webiny/form/Form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -43,7 +44,10 @@ const dialogContainerStyles = css`
     }
 `;
 
-const EntryForm = ({ onCreate }) => {
+interface EntryFormProps {
+    onCreate: FormOnSubmit;
+}
+const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     const { setFormRef, contentModel } = useContentEntry();
 
     return (
@@ -56,7 +60,7 @@ const EntryForm = ({ onCreate }) => {
     );
 };
 
-const DialogSaveButton = () => {
+const DialogSaveButton: React.FC = () => {
     const { form } = useContentEntry();
 
     return <DialogButton onClick={() => form.current.submit()}>{t`Save`}</DialogButton>;
@@ -66,7 +70,8 @@ const DefaultButton = styled(ButtonDefault)`
     margin-left: 32px;
 `;
 
-export const NewEntryButton = () => {
+// TODO @ts-refactor verify that this component is not used
+export const NewEntryButton: React.FC = () => {
     const { setOpen } = useNewRefEntryDialog();
     return (
         <DefaultButton small={true} onClick={() => setOpen(true)}>

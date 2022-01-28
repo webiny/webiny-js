@@ -1,6 +1,10 @@
 import React, { useMemo } from "react";
 import debounce from "lodash/debounce";
 import { css } from "emotion";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import pluralize from "pluralize";
 import styled from "@emotion/styled";
@@ -18,6 +22,8 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import statusLabels from "../../constants/statusLabels";
 import { useCallback } from "react";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/useContentEntriesList";
+import { positionValues as PositionValues } from "react-custom-scrollbars";
+import { CmsEditorContentEntry } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
 
@@ -46,7 +52,7 @@ const listItemMinHeight = css({
     minHeight: "66px !important"
 });
 
-const ContentEntriesList = () => {
+const ContentEntriesList: React.FC = () => {
     const {
         contentModel,
         id,
@@ -65,7 +71,7 @@ const ContentEntriesList = () => {
     } = useContentEntriesList();
 
     const loadMoreOnScroll = useCallback(
-        debounce(scrollFrame => {
+        debounce((scrollFrame: PositionValues) => {
             if (scrollFrame.top > 0.9) {
                 loadMore();
             }
@@ -159,7 +165,7 @@ const ContentEntriesList = () => {
                 />
             }
         >
-            {({ data }) => (
+            {({ data }: { data: CmsEditorContentEntry[] }) => (
                 <>
                     <Scrollbar
                         data-testid="default-data-list"

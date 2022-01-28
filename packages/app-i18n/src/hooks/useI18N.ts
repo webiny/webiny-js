@@ -2,12 +2,13 @@ import { useContext } from "react";
 import { I18NContext, I18NContextValue } from "../contexts/I18N";
 import { I18NCurrentLocaleItem, I18NLocaleItem } from "~/types";
 
+type LocaleTypes = "default" | "content";
 interface UseI18NHook {
     refetchLocales: I18NContextValue["refetchLocales"];
     state: I18NContextValue["state"];
     getDefaultLocale(): I18NLocaleItem | null;
     getCurrentLocales(): I18NCurrentLocaleItem[];
-    getCurrentLocale(localeContext: string): string | null;
+    getCurrentLocale(localeContext?: LocaleTypes): string | null;
     getLocale(localeContext: string): string | null;
     setCurrentLocale(code: string, localeContext: string): void;
     getLocales(): I18NLocaleItem[];
@@ -24,10 +25,14 @@ export function useI18N(): UseI18NHook {
         getCurrentLocales() {
             return state.currentLocales;
         },
-        getCurrentLocale(localeContext = "default") {
-            return state.currentLocales.find(locale => locale.context === localeContext)?.locale;
+        getCurrentLocale(localeContext: LocaleTypes = "default") {
+            const locale = state.currentLocales.find(locale => locale.context === localeContext);
+            if (!locale) {
+                return null;
+            }
+            return locale.locale;
         },
-        getLocale(localeContext: string) {
+        getLocale(localeContext: LocaleTypes) {
             return self.getCurrentLocale(localeContext);
         },
         setCurrentLocale(code, localeContext = "default") {

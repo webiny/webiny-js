@@ -30,10 +30,21 @@ const IconStyle = css({
     height: 64
 });
 
-export const createRenderImagePreview = ({ value, imagePreviewProps }) => {
+interface CreateRenderImagePreviewProps {
+    value: string;
+    // TODO @ts-refactor figure out correct type
+    imagePreviewProps: any;
+}
+interface RenderImageProps {
+    [key: string]: string;
+}
+export const createRenderImagePreview = ({
+    value,
+    imagePreviewProps
+}: CreateRenderImagePreviewProps) => {
     const fileName = getFileName(value);
 
-    const renderImagePreview = renderImageProps => {
+    const renderImagePreview = (renderImageProps: RenderImageProps) => {
         return (
             <div {...renderImageProps} {...imagePreviewProps}>
                 <div className={IconWrapperStyle}>
@@ -46,7 +57,7 @@ export const createRenderImagePreview = ({ value, imagePreviewProps }) => {
     return renderImagePreview;
 };
 
-const getFileName = value => {
+const getFileName = (value: string): string => {
     if (!value) {
         return "";
     }

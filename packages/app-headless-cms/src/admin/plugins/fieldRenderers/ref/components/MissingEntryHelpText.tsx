@@ -1,3 +1,4 @@
+// TODO @ts-refactor verify that this component is not used
 import React from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
@@ -17,7 +18,10 @@ const HelpTextTypography = styled(Typography)`
     }
 `;
 
-const MissingEntryHelpText: React.FC<{ refModelId: string }> = ({ refModelId }) => {
+interface MissingEntryHelpTextProps {
+    refModelId: string;
+}
+const MissingEntryHelpText: React.FC<MissingEntryHelpTextProps> = ({ refModelId }) => {
     return (
         <HelpTextTypography use={"caption"}>
             {missingEntryLabel({

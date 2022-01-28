@@ -6,10 +6,25 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 import { useCmsData } from "./useCmsData";
+import { BindComponent } from "@webiny/form/Bind";
+import { FormData } from "@webiny/form/Form";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const ContentModelGroupPermission = ({ Bind, data, entity, title, locales }) => {
+interface ContentModelGroupPermissionProps {
+    Bind: BindComponent;
+    data: FormData;
+    entity: string;
+    title: string;
+    locales: string[];
+}
+const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = ({
+    Bind,
+    data,
+    entity,
+    title,
+    locales
+}) => {
     const modelsGroups = useCmsData(locales);
 
     const getItems = useCallback(

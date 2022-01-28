@@ -5,13 +5,14 @@ import { Editor } from "~/admin/components/ContentModelEditor/Editor";
 import { useRouter } from "@webiny/react-router";
 import { useCms } from "~/admin/hooks";
 import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor/Context";
-type QueryMatch = {
-    modelId?: string;
-};
-export default function ContentModelEditorView() {
+import { CmsModel } from "~/types";
+
+interface QueryMatch extends Pick<Partial<CmsModel>, "modelId"> {}
+
+const ContentModelEditorView: React.FC = () => {
     const { match } = useRouter();
     const { apolloClient } = useCms();
-    const { modelId } = match.params as QueryMatch;
+    const { modelId } = (match && match.params ? match.params : {}) as QueryMatch;
     if (!apolloClient) {
         return null;
     }
@@ -22,4 +23,5 @@ export default function ContentModelEditorView() {
             </DndProvider>
         </ContentModelEditorProvider>
     );
-}
+};
+export default ContentModelEditorView;

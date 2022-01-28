@@ -6,7 +6,7 @@ type Handlers = {
     [K in keyof HandlerFactories]: (...params: any[]) => any;
 };
 
-export function useHandlers(props: HandlerProps, factories: HandlerFactories) {
+export function useHandlers<H = Handlers>(props: HandlerProps, factories: HandlerFactories) {
     const propsRef = useRef(props);
 
     const handlersRef = useRef(
@@ -29,5 +29,5 @@ export function useHandlers(props: HandlerProps, factories: HandlerFactories) {
         propsRef.current = props;
     });
 
-    return handlersRef.current as Handlers;
+    return handlersRef.current as H;
 }

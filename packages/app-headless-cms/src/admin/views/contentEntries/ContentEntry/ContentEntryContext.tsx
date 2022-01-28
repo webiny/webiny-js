@@ -18,16 +18,12 @@ import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContent
 import { CmsContentEntryRevision, CmsEditorContentEntry } from "~/types";
 import { Tabs } from "@webiny/ui/Tabs";
 import { parseIdentifier } from "@webiny/utils";
-
-interface EntryQueryData {
-    content: {
-        error?: {
-            message: string;
-            code: string;
-            data: Record<string, any>;
-        };
-    };
-}
+import {
+    CmsEntriesListRevisionsQueryResponse,
+    CmsEntriesListRevisionsQueryVariables,
+    CmsEntryGetQueryResponse,
+    CmsEntryGetQueryVariables
+} from "~/admin/graphql/contentEntries";
 
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
@@ -45,17 +41,16 @@ export interface ContentEntryContext extends ContentEntriesContext {
 
 export const Context = React.createContext<ContentEntryContext>(null);
 
-export const Provider: React.FC = ({ children }) => {
-export interface ContentEntryContextProviderProps extends GetContentEntryFormType {
+export interface ContentEntryContextProviderProps extends UseContentEntryProviderProps {
     children: React.ReactNode;
 }
 
-interface GetContentEntryFormType {
+interface UseContentEntryProviderProps {
     getContentId?: () => string | null;
     isNewEntry?: () => boolean;
 }
 
-export const useContentEntryProviderProps = (): GetContentEntryFormType => {
+export const useContentEntryProviderProps = (): UseContentEntryProviderProps => {
     const { location } = useRouter();
     const query = new URLSearchParams(location.search);
 
@@ -73,11 +68,11 @@ export const useContentEntryProviderProps = (): GetContentEntryFormType => {
     };
 };
 
-export const Provider = ({
+export const Provider: React.FC<ContentEntryContextProviderProps> = ({
     children,
     isNewEntry,
     getContentId
-}: ContentEntryContextProviderProps) => {
+}) => {
     const { contentModel, canCreate, listQueryVariables, setListQueryVariables, sorters } =
         useContentEntries();
 
@@ -129,14 +124,14 @@ export const Provider = ({
         [tabsRef]
     );
 
-    const createEntry = useCallback(() => {
+    const createEntry = useCallback((): void => {
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
     }, [contentModel.modelId]);
 
-    const getEntry = useQuery(READ_CONTENT, {
+    const getEntry = useQuery<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>(READ_CONTENT, {
         variables: { revision: decodeURIComponent(contentId) },
         skip: !contentId,
-        onCompleted: (data?: EntryQueryData) => {
+        onCompleted: data => {
             if (!data) {
                 return;
             }
@@ -150,13 +145,16 @@ export const Provider = ({
         }
     });
 
-    const getRevisions = useQuery(GET_REVISIONS, {
+    const getRevisions = useQuery<
+        CmsEntriesListRevisionsQueryResponse,
+        CmsEntriesListRevisionsQueryVariables
+    >(GET_REVISIONS, {
         variables: { id: entryId },
         skip: !entryId
     });
 
     const loading = isLoading || getEntry.loading || getRevisions.loading;
-    const entry = get(getEntry, "data.content.data") || {};
+    const entry: CmsEditorContentEntry = get(getEntry, "data.content.data") || {};
 
     const value = {
         canCreate,

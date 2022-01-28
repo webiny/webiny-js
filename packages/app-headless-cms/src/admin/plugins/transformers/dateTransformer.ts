@@ -1,6 +1,9 @@
 import { CmsFieldValueTransformer } from "~/types";
 import WebinyError from "@webiny/error";
 
+interface TransformerCallable {
+    (value: string | number | Date): string | null;
+}
 interface ThrowTransformErrorParams {
     ex: WebinyError;
     type: string;
@@ -15,7 +18,7 @@ const throwTransformError = (params: ThrowTransformErrorParams): WebinyError => 
     });
 };
 
-const dateOnly = (value?: string): string | null => {
+const dateOnly: TransformerCallable = (value?: string): string | null => {
     if (!value) {
         return null;
     }
@@ -69,7 +72,7 @@ const extractTime = (value?: string): string | null => {
     return null;
 };
 
-const dateTimeWithTimezone = (value?: string): string => {
+const dateTimeWithTimezone: TransformerCallable = (value?: string): string => {
     if (!value) {
         return null;
     } else if (value.includes("T") === false) {
@@ -101,7 +104,7 @@ const dateTimeWithTimezone = (value?: string): string => {
     return value.replace(initialDate, date).replace(initialTime, time);
 };
 
-const dateTimeWithoutTimezone = (value?: string): string | null => {
+const dateTimeWithoutTimezone: TransformerCallable = (value?: string): string | null => {
     if (!value) {
         return null;
     } else if (value.includes(" ") === false) {
@@ -118,14 +121,14 @@ const dateTimeWithoutTimezone = (value?: string): string | null => {
     }
 };
 
-const time = (value?: string) => {
+const time: TransformerCallable = (value?: string) => {
     if (!value) {
         return null;
     }
     return extractTime(value);
 };
 
-const transformers = {
+const transformers: Record<string, TransformerCallable> = {
     time,
     date: dateOnly,
     dateTimeWithoutTimezone,

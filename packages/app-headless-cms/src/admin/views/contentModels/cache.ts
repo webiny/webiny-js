@@ -1,9 +1,13 @@
 import dotProp from "dot-prop-immutable";
 import * as GQL from "../../viewsGraphql";
 import { CmsEditorContentModel } from "~/types";
+import { DataProxy } from "apollo-cache";
+import { ListCmsModelsQueryResponse, ListMenuCmsGroupsQueryResponse } from "../../viewsGraphql";
 
-export const addModelToListCache = (cache, model: CmsEditorContentModel) => {
-    const { listContentModels } = cache.readQuery({ query: GQL.LIST_CONTENT_MODELS });
+export const addModelToListCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+    const { listContentModels } = cache.readQuery<ListCmsModelsQueryResponse>({
+        query: GQL.LIST_CONTENT_MODELS
+    });
     const newModelIndex = listContentModels.data.length;
 
     cache.writeQuery({
@@ -14,8 +18,8 @@ export const addModelToListCache = (cache, model: CmsEditorContentModel) => {
     });
 };
 
-export const addModelToGroupCache = (cache, model: CmsEditorContentModel) => {
-    const { listContentModelGroups: groupsList } = cache.readQuery({
+export const addModelToGroupCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+    const { listContentModelGroups: groupsList } = cache.readQuery<ListMenuCmsGroupsQueryResponse>({
         query: GQL.LIST_MENU_CONTENT_GROUPS_MODELS
     });
 
@@ -34,8 +38,10 @@ export const addModelToGroupCache = (cache, model: CmsEditorContentModel) => {
     });
 };
 
-export const removeModelFromListCache = (cache, model: CmsEditorContentModel) => {
-    const { listContentModels } = cache.readQuery({ query: GQL.LIST_CONTENT_MODELS });
+export const removeModelFromListCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+    const { listContentModels } = cache.readQuery<ListCmsModelsQueryResponse>({
+        query: GQL.LIST_CONTENT_MODELS
+    });
     const modelIndex = listContentModels.data.findIndex(m => m.modelId === model.modelId);
 
     cache.writeQuery({
@@ -46,8 +52,8 @@ export const removeModelFromListCache = (cache, model: CmsEditorContentModel) =>
     });
 };
 
-export const removeModelFromGroupCache = (cache, model: CmsEditorContentModel) => {
-    const { listContentModelGroups: groupsList } = cache.readQuery({
+export const removeModelFromGroupCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+    const { listContentModelGroups: groupsList } = cache.readQuery<ListMenuCmsGroupsQueryResponse>({
         query: GQL.LIST_MENU_CONTENT_GROUPS_MODELS
     });
 

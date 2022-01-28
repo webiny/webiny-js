@@ -1,16 +1,22 @@
-export const serializeSorters = data => {
+type SortTypes = "asc" | "desc";
+/**
+ * @deprecated
+ */
+export const serializeSorters = (data: string): string | undefined => {
     if (!data) {
-        return data;
+        return data as undefined;
     }
-    const [[key, value]] = Object.entries(data);
-    return `${key}:${value}`;
+    const [field, order] = data.split("_") as [string, SortTypes];
+    return `${field}:${order.toLowerCase()}`;
 };
-
-export const deserializeSorters = (data: string): Record<string, "asc" | "desc" | boolean> => {
+/**
+ * @param data in format field_order
+ */
+export const deserializeSorters = (data: string): [string, SortTypes] => {
     if (typeof data !== "string") {
         return data;
     }
-
-    const [key, value] = data.split(":") as [string, "asc" | "desc" | boolean];
-    return { [key]: value };
+    const [field, orderBy] = data.split("_") as [string, SortTypes];
+    const order = String(orderBy).toLowerCase() === "asc" ? "asc" : "desc";
+    return [field, order];
 };

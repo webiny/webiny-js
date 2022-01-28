@@ -6,20 +6,31 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
-import { useCmsData } from "./useCmsData";
+import { useCmsData, CmsDataCmsModel } from "./useCmsData";
 import { Note } from "./StyledComponents";
 import ContentModelList from "./ContentModelList";
+import { BindComponent } from "@webiny/form/Bind";
+import { FormData } from "@webiny/form/Form";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-export const ContentModelPermission = ({
+interface ContentModelPermissionProps {
+    Bind: BindComponent;
+    data: FormData;
+    setValue: (name: string, value: string) => void;
+    entity: string;
+    title: string;
+    locales: string[];
+    selectedContentModelGroups?: Record<string, string[]>;
+}
+export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
     Bind,
     data,
     setValue,
     entity,
     title,
     locales,
-    selectedContentModelGroups
+    selectedContentModelGroups = {}
 }) => {
     const modelsGroups = useCmsData(locales);
     // Set "cms.contentModel" access scope to "own" if "cms.contentModelGroup" === "own".
@@ -33,10 +44,10 @@ export const ContentModelPermission = ({
     }, [data]);
 
     const getItems = useCallback(
-        (code: string) => {
-            let list = get(modelsGroups, `${code}.models`, []);
+        (code: string): CmsDataCmsModel[] => {
+            let list = get(modelsGroups, `${code}.models`, []) as CmsDataCmsModel[];
 
-            const groups = (selectedContentModelGroups && selectedContentModelGroups[code]) || [];
+            const groups: string[] = selectedContentModelGroups[code] || [];
             if (groups.length) {
                 // Filter by groups
                 list = list.filter(item => groups.includes(item.group.id));

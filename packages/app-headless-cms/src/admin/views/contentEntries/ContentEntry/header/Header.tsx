@@ -21,7 +21,7 @@ const headerActionsRight = css({
     justifyContent: "flex-start"
 });
 
-const Header = props => {
+const Header: React.FC = props => {
     return (
         <React.Fragment>
             <Grid className={toolbarGrid}>

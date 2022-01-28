@@ -6,7 +6,7 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { PbIcon, PbIconsPlugin } from "~/types";
 import { IconPrefix } from "@fortawesome/fontawesome-common-types";
 
-const createSvg = (icon: string[]) => {
+const createSvg = (icon: string[]): React.ReactElement => {
     return (
         <svg width={24} viewBox={`0 0 ${icon[0]} ${icon[1]}`}>
             <path d={icon[4]} fill="currentColor" />

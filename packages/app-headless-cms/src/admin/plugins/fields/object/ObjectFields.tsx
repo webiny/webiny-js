@@ -1,16 +1,24 @@
 import React, { useCallback } from "react";
 import { set } from "dot-prop-immutable";
 import { FieldEditor, useFieldEditor } from "~/admin/components/FieldEditor";
+import { CmsEditorField, CmsModel } from "~/types";
 
-export const ObjectFields = ({ field }) => {
+interface ObjectFieldsProps {
+    field: CmsEditorField;
+}
+export const ObjectFields: React.FC<ObjectFieldsProps> = ({ field }) => {
     const { getField, updateField } = useFieldEditor();
 
     const onChange = useCallback(
-        ({ fields, layout }) => {
+        ({ fields, layout }: Pick<CmsModel, "fields" | "layout">) => {
             const currentField = getField({ id: field.id });
-            const updatedField = set(currentField, `settings`, settings => {
-                return { ...settings, fields, layout };
-            });
+            const updatedField = set(
+                currentField,
+                `settings`,
+                (settings: CmsModel["settings"]): Partial<CmsModel> => {
+                    return { ...settings, fields, layout };
+                }
+            );
             updateField(updatedField);
         },
         [field]

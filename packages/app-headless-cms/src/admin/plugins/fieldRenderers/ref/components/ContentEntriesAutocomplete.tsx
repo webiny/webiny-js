@@ -6,13 +6,18 @@ import { Link } from "@webiny/react-router";
 import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
+import { CmsEditorField } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const unpublishedLabel = t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`;
 const publishedLabel = t`Selected content entry is published. You can view it {here}.`;
 
-function ContentEntriesAutocomplete({ bind, field }) {
+interface ContentEntriesAutocompleteProps {
+    bind: any;
+    field: CmsEditorField;
+}
+const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({ bind, field }) => {
     const { options, setSearch, value, loading, onChange } = useReference({
         bind,
         field
@@ -47,6 +52,6 @@ function ContentEntriesAutocomplete({ bind, field }) {
             onInput={debounce(search => setSearch(search), 250)}
         />
     );
-}
+};
 
 export default ContentEntriesAutocomplete;

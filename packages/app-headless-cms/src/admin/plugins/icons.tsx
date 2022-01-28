@@ -1,11 +1,12 @@
-import * as React from "react";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import React from "react";
+import { IconName, library } from "@fortawesome/fontawesome-svg-core";
+import { IconPrefix } from "@fortawesome/fontawesome-common-types";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
-import { CmsIconsPlugin } from "~/types";
+import { CmsIcon, CmsIconsPlugin } from "~/types";
 
-const createSvg = icon => {
+const createSvg = (icon: string[]): React.ReactElement => {
     return (
         <svg width={24} viewBox={`0 0 ${icon[0]} ${icon[1]}`}>
             <path d={icon[4]} fill="currentColor" />
@@ -13,7 +14,7 @@ const createSvg = icon => {
     );
 };
 
-const icons = [];
+const icons: CmsIcon[] = [];
 
 const plugin: CmsIconsPlugin = {
     name: "cms-icons-fontawesome",
@@ -22,9 +23,9 @@ const plugin: CmsIconsPlugin = {
         library.add(fab, fas, far);
         // @ts-ignore
         const definitions = library.definitions;
-        Object.keys(definitions).forEach(pack => {
+        Object.keys(definitions).forEach((pack: IconPrefix) => {
             const defs = definitions[pack];
-            Object.keys(defs).forEach(icon => {
+            Object.keys(defs).forEach((icon: IconName) => {
                 icons.push({
                     id: [pack, icon],
                     name: icon,

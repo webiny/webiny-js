@@ -2,12 +2,12 @@ import React, { createContext, useContext, useState } from "react";
 
 export interface NewRefEntryDialogContextValue {
     open: boolean;
-    setOpen: Function;
+    setOpen: (value: boolean) => void;
 }
 
 export const NewRefEntryDialogContext = createContext<NewRefEntryDialogContextValue>(null);
 
-export const NewRefEntryDialogContextProvider = ({ children }) => {
+export const NewRefEntryDialogContextProvider: React.FC = ({ children }) => {
     const [open, setOpen] = useState<boolean>(false);
 
     return (

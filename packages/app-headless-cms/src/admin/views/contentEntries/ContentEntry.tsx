@@ -48,7 +48,7 @@ declare global {
     }
 }
 
-const ContentEntry = () => {
+const ContentEntry: React.FC = () => {
     const {
         contentModel,
         loading,

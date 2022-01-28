@@ -15,6 +15,13 @@ import * as UID from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
+import {
+    CreateCmsModelMutationResponse,
+    CreateCmsModelMutationVariables,
+    ListMenuCmsGroupsQueryResponse
+} from "../../viewsGraphql";
+import { CmsGroup } from "~/types";
+import { CmsGroupOption } from "./types";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -29,23 +36,26 @@ const noPadding = css({
     padding: "5px !important"
 });
 
-export type NewContentModelDialogProps = {
-    open: boolean;
-    onClose: UID.DialogOnClose;
-};
-
 /**
  * This list is to disallow creating models that might interfere with GraphQL schema creation.
  * Add more if required.
  */
 const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
 
+export interface NewContentModelDialogProps {
+    open: boolean;
+    onClose: UID.DialogOnClose;
+}
+
 const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const [createContentModel] = useMutation(GQL.CREATE_CONTENT_MODEL, {
+    const [createContentModel] = useMutation<
+        CreateCmsModelMutationResponse,
+        CreateCmsModelMutationVariables
+    >(GQL.CREATE_CONTENT_MODEL, {
         update(cache, { data }) {
             const { data: model, error } = data.createContentModel;
 
@@ -61,15 +71,23 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         }
     });
 
-    const { data } = useQuery(GQL.LIST_MENU_CONTENT_GROUPS_MODELS, {
-        skip: !open
-    });
+    const listMenuGroupsQuery = useQuery<ListMenuCmsGroupsQueryResponse>(
+        GQL.LIST_MENU_CONTENT_GROUPS_MODELS,
+        {
+            skip: !open
+        }
+    );
 
-    const contentModelGroups = get(data, "listContentModelGroups.data", []).map(item => {
-        return { value: item.id, label: item.name };
-    });
+    const contentModelGroups = get(listMenuGroupsQuery, "data.listContentModelGroups.data", []).map(
+        (item: CmsGroup): CmsGroupOption => {
+            return {
+                value: item.id,
+                label: item.name
+            };
+        }
+    );
 
-    const nameValidator = useCallback((name: string) => {
+    const nameValidator = useCallback((name: string): boolean => {
         const target = (name || "").trim();
         if (!target.charAt(0).match(/[a-zA-Z]/)) {
             throw new Error("Value is not valid - must not start with a number.");
@@ -88,6 +106,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         return true;
     }, undefined);
 
+    const group = contentModelGroups?.length > 0 ? contentModelGroups[0].value : null;
+
     return (
         <UID.Dialog
             open={open}
@@ -97,9 +117,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         >
             {open && (
                 <Form
-                    data={{
-                        group: get(contentModelGroups, "0.value")
-                    }}
+                    data={{ group }}
                     onSubmit={async data => {
                         setLoading(true);
                         await createContentModel({

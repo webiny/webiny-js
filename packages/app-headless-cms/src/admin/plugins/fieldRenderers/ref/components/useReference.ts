@@ -2,7 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import * as GQL from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorField } from "~/types";
+import { CmsEditorField, CmsModel } from "~/types";
+import {
+    CmsEntryGetQueryResponse,
+    CmsEntryGetQueryVariables,
+    CmsEntryQueryResponseDataEntry,
+    CmsEntrySearchQueryResponse,
+    CmsEntrySearchQueryVariables
+} from "./graphql";
 
 interface ValueEntry {
     id: string;
@@ -10,15 +17,6 @@ interface ValueEntry {
     modelName: string;
     published: boolean;
     name: string;
-}
-interface DataEntry {
-    id: string;
-    model: {
-        modelId: string;
-        name: string;
-    };
-    status: "published" | "draft";
-    title: string;
 }
 interface UseReferenceHookArgs {
     bind: any;
@@ -33,16 +31,18 @@ interface UseReferenceHookValue {
 }
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
-type EntryCollection = Record<string, DataEntry>;
+type EntryCollection = Record<string, CmsEntryQueryResponseDataEntry>;
 
-const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
+export const convertQueryDataToEntryList = (
+    data: CmsEntryQueryResponseDataEntry[]
+): EntryCollection => {
     return data.reduce((collection, entry) => {
         collection[entry.id] = entry;
         return collection;
-    }, {});
+    }, {} as Record<string, CmsEntryQueryResponseDataEntry>);
 };
 
-const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
+export const convertValueEntryToData = (entry: ValueEntry): CmsEntryQueryResponseDataEntry => {
     return {
         id: entry.id,
         model: {
@@ -54,7 +54,7 @@ const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
     };
 };
 
-const convertDataEntryToValue = (entry: DataEntry): ValueEntry => {
+export const convertDataEntryToValue = (entry: CmsEntryQueryResponseDataEntry): ValueEntry => {
     return {
         id: entry.id,
         modelId: entry.model.modelId,
@@ -80,7 +80,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const [latestEntries, setLatestEntries] = useState<EntryCollection>({});
     const [valueEntry, setValueEntry] = useState<ValueEntry>(null);
 
-    const { models } = field.settings;
+    const models = field.settings.models as Pick<CmsModel, "modelId">[];
     const modelsHash = models.join(",");
 
     const value = bind.value;
@@ -92,7 +92,10 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         }
 
         setLoading(true);
-        const { data } = await client.query({
+        const { data } = await client.query<
+            CmsEntrySearchQueryResponse,
+            CmsEntrySearchQueryVariables
+        >({
             query: GQL.SEARCH_CONTENT_ENTRIES,
             variables: { modelIds: models.map(m => m.modelId), query: search }
         });
@@ -112,7 +115,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
 
     useEffect(() => {
         client
-            .query({
+            .query<CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables>({
                 query: GQL.SEARCH_CONTENT_ENTRIES,
                 variables: {
                     modelIds: models.map(m => m.modelId),
@@ -146,13 +149,13 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
 
         setLoading(true);
         client
-            .query({
+            .query<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>({
                 query: GQL.GET_CONTENT_ENTRY,
                 variables: { entry: { modelId: value.modelId, id: value.id } }
             })
             .then(res => {
                 setLoading(false);
-                const dataEntry: DataEntry | null = res.data.content.data;
+                const dataEntry = res.data.content.data;
                 if (!dataEntry) {
                     return;
                 }
@@ -170,7 +173,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             });
     }, [valueHash, modelsHash]);
 
-    const onChange = useCallback((value, entry) => {
+    const onChange = useCallback((value: string, entry: ValueEntry) => {
         if (value !== null) {
             setSearch("");
 
