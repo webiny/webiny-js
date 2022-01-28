@@ -28,7 +28,7 @@ export class PulumiApp {
     }
 
     public addResource<T extends ResourceConstructor>(ctor: T, params: CreateResourceParams<T>) {
-        const config = params.config;
+        const config = params.config ?? ({} as ResourceArgs<T>);
         const opts = params.opts ?? {};
 
         const promise = new Promise<ResourceType<T>>(resolve => {

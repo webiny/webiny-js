@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 
 export interface ResourceConstructor<T = any, TArgs = any> {
-    new (name: string, args?: TArgs, opts?: pulumi.CustomResourceOptions): T;
+    new (name: string, args: TArgs, opts?: pulumi.CustomResourceOptions): T;
 }
 
 export type ResourceType<T extends ResourceConstructor> = T extends ResourceConstructor<infer TType>
@@ -12,7 +12,7 @@ export type ResourceArgs<T extends ResourceConstructor> = T extends ResourceCons
     any,
     infer TArgs
 >
-    ? TArgs
+    ? Exclude<TArgs, undefined>
     : never;
 
 export interface ResourceOverride<TCtor extends ResourceConstructor> {
