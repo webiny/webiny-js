@@ -1,8 +1,9 @@
 import { LocalWorkspace } from "@pulumi/pulumi/automation";
-import { PulumiApp } from "@webiny/pulumi-sdk";
+import { Pulumi } from "./Pulumi";
+import { PulumiApp } from "./PulumiApp";
 import { ApplicationConfig, ApplicationHook } from "./ApplicationConfig";
 
-export interface GenericApplicationConfig extends ApplicationConfig {
+export interface ApplicationGenericConfig extends ApplicationConfig {
     app: PulumiApp;
 }
 
@@ -10,10 +11,11 @@ interface StackArgs {
     /** Root path of the application */
     root: string;
     env: string;
-    pulumiCli: string;
+    pulumi: Pulumi;
+    debug?: boolean;
 }
 
-export class GenericApplication implements Readonly<ApplicationConfig> {
+export class ApplicationGeneric implements Readonly<ApplicationConfig> {
     public readonly id: string;
     public readonly name: string;
     public readonly description?: string;
@@ -23,7 +25,7 @@ export class GenericApplication implements Readonly<ApplicationConfig> {
     public readonly beforeDeploy?: ApplicationHook;
     public readonly afterDeploy?: ApplicationHook;
 
-    constructor(private readonly config: GenericApplicationConfig) {
+    constructor(private readonly config: ApplicationGenericConfig) {
         this.id = config.id;
         this.name = config.name;
         this.description = config.description;
@@ -36,32 +38,45 @@ export class GenericApplication implements Readonly<ApplicationConfig> {
 
     public async createOrSelectStack(args: StackArgs) {
         const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
-        // const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
 
-        return await LocalWorkspace.createOrSelectStack(
+        const stack = await LocalWorkspace.createOrSelectStack(
             {
-                projectName: this.config.name,
+                projectName: this.name,
                 stackName: args.env,
                 program: () => this.config.app.run()
             },
             {
                 workDir: args.root,
                 projectSettings: {
-                    name: this.config.name,
+                    name: this.name,
                     runtime: "nodejs",
-                    description: this.config.description
+                    description: this.description
                 },
                 secretsProvider: PULUMI_SECRETS_PROVIDER,
-                pulumiHome: args.pulumiCli,
+                pulumiHome: args.pulumi.pulumiFolder,
                 envVars: {
+                    WEBINY_ENV: args.env,
+                    WEBINY_PROJECT_NAME: this.name,
                     // Add Pulumi CLI path to env variable, so the CLI would be properly resolved.
-                    PATH: `${args.pulumiCli};${process.env.PATH ?? ""}`
+                    PATH: `${args.pulumi.pulumiFolder};${process.env.PATH ?? ""}`
                 }
             }
         );
+
+        return {
+            async refresh() {
+                return await stack.refresh({ onOutput: console.info });
+            },
+            async preview() {
+                return await stack.preview({ onOutput: console.info });
+            },
+            async up() {
+                return await stack.up({ onOutput: console.info });
+            }
+        };
     }
 }
 
-export function createGenericApplication(config: GenericApplicationConfig) {
-    return new GenericApplication(config);
+export function createGenericApplication(config: ApplicationGenericConfig) {
+    return new ApplicationGeneric(config);
 }

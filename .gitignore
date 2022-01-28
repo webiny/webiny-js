@@ -23,7 +23,7 @@ build/
 *.tsbuildinfo
 cypress.json
 .pulumi
-Pulumi.*.yaml
+Pulumi.*
 !Pulumi.yaml
 pbInstalation.zip
 globalConfig.json

@@ -3,10 +3,10 @@
  * https://www.webiny.com/docs/key-topics/cloud-infrastructure/admin/introduction
  */
 
-import { createAdminApplication } from "@webiny/pulumi-aws";
+import { createAdminApp } from "@webiny/pulumi-aws";
 import { afterDeploy } from "./cli/afterDeploy";
 
-export default createAdminApplication({
+export default createAdminApp({
     id: "admin",
     name: "Admin Area",
     description: "Your project's admin area.",
@@ -18,7 +18,7 @@ export default createAdminApplication({
     },
     config(app) {
         app.bucket.config.versioning = {
-            enabled: true
+            enabled: false
         };
     },
     beforeBuild() {

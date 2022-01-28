@@ -1,12 +1,25 @@
 import * as aws from "@pulumi/aws";
-import { defineAppModule } from "@webiny/pulumi-sdk";
 
-import { AppBucket } from "./AppBucket";
+import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
+import { defineApp, ApplicationConfig, createGenericApplication } from "@webiny/pulumi-sdk";
 
-export const AdminCloudfront = defineAppModule({
-    name: "Admin CloudFront",
-    run(app) {
-        const bucket = app.getModule(AppBucket);
+import { createAppBucket } from "./createAppBucket";
+
+export interface AdminAppConfig extends ApplicationConfig {
+    config?(app: InstanceType<typeof AdminApp>): void;
+}
+
+export const AdminApp = defineApp({
+    name: "Admin",
+    config(app) {
+        app.addHandler(() => {
+            tagResources({
+                WbyProjectName: String(process.env.WEBINY_PROJECT_NAME),
+                WbyEnvironment: String(process.env.WEBINY_ENV)
+            });
+        });
+
+        const bucket = createAppBucket(app, "admin-app");
 
         const cloudfront = app.addResource(aws.cloudfront.Distribution, {
             name: "admin-app-cdn",
@@ -45,6 +58,32 @@ export const AdminCloudfront = defineAppModule({
             }
         });
 
-        return cloudfront;
+        app.addOutputs({
+            appStorage: bucket.bucket.output.id,
+            appUrl: cloudfront.output.domainName.apply(value => `https://${value}`)
+        });
+
+        return {
+            ...bucket,
+            cloudfront
+        };
     }
 });
+
+export function createAdminApp(config: AdminAppConfig) {
+    const app = new AdminApp();
+
+    config.config?.(app);
+
+    return createGenericApplication({
+        id: config.id,
+        name: config.name,
+        description: config.description,
+        cli: config.cli,
+        app: app,
+        beforeBuild: config.beforeBuild,
+        afterBuild: config.afterBuild,
+        beforeDeploy: config.beforeDeploy,
+        afterDeploy: config.afterDeploy
+    });
+}

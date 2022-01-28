@@ -3,6 +3,7 @@ const { green } = require("chalk");
 const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 const buildPackages = require("./deploy/buildPackages");
+const { ApplicationGeneric, ApplicationLegacy } = require("@webiny/pulumi-sdk");
 
 module.exports = async (inputs, context) => {
     const { env, folder, build, deploy } = inputs;
@@ -36,10 +37,15 @@ module.exports = async (inputs, context) => {
 
     const hookArgs = { context, env, inputs, projectApplication };
 
+    const application =
+        projectApplication.config instanceof ApplicationGeneric
+            ? projectApplication.config
+            : new ApplicationLegacy(projectApplication.config);
+
     if (build) {
         await runHook({
             hookName: "hook-before-build",
-            hookFn: projectApplication.config.beforeBuild,
+            hookFn: application.beforeBuild,
             args: hookArgs,
             context
         });
@@ -48,7 +54,7 @@ module.exports = async (inputs, context) => {
 
         await runHook({
             hookName: "hook-after-build",
-            hookFn: projectApplication.config.afterBuild,
+            hookFn: application.afterBuild,
             args: hookArgs,
             context
         });
@@ -70,16 +76,15 @@ module.exports = async (inputs, context) => {
             cwd: projectApplication.root
         }
     });
-
-    const stack = await projectApplication.config.createOrSelectStack({
+    const stack = await application.createOrSelectStack({
         root: projectApplication.root,
         env,
-        pulumiCli: pulumi.pulumiFolder
+        pulumi: pulumi
     });
 
     await runHook({
         hookName: "hook-before-deploy",
-        hookFn: projectApplication.config.beforeDeploy,
+        hookFn: application.beforeDeploy,
         skip: inputs.preview,
         args: hookArgs,
         context
@@ -114,7 +119,7 @@ module.exports = async (inputs, context) => {
 
     await runHook({
         hookName: "hook-after-deploy",
-        hookFn: projectApplication.config.afterDeploy,
+        hookFn: application.afterDeploy,
         skip: inputs.preview,
         args: hookArgs,
         context
