@@ -541,11 +541,13 @@ module.exports = function (webpackEnv, { paths, options }) {
                 options: {
                     esModule: false,
                     sourceMap: isEnvProduction && shouldUseSourceMap,
-                    // for some wacky reason css-loader tries to resolve inline images
-                    // like url("data:image/svg+xml;base64,PHN2ZyB4d3dy53My5...")
                     url: {
                         filter(url) {
-                            if (url.startsWith("data:")) {
+                            // Don't resolve inline assets and assets starting with `/`.
+                            // Use of absolute path is most likely intentional, and we don't want want to resolve
+                            // to actual file system root. Previous versions of css-loader would just ignore these paths,
+                            // but the new one is complaining, so we need to make this an explicit rule.
+                            if (url.startsWith("data:") || url.startsWith("/")) {
                                 return false;
                             }
 
