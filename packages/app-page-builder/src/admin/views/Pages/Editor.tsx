@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useApolloClient, useMutation } from "@apollo/react-hooks";
 import { useHistory, useParams } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import get from "lodash.get";
+import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
 import { createElement } from "~/editor/helpers";
 import { GET_PAGE, CREATE_PAGE_FROM } from "./graphql";
