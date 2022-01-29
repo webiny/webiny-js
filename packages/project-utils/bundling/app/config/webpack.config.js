@@ -227,7 +227,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                 ...(modules.webpackAliases || {})
             },
             fallback: {
-                path: require.resolve("path-browserify")
+                path: require.resolve("path-browserify"),
+                buffer: require.resolve("buffer/")
             }
         },
 
@@ -401,6 +402,9 @@ module.exports = function (webpackEnv, { paths, options }) {
             ]
         },
         plugins: [
+            new webpack.ProvidePlugin({
+                Buffer: ["buffer", "Buffer"]
+            }),
             // Generates an `index.html` file with the <script> injected.
             new HtmlWebpackPlugin(
                 Object.assign(

@@ -1,18 +1,29 @@
-const baseSendEvent = require("./sendEvent");
+const createSendEvent = require("./sendEvent");
 const { globalConfig } = require("@webiny/global-config");
 
 const sendEvent = ({ event, user, version, properties, extraPayload }) => {
-    if (!isEnabled()) {
-        return;
-    }
+    const shouldSend = isEnabled();
 
-    return baseSendEvent({
-        event,
-        user: user || globalConfig.get("id"),
-        version: version || require("./package.json").version,
-        properties,
-        extraPayload
-    });
+    try {
+        const sendTelemetry = createSendEvent({
+            event,
+            user: user || globalConfig.get("id"),
+            version: version || require("./package.json").version,
+            properties,
+            extraPayload
+        });
+
+        if (shouldSend) {
+            return sendTelemetry();
+        }
+    } catch (err) {
+        // Ignore errors if telemetry is disabled.
+        if (!shouldSend) {
+            return;
+        }
+
+        throw err;
+    }
 };
 
 const enable = () => {
@@ -30,6 +41,7 @@ const isEnabled = () => {
         return false;
     }
 
+    // `tracking` is left here for backwards compatibility with previous versions of Webiny.
     return config.tracking !== false;
 };
 
