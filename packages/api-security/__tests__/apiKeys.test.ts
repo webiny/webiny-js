@@ -100,6 +100,28 @@ describe("Security API Key Test", () => {
             }
         });
 
+        // List again to make sure that an updated token is accessible.
+        const [listResponse2] = await securityApiKeys.list();
+
+        expect(listResponse2).toEqual({
+            data: {
+                security: {
+                    listApiKeys: {
+                        data: [
+                            {
+                                id: token.id,
+                                name: "Renamed token",
+                                token: token.token,
+                                description: "Updated description",
+                                permissions: []
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+
         // Delete token
         const [deleteResponse] = await securityApiKeys.delete({
             id: token.id
