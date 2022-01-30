@@ -24,8 +24,8 @@ import { ReactComponent as MoreVerticalIcon } from "../../../icons/more_vert.svg
 import { ReactComponent as PublishIcon } from "../../../icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "../../../icons/unpublish.svg";
 import { useRevision } from "./useRevision";
-import { FbFormModel } from "../../../../types";
-import usePermission from "../../../../hooks/usePermission";
+import { FbFormModel } from "~/types";
+import { usePermission } from "~/hooks/usePermission";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
@@ -35,7 +35,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = rev => {
+const getIcon = (rev: FbFormModel) => {
     switch (rev.status) {
         case "locked":
             return {
@@ -55,12 +55,12 @@ const getIcon = rev => {
     }
 };
 
-type RevisionProps = {
+interface RevisionProps {
     form: FbFormModel;
     revision: FbFormModel;
-};
+}
 
-const Revision = (props: RevisionProps) => {
+const Revision: React.FC<RevisionProps> = props => {
     const { revision: rev, form } = props;
     const { icon, text: tooltipText } = getIcon(rev);
     const { publishRevision, createRevision, deleteRevision, editRevision, unpublishRevision } =

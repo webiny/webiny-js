@@ -14,7 +14,7 @@ import { CmsEditorField, CmsEditorFieldsLayout } from "~/types";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
-const fieldTypes = ["field", "newField"];
+const fieldTypes: string[] = ["field", "newField"];
 
 const Editor: React.FC = () => {
     const {
@@ -157,13 +157,14 @@ const Editor: React.FC = () => {
 
             <EditFieldDialog
                 field={field}
-                onClose={editField}
+                onClose={() => editField(null)}
                 onSubmit={field => {
                     if (field.id) {
                         updateField(field);
-                    } else {
-                        insertField({ field, position: dropTarget });
+                        return;
                     }
+                    insertField({ field, position: dropTarget });
+
                     editField(null);
                 }}
             />

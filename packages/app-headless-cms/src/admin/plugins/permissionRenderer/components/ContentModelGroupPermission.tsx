@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 import { useCmsData } from "./useCmsData";
 import { BindComponent } from "@webiny/form/types";
-import { FormData } from "@webiny/form/Form";
+import { FormData } from "@webiny/form/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 

@@ -4,9 +4,14 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "../../../../icons/edit.svg";
 import { useRevision } from "../../formRevisions/useRevision";
-import usePermission from "../../../../../hooks/usePermission";
+import { usePermission } from "~/hooks/usePermission";
+import { FbFormModel, FbRevisionModel } from "~/types";
 
-const EditRevision = ({ revision, form }) => {
+interface EditRevisionProps {
+    revision: FbRevisionModel;
+    form: FbFormModel;
+}
+const EditRevision: React.FC<EditRevisionProps> = ({ revision, form }) => {
     const { createRevision } = useRevision({ revision, form });
     const { history } = useRouter();
     const { canEdit } = usePermission();

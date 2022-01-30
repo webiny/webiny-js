@@ -29,9 +29,10 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import usePermission from "../../../hooks/usePermission";
+import { usePermission } from "~/hooks/usePermission";
 import { useForms } from "./useForms";
 import { deserializeSorters, serializeSorters } from "../utils";
+import { FbFormModel, FbRevisionModel } from "~/types";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 const rightAlign = css({
@@ -46,29 +47,38 @@ export type FormsDataListProps = {
     onCreateForm: () => void;
 };
 
-const SORTERS = [
+interface Sorter {
+    label: string;
+    sorters: string;
+}
+
+const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
-        sorters: { savedOn: "desc" }
+        sorters: "savedOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { savedOn: "asc" }
+        sorters: "savedOn_ASC"
     },
     {
         label: t`Name A-Z`,
-        sorters: { name: "asc" }
+        sorters: "name_ASC"
     },
     {
         label: t`Name Z-A`,
-        sorters: { name: "desc" }
+        sorters: "name_DESC"
     }
 ];
 
-const FormsDataList = (props: FormsDataListProps) => {
-    const editHandlers = useRef({});
-    const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters({ savedOn: "desc" }));
+interface HandlerCallable {
+    (): Promise<void>;
+}
+
+const FormsDataList: React.FC<FormsDataListProps> = props => {
+    const editHandlers = useRef<Record<string, HandlerCallable>>({});
+    const [filter, setFilter] = useState<string>("");
+    const [sort, setSort] = useState<string>(SORTERS[0].sorters);
 
     const { listQuery, canCreate } = useForms();
 
@@ -104,7 +114,7 @@ const FormsDataList = (props: FormsDataListProps) => {
         [location]
     );
 
-    const editRecord = useCallback(form => {
+    const editRecord = useCallback((form: FbRevisionModel) => {
         // Note: form id is remains the same after publish.
         const handlerKey = form.id + form.status;
         if (!editHandlers.current[handlerKey]) {
@@ -165,7 +175,7 @@ const FormsDataList = (props: FormsDataListProps) => {
                         >
                             {SORTERS.map(({ label, sorters }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorters}>
                                         {label}
                                     </option>
                                 );

@@ -7872,6 +7872,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-google-recaptcha@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@types/react-google-recaptcha@npm:1.1.2"
+  dependencies:
+    "@types/react": "*"
+  checksum: 2a4a0697a19e18a90c5b45d946f1b7bcfccc8e96f5f33dcf64e3605a94940e731d480a01c53ceb18503fa950ddaa55d6b8bff5c38528765f20bbcb3a9bf1544e
+  languageName: node
+  linkType: hard
+
 "@types/react-helmet@npm:^6.1.5":
   version: 6.1.5
   resolution: "@types/react-helmet@npm:6.1.5"
@@ -10237,6 +10246,7 @@ __metadata:
     "@rmwc/menu": ^5.6.0
     "@svgr/webpack": ^6.1.1
     "@types/react": ^16.14.0
+    "@types/react-google-recaptcha": ^1.1.2
     "@webiny/app": ^5.22.0
     "@webiny/app-admin": ^5.22.0
     "@webiny/app-page-builder": ^5.22.0

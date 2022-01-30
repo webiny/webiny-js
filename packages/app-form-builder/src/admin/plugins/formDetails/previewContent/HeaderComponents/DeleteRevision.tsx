@@ -11,10 +11,16 @@ import {
     removeFormFromListCache,
     removeRevisionFromFormCache,
     updateLatestRevisionInListCache
-} from "../../../../views/cache";
-import usePermission from "../../../../../hooks/usePermission";
+} from "~/admin/views/cache";
+import { usePermission } from "~/hooks/usePermission";
 
-const DeleteRevision = ({ revisions, form, revision, selectRevision }) => {
+interface DeleteRevisionProps {}
+const DeleteRevision: React.FC<DeleteRevisionProps> = ({
+    revisions,
+    form,
+    revision,
+    selectRevision
+}) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { history } = useRouter();

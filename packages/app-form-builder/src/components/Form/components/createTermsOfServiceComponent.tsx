@@ -1,13 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { OutputBlockData } from "@editorjs/editorjs";
 import { termsOfServiceEnabled } from "./../functions";
-import { FbFormModel, FbFormRenderComponentProps } from "../../../types";
+import { FbFormModel, FbFormRenderComponentProps } from "~/types";
 
-type CreateTermsOfServiceComponentArgs = {
+interface CreateTermsOfServiceComponentArgs {
     props: FbFormRenderComponentProps;
     formData: FbFormModel;
     setTermsOfServiceAccepted: (value: boolean) => void;
-};
+}
 
 type ChildrenFunction = (params: {
     onChange: (value: boolean) => void;
@@ -15,12 +15,12 @@ type ChildrenFunction = (params: {
     message: OutputBlockData[];
 }) => React.ReactNode;
 
-export type TermsOfServiceProps = {
+export interface TermsOfServiceProps {
     children: ChildrenFunction;
     onChange?: (value: string) => void;
     onErrored?: Function;
     onExpired?: Function;
-};
+}
 
 export type TermsOfServiceComponent = React.FC<TermsOfServiceProps>;
 
@@ -28,6 +28,7 @@ const createTermsOfServiceComponent = ({
     formData,
     setTermsOfServiceAccepted
 }: CreateTermsOfServiceComponentArgs): TermsOfServiceComponent =>
+    // TODO @ts-refactor figure out how to type this
     // @ts-ignore
     function TermsOfService(props: TermsOfServiceProps) {
         if (!termsOfServiceEnabled(formData)) {

@@ -27,7 +27,7 @@ interface Position {
 
 export interface DragSource extends DragObjectWithType {
     parent?: string;
-    pos: Partial<Position>;
+    pos?: Partial<Position>;
     type: "row" | "field" | "newField";
     fieldType?: string;
     field?: CmsEditorField;
@@ -93,7 +93,7 @@ export interface FieldEditorContextValue {
     getFieldsInLayout: GetFieldsInLayoutCallable;
     getFieldPlugin: GetFieldPluginCallable;
     getField: GetFieldCallable;
-    editField: (field: CmsEditorField) => void;
+    editField: (field: CmsEditorField | null) => void;
     field: CmsEditorField;
     parent: CmsEditorField;
     depth: number;

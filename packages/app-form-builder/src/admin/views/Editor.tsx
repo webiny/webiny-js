@@ -3,10 +3,11 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { FormEditorApp } from "../components/FormEditor";
 
-export default function EditorView() {
+const EditorView: React.FC = () => {
     return (
         <DndProvider backend={HTML5Backend}>
             <FormEditorApp />
         </DndProvider>
     );
-}
+};
+export default EditorView;

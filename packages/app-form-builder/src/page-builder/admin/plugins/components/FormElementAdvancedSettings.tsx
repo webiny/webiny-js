@@ -12,13 +12,37 @@ import {
     SimpleButton,
     classes
 } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
-import { LIST_FORMS, GET_FORM_REVISIONS } from "./graphql";
+import {
+    LIST_FORMS,
+    GET_FORM_REVISIONS,
+    GetFormRevisionsQueryResponse,
+    GetFormRevisionsQueryVariables
+} from "./graphql";
+import { BindComponent, FormOnSubmit } from "@webiny/form";
+import { FbRevisionModel } from "~/types";
 
 const FormOptionsWrapper = styled("div")({
     minHeight: 250
 });
 
-const FormElementAdvancedSettings = ({ Bind, submit, data }) => {
+interface FormElementAdvancedSettingsProps {
+    Bind: BindComponent;
+    submit: FormOnSubmit;
+    data: Record<string, string>;
+}
+interface RevisionsOutputOption {
+    name: string;
+    id: string;
+}
+interface RevisionsOutput {
+    options: RevisionsOutputOption[];
+    value: RevisionsOutputOption | null;
+}
+const FormElementAdvancedSettings: React.FC<FormElementAdvancedSettingsProps> = ({
+    Bind,
+    submit,
+    data
+}) => {
     const listQuery = useQuery(LIST_FORMS, { fetchPolicy: "network-only" });
 
     const selectedForm = useMemo(() => {
@@ -28,25 +52,29 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }) => {
         };
     }, [data]);
 
-    const [getFormRevisions, getQuery] = useLazyQuery(GET_FORM_REVISIONS, {
+    const [getFormRevisions, getQuery] = useLazyQuery<
+        GetFormRevisionsQueryResponse,
+        GetFormRevisionsQueryVariables
+    >(GET_FORM_REVISIONS, {
         variables: {
             id: selectedForm.parent
         }
     });
 
     const latestRevisions = useMemo(() => {
-        const output = {
+        const output: RevisionsOutput = {
             options: [],
             value: null
         };
         if (listQuery.data) {
-            const latestFormRevisionsList = get(listQuery, "data.formBuilder.listForms.data") || [];
+            const latestFormRevisionsList: FbRevisionModel[] =
+                get(listQuery, "data.formBuilder.listForms.data") || [];
 
             output.options = latestFormRevisionsList.map(({ id, name }) => ({ id, name }));
             output.value =
                 output.options.find(item => {
                     if (typeof item.id !== "string" || typeof selectedForm.parent !== "string") {
-                        return;
+                        return false;
                     }
                     // Get selected form's "baseId", i.e without the revision number suffix.
                     const [baseId] = selectedForm.parent.split("#");
@@ -58,15 +86,14 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }) => {
     }, [listQuery, selectedForm]);
 
     const publishedRevisions = useMemo(() => {
-        const output = {
+        const output: RevisionsOutput = {
             options: [],
             value: null
         };
 
         if (getQuery.data) {
-            const publishedRevisions = get(
-                getQuery,
-                "data.formBuilder.getFormRevisions.data"
+            const publishedRevisions = (
+                get(getQuery, "data.formBuilder.getFormRevisions.data") as FbRevisionModel[]
             ).filter(revision => revision.published);
             output.options = publishedRevisions.map(item => ({
                 id: item.id,

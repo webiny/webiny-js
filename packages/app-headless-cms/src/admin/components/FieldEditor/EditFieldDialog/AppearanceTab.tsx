@@ -7,7 +7,7 @@ import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
-import { Form } from "@webiny/form/Form";
+import { FormRenderPropParams } from "@webiny/form";
 
 const t = i18n.ns(
     "app-headless-cms/admin/views/components/editor/tabs/edit-field-dialog/appearance-tab"
@@ -28,7 +28,7 @@ const style = {
 
 interface AppearanceTabProps {
     field: CmsEditorField;
-    form: Form;
+    form: FormRenderPropParams;
 }
 const AppearanceTab: React.FC<AppearanceTabProps> = props => {
     const { field, form } = props;

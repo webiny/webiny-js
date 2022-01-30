@@ -18,8 +18,9 @@ import {
     FbFormModel,
     FbFormSubmissionData,
     FbFormFieldValidatorPlugin,
-    FbFormLayoutPlugin
-} from "../../types";
+    FbFormLayoutPlugin,
+    FbFormModelField
+} from "~/types";
 import { PbThemePlugin } from "@webiny/app-page-builder/types";
 
 declare global {
@@ -35,7 +36,7 @@ declare global {
     }
 }
 
-const FormRender = (props: FbFormRenderComponentProps) => {
+const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     const theme = useMemo(
         () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
         []
@@ -60,23 +61,24 @@ const FormRender = (props: FbFormRenderComponentProps) => {
     const formData: FbFormModel = cloneDeep(data);
     const { layout, fields, settings } = formData;
 
-    const getFieldById = id => {
+    const getFieldById = (id: string): FbFormModelField => {
         return fields.find(field => field._id === id);
     };
 
-    const getFieldByFieldId = id => {
+    const getFieldByFieldId = (id: string): FbFormModelField => {
         return fields.find(field => field.fieldId === id);
     };
 
     const getFields = () => {
-        const fields: any = cloneDeep(layout);
+        const fields = cloneDeep(layout);
         const validatorPlugins =
             plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
 
         fields.forEach(row => {
             row.forEach((id, idIndex) => {
-                row[idIndex] = getFieldById(id);
-                row[idIndex].validators = row[idIndex].validation
+                const field = getFieldById(id);
+                // row[idIndex] = getFieldById(id);
+                field.validators = row[idIndex].validation
                     .map(item => {
                         const validatorPlugin = validatorPlugins.find(
                             plugin => plugin.validator.name === item.name
@@ -89,7 +91,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
                             return null;
                         }
 
-                        return async value => {
+                        return async (value: string): Promise<void> => {
                             let isInvalid;
                             try {
                                 const result = await validatorPlugin.validator.validate(

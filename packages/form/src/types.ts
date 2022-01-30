@@ -69,6 +69,7 @@ export interface FormProps<T extends Record<string, any> = Record<string, any>> 
     onInvalid?: () => void;
     onChange?: FormOnSubmit;
     children: FormRenderProp;
+    ref: React.MutableRefObject<any>;
 }
 
 /**

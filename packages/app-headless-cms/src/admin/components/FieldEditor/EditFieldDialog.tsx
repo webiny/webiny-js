@@ -20,7 +20,6 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
-import { FormOnSubmit } from "@webiny/form/Form";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -34,7 +33,7 @@ const dialogBody = css({
 interface EditFieldDialogProps {
     field: CmsEditorField;
     onClose: () => void;
-    onSubmit: FormOnSubmit;
+    onSubmit: (data: CmsEditorField) => void;
 }
 
 interface Validator {
@@ -101,13 +100,14 @@ const fieldEditorDialog = css({
 });
 
 const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
-    const [current, setCurrent] = useState(null);
+    const [current, setCurrent] = useState<CmsEditorField>(null);
 
     const { getFieldPlugin } = useFieldEditor();
 
-    useEffect(() => {
+    useEffect((): void => {
         if (!field) {
-            return setCurrent(field);
+            setCurrent(field);
+            return;
         }
 
         const clonedField = cloneDeep(field);
@@ -125,7 +125,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
         setCurrent(clonedField);
     }, [field]);
 
-    const onClose = useCallback(() => {
+    const onClose = useCallback((): void => {
         setCurrent(null);
         props.onClose();
     }, undefined);
@@ -142,7 +142,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
         }
 
         render = (
-            <Form data={current} onSubmit={onSubmit}>
+            <Form data={current} onSubmit={(data: CmsEditorField) => onSubmit(data)}>
                 {form => {
                     const predefinedValuesTabEnabled =
                         fieldPlugin.field.allowPredefinedValues &&
@@ -249,6 +249,8 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                         <AppearanceTab
                                             form={form}
                                             field={form.data as CmsEditorField}
+                                            // TODO @ts-refactor verify that this actually worked? There was no fieldPlugin in AppearanceTab props
+                                            // @ts-ignore
                                             fieldPlugin={fieldPlugin}
                                         />
                                     </Tab>

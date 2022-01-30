@@ -13,7 +13,7 @@ export interface DroppableChildrenFunction {
 }
 
 interface IsVisibleParams {
-    type: string;
+    type: "row" | "field" | "newField";
     item: any;
     isDragging: boolean;
 }

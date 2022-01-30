@@ -11,11 +11,17 @@ import {
 import { ApolloClient } from "apollo-client";
 import { SecurityContext } from "@webiny/app-security";
 
-export type FbBuilderFieldValidator = {
+export interface FbErrorResponse {
+    message: string;
+    code: string;
+    data?: Record<string, any>;
+}
+
+export interface FbBuilderFieldValidator {
     name: string;
     message: string;
     settings: any;
-};
+}
 
 export type FbBuilderFormFieldValidatorPlugin = Plugin & {
     type: "form-editor-field-validator";
@@ -51,27 +57,27 @@ export type FbFormFieldPatternValidatorPlugin = Plugin & {
     };
 };
 
-export type FbFormFieldValidator = {
+export interface FbFormFieldValidator {
     name: string;
     message: any;
     settings: any;
-};
+}
 
 export type FbFormFieldValidatorPlugin = Plugin & {
     type: "fb-form-field-validator";
     validator: {
         name: string;
-        validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;
+        validate: (value: string, validator: FbFormFieldValidator) => Promise<any>;
     };
 };
 
 export type FieldIdType = string;
 export type FbFormModelFieldsLayout = FieldIdType[][];
 
-export type FieldLayoutPositionType = {
+export interface FieldLayoutPositionType {
     row: number;
     index: number;
-};
+}
 
 export type FbBuilderFieldPlugin = Plugin & {
     type: "form-editor-field-type";
@@ -93,7 +99,7 @@ export type FbBuilderFieldPlugin = Plugin & {
     };
 };
 
-export type FbRevisionModel = {
+export interface FbRevisionModel {
     id: string;
     name: string;
     version: number;
@@ -104,15 +110,15 @@ export type FbRevisionModel = {
         id: string;
         displayName: string;
     };
-};
+}
 
-export type FbFormDetailsPluginRenderParams = {
+export interface FbFormDetailsPluginRenderParams {
     security: SecurityContext;
     refreshForms: () => Promise<void>;
     form: FbFormModel;
     revisions: FbRevisionModel[];
     loading: boolean;
-};
+}
 
 export type FbFormDetailsPluginType = Plugin & {
     type: "forms-form-details-revision-content";
@@ -124,7 +130,7 @@ export type FbFormDetailsSubmissionsPlugin = Plugin & {
     render: (props: { form: FbFormModel }) => React.ReactNode;
 };
 
-export type FbFormModel = {
+export interface FbFormModel {
     id: FieldIdType;
     version: number;
     parent: string;
@@ -140,7 +146,7 @@ export type FbFormModel = {
         views: number;
         conversionRate: number;
     };
-};
+}
 
 export type FbFormModelField = {
     _id?: string;
@@ -255,14 +261,11 @@ export type FbFormRenderComponentProps = {
     client?: ApolloClient<any>;
 };
 
-export type FormSubmitResponseType = {
+export interface FormSubmitResponseType {
     data: any;
     preview: boolean;
-    error: {
-        message: string;
-        code: string;
-    };
-};
+    error: FbErrorResponse;
+}
 
 export type FormLoadComponentPropsType = {
     preview?: boolean;
@@ -290,3 +293,15 @@ export type FormSettingsPluginRenderFunctionType = (props: {
     formData: any; // Form settings.
     form: any;
 }) => React.ReactElement<any>;
+
+/**
+ * Data types
+ */
+export interface FbSettings {
+    domain: string;
+    reCaptcha: {
+        enabled: boolean;
+        siteKey: string;
+        secretKey: string;
+    };
+}

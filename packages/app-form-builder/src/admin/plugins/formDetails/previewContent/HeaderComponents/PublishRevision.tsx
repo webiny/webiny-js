@@ -3,18 +3,18 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as PublishIcon } from "../../../../icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "../../../../icons/unpublish.svg";
-import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "../../../../graphql";
+import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "~/admin/graphql";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FbRevisionModel } from "../../../../../types";
-import usePermission from "../../../../../hooks/usePermission";
+import { FbRevisionModel } from "~/types";
+import { usePermission } from "~/hooks/usePermission";
 
 type PublishRevisionProps = {
     revision: FbRevisionModel;
 };
 
-const PublishRevision = ({ revision }: PublishRevisionProps) => {
+const PublishRevision: React.FC<PublishRevisionProps> = ({ revision }) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { canPublish, canUnpublish } = usePermission();

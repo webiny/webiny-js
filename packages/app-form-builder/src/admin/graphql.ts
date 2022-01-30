@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { FbErrorResponse, FbRevisionModel } from "~/types";
 
 const ERROR_FIELDS = `
     code
@@ -18,7 +19,18 @@ const BASE_FORM_FIELDS = `
         displayName
     }
 `;
-
+/**
+ * ####################
+ * List Forms Query
+ */
+export interface ListFormsQueryResponse {
+    formBuilder: {
+        listForms: {
+            data: FbRevisionModel[];
+            error?: FbErrorResponse;
+        };
+    };
+}
 export const LIST_FORMS = gql`
     query FbListForms {
         formBuilder {
@@ -34,7 +46,23 @@ export const LIST_FORMS = gql`
         }
     }
 `;
-
+/**
+ * ####################
+ * Create Form Mutation
+ */
+export interface CreateFormMutationResponse {
+    formBuilder: {
+        form: {
+            data: FbRevisionModel | null;
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface CreateFormMutationVariables {
+    data: {
+        name: string;
+    };
+}
 export const CREATE_FORM = gql`
     mutation FormsCreateForm($name: String!) {
         formBuilder {
@@ -50,6 +78,21 @@ export const CREATE_FORM = gql`
     }
 `;
 
+/**
+ * ########################
+ * Get Form Revision Query
+ */
+export interface GetFormRevisionQueryResponse {
+    formBuilder: {
+        form: {
+            data: FbRevisionModel | null;
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface GetFormRevisionQueryVariables {
+    revision: string;
+}
 export const GET_FORM = gql`
     query FbGetForm($revision: ID!) {
         formBuilder {
@@ -70,6 +113,21 @@ export const GET_FORM = gql`
     }
 `;
 
+/**
+ * ####################
+ * Get Forms Revisions Query
+ */
+export interface GetFormRevisionsQueryResponse {
+    formBuilder: {
+        revisions: {
+            data: FbRevisionModel[];
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface GetFormRevisionsQueryVariables {
+    id: string;
+}
 export const GET_FORM_REVISIONS = gql`
     query FbGetFormRevisions($id: ID!) {
         formBuilder {

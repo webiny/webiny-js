@@ -10,7 +10,7 @@ import { useCmsData, CmsDataCmsModel } from "./useCmsData";
 import { Note } from "./StyledComponents";
 import ContentModelList from "./ContentModelList";
 import { BindComponent } from "@webiny/form/types";
-import { FormData } from "@webiny/form/Form";
+import { FormData } from "@webiny/form/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 

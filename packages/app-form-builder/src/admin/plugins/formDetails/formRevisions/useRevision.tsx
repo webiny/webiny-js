@@ -7,17 +7,17 @@ import {
     DELETE_REVISION,
     PUBLISH_REVISION,
     UNPUBLISH_REVISION
-} from "../../../graphql";
+} from "~/admin/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FbFormModel } from "../../../../types";
+import { FbFormModel, FbRevisionModel } from "~/types";
 import {
     removeRevisionFromFormCache,
     updateLatestRevisionInListCache,
     addRevisionToRevisionsCache
-} from "../../../views/cache";
+} from "~/admin/views/cache";
 
 export type UseRevisionProps = {
-    revision: FbFormModel;
+    revision: FbRevisionModel;
     form: FbFormModel;
 };
 

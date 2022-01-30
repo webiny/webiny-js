@@ -5,13 +5,13 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { useFormEditor } from "../../../components/FormEditor/Context";
-import { PUBLISH_REVISION } from "../../../graphql";
-import usePermission from "../../../../hooks/usePermission";
+import { useFormEditor } from "~/admin/components/FormEditor";
+import { PUBLISH_REVISION } from "~/admin/graphql";
+import { usePermission } from "~/hooks/usePermission";
 
 const t = i18n.namespace("FormEditor.PublishPageButton");
 
-const PublishFormButton = () => {
+const PublishFormButton: React.FC = () => {
     const {
         state: { data }
     } = useFormEditor();
