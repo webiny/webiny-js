@@ -5,11 +5,11 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "../../../../icons/edit.svg";
 import { useRevision } from "../../formRevisions/useRevision";
 import { usePermission } from "~/hooks/usePermission";
-import { FbFormModel, FbRevisionModel } from "~/types";
+import { FbRevisionModel } from "~/types";
 
 interface EditRevisionProps {
     revision: FbRevisionModel;
-    form: FbFormModel;
+    form: FbRevisionModel;
 }
 const EditRevision: React.FC<EditRevisionProps> = ({ revision, form }) => {
     const { createRevision } = useRevision({ revision, form });

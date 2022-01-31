@@ -13,8 +13,14 @@ import {
     updateLatestRevisionInListCache
 } from "~/admin/views/cache";
 import { usePermission } from "~/hooks/usePermission";
+import { FbFormModel, FbRevisionModel } from "~/types";
 
-interface DeleteRevisionProps {}
+interface DeleteRevisionProps {
+    revisions: FbRevisionModel[];
+    form: FbRevisionModel;
+    revision: FbRevisionModel;
+    selectRevision: (revision: FbRevisionModel) => void;
+}
 const DeleteRevision: React.FC<DeleteRevisionProps> = ({
     revisions,
     form,

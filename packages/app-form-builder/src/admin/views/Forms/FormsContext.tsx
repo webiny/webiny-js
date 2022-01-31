@@ -11,6 +11,10 @@ export interface FormsContextValue {
 
 export const FormsContext = React.createContext<FormsContextValue>(null);
 
+export interface FormContextProvider {
+    canCreate: boolean;
+    listQuery: QueryResult<ListFormsQueryResponse>;
+}
 export const FormsProvider: React.FC = ({ children }) => {
     const { identity } = useSecurity();
     const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS);
@@ -28,7 +32,7 @@ export const FormsProvider: React.FC = ({ children }) => {
         return permission.rwd.includes("w");
     }, []);
 
-    const value = {
+    const value: FormContextProvider = {
         canCreate,
         listQuery
     };

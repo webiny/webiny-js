@@ -19,7 +19,11 @@ const BackgroundColorDiv = styled("div")({
     height: "100%"
 });
 
-type OuterDivProps = { isOver: boolean; isDragging: boolean; last: boolean };
+interface OuterDivProps {
+    isOver: boolean;
+    isDragging: boolean;
+    last: boolean;
+}
 
 const OuterDiv = styled("div")(
     {
@@ -49,13 +53,13 @@ const OuterDiv = styled("div")(
     })
 );
 
-type HorizontalProps = {
+interface HorizontalProps {
     onDrop(item: DragObjectWithType): void;
     last?: boolean;
     isVisible?: any;
-};
+}
 
-const Horizontal = ({ last, onDrop, isVisible }: HorizontalProps) => {
+export const Horizontal = ({ last, onDrop, isVisible }: HorizontalProps) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
@@ -81,5 +85,3 @@ const Horizontal = ({ last, onDrop, isVisible }: HorizontalProps) => {
         </Droppable>
     );
 };
-
-export default Horizontal;

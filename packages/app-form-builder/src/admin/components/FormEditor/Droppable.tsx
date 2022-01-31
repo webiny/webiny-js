@@ -8,16 +8,16 @@ export type DroppableChildrenFunction = (params: {
     drop: ConnectDropTarget;
 }) => React.ReactElement;
 
-export type DroppableProps = {
+export interface DroppableProps {
     type?: string;
     children: DroppableChildrenFunction;
     isDragging?: boolean;
     isDroppable?: (item: any) => boolean;
     isVisible?: (params: { type: string; item: any; isDragging: boolean }) => boolean;
     onDrop?: (item: DragObjectWithType) => void;
-};
+}
 
-function Droppable(props: DroppableProps) {
+const Droppable: React.FC<DroppableProps> = props => {
     const { children, onDrop, isVisible = () => true } = props;
 
     const [{ item, isOver }, drop] = useDrop({
@@ -38,6 +38,8 @@ function Droppable(props: DroppableProps) {
     }
 
     return children({ isDragging: Boolean(item), isOver, item, drop });
-}
+};
 
-export default React.memo(Droppable);
+const MemoizedDroppable: React.FC<DroppableProps> = React.memo(Droppable);
+
+export default MemoizedDroppable;

@@ -2,23 +2,30 @@ import React, { useState, useCallback } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_RECAPTCHA_SETTINGS } from "./graphql";
+import { GET_RECAPTCHA_SETTINGS, GetReCaptchaSettingsQueryResponse } from "./graphql";
 import ReCaptchaSettingsDialog from "./ReCaptchaSettingsDialog";
 import { Alert } from "@webiny/ui/Alert";
 import { Input } from "@webiny/ui/Input";
+import { BindComponent } from "@webiny/form";
+import { FbSettings } from "~/types";
 
-const ReCaptchaSettings = ({ Bind, formData }) => {
+interface ReCaptchaSettingsProps {
+    Bind: BindComponent;
+    formData: FbSettings;
+}
+const ReCaptchaSettings: React.FC<ReCaptchaSettingsProps> = ({ Bind, formData }) => {
     const [dialogOpened, setDialogOpened] = useState(false);
     const openDialog = useCallback(() => setDialogOpened(true), []);
     const closeDialog = useCallback(() => setDialogOpened(false), []);
 
     const [settingsLoaded, setSettingsLoaded] = useState(false);
 
-    const { data, refetch } = useQuery(GET_RECAPTCHA_SETTINGS, {
+    const { data, refetch } = useQuery<GetReCaptchaSettingsQueryResponse>(GET_RECAPTCHA_SETTINGS, {
         onCompleted: () => setSettingsLoaded(true)
     });
 
-    const settings = data?.formBuilder?.getSettings?.data?.reCaptcha || {};
+    const settings: Partial<FbSettings["reCaptcha"]> =
+        data?.formBuilder?.getSettings?.data?.reCaptcha || {};
     const reCaptchaEnabledInSettings = settings.enabled && settings.siteKey && settings.secretKey;
     const reCaptchaEnabled = formData?.reCaptcha?.enabled;
 

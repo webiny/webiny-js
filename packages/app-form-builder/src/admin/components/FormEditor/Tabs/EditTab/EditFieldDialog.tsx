@@ -10,7 +10,7 @@ import {
     DialogActions,
     DialogButton
 } from "@webiny/ui/Dialog";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { plugins } from "@webiny/plugins";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
@@ -37,13 +37,13 @@ const FbFormModelFieldList = styled("div")({
     backgroundColor: "var(--mdc-theme-background) !important"
 });
 
-type EditFieldDialogProps = {
+interface EditFieldDialogProps {
     field: FbFormModelField;
     onClose: Function;
-    onSubmit: (data: any) => void;
-};
+    onSubmit: FormOnSubmit;
+}
 
-const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
+const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
     const [current, setCurrent] = useState(null);
     const [isNewField, setIsNewField] = useState<boolean>(false);
     const [screen, setScreen] = useState<string>();

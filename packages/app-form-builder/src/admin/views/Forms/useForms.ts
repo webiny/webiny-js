@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { FormsContext } from "./FormsContext";
+import { FormContextProvider, FormsContext } from "./FormsContext";
 
-export function useForms() {
+export function useForms(): FormContextProvider {
     return useContext(FormsContext);
 }

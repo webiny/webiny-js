@@ -76,19 +76,27 @@ export default FormEditorContext => {
              * @param layout
              * @returns {*}
              */
-            getFields(layout = false): FbFormModelField[] | FbFormModelFieldsLayout {
+            getFields(layout = false): FbFormModelField[][] {
                 if (!layout) {
                     return state.data.fields;
                 }
 
                 // Replace every field ID with actual field object.
-                const fields = cloneDeep(state.data.layout);
-                fields.forEach((row, rowIndex) => {
-                    row.forEach((fieldId, fieldIndex) => {
-                        fields[rowIndex][fieldIndex] = self.getField({ _id: fieldId });
+                return state.data.layout.map(row => {
+                    return row.map(id => {
+                        return self.getField({
+                            _id: id
+                        });
                     });
                 });
-                return fields;
+
+                // const fields = cloneDeep(state.data.layout);
+                // fields.forEach((row, rowIndex) => {
+                //     row.forEach((fieldId, fieldIndex) => {
+                //         fields[rowIndex][fieldIndex] = self.getField({ _id: fieldId });
+                //     });
+                // });
+                // return fields;
             },
 
             /**

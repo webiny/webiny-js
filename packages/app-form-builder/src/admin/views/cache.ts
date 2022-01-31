@@ -86,7 +86,7 @@ export const removeFormFromListCache = (cache: DataProxy, form: FbFormModel): vo
 
 export const removeRevisionFromFormCache = (
     cache: DataProxy,
-    form: FbFormModel,
+    form: FbRevisionModel,
     revision: FbRevisionModel
 ): FbRevisionModel[] => {
     const gqlParams = {

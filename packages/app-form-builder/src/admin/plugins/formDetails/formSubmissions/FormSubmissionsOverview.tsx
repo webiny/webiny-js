@@ -2,11 +2,11 @@ import * as React from "react";
 import Block from "./Block";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
-import { FbFormModel } from "../../../../types";
+import { FbFormModel } from "~/types";
 
-type Props = {
+interface FormSubmissionsOverviewProps {
     form: FbFormModel;
-};
+}
 
 const StatBox = styled("div")({
     width: "33.33%",
@@ -24,7 +24,7 @@ const ContentWrapper = styled("div")({
     boxSizing: "border-box"
 });
 
-export const FormSubmissionsOverview = ({ form }: Props) => {
+export const FormSubmissionsOverview: React.FC<FormSubmissionsOverviewProps> = ({ form }) => {
     return (
         <Block title="Overview">
             <ContentWrapper>

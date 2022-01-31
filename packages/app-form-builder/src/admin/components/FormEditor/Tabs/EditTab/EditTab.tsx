@@ -8,11 +8,11 @@ import Field from "./Field";
 import { ReactComponent as HandleIcon } from "../../../../icons/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "../../Context";
-import { FieldLayoutPositionType } from "../../../../../types";
+import { FieldLayoutPositionType } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
 
-export const EditTab = () => {
+export const EditTab: React.FC = () => {
     const {
         getFields,
         insertField,
@@ -56,7 +56,7 @@ export const EditTab = () => {
         insertField(plugin.field.createField(), dropTarget);
     }, undefined);
 
-    const fields: Array<any> = getFields(true);
+    const fields = getFields(true);
 
     return (
         <EditContainer>

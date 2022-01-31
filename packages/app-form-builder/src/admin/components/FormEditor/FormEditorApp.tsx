@@ -5,7 +5,7 @@ import { FormEditorProvider } from "./Context";
 import FormEditor from "./FormEditor";
 import { match } from "react-router";
 
-const FormEditorApp = () => {
+const FormEditorApp: React.FC = () => {
     const router = useRouter();
     const client = useApolloClient();
 

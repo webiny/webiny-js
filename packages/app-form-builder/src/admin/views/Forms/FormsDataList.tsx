@@ -1,4 +1,8 @@
 import React, { useRef, useCallback, useState, useMemo } from "react";
+/**
+ * Package timeago-react does not have types
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
 import orderBy from "lodash/orderBy";
@@ -7,7 +11,12 @@ import { useRouter } from "@webiny/react-router";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { DELETE_FORM, CREATE_REVISION_FROM } from "../../graphql";
+import {
+    DELETE_FORM,
+    CREATE_REVISION_FROM,
+    CreateRevisionFromMutationResponse,
+    CreateRevisionFromMutationVariables
+} from "../../graphql";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import {
@@ -31,7 +40,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { usePermission } from "~/hooks/usePermission";
 import { useForms } from "./useForms";
-import { deserializeSorters, serializeSorters } from "../utils";
+import { deserializeSorters } from "../utils";
 import { FbFormModel, FbRevisionModel } from "~/types";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
@@ -119,25 +128,29 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
         const handlerKey = form.id + form.status;
         if (!editHandlers.current[handlerKey]) {
             editHandlers.current[handlerKey] = async () => {
-                if (form.published) {
-                    const { data: res } = await client.mutate({
-                        mutation: CREATE_REVISION_FROM,
-                        variables: { revision: form.id },
-                        update(cache, { data }) {
-                            updateLatestRevisionInListCache(cache, data.formBuilder.revision.data);
-                        }
-                    });
-
-                    const { data, error } = res.formBuilder.revision;
-
-                    if (error) {
-                        return showSnackbar(error.message);
-                    }
-
-                    history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
-                } else {
+                if (!form.published) {
                     history.push(`/form-builder/forms/${encodeURIComponent(form.id)}`);
                 }
+
+                const { data: res } = await client.mutate<
+                    CreateRevisionFromMutationResponse,
+                    CreateRevisionFromMutationVariables
+                >({
+                    mutation: CREATE_REVISION_FROM,
+                    variables: { revision: form.id },
+                    update(cache, { data }) {
+                        updateLatestRevisionInListCache(cache, data.formBuilder.revision.data);
+                    }
+                });
+
+                const { data, error } = res.formBuilder.revision;
+
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
+                return;
             };
         }
 
@@ -152,7 +165,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
     );
 
     const sortData = useCallback(
-        list => {
+        (list: FbFormModel[]) => {
             if (!sort) {
                 return list;
             }

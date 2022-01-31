@@ -9,7 +9,7 @@ import {
     FbBuilderFormFieldValidatorPlugin
 } from "~/types";
 
-export default {
+const plugin: FbBuilderFormFieldValidatorPlugin = {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-pattern",
     validator: {
@@ -17,6 +17,8 @@ export default {
         label: "Pattern",
         description: "Entered value must match a specific pattern.",
         defaultMessage: "Invalid value.",
+        // TODO @ts-refactor verify that settings is being used - there is no type written for it
+        // @ts-ignore
         defaultSettings: {
             preset: "custom"
         },
@@ -82,4 +84,5 @@ export default {
             );
         }
     }
-} as FbBuilderFormFieldValidatorPlugin;
+};
+export default plugin;

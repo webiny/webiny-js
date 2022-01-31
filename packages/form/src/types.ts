@@ -57,7 +57,7 @@ export type FormData = { [key: string]: any };
 
 export type Validation = { [key: string]: any };
 
-export type FormOnSubmit = (data: FormData, form?: Form) => void;
+export type FormOnSubmit<T = FormData> = (data: T, form?: Form) => void;
 
 export interface FormProps<T extends Record<string, any> = Record<string, any>> {
     invalidFields?: { [key: string]: any };

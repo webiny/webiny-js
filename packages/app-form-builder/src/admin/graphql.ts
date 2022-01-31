@@ -1,5 +1,11 @@
 import gql from "graphql-tag";
-import { FbErrorResponse, FbRevisionModel } from "~/types";
+import {
+    FbErrorResponse,
+    FbFormModel,
+    FbFormSubmissionData,
+    FbMetaResponse,
+    FbRevisionModel
+} from "~/types";
 
 const ERROR_FIELDS = `
     code
@@ -26,7 +32,7 @@ const BASE_FORM_FIELDS = `
 export interface ListFormsQueryResponse {
     formBuilder: {
         listForms: {
-            data: FbRevisionModel[];
+            data: FbFormModel[];
             error?: FbErrorResponse;
         };
     };
@@ -143,6 +149,25 @@ export const GET_FORM_REVISIONS = gql`
     }
 `;
 
+/**
+ * ############################
+ * List Form Submissions Query Response
+ */
+export interface ListFormSubmissionsQueryResponse {
+    formBuilder: {
+        listFormSubmissions: {
+            data: FbFormSubmissionData[];
+            error?: FbErrorResponse;
+            meta: FbMetaResponse;
+        };
+    };
+}
+export interface ListFormSubmissionsQueryVariables {
+    form: string;
+    sort: string[];
+    limit?: number | null;
+    after?: string | null;
+}
 export const LIST_FORM_SUBMISSIONS = gql`
     query FbListFormSubmissions(
         $form: ID!
@@ -189,7 +214,23 @@ export const LIST_FORM_SUBMISSIONS = gql`
         }
     }
 `;
-
+/**
+ * ####################
+ * Export Form Submissions Mutation
+ */
+export interface ExportFormSubmissionsMutationResponse {
+    formBuilder: {
+        exportFormSubmissions: {
+            data: {
+                src: string;
+            };
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface ExportFormSubmissionsMutationVariables {
+    form: string;
+}
 export const EXPORT_FORM_SUBMISSIONS = gql`
     mutation FormsExportFormSubmissions($form: ID!) {
         formBuilder {
@@ -204,7 +245,21 @@ export const EXPORT_FORM_SUBMISSIONS = gql`
         }
     }
 `;
-
+/**
+ * ####################
+ * Create Revision From Mutation
+ */
+export interface CreateRevisionFromMutationResponse {
+    formBuilder: {
+        revision: {
+            data: FbRevisionModel;
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface CreateRevisionFromMutationVariables {
+    revision: string;
+}
 export const CREATE_REVISION_FROM = gql`
     mutation FormsCreateRevisionFrom($revision: ID!) {
         formBuilder {
@@ -219,7 +274,21 @@ export const CREATE_REVISION_FROM = gql`
         }
     }
 `;
-
+/**
+ * ##############################
+ * Publish Revision Mutation Response
+ */
+export interface PublishRevisionMutationResponse {
+    formBuilder: {
+        publishRevision: {
+            data: FbRevisionModel;
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface PublishRevisionMutationVariables {
+    revision: string;
+}
 export const PUBLISH_REVISION = gql`
     mutation FormsPublishRevision($revision: ID!) {
         formBuilder {
@@ -235,6 +304,21 @@ export const PUBLISH_REVISION = gql`
     }
 `;
 
+/**
+ * ##############################
+ * Unpublish Revision Mutation Response
+ */
+export interface UnpublishRevisionMutationResponse {
+    formBuilder: {
+        unpublishRevision: {
+            data: FbRevisionModel;
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface UnpublishRevisionMutationVariable {
+    revision: string;
+}
 export const UNPUBLISH_REVISION = gql`
     mutation FormsUnpublishRevision($revision: ID!) {
         formBuilder {

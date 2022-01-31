@@ -7,6 +7,7 @@ import { ReactComponent as DownButton } from "../../../../icons/round-arrow_drop
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
+import { FbFormModel, FbRevisionModel } from "~/types";
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -23,7 +24,16 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = ({ revisions, revision, selectRevision }) => {
+interface RevisionSelectorProps {
+    revisions: FbRevisionModel[];
+    revision: FbRevisionModel;
+    selectRevision: (form: FbRevisionModel) => void;
+}
+const RevisionSelector: React.FC<RevisionSelectorProps> = ({
+    revisions,
+    revision,
+    selectRevision
+}) => {
     return (
         <Menu
             data-testid={"fb.form-preview.header.revision-selector"}

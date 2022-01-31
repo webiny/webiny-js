@@ -8,7 +8,7 @@ import { plugins } from "@webiny/plugins";
 import { set } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { FbEditorTrigger } from "../../../../../types";
+import { FbEditorTrigger } from "~/types";
 const t = i18n.namespace("FormsApp.Editor.TriggersTab");
 
 const Container = styled("div")({
@@ -16,7 +16,7 @@ const Container = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-export const TriggersTab = () => {
+export const TriggersTab: React.FC = () => {
     const { setData, data: formData } = useFormEditor();
     const formEditorTriggerPlugins = plugins.byType<FbEditorTrigger>("form-editor-trigger");
     const { showSnackbar } = useSnackbar();
@@ -38,7 +38,9 @@ export const TriggersTab = () => {
                         <Form
                             data={formData?.triggers?.[trigger.id] || {}}
                             onSubmit={submitData => {
-                                setData(data => set(data, `triggers.${trigger.id}`, submitData));
+                                setData(data => {
+                                    return set(data, `triggers.${trigger.id}`, submitData);
+                                });
                                 showSnackbar(t`Form settings updated successfully.`);
                             }}
                         >

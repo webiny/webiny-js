@@ -1,11 +1,20 @@
 import { RichTextEditorProps } from "./RichTextEditor";
+import { ToolSettings } from "@editorjs/editorjs";
 
+interface CreatePropsFromConfigResult {
+    onReady: (editor: any) => void;
+    tools: {
+        [key: string]: ToolSettings;
+    };
+}
 /**
  * Creates RichTextEditor props from the given config (or array of configs).
  *
  * TODO: figure out types for editor and return type of the function.
  */
-export const createPropsFromConfig = (config: RichTextEditorProps[]) => {
+export const createPropsFromConfig = (
+    config: RichTextEditorProps[]
+): CreatePropsFromConfigResult => {
     const configs = (Array.isArray(config) ? config : [config]) as RichTextEditorProps[];
 
     return {
@@ -17,7 +26,10 @@ export const createPropsFromConfig = (config: RichTextEditorProps[]) => {
             });
         },
         tools: configs.reduce((tools, config) => {
-            return Object.assign(tools, config.tools);
-        }, {})
+            return {
+                ...tools,
+                ...config.tools
+            };
+        }, {} as Record<string, ToolSettings>)
     };
 };

@@ -7,7 +7,7 @@ import EditorContent from "./EditorContent";
 import DragPreview from "./DragPreview";
 import { useFormEditor } from "./Context";
 
-const FormEditor = () => {
+const FormEditor: React.FC = () => {
     const {
         getForm,
         state: { data, id }
@@ -16,7 +16,7 @@ const FormEditor = () => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    React.useEffect(() => {
+    React.useEffect((): void => {
         getForm(id).catch(() => {
             history.push(`/form-builder/forms`);
             showSnackbar("Could not load form with given ID.");

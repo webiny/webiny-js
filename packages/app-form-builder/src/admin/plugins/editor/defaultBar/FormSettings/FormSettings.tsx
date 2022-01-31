@@ -7,7 +7,7 @@ import { Form } from "@webiny/form";
 import { Icon } from "@webiny/ui/Icon";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
-import { useFormEditor } from "../../../../components/FormEditor/Context";
+import { useFormEditor } from "~/admin/components/FormEditor";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import { i18n } from "@webiny/app/i18n";
@@ -20,13 +20,13 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
-import { FbEditorFormSettingsPlugin } from "../../../../../types";
+import { FbEditorFormSettingsPlugin } from "~/types";
 
-type FormSettingsProps = {
+interface FormSettingsProps {
     onExited: () => void;
-};
+}
 
-const FormSettings = ({ onExited }: FormSettingsProps) => {
+const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
     const formEditorSettingsPlugins = plugins.byType<FbEditorFormSettingsPlugin>(
         "form-editor-form-settings"
     );

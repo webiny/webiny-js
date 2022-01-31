@@ -1,4 +1,4 @@
-import { UseFormEditorReducerStateType } from "../../../../types";
+import { UseFormEditorReducerStateType } from "~/types";
 
 export function init(props: UseFormEditorReducerStateType) {
     return {

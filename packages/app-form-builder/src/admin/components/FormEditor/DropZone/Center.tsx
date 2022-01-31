@@ -28,15 +28,15 @@ const Add = styled("div")(({ isOver }: { isOver: boolean }) => ({
     color: isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)"
 }));
 
-type Props = {
+interface Props {
     type?: string;
     onDrop(item: DragObjectWithType): void;
     children: React.ReactNode;
     active?: boolean;
     highlight?: boolean;
-};
+}
 
-export default function Center({ onDrop, children }: Props) {
+export const Center: React.FC<Props> = ({ onDrop, children }) => {
     return (
         <Droppable onDrop={onDrop}>
             {({ isOver, drop }) => (
@@ -52,4 +52,4 @@ export default function Center({ onDrop, children }: Props) {
             )}
         </Droppable>
     );
-}
+};

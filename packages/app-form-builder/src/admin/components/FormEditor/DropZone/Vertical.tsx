@@ -20,12 +20,12 @@ const BackgroundColorDiv = styled("div")({
     height: "100%"
 });
 
-type OuterDivVerticalProps = {
+interface OuterDivVerticalProps {
     isOver: boolean;
     last?: boolean;
     isVisible?: any;
     isDragging?: boolean;
-};
+}
 
 const OuterDivVertical = styled("div")(
     {
@@ -55,13 +55,13 @@ const OuterDivVertical = styled("div")(
     })
 );
 
-type VerticalProps = {
+interface VerticalProps {
     onDrop(item: DragObjectWithType): void;
     last?: boolean;
     isVisible?: any;
-};
+}
 
-const Vertical = ({ last, onDrop, isVisible }: VerticalProps) => {
+export const Vertical: React.FC<VerticalProps> = ({ last, onDrop, isVisible }) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
@@ -87,5 +87,3 @@ const Vertical = ({ last, onDrop, isVisible }: VerticalProps) => {
         </Droppable>
     );
 };
-
-export default Vertical;
