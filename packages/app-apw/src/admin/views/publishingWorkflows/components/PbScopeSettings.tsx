@@ -13,6 +13,7 @@ import { ListItemWithCheckbox } from "~/admin/views/publishingWorkflows/componen
 import { usePbCategories } from "~/admin/views/publishingWorkflows/hooks/usePbCategories";
 import { usePbPages } from "~/admin/views/publishingWorkflows/hooks/usePbPages";
 import { validation } from "@webiny/validation";
+import { BindComponentRenderProp } from "@webiny/form/Bind";
 
 const textStyle = css`
     color: var(--mdc-theme-text-secondary-on-background);
@@ -73,10 +74,13 @@ const PbCategories: React.FC<PbCategoriesProps> = ({ Bind, runValidation }) => {
     );
 };
 
-type PbPagesListProps = PbScopeSettingsProps;
+interface PbPagesListProps {
+    bind: BindComponentRenderProp;
+    runValidation: boolean;
+}
 
-const PbPagesList: React.FC<PbPagesListProps> = ({ Bind, runValidation }) => {
-    const { loading, setQuery, options } = usePbPages();
+const PbPagesList: React.FC<PbPagesListProps> = ({ bind }) => {
+    const { loading, setQuery, options, value } = usePbPages({ bind });
     return (
         <Stack space={6} padding={6}>
             <Box>
@@ -86,23 +90,17 @@ const PbPagesList: React.FC<PbPagesListProps> = ({ Bind, runValidation }) => {
                 >{`This workflow applies to specific pages only.`}</Typography>
             </Box>
             <Box>
-                <Bind
-                    name={"scope.data.pages"}
-                    validators={runValidation ? validation.create("minLength:1") : noop}
-                >
-                    {bind => (
-                        <MultiAutoComplete
-                            {...bind}
-                            label={"Pages"}
-                            options={options}
-                            useMultipleSelectionList={true}
-                            useSimpleValues={false}
-                            loading={loading}
-                            textProp={"title"}
-                            onInput={search => setQuery(search)}
-                        />
-                    )}
-                </Bind>
+                <MultiAutoComplete
+                    {...bind}
+                    value={value}
+                    label={"Pages"}
+                    options={options}
+                    useMultipleSelectionList={true}
+                    useSimpleValues={false}
+                    loading={loading}
+                    textProp={"title"}
+                    onInput={search => setQuery(search)}
+                />
             </Box>
         </Stack>
     );
@@ -121,7 +119,15 @@ const PbScopeSettings: React.FC<PbScopeSettingsProps> = ({ Bind, runValidation }
                     <PbCategories Bind={Bind} runValidation={runValidation} />
                 </Tab>
                 <Tab label={"Specific Pages"}>
-                    <PbPagesList Bind={Bind} runValidation={runValidation} />
+                    <Bind
+                        name={"scope.data.pages"}
+                        validators={runValidation ? validation.create("minLength:1") : noop}
+                        beforeChange={(pages, onChange) => {
+                            onChange(pages.map(item => item.pid));
+                        }}
+                    >
+                        {bind => <PbPagesList bind={bind} runValidation={runValidation} />}
+                    </Bind>
                 </Tab>
             </Tabs>
         </Elevation>
