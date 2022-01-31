@@ -1,4 +1,10 @@
-import { Page, OnBeforePageCreateFromTopicParams } from "@webiny/api-page-builder/types";
+import {
+    Page,
+    OnBeforePageCreateTopicParams,
+    OnBeforePageCreateFromTopicParams,
+    OnBeforePageUpdateTopicParams,
+    OnBeforePagePublishTopicParams
+} from "@webiny/api-page-builder/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
@@ -59,9 +65,14 @@ export interface PageWithWorkflow extends Page {
     };
 }
 
-export interface CustomEventParams extends OnBeforePageCreateFromTopicParams {
-    page: PageWithWorkflow;
-}
+export type ApwOnBeforePageCreateTopicParams = OnBeforePageCreateTopicParams<PageWithWorkflow>;
+
+export type ApwOnBeforePageCreateFromTopicParams =
+    OnBeforePageCreateFromTopicParams<PageWithWorkflow>;
+
+export type ApwOnBeforePageUpdateTopicParams = OnBeforePageUpdateTopicParams<PageWithWorkflow>;
+
+export type ApwOnBeforePagePublishTopicParams = OnBeforePagePublishTopicParams<PageWithWorkflow>;
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
@@ -158,7 +169,7 @@ export interface ApwWorkflow extends BaseFields {
     app: ApwWorkflowApplications;
 }
 
-interface ApwWorkflowScope {
+export interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
     data: {
         categories?: string[];

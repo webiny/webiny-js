@@ -17,6 +17,8 @@ export default () => [
         const { security, apw, pageBuilder } = context;
         const pageMethods = {
             onBeforePageCreate: pageBuilder.onBeforePageCreate,
+            onBeforePageCreateFrom: pageBuilder.onBeforePageCreateFrom,
+            onBeforePageUpdate: pageBuilder.onBeforePageUpdate,
             getPage: pageBuilder.getPage,
             updatePage: pageBuilder.updatePage
         };

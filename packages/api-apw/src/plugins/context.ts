@@ -1,10 +1,11 @@
+import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 import { createApw } from "~/createApw";
 import apwHooks from "./hooks";
+import triggerContentReview from "./pageBuilder/triggerContentReview";
 import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
-import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
 
 export default () => [
     new ContextPlugin<ApwContext>(async context => {
@@ -60,6 +61,8 @@ export default () => [
             const entry = await context.cms.getEntry(model, { where: { id: id } });
             return entry.values.workflow;
         });
+
+        triggerContentReview({ pageBuilder: context.pageBuilder });
     }),
     apwHooks()
 ];
