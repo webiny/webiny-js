@@ -256,14 +256,14 @@ interface UpdateApwChangeRequestParams {
 export interface ApwContentReviewContent {
     id: string;
     type: ApwContentTypes;
-    settings: Record<string, any>;
+    workflowId: string;
+    settings: {
+        modelId?: string;
+    };
 }
 
 export interface CreateApwContentReviewParams {
     content: ApwContentReviewContent;
-    workflow: string;
-    steps: ApwContentReviewStep[];
-    status: ApwContentReviewStatus;
 }
 
 interface UpdateApwContentReviewParams {
@@ -387,11 +387,14 @@ export interface ApwContentReviewCrud
     onAfterContentReviewDelete: Topic<OnAfterContentReviewDeleteTopicParams>;
 }
 
-export type WorkflowGetter = (id: string, settings: { modelId?: string }) => Promise<string>;
+export type ContentGetter = (
+    id: string,
+    settings: { modelId?: string }
+) => Promise<{ title: string; version: number }>;
 
 export interface AdvancedPublishingWorkflow {
-    addWorkflowGetter: (type: ApwContentTypes, func: WorkflowGetter) => void;
-    getWorkflowGetter: (type: ApwContentTypes) => WorkflowGetter;
+    addContentGetter: (type: ApwContentTypes, func: ContentGetter) => void;
+    getContentGetter: (type: ApwContentTypes) => ContentGetter;
     workflow: ApwWorkflowCrud;
     reviewer: ApwReviewerCrud;
     comment: ApwCommentCrud;

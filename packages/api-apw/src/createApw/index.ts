@@ -6,26 +6,28 @@ import { createContentReviewMethods } from "./createContentReviewMethods";
 import {
     AdvancedPublishingWorkflow,
     ApwContentTypes,
-    CreateApwParams,
-    WorkflowGetter
+    ContentGetter,
+    CreateApwParams
 } from "~/types";
 
 export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow => {
-    const workflowGetters = new Map<ApwContentTypes, WorkflowGetter>();
+    const contentGetters = new Map<ApwContentTypes, ContentGetter>();
 
     const workflowMethods = createWorkflowMethods(params);
     const reviewerMethods = createReviewerMethods(params);
     const changeRequestMethods = createChangeRequestMethods(params);
 
     return {
-        addWorkflowGetter(type, func) {
-            workflowGetters.set(type, func);
+        addContentGetter(type, func) {
+            contentGetters.set(type, func);
         },
-        getWorkflowGetter(type) {
-            if (!workflowGetters.has(type)) {
-                throw new Error(`No loader found for type: "${type}". You must define a loader.`);
+        getContentGetter(type) {
+            if (!contentGetters.has(type)) {
+                throw new Error(
+                    `No "ContentGetter" loader found for type: "${type}". You must define a loader.`
+                );
             }
-            return workflowGetters.get(type);
+            return contentGetters.get(type);
         },
         workflow: workflowMethods,
         reviewer: reviewerMethods,

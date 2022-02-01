@@ -51,15 +51,13 @@ export default () => [
          * TODO: @ashutosh
          * Move these call into a separate package let say "ap-apw-page-builder"
          */
-        context.apw.addWorkflowGetter(ApwContentTypes.PAGE, async id => {
-            const page = await context.pageBuilder.getPage<PageWithWorkflow>(id);
-            return page.settings.apw.workflowId;
+        context.apw.addContentGetter(ApwContentTypes.PAGE, async id => {
+            return await context.pageBuilder.getPage<PageWithWorkflow>(id);
         });
-
-        context.apw.addWorkflowGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+        context.apw.addContentGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
             const model = await context.cms.getModel(settings.modelId);
             const entry = await context.cms.getEntry(model, { where: { id: id } });
-            return entry.values.workflow;
+            return { ...entry, title: "NO_TITLE" };
         });
 
         triggerContentReview({ pageBuilder: context.pageBuilder });

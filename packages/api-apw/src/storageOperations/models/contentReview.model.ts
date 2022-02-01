@@ -54,6 +54,14 @@ const contentIdField = () =>
         validation: [{ name: "required", message: "Value is required." }]
     });
 
+const contentWorkflowIdField = () =>
+    createModelField({
+        label: "Workflow Id",
+        type: "text",
+        parent: "contentReview Content",
+        validation: [{ name: "required", message: "Value is required." }]
+    });
+
 const contentTypeField = () =>
     createModelField({
         label: "Type",
@@ -71,12 +79,21 @@ const contentTypeField = () =>
         },
         validation: [{ name: "required", message: "Value is required." }]
     });
-// TODO: Find a way to store JSON value without "object" field.
-const contentSettingsField = () =>
+
+const contentSettingsField = fields =>
     createModelField({
         label: "Settings",
-        type: "text",
-        parent: "contentReview Settings"
+        parent: "contentReview Content",
+        type: "object",
+        multipleValues: false,
+        settings: { fields }
+    });
+
+const contentSettingsModelIdField = () =>
+    createModelField({
+        label: "Model Id",
+        parent: "contentReview Settings",
+        type: "text"
     });
 
 const stepStatusField = () => ({
@@ -186,7 +203,12 @@ export const createContentReviewModelDefinition = ({ reviewerModelId }) => ({
         ["contentReview_changeRequested"]
     ],
     fields: [
-        contentField([contentIdField(), contentTypeField(), contentSettingsField()]),
+        contentField([
+            contentIdField(),
+            contentTypeField(),
+            contentWorkflowIdField(),
+            contentSettingsField([contentSettingsModelIdField()])
+        ]),
         contentStatus(),
         stepsField([
             stepTitleField(),

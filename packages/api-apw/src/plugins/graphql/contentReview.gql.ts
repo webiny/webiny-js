@@ -73,6 +73,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             workflow: ID
+            reviewers: [ApwReviewer!]!
             status: ApwContentReviewStatus
         }
 
@@ -127,16 +128,28 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             cms_entry
         }
 
+        type ApwContentReviewContentSettings {
+            modelId: String
+        }
+
+        input ApwContentReviewContentSettingsInput {
+            modelId: String
+        }
+
         type ApwContentReviewContent {
-            id: ID
-            type: ApwContentReviewContentTypes
-            settings: String
+            id: ID!
+            type: ApwContentReviewContentTypes!
+            workflowId: String!
+            title: String!
+            version: Int!
+            settings: ApwContentReviewContentSettings
         }
 
         input ApwContentReviewContentInput {
             id: ID!
             type: ApwContentReviewContentTypes!
-            settings: String
+            workflowId: String!
+            settings: ApwContentReviewContentSettingsInput
         }
 
         input ApwCreateContentReviewInput {
@@ -180,6 +193,21 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
     `,
     resolvers: {
+        /**
+         * TODO: @ashutosh remove the redundancy.
+         */
+        ApwContentReviewContent: {
+            title: async (parent, _, context) => {
+                const getContent = context.apw.getContentGetter(parent.type);
+                const content = await getContent(parent.id, parent.settings);
+                return content.title;
+            },
+            version: async (parent, _, context) => {
+                const getContent = context.apw.getContentGetter(parent.type);
+                const content = await getContent(parent.id, parent.settings);
+                return content.version;
+            }
+        },
         ApwQuery: {
             getContentReview: async (_, args, context) => {
                 return resolve(() => context.apw.contentReview.get(args.id));
