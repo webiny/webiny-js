@@ -11231,7 +11231,6 @@ __metadata:
     get-yarn-workspaces: 1.0.2
     glob: ^7.1.2
     html-webpack-plugin: 4.0.0-beta.5
-    https: ^1.0.0
     lodash: ^4.6.2
     mini-css-extract-plugin: 0.9.0
     optimize-css-assets-webpack-plugin: 5.0.3
@@ -22512,13 +22511,6 @@ __metadata:
     agent-base: ^4.3.0
     debug: ^3.1.0
   checksum: 5fa8eab256b117a8badb5747bedf8b3a9de1fbabdccb26ff3132385426fdc3ad3c8b092ce52a1b74c70229b971df623f4f5a0c17f78e6a8fe5d10fc65d6ed8b8
-  languageName: node
-  linkType: hard
-
-"https@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "https@npm:1.0.0"
-  checksum: ccea8a8363a018d4b241db7748cff3a85c9f5b71bf80639e9c37dc6823f590f35dda098b80b726930e9f945387c8bfd6b1461df25cab5bf65a31903d81875b5d
   languageName: node
   linkType: hard
 

@@ -1,43 +1,16 @@
-const AWS = require("aws-sdk");
-const s3 = new AWS.S3();
-const packageData = require("../../package.json");
 const fs = require("fs");
+const fetch = require("node-fetch");
 
-const params = {
-    Bucket: "telemetry-code",
-    Delimiter: "/",
-    Prefix: "telemetry-versions/"
-};
+const TELEMETRY_BUCKET_URL = "https://wcp-telemetry-function-7cbe312.s3.amazonaws.com/latest";
 
-async function getLatestTelemetryFunction() {
-    const { Contents } = await s3.listObjects(params).promise();
+async function updateTelemetryFunction() {
+    const response = await fetch(TELEMETRY_BUCKET_URL);
 
-    const telemetryVersions = Contents.map(content => content.Key.split("/").pop()).sort();
+    const latestCode = await response.text();
 
-    const latestTelemetryVersion = telemetryVersions.pop();
-
-    if (packageData.telemetryVersion === latestTelemetryVersion) {
-        return;
-    }
-
-    const latestCodeData = await s3
-        .getObject({
-            Bucket: "telemetry-code",
-            Key: "telemetry-versions/" + latestVersion
-        })
-        .promise();
-
-    const latestCode = latestCodeData.Body.toString("utf-8");
     fs.writeFileSync(__dirname + "/telemetryFunction.js", latestCode);
-
-    packageData.telemetryVersion = latestVersion;
-
-    fs.writeFileSync(
-        process.cwd() + "/packages/project-utils/package.json",
-        JSON.stringify(packageData, null, 2)
-    );
 }
 
 module.exports = {
-    getLatestTelemetryFunction
+    updateTelemetryFunction
 };

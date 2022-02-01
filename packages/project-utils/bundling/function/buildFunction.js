@@ -3,14 +3,12 @@ const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 const fs = require("fs");
 const telemetry = require("./telemetry");
+import { getProject } from "@webiny/cli/utils";
 
 async function injectHandlerTelemetry() {
-    await telemetry.getLatestTelemetryFunction();
+    await telemetry.updateTelemetryFunction();
 
-    fs.copyFileSync(
-        path.join(cwd, "build", "handler.js"),
-        path.join(cwd, "build", "_handler.js")
-    );
+    fs.copyFileSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
 
     // Create a new handler.js.
     const telemetryFunction = fs.readFileSync(path.join(__dirname, "/telemetryFunction.js"), {
@@ -73,6 +71,12 @@ module.exports = async options => {
             resolve();
         });
     });
+
+    const project = getProject({ cwd });
+
+    if (!project.config.id) {
+        return result;
+    }
 
     const handlerFile = fs.readFileSync(path.join(options.cwd, "/build/handler.js"), {
         encoding: "utf8",

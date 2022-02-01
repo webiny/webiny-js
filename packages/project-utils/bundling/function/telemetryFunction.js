@@ -1,14 +1,14 @@
-const { handler } = require("./_handler.js");
+const userFunction = require("./_handler.js");
 const https = require("https");
 const packageData = require("../../package.json");
 const AWS = require("aws-sdk");
 AWS.config.update({ region: "us-east-1" });
 
-const TELEMETRY_ENDPOINT = "dprxy5obcl14c.cloudfront.net";
+const TELEMETRY_ENDPOINT = "d16ix00y8ek390.cloudfront.net";
 
 const localData = {
     apiKey: process.env.WCP_API_KEY,
-    version: packageData.telemetryVersion,
+    version: packageData.version,
     logs: []
 };
 
@@ -31,7 +31,8 @@ async function postTelemetryData(telemetryData) {
 
             res.on("end", function () {
                 const body = Buffer.concat(chunks);
-                resolve(body.toString());
+                const strigifiedBody = body.toString();
+                resolve(JSON.parse(strigifiedBody));
             });
 
             res.on("error", function (error) {
@@ -49,7 +50,7 @@ async function postTelemetryData(telemetryData) {
 
 let timerRunning = false;
 
-const initialTime = new Date();
+const initialTime = Date.now();
 const minutesToFireRequest = 5;
 
 async function initTelemetry() {
@@ -60,9 +61,11 @@ async function initTelemetry() {
     timerRunning = true;
 
     setInterval(async () => {
-        if (initialTime > new Date(initialTime.getTime() + minutesToFireRequest * 60000)) {
+        const timeInFiveMinutes = Date.now() + minutesToFireRequest * 60000;
+        if (timeInFiveMinutes > initialTime) {
             if (localData.logs.length > 0) {
                 await postTelemetryData(localData);
+                localData.logs = [];
             }
         }
     }, 1000);
@@ -77,12 +80,12 @@ async function addToTelemetryPackage(data) {
     }
 }
 
-module.exports.handler = async args => {
+async function handler(args) {
     await initTelemetry();
     const start = Date.now();
 
     try {
-        const result = await handler(args);
+        const result = await userFunction.handler(args);
 
         const duration = Date.now() - start;
 
@@ -104,4 +107,10 @@ module.exports.handler = async args => {
             createdOn: Date.now()
         });
     }
+}
+
+module.exports = {
+    handler,
+    localData,
+    postTelemetryData
 };
