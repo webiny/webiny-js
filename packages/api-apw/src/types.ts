@@ -3,7 +3,8 @@ import {
     OnBeforePageCreateTopicParams,
     OnBeforePageCreateFromTopicParams,
     OnBeforePageUpdateTopicParams,
-    OnBeforePagePublishTopicParams
+    OnBeforePagePublishTopicParams,
+    OnBeforePageRequestReviewTopicParams
 } from "@webiny/api-page-builder/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
@@ -73,6 +74,9 @@ export type ApwOnBeforePageCreateFromTopicParams =
 export type ApwOnBeforePageUpdateTopicParams = OnBeforePageUpdateTopicParams<PageWithWorkflow>;
 
 export type ApwOnBeforePagePublishTopicParams = OnBeforePagePublishTopicParams<PageWithWorkflow>;
+
+export type ApwOnBeforePageRequestReviewTopicParams =
+    OnBeforePageRequestReviewTopicParams<PageWithWorkflow>;
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",

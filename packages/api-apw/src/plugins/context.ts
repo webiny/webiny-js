@@ -60,7 +60,7 @@ export default () => [
             return { ...entry, title: "NO_TITLE" };
         });
 
-        triggerContentReview({ pageBuilder: context.pageBuilder });
+        triggerContentReview({ pageBuilder: context.pageBuilder, apw: context.apw });
     }),
     apwHooks()
 ];
