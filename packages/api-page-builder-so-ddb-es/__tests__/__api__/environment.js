@@ -9,7 +9,7 @@ const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
-const { ContextPlugin } = require("@webiny/handler/plugins/ContextPlugin");
+const { ContextPlugin } = require("@webiny/handler");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");

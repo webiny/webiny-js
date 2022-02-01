@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const fs = require("fs");
 const S3Client = require("aws-sdk/clients/s3");
 const mime = require("mime");
@@ -44,6 +45,10 @@ module.exports = async ({
 
     const pathsChunks = chunk(paths, 20);
 
+    if (_.isString(cacheControl)) {
+        cacheControl = [{ pattern: /.*/, value: cacheControl }];
+    }
+
     for (let i = 0; i < pathsChunks.length; i++) {
         const chunk = pathsChunks[i];
 
@@ -86,7 +91,7 @@ module.exports = async ({
                                     Bucket: bucket,
                                     Key: key,
                                     ACL: acl,
-                                    CacheControl: cacheControl,
+                                    CacheControl: cacheControl.find(x => x.pattern.test(key)).value,
                                     ContentType: mime.getType(path) || undefined,
                                     Body: fs.readFileSync(path),
                                     Metadata: {

@@ -46,7 +46,8 @@ export const ContentModelFieldModel = withFields({
                 list: true,
                 instanceOf: withFields({
                     label: string(),
-                    value: string()
+                    value: string(),
+                    selected: boolean()
                 })()
             })
         })()

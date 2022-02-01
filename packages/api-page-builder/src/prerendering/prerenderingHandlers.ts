@@ -6,13 +6,13 @@ import WebinyError from "@webiny/error";
 import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/types";
 import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { PbContext } from "~/graphql/types";
 
 export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
     context.pageBuilder.setPrerenderingHandlers({
         async render(args): Promise<void> {
-            const { paths, tags, context } = args;
+            const { paths, tags, context, queue = false } = args;
 
             const current = await context.pageBuilder.getCurrentSettings();
             const appUrl = lodashGet(current, "prerendering.app.url");
@@ -55,7 +55,17 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
                         paths,
                         args: { render }
                     });
-                    await context.prerenderingServiceClient.render(render);
+
+                    if (queue) {
+                        for (const renderItem of render) {
+                            await context.prerenderingServiceClient.queue.add({
+                                render: renderItem
+                            });
+                        }
+                    } else {
+                        await context.prerenderingServiceClient.render(render);
+                    }
+
                     await context.pageBuilder.onPageAfterRender.publish({
                         paths,
                         args: { render }

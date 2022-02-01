@@ -4,6 +4,7 @@ import sanitizeFilename from "sanitize-filename";
 import pathLib from "path";
 import { createHandler, getEnvironment, getObjectParams } from "../utils";
 import loaders from "../transform/loaders";
+import { ArgsContext } from "@webiny/handler-args/types";
 
 const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
@@ -57,7 +58,7 @@ const getS3Object = async (event, s3, context) => {
     };
 };
 
-export default (): HandlerPlugin => ({
+export default (): HandlerPlugin<ArgsContext> => ({
     type: "handler",
     name: "handler-download-file",
     async handle(context) {

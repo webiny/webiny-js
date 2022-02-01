@@ -15,7 +15,7 @@ export interface Config {
 const jwksCache = new Map<string, Record<string, any>[]>();
 
 export interface Authenticator {
-    (token: string): Record<string, any>;
+    (token: string): Record<string, any> | null;
 }
 
 export const createAuthenticator =
@@ -44,17 +44,17 @@ export const createAuthenticator =
             const jwk = jwks.find(key => key.kid === header.kid);
 
             if (!jwk) {
-                return;
+                return null;
             }
 
             const token = await verify(idToken, jwkToPem(jwk));
             if (token.token_use !== "id") {
-                const error = new Error("idToken is invalid!");
-                throw Object.assign(error, {
-                    code: "SECURITY_COGNITO_INVALID_TOKEN"
-                });
+                const error: any = new Error("idToken is invalid!");
+                error.code = "SECURITY_COGNITO_INVALID_TOKEN";
+                throw error;
             }
 
             return token;
         }
+        return null;
     };

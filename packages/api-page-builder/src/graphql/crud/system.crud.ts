@@ -95,6 +95,11 @@ export const createSystemCrud = (params: Params): SystemCrud => {
             }
         },
         async installSystem(this: PageBuilderContextObject, { name, insertDemoData }) {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
+
             const { fileManager } = context;
 
             // Check whether the PB app is already installed
@@ -107,7 +112,6 @@ export const createSystemCrud = (params: Params): SystemCrud => {
              * 1. Execute all beforeInstall installation hooks.
              */
             await onBeforeInstall.publish({
-                context,
                 tenant: getTenantId()
             });
 
@@ -192,7 +196,6 @@ export const createSystemCrud = (params: Params): SystemCrud => {
             await this.setSystemVersion(context.WEBINY_VERSION);
 
             await onAfterInstall.publish({
-                context,
                 tenant: getTenantId()
             });
         },

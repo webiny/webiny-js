@@ -39,6 +39,7 @@ import dateGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/valida
 import dateLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/dateLte";
 import timeGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/timeGte";
 import timeLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/timeLte";
+import uniqueFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/unique";
 
 import editorGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/gte";
 import editorDateGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/dateGte";
@@ -46,6 +47,7 @@ import editorDateLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/
 import editorInValidatorFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/in";
 import editorLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/lte";
 import editorRequiredFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/required";
+import editorUniqueFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/unique";
 import editorMinLengthFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/minLength";
 import editorMaxLengthFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/maxLength";
 import editorPatternFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/pattern";
@@ -99,12 +101,14 @@ export default [
     dateLteFieldValidator(),
     timeGteFieldValidator(),
     timeLteFieldValidator(),
+    uniqueFieldValidator(),
     editorGteFieldValidator,
     editorDateGteFieldValidator(),
     editorDateLteFieldValidator(),
     editorInValidatorFieldValidator,
     editorLteFieldValidator,
     editorRequiredFieldValidator,
+    editorUniqueFieldValidator(),
     editorMinLengthFieldValidator,
     editorMaxLengthFieldValidator,
     editorPatternFieldValidator,

@@ -1,5 +1,6 @@
 import HandlerClient from "./HandlerClient";
 import { Plugin } from "@webiny/plugins/types";
+import { Context } from "@webiny/handler/types";
 
 export type InvokeArgs<TInvokeArgsPayload = any> = {
     name: string;
@@ -22,6 +23,6 @@ export type HandlerClientHandlerPlugin = Plugin & {
     ) => TResponse | Promise<TResponse>;
 };
 
-export type ClientContext = {
+export interface ClientContext extends Context {
     handlerClient: HandlerClient;
-};
+}

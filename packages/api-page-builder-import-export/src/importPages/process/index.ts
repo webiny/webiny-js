@@ -62,7 +62,10 @@ export default (
              */
             if (!subTask || subTask.status !== PageImportExportTaskStatus.PENDING) {
                 noPendingTask = true;
-                return;
+                return {
+                    data: "",
+                    error: null
+                };
             } else {
                 noPendingTask = false;
             }
@@ -186,5 +189,9 @@ export default (
                 });
             }
         }
+        return {
+            data: "",
+            error: null
+        };
     }
 });

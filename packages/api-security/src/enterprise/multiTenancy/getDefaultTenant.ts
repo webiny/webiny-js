@@ -1,8 +1,7 @@
-import { Context as BaseContext } from "@webiny/handler/types";
 import { SecurityContext } from "~/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
-export type Context = BaseContext<SecurityContext, TenancyContext>;
+export type Context = SecurityContext & TenancyContext;
 
 export const getDefaultTenant = async ({ security, tenancy }: Context) => {
     const identity = security.getIdentity();

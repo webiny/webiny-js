@@ -42,6 +42,16 @@ class Vpc {
             vpcId: vpc.id
         });
 
+        // Create NAT gateway.
+        const elasticIpAllocation = new aws.ec2.Eip("nat-gateway-elastic-ip", {
+            vpc: true
+        });
+
+        const natGateway = new aws.ec2.NatGateway("nat-gateway", {
+            allocationId: elasticIpAllocation.id,
+            subnetId: publicSubnet.id
+        });
+
         // Create a route table for both subnets.
         const publicSubnetRouteTable = new aws.ec2.RouteTable("public", {
             vpcId: vpc.id,
@@ -53,10 +63,30 @@ class Vpc {
             ]
         });
 
+        const privateSubnetRouteTable = new aws.ec2.RouteTable("private", {
+            vpcId: vpc.id,
+            routes: [
+                {
+                    cidrBlock: "0.0.0.0/0",
+                    natGatewayId: natGateway.id
+                }
+            ]
+        });
+
         // Create route table associations - links between subnets and route tables.
         new aws.ec2.RouteTableAssociation("public-subnet-route-table-association", {
             subnetId: publicSubnet.id,
             routeTableId: publicSubnetRouteTable.id
+        });
+
+        new aws.ec2.RouteTableAssociation("private-subnet-1-route-table-association", {
+            subnetId: privateSubnet1.id,
+            routeTableId: privateSubnetRouteTable.id
+        });
+
+        new aws.ec2.RouteTableAssociation("private-subnet-2-route-table-association", {
+            subnetId: privateSubnet2.id,
+            routeTableId: privateSubnetRouteTable.id
         });
 
         this.vpc = vpc;

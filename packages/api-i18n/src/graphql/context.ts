@@ -1,6 +1,6 @@
 import acceptLanguageParser from "accept-language-parser";
 import { ContextI18NGetLocales, I18NContext } from "~/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { I18NLocaleContextPlugin } from "~/plugins/I18NLocaleContextPlugin";
 import { createCrudContext } from "~/graphql/crud";
 /**

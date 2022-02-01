@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 import util from "util";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import Error from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
 // All JWTs are split into 3 parts by two periods
@@ -15,8 +15,6 @@ type Context = SecurityContext;
 export interface AuthenticatorConfig {
     // Okta issuer endpoint
     issuer: string;
-    // Okta client ID
-    clientId: string;
     // Create an identity object using the verified idToken
     getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
 }
@@ -43,7 +41,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                 const jwk = jwks.find(key => key.kid === header.kid);
 
                 if (!jwk) {
-                    return;
+                    return null;
                 }
 
                 const token = await verify(idToken, jwkToPem(jwk));
@@ -57,6 +55,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                 throw new Error(err.message, "SECURITY_OKTA_INVALID_TOKEN");
             }
         }
+        return null;
     };
 
     return new ContextPlugin<Context>(({ security }) => {
@@ -64,7 +63,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
             const token = await oktaAuthenticator(idToken);
 
             if (!token) {
-                return;
+                return null;
             }
 
             return config.getIdentity({ token });

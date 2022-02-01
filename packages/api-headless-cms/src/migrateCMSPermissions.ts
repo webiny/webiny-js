@@ -150,9 +150,10 @@ export const migrateCMSPermissions = async (
 };
 
 const mergeCustomizer = (objValue, srcValue) => {
-    if (Array.isArray(objValue)) {
-        return objValue.concat(srcValue).filter(removeDuplicate);
+    if (Array.isArray(objValue) === false) {
+        return [];
     }
+    return objValue.concat(srcValue).filter(removeDuplicate);
 };
 
 const removeDuplicate = (item, index, arr) => arr.findIndex(el => el === item) === index;

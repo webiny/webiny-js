@@ -1,10 +1,12 @@
 import * as React from "react";
-import { LoginContent, Logo, Wrapper } from "./StyledComponents";
-import logoOrange from "./webiny-orange-logo.svg";
+import { Logo } from "@webiny/app-admin";
+import { LoginContent, LogoWrapper, Wrapper } from "./StyledComponents";
 
 const StateContainer = ({ children }) => (
     <Wrapper>
-        <Logo src={logoOrange} />
+        <LogoWrapper>
+            <Logo />
+        </LogoWrapper>
         <LoginContent>{children}</LoginContent>
     </Wrapper>
 );

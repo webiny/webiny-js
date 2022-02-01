@@ -1,5 +1,5 @@
 import { AuthenticationContext, Identity } from "@webiny/api-authentication/types";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { createAuthenticator, Config as CognitoConfig } from "@webiny/api-cognito-authenticator";
 
 export interface Config extends CognitoConfig {
@@ -21,7 +21,7 @@ export default (config: Config) => {
             const tokenObj = await cognitoAuthenticator(token);
 
             if (!tokenObj) {
-                return;
+                return null;
             }
 
             if (typeof config.getIdentity === "function") {

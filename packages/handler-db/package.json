@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-db",
-  "version": "5.20.0",
+  "version": "5.22.1",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -10,16 +10,16 @@
   "description": "Webiny API plugin that provides a db driver for DynamoDB.",
   "author": "Webiny Ltd.",
   "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "@webiny/db": "^5.20.0",
-    "@webiny/handler": "^5.20.0"
+    "@babel/runtime": "^7.16.3",
+    "@webiny/db": "^5.22.1",
+    "@webiny/handler": "^5.22.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@webiny/cli": "^5.20.0",
-    "@webiny/project-utils": "^5.20.0",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@webiny/cli": "^5.22.1",
+    "@webiny/project-utils": "^5.22.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"
   },

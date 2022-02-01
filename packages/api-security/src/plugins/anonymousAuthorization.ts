@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { SecurityContext } from "~/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
@@ -12,7 +12,7 @@ export default () => {
             }
 
             if (security.getIdentity()) {
-                return;
+                return null;
             }
 
             // We assume that all other authorization plugins have already been executed.

@@ -3,6 +3,100 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.22.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.0...v5.22.1-beta.0) (2022-01-29)
+
+
+### Bug Fixes
+
+* **telemetry:** add Buffer polyfill and improve telemetry code ([e078a2d](https://github.com/webiny/webiny-js/commit/e078a2d3659c979683a98c3c2f2aa769a5c7b56e))
+
+
+
+
+
+# [5.22.0](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.3...v5.22.0) (2022-01-24)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+
+### Bug Fixes
+
+* **css-loader:** disable esModule output for CSS assets ([79c005d](https://github.com/webiny/webiny-js/commit/79c005d11eb120f9ff40de0e16e19e9e129953e6))
+
+
+
+
+
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.22.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.21.0...v5.22.0-beta.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* **project-utils:** add ENV variable to run TS checks for functions ([93e3353](https://github.com/webiny/webiny-js/commit/93e335384d20d3a1ced2f2b71c05dfe79ec38cd2))
+* **project-utils:** update order or extensions and add mjs rule ([8f4e3a1](https://github.com/webiny/webiny-js/commit/8f4e3a1e7908a736d49893dc7474a95746d25eff))
+* remove react hot-loader and fix TS types ([#2193](https://github.com/webiny/webiny-js/issues/2193)) ([986fce5](https://github.com/webiny/webiny-js/commit/986fce5029dd392fcfdd60bceb2f0bc63ce8805a))
+* revert react to v16 due to Material incompatibility with v17 ([f073521](https://github.com/webiny/webiny-js/commit/f073521af9327d95535296d4275b42968888bb77))
+* update cwp template dependencies ([7e69a47](https://github.com/webiny/webiny-js/commit/7e69a4763479c8b32d6ac865ed4c7142dade0b45))
+* **project-utils:** exclude empty file name from file-loader ([2b7ddb5](https://github.com/webiny/webiny-js/commit/2b7ddb5957a918bc42e4892422e834274ffa201e))
+
+
+### Features
+
+* upgrade webpack to version 5 ([#2101](https://github.com/webiny/webiny-js/issues/2101)) ([d3bdfac](https://github.com/webiny/webiny-js/commit/d3bdfac4b08b453f6d2ff836d8e56e1f0073ae62))
+
+
+
+
+
+# [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.21.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.20.0...v5.21.0-beta.0) (2022-01-03)
+
+
+### Features
+
+* add possibility to output api version in headers ([#2143](https://github.com/webiny/webiny-js/issues/2143)) ([cc3f5cc](https://github.com/webiny/webiny-js/commit/cc3f5cce2456a92bc977bb49bffcf7e281911720))
+
+
+
+
+
 # [5.20.0](https://github.com/webiny/webiny-js/compare/v5.20.0-beta.2...v5.20.0) (2021-12-23)
 
 **Note:** Version bump only for package @webiny/project-utils

@@ -68,6 +68,7 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
             return false;
         }
         onChange(newValue);
+        return true;
     };
 
     const onAddHandler = () => {
@@ -76,6 +77,7 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
             return false;
         }
         onChange(value + 1);
+        return true;
     };
 
     return (

@@ -7,9 +7,23 @@ import * as GQL from "~/admin/graphql/contentEntries";
 import { useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsEditorContentModel, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorContentModel, CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
+
+/**
+ * Used for some fields to convert their values.
+ */
+const convertDefaultValue = (field: CmsEditorField, value: any): string | number | boolean => {
+    switch (field.type) {
+        case "boolean":
+            return Boolean(value);
+        case "number":
+            return Number(value);
+        default:
+            return value;
+    }
+};
 
 interface UseContentEntryForm {
     data: Record<string, any>;
@@ -26,6 +40,7 @@ export interface UseContentEntryFormParams {
     entry?: { [key: string]: any };
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
+    addEntryToListCache: boolean;
 }
 
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
@@ -83,7 +98,14 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                         return;
                     }
                     resetInvalidFieldValues();
-                    GQLCache.addEntryToListCache(contentModel, cache, entry, listQueryVariables);
+                    if (params.addEntryToListCache) {
+                        GQLCache.addEntryToListCache(
+                            contentModel,
+                            cache,
+                            entry,
+                            listQueryVariables
+                        );
+                    }
                 }
             });
             setLoading(false);
@@ -96,10 +118,14 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             }
             resetInvalidFieldValues();
             showSnackbar(`${contentModel.name} entry created successfully!`);
-            goToRevision(entry.id);
+            if (typeof params.onSubmit === "function") {
+                params.onSubmit(entry);
+            } else {
+                goToRevision(entry.id);
+            }
             return entry;
         },
-        [contentModel.modelId, listQueryVariables]
+        [contentModel.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
     );
 
     const updateContent = useCallback(
@@ -147,12 +173,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
 
                     showSnackbar("A new revision was created!");
-
-                    history.push(
-                        `/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(
-                            newRevision.id
-                        )}`
-                    );
+                    goToRevision(newRevision.id);
                 }
             });
             setLoading(false);
@@ -188,25 +209,66 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         return createContentFrom(entry.id, gqlData);
     };
 
-    const getDefaultValues = (overrides = {}) => {
-        const values = {};
-        // TODO: finish default values.
-        /*fields.forEach(field => {
-            const fieldId = field.fieldId;
-
-            if (
-                fieldId &&
-                "defaultValue" in field.settings &&
-                typeof field.settings.defaultValue !== "undefined"
-            ) {
-                values[fieldId] = field.settings.defaultValue;
+    const getDefaultValues = (overrides: Record<string, any> = {}): Record<string, any> => {
+        const values: Record<string, any> = {};
+        /**
+         * Assign the default values:
+         * * check the settings.defaultValue
+         * * check the predefinedValues for selected value
+         */
+        for (const field of contentModel.fields) {
+            /**
+             * When checking if defaultValue is set in settings, we do the undefined check because it can be null, 0, empty string, false, etc...
+             */
+            const { settings, multipleValues = false } = field;
+            if (settings && settings.defaultValue !== undefined) {
+                /**
+                 * Special type of field is the boolean one.
+                 * We MUST set true/false for default value.
+                 */
+                values[field.fieldId] = convertDefaultValue(field, settings.defaultValue);
+                continue;
             }
-        });*/
+            /**
+             * No point in going further if predefined values are not enabled.
+             */
+            const { predefinedValues } = field;
+            if (
+                !predefinedValues ||
+                !predefinedValues.enabled ||
+                Array.isArray(predefinedValues.values) === false
+            ) {
+                continue;
+            }
+            /**
+             * When field is not a multiple values one, we find the first possible default selected value and set it as field value.
+             */
+            if (!multipleValues) {
+                const selectedValue = predefinedValues.values.find(({ selected }) => {
+                    return !!selected;
+                });
+                if (selectedValue) {
+                    values[field.fieldId] = convertDefaultValue(field, selectedValue.value);
+                }
+                continue;
+            }
+            /**
+             *
+             */
+            values[field.fieldId] = predefinedValues.values
+                .filter(({ selected }) => !!selected)
+                .map(({ value }) => {
+                    return convertDefaultValue(field, value);
+                });
+        }
         return { ...values, ...overrides };
     };
 
     return {
-        data: entry ? entry : getDefaultValues(),
+        /**
+         * If entry is not set or entry.id does not exist, it means that form is for the new entry, so fetch default values.
+         */
+        data: entry && entry.id ? entry : getDefaultValues(),
         loading,
         setLoading,
         onChange: params.onChange,

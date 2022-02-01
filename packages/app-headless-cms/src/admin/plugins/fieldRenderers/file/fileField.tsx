@@ -4,7 +4,6 @@ import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { FileManager } from "@webiny/app-admin/components";
 import File from "./File";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -56,9 +55,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 );
                             }}
                         </Bind>
-                        {field.helpText && (
-                            <FormElementMessage>{field.helpText}</FormElementMessage>
-                        )}
                     </Cell>
                 </Grid>
             );

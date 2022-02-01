@@ -35,19 +35,56 @@ export interface ContentEntryContext extends ContentEntriesContext {
 
 export const Context = React.createContext<ContentEntryContext>(null);
 
-export const Provider = ({ children }) => {
+export interface ContentEntryContextProviderProps extends UseContentEntryProviderProps {
+    children: React.ReactNode;
+}
+
+interface UseContentEntryProviderProps {
+    getContentId?: () => string | null;
+    isNewEntry?: () => boolean;
+}
+
+export const useContentEntryProviderProps = (): UseContentEntryProviderProps => {
+    const { location } = useRouter();
+    const query = new URLSearchParams(location.search);
+
+    const isNewEntry = () => {
+        return query.get("new") === "true";
+    };
+
+    const getContentId = () => {
+        return query.get("id");
+    };
+
+    return {
+        getContentId,
+        isNewEntry
+    };
+};
+
+export const Provider = ({
+    children,
+    isNewEntry,
+    getContentId
+}: ContentEntryContextProviderProps) => {
     const { contentModel, canCreate, listQueryVariables, setListQueryVariables, sorters } =
         useContentEntries();
 
     const formRef = useRef(null);
     const tabsRef = useRef(null);
-    const { history, location } = useRouter();
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [isLoading, setLoading] = useState(false);
 
-    const newEntry = new URLSearchParams(location.search).get("new") === "true";
-    const query = new URLSearchParams(location.search);
-    const contentId = query.get("id");
+    const contentEntryProviderProps = useContentEntryProviderProps();
+
+    const newEntry =
+        typeof isNewEntry === "function" ? isNewEntry() : contentEntryProviderProps.isNewEntry();
+    const contentId =
+        typeof getContentId === "function"
+            ? getContentId()
+            : contentEntryProviderProps.getContentId();
+
     const revisionId = contentId ? decodeURIComponent(contentId) : null;
     let entryId = null;
     if (revisionId) {

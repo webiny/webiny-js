@@ -1,8 +1,9 @@
 import Error from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { TenancyContext, TenancyStorageOperations } from "./types";
 import { createTenancy } from "./createTenancy";
-import graphql from "./graphql";
+import graphql from "./graphql/full.gql";
+import baseGraphQLTypes from "./graphql/types.gql";
 
 interface TenancyPluginsParams {
     storageOperations: TenancyStorageOperations;
@@ -32,6 +33,11 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
             multiTenancy,
             storageOperations
         });
+
+        // Even though we don't have a full GraphQL schema when using the `context` plugins,
+        // we still need to register the base tenancy types, so other plugins can extend and use them
+        // in other GraphQLSchema plugins.
+        context.plugins.register(baseGraphQLTypes);
     });
 };
 

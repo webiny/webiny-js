@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import {
     SecurityAuthenticationPlugin,
@@ -7,6 +7,7 @@ import {
     SecurityStorageOperations
 } from "./types";
 import graphqlPlugins from "./graphql";
+import gqlInterfaces from "./graphql/interfaces.gql";
 import { createSecurity } from "~/createSecurity";
 import { attachGroupInstaller } from "~/installation/groups";
 import {
@@ -27,6 +28,8 @@ type Context = SecurityContext & TenancyContext;
 
 export const createSecurityContext = ({ storageOperations, ...config }: SecurityConfig) => {
     return new ContextPlugin<Context>(async context => {
+        context.plugins.register(gqlInterfaces);
+
         context.security = await createSecurity({
             getTenant: () => {
                 const tenant = context.tenancy.getCurrentTenant();

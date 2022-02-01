@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
 
       - uses: actions/checkout@v2
 
@@ -73,7 +73,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
 
       - uses: actions/checkout@v2
 
@@ -108,7 +108,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
 
       - uses: actions/checkout@v2
 
@@ -166,7 +166,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
 
       - uses: actions/checkout@v2
         with:
@@ -228,7 +228,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [12, 14]
+        node: [14]
     runs-on: ${{ matrix.os }}
     env:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false

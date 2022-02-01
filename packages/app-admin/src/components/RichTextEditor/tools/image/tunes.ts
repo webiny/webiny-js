@@ -114,5 +114,6 @@ export default class Tunes {
         );
 
         this.onChange(tuneName);
+        return true;
     }
 }

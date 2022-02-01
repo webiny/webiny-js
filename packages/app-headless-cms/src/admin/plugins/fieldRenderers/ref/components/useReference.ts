@@ -11,6 +11,7 @@ interface ValueEntry {
     published: boolean;
     name: string;
 }
+
 interface DataEntry {
     id: string;
     model: {
@@ -20,10 +21,12 @@ interface DataEntry {
     status: "published" | "draft";
     title: string;
 }
+
 interface UseReferenceHookArgs {
     bind: any;
     field: CmsEditorField;
 }
+
 interface UseReferenceHookValue {
     onChange: (value: any, entry: ValueEntry) => void;
     setSearch: (value: string) => void;
@@ -31,6 +34,7 @@ interface UseReferenceHookValue {
     loading: boolean;
     options: ValueEntry[];
 }
+
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
 type EntryCollection = Record<string, DataEntry>;
@@ -118,7 +122,12 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                     modelIds: models.map(m => m.modelId),
                     query: "__latest__",
                     limit: 10
-                }
+                },
+                /**
+                 * We cannot update this query response in cache after a reference entry being created/deleted,
+                 * which result in cached response being stale, therefore, we're setting the fetchPolicy to "network-only" to by passing cache.
+                 */
+                fetchPolicy: "network-only"
             })
             .then(({ data }) => {
                 const latestEntryData = convertQueryDataToEntryList(data.content.data);

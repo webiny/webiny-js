@@ -99,6 +99,7 @@ export default async ({ context }): Promise<Record<string, File>> => {
     } catch (e) {
         console.log(`[savePageAssets]: error occurred: ${e.stack}`);
     }
+    return {};
 };
 
 interface UploadPageAssetsParams {
@@ -201,6 +202,7 @@ export const uploadPageAssets = async ({
     } catch (e) {
         console.log(`[savePageAssets]: error occurred: ${e.stack}`);
     }
+    return {};
 };
 
 /**

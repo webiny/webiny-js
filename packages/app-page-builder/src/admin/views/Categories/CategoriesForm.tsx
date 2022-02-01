@@ -43,10 +43,10 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    const layouts = React.useMemo(
-        () => plugins.byType<PbPageLayoutPlugin>("pb-page-layout").map(pl => pl.layout),
-        []
-    );
+    const layouts = React.useMemo(() => {
+        const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
+        return (layoutPlugins || []).map(pl => pl.layout);
+    }, []);
     const newEntry = new URLSearchParams(location.search).get("new") === "true";
     const slug = new URLSearchParams(location.search).get("slug");
 
@@ -194,7 +194,10 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="layout" defaultValue={layouts[0].name}>
+                                <Bind
+                                    name="layout"
+                                    defaultValue={layouts.length ? layouts[0].name : ""}
+                                >
                                     <Select label={t`Layout`}>
                                         {layouts.map(({ name, title }) => (
                                             <option key={name} value={name}>

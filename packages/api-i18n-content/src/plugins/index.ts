@@ -1,7 +1,7 @@
 import hasPermission from "../utils/hasI18NContentPermission";
 import { I18NContentContext } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
 
 export default () => {
     return new ContextPlugin<I18NContentContext>(async context => {

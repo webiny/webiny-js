@@ -22,7 +22,8 @@ const appleData: Fruit = {
     dateTime: new Date("2020-12-15T12:12:21").toISOString(),
     dateTimeZ: "2020-12-15T14:52:41+01:00",
     time: "11:39:58",
-    description: "fruit named apple"
+    description: "fruit named apple",
+    slug: null
 };
 
 const strawberryData: Fruit = {
@@ -38,7 +39,8 @@ const strawberryData: Fruit = {
     dateTime: new Date("2020-12-19T12:12:21").toISOString(),
     dateTimeZ: "2020-12-25T14:52:41+01:00",
     time: "12:44:55",
-    description: "strawberry named fruit"
+    description: "strawberry named fruit",
+    slug: null
 };
 
 const bananaData: Fruit = {
@@ -54,7 +56,8 @@ const bananaData: Fruit = {
     dateTime: new Date("2020-12-03T12:12:21").toISOString(),
     dateTimeZ: "2020-12-03T14:52:41+01:00",
     time: "11:59:01",
-    description: "fruit banana named"
+    description: "fruit banana named",
+    slug: null
 };
 
 jest.setTimeout(100000);
@@ -1024,6 +1027,165 @@ describe("filtering", () => {
                         totalCount: 0
                     },
                     error: null
+                }
+            }
+        });
+    });
+
+    test("should filter entries by empty datetime field", async () => {
+        const categoryManager = useCategoryManageHandler(manageOpts);
+        const productManager = useProductManageHandler(manageOpts);
+        // const productReader = useProductReadHandler(readOpts);
+
+        const group = await setupContentModelGroup(mainManager);
+        const { category: categoryModel } = await setupContentModels(mainManager, group, [
+            "category",
+            "product"
+        ]);
+
+        const [createFruitResponse] = await categoryManager.createCategory({
+            data: {
+                title: "Fruit category 123",
+                slug: "fruit-category-123"
+            }
+        });
+        expect(createFruitResponse).toEqual({
+            data: {
+                createCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+        const fruitCategoryId = createFruitResponse.data.createCategory.data.id;
+
+        const [createBananaResponse] = await productManager.createProduct({
+            data: {
+                title: "Banana",
+                price: 100,
+                availableOn: "2021-04-19",
+                color: "red",
+                availableSizes: ["l"],
+                image: "banana.jpg",
+                category: {
+                    modelId: categoryModel.modelId,
+                    id: fruitCategoryId
+                }
+            }
+        });
+        expect(createBananaResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+        const banana = createBananaResponse.data.createProduct.data;
+
+        const [createPlumResponse] = await productManager.createProduct({
+            data: {
+                title: "Plum",
+                price: 100,
+                availableOn: "2021-04-22",
+                color: "white",
+                availableSizes: ["s"],
+                image: "plum.jpg",
+                category: {
+                    modelId: categoryModel.modelId,
+                    id: fruitCategoryId
+                }
+            }
+        });
+        expect(createPlumResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+        const plum = createPlumResponse.data.createProduct.data;
+
+        const [createAppleResponse] = await productManager.createProduct({
+            data: {
+                title: "Apple",
+                price: 100,
+                availableOn: null,
+                color: "red",
+                availableSizes: ["s"],
+                image: "apple.jpg",
+                category: {
+                    modelId: categoryModel.modelId,
+                    id: fruitCategoryId
+                }
+            }
+        });
+        expect(createAppleResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+        const apple = createAppleResponse.data.createProduct.data;
+
+        /**
+         * Make sure that we have something in the list response
+         */
+        await until(
+            () => productManager.listProducts().then(([data]) => data),
+            ({ data }) => {
+                return data.listProducts.data.length === 3;
+            },
+            { name: "list products after create" }
+        );
+
+        const [listNullResponse] = await productManager.listProducts({
+            where: {
+                availableOn: null
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listNullResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [apple],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
+            }
+        });
+
+        const [listNotNullResponse] = await productManager.listProducts({
+            where: {
+                availableOn_not: null
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listNotNullResponse).toEqual({
+            data: {
+                listProducts: {
+                    data: [banana, plum],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 2
+                    }
                 }
             }
         });

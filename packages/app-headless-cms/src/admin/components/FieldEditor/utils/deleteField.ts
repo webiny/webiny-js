@@ -19,7 +19,7 @@ export default ({ field, data }: { field: CmsEditorField; data: Data }) => {
             row.forEach(fieldId => {
                 const field = data.fields.find(item => item.id === fieldId);
                 if (!field) {
-                    return true;
+                    return;
                 }
                 if (!Array.isArray(newLayout[currentRowIndex])) {
                     newLayout[currentRowIndex] = [];

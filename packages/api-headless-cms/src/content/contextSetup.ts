@@ -1,34 +1,33 @@
 import { CmsContext } from "~/types";
 import WebinyError from "@webiny/error";
-import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { ContextPlugin } from "@webiny/handler";
+import {
+    CmsParametersPlugin,
+    CmsParametersPluginResponse
+} from "~/content/plugins/CmsParametersPlugin";
 
-const extractHandlerHttpParameters = (context: CmsContext) => {
-    const { key = "" } = context.http?.request?.path?.parameters || {};
-    const [type, locale] = key.split("/");
-    if (!type) {
-        throw new WebinyError(`Missing context.http.request.path parameter "type".`);
-    } else if (!locale) {
-        throw new WebinyError(`Missing context.http.request.path parameter "locale".`);
+const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
+    const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
+
+    for (const plugin of plugins) {
+        const result = await plugin.getParameters(context);
+        if (result !== null) {
+            return result;
+        }
     }
-
-    return {
-        type,
-        locale
-    };
+    throw new WebinyError(
+        "Could not determine locale and/or type of the CMS.",
+        "CMS_LOCALE_AND_TYPE_ERROR"
+    );
 };
 
 export default () => {
     return new ContextPlugin<CmsContext>(async context => {
         if (context.http?.request?.method === "OPTIONS") {
             return;
-        } else if (context.cms) {
-            throw new WebinyError(
-                "Context setup plugin must be first to be registered. Cannot have anything before it.",
-                "CMS_CONTEXT_INITIALIZED_ERROR"
-            );
         }
 
-        const { type, locale } = extractHandlerHttpParameters(context);
+        const { type, locale } = await getParameters(context);
 
         const systemLocale = context.i18n.getLocale(locale);
         if (!systemLocale) {
@@ -36,6 +35,7 @@ export default () => {
         }
 
         context.cms = {
+            ...((context.cms || {}) as any),
             type,
             locale,
             getLocale: () => systemLocale,
