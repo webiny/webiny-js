@@ -1,3 +1,7 @@
+/**
+ * Not used anymore so ignore.
+ */
+// @ts-nocheck
 export const paginateBatch = async (items, perPage, execute) => {
     const pages = Math.ceil(items.length / perPage);
 

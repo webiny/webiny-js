@@ -10,7 +10,7 @@ import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
 import defineSettingsEntity from "~/definitions/settingsEntity";
 
-interface ConstructorParams {
+interface SettingsStorageOperationsConstructorParams {
     context: FileManagerContext;
 }
 
@@ -28,7 +28,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
         return `T#${tenant.id}#FM#SETTINGS`;
     }
 
-    public constructor({ context }: ConstructorParams) {
+    public constructor({ context }: SettingsStorageOperationsConstructorParams) {
         this._context = context;
         const table = defineTable({
             context

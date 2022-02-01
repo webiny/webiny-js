@@ -6,16 +6,16 @@ export interface InstallationPluginParams {
 }
 export type CallbackFunction<TParams> = (params: TParams) => Promise<void>;
 
-interface Config {
+interface InstallationPluginConfig {
     beforeInstall?: CallbackFunction<InstallationPluginParams>;
     afterInstall?: CallbackFunction<InstallationPluginParams>;
 }
 
 export abstract class InstallationPlugin extends Plugin {
     public static readonly type = "fm.install";
-    private readonly _config: Partial<Config>;
+    private readonly _config: Partial<InstallationPluginConfig>;
 
-    constructor(config?: Partial<Config>) {
+    constructor(config?: Partial<InstallationPluginConfig>) {
         super();
         this._config = config || {};
     }
@@ -29,7 +29,7 @@ export abstract class InstallationPlugin extends Plugin {
     }
 
     private async _execute(
-        callback: keyof Config,
+        callback: keyof InstallationPluginConfig,
         params: InstallationPluginParams
     ): Promise<void> {
         if (typeof this._config[callback] !== "function") {

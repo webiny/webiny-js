@@ -8,6 +8,7 @@ import {
     FileManagerFilesStorageOperationsGetParams,
     FileManagerFilesStorageOperationsListParams,
     FileManagerFilesStorageOperationsListResponse,
+    FileManagerFilesStorageOperationsListResponseMeta,
     FileManagerFilesStorageOperationsTagsParams,
     FileManagerFilesStorageOperationsTagsResponse,
     FileManagerFilesStorageOperationsUpdateParams
@@ -29,6 +30,7 @@ import { compress } from "@webiny/api-elasticsearch/compression";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
+import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 
 interface FileItem extends File {
     PK: string;
@@ -308,7 +310,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             after
         });
 
-        let response;
+        let response: ElasticsearchSearchResponse<File>;
         try {
             response = await this.esClient.search({
                 ...configurations.es({
@@ -329,7 +331,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const plugins = this.getFileIndexTransformPlugins();
         const { hits, total } = response.body.hits;
 
-        const files = await Promise.all<File>(
+        const files = await Promise.all(
             hits.map(async item => {
                 return await transformFromIndex({
                     plugins,
@@ -390,7 +392,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             search_after: decodeCursor(null)
         };
 
-        let response = undefined;
+        let response: ElasticsearchSearchResponse<string> = undefined;
 
         try {
             response = await this.esClient.search({
@@ -416,7 +418,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             hasMoreItems = true;
         }
 
-        const meta = {
+        const meta: FileManagerFilesStorageOperationsListResponseMeta = {
             hasMoreItems,
             totalCount,
             cursor: null //tags.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null

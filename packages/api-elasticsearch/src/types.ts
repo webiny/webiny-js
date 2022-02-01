@@ -63,3 +63,29 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
      */
     keyword: boolean;
 }
+
+/**
+ * Elasticsearch responses.
+ */
+export interface ElasticsearchSearchResponseHit<T> {
+    _source: T;
+    sort: string;
+}
+export interface ElasticsearchSearchResponseAggregationBucket<T> {
+    key: T;
+}
+export interface ElasticsearchSearchResponse<T = any> {
+    body: {
+        hits: {
+            hits: ElasticsearchSearchResponseHit<T>[];
+            total: {
+                value: number;
+            };
+        };
+        aggregations: {
+            [key: string]: {
+                buckets: ElasticsearchSearchResponseAggregationBucket<T>[];
+            };
+        };
+    };
+}
