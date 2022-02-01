@@ -6,11 +6,11 @@ const SUPPORTED_TRANSFORMABLE_IMAGES = [".jpg", ".jpeg", ".png"];
 const OPTIMIZED_TRANSFORMED_IMAGE_PREFIX = "img-o-t-";
 const OPTIMIZED_IMAGE_PREFIX = "img-o-";
 
-const getOptimizedImageKeyPrefix = key => {
+const getOptimizedImageKeyPrefix = (key: string): string => {
     return `${OPTIMIZED_IMAGE_PREFIX}${objectHash(key)}-`;
 };
 
-const getOptimizedTransformedImageKeyPrefix = key => {
+const getOptimizedTransformedImageKeyPrefix = (key: string): string => {
     return `${OPTIMIZED_TRANSFORMED_IMAGE_PREFIX}${objectHash(key)}-`;
 };
 
@@ -19,7 +19,7 @@ interface GetImageKeyParams {
     transformations?: any;
 }
 
-const getImageKey = ({ key, transformations }: GetImageKeyParams) => {
+const getImageKey = ({ key, transformations }: GetImageKeyParams): string => {
     if (!transformations) {
         const prefix = getOptimizedImageKeyPrefix(key);
         return prefix + key;
