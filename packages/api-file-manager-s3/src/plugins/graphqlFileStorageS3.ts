@@ -3,8 +3,17 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import checkBasePermissions from "@webiny/api-file-manager/plugins/crud/utils/checkBasePermissions";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import getPresignedPostPayload from "../utils/getPresignedPostPayload";
+import { PresignedPostPayloadData } from "~/types";
 
 const BATCH_UPLOAD_MAX_FILES = 20;
+
+interface GetPreSignedPostPayloadArgs {
+    data: PresignedPostPayloadData;
+}
+
+interface GetPreSignedPostPayloadsArgs {
+    data: PresignedPostPayloadData[];
+}
 
 const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
     type: "graphql-schema",
@@ -51,7 +60,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
         `,
         resolvers: {
             FmQuery: {
-                getPreSignedPostPayload: async (_, args, context) => {
+                getPreSignedPostPayload: async (_, args: GetPreSignedPostPayloadArgs, context) => {
                     try {
                         await checkBasePermissions(context, { rwd: "w" });
 
@@ -68,7 +77,11 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         });
                     }
                 },
-                getPreSignedPostPayloads: async (_, args, context) => {
+                getPreSignedPostPayloads: async (
+                    _,
+                    args: GetPreSignedPostPayloadsArgs,
+                    context
+                ) => {
                     await checkBasePermissions(context, { rwd: "w" });
 
                     const { data: files } = args;
@@ -97,8 +110,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         const settings = await context.fileManager.settings.getSettings();
 
                         const promises = [];
-                        for (let i = 0; i < files.length; i++) {
-                            const item = files[i];
+                        for (const item of files) {
                             promises.push(getPresignedPostPayload(item, settings));
                         }
 
