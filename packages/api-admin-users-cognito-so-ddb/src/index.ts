@@ -5,12 +5,12 @@ import { createSystemEntity, createUserEntity } from "~/definitions/entities";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
-import { AdminUser } from "@webiny/api-admin-users-cognito/types";
+import { AdminUser, StorageOperationsListUsersParams } from "@webiny/api-admin-users-cognito/types";
 
 const reservedFields = ["PK", "SK", "index", "data"];
 const cleanupAttributes = ["TYPE"];
 
-const isReserved = name => {
+const isReserved = (name: string): void => {
     if (reservedFields.includes(name)) {
         throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
             name
@@ -19,7 +19,7 @@ const isReserved = name => {
 };
 
 export const createStorageOperations: CreateAdminUsersStorageOperations = params => {
-    const { table: tableName, documentClient, attributes = {} } = params;
+    const { table: tableName, documentClient, attributes } = params;
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -30,8 +30,8 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
     const table = createTable({ table: tableName, documentClient });
 
     const entities = {
-        system: createSystemEntity(table, attributes[ENTITIES.SYSTEM]),
-        users: createUserEntity(table, attributes[ENTITIES.USERS])
+        system: createSystemEntity(table, attributes[ENTITIES.SYSTEM] || {}),
+        users: createUserEntity(table, attributes[ENTITIES.USERS] || {})
     };
 
     const createUserKeys = (user: Pick<AdminUser, "tenant" | "id">) => ({
@@ -44,7 +44,7 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         GSI1_SK: user.email
     });
 
-    const createSystemKeys = tenant => ({
+    const createSystemKeys = (tenant: string) => ({
         PK: `T#${tenant}#SYSTEM`,
         SK: "ADMIN_USERS"
     });
@@ -152,10 +152,14 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
         },
-        async listUsers({ where, sort }) {
+        // TODO @ts-refactor verify that this is correct
+        async listUsers<TUser extends AdminUser = AdminUser>({
+            where,
+            sort
+        }: StorageOperationsListUsersParams) {
             let items;
             try {
-                items = await queryAll({
+                items = await queryAll<TUser>({
                     entity: entities.users,
                     partitionKey: `T#${where.tenant}#ADMIN_USERS`,
                     options: {

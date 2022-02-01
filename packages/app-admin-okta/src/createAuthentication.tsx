@@ -18,7 +18,6 @@ import {
     LOGIN_MT,
     LOGIN_ST
 } from "./createGetIdentityData";
-import { useTenancy, withTenant } from "@webiny/app-tenancy";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
@@ -42,11 +41,13 @@ interface WithGetIdentityDataProps {
 
 interface AuthState {
     isAuthenticated?: boolean;
+    idToken: {
+        clientId?: string;
+    };
 }
 
-
 export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config }: Config) => {
-    const withGetIdentityData = Component => {
+    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>): React.FC => {
         return function WithGetIdentityData({ children }) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);

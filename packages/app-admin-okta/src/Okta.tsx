@@ -27,7 +27,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
     rootAppClientId,
     children
 }) => {
-    const [loaded, setState] = useState(false);
+    const [loaded, setState] = useState<boolean>(false);
     const authRef = useRef(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
@@ -67,7 +67,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
 };
 
 const createLoginScreen = (params: OktaProps) => {
-    return function OktaLoginScreenHOC() {
+    return function OktaLoginScreenHOC(): React.FC {
         return function OktaLoginScreen({ children }) {
             return (
                 <AppClientIdLoader
@@ -99,7 +99,7 @@ export interface OktaProps {
     factory: OktaFactory;
 }
 
-export const Okta = (props: OktaProps) => {
+export const Okta: React.FC<OktaProps> = props => {
     return (
         <Fragment>
             <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />

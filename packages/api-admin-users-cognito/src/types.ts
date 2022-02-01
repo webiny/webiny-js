@@ -159,7 +159,7 @@ export interface AdminUsers {
 }
 
 /* Storage Operations */
-interface StorageOperationsListUsersParams extends ListUsersParams {
+export interface StorageOperationsListUsersParams extends ListUsersParams {
     where: ListUsersParams["where"] & {
         tenant: string;
     };
