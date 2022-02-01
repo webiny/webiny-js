@@ -4,7 +4,7 @@ import Revision from "./Revision";
 import { Elevation } from "@webiny/ui/Elevation";
 import { css } from "emotion";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { FbFormModel } from "~/types";
+import { FbFormModel, FbRevisionModel } from "~/types";
 
 const listWrapper = css({
     margin: 25,
@@ -22,10 +22,10 @@ const listWrapper = css({
 
 interface RevisionsListProps {
     form: FbFormModel;
-    revisions: FbFormModel[];
+    revisions: FbRevisionModel[];
     loading: boolean;
 }
-const RevisionsList: React.FC<RevisionsListProps> = ({ form, revisions, loading }) => {
+export const RevisionsList: React.FC<RevisionsListProps> = ({ form, revisions, loading }) => {
     return (
         form && (
             <Elevation className={listWrapper} z={2}>
@@ -47,5 +47,3 @@ const RevisionsList: React.FC<RevisionsListProps> = ({ form, revisions, loading 
         )
     );
 };
-
-export default RevisionsList;

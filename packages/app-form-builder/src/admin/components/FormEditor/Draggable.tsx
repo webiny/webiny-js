@@ -1,6 +1,7 @@
 import React, { ReactElement } from "react";
 import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
 import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
+import { DragObjectWithType } from "react-dnd/lib/interfaces/hooksApi";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
@@ -9,12 +10,23 @@ export type DraggableChildrenFunction = (params: {
     drag: ConnectDragSource;
 }) => ReactElement;
 
-export interface DraggableProps {
+interface BeginDragProps {
+    ui?: "row" | "field";
+    pos?: {
+        row: number;
+        index?: number;
+    };
+    name?: string;
+}
+interface EndDragProps {}
+
+type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;
+type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
+
+export interface DraggableProps extends BeginDragProps {
     children: DraggableChildrenFunction;
-    beginDrag?: (props: DraggableProps, monitor: DragSourceMonitor) => void;
-    // TODO @ts-refactor figure type for item
-    // @ts-ignore
-    endDrag?: (item, monitor: DragSourceMonitor) => void;
+    beginDrag?: BeginDrag | BeginDragProps;
+    endDrag?: EndDrag | EndDragProps;
     target?: string[];
 }
 
@@ -27,16 +39,16 @@ const Draggable: React.FC<DraggableProps> = props => {
             isDragging: monitor.isDragging()
         }),
         begin(monitor) {
-            if (typeof beginDrag === "function") {
-                return beginDrag(props, monitor);
+            if (typeof beginDrag !== "function") {
+                return beginDrag as undefined;
             }
-            return beginDrag;
+            return beginDrag(props, monitor);
         },
         end(item, monitor) {
-            if (typeof endDrag === "function") {
-                return endDrag(item, monitor);
+            if (typeof endDrag !== "function") {
+                return endDrag as undefined;
             }
-            return endDrag;
+            return endDrag(item, monitor);
         }
     });
 

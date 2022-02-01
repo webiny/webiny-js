@@ -1,6 +1,18 @@
 import gql from "graphql-tag";
-import { FbErrorResponse, FbRevisionModel } from "~/types";
+import { FbErrorResponse, FbFormModel, FbRevisionModel } from "~/types";
 
+/**
+ * ##################
+ * List Forms Query
+ */
+export interface ListFormsQueryResponse {
+    formBuilder: {
+        listForms: {
+            data: Pick<FbFormModel, "id" | "name">[];
+            error: FbErrorResponse | null;
+        };
+    };
+}
 export const LIST_FORMS = gql`
     query FormsListForms {
         formBuilder {
@@ -8,6 +20,11 @@ export const LIST_FORMS = gql`
                 data {
                     id
                     name
+                }
+                error {
+                    code
+                    message
+                    data
                 }
             }
         }
@@ -21,7 +38,7 @@ export interface GetFormRevisionsQueryResponse {
     formBuilder: {
         getFormRevisions: {
             data: FbRevisionModel[];
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }

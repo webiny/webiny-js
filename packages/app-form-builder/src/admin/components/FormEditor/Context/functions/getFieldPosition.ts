@@ -1,7 +1,7 @@
-import { FbFormModel, FbFormModelField, FieldLayoutPositionType } from "~/types";
+import { FbFormModel, FbFormModelField, FieldIdType, FieldLayoutPositionType } from "~/types";
 
 interface Params {
-    field: FbFormModelField | string;
+    field: FbFormModelField | FieldIdType;
     data: FbFormModel;
 }
 export default ({ field, data }: Params): FieldLayoutPositionType => {

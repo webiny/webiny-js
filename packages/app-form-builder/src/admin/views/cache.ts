@@ -7,7 +7,7 @@ import {
     ListFormsQueryResponse
 } from "../graphql";
 import { DataProxy } from "apollo-cache";
-import { FbFormModel, FbRevisionModel } from "~/types";
+import { FbRevisionModel } from "~/types";
 
 // Replace existing "latest" revision with the new revision
 export const updateLatestRevisionInListCache = (
@@ -70,7 +70,7 @@ export const addRevisionToRevisionsCache = (
     });
 };
 
-export const removeFormFromListCache = (cache: DataProxy, form: FbFormModel): void => {
+export const removeFormFromListCache = (cache: DataProxy, form: FbRevisionModel): void => {
     // Delete the form from list cache
     const gqlParams = { query: LIST_FORMS };
     const { formBuilder } = cache.readQuery<ListFormsQueryResponse>(gqlParams);

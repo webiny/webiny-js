@@ -14,7 +14,7 @@ import {
     SimpleButton,
     ButtonContainer
 } from "../../elementSettings/components/StyledComponents";
-import { BindComponent } from "@webiny/form/Bind";
+import { BindComponent } from "@webiny/form";
 import { FileItem } from "@webiny/app-admin/components/FileManager/types";
 
 const style = {

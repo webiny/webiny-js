@@ -10,7 +10,7 @@ import {
     classes,
     SimpleButton
 } from "../../elementSettings/components/StyledComponents";
-import { BindComponent } from "@webiny/form/Bind";
+import { BindComponent } from "@webiny/form";
 
 interface ImagesListDesignSettingsProps {
     Bind: BindComponent;

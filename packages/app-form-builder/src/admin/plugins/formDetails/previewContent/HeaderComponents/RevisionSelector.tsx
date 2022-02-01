@@ -7,7 +7,7 @@ import { ReactComponent as DownButton } from "../../../../icons/round-arrow_drop
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
-import { FbFormModel, FbRevisionModel } from "~/types";
+import { FbRevisionModel } from "~/types";
 
 const buttonStyle = css({
     "&.mdc-button": {

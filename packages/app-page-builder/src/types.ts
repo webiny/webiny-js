@@ -4,7 +4,7 @@ import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
 import { PluginsAtomType } from "./editor/recoil/modules";
 import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
-import { BindComponent } from "@webiny/form/Bind";
+import { BindComponent } from "@webiny/form";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { Form, FormData, FormOnCancel, FormOnSubmit, FormSetValue } from "@webiny/form/Form";
 import { CoreOptions } from "medium-editor";

@@ -23,4 +23,4 @@ const plugin: AdminAppPermissionRendererPlugin = {
         );
     }
 };
-export default plugin;
+export default () => plugin;

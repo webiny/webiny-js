@@ -13,7 +13,7 @@ import {
     updateLatestRevisionInListCache
 } from "~/admin/views/cache";
 import { usePermission } from "~/hooks/usePermission";
-import { FbFormModel, FbRevisionModel } from "~/types";
+import { FbRevisionModel } from "~/types";
 
 interface DeleteRevisionProps {
     revisions: FbRevisionModel[];

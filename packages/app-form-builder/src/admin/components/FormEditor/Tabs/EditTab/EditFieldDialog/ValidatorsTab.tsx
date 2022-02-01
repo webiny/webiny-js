@@ -1,3 +1,5 @@
+// TODO @ts-refactor figure out correct types.
+// @ts-nocheck
 import React, { useMemo } from "react";
 import { plugins } from "@webiny/plugins";
 import { Switch } from "@webiny/ui/Switch";

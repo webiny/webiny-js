@@ -20,7 +20,7 @@ import {
     FbFormLayoutPlugin,
     FbFormModelField,
     FormRenderFbFormModelField,
-    FbFormRenderModel
+    FbFormModel
 } from "~/types";
 import { PbThemePlugin } from "@webiny/app-page-builder/types";
 
@@ -44,7 +44,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     );
 
     const client = useApolloClient();
-    const data = props.data || ({} as FbFormRenderModel);
+    const data = props.data || ({} as FbFormModel);
 
     useEffect((): void => {
         if (!data.id) {
@@ -60,10 +60,10 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return null;
     }
 
-    const formData: FbFormRenderModel = cloneDeep(data);
+    const formData: FbFormModel = cloneDeep(data);
     const { layout, fields, settings } = formData;
 
-    const getFieldById = (id: string): FormRenderFbFormModelField => {
+    const getFieldById = (id: string): FbFormModelField => {
         return fields.find(field => field._id === id);
     };
 
@@ -79,7 +79,10 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         // TODO @ts-refactor verify that this is correct @pavel / @adrian
         return fieldLayout.map(row => {
             return row.map(id => {
-                const field = getFieldById(id);
+                /**
+                 * We can cast safely because we are adding validators
+                 */
+                const field = getFieldById(id) as FormRenderFbFormModelField;
                 // row[idIndex] = getFieldById(id);
                 field.validators = field.validation
                     .map(item => {

@@ -16,7 +16,8 @@ import {
     LIST_FORMS,
     GET_FORM_REVISIONS,
     GetFormRevisionsQueryResponse,
-    GetFormRevisionsQueryVariables
+    GetFormRevisionsQueryVariables,
+    ListFormsQueryResponse
 } from "./graphql";
 import { BindComponent, FormOnSubmit } from "@webiny/form";
 import { FbRevisionModel } from "~/types";
@@ -43,7 +44,7 @@ const FormElementAdvancedSettings: React.FC<FormElementAdvancedSettingsProps> = 
     submit,
     data
 }) => {
-    const listQuery = useQuery(LIST_FORMS, { fetchPolicy: "network-only" });
+    const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS, { fetchPolicy: "network-only" });
 
     const selectedForm = useMemo(() => {
         return {
