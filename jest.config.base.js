@@ -20,7 +20,6 @@ module.exports = function ({ path }, presets = []) {
         transform: {
             "^.+\\.(ts|tsx)$": "ts-jest"
         },
-        timers: "modern",
         moduleDirectories: ["node_modules"],
         moduleFileExtensions: ["ts", "js", "tsx"],
         moduleNameMapper: {

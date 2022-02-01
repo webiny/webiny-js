@@ -16,8 +16,13 @@ function waitForMilliSeconds(ms) {
 }
 
 beforeEach(() => {
+    // The telemetry function is being injected into the folder where the clients handler function is, so it
+    // expects there to be a _hander.js file to be in the folder it is placed in, so lets mock a _handler.js
+    // file in this test folder so it wont throw an error it is not important what is in the file so lets put in an
+    // empty string
     fs.writeFileSync(handlerPath, "");
 
+    // Now we can export the telemetry functions
     const telemetry = require("../../../bundling/function/telemetryFunction");
     postTelemetryData = telemetry.postTelemetryData;
     localData = telemetry.localData;
@@ -25,6 +30,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+    // After the tests run we destroy the mocked _handler.js function
     fs.unlinkSync(handlerPath);
 });
 
@@ -97,14 +103,11 @@ describe("Telemetry functions", () => {
             // Set time forward 5 minutes
             Date.now = jest.fn(() => timeInFiveMinutes);
 
-            // Wait a second to let the function check if 5 minutes have passed
+            // Wait a second to let the function fire if 5 minutes have passed
             await waitForMilliSeconds(1000);
 
-            // Fire a normal handler
-            await handler();
-
             // The timer should have fired, clears the logs and only one should be in the logs now
-            expect(localData.logs.length).toEqual(1);
+            expect(localData.logs.length).toEqual(0);
 
             jest.clearAllMocks();
         });

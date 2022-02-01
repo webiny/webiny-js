@@ -72,6 +72,7 @@
     "webpack": "4.41.2",
     "webpack-dev-server": "3.9.0",
     "webpack-manifest-plugin": "2.2.0",
+    "node-fetch": "3.2.0",
     "webpackbar": "4.0.0"
   },
   "license": "MIT",
