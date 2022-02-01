@@ -27,7 +27,12 @@ const getDataFields = (fields = "") => `{
     content {
         type
         id
-        settings
+        workflowId
+        title
+        version
+        settings {
+            modelId
+        }
     }
     ${fields}
 }`;

@@ -31,7 +31,8 @@ describe("Content Review crud test", () => {
             data: {
                 content: {
                     id: page.id,
-                    type: "page"
+                    type: "page",
+                    workflowId: workflow.id
                 }
             }
         });
@@ -65,6 +66,9 @@ describe("Content Review crud test", () => {
                             content: {
                                 id: expect.any(String),
                                 type: expect.any(String),
+                                workflowId: expect.any(String),
+                                title: expect.any(String),
+                                version: expect.any(Number),
                                 settings: null
                             }
                         },
@@ -115,6 +119,9 @@ describe("Content Review crud test", () => {
                             content: {
                                 id: expect.any(String),
                                 type: expect.any(String),
+                                workflowId: expect.any(String),
+                                title: expect.any(String),
+                                version: expect.any(Number),
                                 settings: null
                             }
                         },
@@ -167,6 +174,9 @@ describe("Content Review crud test", () => {
                                 content: {
                                     id: expect.any(String),
                                     type: expect.any(String),
+                                    workflowId: expect.any(String),
+                                    title: expect.any(String),
+                                    version: expect.any(Number),
                                     settings: null
                                 }
                             }

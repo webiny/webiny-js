@@ -50,7 +50,8 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             data: {
                 content: {
                     id: page.id,
-                    type: "page"
+                    type: "page",
+                    workflowId: page.settings.apw.workflowId
                 }
             }
         });
@@ -313,6 +314,9 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                             content: {
                                 id: expect.any(String),
                                 type: "page",
+                                workflowId: expect.any(String),
+                                title: expect.any(String),
+                                version: expect.any(Number),
                                 settings: null
                             },
                             steps: [

@@ -25,7 +25,8 @@ describe(`Pending change requests count test`, () => {
             data: {
                 content: {
                     id: page.id,
-                    type: "page"
+                    type: "page",
+                    workflowId: page.settings.apw.workflowId
                 }
             }
         });
@@ -101,6 +102,9 @@ describe(`Pending change requests count test`, () => {
                             content: {
                                 id: expect.any(String),
                                 type: "page",
+                                workflowId: expect.any(String),
+                                title: expect.any(String),
+                                version: expect.any(Number),
                                 settings: null
                             },
                             steps: [
@@ -185,6 +189,9 @@ describe(`Pending change requests count test`, () => {
                             content: {
                                 id: expect.any(String),
                                 type: "page",
+                                workflowId: expect.any(String),
+                                title: expect.any(String),
+                                version: expect.any(Number),
                                 settings: null
                             },
                             steps: [
@@ -248,6 +255,9 @@ describe(`Pending change requests count test`, () => {
                             content: {
                                 id: expect.any(String),
                                 type: "page",
+                                workflowId: expect.any(String),
+                                title: expect.any(String),
+                                version: expect.any(Number),
                                 settings: null
                             },
                             steps: [
@@ -311,6 +321,9 @@ describe(`Pending change requests count test`, () => {
                             content: {
                                 id: expect.any(String),
                                 type: "page",
+                                workflowId: expect.any(String),
+                                title: expect.any(String),
+                                version: expect.any(Number),
                                 settings: null
                             },
                             steps: [
@@ -374,6 +387,9 @@ describe(`Pending change requests count test`, () => {
                             content: {
                                 id: expect.any(String),
                                 type: "page",
+                                workflowId: expect.any(String),
+                                title: expect.any(String),
+                                version: expect.any(Number),
                                 settings: null
                             },
                             steps: [
