@@ -1,27 +1,19 @@
 import { FileManagerContext } from "~/types";
 import WebinyError from "@webiny/error";
-import {
-    FilePhysicalStoragePlugin,
-    FilePhysicalStoragePluginUploadParams
-} from "~/plugins/definitions/FilePhysicalStoragePlugin";
-
-export type Args = {
-    name: string;
-    type: string;
-    size: number;
-    buffer: Buffer;
-    keyPrefix?: string;
-    hideInFileManager?: boolean;
-    tags?: string[];
-};
+import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
 
 export type Result = Record<string, any>;
 
 const storagePluginType = "api-file-manager-storage";
 
-export interface FileStorageUploadParams extends FilePhysicalStoragePluginUploadParams {
+export interface FileStorageUploadParams {
+    buffer: Buffer;
     hideInFileManager: boolean | string;
     tags?: string[];
+    size: number;
+    name: string;
+    keyPrefix: string;
+    type: string;
 }
 export interface FileStorageDeleteParams {
     id: string;
@@ -74,8 +66,7 @@ export class FileStorage {
         const settings = await this.context.fileManager.settings.getSettings();
         // Upload files to cloud storage.
         const promises = [];
-        for (let i = 0; i < params.files.length; i++) {
-            const item = params.files[i];
+        for (const item of params.files) {
             promises.push(
                 this.storagePlugin.upload({
                     ...item,

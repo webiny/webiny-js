@@ -1,4 +1,8 @@
 import { validation } from "@webiny/validation";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string, boolean, fields } from "@commodo/fields";
 
 export const CreateDataModel = withFields({

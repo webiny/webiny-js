@@ -1,4 +1,4 @@
-import { CmsModel, CmsFieldTypePlugins, CmsContext } from "~/types";
+import { CmsModel, CmsFieldTypePlugins, CmsContext, CmsEntry } from "~/types";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
@@ -18,13 +18,15 @@ import { createManageTypeName, createTypeName } from "~/content/plugins/utils/cr
 import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
 import { getEntryTitle } from "~/content/plugins/utils/getEntryTitle";
 
+interface CreateManageResolversParams {
+    models: CmsModel[];
+    model: CmsModel;
+    context: CmsContext;
+    fieldTypePlugins: CmsFieldTypePlugins;
+}
 interface CreateManageResolvers {
-    (params: {
-        models: CmsModel[];
-        model: CmsModel;
-        context: CmsContext;
-        fieldTypePlugins: CmsFieldTypePlugins;
-    }): any;
+    // TODO @ts-refactor determine correct type.
+    (params: CreateManageResolversParams): any;
 }
 
 export const createManageResolvers: CreateManageResolvers = ({
@@ -80,13 +82,13 @@ export const createManageResolvers: CreateManageResolvers = ({
         },
         ...fieldResolvers,
         [`${mTypeName}Meta`]: {
-            title(entry) {
+            title(entry: CmsEntry) {
                 return getEntryTitle(model, entry);
             },
-            status(entry) {
+            status(entry: CmsEntry) {
                 return entry.status;
             },
-            async revisions(entry, _, context: CmsContext) {
+            async revisions(entry: CmsEntry, _: any, context: CmsContext) {
                 const revisions = await context.cms.getEntryRevisions(model, entry.entryId);
                 return revisions.sort((a, b) => b.version - a.version);
             }

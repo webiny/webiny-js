@@ -23,16 +23,18 @@ const processRequestBody = async (
 };
 
 export default async (
-    requestBody: GraphQLRequestBody,
+    requestBody: GraphQLRequestBody | GraphQLRequestBody[],
     schema: GraphQLSchema,
     context: Context
 ): Promise<ExecutionResult[] | ExecutionResult> => {
-    if (Array.isArray(requestBody)) {
+    if (Array.isArray(requestBody) === true) {
         const result: ExecutionResult[] = [];
-        for (let i = 0; i < requestBody.length; i++) {
-            result.push(await processRequestBody(requestBody[i], schema, context));
+        for (let i = 0; i < (requestBody as GraphQLRequestBody[]).length; i++) {
+            result.push(
+                await processRequestBody((requestBody as GraphQLRequestBody[])[i], schema, context)
+            );
         }
         return result;
     }
-    return await processRequestBody(requestBody, schema, context);
+    return await processRequestBody(requestBody as GraphQLRequestBody, schema, context);
 };

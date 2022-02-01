@@ -9,6 +9,7 @@ import {
     FileManagerFilesStorageOperationsListParams,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsListResponse,
+    FileManagerFilesStorageOperationsListResponseMeta,
     FileManagerFilesStorageOperationsTagsParams,
     FileManagerFilesStorageOperationsTagsResponse,
     FileManagerFilesStorageOperationsUpdateParams
@@ -280,7 +281,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             fields
         });
 
-        const start = decodeCursor(after) || 0;
+        const start = parseInt(decodeCursor(after)) || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const files = sortedFiles.slice(start, end);
@@ -336,14 +337,14 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 collection[tag].push(item.id);
             }
             return collection;
-        }, {});
+        }, {} as Record<string, string[]>);
 
         const tags: string[] = Object.keys(tagsObject);
 
         const hasMoreItems = false;
         const totalCount = tags.length;
 
-        const meta = {
+        const meta: FileManagerFilesStorageOperationsListResponseMeta = {
             hasMoreItems,
             totalCount,
             cursor: null

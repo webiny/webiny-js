@@ -29,7 +29,7 @@ const getStoragePluginFactory: GetStoragePluginFactory = context => {
             }
 
             return collection;
-        }, {});
+        }, {} as Record<string, StorageTransformPlugin>);
 
     return (fieldType: string) => {
         return plugins[fieldType] || defaultStoragePlugin;

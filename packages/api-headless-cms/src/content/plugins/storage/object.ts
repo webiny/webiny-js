@@ -4,25 +4,20 @@ import { CmsModel, CmsModelField } from "~/types";
 import { StorageTransformPlugin } from "./StorageTransformPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 
+interface ProcessValueParams {
+    fields: CmsModelField[];
+    sourceValue: Record<string, any>;
+    getStoragePlugin: (fieldType: string) => StorageTransformPlugin;
+    plugins: PluginsContainer;
+    model: CmsModel;
+    operation: "toStorage" | "fromStorage";
+}
 interface ProcessValue {
-    (params: {
-        fields: CmsModelField[];
-        sourceValue: Record<string, any>;
-        getStoragePlugin: (fieldType: string) => StorageTransformPlugin;
-        plugins: PluginsContainer;
-        model: CmsModel;
-        operation: string;
-    }): Promise<Record<string, any>>;
+    (params: ProcessValueParams): Promise<Record<string, any>>;
 }
 
-const processValue: ProcessValue = async ({
-    fields,
-    sourceValue,
-    getStoragePlugin,
-    plugins,
-    model,
-    operation
-}) => {
+const processValue: ProcessValue = async params => {
+    const { fields, sourceValue, getStoragePlugin, plugins, model, operation } = params;
     return await pReduce(
         fields,
         async (values, field) => {

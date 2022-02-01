@@ -1,3 +1,7 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import fetch from "node-fetch";
 import pick from "lodash/pick";
@@ -167,7 +171,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 throw new Error("Form data cannot be empty.");
             }
 
-            const invalidFields = {};
+            const invalidFields: Record<string, string> = {};
             for (let i = 0; i < fields.length; i++) {
                 const field = fields[i];
                 if (Array.isArray(field.validation)) {
@@ -275,7 +279,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                         if (form.triggers[plugin.trigger]) {
                             await plugin.handle({
                                 form: form,
-                                addLog: log => {
+                                addLog: (log: Record<string, any>) => {
                                     submission.logs.push(log);
                                 },
                                 data,

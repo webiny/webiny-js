@@ -1,21 +1,29 @@
 import upperFirst from "lodash/upperFirst";
-import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
+import {
+    ApiEndpoint,
+    CmsFieldTypePlugins,
+    CmsModel,
+    CmsModelField,
+    CmsModelFieldToGraphQLPlugin
+} from "~/types";
 import { renderField } from "~/content/plugins/utils/renderFields";
 import { renderInputField } from "~/content/plugins/utils/renderInputFields";
 import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
 import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
 
+interface TypeFromFieldParams {
+    typeOfType: string;
+    model: CmsModel;
+    type: ApiEndpoint;
+    field: CmsModelField;
+    fieldTypePlugins: CmsFieldTypePlugins;
+}
 interface TypeFromFieldResponse {
     fieldType: string;
     typeDefs: string;
 }
-const typeFromField = ({
-    typeOfType,
-    model,
-    type,
-    field,
-    fieldTypePlugins
-}): TypeFromFieldResponse | null => {
+const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | null => {
+    const { typeOfType, model, type, field, fieldTypePlugins } = params;
     const typeSuffix = typeOfType === "input" ? "Input" : "";
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);

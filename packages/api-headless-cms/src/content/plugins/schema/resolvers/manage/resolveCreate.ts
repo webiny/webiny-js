@@ -1,13 +1,16 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
+import { CmsEntryResolverFactory as ResolverFactory, CreateCmsEntryInput } from "~/types";
 
-type ResolveCreate = ResolverFactory<any, { data: Record<string, any> }>;
+interface ResolveCreateArgs {
+    data: CreateCmsEntryInput;
+}
+type ResolveCreate = ResolverFactory<any, ResolveCreateArgs>;
 
 export const resolveCreate: ResolveCreate =
     ({ model }) =>
-    async (_, args, { cms }) => {
+    async (_, args, context) => {
         try {
-            const entry = await cms.createEntry(model, args.data);
+            const entry = await context.cms.createEntry(model, args.data);
 
             return new Response(entry);
         } catch (e) {

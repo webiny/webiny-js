@@ -7417,6 +7417,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/got@npm:^9.6.12":
+  version: 9.6.12
+  resolution: "@types/got@npm:9.6.12"
+  dependencies:
+    "@types/node": "*"
+    "@types/tough-cookie": "*"
+    form-data: ^2.5.0
+  checksum: e6c17cf49107064bc0c4371efaef6855d4753b0e17b615da1a9ab7dcd10c6208c48620c7309e96861a4ea1a0d8b9e7cdda67316b4075d4ba2aff4d7400f92f53
+  languageName: node
+  linkType: hard
+
 "@types/graceful-fs@npm:^4.1.2":
   version: 4.1.5
   resolution: "@types/graceful-fs@npm:4.1.5"
@@ -8077,6 +8088,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 9578470db0b527c26e246a1220ae9bffc6bf47f20f89c54aac467c083ab1f7e16c00d9a7b4bb6cb4e2dfae465027270827e5908a6236063f6214625e50585d78
+  languageName: node
+  linkType: hard
+
+"@types/tough-cookie@npm:*":
+  version: 4.0.1
+  resolution: "@types/tough-cookie@npm:4.0.1"
+  checksum: 7570c1c2d74201f4ead3512cf8e4c99e97d92ab8a02ae2fb987fd720ced0ca1a2baf250c98a861a170b86762606c9bf6d32207675f13dffc5ab75c08c96578d2
   languageName: node
   linkType: hard
 
@@ -9127,6 +9145,7 @@ __metadata:
     "@commodo/fields": 1.1.2-beta.20
     "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
+    "@types/got": ^9.6.12
     "@types/json2csv": ^4.5.1
     "@webiny/api-dynamodb-to-elasticsearch": ^5.22.0
     "@webiny/api-file-manager": ^5.22.0
@@ -20926,6 +20945,17 @@ __metadata:
     combined-stream: ^1.0.8
     mime-types: ^2.1.12
   checksum: 60ec3fe7e23154949ab6fef31baedf5afbfb8d6441ea8d19b211b43a5d0448be2918c9bba6218cade56a7cbd43f670d6e75f41f626f8d397d56bf8c60f4a829d
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^2.5.0":
+  version: 2.5.1
+  resolution: "form-data@npm:2.5.1"
+  dependencies:
+    asynckit: ^0.4.0
+    combined-stream: ^1.0.6
+    mime-types: ^2.1.12
+  checksum: 5134ada56cc246b293a1ac7678dba6830000603a3979cf83ff7b2f21f2e3725202237cfb89e32bcb38a1d35727efbd3c3a22e65b42321e8ade8eec01ce755d08
   languageName: node
   linkType: hard
 

@@ -8,6 +8,10 @@ interface EntriesByModel {
     [key: string]: string[];
 }
 
+interface GetContentEntriesArgs {
+    entries: { id: string; modelId: string }[];
+}
+
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
         return null;
@@ -121,29 +125,23 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         title: getEntryTitle(model, entry)
                     });
                 },
-                async getContentEntries(_, args, context) {
+                async getContentEntries(_, args: GetContentEntriesArgs, context) {
                     const models = await context.cms.listModels();
 
-                    const modelsMap: Record<string, CmsModel> = models.reduce(
-                        (collection, model) => {
-                            collection[model.modelId] = model;
-                            return collection;
-                        },
-                        {}
-                    );
+                    const modelsMap = models.reduce((collection, model) => {
+                        collection[model.modelId] = model;
+                        return collection;
+                    }, {} as Record<string, CmsModel>);
 
-                    const entriesByModel: EntriesByModel = args.entries.reduce(
-                        (collection, ref) => {
-                            if (!collection[ref.modelId]) {
-                                collection[ref.modelId] = [];
-                            } else if (collection[ref.modelId].includes(ref.id) === true) {
-                                return collection;
-                            }
-                            collection[ref.modelId].push(ref.id);
+                    const entriesByModel = args.entries.reduce((collection, ref) => {
+                        if (!collection[ref.modelId]) {
+                            collection[ref.modelId] = [];
+                        } else if (collection[ref.modelId].includes(ref.id) === true) {
                             return collection;
-                        },
-                        {} as EntriesByModel
-                    );
+                        }
+                        collection[ref.modelId].push(ref.id);
+                        return collection;
+                    }, {} as EntriesByModel);
 
                     const getters: Promise<CmsEntry[]>[] = Object.keys(entriesByModel).map(
                         async modelId => {
