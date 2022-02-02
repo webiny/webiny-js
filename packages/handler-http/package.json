@@ -17,6 +17,7 @@
     "@babel/runtime": "^7.16.3",
     "@webiny/handler": "^5.22.1",
     "@webiny/handler-args": "^5.22.1",
+    "@webiny/plugins": "^5.22.1",
     "@webiny/utils": "^5.22.1",
     "boolean": "^3.0.1"
   },

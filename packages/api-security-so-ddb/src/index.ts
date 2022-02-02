@@ -45,10 +45,13 @@ export const createStorageOperations = (
     const table = createTable({ table: tableName, documentClient });
 
     const entities = {
-        apiKeys: createApiKeyEntity(table, attributes[ENTITIES.API_KEY] || {}),
-        system: createSystemEntity(table, attributes[ENTITIES.SYSTEM] || {}),
-        groups: createGroupEntity(table, attributes[ENTITIES.GROUP] || {}),
-        tenantLinks: createTenantLinkEntity(table, attributes[ENTITIES.TENANT_LINK] || {})
+        apiKeys: createApiKeyEntity(table, attributes ? attributes[ENTITIES.API_KEY] : {}),
+        system: createSystemEntity(table, attributes ? attributes[ENTITIES.SYSTEM] : {}),
+        groups: createGroupEntity(table, attributes ? attributes[ENTITIES.GROUP] : {}),
+        tenantLinks: createTenantLinkEntity(
+            table,
+            attributes ? attributes[ENTITIES.TENANT_LINK] : {}
+        )
     };
 
     const createApiKeyKeys = ({ id, tenant }: Pick<ApiKey, "id" | "tenant">) => ({

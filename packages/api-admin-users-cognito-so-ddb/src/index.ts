@@ -30,8 +30,8 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
     const table = createTable({ table: tableName, documentClient });
 
     const entities = {
-        system: createSystemEntity(table, attributes[ENTITIES.SYSTEM] || {}),
-        users: createUserEntity(table, attributes[ENTITIES.USERS] || {})
+        system: createSystemEntity(table, attributes ? attributes[ENTITIES.SYSTEM] : {}),
+        users: createUserEntity(table, attributes ? attributes[ENTITIES.USERS] : {})
     };
 
     const createUserKeys = (user: Pick<AdminUser, "tenant" | "id">) => ({

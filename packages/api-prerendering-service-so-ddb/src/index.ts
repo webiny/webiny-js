@@ -35,17 +35,17 @@ export const createPrerenderingServiceStorageOperations: PrerenderingServiceFact
         render: createRenderEntity({
             entityName: ENTITIES.RENDER,
             table: tableInstance,
-            attributes: attributes[ENTITIES.RENDER] || {}
+            attributes: attributes ? attributes[ENTITIES.RENDER] : {}
         }),
         queueJob: createQueueJobEntity({
             entityName: ENTITIES.QUEUE_JOB,
             table: tableInstance,
-            attributes: attributes[ENTITIES.QUEUE_JOB] || {}
+            attributes: attributes ? attributes[ENTITIES.QUEUE_JOB] : {}
         }),
         tagUrlLink: createTagUrlLinkEntity({
             entityName: ENTITIES.TAG_URL_LINK,
             table: tableInstance,
-            attributes: attributes[ENTITIES.TAG_URL_LINK] || {}
+            attributes: attributes ? attributes[ENTITIES.TAG_URL_LINK] : {}
         })
     };
 

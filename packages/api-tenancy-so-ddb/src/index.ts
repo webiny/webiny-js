@@ -36,17 +36,17 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         tenants: createTenantEntity({
             entityName: ENTITIES.TENANT,
             table: tableInstance,
-            attributes: attributes[ENTITIES.TENANT] || {}
+            attributes: attributes ? attributes[ENTITIES.TENANT] : {}
         }),
         domains: createDomainEntity({
             entityName: ENTITIES.DOMAIN,
             table: tableInstance,
-            attributes: attributes[ENTITIES.DOMAIN] || {}
+            attributes: attributes ? attributes[ENTITIES.DOMAIN] : {}
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table: tableInstance,
-            attributes: attributes[ENTITIES.SYSTEM] || {}
+            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
         })
     };
 

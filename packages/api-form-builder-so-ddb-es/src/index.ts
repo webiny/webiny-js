@@ -110,12 +110,12 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         esForm: createElasticsearchEntity({
             entityName: ENTITIES.ES_FORM,
             table: esTable,
-            attributes: attributes[ENTITIES.ES_FORM]
+            attributes: attributes ? attributes[ENTITIES.ES_FORM] : {}
         }),
         esSubmission: createElasticsearchEntity({
             entityName: ENTITIES.ES_SUBMISSION,
             table: esTable,
-            attributes: attributes[ENTITIES.ES_SUBMISSION]
+            attributes: attributes ? attributes[ENTITIES.ES_SUBMISSION] : {}
         })
     };
 

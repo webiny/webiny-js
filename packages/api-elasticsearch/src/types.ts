@@ -1,7 +1,12 @@
 import { Client } from "@elastic/elasticsearch";
+import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
 import { BoolQueryConfig as esBoolQueryConfig, Query as esQuery } from "elastic-ts";
 import { Context } from "@webiny/handler/types";
+/**
+ * Re-export some dep lib types.
+ */
 export * from "elastic-ts";
+export { ApiResponse };
 
 export interface ElasticsearchContext extends Context {
     elasticsearch: Client;

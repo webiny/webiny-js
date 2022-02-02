@@ -32,7 +32,7 @@
     "dot-prop": "^5.3.0",
     "dynamodb-toolbox": "^0.3.3",
     "jsonpack": "^1.1.5",
-    "lodash.sortby": "^4.5.0"
+    "lodash": "^4.5.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
