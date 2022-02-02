@@ -2,11 +2,17 @@ import { PbContext } from "@webiny/api-page-builder/types";
 import { DataSourceSettings } from "~/types";
 import { DataSource, DataSourcePlugin } from "~/plugins/DataSourcePlugin";
 
+interface DataSourceValue {
+    id: string;
+    type: string;
+    // TODO @ts-refactor
+    data: any;
+}
 export const loadDataSources = async (
     settings: DataSourceSettings[],
     variables: Record<string, any>,
     context: PbContext
-) => {
+): Promise<DataSourceValue[]> => {
     const dataSources = [];
     const dataSourcePlugins = context.plugins.byType<DataSourcePlugin>(DataSourcePlugin.type);
 

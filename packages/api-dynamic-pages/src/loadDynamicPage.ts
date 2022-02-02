@@ -2,7 +2,13 @@ import { PbContext } from "@webiny/api-page-builder/types";
 import { loadDataSources } from "./loadDataSources";
 import { DynamicPage } from "~/types";
 
-export const loadDynamicPage = async (args, context: PbContext): Promise<DynamicPage | null> => {
+interface Args {
+    path: string;
+}
+export const loadDynamicPage = async (
+    args: Args,
+    context: PbContext
+): Promise<DynamicPage | null> => {
     // Find all pages that have a pattern instead of an exact slug
     const [pages] = await context.pageBuilder.listPublishedPages<DynamicPage>({
         where: { dynamic: true },

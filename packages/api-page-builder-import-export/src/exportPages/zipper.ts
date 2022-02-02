@@ -1,6 +1,5 @@
 // TODO: Move "archive" in layer
-import Archiver from "archiver/lib/core";
-import vending from "archiver";
+import vending, { ArchiverError } from "archiver";
 import S3 from "aws-sdk/clients/s3";
 import { Readable } from "stream";
 import * as path from "path";
@@ -69,7 +68,7 @@ export default class Zipper {
         // 2. Prepare zip from the file stream.
         const archive = vending.create(this.archiveFormat);
         // Handle archive events.
-        archive.on("error", (error: Archiver.ArchiverError) => {
+        archive.on("error", (error: ArchiverError) => {
             throw new Error(
                 `${error.name} ${error.code} ${error.message} ${error.path} ${error.stack}`
             );
@@ -123,7 +122,7 @@ export class ZipOfZip {
         // 2. Prepare zip from the file stream.
         const archive = vending.create(this.archiveFormat);
         // Handle archive events.
-        archive.on("error", (error: Archiver.ArchiverError) => {
+        archive.on("error", (error: ArchiverError) => {
             throw new Error(
                 `${error.name} ${error.code} ${error.message} ${error.path} ${error.stack}`
             );

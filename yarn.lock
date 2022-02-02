@@ -7276,6 +7276,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/archiver@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@types/archiver@npm:5.3.1"
+  dependencies:
+    "@types/glob": "*"
+  checksum: 1c6babc7f50acf5bf7fa3d5fa76bb68702e4463e6a412d259cdddff611dbbb9832ea4b2f41d675fd95ac1aa8b087daa882423073e41db9e296f14d41f2ea88e6
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^4.2.0":
   version: 4.2.2
   resolution: "@types/aria-query@npm:4.2.2"
@@ -8208,6 +8217,15 @@ __metadata:
   dependencies:
     "@types/yargs-parser": "*"
   checksum: caa21d2c957592fe2184a8368c8cbe5a82a6c2e2f2893722e489f842dc5963293d2f3120bc06fe3933d60a3a0d1e2eb269649fd6b1947fe1820f8841ba611dd9
+  languageName: node
+  linkType: hard
+
+"@types/yauzl@npm:^2.9.2":
+  version: 2.9.2
+  resolution: "@types/yauzl@npm:2.9.2"
+  dependencies:
+    "@types/node": "*"
+  checksum: dfb49abe82605615712fc694eaa4f7068fe30aa03f38c085e2c2e74408beaad30471d36da9654a811482ece2ea4405575fd99b19c0aa327ed2a9736b554bbf43
   languageName: node
   linkType: hard
 
@@ -9477,7 +9495,9 @@ __metadata:
     "@commodo/fields": beta
     "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
+    "@types/archiver": ^5.3.1
     "@types/puppeteer": ^5.4.2
+    "@types/yauzl": ^2.9.2
     "@webiny/api-dynamodb-to-elasticsearch": ^5.22.1
     "@webiny/api-file-manager": ^5.22.1
     "@webiny/api-file-manager-ddb-es": ^5.22.1
@@ -9495,6 +9515,7 @@ __metadata:
     "@webiny/handler-aws": ^5.22.1
     "@webiny/handler-graphql": ^5.22.1
     "@webiny/project-utils": ^5.22.1
+    "@webiny/utils": ^5.22.1
     "@webiny/validation": ^5.22.1
     archiver: ^5.3.0
     commodo-fields-object: ^1.0.6
