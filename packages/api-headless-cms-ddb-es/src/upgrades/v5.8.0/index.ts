@@ -1,3 +1,7 @@
+/**
+ * File not used anymore.
+ */
+// @ts-nocheck
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { CmsEntry, CmsModel, CmsContext } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";

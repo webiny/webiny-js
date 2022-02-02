@@ -61,11 +61,13 @@ const createKeys = (params: PartitionKeyParams): Keys => {
     };
 };
 
-export interface Params {
+export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
 }
 
-export const createSettingsStorageOperations = (params: Params): CmsSettingsStorageOperations => {
+export const createSettingsStorageOperations = (
+    params: CreateSettingsStorageOperationsParams
+): CmsSettingsStorageOperations => {
     const { entity } = params;
 
     const create = async (params: CmsSettingsStorageOperationsCreateParams) => {

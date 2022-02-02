@@ -3,7 +3,7 @@ import {
     Params as BaseParams
 } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 
-export interface Params extends BaseParams {
+export interface CmsEntryElasticsearchFieldPluginParams extends BaseParams {
     /**
      * If modelId is not passed, there is no filtering of plugins by it when plugin is applied during the runtime.
      */
@@ -14,7 +14,7 @@ export class CmsEntryElasticsearchFieldPlugin extends ElasticsearchFieldPlugin {
 
     public readonly modelId?: string;
 
-    public constructor(params: Params) {
+    public constructor(params: CmsEntryElasticsearchFieldPluginParams) {
         super(params);
 
         this.modelId = params.modelId;

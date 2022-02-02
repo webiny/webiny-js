@@ -9,7 +9,7 @@ export interface ModifySortParams extends BaseModifySortParams {
     model: CmsModel;
 }
 
-export interface Config {
+export interface CmsEntryElasticsearchSortModifierPluginConfig {
     modifySort: ModifySortCallable<ModifySortParams>;
     /**
      * If modelId is not passed, there is no filtering of plugins by it when plugin is applied during the runtime.
@@ -22,7 +22,7 @@ export class CmsEntryElasticsearchSortModifierPlugin extends ElasticsearchSortMo
 
     public readonly modelId?: string;
 
-    public constructor(config: Config) {
+    public constructor(config: CmsEntryElasticsearchSortModifierPluginConfig) {
         super(config.modifySort);
         this.modelId = config.modelId;
     }

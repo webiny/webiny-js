@@ -9,7 +9,7 @@ export interface ModifyQueryParams extends BaseModifyQueryParams {
     model: CmsModel;
 }
 
-export interface Config {
+export interface CmsEntryElasticsearchQueryModifierPluginConfig {
     modifyQuery: ModifyQueryCallable<ModifyQueryParams>;
     /**
      * If modelId is not passed, there is no filtering of plugins by it when plugin is applied during the runtime.
@@ -22,7 +22,7 @@ export class CmsEntryElasticsearchQueryModifierPlugin extends ElasticsearchQuery
 
     public readonly modelId?: string;
 
-    public constructor(config: Config) {
+    public constructor(config: CmsEntryElasticsearchQueryModifierPluginConfig) {
         super(config.modifyQuery);
 
         this.modelId = config.modelId;

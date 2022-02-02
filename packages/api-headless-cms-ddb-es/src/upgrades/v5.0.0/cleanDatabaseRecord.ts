@@ -1,3 +1,7 @@
+/**
+ * File not used anymore.
+ */
+// @ts-nocheck
 import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import lodashOmit from "lodash.omit";
 

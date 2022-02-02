@@ -1,3 +1,7 @@
+/**
+ * File not used anymore.
+ */
+// @ts-nocheck
 import { ModelFieldFinder } from "./fieldFinder";
 import { cleanDatabaseRecord } from "./cleanDatabaseRecord";
 import { CmsIndexEntry } from "../../types";

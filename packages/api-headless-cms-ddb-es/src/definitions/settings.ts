@@ -1,13 +1,13 @@
 import { Entity, Table } from "dynamodb-toolbox";
 import { Attributes } from "~/types";
 
-export interface Params {
+export interface CreateSettingsEntityParams {
     table: Table;
     entityName: string;
     attributes: Attributes;
 }
 
-export const createSettingsEntity = (params: Params): Entity<any> => {
+export const createSettingsEntity = (params: CreateSettingsEntityParams): Entity<any> => {
     const { entityName, table, attributes } = params;
     return new Entity({
         name: entityName,
