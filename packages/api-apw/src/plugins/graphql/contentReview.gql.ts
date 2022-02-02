@@ -1,7 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { ApwContext } from "~/types";
+import { ApwContentReviewStep, ApwContentReviewStepStatus, ApwContext } from "~/types";
 import resolve from "~/utils/resolve";
 
 const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -16,6 +16,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             status: ApwContentReviewStatus
+            activeStep: ApwContentReviewStep
         }
 
         type ApwListContentReviewsResponse {
@@ -58,6 +59,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwContentReviewStep {
             status: ApwContentReviewStepStatus
             id: String
+            title: String
             pendingChangeRequests: Int
             signOffProvidedOn: DateTime
             signOffProvidedBy: ApwCreatedBy
@@ -206,6 +208,12 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 const getContent = context.apw.getContentGetter(parent.type);
                 const content = await getContent(parent.id, parent.settings);
                 return content.version;
+            }
+        },
+        ApwContentReviewListItem: {
+            activeStep: async parent => {
+                const steps: ApwContentReviewStep[] = parent.steps;
+                return steps.find(step => step.status === ApwContentReviewStepStatus.ACTIVE);
             }
         },
         ApwQuery: {
