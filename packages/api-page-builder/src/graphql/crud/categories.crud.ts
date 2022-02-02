@@ -1,3 +1,7 @@
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import {
@@ -45,7 +49,7 @@ export interface Params {
 export const createCategoriesCrud = (params: Params): CategoriesCrud => {
     const { context, storageOperations } = params;
 
-    const getPermission = name => context.security.getPermission(name);
+    const getPermission = (name: string) => context.security.getPermission(name);
 
     const onBeforeCategoryCreate = createTopic<OnBeforeCategoryCreateTopicParams>();
     const onAfterCategoryCreate = createTopic<OnAfterCategoryCreateTopicParams>();

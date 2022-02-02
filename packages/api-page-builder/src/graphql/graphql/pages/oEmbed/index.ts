@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
-import providerList from "./providers";
+import { providerList } from "./providers";
 
-const getHostname = url => {
+const getHostname = (url: string): string | null => {
     const match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
     if (match && match.length > 2 && typeof match[2] === "string" && match[2].length > 0) {
         return match[2];
@@ -9,19 +9,8 @@ const getHostname = url => {
     return null;
 };
 
-type ProviderEndpoint = {
-    schemes: any;
-    url: string;
-};
-
-type ProviderItem = {
-    provider_name: string;
-    provider_url: string;
-    endpoints: ProviderEndpoint[];
-};
-
 const providers = providerList
-    .map((item: ProviderItem) => {
+    .map(item => {
         const { provider_name, provider_url, endpoints } = item;
 
         const endpoint = endpoints[0];
@@ -37,7 +26,7 @@ const providers = providerList
 
 export const findProvider = (url: string): { [key: string]: any } | null => {
     const candidates = providers.filter(provider => {
-        const { schemes, domain }: any = provider;
+        const { schemes, domain } = provider;
         if (!schemes.length) {
             return url.includes(domain);
         }

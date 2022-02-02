@@ -21,13 +21,17 @@ export class PagePlugin<TPage extends Page = Page> extends Plugin {
         this._config = config || {};
     }
 
-    notFound(params: NotFoundParams): Promise<Page | undefined> {
+    notFound(params: NotFoundParams): Promise<TPage | undefined> {
         return this._execute("notFound", params);
     }
 
-    private _execute(callback, params) {
-        if (typeof this._config[callback] === "function") {
-            return this._config[callback](params);
+    private async _execute(
+        callback: keyof Config,
+        params: NotFoundParams
+    ): Promise<TPage | undefined> {
+        if (typeof this._config[callback] !== "function") {
+            return undefined;
         }
+        return this._config[callback](params);
     }
 }

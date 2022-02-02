@@ -7398,6 +7398,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/extract-zip@npm:^1.6.2":
+  version: 1.6.2
+  resolution: "@types/extract-zip@npm:1.6.2"
+  checksum: 5f33ebe9d22d31537b943ef4bb6d51829d5f8e8ed7c884813b2c698a228ecab0dd0e6175561e4d5c22d04a57c78c7cf0d0bea71209a4aeb122907aa8e4855d09
+  languageName: node
+  linkType: hard
+
 "@types/fs-extra@npm:^8.0.1":
   version: 8.1.2
   resolution: "@types/fs-extra@npm:8.1.2"
@@ -7407,7 +7414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^7.1.1":
+"@types/glob@npm:*, @types/glob@npm:^7.1.1":
   version: 7.2.0
   resolution: "@types/glob@npm:7.2.0"
   dependencies:
@@ -8016,6 +8023,16 @@ __metadata:
   version: 0.12.1
   resolution: "@types/retry@npm:0.12.1"
   checksum: 5f46b2556053655f78262bb33040dc58417c900457cc63ff37d6c35349814471453ef511af0cec76a540c601296cd2b22f64bab1ab649c0dacc0223765ba876c
+  languageName: node
+  linkType: hard
+
+"@types/rimraf@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@types/rimraf@npm:3.0.2"
+  dependencies:
+    "@types/glob": "*"
+    "@types/node": "*"
+  checksum: b47fa302f46434cba704d20465861ad250df79467d3d289f9d6490d3aeeb41e8cb32dd80bd1a8fd833d1e185ac719fbf9be12e05ad9ce9be094d8ee8f1405347
   languageName: node
   linkType: hard
 
@@ -9584,7 +9601,9 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@commodo/fields": beta
+    "@types/extract-zip": ^1.6.2
     "@types/puppeteer": ^5.4.2
+    "@types/rimraf": ^3.0.2
     "@webiny/api-file-manager": ^5.22.0
     "@webiny/api-file-manager-ddb": ^5.22.0
     "@webiny/api-i18n": ^5.22.0

@@ -26,7 +26,6 @@ import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { PagePlugin } from "~/plugins/PagePlugin";
 import WebinyError from "@webiny/error";
 import lodashTrimEnd from "lodash/trimEnd";
-import { getZeroPaddedVersionNumber } from "~/utils/zeroPaddedVersionNumber";
 import {
     FlushParams,
     OnAfterPageCreateFromTopicParams,
@@ -47,7 +46,7 @@ import {
     RenderParams
 } from "~/graphql/types";
 import { createTopic } from "@webiny/pubsub";
-import { parseIdentifier } from "@webiny/utils";
+import { parseIdentifier, zeroPad } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
@@ -273,7 +272,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const pageId = mdbid();
             const version = 1;
 
-            const id = `${pageId}#${getZeroPaddedVersionNumber(version)}`;
+            const id = `${pageId}#${zeroPad(version)}`;
 
             const updateSettingsModel = new UpdateSettingsModel().populate({
                 general: {
@@ -385,7 +384,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             const version = latestPage.version + 1;
 
-            const newId = `${original.pid}#${getZeroPaddedVersionNumber(version)}`;
+            const newId = `${original.pid}#${zeroPad(version)}`;
 
             const page: Page = {
                 ...original,

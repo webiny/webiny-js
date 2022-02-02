@@ -8,27 +8,25 @@ import download from "./download";
 const PAGE_BUILDER_S3_BUCKET = process.env.S3_BUCKET;
 const PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY = "pbInstallation.zip";
 
-function extractZip(zipPath, dir) {
+function extractZip(zipPath: string, dir: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        extract(zipPath, { dir }, e => {
-            if (e) {
-                reject(e);
+        extract(zipPath, { dir }, (err: Error) => {
+            if (err) {
+                reject(err);
                 return;
             }
-            // @ts-ignore
             resolve();
         });
     });
 }
 
-export function deleteFile(path) {
+export function deleteFile(path: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        rimraf(path, e => {
-            if (e) {
-                reject(e);
+        rimraf(path, (err: Error) => {
+            if (err) {
+                reject(err);
                 return;
             }
-            // @ts-ignore
             resolve();
         });
     });

@@ -1,4 +1,8 @@
-export const notFoundPageData = {
+/**
+ * Too complex to handle atm.
+ */
+// TODO @ts-refactor
+export const notFoundPageData: any = {
     id: "h0HqpItbGT",
     type: "document",
     data: { settings: {} },
