@@ -1,101 +1,9 @@
+import { LifeCycleHookCallbackParams } from "~/types";
 import {
-    ApwChangeRequest,
-    ApwContentReview,
-    ApwContentReviewCrud,
-    LifeCycleHookCallbackParams
-} from "~/types";
-
-interface UpdatePendingChangeRequestsParams {
-    contentReviewMethods: ApwContentReviewCrud;
-    changeRequest: ApwChangeRequest;
-    delta: number;
-}
-
-interface UpdateContentReviewParams {
-    contentReviewMethods: ApwContentReviewCrud;
-    id: string;
-    getNewContentReviewData: (entry: ApwContentReview) => ApwContentReview;
-}
-
-const updateTotalComments = async ({
-    contentReviewMethods,
-    changeRequest,
-    delta
-}: UpdatePendingChangeRequestsParams): Promise<void> => {
-    const { step } = changeRequest;
-    /*
-     * Get associated content review entry.
-     */
-    const [entryId, version, stepId] = step.split("#");
-    const revisionId = `${entryId}#${version}`;
-
-    let contentReviewEntry: ApwContentReview;
-    try {
-        contentReviewEntry = await contentReviewMethods.get(revisionId);
-    } catch (e) {
-        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
-            throw e;
-        }
-    }
-    if (contentReviewEntry) {
-        /**
-         * Update "pendingChangeRequests" count of corresponding step in content review entry.
-         */
-        await contentReviewMethods.update(contentReviewEntry.id, {
-            steps: contentReviewEntry.steps.map(step => {
-                if (step.id === stepId) {
-                    return {
-                        ...step,
-                        totalComments: step.totalComments + delta
-                    };
-                }
-                return step;
-            })
-        });
-    }
-};
-
-const updateContentReview = async ({
-    contentReviewMethods,
-    id,
-    getNewContentReviewData
-}: UpdateContentReviewParams): Promise<void> => {
-    let contentReviewEntry: ApwContentReview;
-    try {
-        contentReviewEntry = await contentReviewMethods.get(id);
-    } catch (e) {
-        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
-            throw e;
-        }
-    }
-    if (contentReviewEntry) {
-        const newContentReviewData = getNewContentReviewData(contentReviewEntry);
-        /**
-         * Update "pendingChangeRequests" count of corresponding step in content review entry.
-         */
-        await contentReviewMethods.update(contentReviewEntry.id, newContentReviewData);
-    }
-};
-
-interface GetContentReviewIdAndStepResult {
-    id: string;
-    stepId: string;
-}
-
-const getContentReviewIdAndStep = (
-    step: ApwChangeRequest["step"]
-): GetContentReviewIdAndStepResult => {
-    /*
-     * Get associated content review entry.
-     */
-    const [entryId, version, stepId] = step.split("#");
-    const revisionId = `${entryId}#${version}`;
-
-    return {
-        id: revisionId,
-        stepId
-    };
-};
+    extractContentReviewIdAndStep,
+    updateContentReview,
+    updateContentReviewStep
+} from "../utils";
 
 export const updateTotalCommentsCount = ({ apw }: LifeCycleHookCallbackParams) => {
     apw.comment.onAfterCommentDelete.subscribe(async ({ comment }) => {
@@ -117,10 +25,20 @@ export const updateTotalCommentsCount = ({ apw }: LifeCycleHookCallbackParams) =
          * in the corresponding step of the content review entry.
          */
         if (changeRequest) {
-            await updateTotalComments({
+            const { id, stepId } = extractContentReviewIdAndStep(changeRequest.step);
+
+            await updateContentReview({
                 contentReviewMethods: apw.contentReview,
-                changeRequest,
-                delta: -1
+                id,
+                getNewContentReviewData: data => {
+                    return {
+                        ...data,
+                        steps: updateContentReviewStep(data.steps, stepId, step => ({
+                            ...step,
+                            totalComments: step.totalComments - 1
+                        }))
+                    };
+                }
             });
         }
     });
@@ -132,10 +50,20 @@ export const updateTotalCommentsCount = ({ apw }: LifeCycleHookCallbackParams) =
          */
         const changeRequest = await apw.changeRequest.get(comment.changeRequest);
 
-        await updateTotalComments({
+        const { id, stepId } = extractContentReviewIdAndStep(changeRequest.step);
+
+        await updateContentReview({
             contentReviewMethods: apw.contentReview,
-            changeRequest,
-            delta: 1
+            id,
+            getNewContentReviewData: data => {
+                return {
+                    ...data,
+                    steps: updateContentReviewStep(data.steps, stepId, step => ({
+                        ...step,
+                        totalComments: step.totalComments + 1
+                    }))
+                };
+            }
         });
     });
 };
@@ -148,14 +76,14 @@ export const updateLatestCommentId = ({ apw }: LifeCycleHookCallbackParams) => {
          */
         const changeRequest = await apw.changeRequest.get(comment.changeRequest);
 
-        const { id } = getContentReviewIdAndStep(changeRequest.step);
+        const { id } = extractContentReviewIdAndStep(changeRequest.step);
 
         await updateContentReview({
             contentReviewMethods: apw.contentReview,
             id,
-            getNewContentReviewData: data => {
+            getNewContentReviewData: contentReview => {
                 return {
-                    ...data,
+                    ...contentReview,
                     latestCommentId: comment.id
                 };
             }
@@ -169,14 +97,14 @@ export const updateLatestCommentId = ({ apw }: LifeCycleHookCallbackParams) => {
          */
         const changeRequest = await apw.changeRequest.get(comment.changeRequest);
 
-        const { id } = getContentReviewIdAndStep(changeRequest.step);
+        const { id } = extractContentReviewIdAndStep(changeRequest.step);
 
         await updateContentReview({
             contentReviewMethods: apw.contentReview,
             id,
-            getNewContentReviewData: data => {
+            getNewContentReviewData: contentReview => {
                 return {
-                    ...data,
+                    ...contentReview,
                     latestCommentId: comment.id
                 };
             }

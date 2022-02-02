@@ -1,52 +1,36 @@
+import { ApwChangeRequest, ApwContentReviewCrud, LifeCycleHookCallbackParams } from "~/types";
 import {
-    ApwChangeRequest,
-    ApwContentReview,
-    ApwContentReviewCrud,
-    LifeCycleHookCallbackParams
-} from "~/types";
+    extractContentReviewIdAndStep,
+    updateContentReview,
+    updateContentReviewStep
+} from "../utils";
 
 interface UpdatePendingChangeRequestsParams {
     contentReviewMethods: ApwContentReviewCrud;
-    changeRequest: ApwChangeRequest;
     delta: number;
+    step: ApwChangeRequest["step"];
 }
 
 const updatePendingChangeRequests = async ({
     contentReviewMethods,
-    changeRequest,
+    step,
     delta
 }: UpdatePendingChangeRequestsParams): Promise<void> => {
-    const { step } = changeRequest;
-    /*
-     * Get associated content review entry.
-     */
-    const [entryId, version, stepId] = step.split("#");
-    const revisionId = `${entryId}#${version}`;
+    const { id, stepId } = extractContentReviewIdAndStep(step);
 
-    let contentReviewEntry: ApwContentReview;
-    try {
-        contentReviewEntry = await contentReviewMethods.get(revisionId);
-    } catch (e) {
-        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
-            throw e;
+    await updateContentReview({
+        contentReviewMethods,
+        id,
+        getNewContentReviewData: data => {
+            return {
+                ...data,
+                steps: updateContentReviewStep(data.steps, stepId, step => ({
+                    ...step,
+                    pendingChangeRequests: step.pendingChangeRequests + delta
+                }))
+            };
         }
-    }
-    if (contentReviewEntry) {
-        /**
-         * Update "pendingChangeRequests" count of corresponding step in content review entry.
-         */
-        await contentReviewMethods.update(contentReviewEntry.id, {
-            steps: contentReviewEntry.steps.map(step => {
-                if (step.id === stepId) {
-                    return {
-                        ...step,
-                        pendingChangeRequests: step.pendingChangeRequests + delta
-                    };
-                }
-                return step;
-            })
-        });
-    }
+    });
 };
 
 export const updatePendingChangeRequestsCount = ({ apw }: LifeCycleHookCallbackParams) => {
@@ -57,7 +41,7 @@ export const updatePendingChangeRequestsCount = ({ apw }: LifeCycleHookCallbackP
          */
         await updatePendingChangeRequests({
             contentReviewMethods: apw.contentReview,
-            changeRequest: changeRequest,
+            step: changeRequest.step,
             delta: -1
         });
     });
@@ -69,7 +53,7 @@ export const updatePendingChangeRequestsCount = ({ apw }: LifeCycleHookCallbackP
          */
         await updatePendingChangeRequests({
             contentReviewMethods: apw.contentReview,
-            changeRequest,
+            step: changeRequest.step,
             delta: 1
         });
     });
@@ -85,7 +69,7 @@ export const updatePendingChangeRequestsCount = ({ apw }: LifeCycleHookCallbackP
 
             await updatePendingChangeRequests({
                 contentReviewMethods: apw.contentReview,
-                changeRequest,
+                step: changeRequest.step,
                 delta
             });
         }

@@ -3,6 +3,9 @@ import { customAlphabet } from "nanoid";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import {
+    ApwChangeRequest,
+    ApwContentReview,
+    ApwContentReviewCrud,
     ApwContentReviewStep,
     ApwContentReviewStepStatus,
     ApwReviewerCrud,
@@ -82,4 +85,67 @@ export const getNextStepStatus = (
     }
 
     return ApwContentReviewStepStatus.INACTIVE;
+};
+
+export interface ExtractContentReviewIdAndStepResult {
+    id: string;
+    stepId: string;
+}
+
+export const extractContentReviewIdAndStep = (
+    step: ApwChangeRequest["step"]
+): ExtractContentReviewIdAndStepResult => {
+    /*
+     * Get associated content review entry.
+     */
+    const [entryId, version, stepId] = step.split("#");
+    const revisionId = `${entryId}#${version}`;
+
+    return {
+        id: revisionId,
+        stepId
+    };
+};
+
+export interface UpdateContentReviewParams {
+    id: string;
+    contentReviewMethods: ApwContentReviewCrud;
+    getNewContentReviewData: (entry: ApwContentReview) => ApwContentReview;
+}
+
+export const updateContentReview = async ({
+    contentReviewMethods,
+    id,
+    getNewContentReviewData
+}: UpdateContentReviewParams): Promise<void> => {
+    let contentReviewEntry: ApwContentReview;
+    try {
+        contentReviewEntry = await contentReviewMethods.get(id);
+    } catch (e) {
+        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
+            throw e;
+        }
+    }
+    if (contentReviewEntry) {
+        const newContentReviewData = getNewContentReviewData(contentReviewEntry);
+        /**
+         * Update content review entry.
+         */
+        await contentReviewMethods.update(contentReviewEntry.id, newContentReviewData);
+    }
+};
+
+export const updateContentReviewStep = (
+    steps: ApwContentReviewStep[],
+    stepId: string,
+    updater: (step: ApwContentReviewStep) => ApwContentReviewStep
+): ApwContentReviewStep[] => {
+    return steps.map(step => {
+        if (step.id === stepId) {
+            return {
+                ...updater(step)
+            };
+        }
+        return step;
+    });
 };
