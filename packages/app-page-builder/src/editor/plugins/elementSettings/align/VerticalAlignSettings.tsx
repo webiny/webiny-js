@@ -6,19 +6,7 @@ import set from "lodash/set";
 import merge from "lodash/merge";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import {
-    PbEditorPageElementPlugin,
-    PbEditorElement,
-    PbEditorPageElementSettingsRenderComponentProps,
-    PbEditorResponsiveModePlugin
-} from "~/types";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
-import {
-    activeElementAtom,
-    uiAtom,
-    elementWithChildrenByIdSelector
-} from "../../../recoil/modules";
+import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";

@@ -37,12 +37,13 @@ const classes = {
     })
 };
 
-type ActionSettingsPropsType = {
+interface ActionSettingsPropsType extends PbEditorPageElementSettingsRenderComponentProps {
     element: PbEditorElement;
-};
-const ActionSettingsComponent: React.FunctionComponent<
-    ActionSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = ({ element, defaultAccordionValue }) => {
+}
+const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
+    element,
+    defaultAccordionValue
+}) => {
     const updateElement = useUpdateElement();
 
     // Let's preserve backwards compatibility by extracting href and newTab properties from deprecated
@@ -59,7 +60,7 @@ const ActionSettingsComponent: React.FunctionComponent<
 
     const { clickHandler, actionType, variables } = element.data?.action || {};
 
-    const updateSettings = data => {
+    const updateSettings = (data: Record<string, string>): void => {
         const attrKey = `data.action`;
         const newElement: PbEditorElement = merge(element, attrKey, data);
         updateElement(newElement);
@@ -137,7 +138,8 @@ const ActionSettingsComponent: React.FunctionComponent<
                                     >
                                         <Bind name="variables" defaultValue={{}}>
                                             <DelayedOnChange>
-                                                {({ value, onChange }) => {
+                                                {({ value, onChange }: any) => {
+                                                    // TODO @ts-refactor need to have generic on DelayedOnChange
                                                     if (!selectedHandler?.variables) {
                                                         return (
                                                             <Typography use="body2">

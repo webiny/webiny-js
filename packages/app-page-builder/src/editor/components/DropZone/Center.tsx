@@ -47,7 +47,13 @@ export interface CenterProps {
     isHighlighted: boolean;
 }
 
-const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children, isHighlighted }) => {
+const CenterComponent: React.FunctionComponent<CenterProps> = ({
+    id,
+    type,
+    onDrop,
+    children,
+    isHighlighted
+}) => {
     const [activeElementId] = useActiveElementId();
     const isActive = activeElementId === id;
 
@@ -67,4 +73,4 @@ const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children, is
     );
 };
 
-export default React.memo(Center);
+export const Center = React.memo(CenterComponent);

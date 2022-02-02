@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { PbErrorResponse } from "~/types";
 
 const error = `
 error {
@@ -154,7 +155,33 @@ const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
         preview
     }
 `;
+/**
+ * ##############################
+ * List Page Elements Query
+ */
+export interface ListPageElementsQueryResponseDataPreview {
+    src: string;
+    meta: {
+        width: number;
+        height: number;
+        aspectRatio: number;
+    };
+}
+export interface ListPageElementsQueryResponseData {
+    id: string;
+    name: string;
+    category: string;
+    type: string;
+    content: Record<string, any>;
+    preview: ListPageElementsQueryResponseDataPreview;
+}
 
+export interface ListPageElementsQueryResponse {
+    pageBuilder: {
+        data?: ListPageElementsQueryResponseData[];
+        error?: PbErrorResponse;
+    };
+}
 export const LIST_PAGE_ELEMENTS = gql`
     query PbListPageElements {
         pageBuilder {

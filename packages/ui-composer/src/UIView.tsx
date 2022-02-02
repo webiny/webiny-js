@@ -82,7 +82,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         this._wrappers.push(wrapper);
     }
 
-    public dispatchEvent(name: string, params: Record<string, string> = {}): void {
+    public dispatchEvent(name: string, params: Record<string, any> = {}): void {
         const callbacks: CallableFunction[] = Array.from(this._events.get(name) || new Set());
         callbacks.reverse().reduce((data, cb) => cb(data), params);
     }

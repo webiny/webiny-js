@@ -5,9 +5,18 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
 import { createElement } from "~/editor/helpers";
-import { GET_PAGE, CREATE_PAGE_FROM } from "./graphql";
+import {
+    GET_PAGE,
+    CREATE_PAGE_FROM,
+    CreatePageFromMutationResponse,
+    CreatePageFromMutationVariables
+} from "./graphql";
 import { EditorLoadingScreen } from "~/admin/components/EditorLoadingScreen";
-import { LIST_PAGE_ELEMENTS } from "~/admin/graphql/pages";
+import {
+    LIST_PAGE_ELEMENTS,
+    ListPageElementsQueryResponse,
+    ListPageElementsQueryResponseData
+} from "~/admin/graphql/pages";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 
@@ -25,25 +34,39 @@ const extractPageErrorData = (data: any): any => {
     return getPageData.error || {};
 };
 
-const Editor: React.FunctionComponent = () => {
+const Editor: React.FC = () => {
     const client = useApolloClient();
     const params = useParams<{ id: string }>();
     const history = useHistory();
     const { showSnackbar } = useSnackbar();
-    const [{ page, revisions }, setData] = useState({ page: null, revisions: null });
-    const [createPageFrom] = useMutation(CREATE_PAGE_FROM);
+    const [data, setData] = useState({ page: null, revisions: null });
+    const [createPageFrom] = useMutation<
+        CreatePageFromMutationResponse,
+        CreatePageFromMutationVariables
+    >(CREATE_PAGE_FROM);
+
+    const { page, revisions } = data;
 
     const LoadData = useMemo(() => {
-        const savedElements = client.query({ query: LIST_PAGE_ELEMENTS }).then(({ data }) => {
-            const elements = get(data, "pageBuilder.listPageElements.data") || [];
-            elements.forEach(el => {
-                if (el.type === "element") {
-                    createElementPlugin(el);
-                } else {
-                    createBlockPlugin(el);
-                }
+        const savedElements = client
+            .query<ListPageElementsQueryResponse>({ query: LIST_PAGE_ELEMENTS })
+            .then(({ data }) => {
+                const elements: ListPageElementsQueryResponseData[] =
+                    get(data, "pageBuilder.listPageElements.data") || [];
+                elements.forEach(element => {
+                    if (element.type === "element") {
+                        createElementPlugin({
+                            ...element,
+                            data: {},
+                            elements: []
+                        });
+                    } else {
+                        createBlockPlugin({
+                            ...element
+                        });
+                    }
+                });
             });
-        });
 
         const pageData = client
             .query({
@@ -84,7 +107,7 @@ const Editor: React.FunctionComponent = () => {
 
         return React.lazy(() =>
             Promise.all([savedElements, pageData]).then(() => {
-                return { default: ({ children }) => children };
+                return { default: ({ children }: { children: React.ReactElement }) => children };
             })
         );
     }, []);

@@ -209,7 +209,7 @@ export type PbPageLayoutPlugin = Plugin & {
     layout: PbPageLayout;
 };
 
-export interface PbError {
+export interface PbErrorResponse {
     message: string;
     data: Record<string, any>;
     code: string;
@@ -761,7 +761,7 @@ export interface PageBuilderListCategoriesResponse {
     pageBuilder: {
         listCategories: {
             data?: PbCategory[];
-            error?: PbError;
+            error?: PbErrorResponse;
         };
     };
 }
@@ -790,7 +790,7 @@ export interface PageBuilderImportExportSubTask {
 
 export interface PageBuilderGetPageDataResponse {
     data?: PbPageData;
-    error?: PbError;
+    error?: PbErrorResponse;
 }
 export interface PageBuilderGetPageResponse {
     pageBuilder: {
@@ -800,7 +800,7 @@ export interface PageBuilderGetPageResponse {
 
 export interface PageBuilderListDataResponse {
     data?: PbPageData[];
-    error?: PbError;
+    error?: PbErrorResponse;
 }
 export interface PageBuilderListResponse {
     pageBuilder: {
@@ -841,23 +841,5 @@ export interface PageBuilderFormDataSettings {
                 content: string;
             };
         };
-    };
-}
-
-export interface PageBuilderListPageElementsResponseData {
-    id: string;
-    createdOn: string;
-    createdBy: PbIdentity;
-    name: string;
-    category: string;
-    type: string;
-    content: Record<string, any>;
-    preview: Record<string, any>;
-}
-
-export interface PageBuilderListPageElementsResponse {
-    pageBuilder: {
-        data?: PageBuilderListPageElementsResponseData[];
-        error?: PbError;
     };
 }
