@@ -20,7 +20,7 @@ const fields = `
         type
     }
 `;
-export type CmsGroup = Omit<BaseCmsGroup, "contentModels">
+export type CmsGroup = Omit<BaseCmsGroup, "contentModels">;
 export interface CmsGroupWithModels extends CmsGroup {
     contentModels: Pick<CmsModel, "modelId" | "name">[];
 }

@@ -7,7 +7,7 @@ import { useCms } from "~/admin/hooks";
 import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor/Context";
 import { CmsModel } from "~/types";
 
-type QueryMatch = Pick<Partial<CmsModel>, "modelId">
+type QueryMatch = Pick<Partial<CmsModel>, "modelId">;
 
 const ContentModelEditorView: React.FC = () => {
     const { match } = useRouter();

@@ -36,7 +36,7 @@ interface MoveFieldParams {
     position: FieldLayoutPositionType;
 }
 
-type State = FormEditorProviderContextState
+type State = FormEditorProviderContextState;
 export interface FormEditor {
     apollo: ApolloClient<any>;
     data: FbFormModel;

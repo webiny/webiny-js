@@ -1,7 +1,7 @@
 import dot from "dot-prop-immutable";
 import { CmsEditorField, CmsModel } from "~/types";
 
-type Data = Pick<CmsModel, "fields" | "layout">
+type Data = Pick<CmsModel, "fields" | "layout">;
 interface Params {
     field: CmsEditorField;
     data: Data;

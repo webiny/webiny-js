@@ -3,8 +3,8 @@ import { Render, Args as BaseArgs, Configuration as BaseConfiguration } from "~/
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
 
-export type Args = BaseArgs
-export type Configuration = Omit<BaseConfiguration, "storage">
+export type Args = BaseArgs;
+export type Configuration = Omit<BaseConfiguration, "storage">;
 
 export type HandlerArgs = Args | Args[];
 export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {

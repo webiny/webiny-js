@@ -62,7 +62,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
 export default React.memo(ColorPicker);
 
-type BaseColorPickerComponent = Omit<ColorPickerProps, "label">
+type BaseColorPickerComponent = Omit<ColorPickerProps, "label">;
 export const BaseColorPickerComponent: React.FC<BaseColorPickerComponent> = ({
     value,
     valueKey,

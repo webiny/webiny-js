@@ -21,9 +21,9 @@ export interface Context {
 export const contentModelEditorContext = React.createContext<Context>(null);
 
 type PickedCmsEditorContentModel = Pick<
-        CmsEditorContentModel,
-        "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId" | "group"
-    >
+    CmsEditorContentModel,
+    "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId" | "group"
+>;
 interface State {
     modelId: string;
     isPristine: boolean;

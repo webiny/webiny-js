@@ -826,6 +826,6 @@ export interface OnAfterWorkflowDeleteTopicParams {
 }
 
 export type WorkflowModelDefinition = Pick<
-        CmsModel,
-        "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields"
-    >
+    CmsModel,
+    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields"
+>;
