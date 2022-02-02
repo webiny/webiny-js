@@ -148,6 +148,7 @@ export interface ApwContentReviewStep {
     reviewers: ApwReviewer[];
     status: ApwContentReviewStepStatus;
     pendingChangeRequests: number;
+    totalComments: number;
     signOffProvidedOn: string;
     signOffProvidedBy: CreatedBy;
 }

@@ -7,6 +7,7 @@ import { deleteChangeRequestsWithContentReview } from "./deleteChangeRequestsAft
 import { createReviewerFromIdentity } from "./createReviewerFromIdentity";
 import { initializeContentReviewSteps } from "./initializeContentReviewSteps";
 import { updatePendingChangeRequestsCount } from "./updatePendingChangeRequests";
+import { updateTotalCommentsCount } from "./updateTotalComments";
 
 export default () => [
     extendPbPageSchema(),
@@ -30,6 +31,8 @@ export default () => [
         initializeContentReviewSteps({ apw });
 
         updatePendingChangeRequestsCount({ apw });
+
+        updateTotalCommentsCount({ apw });
 
         deleteCommentsAfterChangeRequest({ apw });
 

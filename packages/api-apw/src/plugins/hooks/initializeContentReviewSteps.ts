@@ -28,7 +28,8 @@ export const initializeContentReviewSteps = ({ apw }: LifeCycleHookCallbackParam
             return {
                 ...step,
                 status,
-                pendingChangeRequests: 0
+                pendingChangeRequests: 0,
+                totalComments: 0
             };
         });
 

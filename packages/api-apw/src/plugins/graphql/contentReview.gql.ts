@@ -17,6 +17,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             content: ApwContentReviewContent
             status: ApwContentReviewStatus
             activeStep: ApwContentReviewStep
+            totalComments: Int
         }
 
         type ApwListContentReviewsResponse {
@@ -214,6 +215,17 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             activeStep: async parent => {
                 const steps: ApwContentReviewStep[] = parent.steps;
                 return steps.find(step => step.status === ApwContentReviewStepStatus.ACTIVE);
+            },
+            totalComments: async parent => {
+                const steps: ApwContentReviewStep[] = parent.steps;
+                return steps.reduce((count, step) => {
+                    /**
+                     * Aggregate totalComments from each step.
+                     */
+                    count += step.totalComments;
+
+                    return count;
+                }, 0);
             }
         },
         ApwQuery: {

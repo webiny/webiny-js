@@ -144,6 +144,19 @@ const stepPendingChangeRequests = () =>
         ]
     });
 
+const stepTotalComments = () =>
+    createModelField({
+        label: "Total comments",
+        type: "number",
+        parent: "contentReview Step",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
+    });
+
 const stepSignOffProvidedOn = () =>
     createModelField({
         label: "Sign off provided on",
@@ -217,6 +230,7 @@ export const createContentReviewModelDefinition = ({ reviewerModelId }) => ({
             stepReviewersField(reviewerModelId),
             stepStatusField(),
             stepPendingChangeRequests(),
+            stepTotalComments(),
             stepSignOffProvidedOn(),
             stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])
         ])
