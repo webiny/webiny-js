@@ -18,6 +18,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             status: ApwContentReviewStatus
             activeStep: ApwContentReviewStep
             totalComments: Int
+            latestCommentId: String
         }
 
         type ApwListContentReviewsResponse {

@@ -157,6 +157,13 @@ const stepTotalComments = () =>
         ]
     });
 
+const latestCommentId = () =>
+    createModelField({
+        label: "Latest comment Id",
+        type: "text",
+        parent: "contentReview"
+    });
+
 const stepSignOffProvidedOn = () =>
     createModelField({
         label: "Sign off provided on",
@@ -233,6 +240,7 @@ export const createContentReviewModelDefinition = ({ reviewerModelId }) => ({
             stepTotalComments(),
             stepSignOffProvidedOn(),
             stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])
-        ])
+        ]),
+        latestCommentId()
     ]
 });
