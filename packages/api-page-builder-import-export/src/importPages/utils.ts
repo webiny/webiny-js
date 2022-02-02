@@ -63,7 +63,7 @@ function updateImageInPageSettings({
         );
     }
 
-    return settings;
+    return newSettings;
 }
 
 function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesInPageDataParams) {

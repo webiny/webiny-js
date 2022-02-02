@@ -17,7 +17,7 @@ const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.CMS]: 1
 };
 
-const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
+const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow): number => {
     const scoreA = WORKFLOW_PRECEDENCE[a.scope.type];
     const scoreB = WORKFLOW_PRECEDENCE[b.scope.type];
     /**
@@ -26,7 +26,7 @@ const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
     return scoreB - scoreA;
 };
 
-const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
+const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow): number => {
     const createdOnA = get(a, "createdOn");
     const createdOnB = get(b, "createdOn");
     /**
@@ -35,7 +35,7 @@ const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
     return new Date(createdOnB).getTime() - new Date(createdOnA).getTime();
 };
 
-const isWorkflowApplicable = (page, workflow: ApwWorkflow) => {
+const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow): boolean => {
     const application = workflow.app;
     if (application !== ApwWorkflowApplications.PB) {
         return false;
@@ -63,7 +63,7 @@ const isWorkflowApplicable = (page, workflow: ApwWorkflow) => {
     return false;
 };
 
-interface PageMethods {
+interface PageMethods extends LifeCycleHookCallbackParams {
     getPage: PageBuilderContextObject["getPage"];
     updatePage: PageBuilderContextObject["updatePage"];
     onBeforePageCreate: PageBuilderContextObject["onBeforePageCreate"];
@@ -74,7 +74,7 @@ export const linkWorkflowToPage = ({
     getPage,
     updatePage,
     onBeforePageCreate
-}: LifeCycleHookCallbackParams & PageMethods) => {
+}: PageMethods) => {
     onBeforePageCreate.subscribe<CustomEventParams>(async ({ page }) => {
         try {
             /*

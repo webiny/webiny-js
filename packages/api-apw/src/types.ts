@@ -1,5 +1,5 @@
 import { Page, OnBeforePageCreateFromTopicParams } from "@webiny/api-page-builder/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
@@ -824,3 +824,9 @@ export interface OnBeforeWorkflowDeleteTopicParams {
 export interface OnAfterWorkflowDeleteTopicParams {
     workflow: ApwWorkflow;
 }
+
+export interface WorkflowModelDefinition
+    extends Pick<
+        CmsModel,
+        "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields"
+    > {}
