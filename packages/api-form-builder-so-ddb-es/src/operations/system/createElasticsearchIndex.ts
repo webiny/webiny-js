@@ -1,7 +1,7 @@
 import { Client } from "@elastic/elasticsearch";
 import configurations from "~/configurations";
 
-export interface Params {
+interface Params {
     elasticsearch: Client;
     tenant: string;
 }

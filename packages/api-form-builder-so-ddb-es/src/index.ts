@@ -33,7 +33,7 @@ const isReserved = (name: string): void => {
 
 export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFactory = params => {
     const {
-        attributes = {},
+        attributes,
         table: tableName,
         esTable: esTableName,
         documentClient,
@@ -87,22 +87,22 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         form: createFormEntity({
             entityName: ENTITIES.FORM,
             table,
-            attributes: attributes[ENTITIES.FORM]
+            attributes: attributes ? attributes[ENTITIES.FORM] : {}
         }),
         submission: createSubmissionEntity({
             entityName: ENTITIES.SUBMISSION,
             table,
-            attributes: attributes[ENTITIES.SUBMISSION]
+            attributes: attributes ? attributes[ENTITIES.SUBMISSION] : {}
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table,
-            attributes: attributes[ENTITIES.SYSTEM]
+            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
         }),
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
             table,
-            attributes: attributes[ENTITIES.SETTINGS]
+            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
         }),
         /**
          * Elasticsearch entities.
