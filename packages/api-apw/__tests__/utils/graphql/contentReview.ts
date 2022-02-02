@@ -64,7 +64,7 @@ export const LIST_CONTENT_REVIEWS_QUERY = /* GraphQL */ `
                 sort: $sort,
                 search: $search
             ) {
-                data ${getDataFields()}
+                data ${getDataFields(`activeStep { title }`)}
                 error ${ERROR_FIELDS}
                 meta {
                     hasMoreItems

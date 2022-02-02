@@ -178,6 +178,9 @@ describe("Content Review crud test", () => {
                                     title: expect.any(String),
                                     version: expect.any(Number),
                                     settings: null
+                                },
+                                activeStep: {
+                                    title: expect.any(String)
                                 }
                             }
                         ],
