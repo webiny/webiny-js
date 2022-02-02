@@ -4,6 +4,7 @@ import { Element } from "~/components/Element";
 import { ElementRenderer } from "~/types";
 
 declare global {
+    // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "pb-grid": any;

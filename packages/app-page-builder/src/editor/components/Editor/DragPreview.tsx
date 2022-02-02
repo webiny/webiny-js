@@ -11,7 +11,7 @@ const layerStyles: React.CSSProperties = {
     height: "100%"
 };
 
-let subscribedToOffsetChange: boolean = false;
+let subscribedToOffsetChange = false;
 let dragPreviewRef: HTMLDivElement | null = null;
 
 const onOffsetChange = (monitor: DragLayerMonitor) => () => {

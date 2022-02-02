@@ -70,7 +70,7 @@ export function usePageBuilderSettings() {
     const settings = get(getSettingsQuery, "data.pageBuilder.getSettings.data") || {};
     const defaultSettings = get(getSettingsQuery, "data.pageBuilder.getDefaultSettings.data") || {};
 
-    const getWebsiteUrl = (preview: boolean = false): string => {
+    const getWebsiteUrl = (preview = false): string => {
         if (preview) {
             return settings.websitePreviewUrl || defaultSettings.websitePreviewUrl;
         }
@@ -79,7 +79,7 @@ export function usePageBuilderSettings() {
 
     const getPageUrl = (
         page: Pick<PbPageData, "id" | "status" | "path">,
-        preview: boolean = false
+        preview = false
     ): string => {
         const url = getWebsiteUrl(preview) + page.path;
         if (!preview || page.status === "published") {

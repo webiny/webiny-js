@@ -34,7 +34,10 @@ const ButtonWrapper = styled("div")({
     display: "flex",
     justifyContent: "space-between"
 });
-export interface ApiKeyFormProps {}
+export interface ApiKeyFormProps {
+    // TODO @ts-refactor delete and go up the tree and sort it out
+    [key: string]: any;
+}
 export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();

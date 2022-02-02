@@ -825,8 +825,7 @@ export interface OnAfterWorkflowDeleteTopicParams {
     workflow: ApwWorkflow;
 }
 
-export interface WorkflowModelDefinition
-    extends Pick<
+export type WorkflowModelDefinition = Pick<
         CmsModel,
         "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields"
-    > {}
+    >

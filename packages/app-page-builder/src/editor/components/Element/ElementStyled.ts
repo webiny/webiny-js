@@ -1,6 +1,4 @@
-// TODO remove
-// @ts-nocheck
-import React, { CSSProperties } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 
@@ -41,16 +39,16 @@ export const typeStyle = css({
     }
 });
 
-type ElementContainerProps = {
+interface ElementContainerProps {
     id: string;
-    onMouseOver: (ev: any) => void;
-    onMouseOut: (ev: any) => void;
+    onMouseOver: (ev: React.MouseEvent) => void;
+    onMouseOut: (ev: React.MouseEvent) => void;
     highlight: boolean;
     active: boolean;
     children: React.ReactNode;
     style: React.CSSProperties;
     className: string;
-};
+}
 
 export const ElementContainer = React.memo<ElementContainerProps>(
     styled<"div", ElementContainerProps>("div")(({ highlight, active }) => {

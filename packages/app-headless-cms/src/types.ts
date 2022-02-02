@@ -534,7 +534,7 @@ export interface CmsCreatedBy {
  * @category GraphQL
  * @category Model
  */
-export interface CmsModel extends CmsEditorContentModel {}
+export type CmsModel = CmsEditorContentModel
 /**
  * @category GraphQL
  * @category Group

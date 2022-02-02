@@ -5,13 +5,14 @@ import { RouterProvider } from "./context/RouterContext";
  * @internal
  */
 const routerEnhancer = (BaseComponent: any) => {
-    return (props: Record<string, any>) => {
+    const EnhancedComponent: React.FC = props => {
         return (
             <RouterProvider>
                 <BaseComponent {...props} />
             </RouterProvider>
         );
     };
+    return EnhancedComponent;
 };
 
 export default routerEnhancer;

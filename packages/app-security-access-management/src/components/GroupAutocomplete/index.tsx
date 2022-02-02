@@ -3,7 +3,7 @@ import { AutoComplete, AutoCompleteProps } from "@webiny/ui/AutoComplete";
 import { LIST_GROUPS } from "./graphql";
 import { useQuery } from "@apollo/react-hooks";
 
-interface GroupAutocompleteProps extends Partial<AutoCompleteProps> {}
+type GroupAutocompleteProps = Partial<AutoCompleteProps>
 export const GroupAutocomplete: React.FC<GroupAutocompleteProps> = props => {
     const { data, loading } = useQuery(LIST_GROUPS);
 

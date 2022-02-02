@@ -7,7 +7,7 @@ import {
 } from "~/types";
 import getFieldPosition from "./getFieldPosition";
 
-interface CmsModel extends Pick<BaseCmsModel, "fields" | "layout"> {}
+type CmsModel = Pick<BaseCmsModel, "fields" | "layout">
 
 interface MoveFieldParams<T> {
     field: CmsEditorFieldId | CmsEditorField;

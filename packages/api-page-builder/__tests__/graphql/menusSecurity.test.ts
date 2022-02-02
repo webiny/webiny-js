@@ -6,7 +6,7 @@ class Mock {
     public readonly title: string;
     public readonly description: string;
     public readonly items: Record<string, string>[];
-    constructor(prefix: string = "") {
+    constructor(prefix = "") {
         this.slug = `${prefix}slug`;
         this.title = `${prefix}title`;
         this.description = `${prefix}description`;

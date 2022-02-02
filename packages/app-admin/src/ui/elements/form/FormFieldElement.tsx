@@ -29,7 +29,7 @@ interface BeforeChangeCallback {
     (value: any): void;
 }
 
-interface AfterChange<T extends any = any, D extends Record<string, any> = Record<string, any>> {
+interface AfterChange<T = any, D extends Record<string, any> = Record<string, any>> {
     (value: T, form: FormAPI<D>): void;
 }
 
@@ -163,7 +163,7 @@ export class FormFieldElement<
         this._beforeChange.push(cb);
     }
 
-    public addAfterChange<T extends any = any, D extends Record<string, any> = Record<string, any>>(
+    public addAfterChange<T = any, D extends Record<string, any> = Record<string, any>>(
         cb: AfterChange<T, D>
     ): void {
         this._afterChange.push(cb);

@@ -3,6 +3,7 @@ import React from "react";
 import { Modifier, Processor } from "@webiny/i18n/types";
 
 declare global {
+    // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "i18n-text": {

@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-const fields: string = `
+const fields = `
     id
     name
     description

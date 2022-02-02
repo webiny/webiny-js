@@ -9,8 +9,12 @@ export type DroppableChildrenFunction = (params: {
     drop: ConnectDropTarget;
 }) => React.ReactElement;
 
-export interface DroppableDragObject extends DragObjectWithType {}
-export interface DroppableDropResult {}
+export type DroppableDragObject = DragObjectWithType;
+
+export interface DroppableDropResult {
+    // TODO @ts-refactor delete and go up the tree
+    [key: string]: any;
+}
 export interface DroppableCollectedProps {
     item: any;
     isOver: boolean;

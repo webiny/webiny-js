@@ -15,6 +15,7 @@ export interface RenderChildren {
 }
 
 export abstract class UIRenderer<TElement, TProps = any> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public canRender(_: TElement, __: TProps) {
         return true;
     }

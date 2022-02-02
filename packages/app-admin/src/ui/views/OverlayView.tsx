@@ -60,7 +60,7 @@ export class OverlayView extends UIView {
     private _onEntered: OnEntered[] = [];
     private _onExited: OnExited[] = [];
 
-    public constructor(id: string = "OverlayView") {
+    public constructor(id = "OverlayView") {
         super(id);
         this.useGrid(false);
 

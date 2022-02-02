@@ -18,7 +18,6 @@ interface BeginDragProps {
     };
     name?: string;
 }
-interface EndDragProps {}
 
 type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;
 type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
@@ -26,7 +25,7 @@ type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
 export interface DraggableProps extends BeginDragProps {
     children: DraggableChildrenFunction;
     beginDrag?: BeginDrag | BeginDragProps;
-    endDrag?: EndDrag | EndDragProps;
+    endDrag?: EndDrag;
     target?: string[];
 }
 

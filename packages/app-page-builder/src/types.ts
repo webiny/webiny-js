@@ -323,7 +323,10 @@ export type PbAddonRenderPlugin = Plugin & {
     component: ReactElement;
 };
 
-export interface PbDocumentElementPluginRenderProps {}
+export interface PbDocumentElementPluginRenderProps {
+    [key: string]: any;
+}
+// TODO @ts-refactor verify and delete if not used
 export type PbDocumentElementPlugin = Plugin & {
     elementType: "document";
     create(options?: any): PbElement;

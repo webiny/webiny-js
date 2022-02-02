@@ -47,7 +47,10 @@ const SORTERS = [
         sorters: { name: "desc" }
     }
 ];
-export interface ApiKeysDataListProps {}
+export interface ApiKeysDataListProps {
+    // TODO @ts-refactor delete and go up the tree and sort it out
+    [key: string]: any;
+}
 export const ApiKeysDataList: React.FC<ApiKeysDataListProps> = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));

@@ -1,3 +1,5 @@
+// TODO @ts-refactor @pavel
+// @ts-nocheck
 import { DataSource } from "@webiny/api-dynamic-pages/plugins/DataSourcePlugin";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 

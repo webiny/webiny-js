@@ -20,11 +20,10 @@ export interface Context {
 
 export const contentModelEditorContext = React.createContext<Context>(null);
 
-interface PickedCmsEditorContentModel
-    extends Pick<
+type PickedCmsEditorContentModel = Pick<
         CmsEditorContentModel,
         "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId" | "group"
-    > {}
+    >
 interface State {
     modelId: string;
     isPristine: boolean;

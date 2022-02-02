@@ -49,7 +49,10 @@ const SORTERS = [
     }
 ];
 
-export interface GroupsDataListProps {}
+export interface GroupsDataListProps {
+    // TODO @ts-refactor delete and go up the tree and sort it out
+    [key: string]: any;
+}
 export const GroupsDataList: React.FC<GroupsDataListProps> = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));

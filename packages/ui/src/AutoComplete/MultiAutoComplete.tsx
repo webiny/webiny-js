@@ -569,14 +569,14 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         const {
             props,
             props: {
-                options: rawOptions,
-                allowFreeInput,
-                useSimpleValues,
+                // options: rawOptions,
+                // allowFreeInput,
+                // useSimpleValues,
                 unique,
                 value,
                 onChange,
-                valueProp,
-                textProp,
+                // valueProp,
+                // textProp,
                 onInput,
                 validation = { isValid: null, message: null },
                 useMultipleSelectionList,
@@ -591,7 +591,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
             <div className={classNames(autoCompleteStyle, props.className)}>
                 <Downshift
                     defaultSelectedItem={null}
-                    // @ts-ignore
+                    // @ts-ignore there is no className on Downshift
                     className={autoCompleteStyle}
                     itemToString={item => item && getOptionText(item, props)}
                     ref={this.downshift}

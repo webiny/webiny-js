@@ -4,7 +4,7 @@ import { UIElement, UiElementRenderProps } from "~/ui/UIElement";
 import { Cell } from "@webiny/ui/Grid";
 
 export class SplitViewPanelElement extends UIElement<any> {
-    private _width: number = 12;
+    private _width = 12;
     private _classNames: Set<string> = new Set();
 
     public setWidth(width: number): void {
