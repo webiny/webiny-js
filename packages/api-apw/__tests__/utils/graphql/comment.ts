@@ -14,11 +14,7 @@ const getDataFields = (fields = "") => `{
         type
     }
     body
-    changeRequest {
-        id
-        entryId
-        modelId
-    }
+    changeRequest
     ${fields}
 }`;
 

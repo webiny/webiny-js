@@ -55,9 +55,7 @@ describe("Comment on a change request test", () => {
         const [createCommentResponse] = await createCommentMutation({
             data: {
                 body: richTextMock,
-                changeRequest: {
-                    id: changeRequested.id
-                }
+                changeRequest: changeRequested.id
             }
         });
         const firstComment = createCommentResponse.data.apw.createComment.data;
@@ -75,11 +73,7 @@ describe("Comment on a change request test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: {
-                                id: changeRequested.id,
-                                entryId: expect.any(String),
-                                modelId: expect.any(String)
-                            }
+                            changeRequest: changeRequested.id
                         },
                         error: null
                     }
@@ -120,11 +114,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changeRequested.id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changeRequested.id
                             }
                         ],
                         error: null,
@@ -144,9 +134,7 @@ describe("Comment on a change request test", () => {
         const [anotherCreateCommentResponse] = await createCommentMutation({
             data: {
                 body: richTextMock,
-                changeRequest: {
-                    id: changeRequested.id
-                }
+                changeRequest: changeRequested.id
             }
         });
         const secondComment = anotherCreateCommentResponse.data.apw.createComment.data;
@@ -185,11 +173,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changeRequested.id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changeRequested.id
                             },
                             {
                                 id: firstComment.id,
@@ -201,11 +185,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changeRequested.id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changeRequested.id
                             }
                         ],
                         error: null,
@@ -241,9 +221,7 @@ describe("Comment on a change request test", () => {
                 const [createCommentResponse] = await createCommentMutation({
                     data: {
                         body: richTextMock,
-                        changeRequest: {
-                            id: changesRequested[i].id
-                        }
+                        changeRequest: changesRequested[i].id
                     }
                 });
                 comments.push(createCommentResponse.data.apw.createComment.data);
@@ -277,11 +255,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[1].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changesRequested[1].id
                             },
                             {
                                 id: comments[2].id,
@@ -293,11 +267,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[1].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changesRequested[1].id
                             },
                             {
                                 id: comments[1].id,
@@ -309,11 +279,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[0].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changesRequested[0].id
                             },
                             {
                                 id: comments[0].id,
@@ -325,11 +291,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[0].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changesRequested[0].id
                             }
                         ],
                         error: null,
@@ -421,11 +383,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[1].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changesRequested[1].id
                             },
                             {
                                 id: comments[2].id,
@@ -437,11 +395,7 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[1].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changesRequested[1].id
                             }
                         ],
                         error: null,

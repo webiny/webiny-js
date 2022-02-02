@@ -86,9 +86,7 @@ describe("Comment crud test", () => {
         const [createCommentResponse] = await createCommentMutation({
             data: {
                 body: richTextMock,
-                changeRequest: {
-                    id: changeRequest.id
-                }
+                changeRequest: changeRequest.id
             }
         });
         const comment = createCommentResponse.data.apw.createComment.data;
@@ -107,11 +105,7 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: {
-                                id: changeRequest.id,
-                                entryId: expect.any(String),
-                                modelId: expect.any(String)
-                            }
+                            changeRequest: changeRequest.id
                         },
                         error: null
                     }
@@ -145,11 +139,7 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: {
-                                id: changeRequest.id,
-                                entryId: expect.any(String),
-                                modelId: expect.any(String)
-                            }
+                            changeRequest: changeRequest.id
                         },
                         error: null
                     }
@@ -199,11 +189,7 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: updatedRichText,
-                            changeRequest: {
-                                id: changeRequest.id,
-                                entryId: expect.any(String),
-                                modelId: expect.any(String)
-                            }
+                            changeRequest: changeRequest.id
                         },
                         error: null
                     }
@@ -241,11 +227,7 @@ describe("Comment crud test", () => {
                                     type: "admin"
                                 },
                                 body: updatedRichText,
-                                changeRequest: {
-                                    id: changeRequest.id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changeRequest.id
                             }
                         ],
                         error: null,
