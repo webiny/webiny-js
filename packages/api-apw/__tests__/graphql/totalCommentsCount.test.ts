@@ -131,7 +131,7 @@ describe(`Total comments count test`, () => {
                 name: `Wait for updated "totalComments" count to be available in list query`
             }
         );
-
+        const [comment1, comment2] = createdComments;
         /**
          * Should have 2 as totalComments count.
          */
@@ -163,7 +163,8 @@ describe(`Total comments count test`, () => {
                                 totalComments: 2,
                                 activeStep: {
                                     title: expect.any(String)
-                                }
+                                },
+                                latestCommentId: comment2.id
                             }
                         ],
                         meta: {
@@ -180,7 +181,6 @@ describe(`Total comments count test`, () => {
         /**
          * Let's delete the first comment.
          */
-        const [comment1] = createdComments;
 
         const [deleteCommentResponse] = await deleteCommentMutation({ id: comment1.id });
         expect(deleteCommentResponse).toEqual({
@@ -239,7 +239,8 @@ describe(`Total comments count test`, () => {
                                 totalComments: 1,
                                 activeStep: {
                                     title: expect.any(String)
-                                }
+                                },
+                                latestCommentId: expect.any(String)
                             }
                         ],
                         meta: {
