@@ -171,6 +171,7 @@ describe("Content Review crud test", () => {
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 })),
+                                totalComments: 0,
                                 content: {
                                     id: expect.any(String),
                                     type: expect.any(String),

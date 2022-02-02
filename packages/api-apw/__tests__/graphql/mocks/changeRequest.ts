@@ -1,4 +1,4 @@
-const richTextMock = [
+export const richTextMock = [
     {
         tag: "h1",
         content: "Testing H1 tags"
