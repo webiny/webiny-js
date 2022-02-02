@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+// @ts-ignore
 import { Link as RouterLink, LinkProps as RouterLinkProps } from "react-router-dom";
 import { RouterContext } from "./context/RouterContext";
 

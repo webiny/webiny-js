@@ -22,7 +22,6 @@
     "@webiny/handler-client": "^5.22.1",
     "@webiny/plugins": "^5.22.1",
     "chrome-aws-lambda": "^5.5.0",
-    "puppeteer": "^13.1.3",
     "dot-prop": "^6.0.1",
     "lodash": "^4.17.20",
     "mdbid": "^1.0.0",
@@ -31,6 +30,7 @@
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",
     "posthtml-plugin-link-preload": "^1.0.0",
+    "puppeteer": "^5.5.0",
     "shortid": "^2.2.16"
   },
   "devDependencies": {
