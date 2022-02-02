@@ -3,6 +3,15 @@ import { ApwCommentStorageOperations } from "./types";
 import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 
+const pickIdFromChangeRequest = obj => {
+    const rawValue = obj["changeRequest"];
+    if (!rawValue || !rawValue.id) {
+        return obj;
+    }
+    obj["changeRequest"] = rawValue.id;
+    return obj;
+};
+
 export const createCommentStorageOperations = ({
     cms,
     getCmsContext
@@ -22,11 +31,14 @@ export const createCommentStorageOperations = ({
     };
     return {
         getCommentModel,
-        getComment,
+        getComment: async params => {
+            const values = await getComment(params);
+            return pickIdFromChangeRequest(values);
+        },
         async listComments(params) {
             const model = await getCommentModel();
             const [entries, meta] = await cms.listLatestEntries(model, params);
-            const all = await Promise.all(
+            const values = await Promise.all(
                 entries.map(entry =>
                     getFieldValues({
                         entry,
@@ -36,6 +48,7 @@ export const createCommentStorageOperations = ({
                     })
                 )
             );
+            const all = values.map(value => pickIdFromChangeRequest(value));
             return [all, meta];
         },
         async createComment(this: ApwStorageOperations, params) {
@@ -44,17 +57,18 @@ export const createCommentStorageOperations = ({
             const entry = await cms.createEntry(model, {
                 ...params.data,
                 changeRequest: {
-                    ...params.data.changeRequest,
+                    id: params.data.changeRequest,
                     modelId: refModel.modelId
                 }
             });
 
-            return getFieldValues({
+            const values = await getFieldValues({
                 entry,
                 fields: baseFields,
                 context: getCmsContext(),
                 transformers: [getTransformer(model, "body")]
             });
+            return pickIdFromChangeRequest(values);
         },
         async updateComment(params) {
             const model = await getCommentModel();
@@ -68,12 +82,13 @@ export const createCommentStorageOperations = ({
                 ...existingEntry,
                 ...params.data
             });
-            return getFieldValues({
+            const values = await getFieldValues({
                 entry,
                 fields: baseFields,
                 context: getCmsContext(),
                 transformers: [getTransformer(model, "body")]
             });
+            return pickIdFromChangeRequest(values);
         },
         async deleteComment(params) {
             const model = await getCommentModel();

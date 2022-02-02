@@ -130,11 +130,7 @@ export interface ApwReviewer extends BaseFields {
 
 export interface ApwComment extends BaseFields {
     body: JSON;
-    changeRequest: {
-        id: string;
-        entryId: string;
-        modelId: string;
-    };
+    changeRequest: string;
 }
 
 export interface ApwChangeRequest extends BaseFields {
@@ -234,9 +230,7 @@ interface CreateReviewerParams {
 
 interface CreateApwCommentParams {
     body: Record<string, any>;
-    changeRequest: {
-        id: string;
-    };
+    changeRequest: string;
 }
 
 interface UpdateApwCommentParams {
