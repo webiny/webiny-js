@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
@@ -8,13 +8,11 @@ import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "../../../components";
 import { DelayedOnChange } from "../../../components/DelayedOnChange";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
 import {
     PbButtonElementClickHandlerPlugin,
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps
-} from "../../../../types";
+} from "~/types";
 import { plugins } from "@webiny/plugins";
 
 // Components
@@ -22,6 +20,7 @@ import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 
 const classes = {
     gridClass: css({
@@ -38,13 +37,13 @@ const classes = {
     })
 };
 
-interface ActionSettingsPropsType {
+type ActionSettingsPropsType = {
     element: PbEditorElement;
-}
+};
 const ActionSettingsComponent: React.FunctionComponent<
     ActionSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ element, defaultAccordionValue }) => {
-    const handler = useEventActionHandler();
+    const updateElement = useUpdateElement();
 
     // Let's preserve backwards compatibility by extracting href and newTab properties from deprecated
     //  "link" element object if it exists, otherwise we'll use the newer "action" element object
@@ -60,26 +59,11 @@ const ActionSettingsComponent: React.FunctionComponent<
 
     const { clickHandler, actionType, variables } = element.data?.action || {};
 
-    const updateElement = useCallback(
-        (element: PbEditorElement) => {
-            handler.trigger(
-                new UpdateElementActionEvent({
-                    element,
-                    history: true
-                })
-            );
-        },
-        [handler]
-    );
-
-    const updateSettings = useCallback(
-        data => {
-            const attrKey = `data.action`;
-            const newElement: PbEditorElement = merge(element, attrKey, data);
-            updateElement(newElement);
-        },
-        [updateElement]
-    );
+    const updateSettings = data => {
+        const attrKey = `data.action`;
+        const newElement: PbEditorElement = merge(element, attrKey, data);
+        updateElement(newElement);
+    };
 
     const clickHandlers = useMemo(
         () =>
@@ -153,14 +137,7 @@ const ActionSettingsComponent: React.FunctionComponent<
                                     >
                                         <Bind name="variables" defaultValue={{}}>
                                             <DelayedOnChange>
-                                                {({
-                                                    value,
-                                                    onChange
-                                                }: /**
-                                                 * Figure out better way to type the callable arguments
-                                                 */
-                                                // TODO @ts-refactor
-                                                any) => {
+                                                {({ value, onChange }) => {
                                                     if (!selectedHandler?.variables) {
                                                         return (
                                                             <Typography use="body2">
@@ -180,7 +157,7 @@ const ActionSettingsComponent: React.FunctionComponent<
                                                                         className={
                                                                             classes.bottomMargin
                                                                         }
-                                                                        onChange={(val: string) =>
+                                                                        onChange={val =>
                                                                             onChange({
                                                                                 ...value,
                                                                                 [variable.name]: val

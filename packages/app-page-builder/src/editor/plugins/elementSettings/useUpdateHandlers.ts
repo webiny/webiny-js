@@ -2,11 +2,9 @@ import { useMemo } from "react";
 import lodashSet from "lodash/set";
 import lodashMerge from "lodash/merge";
 import { useHandler } from "@webiny/app/hooks/useHandler";
-import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "~/editor/recoil/actions";
-import { UpdateElementActionArgsType } from "~/editor/recoil/actions/updateElement/types";
 import { SaveRevisionActionArgsType } from "~/editor/recoil/actions/saveRevision/types";
 import { PbEditorElement } from "~/types";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 
 export type PostModifyElementArgs = {
     name: string;
@@ -25,10 +23,8 @@ type UseUpdateHandlersType = (props: UpdateHandlersPropsType) => {
     getUpdatePreview: HandlerUpdateCallableType;
 };
 const useUpdateHandlers: UseUpdateHandlersType = props => {
-    const handler = useEventActionHandler();
-    const updateElement = (args: UpdateElementActionArgsType) => {
-        handler.trigger(new UpdateElementActionEvent(args));
-    };
+    const updateElement = useUpdateElement();
+
     const updateSettings = useHandler(props, ({ element, dataNamespace, postModifyElement }) => {
         const historyUpdated: Record<string, string> = {};
         return (name: string, newValue: any, history = false) => {
@@ -41,8 +37,7 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
             }
 
             if (!history) {
-                updateElement({
-                    element: newElement,
+                updateElement(newElement, {
                     history: false
                 });
                 return;
@@ -50,8 +45,7 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
 
             if (historyUpdated[propName] !== newValue) {
                 historyUpdated[propName] = newValue;
-                updateElement({
-                    element: newElement,
+                updateElement(newElement, {
                     history: true,
                     debounce: props.debounce,
                     onFinish: props.onFinish

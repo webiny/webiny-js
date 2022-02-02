@@ -1,4 +1,4 @@
-const baseSendEvent = require("./sendEvent");
+const createSendEvent = require("./sendEvent");
 
 const setProperties = data => {
     return sendEvent("$identify", data);
@@ -10,10 +10,6 @@ const setProperties = data => {
  * @return {Promise<T>}
  */
 const sendEvent = (event, data = {}) => {
-    if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
-        return;
-    }
-
     let properties = {};
     let extraPayload = {};
     if (event !== "$identify") {
@@ -24,13 +20,17 @@ const sendEvent = (event, data = {}) => {
         };
     }
 
-    return baseSendEvent({
+    const shouldSend = process.env.REACT_APP_WEBINY_TELEMETRY !== "false";
+
+    const sendTelemetry = createSendEvent({
         event,
         properties,
         extraPayload,
         user: process.env.REACT_APP_USER_ID,
         version: process.env.REACT_APP_WEBINY_VERSION
     });
+
+    return shouldSend ? sendTelemetry() : Promise.resolve();
 };
 
 module.exports = { setProperties, sendEvent };

@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
-import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import get from "lodash/get";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
-import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import ElementAnimation from "../../../../render/components/ElementAnimation";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
@@ -16,6 +14,7 @@ import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
 // Icon
 import { ReactComponent as TimerIcon } from "./icons/round-av_timer-24px.svg";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
 
 const classes = {
     grid: css({
@@ -40,12 +39,13 @@ const classes = {
 const STEP = 50;
 const MAX_VALUE = 3000;
 const DATA_NAMESPACE = "data.settings.animation";
-interface SettingsPropsType extends PbEditorPageElementSettingsRenderComponentProps {
+type SettingsPropsType = {
     animation: any;
-}
-const Settings: React.FC<SettingsPropsType> = ({ defaultAccordionValue }) => {
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+};
+const Settings: React.FunctionComponent<
+    SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
+> = ({ defaultAccordionValue }) => {
+    const element = useActiveElement();
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
@@ -172,11 +172,13 @@ const Settings: React.FC<SettingsPropsType> = ({ defaultAccordionValue }) => {
         </Accordion>
     );
 };
-interface AnimationSettingsPropsType extends PbEditorPageElementSettingsRenderComponentProps {
+type AnimationSettingsPropsType = {
     title?: string;
     styleAttribute?: string;
-}
-const AnimationSettings: React.FC<AnimationSettingsPropsType> = props => {
+};
+const AnimationSettings: React.FunctionComponent<
+    AnimationSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
+> = props => {
     return (
         <ElementAnimation>
             {animation => {

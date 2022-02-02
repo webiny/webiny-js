@@ -367,7 +367,11 @@ export const createStorageOperations = (
             return cleanupItems(entities.tenantLinks, links);
         },
         async updateApiKey({ apiKey }): Promise<ApiKey> {
-            const keys = createApiKeyKeys(apiKey);
+            const keys = {
+                ...createApiKeyKeys(apiKey),
+                GSI1_PK: `T#${apiKey.tenant}#API_KEYS`,
+                GSI1_SK: apiKey.token
+            };
 
             try {
                 await entities.apiKeys.put({
