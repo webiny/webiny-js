@@ -183,7 +183,8 @@ describe("Content Review crud test", () => {
                                 activeStep: {
                                     title: expect.any(String)
                                 },
-                                latestCommentId: null
+                                latestCommentId: null,
+                                reviewers: expect.arrayContaining([expect.any(String)])
                             }
                         ],
                         error: null,

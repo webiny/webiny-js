@@ -164,7 +164,8 @@ describe(`Total comments count test`, () => {
                                 activeStep: {
                                     title: expect.any(String)
                                 },
-                                latestCommentId: comment2.id
+                                latestCommentId: comment2.id,
+                                reviewers: expect.arrayContaining([expect.any(String)])
                             }
                         ],
                         meta: {
@@ -240,7 +241,8 @@ describe(`Total comments count test`, () => {
                                 activeStep: {
                                     title: expect.any(String)
                                 },
-                                latestCommentId: expect.any(String)
+                                latestCommentId: expect.any(String),
+                                reviewers: expect.arrayContaining([expect.any(String)])
                             }
                         ],
                         meta: {

@@ -68,6 +68,7 @@ export const LIST_CONTENT_REVIEWS_QUERY = /* GraphQL */ `
                 activeStep { title }
                 totalComments
                 latestCommentId
+                reviewers
                 `)}
                 error ${ERROR_FIELDS}
                 meta {
