@@ -8,6 +8,7 @@ import { createReviewerFromIdentity } from "./createReviewerFromIdentity";
 import { initializeContentReviewSteps } from "./initializeContentReviewSteps";
 import { updatePendingChangeRequestsCount } from "./updatePendingChangeRequests";
 import { updateTotalCommentsCount, updateLatestCommentId } from "./updateTotalComments";
+import { validateChangeRequest } from "./validateChangeRequest";
 
 export default () => [
     extendPbPageSchema(),
@@ -23,6 +24,8 @@ export default () => [
             getPage: pageBuilder.getPage,
             updatePage: pageBuilder.updatePage
         };
+
+        validateChangeRequest({ apw });
 
         createReviewerFromIdentity({ security, apw });
 

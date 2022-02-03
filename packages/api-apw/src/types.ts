@@ -155,11 +155,7 @@ export interface ApwContentReviewStep {
 
 export interface ApwContentReview extends BaseFields {
     status: ApwContentReviewStatus;
-    content: {
-        id: string;
-        type: string;
-        settings: JSON;
-    };
+    content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
 }
 
@@ -240,6 +236,7 @@ interface UpdateApwCommentParams {
 
 interface CreateApwChangeRequestParams {
     title: string;
+    step: string;
     body: JSON;
     resolved: boolean;
     media: JSON;
