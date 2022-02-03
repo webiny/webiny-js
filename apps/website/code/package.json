@@ -22,7 +22,7 @@
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
     "invariant": "^2.2.4",
-    "lodash.trim": "^4.4.2",
+    "lodash": "^4.4.2",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "react-helmet": "^6.1.0",
