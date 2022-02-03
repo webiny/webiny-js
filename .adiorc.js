@@ -25,6 +25,7 @@ module.exports = {
             "http",
             "path",
             "https",
+            "follow-redirects",
             "os",
             "fs",
             "util",

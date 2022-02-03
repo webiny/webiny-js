@@ -108,7 +108,7 @@ async function handler(args) {
 }
 
 module.exports = {
-  handler,
-  localData,
-  postTelemetryData
+    handler,
+    localData,
+    postTelemetryData
 };
