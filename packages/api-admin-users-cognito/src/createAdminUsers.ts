@@ -3,7 +3,7 @@
  */
 // @ts-ignore
 import mdbid from "mdbid";
-import cloneDeep from "lodash/clonedeep";
+import cloneDeep from "lodash/cloneDeep";
 import { createTopic } from "@webiny/pubsub";
 import Error from "@webiny/error";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";

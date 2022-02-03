@@ -29,7 +29,7 @@ import {
 } from "~/helpers";
 import configurations from "~/configurations";
 import WebinyError from "@webiny/error";
-import lodashCloneDeep from "lodash/clonedeep";
+import lodashCloneDeep from "lodash/cloneDeep";
 import lodashOmit from "lodash/omit";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
