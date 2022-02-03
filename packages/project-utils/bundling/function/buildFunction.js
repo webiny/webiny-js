@@ -5,7 +5,7 @@ const fs = require("fs");
 const telemetry = require("./telemetry");
 import { getProject } from "@webiny/cli/utils";
 
-async function injectHandlerTelemetry() {
+async function injectHandlerTelemetry(cwd) {
     await telemetry.updateTelemetryFunction();
 
     fs.copyFileSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
@@ -91,7 +91,7 @@ module.exports = async options => {
     const includesGraphQl = handlerFile.includes("handler-graphql");
 
     if (includesGraphQl) {
-        await injectHandlerTelemetry();
+        await injectHandlerTelemetry(cwd);
     }
 
     return result;

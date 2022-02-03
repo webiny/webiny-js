@@ -1,8 +1,6 @@
 const userFunction = require("./_handler.js");
 const https = require("https");
 const packageData = require("../../package.json");
-const AWS = require("aws-sdk");
-AWS.config.update({ region: "us-east-1" });
 
 const TELEMETRY_ENDPOINT = "d16ix00y8ek390.cloudfront.net";
 
@@ -110,7 +108,7 @@ async function handler(args) {
 }
 
 module.exports = {
-    handler,
-    localData,
-    postTelemetryData
+  handler,
+  localData,
+  postTelemetryData
 };
