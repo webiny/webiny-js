@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import lodashSortBy from "lodash/sortby";
+import lodashSortBy from "lodash/sortBy";
 import dotProp from "dot-prop";
 import {
     CmsEntry,
