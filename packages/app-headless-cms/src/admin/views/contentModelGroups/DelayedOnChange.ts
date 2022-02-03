@@ -43,24 +43,24 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
         this.setState({ value: this.props.value });
     }
 
-    public applyValue(value: any, callback: OnChangeCbCallable = noop): void {
+    private applyValue = (value: any, callback: OnChangeCbCallable = noop): void => {
         this.delay && clearTimeout(this.delay);
         this.delay = null;
         this.props.onChange(value, callback);
-    }
+    };
 
-    public onChange(value: string): void {
+    private onChange = (value: string): void => {
         this.setState({ value }, this.changed);
-    }
+    };
 
-    public changed(): void {
+    private changed = (): void => {
         this.delay && clearTimeout(this.delay);
         this.delay = null;
         this.delay = setTimeout(
             () => this.applyValue(this.state.value),
             this.props.delay
         ) as unknown as number;
-    }
+    };
 
     render(): React.ReactNode {
         const { children, ...other } = this.props;

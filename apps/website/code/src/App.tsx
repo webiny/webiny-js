@@ -5,7 +5,7 @@ import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuild
 import { createApolloClient } from "./components/apolloClient";
 import Page from "./components/Page";
 
-export const App = () => (
+export const App: React.FC = () => (
     <ApolloProvider client={createApolloClient()}>
         <BrowserRouter basename={process.env.PUBLIC_URL}>
             <PageBuilderProvider>

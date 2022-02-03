@@ -21,5 +21,8 @@
     "react": "16.14.0",
     "react-hamburger-menu": "^1.1.1",
     "react-helmet": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/react-hamburger-menu": "^0.0.4"
   }
 }

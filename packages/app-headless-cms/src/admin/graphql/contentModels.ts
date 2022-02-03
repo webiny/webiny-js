@@ -90,10 +90,10 @@ export interface UpdateCmsModelMutationResponse {
         error?: CmsErrorResponse;
     };
 }
-export interface UpdateCmsModelQueryVariables {
+export interface UpdateCmsModelMutationVariables {
     modelId: string;
     // TODO @ts-refactor write the types.
-    data: Record<string, any>;
+    data: Partial<CmsModel>;
 }
 export const UPDATE_CONTENT_MODEL = gql`
     mutation CmsUpdateContentModel($modelId: ID!, $data: CmsContentModelUpdateInput!) {

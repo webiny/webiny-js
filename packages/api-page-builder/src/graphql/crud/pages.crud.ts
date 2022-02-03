@@ -576,7 +576,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 throw new NotFoundError("Non-existing page.");
             }
 
-            const [pageId] = id.split("#");
+            const { id: pageId } = parseIdentifier(id);
 
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, page, "ownedBy");
@@ -1292,7 +1292,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
         },
 
         async listPageRevisions(pageId) {
-            const [pid] = pageId.split("#");
+            const { id: pid } = parseIdentifier(pageId);
 
             try {
                 const pages = await storageOperations.pages.listRevisions({

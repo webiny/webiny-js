@@ -16,11 +16,11 @@ import { useContentModelEditor } from "~/admin/components/ContentModelEditor/use
 
 const t = i18n.namespace("FormsApp.Editor.FormSettings");
 
-type FormSettingsProps = {
+interface FormSettingsProps {
     onExited: () => void;
-};
+}
 
-const FormSettings = ({ onExited }: FormSettingsProps) => {
+const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
     const cmsEditorFormSettingsPlugins = plugins.byType<CmsEditorFormSettingsPlugin>(
         "cms-editor-form-settings"
     );

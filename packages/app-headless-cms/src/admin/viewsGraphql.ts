@@ -123,8 +123,7 @@ export interface CreateCmsModelFromMutationResponse {
 }
 export interface CreateCmsModelFromMutationVariables {
     modelId: string;
-    // TODO @ts-refactor write the types.
-    data: Record<string, any>;
+    data: CmsModel;
 }
 export const CREATE_CONTENT_MODEL_FROM = gql`
     mutation CmsCreateContentModelFrom($modelId: ID!, $data: CmsContentModelCreateFromInput!) {

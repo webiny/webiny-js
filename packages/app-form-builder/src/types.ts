@@ -255,7 +255,7 @@ export type FormRenderPropsType = {
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponent;
     TermsOfService: TermsOfServiceComponent;
-    submit: (data: Object) => Promise<FormSubmitResponseType>;
+    submit: (data: Record<string, any>) => Promise<FormSubmitResponseType>;
     formData: FbFormModel;
 };
 

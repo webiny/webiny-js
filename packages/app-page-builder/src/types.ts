@@ -182,13 +182,13 @@ export interface PbElement {
  */
 export type PbTheme = {
     colors: { [key: string]: string };
-    // TODO @ts-refator
+    // TODO @ts-refactor
     elements: {
         button?: {
             types: {
                 className: string;
                 label: string;
-                name: string;
+                name?: string;
             }[];
         };
         [key: string]: any;

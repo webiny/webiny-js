@@ -14,10 +14,15 @@ import { ButtonDefault } from "@webiny/ui/Button";
 import * as UID from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
-import * as GQL from "../../viewsGraphql";
-import { CmsEditorContentModel } from "~/types";
+import { CmsEditorContentModel, CmsModel } from "~/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { ListMenuCmsGroupsQueryResponse } from "../../viewsGraphql";
+import {
+    CREATE_CONTENT_MODEL_FROM,
+    LIST_MENU_CONTENT_GROUPS_MODELS,
+    CreateCmsModelFromMutationResponse,
+    CreateCmsModelFromMutationVariables,
+    ListMenuCmsGroupsQueryResponse
+} from "../../viewsGraphql";
 import { CmsGroup } from "~/admin/views/contentModelGroups/graphql";
 import { CmsGroupOption } from "~/admin/views/contentModels/types";
 
@@ -72,7 +77,10 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
     const currentLocale = getCurrentLocale();
     const [locale, setLocale] = React.useState<string>(currentLocale);
 
-    const [createContentModelFrom] = useMutation(GQL.CREATE_CONTENT_MODEL_FROM, {
+    const [createContentModelFrom] = useMutation<
+        CreateCmsModelFromMutationResponse,
+        CreateCmsModelFromMutationVariables
+    >(CREATE_CONTENT_MODEL_FROM, {
         onError(error) {
             setLoading(false);
             showSnackbar(error.message);
@@ -82,7 +90,8 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
 
             if (error) {
                 setLoading(false);
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return;
             }
 
             if (currentLocale !== locale) {
@@ -100,7 +109,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
     });
 
     const { data, loading: loadingGroups } = useQueryLocale<ListMenuCmsGroupsQueryResponse>(
-        GQL.LIST_MENU_CONTENT_GROUPS_MODELS,
+        LIST_MENU_CONTENT_GROUPS_MODELS,
         locale,
         {
             skip: !open
@@ -161,7 +170,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                         locale,
                         name: contentModel.name
                     }}
-                    onSubmit={async data => {
+                    onSubmit={async (data: CmsModel) => {
                         setLoading(true);
                         await createContentModelFrom({
                             variables: {

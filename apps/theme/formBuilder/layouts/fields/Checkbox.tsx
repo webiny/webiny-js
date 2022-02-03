@@ -3,12 +3,21 @@ import { FbFormModelField } from "@webiny/app-form-builder/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import HelperMessage from "../components/HelperMessage";
 
-type Props = {
+interface Option {
+    value: string;
+    label: string;
+}
+interface CheckboxProps {
     bind: BindComponentRenderProp;
     field: FbFormModelField;
-};
+}
 
-const change = ({ option, value, onChange }) => {
+interface ChangeParams {
+    option: Option;
+    value: string;
+    onChange: (values: string[]) => void;
+}
+const change = ({ option, value, onChange }: ChangeParams) => {
     const newValues = Array.isArray(value) ? [...value] : [];
     if (newValues.includes(option.value)) {
         newValues.splice(newValues.indexOf(option.value), 1);
@@ -19,11 +28,15 @@ const change = ({ option, value, onChange }) => {
     onChange(newValues);
 };
 
-const checked = ({ option, value }) => {
+interface CheckedParams {
+    option: Option;
+    value: string;
+}
+const checked = ({ option, value }: CheckedParams) => {
     return Array.isArray(value) && value.includes(option.value);
 };
 
-const Checkbox = (props: Props) => {
+const Checkbox: React.FC<CheckboxProps> = props => {
     const { onChange, value, validation } = props.bind;
     const fieldId = props.field.fieldId;
 

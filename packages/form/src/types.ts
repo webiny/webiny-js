@@ -29,8 +29,8 @@ export interface BindComponentRenderProp<T = any> {
 
 export interface BindComponentProps {
     name: string;
-    beforeChange?: (value: string | string[], cb: (value: string | string[]) => void) => void;
-    afterChange?: (value: string | string[], form: Form) => void;
+    beforeChange?: (value: any, cb: (value: string | string[]) => void) => void;
+    afterChange?: (value: any, form: Form) => void;
     defaultValue?: any;
     validators?: Function | Array<Function>;
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;

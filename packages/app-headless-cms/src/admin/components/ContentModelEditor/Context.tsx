@@ -5,13 +5,20 @@ import pick from "lodash/pick";
 import { ApolloClient } from "apollo-client";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "~/admin/graphql/contentModels";
+import {
+    GET_CONTENT_MODEL,
+    GetCmsModelQueryResponse,
+    GetCmsModelQueryVariables,
+    UPDATE_CONTENT_MODEL,
+    UpdateCmsModelMutationResponse,
+    UpdateCmsModelMutationVariables
+} from "~/admin/graphql/contentModels";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
 import { CmsEditorContentModel, CmsEditorField, CmsModel } from "~/types";
 
 export interface Context {
     apolloClient: ApolloClient<any>;
-    data: CmsEditorContentModel;
+    data: CmsEditorContentModel | null;
     isPristine: boolean;
     getContentModel: (modelId: string) => Promise<any>;
     saveContentModel: (data?: Record<string, any>) => Promise<any>;
@@ -25,9 +32,9 @@ type PickedCmsEditorContentModel = Pick<
     "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId" | "group"
 >;
 interface State {
-    modelId: string;
+    modelId: string | null;
     isPristine: boolean;
-    data: CmsModel;
+    data: CmsModel | null;
 }
 interface Action {
     data: Partial<State> | Partial<CmsModel>;
@@ -92,8 +99,7 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
     const [state, dispatch] = useReducer<Reducer>(contentModelEditorReducer, {
         modelId,
         isPristine: true,
-        // TODO @ts-refactor figure out if possible not to cast
-        data: {} as CmsModel
+        data: null
     });
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -112,7 +118,10 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
             "description",
             "titleFieldId"
         ]);
-        const response = await apolloClient.mutate({
+        const response = await apolloClient.mutate<
+            UpdateCmsModelMutationResponse,
+            UpdateCmsModelMutationVariables
+        >({
             mutation: UPDATE_CONTENT_MODEL,
             variables: {
                 modelId: data.modelId,
@@ -138,9 +147,14 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
     };
 
     const getContentModel = async (modelId: string) => {
-        const response = await apolloClient.query({
+        const response = await apolloClient.query<
+            GetCmsModelQueryResponse,
+            GetCmsModelQueryVariables
+        >({
             query: GET_CONTENT_MODEL,
-            variables: { modelId }
+            variables: {
+                modelId
+            }
         });
 
         const { data, error } = get(response, "data.getContentModel");
@@ -148,7 +162,7 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
             throw new Error(error);
         }
 
-        setData(() => {
+        await setData(() => {
             setPristine(true);
             return data;
         }, false);
