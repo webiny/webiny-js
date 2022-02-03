@@ -1,5 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
+import { createContentReviewSetup } from "../utils/helpers";
 
 const richTextMock = [
     {
@@ -31,21 +32,31 @@ describe("Comment on a change request test", () => {
         path: "manage/en-US"
     };
 
+    const gqlHandler = useContentGqlHandler({
+        ...options
+    });
+
     const {
         createChangeRequestMutation,
         createCommentMutation,
         listCommentsQuery,
         deleteChangeRequestMutation,
         until
-    } = useContentGqlHandler({
-        ...options
-    });
+    } = gqlHandler;
+
+    const getChangeRequestStep = async () => {
+        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        return `${contentReview.id}#${contentReview.steps[0].id}`;
+    };
+
     test("should able to comment on a change request", async () => {
+        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new change request entry.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
-            data: changeRequestMock.changeRequestA
+            data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
         });
         const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
@@ -201,13 +212,14 @@ describe("Comment on a change request test", () => {
     });
 
     test("should able to delete all comments when a change request gets deleted", async () => {
+        const changeRequestStep = await getChangeRequestStep();
         /*
          * Create two new change request entries.
          */
         const changesRequested = [];
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
-                data: changeRequestMock.changeRequestA
+                data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
             });
             changesRequested.push(createChangeRequestResponse.data.apw.createChangeRequest.data);
         }

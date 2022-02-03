@@ -1,5 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
+import { createContentReviewSetup } from "../utils/helpers";
 
 const richTextMock = [
     {
@@ -56,6 +57,10 @@ describe("Comment crud test", () => {
         path: "manage/en-US"
     };
 
+    const gqlHandler = useContentGqlHandler({
+        ...options
+    });
+
     const {
         getCommentQuery,
         listCommentsQuery,
@@ -64,16 +69,16 @@ describe("Comment crud test", () => {
         deleteCommentMutation,
         createChangeRequestMutation,
         until
-    } = useContentGqlHandler({
-        ...options
-    });
+    } = gqlHandler;
 
     const setupChangeRequest = async () => {
+        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new entry.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
-            data: changeRequestMock.changeRequestA
+            data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
         });
         return createChangeRequestResponse.data.apw.createChangeRequest.data;
     };
