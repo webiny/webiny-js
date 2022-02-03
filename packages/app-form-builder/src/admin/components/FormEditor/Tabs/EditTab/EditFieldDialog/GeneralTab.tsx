@@ -23,7 +23,7 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
     const uniqueFieldIdValidator = useCallback(fieldId => {
         const existingField = getField({ fieldId });
         if (!existingField) {
-            return;
+            return true;
         }
 
         if (existingField._id === field._id) {

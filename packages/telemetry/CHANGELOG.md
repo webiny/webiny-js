@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
+
+**Note:** Version bump only for package @webiny/telemetry
+
+
+
+
+
+## [5.22.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.0...v5.22.1-beta.0) (2022-01-29)
+
+
+### Bug Fixes
+
+* **telemetry:** add Buffer polyfill and improve telemetry code ([e078a2d](https://github.com/webiny/webiny-js/commit/e078a2d3659c979683a98c3c2f2aa769a5c7b56e))
+
+
+
+
+
+# [5.22.0](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.3...v5.22.0) (2022-01-24)
+
+**Note:** Version bump only for package @webiny/telemetry
+
+
+
+
+
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+**Note:** Version bump only for package @webiny/telemetry
+
+
+
+
+
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+**Note:** Version bump only for package @webiny/telemetry
+
+
+
+
+
+# [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
+
+**Note:** Version bump only for package @webiny/telemetry
+
+
+
+
+
+# [5.22.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.21.0...v5.22.0-beta.0) (2022-01-14)
+
+**Note:** Version bump only for package @webiny/telemetry
+
+
+
+
+
 # [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
 
 **Note:** Version bump only for package @webiny/telemetry

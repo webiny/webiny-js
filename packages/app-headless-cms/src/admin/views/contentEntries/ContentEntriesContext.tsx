@@ -27,11 +27,22 @@ export interface ContentEntriesContext {
     canCreate: boolean;
     listQueryVariables: ListQueryVariables;
     setListQueryVariables: Dispatch<SetStateAction<ListQueryVariables>>;
+    insideDialog?: boolean;
 }
 
 export const Context = React.createContext<ContentEntriesContext>(null);
 
-export const Provider = ({ contentModel, children }) => {
+export interface ContentEntriesContextProviderProps {
+    contentModel: CmsEditorContentModel;
+    children: React.ReactNode;
+    insideDialog?: boolean;
+}
+
+export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
+    contentModel,
+    children,
+    insideDialog
+}) => {
     const { identity } = useSecurity();
 
     const [listQueryVariables, setListQueryVariables] = useState({
@@ -74,6 +85,7 @@ export const Provider = ({ contentModel, children }) => {
     }, [contentModel.modelId]);
 
     const value = {
+        insideDialog,
         contentModel,
         sorters,
         canCreate,

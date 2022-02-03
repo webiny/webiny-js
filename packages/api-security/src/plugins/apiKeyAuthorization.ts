@@ -17,7 +17,7 @@ export default (config: Config) => {
             const identity = security.getIdentity();
 
             if (!identity || identity.type !== identityType) {
-                return;
+                return null;
             }
 
             // We can expect `permissions` to exist on the identity, because api-key authentication

@@ -1,4 +1,4 @@
-import { PbEditorEventActionPlugin } from "../../../../types";
+import { PbEditorEventActionPlugin } from "~/types";
 import { CreateElementActionEvent } from "../../../recoil/actions";
 import { advancedSettingsEditorAction } from "./advancedSettingsEditorAction";
 

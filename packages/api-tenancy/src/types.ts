@@ -55,11 +55,8 @@ export interface CreateTenantInput {
     name: string;
     description: string;
     status?: string;
-    settings?: {
-        domains: TenantDomain[];
-        // themes: string[];
-    };
-    parent?: string | null;
+    settings?: TenantSettings;
+    parent: string;
 }
 
 export interface ListTenantsParams {

@@ -1,26 +1,12 @@
 import React, { useMemo } from "react";
 import { css } from "emotion";
-import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import get from "lodash/get";
 import set from "lodash/set";
 import merge from "lodash/merge";
-import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import {
-    PbEditorPageElementPlugin,
-    PbEditorElement,
-    PbEditorPageElementSettingsRenderComponentProps,
-    PbEditorResponsiveModePlugin
-} from "../../../../types";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
-import {
-    activeElementAtom,
-    elementWithChildrenByIdSelector,
-    uiAtom
-} from "../../../recoil/modules";
+import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";
@@ -29,6 +15,9 @@ import Accordion from "../components/Accordion";
 import { ReactComponent as AlignLeftIcon } from "./icons/align_horizontal_left.svg";
 import { ReactComponent as AlignCenterIcon } from "./icons/align_horizontal_center.svg";
 import { ReactComponent as AlignRightIcon } from "./icons/align_horizontal_right.svg";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 
 const classes = {
     activeIcon: css({
@@ -70,11 +59,12 @@ const DATA_NAMESPACE = "data.settings.horizontalAlignFlex";
 const HorizontalAlignFlexSettings: React.FunctionComponent<
     PbEditorPageElementSettingsRenderComponentProps
 > = ({ defaultAccordionValue = false }) => {
-    const { displayMode } = useRecoilValue(uiAtom);
+    const { displayMode, config } = useDisplayMode();
+    const element = useActiveElement();
+    const updateElement = useUpdateElement();
+
     const propName = `${DATA_NAMESPACE}.${displayMode}`;
-    const handler = useEventActionHandler();
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+
     const fallbackValue = useMemo(
         () =>
             applyFallbackDisplayMode(displayMode, mode =>
@@ -82,43 +72,21 @@ const HorizontalAlignFlexSettings: React.FunctionComponent<
             ),
         [displayMode]
     );
+
     const align = get(element, propName, fallbackValue || AlignmentsTypeEnum.CENTER);
-
-    const { config: activeEditorModeConfig } = useMemo(() => {
-        return plugins
-            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.displayMode === displayMode);
-    }, [displayMode]);
-
-    const updateElement = (element: PbEditorElement) => {
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element,
-                history: true
-            })
-        );
-    };
 
     const onClick = (type: AlignmentsTypeEnum) => {
         const newElement = merge({}, element, set({}, propName, type));
         updateElement(newElement);
     };
 
-    const plugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
-        .find(pl => pl.elementType === element.type);
-
-    if (!plugin) {
-        return null;
-    }
-
     return (
         <Accordion
             title={"Horizontal align"}
             defaultValue={defaultAccordionValue}
             icon={
-                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.displayMode}`}>
-                    {activeEditorModeConfig.icon}
+                <Tooltip content={`Changes will apply for ${config.displayMode}`}>
+                    {config.icon}
                 </Tooltip>
             }
         >

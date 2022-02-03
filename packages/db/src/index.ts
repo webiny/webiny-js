@@ -98,7 +98,7 @@ class Db {
     // Logging functions.
     async createLog(operation, args: Args): Promise<Result<true>> {
         if (!this.logTable) {
-            return;
+            return null;
         }
 
         const data = getCreateLogData(args);
@@ -107,7 +107,7 @@ class Db {
 
     async readLogs<T = Record<string, any>>(): Promise<Result<T[]>> {
         if (!this.logTable) {
-            return;
+            return null;
         }
 
         return this.driver.readLogs({

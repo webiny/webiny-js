@@ -3,6 +3,8 @@ import { Batch } from "@webiny/db";
 
 type BatchType = "batchWrite" | "batchGet";
 
+export type AddBatchOperationResponse = () => any | null;
+
 class BatchProcess {
     documentClient: DocumentClient;
     batch: Batch;
@@ -41,15 +43,15 @@ class BatchProcess {
         this.batchType;
     }
 
-    waitStartExecution() {
+    waitStartExecution(): Promise<void> {
         return this.queryBuild;
     }
 
-    waitExecution() {
+    waitExecution(): Promise<void> {
         return this.queryExecution;
     }
 
-    addBatchOperation(type: BatchType, args, meta = {}): () => any {
+    addBatchOperation(type: BatchType, args, meta = {}): AddBatchOperationResponse {
         if (!this.batchType) {
             this.batchType = type;
         } else if (this.batchType !== type) {
@@ -58,7 +60,7 @@ class BatchProcess {
             this.rejectBuild({
                 message: `Cannot batch operations - all operations must be of the same type (the initial operation type was "${initial}", and operation type on index "${index}" is "${type}").`
             });
-            return;
+            return null;
         }
 
         this.operations.push([args, meta]);
@@ -66,19 +68,19 @@ class BatchProcess {
         return () => this.results[index];
     }
 
-    addBatchWrite(args) {
+    addBatchWrite(args): AddBatchOperationResponse {
         return this.addBatchOperation("batchWrite", args);
     }
 
-    addBatchDelete(args) {
+    addBatchDelete(args): AddBatchOperationResponse {
         return this.addBatchOperation("batchWrite", { ...args }, { delete: true });
     }
 
-    addBatchGet(args) {
+    addBatchGet(args): AddBatchOperationResponse {
         return this.addBatchOperation("batchGet", args);
     }
 
-    allOperationsAdded() {
+    allOperationsAdded(): boolean {
         return this.operations.length === this.batch.operations.length;
     }
 

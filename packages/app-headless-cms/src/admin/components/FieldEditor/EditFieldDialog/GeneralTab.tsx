@@ -55,7 +55,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     const uniqueFieldIdValidator = useCallback(fieldId => {
         const existingField = getField({ fieldId });
         if (!existingField) {
-            return;
+            return false;
         }
 
         if (existingField.id === field.id) {

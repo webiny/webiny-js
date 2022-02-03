@@ -108,13 +108,33 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                     context.error(
                         `An unknown error occurred while building ${context.error.hl(
                             current.name
-                        )}:`
+                        )} package.`
                     );
 
                     resolve({
                         package: current,
                         result: {
                             message: `An unknown error occurred.`
+                        }
+                    });
+                });
+
+                worker.on("exit", code => {
+                    if (code === 0) {
+                        return;
+                    }
+
+                    stats.error++;
+                    context.error(
+                        `An error occurred while building ${context.error.hl(
+                            current.name
+                        )} package.`
+                    );
+
+                    resolve({
+                        package: current,
+                        result: {
+                            message: `Process exited with a non-zero exit code.`
                         }
                     });
                 });
@@ -138,10 +158,12 @@ module.exports = async ({ projectApplication, inputs, context }) => {
 
     console.log();
 
-    if (stats.error) {
-        throw new Error(
-            `Failed to build all packages (${context.error.hl(stats.error)} error(s) occurred).`
-        );
+    if (stats.error > 0) {
+        const errorsCount = context.error.hl(stats.error);
+        const errorsWord = stats.error === 1 ? "error" : "errors";
+        const errorsOccurred = `(${errorsCount} ${errorsWord} occurred)`;
+
+        throw new Error(`Failed to build all packages ${errorsOccurred}.`);
     }
 
     const duration = (new Date() - start) / 1000 + "s";

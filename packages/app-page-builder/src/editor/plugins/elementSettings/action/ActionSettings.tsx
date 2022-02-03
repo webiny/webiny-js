@@ -8,13 +8,11 @@ import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "../../../components";
 import { DelayedOnChange } from "../../../components/DelayedOnChange";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
 import {
     PbButtonElementClickHandlerPlugin,
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps
-} from "../../../../types";
+} from "~/types";
 import { plugins } from "@webiny/plugins";
 
 // Components
@@ -22,6 +20,7 @@ import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 
 const classes = {
     gridClass: css({
@@ -44,7 +43,7 @@ type ActionSettingsPropsType = {
 const ActionSettingsComponent: React.FunctionComponent<
     ActionSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ element, defaultAccordionValue }) => {
-    const handler = useEventActionHandler();
+    const updateElement = useUpdateElement();
 
     // Let's preserve backwards compatibility by extracting href and newTab properties from deprecated
     //  "link" element object if it exists, otherwise we'll use the newer "action" element object
@@ -59,15 +58,6 @@ const ActionSettingsComponent: React.FunctionComponent<
     }
 
     const { clickHandler, actionType, variables } = element.data?.action || {};
-
-    const updateElement = (element: PbEditorElement) => {
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element,
-                history: true
-            })
-        );
-    };
 
     const updateSettings = data => {
         const attrKey = `data.action`;

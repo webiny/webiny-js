@@ -20,9 +20,36 @@ import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { createTable } from "~/definitions/table";
 import { createPageImportExportTaskEntity } from "~/definitions/pageImportExportTaskEntity";
-import { CreateStorageOperations, PartitionKeyOptions } from "./types";
+import { CreateStorageOperations } from "./types";
 
-// @ts-ignore
+interface PartitionKeyOptions {
+    tenant: string;
+    locale: string;
+    id?: string;
+}
+
+const PARENT_TASK_GSI1_PK = "PB#IE_TASKS";
+
+const createPartitionKey = ({ tenant, locale, id }: PartitionKeyOptions): string => {
+    return `T#${tenant}#L#${locale}#PB#IE_TASK#${id}`;
+};
+
+const createSortKey = (input: string): string => {
+    return `SUB#${input}`;
+};
+
+const createGsiPartitionKey = ({ tenant, locale, id }: PartitionKeyOptions): string => {
+    return `T#${tenant}#L#${locale}#PB#IE_TASK#${id}`;
+};
+
+const createGsiSortKey = (status: PageImportExportTaskStatus, id: string): string => {
+    return `S#${status}#${id}`;
+};
+
+const createType = (): string => {
+    return "pb.pageImportExportTask";
+};
+
 export const createStorageOperations: CreateStorageOperations = params => {
     const { table: tableName, documentClient, attributes = {} } = params;
 
@@ -34,8 +61,6 @@ export const createStorageOperations: CreateStorageOperations = params => {
         attributes
     });
 
-    const PARENT_TASK_GSI1_PK = "PB#IE_TASKS";
-
     return {
         getTable() {
             return table;
@@ -43,32 +68,13 @@ export const createStorageOperations: CreateStorageOperations = params => {
         getEntity() {
             return entity;
         },
-        createPartitionKey({ tenant, locale, id }: PartitionKeyOptions): string {
-            return `T#${tenant}#L#${locale}#PB#IE_TASK#${id}`;
-        },
-
-        createSortKey(input: string): string {
-            return `SUB#${input}`;
-        },
-
-        createGsiPartitionKey({ tenant, locale, id }: PartitionKeyOptions): string {
-            return `T#${tenant}#L#${locale}#PB#IE_TASK#${id}`;
-        },
-
-        createGsiSortKey(status: PageImportExportTaskStatus, id: string): string {
-            return `S#${status}#${id}`;
-        },
-
-        createType(): string {
-            return "pb.pageImportExportTask";
-        },
         async getTask(
             params: PageImportExportTaskStorageOperationsGetParams
         ): Promise<PageImportExportTask | null> {
             const { where } = params;
 
             const keys = {
-                PK: this.createPartitionKey(where),
+                PK: createPartitionKey(where),
                 SK: "A"
             };
 
@@ -137,7 +143,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             const { task } = params;
 
             const keys = {
-                PK: this.createPartitionKey({
+                PK: createPartitionKey({
                     tenant: task.tenant,
                     locale: task.locale,
                     id: task.id
@@ -150,7 +156,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             try {
                 await entity.put({
                     ...task,
-                    TYPE: this.createType(),
+                    TYPE: createType(),
                     ...keys
                 });
                 return task;
@@ -171,7 +177,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
         ): Promise<PageImportExportTask> {
             const { task, original } = params;
             const keys = {
-                PK: this.createPartitionKey({
+                PK: createPartitionKey({
                     tenant: task.tenant,
                     locale: task.locale,
                     id: task.id
@@ -184,7 +190,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             try {
                 await entity.put({
                     ...task,
-                    TYPE: this.createType(),
+                    TYPE: createType(),
                     ...keys
                 });
                 return task;
@@ -206,7 +212,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
         ): Promise<PageImportExportTask> {
             const { task } = params;
             const keys = {
-                PK: this.createPartitionKey({
+                PK: createPartitionKey({
                     tenant: task.tenant,
                     locale: task.locale,
                     id: task.id
@@ -238,7 +244,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             } = params;
 
             const keys = {
-                PK: this.createPartitionKey({
+                PK: createPartitionKey({
                     tenant: original.tenant,
                     locale: original.locale,
                     id: original.id
@@ -250,7 +256,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
 
             try {
                 await entity.update({
-                    TYPE: this.createType(),
+                    TYPE: createType(),
                     ...keys,
                     stats: {
                         $set: {
@@ -282,16 +288,16 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 id: subTask.parent
             };
             const keys = {
-                PK: this.createPartitionKey(pkParams),
-                SK: this.createSortKey(subTask.id),
-                GSI1_PK: this.createGsiPartitionKey(pkParams),
-                GSI1_SK: this.createGsiSortKey(subTask.status, subTask.id)
+                PK: createPartitionKey(pkParams),
+                SK: createSortKey(subTask.id),
+                GSI1_PK: createGsiPartitionKey(pkParams),
+                GSI1_SK: createGsiSortKey(subTask.status, subTask.id)
             };
 
             try {
                 await entity.put({
                     ...subTask,
-                    TYPE: this.createType(),
+                    TYPE: createType(),
                     ...keys
                 });
                 return subTask;
@@ -317,16 +323,16 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 id: subTask.parent
             };
             const keys = {
-                PK: this.createPartitionKey(pkParams),
-                SK: this.createSortKey(subTask.id),
-                GSI1_PK: this.createGsiPartitionKey(pkParams),
-                GSI1_SK: this.createGsiSortKey(subTask.status, subTask.id)
+                PK: createPartitionKey(pkParams),
+                SK: createSortKey(subTask.id),
+                GSI1_PK: createGsiPartitionKey(pkParams),
+                GSI1_SK: createGsiSortKey(subTask.status, subTask.id)
             };
 
             try {
                 await entity.put({
                     ...subTask,
-                    TYPE: this.createType(),
+                    TYPE: createType(),
                     ...keys
                 });
                 return subTask;
@@ -349,12 +355,12 @@ export const createStorageOperations: CreateStorageOperations = params => {
             const { where } = params;
 
             const keys = {
-                PK: this.createPartitionKey({
+                PK: createPartitionKey({
                     tenant: where.tenant,
                     locale: where.locale,
                     id: where.parent
                 }),
-                SK: this.createSortKey(where.id)
+                SK: createSortKey(where.id)
             };
             try {
                 const result = await entity.get(keys);
@@ -381,7 +387,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
             const { tenant, locale, parent, status } = where;
             const queryAllParams: QueryAllParams = {
                 entity: entity,
-                partitionKey: this.createGsiPartitionKey({
+                partitionKey: createGsiPartitionKey({
                     tenant,
                     locale,
                     id: parent

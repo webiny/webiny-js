@@ -1,4 +1,4 @@
-import { FbFormModelField, FbFormModel } from "../../../../../types";
+import { FbFormModelField, FbFormModel } from "~/types";
 
 export default ({ field, data }: { field: FbFormModelField; data: FbFormModel }) => {
     // Remove the field from fields list...
@@ -18,7 +18,7 @@ export default ({ field, data }: { field: FbFormModelField; data: FbFormModel })
         row.forEach(fieldId => {
             const field = data.fields.find(item => item._id === fieldId);
             if (!field) {
-                return true;
+                return;
             }
             if (!Array.isArray(layout[currentRowIndex])) {
                 layout[currentRowIndex] = [];

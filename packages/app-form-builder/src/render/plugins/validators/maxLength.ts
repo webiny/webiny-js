@@ -1,5 +1,5 @@
 import { validation } from "@webiny/validation";
-import { FbFormFieldValidatorPlugin } from "../../../types";
+import { FbFormFieldValidatorPlugin } from "~/types";
 
 export default {
     type: "fb-form-field-validator",
@@ -8,9 +8,10 @@ export default {
         name: "maxLength",
         validate: (value, validator) => {
             const maxLengthValue = validator.settings.value;
-            if (typeof maxLengthValue !== "undefined") {
-                return validation.validate(value, `maxLength:${maxLengthValue}`);
+            if (typeof maxLengthValue === "undefined") {
+                return true;
             }
+            return validation.validate(value, `maxLength:${maxLengthValue}`);
         }
     }
 } as FbFormFieldValidatorPlugin;

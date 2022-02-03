@@ -1,9 +1,13 @@
+/**
+ * When using Caman, we added @ts-ignore because it does not exist in packages, but it is loaded in packages/ui/src/ImageEditor/ImageEditor.tsx:38.
+ * TODO: use some other library to edit images
+ */
 import React from "react";
 import { ReactComponent as FilterIcon } from "./icons/filter.svg";
-import { Slider } from "../../Slider";
+import { Slider } from "~/Slider";
 import { ImageEditorTool } from "./types";
-import { IconButton, ButtonDefault } from "../../Button";
-import { Tooltip } from "../../Tooltip";
+import { IconButton, ButtonDefault } from "~/Button";
+import { Tooltip } from "~/Tooltip";
 import { debounce } from "lodash";
 import styled from "@emotion/styled";
 
@@ -106,10 +110,13 @@ class RenderForm extends React.Component<Props, State> {
 
         // @ts-ignore
         Caman(canvas.current, function () {
+            // @ts-ignore
             this.revert(false);
             Object.keys(values).forEach(
+                // @ts-ignore
                 key => values[key] !== 0 && this[key] && this[key](values[key])
             );
+            // @ts-ignore
             this.render();
             component.setState({ processing: false });
         });
@@ -184,7 +191,9 @@ const tool: ImageEditorTool = {
     cancel: ({ canvas }) => {
         // @ts-ignore
         Caman(canvas.current, function () {
+            // @ts-ignore
             this.revert(false);
+            // @ts-ignore
             this.render();
         });
     }
