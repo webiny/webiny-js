@@ -1,21 +1,14 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "@emotion/styled";
-import { useRouter } from "@webiny/react-router";
-import {
-    DataList,
-    List,
-    DataListModalOverlayAction,
-    DataListModalOverlay,
-    ListItem
-} from "@webiny/ui/List";
+import { DataList, List, DataListModalOverlayAction, ListItem } from "@webiny/ui/List";
 import { i18n } from "@webiny/app/i18n";
-import { Cell, Grid } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { ApwContentReviewStatus } from "~/types";
-import ContentReviewListItem from "./components/ContentReviewItem";
+import { ApwContentReviewListItem } from "~/types";
+import { ContentReviewListItem } from "./components/ContentReviewItem";
 import { useDataListModal } from "./hooks/useDataListModal";
+import { useContentReviewsList } from "./hooks/useContentReviewsList";
+import { ContentReviewsFilterModal } from "./components/ContentReviewsFilterOverlay";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
@@ -25,104 +18,14 @@ const DataListItem = styled(ListItem)`
     }
 `;
 
-const MOCK_ITEM = {
-    id: 1,
-    contentTitle: t`Home page`,
-    contentRevisionNumber: 12,
-    activeStep: "Designer Approval",
-    submittedOn: "Nov 15th, 2021",
-    submittedBy: "Jack Dorsey",
-    status: ApwContentReviewStatus.READY_TO_BE_PUBLISHED,
-    reviewers: [{}, {}, {}],
-    comments: 15,
-    comment: `The upper error message is correct, but the lower one should say “Not authorised” instead.`,
-    commentedBy: t`Sven`,
-    commentedOn: "Nov 17th, 2021"
-};
-const MOCK_ITEM2 = {
-    id: 2,
-    contentTitle: t`About page`,
-    contentRevisionNumber: 6,
-    activeStep: "Editor Approval",
-    submittedOn: "Dec 15th, 2021",
-    submittedBy: "Jack Dorsey",
-    status: ApwContentReviewStatus.UNDER_REVIEW,
-    reviewers: [{}, {}],
-    comments: 225,
-    comment: `The help text is confusing, let's rewrite it as something like this.`,
-    commentedBy: t`Adrian`,
-    commentedOn: "Dec 27th, 2021"
-};
-const MOCK_ITEM3 = {
-    id: 3,
-    contentTitle: t`Pricing page`,
-    contentRevisionNumber: 6,
-    activeStep: "Marketing Approval",
-    submittedOn: "Nov 25th, 2021",
-    submittedBy: "Jack Dorsey",
-    status: ApwContentReviewStatus.PUBLISHED,
-    reviewers: [{}],
-    comments: 8,
-    comment: `Just double the price 💸. Everything else looks fine. To be honest, I've not even read it. Just chattering.`,
-    commentedBy: t`Big Show`,
-    commentedOn: "Nov 27th, 2021"
-};
-
-function ContentReviewDataList() {
+export function ContentReviewDataList() {
     const { status, setStatus, sort, setFilter, setSort, filter } = useDataListModal();
-    const { history } = useRouter();
-
-    const SORTERS = [];
-    const serializeSorters = sorter => {
-        return sorter;
-    };
-
-    const contentModelsDataListModalOverlay = useMemo(
-        () => (
-            <DataListModalOverlay>
-                <Grid>
-                    <Cell span={12}>
-                        <Select
-                            value={status}
-                            onChange={setStatus}
-                            label={t`Filter by`}
-                            description={t`Filter by a specific status.`}
-                        >
-                            <option value={"all"}>{t`All`}</option>
-                            <option
-                                value={ApwContentReviewStatus.UNDER_REVIEW}
-                            >{t`Under review`}</option>
-                            <option
-                                value={ApwContentReviewStatus.READY_TO_BE_PUBLISHED}
-                            >{t`Ready to be published`}</option>
-                            <option value={ApwContentReviewStatus.PUBLISHED}>{t`Published`}</option>
-                        </Select>
-                    </Cell>
-                    <Cell span={12}>
-                        <Select
-                            value={sort}
-                            onChange={setSort}
-                            label={t`Sort by`}
-                            description={t`Sort reviews by.`}
-                        >
-                            {SORTERS.map(({ label, sorters }) => {
-                                return (
-                                    <option key={label} value={serializeSorters(sorters)}>
-                                        {label}
-                                    </option>
-                                );
-                            })}
-                        </Select>
-                    </Cell>
-                </Grid>
-            </DataListModalOverlay>
-        ),
-        [sort]
-    );
+    const { contentReviews, loading, editContentReview } = useContentReviewsList({ sorters: [] });
 
     return (
         <DataList
-            data={[MOCK_ITEM, MOCK_ITEM2, MOCK_ITEM3]}
+            loading={loading}
+            data={contentReviews}
             title={t`Content review dashboard`}
             search={
                 <SearchUI
@@ -131,7 +34,14 @@ function ContentReviewDataList() {
                     inputPlaceholder={t`Search by title`}
                 />
             }
-            modalOverlay={contentModelsDataListModalOverlay}
+            modalOverlay={
+                <ContentReviewsFilterModal
+                    status={status}
+                    setStatus={setStatus}
+                    sort={sort}
+                    setSort={setSort}
+                />
+            }
             modalOverlayAction={
                 <DataListModalOverlayAction
                     icon={<FilterIcon />}
@@ -141,12 +51,19 @@ function ContentReviewDataList() {
         >
             {({ data }) => (
                 <List>
-                    {data.map(item => (
-                        <DataListItem
-                            key={item.id}
-                            onClick={() => history.push("/apw/content-reviews/" + item.id)}
-                        >
-                            <ContentReviewListItem {...item} />
+                    {data.map((item: ApwContentReviewListItem) => (
+                        <DataListItem key={item.id} onClick={() => editContentReview(item.id)}>
+                            <ContentReviewListItem
+                                status={item.status}
+                                submittedOn={item.createdOn}
+                                submittedBy={item.createdBy.displayName}
+                                reviewers={item.reviewers}
+                                comments={item.totalComments}
+                                activeStep={item.activeStep.title}
+                                latestCommentId={item.latestCommentId}
+                                contentTitle={item.content.title}
+                                contentRevisionNumber={item.content.version}
+                            />
                         </DataListItem>
                     ))}
                 </List>
@@ -154,5 +71,3 @@ function ContentReviewDataList() {
         </DataList>
     );
 }
-
-export default ContentReviewDataList;

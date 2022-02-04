@@ -28,8 +28,8 @@ const CommentBadge: React.FC<{ comments: number }> = ({ comments, ...props }) =>
 export interface ContentReviewStatusProps {
     status: ApwContentReviewStatus;
     comments: number;
-    reviewers: Record<string, any>[];
-    width: string;
+    reviewers: string[];
+    width?: string;
 }
 
 export const ContentReviewStatus: React.FC<ContentReviewStatusProps> = ({

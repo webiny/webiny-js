@@ -6,38 +6,36 @@ import { i18n } from "@webiny/app/i18n";
 
 import { ContentReviewBy, ContentReviewByProps } from "./ContentReviewSubmittedInfo";
 import { ContentReviewStatus, ContentReviewStatusProps } from "./ContentReviewStatus";
-import { LatestComment, LatestCommentProps } from "./LatestComment";
+import { LatestComment } from "./LatestComment";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
-interface ContentReviewItemProps
-    extends ContentReviewByProps,
-        ContentReviewStatusProps,
-        LatestCommentProps {
+interface ContentReviewItemProps extends ContentReviewByProps, ContentReviewStatusProps {
     activeStep: string;
     contentTitle: string;
     contentRevisionNumber: number;
+    latestCommentId: string;
 }
 
-const statusBoxWidth = "126px";
+const STATUS_BOX_WIDTH = "126px";
 
-const ContentReviewListItem: React.FC<ContentReviewItemProps> = ({
-    activeStep,
-    contentTitle,
-    contentRevisionNumber,
-    submittedOn,
-    submittedBy,
-    comments,
-    reviewers,
-    status,
-    comment,
-    commentedBy,
-    commentedOn
-}) => {
+export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => {
+    const {
+        activeStep,
+        contentTitle,
+        contentRevisionNumber,
+        submittedOn,
+        submittedBy,
+        comments,
+        reviewers,
+        status,
+        latestCommentId
+    } = props;
+
     return (
         <Columns space={0} className={listItemStyles}>
             <Box
-                width={`calc(100% - ${statusBoxWidth})`}
+                width={`calc(100% - ${STATUS_BOX_WIDTH})`}
                 paddingLeft={5}
                 paddingRight={4}
                 paddingTop={3}
@@ -60,15 +58,11 @@ const ContentReviewListItem: React.FC<ContentReviewItemProps> = ({
                             <Typography use={"caption"}>{activeStep}</Typography>
                         </StatusBox>
                     </Stack>
-                    <LatestComment
-                        comment={comment}
-                        commentedOn={commentedOn}
-                        commentedBy={commentedBy}
-                    />
+                    {latestCommentId && <LatestComment id={latestCommentId} />}
                 </Stack>
             </Box>
             <ContentReviewStatus
-                width={statusBoxWidth}
+                width={STATUS_BOX_WIDTH}
                 status={status}
                 comments={comments}
                 reviewers={reviewers}
@@ -76,5 +70,3 @@ const ContentReviewListItem: React.FC<ContentReviewItemProps> = ({
         </Columns>
     );
 };
-
-export default ContentReviewListItem;
