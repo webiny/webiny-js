@@ -52,7 +52,6 @@ export default [
     new RoutePlugin({
         route: (
             <Route
-                exact
                 path={"/apw/content-reviews/:contentReviewId"}
                 render={() => (
                     <SecureRoute permission={"apw"}>
