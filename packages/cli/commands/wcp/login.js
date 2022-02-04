@@ -1,22 +1,23 @@
-import open from "open";
-import { GraphQLClient } from "graphql-request";
-import { WCP_API_URL, WCP_APP_URL } from "./api";
+const open = require("open");
+const { GraphQLClient } = require("graphql-request");
+const { WCP_API_URL, WCP_APP_URL } = require("./api");
 
 // 120 retries * 2000ms interval = 4 minutes until the command returns an error.
 const LOGIN_RETRIES_COUNT = 30;
 const LOGIN_RETRIES_INTERVAL = 2000;
 
-const GENERATE_PERSONAL_ACCESS_TOKEN = /* GraphQL */ `
-    mutation {
+const GENERATE_USER_PAT = /* GraphQL*/ `
+    mutation GenerateUserPat {
         users {
-            generatePersonalAccessToken
+            generateUserPat
         }
     }
 `;
-const GET_PERSONAL_ACCESS_TOKEN = /* GraphQL */ `
-    query GetPersonalAccessToken($token: ID!) {
+
+const GET_USER_PAT = /* GraphQL*/ `
+    query GetUserPat($token: ID!) {
         users {
-            getPersonalAccessToken(token: $token) {
+            getUserPat(token: $token) {
                 name
                 user {
                     email
@@ -26,7 +27,7 @@ const GET_PERSONAL_ACCESS_TOKEN = /* GraphQL */ `
     }
 `;
 
-export default () => ({
+module.exports = () => ({
     type: "cli-command",
     name: "cli-command-wcp-login",
     create({ yargs, context }) {
@@ -48,11 +49,13 @@ export default () => ({
             async ({ debug, debugLevel }) => {
                 const graphQLClient = new GraphQLClient(WCP_API_URL);
                 const token = await graphQLClient
-                    .request(GENERATE_PERSONAL_ACCESS_TOKEN)
-                    .then(({ users }) => users.generatePersonalAccessToken);
+                    .request(GENERATE_USER_PAT)
+                    .then(({ users }) => users.generateUserPat);
 
-                const queryParams = `?pat=${token}&pat_name=${encodeURIComponent("Webiny CLI")}`;
-                const openUrl = WCP_APP_URL + queryParams;
+                const queryParams = `pat=${token}&pat_name=${encodeURIComponent(
+                    "Webiny CLI"
+                )}&ref=cli`;
+                const openUrl = `${WCP_APP_URL}/login/cli?${queryParams}`;
 
                 debug && context.debug(`Opening ${context.debug.hl(openUrl)}...`);
                 await open(openUrl);
@@ -75,10 +78,7 @@ export default () => ({
                         }
 
                         try {
-                            await graphQLClient.request(
-                                GET_PERSONAL_ACCESS_TOKEN,
-                                graphql.variables
-                            );
+                            await graphQLClient.request(GET_USER_PAT, graphql.variables);
                             resolve(true);
                         } catch (e) {
                             // Do nothing.
@@ -176,8 +176,8 @@ export default () => ({
 
                 try {
                     const user = await graphQLClient
-                        .request(GET_PERSONAL_ACCESS_TOKEN, { token: pat })
-                        .then(({ users }) => users.getPersonalAccessToken.user);
+                        .request(GET_USER_PAT, { token: pat })
+                        .then(({ users }) => users.getUserPat.user);
 
                     context.info(
                         `You are logged in to Webiny Control Panel as ${context.info.hl(

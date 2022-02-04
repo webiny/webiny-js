@@ -1,4 +1,4 @@
-import login from "./login";
-import project from "./project";
+const login = require("./login");
+const project = require("./project");
 
-export default () => [login(), project()];
+module.exports = [login(), project()];
