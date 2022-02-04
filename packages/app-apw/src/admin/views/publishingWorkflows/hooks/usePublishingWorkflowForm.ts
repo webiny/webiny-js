@@ -94,8 +94,10 @@ export const usePublishingWorkflowForm = () => {
             if (error) {
                 return showSnackbar(error.message);
             }
+            const workflowData = get(response, "data.apw.workflow.data");
 
-            !isUpdate && history.push(`${baseUrl}?id=${data.id}`);
+            !isUpdate &&
+                history.push(`${baseUrl}?id=${encodeURIComponent(workflowData.id)}&app=${app}`);
             showSnackbar(t`Workflow saved successfully.`);
         },
         [currentWorkflowId, app]
