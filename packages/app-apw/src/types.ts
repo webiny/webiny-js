@@ -30,6 +30,11 @@ export enum ApwWorkflowApplications {
     CMS = "cms"
 }
 
+export enum ApwContentTypes {
+    PAGE = "page",
+    CMS_ENTRY = "cms_entry"
+}
+
 export interface ApwWorkflowScope {
     type: ApwWorkflowScopeTypes;
     data: {
@@ -55,10 +60,11 @@ export enum ApwContentReviewStatus {
 export interface ApwWorkflowStep {
     title: string;
     type: ApwWorkflowStepTypes;
-    reviewers: any[];
+    reviewers: string[];
 }
 
 export interface ApwContentReviewStep extends ApwWorkflowStep {
+    id: string;
     status: ApwContentReviewStepStatus;
     pendingChangeRequests: number;
     signOffProvidedOn: string;
@@ -81,7 +87,40 @@ export interface PbCategory {
     slug: string;
     name: string;
 }
+
 export interface PbPage {
     id: string;
     title: string;
+}
+
+export interface ApwComment extends BaseFields {
+    body: Record<string, any>;
+    changeRequest: string;
+}
+
+export interface ApwContentReviewContent {
+    id: string;
+    type: ApwContentTypes;
+    workflowId: string;
+    title: string;
+    version: number;
+    settings: {
+        modelId?: string;
+    };
+}
+
+export interface ApwContentReview extends BaseFields {
+    status: ApwContentReviewStatus;
+    content: ApwContentReviewContent;
+    steps: Array<ApwContentReviewStep>;
+}
+
+export interface ApwContentReviewListItem extends BaseFields {
+    steps: [ApwContentReviewStep];
+    content: ApwContentReviewContent;
+    status: ApwContentReviewStatus;
+    activeStep: ApwContentReviewStep;
+    totalComments: number;
+    latestCommentId: string;
+    reviewers: [string];
 }
