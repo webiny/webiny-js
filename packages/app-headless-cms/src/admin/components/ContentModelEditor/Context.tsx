@@ -109,7 +109,10 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
     };
 
     const saveContentModel = async (data?: CmsModel) => {
-        const modelData: PickedCmsEditorContentModel = pick(data || state.data, [
+        if (!data) {
+            data = state.data;
+        }
+        const modelData: PickedCmsEditorContentModel = pick(data, [
             "group",
             "layout",
             "fields",

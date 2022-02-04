@@ -36,17 +36,19 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    {(bind: any) => (
-                        <RichTextEditor
-                            key={getKey(field, bind)}
-                            {...rteProps}
-                            {...bind}
-                            onChange={bind.onChange}
-                            label={field.label}
-                            placeholder={field.placeholderText}
-                            description={field.helpText}
-                        />
-                    )}
+                    {bind => {
+                        return (
+                            <RichTextEditor
+                                key={getKey(field, bind)}
+                                {...rteProps}
+                                {...bind}
+                                onChange={bind.onChange}
+                                label={field.label}
+                                placeholder={field.placeholderText}
+                                description={field.helpText}
+                            />
+                        );
+                    }}
                 </Bind>
             );
         }

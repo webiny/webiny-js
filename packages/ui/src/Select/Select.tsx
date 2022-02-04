@@ -61,10 +61,14 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
 
     return newProps;
 };
-
+/**
+ * We check for null and undefined in the value because React is complaining about those values.
+ * Error says to use the empty string in null/undefined case.
+ */
 export const Select: React.FC<SelectProps> = props => {
-    const { value, description, validation, ...other } = props;
+    const { value: initialValue, description, validation, ...other } = props;
 
+    const value = initialValue === null || initialValue === undefined ? "" : initialValue;
     return (
         <React.Fragment>
             <RmwcSelect

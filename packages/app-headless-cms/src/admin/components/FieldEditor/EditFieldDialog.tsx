@@ -142,7 +142,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
         }
 
         render = (
-            <Form data={current} onSubmit={(data: CmsEditorField) => onSubmit(data)}>
+            <Form data={current} onSubmit={onSubmit}>
                 {form => {
                     const predefinedValuesTabEnabled =
                         fieldPlugin.field.allowPredefinedValues &&

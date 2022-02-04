@@ -28,7 +28,8 @@ export interface BindComponentRenderProp<T = any> {
 }
 
 export interface BindComponentProps {
-    name: string;
+    // TODO @ts-refactor verify that name can be undefined
+    name?: string;
     beforeChange?: (value: any, cb: (value: string | string[]) => void) => void;
     afterChange?: (value: any, form: Form) => void;
     defaultValue?: any;

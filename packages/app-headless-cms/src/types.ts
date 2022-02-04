@@ -232,7 +232,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
         render(props: {
             field: CmsEditorField;
             Label: typeof Label;
-            getBind: (index?: number, key?: string) => any;
+            getBind: (index?: number, key?: string) => BindComponent;
             contentModel: CmsEditorContentModel;
         }): React.ReactNode;
     };

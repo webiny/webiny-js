@@ -161,6 +161,7 @@ const Editor: React.FC = () => {
                 onSubmit={field => {
                     if (field.id) {
                         updateField(field);
+                        editField(null);
                         return;
                     }
                     insertField({ field, position: dropTarget });

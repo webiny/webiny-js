@@ -79,11 +79,16 @@ const ContentEntriesList: React.FC = () => {
         [data]
     );
 
+    const formInitialData = {
+        ...listQueryVariables,
+        sort: listQueryVariables.sort ? listQueryVariables.sort[0] : ""
+    };
+
     const entriesDataListModalOverlay = useMemo(
         () => (
             <UIList.DataListModalOverlay>
                 <Form
-                    data={listQueryVariables}
+                    data={formInitialData}
                     onChange={({ status, sort }) => {
                         setListQueryVariables(prevState => ({ ...prevState, sort, status }));
                     }}
