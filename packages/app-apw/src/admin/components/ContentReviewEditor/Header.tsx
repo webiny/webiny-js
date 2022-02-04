@@ -8,7 +8,7 @@ const EditorTopAppBar = styled(TopAppBar)`
     color: var(--mdc-theme-text-primary-on-background);
 `;
 
-const Header = () => {
+export const Header = () => {
     return (
         <EditorTopAppBar fixed data-testid={"apw-editor-top-bar"}>
             <TopAppBarSection style={{ width: "50%" }}>
@@ -20,5 +20,3 @@ const Header = () => {
         </EditorTopAppBar>
     );
 };
-
-export default Header;

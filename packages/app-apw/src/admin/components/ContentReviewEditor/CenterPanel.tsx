@@ -1,53 +1,22 @@
 import React from "react";
-import { List } from "@webiny/ui/List";
-import { PanelBox } from "./Styled";
-import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
-import { Box } from "../Layout";
-import { i18n } from "@webiny/app/i18n";
+import { Switch, Route, useRouteMatch, useParams } from "@webiny/react-router";
 import styled from "@emotion/styled";
-
+import { List } from "@webiny/ui/List";
+import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { i18n } from "@webiny/app/i18n";
+import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import ChangeRequestListItem from "./ChangeRequest/ChangeRequestListItem";
-import ProvideSignOff from "./ChangeRequest/ProvideSignOff";
+
+import { useChangeRequestsList } from "~/admin/hooks/useChangeRequestsList";
+import { ChangeRequestListItem } from "./ChangeRequest/ChangeRequestListItem";
+import { ProvideSignOff } from "./ChangeRequest/ProvideSignOff";
 import { useChangeRequestDialog } from "./ChangeRequest/useChangeRequestDialog";
+import { Box } from "../Layout";
+import { PanelBox } from "./Styled";
+import { RightPanel } from "./RightPanel";
+import { PlaceholderBox } from "./PlaceholderBox";
 
 const t = i18n.ns("app-apw/admin/content-reviews/editor");
-
-const MOCK_CHANGE_REQUESTS = [
-    {
-        id: 1,
-        createdBy: {
-            displayName: "Adrian Smijulj"
-        },
-        createdOn: "5 min ago",
-        title: "Change title",
-        body: `Overall the structure of the document is good. We just need to tackle a couple of consistency.
-                         Also, why is this not title case here, am I missing something?`,
-        status: "active"
-    },
-    {
-        id: 2,
-        createdBy: {
-            displayName: "Adrian Smijulj"
-        },
-        createdOn: "5 min ago",
-        title: "Change title",
-        body: `Overall the structure of the document is good. We just need to tackle a couple of consistency.
-                         Also, why is this not title case here, am I missing something?`,
-        status: "new"
-    },
-    {
-        id: 3,
-        createdBy: {
-            displayName: "Adrian Smijulj"
-        },
-        createdOn: "5 min ago",
-        title: "Change title",
-        body: `Overall the structure of the document is good. We just need to tackle a couple of consistency.
-                         Also, why is this not title case here, am I missing something?`,
-        status: "inactive"
-    }
-];
 
 const ChangeRequestList = styled(List)`
     overflow: auto;
@@ -62,24 +31,41 @@ const CreateChangeRequestBox = styled(Box)`
     border-bottom: 1px solid var(--mdc-theme-background);
 `;
 
-const CenterPanel = () => {
+export const CenterPanel = () => {
     const { setOpen } = useChangeRequestDialog();
+    const { changeRequests, loading } = useChangeRequestsList({ sorters: [] });
+    const { path } = useRouteMatch();
+    const { stepId } = useParams() as { stepId: string };
+
+    if (loading) {
+        return <Typography use={"caption"}>Loading Change requests...</Typography>;
+    }
     return (
-        <PanelBox flex={"1 1 22%"}>
-            <CreateChangeRequestBox paddingX={5} paddingY={5}>
-                <ButtonSecondary onClick={() => setOpen(true)}>
-                    <ButtonIcon icon={<AddIcon />} />
-                    {t`Request Change`}
-                </ButtonSecondary>
-            </CreateChangeRequestBox>
-            <ChangeRequestList>
-                {[...MOCK_CHANGE_REQUESTS, ...MOCK_CHANGE_REQUESTS].map(item => (
-                    <ChangeRequestListItem key={item.id} {...item} />
-                ))}
-            </ChangeRequestList>
-            <ProvideSignOff />
-        </PanelBox>
+        <>
+            <PanelBox flex={"1 1 22%"}>
+                <CreateChangeRequestBox paddingX={5} paddingY={5}>
+                    <ButtonSecondary onClick={() => setOpen(true)}>
+                        <ButtonIcon icon={<AddIcon />} />
+                        {t`Request Change`}
+                    </ButtonSecondary>
+                </CreateChangeRequestBox>
+                <ChangeRequestList>
+                    {changeRequests.map(item => (
+                        <ChangeRequestListItem key={item.id} {...item} />
+                    ))}
+                </ChangeRequestList>
+                <ProvideSignOff />
+            </PanelBox>
+            <Switch>
+                <Route exact path={path}>
+                    <PanelBox flex={"1 1 52%"}>
+                        <PlaceholderBox />
+                    </PanelBox>
+                </Route>
+                <Route path={`${path}/:changeRequestId`}>
+                    <RightPanel currentStepId={stepId} />
+                </Route>
+            </Switch>
+        </>
     );
 };
-
-export default CenterPanel;

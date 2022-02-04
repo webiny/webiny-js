@@ -9,6 +9,7 @@ import {
     TypographySecondary,
     TypographyTitle
 } from "../Styled";
+import { useRouteMatch, useRouter } from "@webiny/react-router";
 
 const t = i18n.ns("app-apw/admin/content-reviews/editor");
 
@@ -55,11 +56,22 @@ interface ContentReviewStepProps {
         displayName: string;
     };
     createdOn?: string;
+    disabled?: boolean;
 }
 
-const Index: React.FC<ContentReviewStepProps> = ({ step, createdOn, createdBy }) => {
+export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
+    const { step, createdOn, createdBy, disabled } = props;
+    const { history } = useRouter();
+    const { url } = useRouteMatch();
+
     return (
-        <PanelListItem selected={step.status === ApwContentReviewStepStatus.ACTIVE}>
+        <PanelListItem
+            selected={step.status === ApwContentReviewStepStatus.ACTIVE}
+            disabled={disabled}
+            onClick={() =>
+                disabled ? null : history.push(`${url}/${encodeURIComponent(step.id)}`)
+            }
+        >
             <Columns space={3}>
                 <Box paddingTop={1}>
                     <StepStatusIcon status={step.status} />
@@ -69,11 +81,19 @@ const Index: React.FC<ContentReviewStepProps> = ({ step, createdOn, createdBy })
                         <TypographyTitle use={"subtitle1"}>{step.title}</TypographyTitle>
                     </Box>
                     {createdOn && (
-                        <Box>
+                        <Box display={"flex"}>
                             <TypographyBody use={"caption"}>By:&nbsp;&nbsp;</TypographyBody>
+                            <TypographySecondary
+                                use={"caption"}
+                                style={{ textTransform: "capitalize" }}
+                            >
+                                {t`{author}`({
+                                    author: createdBy.displayName
+                                })}
+                            </TypographySecondary>
                             <TypographySecondary use={"caption"}>
-                                {t`{author} on {createdOn}`({
-                                    author: createdBy.displayName,
+                                &nbsp;
+                                {t`on {createdOn}`({
                                     createdOn
                                 })}
                             </TypographySecondary>
@@ -108,5 +128,3 @@ const Index: React.FC<ContentReviewStepProps> = ({ step, createdOn, createdBy })
         </PanelListItem>
     );
 };
-
-export default Index;

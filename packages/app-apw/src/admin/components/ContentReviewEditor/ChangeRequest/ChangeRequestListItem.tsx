@@ -1,8 +1,10 @@
 import React from "react";
+import { useRouteMatch, useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { Box, Columns, Stack } from "~/admin/components/Layout";
 import { Avatar } from "~/admin/views/publishingWorkflows/components/ReviewersList";
+import { fromNow } from "~/admin/components/utils";
 import { ChangeRequestItem, TypographySecondary, TypographyTitle } from "../Styled";
 
 const statusToBackgroundColor = {
@@ -26,31 +28,39 @@ interface ChangeRequestItemProps {
     };
     createdOn: string;
     title: string;
-    body: string;
+    body: Record<string, any>;
     status: string;
+    id: string;
 }
 
-const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = ({
+export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = ({
     createdOn,
     createdBy,
     title,
-    body,
-    status
+    status,
+    id
 }) => {
+    const { history } = useRouter();
+    const { url } = useRouteMatch();
+
     return (
-        <ChangeRequestItem>
-            <Stack space={1}>
+        <ChangeRequestItem onClick={() => history.push(`${url}/${encodeURIComponent(id)}`)}>
+            <Stack space={1} width={"100%"}>
                 <Columns space={1} justifyContent={"space-between"}>
                     <Columns space={2.5} alignItems={"center"}>
                         <Box>
                             <Avatar index={getRandomIndex()} />
                         </Box>
                         <Box>
-                            <Typography use={"subtitle1"}>{createdBy.displayName}</Typography>
+                            <Typography use={"subtitle1"} style={{ textTransform: "capitalize" }}>
+                                {createdBy.displayName}
+                            </Typography>
                         </Box>
                     </Columns>
-                    <Box>
-                        <TypographySecondary use={"caption"}>{createdOn}</TypographySecondary>
+                    <Box display={"flex"} alignItems={"center"}>
+                        <TypographySecondary use={"caption"}>
+                            {fromNow(createdOn)}
+                        </TypographySecondary>
                     </Box>
                 </Columns>
                 <Columns
@@ -66,12 +76,8 @@ const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = ({
                         <StatusBadge status={status} />
                     </Box>
                 </Columns>
-                <Box>
-                    <TypographySecondary use={"caption"}>{body}</TypographySecondary>
-                </Box>
+                <Box>{/*<TypographySecondary use={"caption"}>{body}</TypographySecondary>*/}</Box>
             </Stack>
         </ChangeRequestItem>
     );
 };
-
-export default ChangeRequestListItem;

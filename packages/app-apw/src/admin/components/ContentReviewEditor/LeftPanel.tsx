@@ -1,37 +1,26 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { List } from "@webiny/ui/List";
-import { ApwContentReviewStepStatus, ApwWorkflowStepTypes } from "~/types";
+import {
+    ApwContentReviewStep,
+    ApwContentReviewStepStatus,
+    ApwWorkflowStepTypes,
+    CreatedBy
+} from "~/types";
+import { formatDate } from "~/admin/components/utils";
 import { PanelBox } from "./Styled";
-import ContentReviewStep from "./ContentReviewStep";
+import { ContentReviewStep } from "./ContentReviewStep";
 import PublishContent from "./ContentReviewStep/PublishContent";
 
-const MOCK_STEPS = [
-    {
-        title: "Legal review",
-        type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
-        reviewers: [],
-        pendingChangeRequests: 0,
-        signOffProvidedOn: null,
-        status: ApwContentReviewStepStatus.ACTIVE
-    },
-    {
-        title: "Marketing review",
-        type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
-        reviewers: [],
-        pendingChangeRequests: 0,
-        signOffProvidedOn: null,
-        status: ApwContentReviewStepStatus.INACTIVE
-    },
-    {
-        title: "Designer review",
-        type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
-        reviewers: [],
-        pendingChangeRequests: 0,
-        signOffProvidedOn: null,
-        status: ApwContentReviewStepStatus.INACTIVE
-    }
-];
+const ReviewRequestedStepData = {
+    id: "123",
+    title: "Review requested",
+    type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+    reviewers: [],
+    pendingChangeRequests: 0,
+    signOffProvidedOn: null,
+    status: ApwContentReviewStepStatus.DONE
+};
 
 const ContentReviewStepList = styled(List)`
     padding: 0;
@@ -39,25 +28,27 @@ const ContentReviewStepList = styled(List)`
     height: calc(100vh - 64px - 56px);
 `;
 
-const LeftPanel = () => {
+interface LeftPanelProps {
+    steps: ApwContentReviewStep[];
+    reviewRequestedOn: string;
+    reviewRequestedBy: CreatedBy;
+}
+
+export const LeftPanel: React.FC<LeftPanelProps> = ({
+    steps,
+    reviewRequestedBy,
+    reviewRequestedOn
+}) => {
     return (
         <PanelBox flex={"1 1 26%"}>
             <ContentReviewStepList>
                 <ContentReviewStep
-                    step={{
-                        title: "Review requested",
-                        type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
-                        reviewers: [],
-                        pendingChangeRequests: 0,
-                        signOffProvidedOn: null,
-                        status: ApwContentReviewStepStatus.DONE
-                    }}
-                    createdOn={"Dec 15th 2021"}
-                    createdBy={{
-                        displayName: "Sven"
-                    }}
+                    disabled={true}
+                    step={ReviewRequestedStepData}
+                    createdOn={formatDate(reviewRequestedOn)}
+                    createdBy={reviewRequestedBy}
                 />
-                {MOCK_STEPS.map((step, index) => (
+                {steps.map((step, index) => (
                     <ContentReviewStep key={index} step={step} />
                 ))}
             </ContentReviewStepList>
@@ -65,5 +56,3 @@ const LeftPanel = () => {
         </PanelBox>
     );
 };
-
-export default LeftPanel;
