@@ -51,7 +51,9 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
 
     const currentWorkflowId = useCurrentWorkflowId();
     const listQuery = useQuery(LIST_WORKFLOWS_QUERY);
-    const [deleteWorkflow] = useMutation(DELETE_WORKFLOW_MUTATION);
+    const [deleteWorkflow] = useMutation(DELETE_WORKFLOW_MUTATION, {
+        refetchQueries: [{ query: LIST_WORKFLOWS_QUERY }]
+    });
 
     const { showConfirmation } = useConfirmationDialog({
         dataTestId: "default-data-list.delete-dialog"
@@ -72,22 +74,25 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
         history.push(`${baseUrl}?id=${encodeURIComponent(id)}&app=${app}`);
     }, []);
 
-    const deletePublishingWorkflow = useCallback(id => {
-        showConfirmation(async () => {
-            const response = await deleteWorkflow({ variables: { id } });
+    const deletePublishingWorkflow = useCallback(
+        id => {
+            showConfirmation(async () => {
+                const response = await deleteWorkflow({ variables: { id } });
 
-            const error = get(response, "data.apw.deleteWorkflow.error");
-            if (error) {
-                return showSnackbar(error.message);
-            }
+                const error = get(response, "data.apw.deleteWorkflow.error");
+                if (error) {
+                    return showSnackbar(error.message);
+                }
 
-            showSnackbar(t`Workflow "{id}" deleted.`({ id }));
+                showSnackbar(t`Workflow "{id}" deleted.`({ id }));
 
-            if (currentWorkflowId === id) {
-                history.push(baseUrl);
-            }
-        });
-    }, []);
+                if (currentWorkflowId === id) {
+                    history.push(baseUrl);
+                }
+            });
+        },
+        [currentWorkflowId]
+    );
 
     return {
         workflows: data,
