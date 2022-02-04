@@ -107,20 +107,6 @@ module.exports = () => ({
                 context.localStorage.set("wcpPat", token);
 
                 context.success(`You've successfully logged in to Webiny Control Panel!`);
-
-                const { project } = context;
-
-                if (!project.config.id) {
-                    // Show list of all projects.
-                    // If no projects, want to create one?
-                } else {
-                    // Check the project ID as well.
-                    // Write "this is project xyz"
-                }
-
-                console.log();
-                process.exit();
-                process.exit(0);
             }
         );
 
