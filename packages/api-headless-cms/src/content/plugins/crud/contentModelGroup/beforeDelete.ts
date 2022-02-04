@@ -4,12 +4,12 @@ import { PluginsContainer } from "@webiny/plugins";
 import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import WebinyError from "@webiny/error";
 
-export interface Params {
+interface AssignBeforeGroupDeleteParams {
     onBeforeDelete: Topic<BeforeGroupDeleteTopicParams>;
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
-export const assignBeforeGroupDelete = (params: Params) => {
+export const assignBeforeGroupDelete = (params: AssignBeforeGroupDeleteParams) => {
     const { onBeforeDelete, plugins, storageOperations } = params;
 
     onBeforeDelete.subscribe(async params => {
