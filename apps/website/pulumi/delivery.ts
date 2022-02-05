@@ -1,4 +1,6 @@
 import * as aws from "@pulumi/aws";
+// import * as pulumi from "@pulumi/pulumi";
+// import { WebsiteTenantRouter } from "@webiny/pulumi-aws";
 
 class Delivery {
     bucket: aws.s3.Bucket;
@@ -12,6 +14,8 @@ class Delivery {
                 errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
         });
+
+        // const websiteRouter = new WebsiteTenantRouter("website-router");
 
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,
@@ -70,11 +74,19 @@ class Delivery {
                 forwardedValues: {
                     cookies: { forward: "none" },
                     queryString: true
+                    // headers: ["Host"]
                 },
                 // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
                 defaultTtl: 30,
                 maxTtl: 30
+                // lambdaFunctionAssociations: [
+                //     {
+                //         eventType: "origin-request",
+                //         includeBody: false,
+                //         lambdaArn: pulumi.interpolate`${websiteRouter.originRequest.qualifiedArn}`
+                //     }
+                // ]
             },
             priceClass: "PriceClass_100",
             restrictions: {
@@ -82,8 +94,12 @@ class Delivery {
                     restrictionType: "none"
                 }
             },
+            // aliases: ["*.mt2.webiny.com"],
             viewerCertificate: {
                 cloudfrontDefaultCertificate: true
+                // sslSupportMethod: "sni-only",
+                // acmCertificateArn:
+                //     "arn:aws:acm:us-east-1:656932293860:certificate/eb47f296-39c3-44df-a04e-f25f4f339e17"
             }
         });
     }
