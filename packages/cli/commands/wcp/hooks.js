@@ -18,7 +18,7 @@ module.exports = () => [
             }
         }
     },
-    // Within this hook, updating user's "last active" field.
+    // Within this hook, we're updating user's "last active" field.
     {
         type: "hook-before-build",
         // type: "hook-after-deploy",
