@@ -1,4 +1,4 @@
-const { getUser, getProjectEnvironmentBySlug } = require("./api");
+const { getUser } = require("./api");
 const { WCP_APP_URL } = require("./api");
 const open = require("open");
 const inquirer = require("inquirer");
