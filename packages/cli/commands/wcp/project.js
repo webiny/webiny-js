@@ -6,47 +6,6 @@ const path = require("path");
 const tsMorph = require("ts-morph");
 
 module.exports = () => [
-    // Within this hook, we're setting the `WCP_ENVIRONMENT` env variable, which can then be used in
-    // build / deploy steps. For example, we pass it to GraphQL and Headless CMS Lambda functions.
-    {
-        type: "hook-before-build",
-        name: "hook-before-build-auth",
-        async hook(args, context) {
-            // If the `WCP_ENVIRONMENT` has already been assigned, no need to do anything.
-            if (process.env.WCP_ENVIRONMENT) {
-                return;
-            }
-
-            // If the project isn't activated, also do nothing.
-            if (!context.project.config.id) {
-                return;
-            }
-
-            // The `id` has the orgId/projectId structure, for example `my-org-x/my-project-y`.
-            const orgProject = context.project.config.id;
-            const [orgId, projectId] = orgProject.split("/");
-
-            // Check login.
-            const user = await getUser();
-            const project = user.projects.find(item => item.id === projectId);
-            if (!project) {
-                throw new Error(
-                    `It seems you don't belong to the current project or the current project has been deleted.`
-                );
-            }
-
-            const environment = await getProjectEnvironmentBySlug({
-                orgId,
-                projectId,
-                environmentSlug: args.env,
-                userId: user.id
-            });
-
-            console.log("eto ga!");
-            console.log(environment);
-            process.exit();
-        }
-    },
     {
         type: "cli-command",
         name: "cli-command-wcp-project",

@@ -3,5 +3,12 @@ const WCP_API_URL = process.env.WCP_API_URL || "https://api.wcp.webiny.com/graph
 
 const { getUser } = require("./getUser");
 const { getProjectEnvironmentBySlug } = require("./getProjectEnvironmentBySlug");
+const { updateUserLastActiveOn } = require("./updateUserLastActiveOn");
 
-module.exports = { getUser, getProjectEnvironmentBySlug, WCP_APP_URL, WCP_API_URL };
+module.exports = {
+    getUser,
+    getProjectEnvironmentBySlug,
+    updateUserLastActiveOn,
+    WCP_APP_URL,
+    WCP_API_URL
+};
