@@ -19,6 +19,7 @@ const LIST_ORGS = /* GraphQL */ `
             listOrgs {
                 data {
                     id
+                    name
                 }
             }
         }

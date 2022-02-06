@@ -71,14 +71,16 @@ module.exports = () => ({
 
                 let retries = 0;
                 const result = await new Promise(resolve => {
-                    setInterval(async () => {
+                    const interval = setInterval(async () => {
                         retries++;
                         if (retries > LOGIN_RETRIES_COUNT) {
+                            clearInterval(interval);
                             resolve(false);
                         }
 
                         try {
                             await graphQLClient.request(GET_USER_PAT, graphql.variables);
+                            clearInterval(interval);
                             resolve(true);
                         } catch (e) {
                             // Do nothing.

@@ -57,7 +57,8 @@ class HeadlessCMS {
                 environment: {
                     variables: {
                         ...env,
-                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+                        WCP_ENVIRONMENT: String(process.env.WCP_ENVIRONMENT)
                     }
                 }
             })
