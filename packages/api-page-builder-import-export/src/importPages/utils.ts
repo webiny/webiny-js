@@ -482,7 +482,9 @@ function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
                             zipFile.readEntry();
                         });
 
-                        streamPipeline(readStream, createWriteStream(filePath));
+                        streamPipeline(readStream, createWriteStream(filePath)).catch(error => {
+                            reject(error);
+                        });
                     });
                 }
             });
@@ -559,9 +561,13 @@ function extractZipAndUploadToS3(
                         const { streamPassThrough, streamPassThroughUploadPromise: promise } =
                             s3Stream.writeStream(newKey, FILE_CONTENT_TYPE);
 
-                        streamPipeline(readStream, streamPassThrough).then(() => {
-                            fileUploadPromises.push(promise);
-                        });
+                        streamPipeline(readStream, streamPassThrough)
+                            .then(() => {
+                                fileUploadPromises.push(promise);
+                            })
+                            .catch(error => {
+                                reject(error);
+                            });
                     });
                 }
             });
