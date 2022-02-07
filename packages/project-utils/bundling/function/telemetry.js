@@ -1,7 +1,8 @@
 const fs = require("fs");
 const { https } = require("follow-redirects");
 
-const TELEMETRY_BUCKET_URL = "wcp-telemetry-function-7cbe312.s3.amazonaws.com";
+const TELEMETRY_BUCKET_URL =
+    process.env.WCP_API_CLIENTS_URL || "wcp-telemetry-function-7cbe312.s3.amazonaws.com";
 
 function requestTelemetryCode() {
     const options = {

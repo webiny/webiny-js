@@ -1,3 +1,17 @@
+async function injectHandlerTelemetry(cwd) {
+    await telemetry.updateTelemetryFunction();
+
+    fs.copyFileSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
+
+    // Create a new handler.js.
+    const telemetryFunction = fs.readFileSync(path.join(__dirname, "/telemetryFunction.js"), {
+        encoding: "utf8",
+        flag: "r"
+    });
+
+    fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
+}
+
 module.exports = options => {
     const webpack = require("webpack");
 
@@ -14,7 +28,7 @@ module.exports = options => {
         webpackConfig = overrides.webpack(webpackConfig);
     }
 
-    return new Promise(async (resolve, reject) => {
+    const result = new Promise(async (resolve, reject) => {
         options.logs && console.log("Compiling...");
         return webpack(webpackConfig).watch({}, async (err, stats) => {
             if (err) {
@@ -28,4 +42,22 @@ module.exports = options => {
             }
         });
     });
+
+    const project = getProject({ cwd });
+
+    if (!project.config.id) {
+        return result;
+    }
+
+    const handlerFile = fs.readFileSync(path.join(options.cwd, "/build/handler.js"), {
+        encoding: "utf8",
+        flag: "r"
+    });
+    const includesGraphQl = handlerFile.includes("handler-graphql");
+
+    if (includesGraphQl) {
+        await injectHandlerTelemetry(cwd);
+    }
+
+    return result;
 };
