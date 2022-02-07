@@ -23,7 +23,7 @@ describe("Retract sign off for a step in content review process", function () {
     };
 
     test(`should able to retract sign-off`, async () => {
-        const { page, workflow } = await setup();
+        const { page } = await setup();
         /*
          Create a content review entry.
         */
@@ -31,8 +31,7 @@ describe("Retract sign off for a step in content review process", function () {
             data: {
                 content: {
                     id: page.id,
-                    type: "page",
-                    workflowId: workflow.id
+                    type: "page"
                 }
             }
         });
@@ -128,11 +127,11 @@ describe("Retract sign off for a step in content review process", function () {
                                 type: "admin"
                             },
                             status: "underReview",
+                            title: expect.any(String),
                             content: {
                                 id: expect.any(String),
                                 type: expect.any(String),
-                                workflowId: expect.any(String),
-                                title: expect.any(String),
+
                                 version: expect.any(Number),
                                 settings: null
                             },
@@ -224,11 +223,11 @@ describe("Retract sign off for a step in content review process", function () {
                                 type: "admin"
                             },
                             status: "underReview",
+                            title: expect.any(String),
                             content: {
                                 id: expect.any(String),
                                 type: expect.any(String),
-                                workflowId: expect.any(String),
-                                title: expect.any(String),
+
                                 version: expect.any(Number),
                                 settings: null
                             },
@@ -273,7 +272,7 @@ describe("Retract sign off for a step in content review process", function () {
             }
         });
 
-        const { page, workflow } = await setup();
+        const { page } = await setup();
         await gqlHandlerForIdentityA.securityIdentity.login();
 
         /*
@@ -283,8 +282,7 @@ describe("Retract sign off for a step in content review process", function () {
             data: {
                 content: {
                     id: page.id,
-                    type: "page",
-                    workflowId: workflow.id
+                    type: "page"
                 }
             }
         });

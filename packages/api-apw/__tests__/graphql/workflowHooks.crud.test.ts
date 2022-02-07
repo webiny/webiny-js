@@ -323,7 +323,8 @@ describe("Workflow assignment to a PB Page", () => {
          */
         const [getPageResponse] = await getPageQuery({ id: firstPage.id });
         expect(getPageResponse.data.pageBuilder.getPage.data.settings.apw).toEqual({
-            workflowId: workflow.id
+            workflowId: workflow.id,
+            contentReviewId: null
         });
 
         /**
@@ -383,7 +384,8 @@ describe("Workflow assignment to a PB Page", () => {
          */
         const [getSecondPageResponse] = await getPageQuery({ id: secondPage.id });
         expect(getSecondPageResponse.data.pageBuilder.getPage.data.settings.apw).toEqual({
-            workflowId: workflow.id
+            workflowId: workflow.id,
+            contentReviewId: null
         });
     });
 
@@ -461,7 +463,8 @@ describe("Workflow assignment to a PB Page", () => {
          */
         const [getPageResponse] = await getPageQuery({ id: firstPage.id });
         expect(getPageResponse.data.pageBuilder.getPage.data.settings.apw).toEqual({
-            workflowId: workflow.id
+            workflowId: workflow.id,
+            contentReviewId: null
         });
 
         /**
@@ -492,7 +495,8 @@ describe("Workflow assignment to a PB Page", () => {
          * Now, it should have a workflow assigned.
          */
         expect(secondPageNewRevision.settings.apw).toEqual({
-            workflowId: workflow.id
+            workflowId: workflow.id,
+            contentReviewId: null
         });
     });
 
@@ -557,7 +561,8 @@ describe("Workflow assignment to a PB Page", () => {
         for (let i = 0; i < pages.length; i++) {
             const [getPageResponse] = await getPageQuery({ id: pages[i].id });
             expect(getPageResponse.data.pageBuilder.getPage.data.settings.apw).toEqual({
-                workflowId: workflow.id
+                workflowId: workflow.id,
+                contentReviewId: null
             });
         }
 
@@ -618,12 +623,14 @@ describe("Workflow assignment to a PB Page", () => {
          */
         const [getPageResponse] = await getPageQuery({ id: firstPage.id });
         expect(getPageResponse.data.pageBuilder.getPage.data.settings.apw).toEqual({
-            workflowId: workflow.id
+            workflowId: workflow.id,
+            contentReviewId: null
         });
 
         const [getPage2Response] = await getPageQuery({ id: secondPage.id });
         expect(getPage2Response.data.pageBuilder.getPage.data.settings.apw).toEqual({
-            workflowId: null
+            workflowId: null,
+            contentReviewId: null
         });
     });
 });

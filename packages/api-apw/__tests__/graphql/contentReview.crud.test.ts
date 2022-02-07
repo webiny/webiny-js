@@ -31,8 +31,7 @@ describe("Content Review crud test", () => {
             data: {
                 content: {
                     id: page.id,
-                    type: "page",
-                    workflowId: workflow.id
+                    type: "page"
                 }
             }
         });
@@ -52,6 +51,7 @@ describe("Content Review crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            title: expect.any(String),
                             status: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
@@ -66,8 +66,6 @@ describe("Content Review crud test", () => {
                             content: {
                                 id: expect.any(String),
                                 type: expect.any(String),
-                                workflowId: expect.any(String),
-                                title: expect.any(String),
                                 version: expect.any(Number),
                                 settings: null
                             }
@@ -105,6 +103,7 @@ describe("Content Review crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            title: expect.any(String),
                             status: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
@@ -119,8 +118,6 @@ describe("Content Review crud test", () => {
                             content: {
                                 id: expect.any(String),
                                 type: expect.any(String),
-                                workflowId: expect.any(String),
-                                title: expect.any(String),
                                 version: expect.any(Number),
                                 settings: null
                             }
@@ -160,6 +157,7 @@ describe("Content Review crud test", () => {
                                     displayName: "John Doe",
                                     type: "admin"
                                 },
+                                title: expect.any(String),
                                 status: "underReview",
                                 steps: workflow.steps.map((_, index) => ({
                                     status:
@@ -175,8 +173,6 @@ describe("Content Review crud test", () => {
                                 content: {
                                     id: expect.any(String),
                                     type: expect.any(String),
-                                    workflowId: expect.any(String),
-                                    title: expect.any(String),
                                     version: expect.any(Number),
                                     settings: null
                                 },

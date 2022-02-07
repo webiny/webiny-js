@@ -140,7 +140,7 @@ export const createSetupForContentReview = async gqlHandler => {
 };
 
 export const createContentReviewSetup = async gqlHandler => {
-    const { page, workflow } = await createSetupForContentReview(gqlHandler);
+    const { page } = await createSetupForContentReview(gqlHandler);
     /*
      Create a content review entry.
     */
@@ -148,8 +148,7 @@ export const createContentReviewSetup = async gqlHandler => {
         data: {
             content: {
                 id: page.id,
-                type: "page",
-                workflowId: workflow.id
+                type: "page"
             }
         }
     });

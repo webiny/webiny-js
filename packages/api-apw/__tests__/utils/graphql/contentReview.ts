@@ -13,6 +13,7 @@ const getDataFields = (fields = "") => `{
         displayName
         type
     }
+    title
     status
     steps {
         status
@@ -27,8 +28,6 @@ const getDataFields = (fields = "") => `{
     content {
         type
         id
-        workflowId
-        title
         version
         settings {
             modelId

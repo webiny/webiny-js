@@ -26,8 +26,7 @@ describe(`Total comments count test`, () => {
             data: {
                 content: {
                     id: page.id,
-                    type: "page",
-                    workflowId: page.settings.apw.workflowId
+                    type: "page"
                 }
             }
         });
@@ -151,11 +150,10 @@ describe(`Total comments count test`, () => {
                                     type: "admin"
                                 },
                                 status: "underReview",
+                                title: expect.any(String),
                                 content: {
                                     id: expect.any(String),
                                     type: "page",
-                                    workflowId: expect.any(String),
-                                    title: expect.any(String),
                                     version: expect.any(Number),
                                     settings: null
                                 },
@@ -228,11 +226,10 @@ describe(`Total comments count test`, () => {
                                     type: "admin"
                                 },
                                 status: "underReview",
+                                title: expect.any(String),
                                 content: {
                                     id: expect.any(String),
                                     type: "page",
-                                    workflowId: expect.any(String),
-                                    title: expect.any(String),
                                     version: expect.any(Number),
                                     settings: null
                                 },
