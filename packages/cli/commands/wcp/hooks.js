@@ -4,8 +4,8 @@ module.exports = () => [
     // Within this hook, we're setting the `WCP_ENVIRONMENT_API_KEY` env variable, which can then be used in
     // build / deploy steps. For example, we pass it to GraphQL and Headless CMS Lambda functions.
     {
-        type: "hook-before-build",
-        name: "hook-before-build-auth",
+        type: "hook-before-deploy",
+        name: "hook-before-deploy-environment-api-key",
         async hook(args, context) {
             // If the `WCP_ENVIRONMENT_API_KEY` has already been assigned, no need to do anything.
             if (process.env.WCP_ENVIRONMENT_API_KEY) {
@@ -20,9 +20,8 @@ module.exports = () => [
     },
     // Within this hook, we're updating user's "last active" field.
     {
-        type: "hook-before-build",
-        // type: "hook-after-deploy",
-        name: "hook-after-deploy-update-last-active-on",
+        type: "hook-before-deploy",
+        name: "hook-before-deploy-update-last-active-on",
         async hook(args, context) {
             // Is this a user environment? If so, let's update his "last active" field.
             const environment = await getProjectEnvironment(args, context);
