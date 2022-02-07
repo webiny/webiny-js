@@ -8,13 +8,13 @@ interface Option {
     label: string;
 }
 interface CheckboxProps {
-    bind: BindComponentRenderProp;
+    bind: BindComponentRenderProp<string[]>;
     field: FbFormModelField;
 }
 
 interface ChangeParams {
     option: Option;
-    value: string;
+    value: string[];
     onChange: (values: string[]) => void;
 }
 const change = ({ option, value, onChange }: ChangeParams) => {
@@ -30,7 +30,7 @@ const change = ({ option, value, onChange }: ChangeParams) => {
 
 interface CheckedParams {
     option: Option;
-    value: string;
+    value: string[];
 }
 const checked = ({ option, value }: CheckedParams) => {
     return Array.isArray(value) && value.includes(option.value);
