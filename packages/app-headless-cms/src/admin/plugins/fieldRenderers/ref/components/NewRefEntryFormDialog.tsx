@@ -18,10 +18,14 @@ import { Provider as ContentEntriesProvider } from "~/admin/views/contentEntries
 import { Provider as ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
 import { useQuery } from "~/admin/hooks";
-import { GET_CONTENT_MODEL } from "~/admin/graphql/contentModels";
+import {
+    GET_CONTENT_MODEL,
+    GetCmsModelQueryResponse,
+    GetCmsModelQueryVariables
+} from "~/admin/graphql/contentModels";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { useNewRefEntryDialog } from "../hooks/useNewRefEntryDialog";
-import { CmsEditorContentEntry } from "~/types";
+import { CmsEditorContentEntry, CmsModel } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -88,17 +92,18 @@ interface NewRefEntryProps {
 }
 
 const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, onChange }) => {
-    const [contentModel, setContentModel] = useState<any>();
+    const [contentModel, setContentModel] = useState<CmsModel>();
 
     const { showSnackbar } = useSnackbar();
 
-    useQuery(GET_CONTENT_MODEL, {
+    useQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>(GET_CONTENT_MODEL, {
         skip: !modelId,
         variables: { modelId },
         onCompleted: data => {
-            const contentModelData = get(data, "getContentModel.data");
+            const contentModelData: CmsModel | null = get(data, "getContentModel.data");
             if (contentModelData) {
-                return setContentModel(contentModelData);
+                setContentModel(contentModelData);
+                return;
             }
 
             showSnackbar(

@@ -150,7 +150,8 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         update: (cache, { data }) => {
                             const { error } = data.content;
                             if (error) {
-                                return showSnackbar(error.message);
+                                showSnackbar(error.message);
+                                return;
                             }
 
                             // We have other revisions, update entry's cache
@@ -160,19 +161,20 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                                 revision
                             );
 
-                            if (revision.id === entry.id) {
-                                GQLCache.updateLatestRevisionInListCache(
-                                    contentModel,
-                                    cache,
-                                    revisions[0],
-                                    listQueryVariables
-                                );
-                                // Redirect to the first revision in the list of all entry revisions.
-                                return history.push(
-                                    `/cms/content-entries/${modelId}?id=` +
-                                        encodeURIComponent(revisions[0].id)
-                                );
+                            if (revision.id !== entry.id) {
+                                return;
                             }
+                            GQLCache.updateLatestRevisionInListCache(
+                                contentModel,
+                                cache,
+                                revisions[0],
+                                listQueryVariables
+                            );
+                            // Redirect to the first revision in the list of all entry revisions.
+                            history.push(
+                                `/cms/content-entries/${modelId}?id=` +
+                                    encodeURIComponent(revisions[0].id)
+                            );
                         }
                     });
 

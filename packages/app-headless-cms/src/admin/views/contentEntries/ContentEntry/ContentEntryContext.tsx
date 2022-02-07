@@ -11,7 +11,6 @@ import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import * as GQL from "~/admin/graphql/contentEntries";
 import { useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
@@ -22,7 +21,9 @@ import {
     CmsEntriesListRevisionsQueryResponse,
     CmsEntriesListRevisionsQueryVariables,
     CmsEntryGetQueryResponse,
-    CmsEntryGetQueryVariables
+    CmsEntryGetQueryVariables,
+    createReadQuery,
+    createRevisionsQuery
 } from "~/admin/graphql/contentEntries";
 
 export interface ContentEntryContext extends ContentEntriesContext {
@@ -100,13 +101,13 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
 
     const { READ_CONTENT } = useMemo(() => {
         return {
-            READ_CONTENT: GQL.createReadQuery(contentModel)
+            READ_CONTENT: createReadQuery(contentModel)
         };
     }, [contentModel.modelId]);
 
     const { GET_REVISIONS } = useMemo(() => {
         return {
-            GET_REVISIONS: GQL.createRevisionsQuery(contentModel)
+            GET_REVISIONS: createRevisionsQuery(contentModel)
         };
     }, [contentModel.modelId]);
 

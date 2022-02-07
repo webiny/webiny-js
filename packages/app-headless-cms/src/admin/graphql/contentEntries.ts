@@ -187,7 +187,9 @@ export interface CmsEntryCreateMutationResponse {
     };
 }
 export interface CmsEntryCreateMutationVariables {
-    // TODO @ts-refactor write the types.
+    /**
+     * We have any here because we do not know which fields does entry have
+     */
     data: Record<string, any>;
 }
 export const createCreateMutation = (model: CmsEditorContentModel) => {
@@ -221,7 +223,9 @@ export interface CmsEntryCreateFromMutationResponse {
 }
 export interface CmsEntryCreateFromMutationVariables {
     revision: string;
-    // TODO @ts-refactor write the types.
+    /**
+     * We have any here because we do not know which fields does entry have
+     */
     data: Record<string, any>;
 }
 export const createCreateFromMutation = (model: CmsEditorContentModel) => {
@@ -254,7 +258,9 @@ export interface CmsEntryUpdateMutationResponse {
 }
 export interface CmsEntryUpdateMutationVariables {
     revision: string;
-    // TODO @ts-refactor write the types.
+    /**
+     * We have any here because we do not know which fields does entry have
+     */
     data: Record<string, any>;
 }
 export const createUpdateMutation = (model: CmsEditorContentModel) => {

@@ -46,7 +46,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
     const modelsHash = models.join(",");
     const values: CmsEntryGetEntryVariable[] = bind.value ? bind.value : [];
 
-    const searchEntries = async () => {
+    const searchEntries = async (): Promise<void> => {
         if (!search) {
             return;
         }

@@ -13,7 +13,7 @@ import {
 } from "~/admin/graphql/contentModels";
 import { useQuery } from "../../hooks";
 import ContentEntriesList from "~/admin/views/contentEntries/ContentEntriesList";
-import ContentEntry from "~/admin/views/contentEntries/ContentEntry";
+import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { Provider as ContentEntryProvider } from "./ContentEntry/ContentEntryContext";
 import { CmsModel } from "~/types";
 

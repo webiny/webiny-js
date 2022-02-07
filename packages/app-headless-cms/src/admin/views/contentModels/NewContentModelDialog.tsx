@@ -61,7 +61,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
 
             if (error) {
                 setLoading(false);
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return;
             }
 
             addModelToListCache(cache, model);

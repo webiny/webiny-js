@@ -25,7 +25,7 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
 
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
 
-    const entryWarning = (entry: ReferencedCmsEntry, index: number) => {
+    const entryWarning = (entry: ReferencedCmsEntry, index: number): React.ReactElement => {
         const { id, modelId, name, published } = entry;
         if (published) {
             return null;
@@ -48,6 +48,7 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
     }
 
     const refEntryOnChange = useCallback(
+        // TODO @ts-refactor figure out which type is this
         value => {
             /**
              * Append new selected entry at the end of existing entries.

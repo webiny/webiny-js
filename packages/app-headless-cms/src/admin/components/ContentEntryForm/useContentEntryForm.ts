@@ -3,7 +3,17 @@ import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FormOnSubmit } from "@webiny/form";
-import * as GQL from "~/admin/graphql/contentEntries";
+import {
+    createCreateFromMutation,
+    createCreateMutation,
+    createUpdateMutation,
+    CmsEntryCreateMutationResponse,
+    CmsEntryCreateMutationVariables,
+    CmsEntryUpdateMutationResponse,
+    CmsEntryUpdateMutationVariables,
+    CmsEntryCreateFromMutationResponse,
+    CmsEntryCreateFromMutationVariables
+} from "~/admin/graphql/contentEntries";
 import { useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
@@ -67,18 +77,30 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
         return {
-            LIST_CONTENT: GQL.createListQuery(contentModel),
-            CREATE_CONTENT: GQL.createCreateMutation(contentModel),
-            UPDATE_CONTENT: GQL.createUpdateMutation(contentModel),
-            CREATE_CONTENT_FROM: GQL.createCreateFromMutation(contentModel)
+            // LIST_CONTENT: createListQuery(contentModel),
+            CREATE_CONTENT: createCreateMutation(contentModel),
+            UPDATE_CONTENT: createUpdateMutation(contentModel),
+            CREATE_CONTENT_FROM: createCreateFromMutation(contentModel)
         };
     }, [contentModel.modelId]);
 
-    const [createMutation] = useMutation(CREATE_CONTENT);
-    const [updateMutation] = useMutation(UPDATE_CONTENT);
-    const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
+    const [createMutation] = useMutation<
+        CmsEntryCreateMutationResponse,
+        CmsEntryCreateMutationVariables
+    >(CREATE_CONTENT);
+    const [updateMutation] = useMutation<
+        CmsEntryUpdateMutationResponse,
+        CmsEntryUpdateMutationVariables
+    >(UPDATE_CONTENT);
+    const [createFromMutation] = useMutation<
+        CmsEntryCreateFromMutationResponse,
+        CmsEntryCreateFromMutationVariables
+    >(CREATE_CONTENT_FROM);
 
-    const setInvalidFieldValues = (errors?: InvalidFieldError[]) => {
+    /**
+     * Note that when passing error.data variable we cast as InvalidFieldError[] because we know it is so.
+     */
+    const setInvalidFieldValues = (errors?: InvalidFieldError[]): void => {
         const values = (errors || []).reduce((acc, er) => {
             acc[er.fieldId] = er.error;
             return acc;
@@ -86,7 +108,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         setInvalidFields(() => values);
     };
 
-    const resetInvalidFieldValues = () => {
+    const resetInvalidFieldValues = (): void => {
         setInvalidFields(() => ({}));
     };
 
@@ -99,7 +121,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     const { data: entry, error } = data.content;
                     if (error) {
                         showSnackbar(error.message);
-                        setInvalidFieldValues(error.data);
+                        setInvalidFieldValues(error.data as InvalidFieldError[]);
                         return;
                     }
                     resetInvalidFieldValues();
@@ -118,7 +140,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             const { error, data: entry } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
-                setInvalidFieldValues(error.data);
+                setInvalidFieldValues(error.data as InvalidFieldError[]);
                 return null;
             }
             resetInvalidFieldValues();
@@ -144,7 +166,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             const { error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
-                setInvalidFieldValues(error.data);
+                setInvalidFieldValues(error.data as InvalidFieldError[]);
                 return null;
             }
 
@@ -165,7 +187,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     const { data: newRevision, error } = data.content;
                     if (error) {
                         showSnackbar(error.message);
-                        setInvalidFieldValues(error.data);
+                        setInvalidFieldValues(error.data as InvalidFieldError[]);
                         return;
                     }
                     resetInvalidFieldValues();
@@ -186,7 +208,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             const { data, error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
-                setInvalidFieldValues(error.data);
+                setInvalidFieldValues(error.data as InvalidFieldError[]);
                 return null;
             }
             resetInvalidFieldValues();
@@ -268,7 +290,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         }
         return { ...values, ...overrides };
     };
-
     return {
         /**
          * If entry is not set or entry.id does not exist, it means that form is for the new entry, so fetch default values.
