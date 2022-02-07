@@ -13,7 +13,7 @@ import {
 import { CircularProgress } from "../Progress";
 
 interface ChildrenRenderProp {
-    showConfirmation: (onAccept?: Function, onCancel?: Function) => any;
+    showConfirmation: (onAccept?: () => void, onCancel?: () => void) => any;
 }
 
 interface ConfirmationCallbacks {
