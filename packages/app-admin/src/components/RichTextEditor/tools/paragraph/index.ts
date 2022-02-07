@@ -85,7 +85,8 @@ class Paragraph {
         this.settingsButtons = [];
         this.alignments = ALIGNMENTS;
 
-        // this.data = this.normalizeData(data);
+        // Call the `data` setter, to properly render the view element.
+        this.data = this._data;
     }
 
     /**
