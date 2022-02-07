@@ -11,6 +11,7 @@ import { ReactComponent as DeleteIcon } from "./icons/delete-24dpx.svg";
 import * as Styled from "./StyledComponents";
 import kebabCase from "lodash/kebabCase";
 import { PbEditorBlockPlugin } from "~/types";
+import { useCallback } from "react";
 
 interface BlockPreviewProps {
     plugin: PbEditorBlockPlugin;
@@ -20,19 +21,9 @@ interface BlockPreviewProps {
 }
 const BlockPreview: React.FC<BlockPreviewProps> = props => {
     const { plugin, addBlockToContent, onEdit, onDelete } = props;
-    const onClickToAddHandler = (ev: React.MouseEvent) => {
+    const onClickToAddHandler = useCallback(() => {
         addBlockToContent(plugin);
-        if (ev.shiftKey) {
-            return;
-        }
-        // eventActionHandler.trigger(new TogglePluginEventAction({
-        //     name: "pb-editor-search-blocks-bar"
-        // }))
-        //
-        // activatePluginAction({
-        //     name: "pb-editor-search-blocks-bar",
-        // })
-    };
+    }, [plugin]);
     return (
         <Elevation
             z={1}
@@ -45,7 +36,7 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                 <Styled.AddBlock className={"add-block"}>
                     <ButtonFloating
                         label={"Click to Add"}
-                        onClick={onClickToAddHandler}
+                        onClick={() => onClickToAddHandler()}
                         icon={<AddIcon />}
                     />
                 </Styled.AddBlock>
@@ -61,7 +52,7 @@ const BlockPreview: React.FC<BlockPreviewProps> = props => {
                                     {plugin.id ? (
                                         <IconButton
                                             icon={<DeleteIcon />}
-                                            onClick={() => showConfirmation(onDelete)}
+                                            onClick={ev => showConfirmation(() => onDelete(ev))}
                                         />
                                     ) : (
                                         <Tooltip content={"Cannot delete."} placement={"top"}>

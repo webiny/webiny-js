@@ -83,11 +83,11 @@ const BlocksList: React.FC<BlocksListProps> = props => {
             }
             rightPanelElement.current.scroll(0, 0);
         }
-    });
+    }, []);
 
     useEffect(() => {
         prevProps.current = props;
-    });
+    }, []);
 
     const { blocks, category } = props;
 
@@ -112,7 +112,12 @@ const BlocksList: React.FC<BlocksListProps> = props => {
                             isScrolling={isScrolling}
                             onScroll={onChildScroll}
                             rowCount={blocks.length}
-                            rowHeight={getRowHeight}
+                            rowHeight={rowHeightParams => {
+                                return getRowHeight({
+                                    ...rowHeightParams,
+                                    blocks
+                                });
+                            }}
                             rowRenderer={rendererProps => {
                                 return renderRow({
                                     ...rendererProps,
@@ -120,7 +125,6 @@ const BlocksList: React.FC<BlocksListProps> = props => {
                                     addBlock: props.addBlock,
                                     onEdit: props.onEdit,
                                     onDelete: props.onDelete
-                                    // deactivatePlugin: props.deactivatePlugin
                                 });
                             }}
                             scrollTop={scrollTop}

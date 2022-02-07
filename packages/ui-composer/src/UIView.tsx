@@ -169,7 +169,7 @@ const UIViewHooks: React.FC<UIViewHooksProps> = ({ view, props, render }) => {
 };
 
 export const UIViewComponent = ({ view, ...props }: UIViewComponentProps): React.ReactElement => {
-    const [, setCount] = useState(0);
+    const [, setCount] = useState<number>(0);
 
     const wrappers = view.getWrappers();
 

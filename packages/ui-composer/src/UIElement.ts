@@ -28,7 +28,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     protected _elements = new Map<string, UIElement>();
     protected _layout: UILayout;
     private readonly _config: TConfig;
-    private readonly _tags: Set<string>;
+    private readonly _tags: Set<string> = new Set();
     private readonly _id: string;
     private _parent: UIElement;
     private _renderers: UIRenderer<any>[] = [];
@@ -169,6 +169,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     }
 
     public addTag(tag: string): void {
+        console.log(this);
         this._tags.add(tag);
     }
 
