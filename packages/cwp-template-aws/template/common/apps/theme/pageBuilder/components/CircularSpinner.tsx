@@ -1,6 +1,9 @@
 import React from "react";
 
-const CircularSpinner = ({ label }) => {
+interface CircularSpinnerProps {
+    label: string;
+}
+const CircularSpinner: React.FC<CircularSpinnerProps> = ({ label }) => {
     return (
         <div className="webiny-pb-circular-spinner">
             <div className="webiny-pb-circular-spinner__container">

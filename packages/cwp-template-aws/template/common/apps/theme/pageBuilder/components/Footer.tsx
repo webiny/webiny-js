@@ -6,12 +6,12 @@ import { ReactComponent as TwitterIcon } from "./assets/twitter-square-brands.sv
 import { ReactComponent as InstagramIcon } from "./assets/instagram-brands.svg";
 import { PbPageData } from "@webiny/app-page-builder/types";
 
-type FooterProps = {
+interface FooterProps {
     settings: Record<string, any>;
     page: PbPageData;
-};
+}
 
-const Footer = ({ settings }: FooterProps) => {
+const Footer: React.FC<FooterProps> = ({ settings }) => {
     const { name, logo, social } = settings;
 
     return (
