@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import FileManagerView from "./FileManager/FileManagerView";
 import pick from "lodash/pick";
@@ -27,8 +27,6 @@ export interface FileManagerProps {
 }
 
 export type FileManagerPortalProps = Omit<FileManagerProps, "children">;
-
-const { useState, useRef, useCallback, useEffect } = React;
 
 class FileManagerPortal extends React.Component<FileManagerPortalProps> {
     container: Element;
@@ -65,26 +63,23 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
 
         const container = this.container;
 
-        const handleFileOnChange = useCallback(
-            (files?: FileItem[] | FileItem) => {
-                if (!files || files.length === 0) {
-                    return;
-                }
-                const fields = Array.isArray(onChangePick)
-                    ? onChangePick
-                    : ["id", "name", "key", "src", "size", "type"];
+        const handleFileOnChange = (files?: FileItem[] | FileItem) => {
+            if (!files || files.length === 0) {
+                return;
+            }
+            const fields = Array.isArray(onChangePick)
+                ? onChangePick
+                : ["id", "name", "key", "src", "size", "type"];
 
-                if (Array.isArray(files) === true) {
-                    const items = (files as FileItem[]).map(file => pick(file, fields));
-                    onChange(items as FileItem[]);
-                    return;
-                }
-                const file = pick(files as FileItem, fields);
+            if (Array.isArray(files) === true) {
+                const items = (files as FileItem[]).map(file => pick(file, fields));
+                onChange(items as FileItem[]);
+                return;
+            }
+            const file = pick(files as FileItem, fields);
 
-                onChange(file as FileItem);
-            },
-            [onChangePick, onChange]
-        );
+            onChange(file as FileItem);
+        };
 
         const props = {
             onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
