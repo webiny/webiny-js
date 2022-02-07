@@ -6,6 +6,7 @@ export default () =>
         typeDefs: /* GraphQL */ `
             type PbApwPageSettings {
                 workflowId: ID
+                contentReviewId: ID
             }
 
             extend type PbPageSettings {

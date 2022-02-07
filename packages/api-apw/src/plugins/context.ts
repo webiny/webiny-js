@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 import { createApw } from "~/createApw";
 import apwHooks from "./hooks";
-import triggerContentReview from "./pageBuilder/triggerContentReview";
+import { apwPageBuilderPlugins } from "./pageBuilder";
 import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
 
@@ -60,7 +60,7 @@ export default () => [
             return { ...entry, title: "NO_TITLE" };
         });
 
-        triggerContentReview({ pageBuilder: context.pageBuilder, apw: context.apw });
+        apwPageBuilderPlugins({ pageBuilder: context.pageBuilder, apw: context.apw });
     }),
     apwHooks()
 ];

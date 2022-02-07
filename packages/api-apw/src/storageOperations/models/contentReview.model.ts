@@ -46,6 +46,14 @@ const contentStatus = () =>
         ]
     });
 
+const titleField = () =>
+    createModelField({
+        label: "Title",
+        type: "text",
+        parent: "contentReview Content",
+        validation: [{ name: "required", message: "Value is required." }]
+    });
+
 const contentIdField = () =>
     createModelField({
         label: "Id",
@@ -223,6 +231,7 @@ export const createContentReviewModelDefinition = ({ reviewerModelId }) => ({
         ["contentReview_changeRequested"]
     ],
     fields: [
+        titleField(),
         contentField([
             contentIdField(),
             contentTypeField(),

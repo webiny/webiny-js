@@ -1,17 +1,11 @@
 import get from "lodash/get";
 import Error from "@webiny/error";
-import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 import {
-    AdvancedPublishingWorkflow,
     ApwContentTypes,
     ApwOnBeforePagePublishTopicParams,
     ApwOnBeforePageRequestReviewTopicParams
 } from "~/types";
-
-interface InitiateContentReviewParams {
-    pageBuilder: PageBuilderContextObject;
-    apw: AdvancedPublishingWorkflow;
-}
+import { InitiateContentReviewParams } from ".";
 
 export default ({ pageBuilder, apw }: InitiateContentReviewParams) => {
     pageBuilder.onBeforePagePublish.subscribe<ApwOnBeforePagePublishTopicParams>(
@@ -31,20 +25,27 @@ export default ({ pageBuilder, apw }: InitiateContentReviewParams) => {
         }
     );
 
-    pageBuilder.onBeforePageRequestReview.subscribe<ApwOnBeforePageRequestReviewTopicParams>(
+    pageBuilder.onAfterPageRequestReview.subscribe<ApwOnBeforePageRequestReviewTopicParams>(
         async ({ page }) => {
-            const workflowId = get(page, "settings.apw.workflowId");
+            /*
+             * TODO: @ashutosh add check to determine if a content review already exist for requested page.
+             *  If it is so, terminate with an "ALREADY_EXISTS" error.
+             */
 
             const contentReview = await apw.contentReview.create({
                 content: {
                     id: page.id,
                     type: ApwContentTypes.PAGE,
-                    workflowId,
                     settings: null
                 }
             });
-            console.log(JSON.stringify({ contentReview }, null, 2));
-            throw new Error("Test!");
+            /**
+             * As we don't want the "RequestReview" process to continue,
+             * we're using error in this lifecycle hook as a mechanism of flow control.
+             */
+            if (contentReview) {
+                throw new Error(`A content review has been initiated for page "${page.id}"`);
+            }
         }
     );
 };

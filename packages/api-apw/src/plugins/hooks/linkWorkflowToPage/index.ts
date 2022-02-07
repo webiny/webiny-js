@@ -61,6 +61,17 @@ export const linkWorkflowToPage = ({
         if (prevApwWorkflowId && !currentApwWorkflowId) {
             page.settings.apw = original.settings.apw;
         }
+        /*
+         * If there is a linked "contentReview" for this page and the page "title" has changed.
+         * Let's update the "title" field in "contentReview".
+         */
+        const linkedContentReviewId = get(page, "settings.apw.contentReviewId");
+        const prevTitle = get(original, "title");
+        const newTitle = get(page, "title");
+
+        if (linkedContentReviewId && prevTitle !== newTitle) {
+            await apw.contentReview.update(linkedContentReviewId, { title: newTitle });
+        }
     });
     /**
      * Link created workflow to associated pages.

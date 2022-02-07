@@ -154,6 +154,7 @@ export interface ApwContentReviewStep {
 }
 
 export interface ApwContentReview extends BaseFields {
+    title: string;
     status: ApwContentReviewStatus;
     content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
@@ -252,7 +253,6 @@ interface UpdateApwChangeRequestParams {
 export interface ApwContentReviewContent {
     id: string;
     type: ApwContentTypes;
-    workflowId: string;
     settings: {
         modelId?: string;
     };
@@ -263,7 +263,8 @@ export interface CreateApwContentReviewParams {
 }
 
 interface UpdateApwContentReviewParams {
-    steps: ApwContentReviewStep[];
+    title?: string;
+    steps?: ApwContentReviewStep[];
 }
 
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
@@ -386,7 +387,7 @@ export interface ApwContentReviewCrud
 export type ContentGetter = (
     id: string,
     settings: { modelId?: string }
-) => Promise<{ title: string; version: number }>;
+) => Promise<PageWithWorkflow | { title: string; version: number }>;
 
 export interface AdvancedPublishingWorkflow {
     addContentGetter: (type: ApwContentTypes, func: ContentGetter) => void;
@@ -471,7 +472,14 @@ interface StorageOperationsUpdateWorkflowParams {
 
 type StorageOperationsDeleteWorkflowParams = StorageOperationsDeleteParams;
 type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
-type StorageOperationsListContentReviewsParams = ListParams;
+
+interface ApwContentReviewListParams extends ListParams {
+    where: ListWhere & {
+        status?: ApwContentReviewStatus;
+    };
+}
+
+type StorageOperationsListContentReviewsParams = ApwContentReviewListParams;
 
 interface StorageOperationsCreateContentReviewParams {
     data: CreateApwContentReviewParams;

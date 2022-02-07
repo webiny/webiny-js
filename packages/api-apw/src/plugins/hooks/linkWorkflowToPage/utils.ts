@@ -178,6 +178,29 @@ export const setPageWorkflowId = async ({
     uniquePageId,
     workflowId
 }: SetPageWorkflowIdParams) => {
+    await updatePageSettings({
+        getPage,
+        updatePage,
+        uniquePageId,
+        getNewSettings: settings => {
+            return set(settings, "apw.workflowId", workflowId);
+        }
+    });
+};
+
+interface UpdatePageSettingsParams {
+    getPage: PageMethods["getPage"];
+    updatePage: PageMethods["updatePage"];
+    uniquePageId: string;
+    getNewSettings: (settings: PageWithWorkflow["settings"]) => PageWithWorkflow["settings"];
+}
+
+export const updatePageSettings = async ({
+    getPage,
+    updatePage,
+    uniquePageId,
+    getNewSettings
+}: UpdatePageSettingsParams) => {
     try {
         /**
          * Currently, we only assign "workflow" to latest page.
@@ -194,7 +217,7 @@ export const setPageWorkflowId = async ({
          * We'll update the workflow reference even though it already had one assign.
          */
         await updatePage(page.id, {
-            settings: set(page.settings, "apw.workflowId", workflowId)
+            settings: getNewSettings(page.settings)
         });
     } catch (e) {
         if (e.code !== "NOT_FOUND") {

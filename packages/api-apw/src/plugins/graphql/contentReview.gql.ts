@@ -13,6 +13,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ContentReview specific fields
+            title: String
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             status: ApwContentReviewStatus
@@ -75,6 +76,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ContentReview specific fields
+            title: String
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             workflow: ID
@@ -98,8 +100,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             savedOn_DESC
             createdOn_ASC
             createdOn_DESC
-            publishedOn_ASC
-            publishedOn_DESC
             title_ASC
             title_DESC
         }
@@ -144,7 +144,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             id: ID!
             type: ApwContentReviewContentTypes!
             workflowId: String!
-            title: String!
             version: Int!
             settings: ApwContentReviewContentSettings
         }
@@ -152,7 +151,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         input ApwContentReviewContentInput {
             id: ID!
             type: ApwContentReviewContentTypes!
-            workflowId: String!
             settings: ApwContentReviewContentSettingsInput
         }
 
@@ -162,10 +160,11 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwListContentReviewsWhereInput {
             id: ID
+            status: ApwContentReviewStatus
         }
 
         input ApwListContentReviewsSearchInput {
-            # By specifying "query", the search will be performed against workflow' "title" field.
+            # By specifying "query", the search will be performed against the "title" field.
             query: String
         }
 
@@ -197,15 +196,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         }
     `,
     resolvers: {
-        /**
-         * TODO: @ashutosh remove the redundancy.
-         */
         ApwContentReviewContent: {
-            title: async (parent, _, context) => {
-                const getContent = context.apw.getContentGetter(parent.type);
-                const content = await getContent(parent.id, parent.settings);
-                return content.title;
-            },
             version: async (parent, _, context) => {
                 const getContent = context.apw.getContentGetter(parent.type);
                 const content = await getContent(parent.id, parent.settings);
