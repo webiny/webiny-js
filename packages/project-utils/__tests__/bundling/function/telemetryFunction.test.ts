@@ -104,9 +104,9 @@ describe("Telemetry functions", () => {
             Date.now = jest.fn(() => timeInFiveMinutes);
 
             // Wait a second to let the function fire if 5 minutes have passed
-            await waitForMilliSeconds(1000);
+            await waitForMilliSeconds(2000);
 
-            // The timer should have fired, clears the logs and only one should be in the logs now
+            // The timer should have fired and clears the logs
             expect(localData.logs.length).toEqual(0);
 
             jest.clearAllMocks();
