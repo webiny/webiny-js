@@ -2,13 +2,30 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../app" },
-    { "path": "../app-admin" },
-    { "path": "../app-security" },
-    { "path": "../form" },
-    { "path": "../react-router" },
-    { "path": "../ui" },
-    { "path": "../validation" }
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-page-builder"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../validation"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -20,6 +37,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
+      "@webiny/app-page-builder": ["../app-page-builder/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/form/*": ["../form/src/*"],
