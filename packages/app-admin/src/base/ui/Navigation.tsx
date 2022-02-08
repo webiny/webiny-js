@@ -9,14 +9,14 @@ import React, {
 } from "react";
 import { nanoid } from "nanoid";
 import { makeComposable, Plugins } from "@webiny/app-admin-core";
-import { MenuData, MenuProps, AddMenu as Menu, Tags } from "~/index";
+import { MenuData, MenuProps, AddMenu as Menu, Tags, MenuUpdater, createEmptyMenu } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
 
 export interface NavigationContext {
     menuItems: MenuData[];
-    setMenu(id: string, props: MenuProps): void;
+    setMenu(id: string, update: MenuUpdater): void;
     removeMenu(id: string): void;
 }
 
@@ -66,37 +66,18 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>): Rea
     return function NavigationProvider({ children }) {
         const [menuItems, setState] = useState<MenuData[]>([]);
 
-        const mergeMenuItems = (item1: MenuData, item2: MenuData): MenuData => {
-            return {
-                ...item1,
-                label: item2.label ?? item1.label,
-                icon: item2.icon ?? item1.icon,
-                children: item2.children.reduce(
-                    (acc, menu) => {
-                        const index = acc.findIndex(i => i.name === menu.name);
-                        if (index > -1) {
-                            acc[index] = mergeMenuItems(acc[index], menu);
-                        } else {
-                            acc.push(menu);
-                        }
-                        return acc;
-                    },
-                    [...item1.children]
-                )
-            };
-        };
-
-        const setMenu = (id: string, menuItem: MenuData): void => {
+        const setMenu = (id: string, updater: MenuUpdater): void => {
             setState(state => {
                 const index = state.findIndex(m => m.name === id);
 
+                const newMenu = index > -1 ? updater(state[index]) : updater(createEmptyMenu(id));
+                if (!newMenu.children) {
+                    newMenu.children = [];
+                }
+
                 return index > -1
-                    ? [
-                          ...state.slice(0, index),
-                          mergeMenuItems(state[index], menuItem),
-                          ...state.slice(index + 1)
-                      ]
-                    : [...state, menuItem];
+                    ? [...state.slice(0, index), newMenu, ...state.slice(index + 1)]
+                    : [...state, newMenu];
             });
         };
         const removeMenu = useCallback(
