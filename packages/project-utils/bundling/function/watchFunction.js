@@ -12,7 +12,7 @@ async function injectHandlerTelemetry(cwd) {
     fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
 }
 
-module.exports = options => {
+module.exports = async options => {
     const webpack = require("webpack");
 
     const { overrides } = options;
