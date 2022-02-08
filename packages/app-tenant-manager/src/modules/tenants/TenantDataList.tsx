@@ -25,14 +25,18 @@ import { TenantItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/data-list");
 
-const SORTERS = [
+interface Sorter {
+    label: string;
+    sorter: string;
+}
+const SORTERS: Sorter[] = [
     {
         label: t`Name A-Z` as string,
-        sorters: { name: "asc" }
+        sorter: "name_ASC"
     },
     {
         label: t`Name Z-A` as string,
-        sorters: { name: "desc" }
+        sorter: "name_DESC"
     }
 ];
 
@@ -46,7 +50,6 @@ const TenantDataList: React.FC = () => {
         setFilter,
         sort,
         setSort,
-        serializeSorters,
         editTenant
     } = useTenantsList({ sorters: SORTERS });
 
@@ -58,9 +61,9 @@ const TenantDataList: React.FC = () => {
                 <Grid>
                     <Cell span={12}>
                         <Select value={sort} onChange={setSort} label={t`Sort by`}>
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sorter }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorter}>
                                         {label}
                                     </option>
                                 );

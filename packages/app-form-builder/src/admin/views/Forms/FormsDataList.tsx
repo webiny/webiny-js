@@ -58,25 +58,25 @@ export type FormsDataListProps = {
 
 interface Sorter {
     label: string;
-    sorters: string;
+    sorter: string;
 }
 
 const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
-        sorters: "savedOn_DESC"
+        sorter: "savedOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: "savedOn_ASC"
+        sorter: "savedOn_ASC"
     },
     {
         label: t`Name A-Z`,
-        sorters: "name_ASC"
+        sorter: "name_ASC"
     },
     {
         label: t`Name Z-A`,
-        sorters: "name_DESC"
+        sorter: "name_DESC"
     }
 ];
 
@@ -87,7 +87,7 @@ interface HandlerCallable {
 const FormsDataList: React.FC<FormsDataListProps> = props => {
     const editHandlers = useRef<Record<string, HandlerCallable>>({});
     const [filter, setFilter] = useState<string>("");
-    const [sort, setSort] = useState<string>(SORTERS[0].sorters);
+    const [sort, setSort] = useState<string>(SORTERS[0].sorter);
 
     const { listQuery, canCreate } = useForms();
 
@@ -169,7 +169,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
             if (!sort) {
                 return list;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            const [key, value] = deserializeSorters(sort);
             return orderBy(list, [key], [value]);
         },
         [sort]
@@ -186,9 +186,9 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                             label={t`Sort by`}
                             description={"Sort pages by"}
                         >
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sorter }) => {
                                 return (
-                                    <option key={label} value={sorters}>
+                                    <option key={label} value={sorter}>
                                         {label}
                                     </option>
                                 );

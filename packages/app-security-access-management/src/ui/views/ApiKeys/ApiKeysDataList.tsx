@@ -24,7 +24,7 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import * as GQL from "./graphql";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { serializeSorters, deserializeSorters } from "../utils";
+import { deserializeSorters } from "../utils";
 import { ApiKey } from "~/types";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
@@ -32,19 +32,19 @@ const t = i18n.ns("app-security/admin/groups/data-list");
 const SORTERS = [
     {
         label: t`Newest to oldest`,
-        sorters: { createdOn: "desc" }
+        sorter: "createdOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { createdOn: "asc" }
+        sorter: "createdOn_ASC"
     },
     {
         label: t`Name A-Z`,
-        sorters: { name: "asc" }
+        sorter: "name_ASC"
     },
     {
         label: t`Name Z-A`,
-        sorters: { name: "desc" }
+        sorter: "name_DESC"
     }
 ];
 export interface ApiKeysDataListProps {
@@ -53,7 +53,7 @@ export interface ApiKeysDataListProps {
 }
 export const ApiKeysDataList: React.FC<ApiKeysDataListProps> = () => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
+    const [sort, setSort] = useState<string>(SORTERS[0].sorter);
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
@@ -75,7 +75,7 @@ export const ApiKeysDataList: React.FC<ApiKeysDataListProps> = () => {
             if (!sort) {
                 return list;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            const [key, value] = deserializeSorters(sort);
             return orderBy(list, [key], [value]);
         },
         [sort]
@@ -118,9 +118,9 @@ export const ApiKeysDataList: React.FC<ApiKeysDataListProps> = () => {
                 <Grid>
                     <Cell span={12}>
                         <Select value={sort} onChange={setSort} label={t`Sort by`}>
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sorter }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorter}>
                                         {label}
                                     </option>
                                 );

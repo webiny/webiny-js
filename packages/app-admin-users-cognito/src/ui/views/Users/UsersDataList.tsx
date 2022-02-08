@@ -29,7 +29,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { DELETE_USER, LIST_USERS } from "./graphql";
-import { serializeSorters, deserializeSorters } from "../utils";
+import { deserializeSorters } from "../utils";
 import { UserItem } from "~/UserItem";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
@@ -37,25 +37,25 @@ const t = i18n.ns("app-identity/admin/users/data-list");
 const SORTERS = [
     {
         label: t`Newest to oldest`,
-        sorters: { createdOn: "desc" }
+        sorter: "createdOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { createdOn: "asc" }
+        sorter: "createdOn_ASC"
     },
     {
         label: t`Email A-Z`,
-        sorters: { email: "asc" }
+        sorter: "email_ASC"
     },
     {
         label: t`Email Z-A`,
-        sorters: { email: "desc" }
+        sorter: "email_DESC"
     }
 ];
 
 const UsersDataList: React.FC = () => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
+    const [sort, setSort] = useState<string>(SORTERS[0].sorter);
     const { identity } = useSecurity();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -79,8 +79,8 @@ const UsersDataList: React.FC = () => {
             if (!sort) {
                 return users;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
-            return orderBy(users, [key], [value]);
+            const [key, sortBy] = deserializeSorters(sort);
+            return orderBy(users, [key], [sortBy]);
         },
         [sort]
     );
@@ -124,9 +124,9 @@ const UsersDataList: React.FC = () => {
                 <Grid>
                     <Cell span={12}>
                         <Select value={sort} onChange={setSort} label={t`Sort by`}>
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sorter }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorter}>
                                         {label}
                                     </option>
                                 );

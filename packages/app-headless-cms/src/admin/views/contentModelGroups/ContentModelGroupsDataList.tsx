@@ -104,6 +104,7 @@ const ContentModelGroupsDataList: React.FC<ContentModelGroupsDataListProps> = ({
                     update(cache, { data }) {
                         const { error } = data.deleteContentModelGroup;
                         if (error) {
+                            showSnackbar(error.message);
                             return;
                         }
 

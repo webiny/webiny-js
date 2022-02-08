@@ -27,11 +27,11 @@ const t = i18n.ns("app-i18n/admin/locales/data-list");
 const SORTERS = [
     {
         label: t`Code A-Z` as string,
-        sorters: { code: "asc" }
+        sorter: "code_ASC"
     },
     {
         label: t`Code Z-A` as string,
-        sorters: { code: "desc" }
+        sorter: "code_DESC"
     }
 ];
 
@@ -45,7 +45,6 @@ const LocalesDataList: React.FC = () => {
         setFilter,
         sort,
         setSort,
-        serializeSorters,
         editLocale,
         deleteLocale
     } = useLocalesList({ sorters: SORTERS });
@@ -56,9 +55,9 @@ const LocalesDataList: React.FC = () => {
                 <Grid>
                     <Cell span={12}>
                         <Select value={sort} onChange={setSort} label={t`Sort by`}>
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sorter }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorter}>
                                         {label}
                                     </option>
                                 );

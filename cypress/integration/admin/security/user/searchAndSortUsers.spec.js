@@ -1,10 +1,10 @@
 import uniqid from "uniqid";
 
 const sort = {
-    NEWEST_TO_OLDEST: "createdOn:desc",
-    OLDEST_TO_NEWEST: "createdOn:asc",
-    EMAIL_A_TO_Z: "email:asc",
-    EMAIL_Z_TO_A: "email:desc"
+    NEWEST_TO_OLDEST: "createdOn_DESC",
+    OLDEST_TO_NEWEST: "createdOn_ASC",
+    EMAIL_A_TO_Z: "email_ASC",
+    EMAIL_Z_TO_A: "email_DESC"
 };
 
 context("Search and sort security users", () => {

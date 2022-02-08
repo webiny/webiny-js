@@ -12,27 +12,23 @@ import { I18NLocaleItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/data-list");
 
-const serializeSorters = (data?: Record<string, string>): string | undefined => {
-    if (!data) {
-        return data as undefined;
-    }
-    const [[key, value]] = Object.entries(data);
-    return `${key}:${value}`;
-};
-
-const deserializeSorters = (data: string): Record<string, "asc" | "desc" | boolean> => {
+type SortTypes = "asc" | "desc";
+export const deserializeSorters = (data: string): [string, SortTypes] => {
     if (typeof data !== "string") {
         return data;
     }
-
-    const [key, value] = data.split(":") as [string, "asc" | "desc" | boolean];
-    return {
-        [key]: value
-    };
+    const [field, orderBy] = data.split("_") as [string, SortTypes];
+    const order = String(orderBy).toLowerCase() === "asc" ? "asc" : "desc";
+    return [field, order];
 };
 
+interface Sorter {
+    label: string;
+    sorter: string;
+}
+
 interface Config {
-    sorters: { label: string; sorters: Record<string, string> }[];
+    sorters: Sorter[];
 }
 
 interface UseLocalesListHook {
@@ -50,16 +46,15 @@ interface UseLocalesListHook {
         setFilter: (filter: string) => void;
         sort: string;
         setSort: (sort: string) => void;
-        serializeSorters: (data: Record<string, string>) => string;
         editLocale: (code: I18NLocaleItem) => void;
         deleteLocale: (code: I18NLocaleItem) => void;
     };
 }
 
 export const useLocalesList: UseLocalesListHook = (config: Config) => {
-    const defaultSorter = config.sorters.length ? config.sorters[0].sorters : null;
+    const defaultSorter = config.sorters.length ? config.sorters[0].sorter : null;
     const [filter, setFilter] = useState<string>("");
-    const [sort, setSort] = useState<string>(serializeSorters(defaultSorter));
+    const [sort, setSort] = useState<string>(defaultSorter);
     const { refetchLocales, getDefaultLocale, getCurrentLocale, setCurrentLocale } = useI18N();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -85,7 +80,7 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
             if (!sort) {
                 return locales;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            const [key, value] = deserializeSorters(sort);
             return orderBy(locales, [key], [value]);
         },
         [sort]
@@ -144,7 +139,6 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
         setFilter,
         sort,
         setSort,
-        serializeSorters,
         editLocale,
         deleteLocale
     };
