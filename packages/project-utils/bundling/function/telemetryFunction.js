@@ -2,7 +2,9 @@ const userFunction = require("./_handler.js");
 const https = require("https");
 const packageData = require("../../package.json");
 
-const TELEMETRY_ENDPOINT = "d16ix00y8ek390.cloudfront.net";
+const TELEMETRY_ENDPOINT = "https://d16ix00y8ek390.cloudfront.net/clients/latest";
+const MAXIMUM_MINUTES_UNTIL_REQUEST_FIRED = 5;
+const MAXIMUM_LOGS_STORED_UNTIL_REQUEST_FIRED = 1000;
 
 const localData = {
     apiKey: process.env.WCP_API_KEY,
@@ -49,9 +51,8 @@ async function postTelemetryData(telemetryData) {
 let timerRunning = false;
 
 const initialTime = Date.now();
-const minutesToFireRequest = 5;
 
-async function initTelemetry() {
+async function initTelemetryTimer() {
     if (timerRunning) {
         return;
     }
@@ -59,7 +60,7 @@ async function initTelemetry() {
     timerRunning = true;
 
     setInterval(async () => {
-        const timeInFiveMinutes = Date.now() + minutesToFireRequest * 60000;
+        const timeInFiveMinutes = Date.now() + MAXIMUM_MINUTES_UNTIL_REQUEST_FIRED * 60000;
         if (timeInFiveMinutes > initialTime) {
             if (localData.logs.length > 0) {
                 await postTelemetryData(localData);
@@ -72,35 +73,35 @@ async function initTelemetry() {
 async function addToTelemetryPackage(data) {
     localData.logs.push(data);
 
-    if (localData.logs.length === 1000) {
+    if (localData.logs.length === MAXIMUM_LOGS_STORED_UNTIL_REQUEST_FIRED) {
         await postTelemetryData(localData);
         localData.logs = [];
     }
 }
 
 async function handler(args) {
-    await initTelemetry();
-    const start = Date.now();
+    await initTelemetryTimer();
+    const executionStarted = Date.now();
 
     try {
         const result = await userFunction.handler(args);
 
-        const duration = Date.now() - start;
+        const executionDuration = Date.now() - executionStarted;
 
         await addToTelemetryPackage({
             error: false,
-            executionDuration: duration,
+            executionDuration,
             functionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
             createdOn: Date.now()
         });
 
         return result;
     } catch (error) {
-        const duration = Date.now() - start;
+        const executionDuration = Date.now() - executionStarted;
 
         await addToTelemetryPackage({
             error: true,
-            executionDuration: duration,
+            executionDuration,
             functionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
             createdOn: Date.now()
         });

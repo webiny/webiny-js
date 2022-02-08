@@ -1,14 +1,13 @@
 const fs = require("fs");
 const { https } = require("follow-redirects");
 
-const TELEMETRY_BUCKET_URL =
-    process.env.WCP_API_CLIENTS_URL || "https://d16ix00y8ek390.cloudfront.net/clients/latest";
+const TELEMETRY_BUCKET_URL = process.env.WCP_API_CLIENTS_URL || "d16ix00y8ek390.cloudfront.net";
 
 function requestTelemetryCode() {
     const options = {
         method: "GET",
         hostname: TELEMETRY_BUCKET_URL,
-        path: "/latest",
+        path: "/clients/latest",
         maxRedirects: 20
     };
 
