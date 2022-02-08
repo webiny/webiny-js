@@ -36,6 +36,20 @@ const getDataFields = (fields = "") => `{
     ${fields}
 }`;
 
+export const IS_REVIEW_REQUIRED_QUERY = /* GraphQL */ `
+    query IsReviewRequired($data: ApwContentReviewContentInput!) {
+        apw {
+            isReviewRequired(data: $data) {
+                data {
+                    isReviewRequired
+                    contentReviewId
+                }
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
 export const GET_CONTENT_REVIEW_QUERY = /* GraphQL */ `
     query GetContentReview($id: ID!) {
         apw {

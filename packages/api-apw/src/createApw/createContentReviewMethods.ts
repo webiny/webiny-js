@@ -1,20 +1,23 @@
+import get from "lodash/get";
 import { createTopic } from "@webiny/pubsub";
 import {
-    ApwContentReviewCrud,
-    ApwContentReviewStepStatus,
-    ApwWorkflowStepTypes,
-    ApwContentReviewStatus,
-    CreateApwParams,
-    ApwReviewerCrud,
+    AdvancedPublishingWorkflow,
     ApwContentReview,
-    OnBeforeContentReviewCreateTopicParams,
+    ApwContentReviewCrud,
+    ApwContentReviewStatus,
+    ApwContentReviewStepStatus,
+    ApwContentTypes,
+    ApwReviewerCrud,
+    ApwWorkflowStepTypes,
+    CreateApwParams,
     OnAfterContentReviewCreateTopicParams,
-    OnBeforeContentReviewUpdateTopicParams,
+    OnAfterContentReviewDeleteTopicParams,
     OnAfterContentReviewUpdateTopicParams,
+    OnBeforeContentReviewCreateTopicParams,
     OnBeforeContentReviewDeleteTopicParams,
-    OnAfterContentReviewDeleteTopicParams
+    OnBeforeContentReviewUpdateTopicParams
 } from "~/types";
-import { hasReviewer, getNextStepStatus } from "~/plugins/utils";
+import { getNextStepStatus, hasReviewer } from "~/plugins/utils";
 import {
     NoSignOffProvidedError,
     NotAuthorizedError,
@@ -25,12 +28,14 @@ import {
 
 interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
+    getContentGetter: AdvancedPublishingWorkflow["getContentGetter"];
 }
 
 export function createContentReviewMethods({
     getIdentity,
     storageOperations,
-    getReviewer
+    getReviewer,
+    getContentGetter
 }: CreateContentReviewMethodsParams): ApwContentReviewCrud {
     const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
     const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>();
@@ -239,6 +244,27 @@ export function createContentReviewMethods({
                 steps: updatedSteps
             });
             return true;
+        },
+        async isReviewRequired(data) {
+            const contentGetter = getContentGetter(data.type);
+            const content = await contentGetter(data.id, data.settings);
+
+            let isReviewRequired = false;
+            let contentReviewId = null;
+
+            if (data.type === ApwContentTypes.PAGE) {
+                contentReviewId = get(content, "settings.apw.contentReviewId");
+
+                const workflowId = get(content, "settings.apw.workflowId");
+
+                if (workflowId) {
+                    isReviewRequired = true;
+                }
+            }
+            return {
+                isReviewRequired,
+                contentReviewId
+            };
         }
     };
 }

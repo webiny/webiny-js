@@ -173,6 +173,16 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             error: ApwError
         }
 
+        type ApwIsReviewRequiredData {
+            isReviewRequired: Boolean
+            contentReviewId: ID
+        }
+
+        type ApwIsReviewRequiredResponse {
+            data: ApwIsReviewRequiredData
+            error: ApwError
+        }
+
         extend type ApwQuery {
             getContentReview(id: ID!): ApwContentReviewResponse
 
@@ -183,6 +193,8 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 sort: [ApwListContentReviewsSort!]
                 search: ApwListContentReviewsSearchInput
             ): ApwListContentReviewsResponse
+
+            isReviewRequired(data: ApwContentReviewContentInput!): ApwIsReviewRequiredResponse
         }
 
         extend type ApwMutation {
@@ -246,6 +258,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            },
+            isReviewRequired: async (_, args, context) => {
+                return resolve(() => context.apw.contentReview.isReviewRequired(args.data));
             }
         },
         ApwMutation: {

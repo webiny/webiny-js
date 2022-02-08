@@ -9946,6 +9946,7 @@ __metadata:
     "@types/react": ^16.9.56
     "@webiny/app": ^5.21.0
     "@webiny/app-admin": ^5.21.0
+    "@webiny/app-page-builder": ^5.21.0
     "@webiny/app-security": ^5.21.0
     "@webiny/cli": ^5.21.0
     "@webiny/form": ^5.21.0

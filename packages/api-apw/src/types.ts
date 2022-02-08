@@ -373,6 +373,11 @@ export interface ApwContentReviewCrud
 
     retractSignOff(id: string, step: string): Promise<Boolean>;
 
+    isReviewRequired(data: ApwContentReviewContent): Promise<{
+        isReviewRequired: boolean;
+        contentReviewId?: string;
+    }>;
+
     /**
      * Lifecycle events
      */

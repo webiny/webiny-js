@@ -16,26 +16,28 @@ export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow =
     const workflowMethods = createWorkflowMethods(params);
     const reviewerMethods = createReviewerMethods(params);
     const changeRequestMethods = createChangeRequestMethods(params);
+    const getContentGetter = type => {
+        if (!contentGetters.has(type)) {
+            throw new Error(
+                `No "ContentGetter" loader found for type: "${type}". You must define a loader.`
+            );
+        }
+        return contentGetters.get(type);
+    };
 
     return {
         addContentGetter(type, func) {
             contentGetters.set(type, func);
         },
-        getContentGetter(type) {
-            if (!contentGetters.has(type)) {
-                throw new Error(
-                    `No "ContentGetter" loader found for type: "${type}". You must define a loader.`
-                );
-            }
-            return contentGetters.get(type);
-        },
+        getContentGetter,
         workflow: workflowMethods,
         reviewer: reviewerMethods,
         changeRequest: changeRequestMethods,
         comment: createCommentMethods(params),
         contentReview: createContentReviewMethods({
             ...params,
-            getReviewer: reviewerMethods.get.bind(reviewerMethods)
+            getReviewer: reviewerMethods.get.bind(reviewerMethods),
+            getContentGetter
         })
     };
 };
