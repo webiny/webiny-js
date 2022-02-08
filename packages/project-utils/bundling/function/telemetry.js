@@ -30,9 +30,9 @@ function requestTelemetryCode() {
 }
 
 async function updateTelemetryFunction() {
-    const response = await requestTelemetryCode();
+    const telemetryCode = await requestTelemetryCode();
 
-    fs.writeFileSync(__dirname + "/telemetryFunction.js", response);
+    fs.writeFileSync(__dirname + "/telemetryFunction.js", telemetryCode);
 }
 
 module.exports = {
