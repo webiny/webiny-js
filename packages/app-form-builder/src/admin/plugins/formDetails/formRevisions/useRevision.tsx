@@ -23,7 +23,7 @@ interface CreateRevisionCallable {
 }
 
 interface EditRevisionCallable {
-    (): void;
+    (id?: string): void;
 }
 
 interface DeleteRevisionCallable {
@@ -38,12 +38,20 @@ interface UnpublishRevisionCallable {
     (id?: string): Promise<void>;
 }
 
-export interface UseRevisionProps {
+interface UseRevisionProps {
     revision: FbRevisionModel;
     form: FbRevisionModel;
 }
 
-export const useRevision = ({ revision, form }: UseRevisionProps) => {
+interface UseRevisionResult {
+    createRevision: CreateRevisionCallable;
+    editRevision: EditRevisionCallable;
+    deleteRevision: DeleteRevisionCallable;
+    publishRevision: PublishRevisionCallable;
+    unpublishRevision: UnpublishRevisionCallable;
+}
+
+export const useRevision = ({ revision, form }: UseRevisionProps): UseRevisionResult => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -75,8 +83,9 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
 
                 history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
             },
-            editRevision: (): EditRevisionCallable => () => {
-                history.push(`/form-builder/forms/${encodeURIComponent(revision.id)}`);
+            editRevision: (): EditRevisionCallable => (id?: string) => {
+                const target = encodeURIComponent(id || revision.id);
+                history.push(`/form-builder/forms/${target}`);
             },
             deleteRevision: (): DeleteRevisionCallable => async (id?: string) => {
                 await client.mutate({

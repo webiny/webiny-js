@@ -99,7 +99,7 @@ const Revision: React.FC<RevisionProps> = props => {
                     >
                         {canEdit(form) && (
                             <MenuItem
-                                onClick={createRevision}
+                                onClick={() => createRevision()}
                                 data-testid={"fb.form-revisions.action-menu.create-revision"}
                             >
                                 <ListItemGraphic>
@@ -110,7 +110,7 @@ const Revision: React.FC<RevisionProps> = props => {
                         )}
                         {revision.status === "draft" && canEdit(form) && (
                             <MenuItem
-                                onClick={editRevision}
+                                onClick={() => editRevision(revision.id)}
                                 data-testid={"fb.form-revisions.action-menu.edit"}
                             >
                                 <ListItemGraphic>
@@ -122,7 +122,7 @@ const Revision: React.FC<RevisionProps> = props => {
 
                         {revision.status !== "published" && canPublish() && (
                             <MenuItem
-                                onClick={() => publishRevision(revision)}
+                                onClick={() => publishRevision(revision.id)}
                                 data-testid={"fb.form-revisions.action-menu.publish"}
                             >
                                 <ListItemGraphic>
@@ -142,7 +142,7 @@ const Revision: React.FC<RevisionProps> = props => {
                                 {({ showConfirmation }) => (
                                     <MenuItem
                                         onClick={() =>
-                                            showConfirmation(() => unpublishRevision(revision))
+                                            showConfirmation(() => unpublishRevision(revision.id))
                                         }
                                         data-testid={"fb.form-revisions.action-menu.unpublish"}
                                     >
@@ -166,7 +166,9 @@ const Revision: React.FC<RevisionProps> = props => {
                             >
                                 {({ showConfirmation }) => (
                                     <MenuItem
-                                        onClick={() => showConfirmation(deleteRevision)}
+                                        onClick={() =>
+                                            showConfirmation(() => deleteRevision(revision.id))
+                                        }
                                         data-testid={"fb.form-revisions.action-menu.delete"}
                                     >
                                         <ListItemGraphic>

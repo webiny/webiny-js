@@ -40,7 +40,7 @@ const EditRevision: React.FC<EditRevisionProps> = ({ revision, form }) => {
             <IconButton
                 data-testid={"fb.form-preview.header.create-revision"}
                 icon={<EditIcon />}
-                onClick={createRevision}
+                onClick={() => createRevision(revision.id)}
             />
         </Tooltip>
     );
