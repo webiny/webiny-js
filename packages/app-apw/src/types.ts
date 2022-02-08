@@ -101,8 +101,6 @@ export interface ApwComment extends BaseFields {
 export interface ApwContentReviewContent {
     id: string;
     type: ApwContentTypes;
-    workflowId: string;
-    title: string;
     version: number;
     settings: {
         modelId?: string;
@@ -110,12 +108,14 @@ export interface ApwContentReviewContent {
 }
 
 export interface ApwContentReview extends BaseFields {
+    title: string;
     status: ApwContentReviewStatus;
     content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
 }
 
 export interface ApwContentReviewListItem extends BaseFields {
+    title: string;
     steps: [ApwContentReviewStep];
     content: ApwContentReviewContent;
     status: ApwContentReviewStatus;

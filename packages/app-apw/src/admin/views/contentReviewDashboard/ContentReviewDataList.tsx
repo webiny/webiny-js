@@ -6,7 +6,6 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ApwContentReviewListItem } from "~/types";
 import { ContentReviewListItem } from "./components/ContentReviewItem";
-import { useDataListModal } from "./hooks/useDataListModal";
 import { useContentReviewsList } from "./hooks/useContentReviewsList";
 import { ContentReviewsFilterModal } from "./components/ContentReviewsFilterOverlay";
 
@@ -18,9 +17,39 @@ const DataListItem = styled(ListItem)`
     }
 `;
 
+const SORTERS = [
+    {
+        label: t`Latest activity`,
+        value: "savedOn_DESC"
+    },
+    {
+        label: t`Oldest activity`,
+        value: "savedOn_ASC"
+    },
+    {
+        label: t`Title A-Z`,
+        value: "savedOn_ASC"
+    },
+    {
+        label: t`Title Z-A`,
+        value: "savedOn_DESC"
+    }
+];
+
 export function ContentReviewDataList() {
-    const { status, setStatus, sort, setFilter, setSort, filter } = useDataListModal();
-    const { contentReviews, loading, editContentReview } = useContentReviewsList({ sorters: [] });
+    const {
+        contentReviews,
+        loading,
+        editContentReview,
+        sort,
+        setSort,
+        status,
+        setStatus,
+        setFilter,
+        filter
+    } = useContentReviewsList({
+        sorters: SORTERS
+    });
 
     return (
         <DataList
@@ -40,6 +69,7 @@ export function ContentReviewDataList() {
                     setStatus={setStatus}
                     sort={sort}
                     setSort={setSort}
+                    sorters={SORTERS}
                 />
             }
             modalOverlayAction={
@@ -61,7 +91,7 @@ export function ContentReviewDataList() {
                                 comments={item.totalComments}
                                 activeStep={item.activeStep.title}
                                 latestCommentId={item.latestCommentId}
-                                contentTitle={item.content.title}
+                                contentTitle={item.title}
                                 contentRevisionNumber={item.content.version}
                             />
                         </DataListItem>

@@ -7,20 +7,17 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist/modal");
 
-const SORTERS = [];
-
 interface ContentReviewsFilterModalProps {
     status: string;
     setStatus: (value: any) => void;
     sort: string;
     setSort: (value: any) => void;
+    sorters: { label: string; value: string }[];
 }
 
 export const ContentReviewsFilterModal = (props: ContentReviewsFilterModalProps) => {
-    const { status, setStatus, sort, setSort } = props;
-    const serializeSorters = sorter => {
-        return sorter;
-    };
+    const { status, setStatus, sort, setSort, sorters } = props;
+
     return (
         <DataListModalOverlay>
             <Grid>
@@ -48,9 +45,9 @@ export const ContentReviewsFilterModal = (props: ContentReviewsFilterModalProps)
                         label={t`Sort by`}
                         description={t`Sort reviews by.`}
                     >
-                        {SORTERS.map(({ label, sorters }) => {
+                        {sorters.map(({ label, value }) => {
                             return (
-                                <option key={label} value={serializeSorters(sorters)}>
+                                <option key={label} value={value}>
                                     {label}
                                 </option>
                             );

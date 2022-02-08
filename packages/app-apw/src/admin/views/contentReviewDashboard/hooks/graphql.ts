@@ -22,10 +22,10 @@ const getDataFields = (fields = "") => `{
         type
     }
     status
+    title
     content {
         id
         type
-        title
         version
     }
     steps {
