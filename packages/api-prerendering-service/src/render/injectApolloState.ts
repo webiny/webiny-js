@@ -4,7 +4,10 @@ const stringifyApolloState = (state?: any): string | undefined => {
     }
     try {
         return JSON.stringify(state).replace(/</g, "\\u003c");
-    } catch (ex) {}
+    } catch (ex) {
+        console.log("Could not stringify state.");
+        console.log(ex.message);
+    }
     return undefined;
 };
 
