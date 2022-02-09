@@ -37,6 +37,14 @@ export interface Context {
      * @internal
      */
     getResult: () => void;
+    /**
+     * Wait for property to be defined on the object and then execute the callable.
+     * In case of multiple objects defined, wait for all of them.
+     */
+    waitFor: <T extends Context = Context>(
+        obj: string[] | string,
+        cb: (context: T) => void
+    ) => void;
 }
 
 /**

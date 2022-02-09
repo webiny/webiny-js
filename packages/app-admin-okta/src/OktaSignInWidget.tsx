@@ -30,18 +30,26 @@ const OktaSignInWidget = ({ oktaSignIn }: OktaSignInWidgetProps) => {
 
     useEffect(() => {
         if (!widgetRef.current) {
-            return;
+            return null;
         }
 
-        oktaSignIn.renderEl(
-            { el: widgetRef.current },
-            res => {
-                oktaAuth.handleLoginRedirect(res.tokens);
-            },
-            err => {
-                throw err;
-            }
-        );
+        const query = new URLSearchParams(location.search);
+        const initiateAuthFlow = Boolean(query.get("iss"));
+        if (initiateAuthFlow) {
+            oktaAuth.token.getWithRedirect({
+                responseType: "id_token"
+            });
+        } else {
+            oktaSignIn.renderEl(
+                { el: widgetRef.current },
+                res => {
+                    oktaAuth.handleLoginRedirect(res.tokens);
+                },
+                err => {
+                    throw err;
+                }
+            );
+        }
 
         return () => oktaSignIn.remove();
     }, [oktaAuth]);

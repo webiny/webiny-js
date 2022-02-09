@@ -3,7 +3,7 @@ import { ElementStylesModifier } from "~/types";
 const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
     const { verticalAlign } = element.data.settings;
     if (!verticalAlign) {
-        return;
+        return null;
     }
 
     return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {

@@ -1,13 +1,12 @@
 import React, { useMemo } from "react";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
 import { withActiveElement } from "../../../components";
 import { Form } from "@webiny/form";
-import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "../../../../types";
+import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "~/types";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 
 const emptyElement = { data: {}, type: null };
 
@@ -17,7 +16,7 @@ type AdvancedSettingsPropsType = {
 const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ element }) => {
     const { data, type } = element || cloneDeep(emptyElement);
 
-    const eventActionHandler = useEventActionHandler();
+    const updateElement = useUpdateElement();
 
     // Get element settings plugins
     const advancedSettingsPlugin = useMemo(() => {
@@ -36,12 +35,7 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
             return formData;
         }, formData);
 
-        eventActionHandler.trigger(
-            new UpdateElementActionEvent({
-                element: merge(element, "data", formData),
-                history: true
-            })
-        );
+        updateElement(merge(element, "data", formData));
     };
 
     if (!advancedSettingsPlugin.length) {

@@ -106,6 +106,8 @@ function renderHeader(block: OutputBlockData) {
                     dangerouslySetInnerHTML={{ __html: block.data.text }}
                 />
             );
+        default:
+            return null;
     }
 }
 

@@ -57,7 +57,7 @@ module.exports = async options => {
     // Generate configuration
     let config = configFactory("production", { paths, options });
 
-    if (typeof options.webpack === "function") {
+    if (typeof overrides.webpack === "function") {
         config = overrides.webpack(config);
     }
 

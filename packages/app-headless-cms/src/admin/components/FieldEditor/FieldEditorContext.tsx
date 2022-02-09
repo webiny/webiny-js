@@ -140,6 +140,7 @@ export const FieldEditorProvider = ({
             const plugin = getFieldPlugin(fieldType);
             editField(plugin.field.createField());
             setState(state => ({ ...state, dropTarget }));
+            return null;
         },
         []
     );
@@ -257,6 +258,7 @@ export const FieldEditorProvider = ({
                     return dot.set(data, `fields.${i}`, field);
                 }
             }
+            return data;
         });
     };
 

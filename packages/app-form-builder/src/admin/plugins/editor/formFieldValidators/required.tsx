@@ -1,4 +1,4 @@
-import { FbBuilderFormFieldValidatorPlugin } from "../../../../types";
+import { FbBuilderFormFieldValidatorPlugin } from "~/types";
 
 export default {
     type: "form-editor-field-validator",

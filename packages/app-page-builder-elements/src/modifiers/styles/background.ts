@@ -37,7 +37,7 @@ const DEFAULT_POSITION = "top left";
 const background: ElementStylesModifier = ({ element, theme }) => {
     const { background } = element.data.settings;
     if (!background) {
-        return;
+        return null;
     }
 
     return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {

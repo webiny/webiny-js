@@ -17,7 +17,7 @@ export const DebounceRender = ({ wait = 50, children }) => {
 
     useEffect(() => {
         if (render) {
-            return;
+            return null;
         }
 
         debouncedRender();

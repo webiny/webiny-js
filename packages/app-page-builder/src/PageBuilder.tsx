@@ -1,9 +1,16 @@
 import React, { Fragment } from "react";
 import { HasPermission } from "@webiny/app-security";
-import { Plugins, AddMenu as Menu, Provider } from "@webiny/app-admin";
+import {
+    Compose,
+    Plugins,
+    AddMenu as Menu,
+    Provider,
+    HigherOrderComponent
+} from "@webiny/app-admin";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
+import { EditorProps, EditorRenderer } from "./admin/components/Editor";
 
 const PageBuilderProviderHOC = Component => {
     return function PageBuilderProvider({ children }) {
@@ -63,10 +70,23 @@ const PageBuilderMenu = () => {
     );
 };
 
+const EditorLoader = React.lazy(() =>
+    import("./editor").then(m => ({
+        default: m.Editor
+    }))
+);
+
+const EditorRendererHOC: HigherOrderComponent<EditorProps> = () => {
+    return function Editor(props) {
+        return <EditorLoader {...props} />;
+    };
+};
+
 export const PageBuilder = () => {
     return (
         <Fragment>
             <Provider hoc={PageBuilderProviderHOC} />
+            <Compose component={EditorRenderer} with={EditorRendererHOC} />
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />

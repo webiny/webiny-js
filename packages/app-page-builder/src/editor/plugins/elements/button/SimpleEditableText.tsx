@@ -33,6 +33,7 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
                 return false;
             }
             value.current = elementValue;
+            return true;
         },
         [onChange]
     );

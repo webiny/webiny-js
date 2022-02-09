@@ -1,5 +1,5 @@
 import { validation } from "@webiny/validation";
-import { FbFormFieldValidatorPlugin } from "../../../types";
+import { FbFormFieldValidatorPlugin } from "~/types";
 
 export default {
     type: "fb-form-field-validator",
@@ -8,9 +8,10 @@ export default {
         name: "lte",
         validate: (value, validator) => {
             const lteValue = validator.settings.value;
-            if (typeof lteValue !== "undefined") {
-                return validation.validate(value, `lte:${lteValue}`);
+            if (typeof lteValue === "undefined") {
+                return true;
             }
+            return validation.validate(value, `lte:${lteValue}`);
         }
     }
 } as FbFormFieldValidatorPlugin;

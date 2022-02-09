@@ -12,7 +12,7 @@ export default ({ identityType }: Config) => {
     return new ContextPlugin<Context>(context => {
         context.security.addAuthenticator(async token => {
             if (typeof token !== "string" || !token.startsWith("a")) {
-                return;
+                return null;
             }
 
             const tenant = context.tenancy.getCurrentTenant();
@@ -22,7 +22,7 @@ export default ({ identityType }: Config) => {
                 .getApiKeyByToken({ tenant: tenant.id, token });
 
             if (!apiKey) {
-                return;
+                return null;
             }
 
             return {

@@ -1,8 +1,7 @@
-import { activeElementAtom } from "../../recoil/modules";
 import React from "react";
 import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";
-import { useRecoilValue } from "recoil";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
 type ContainerProps = {
     isOver: boolean;
@@ -49,8 +48,9 @@ type Props = {
 };
 
 const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children, isHighlighted }) => {
-    const activeElementId = useRecoilValue(activeElementAtom);
+    const [activeElementId] = useActiveElementId();
     const isActive = activeElementId === id;
+
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
             {({ isOver, isDroppable, drop }) => (

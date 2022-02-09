@@ -20,7 +20,7 @@
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
     "graphql": "^15.7.2",
-    "graphql-tag": "^2.11.0",
+    "graphql-tag": "^2.12.6",
     "invariant": "^2.2.4",
     "lodash.trim": "^4.4.2",
     "react": "16.14.0",

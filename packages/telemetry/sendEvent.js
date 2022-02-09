@@ -6,15 +6,9 @@ const API_URL = "https://t.webiny.com";
 
 /**
  * The main `sendEvent` function.
- * Note: it's recommended the one from `cli.js` and `react.js` files is used instead.
- * @param event
- * @param user
- * @param version
- * @param properties
- * @param extraPayload
- * @returns {Promise<T>}
+ * NOTE: don't use this in your app directly. Instead, use the one from `cli.js` or `react.js` files accordingly.
  */
-module.exports = async ({ event, user, version, properties, extraPayload } = {}) => {
+module.exports = ({ event, user, version, properties, extraPayload } = {}) => {
     if (!event) {
         throw new Error(`Cannot send event - missing "event" name.`);
     }
@@ -50,10 +44,13 @@ module.exports = async ({ event, user, version, properties, extraPayload } = {})
     const body = new FormData();
     body.append("data", Buffer.from(JSON.stringify(payload)).toString("base64"));
 
-    return fetch(API_URL + "/capture/", {
-        body,
-        method: "POST"
-    }).catch(() => {
-        // Ignore errors
-    });
+    // Return a function which will send the prepared body when invoked.
+    return () => {
+        return fetch(API_URL + "/capture/", {
+            body,
+            method: "POST"
+        }).catch(() => {
+            // Ignore errors
+        });
+    };
 };

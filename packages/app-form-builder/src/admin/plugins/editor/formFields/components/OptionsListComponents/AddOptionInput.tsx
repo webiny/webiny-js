@@ -28,6 +28,7 @@ export default function AddOptionInput({
                         if (options.find(item => item.value === value)) {
                             throw new Error(`Option with value "${value}" already exists.`);
                         }
+                        return true;
                     }}
                 >
                     {({ value, onChange, validate, validation: inputValidation }) => {

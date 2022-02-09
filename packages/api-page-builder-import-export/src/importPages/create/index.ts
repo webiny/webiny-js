@@ -117,5 +117,10 @@ export default (
                 }
             };
         }
+
+        return {
+            data: "",
+            error: null
+        };
     }
 });
