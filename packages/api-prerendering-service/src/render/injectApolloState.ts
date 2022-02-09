@@ -4,7 +4,7 @@ export default ({ render }) =>
 
         tree.match({ tag: "head" }, node => {
             const script = `<script>window.__APOLLO_STATE__ = ${JSON.stringify(
-                render.meta.apolloState
+                render.meta.apolloState || {}
             ).replace(/</g, "\\u003c")};</script>`;
 
             node.content.push(script);
