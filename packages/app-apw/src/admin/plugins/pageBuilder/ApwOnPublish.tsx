@@ -66,13 +66,13 @@ export const ApwOnPublish = () => {
             const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
             if (contentReviewId) {
                 showSnackbar(`A peer review for this content has been already requested.`);
-                return params;
+                return;
             }
 
             const isReviewRequired = get(data, "apw.isReviewRequired.data.isReviewRequired");
             if (isReviewRequired) {
                 setInput(input);
-                return params;
+                return;
             }
 
             return next(params);
