@@ -6,7 +6,7 @@ interface Waiter {
     cb: (context: ContextInterface) => void;
 }
 
-export interface Params {
+export interface ContextParams {
     args?: HandlerArgs;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginsContainer;
     WEBINY_VERSION: string;
@@ -19,7 +19,7 @@ export class Context implements ContextInterface {
 
     private readonly waiters: Waiter[] = [];
 
-    public constructor(params: Params) {
+    public constructor(params: ContextParams) {
         const { plugins, args, WEBINY_VERSION } = params;
         this.plugins = new PluginsContainer(plugins || []);
         this.args = args || [];
