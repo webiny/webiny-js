@@ -1,22 +1,23 @@
 import React, { useMemo, useRef } from "react";
 import ApolloClient from "apollo-client";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient, MutationHookOptions } from "@apollo/react-hooks";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { PbPageData, PbPageRevision } from "~/types";
 import { AsyncProcessor, composeAsync } from "./compose";
 import { PageBuilderContextValue } from "~/contexts/PageBuilder";
 
 export const AdminPageBuilderContext = React.createContext(null);
 
-interface Page extends Pick<PbPageData, "path" | "content">, PbPageRevision {}
+interface Page {
+    id: string;
+}
 
 export interface PublishPageOptions {
-    afterPublishMutation?: Function;
+    mutationOptions?: MutationHookOptions;
     client: ApolloClient<object>;
 }
 
 export interface AdminPageBuilderContextValue extends PageBuilderContextValue {
-    publishPage: (page: Page, options?: PublishPageOptions) => Promise<OnPagePublish>;
+    publishPage: (page: Page, options: PublishPageOptions) => Promise<OnPagePublish>;
     onPagePublish: (fn: OnPagePublishSubscriber) => () => void;
     client: ApolloClient<object>;
 }
@@ -25,7 +26,7 @@ type OnPagePublishSubscriber = AsyncProcessor<OnPagePublish>;
 
 interface OnPagePublish {
     page: Page;
-    options?: PublishPageOptions;
+    options: PublishPageOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: {
         message: string;

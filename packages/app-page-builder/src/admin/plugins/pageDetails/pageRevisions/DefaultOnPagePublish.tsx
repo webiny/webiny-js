@@ -58,7 +58,8 @@ export const DefaultOnPagePublish = () => {
         const response = await options.client.mutate({
             mutation: PUBLISH_PAGE,
             variables: { id: revision.id },
-            update: getUpdateCache(revision)
+            update: getUpdateCache(revision),
+            ...get(options, "mutationOptions", {})
         });
 
         const { error, data } = get(response, "data.pageBuilder.publishPage");
