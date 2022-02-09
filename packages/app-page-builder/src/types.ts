@@ -9,6 +9,14 @@ import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { Form, FormSetValue } from "@webiny/form/Form";
 import { CoreOptions } from "medium-editor";
 
+export enum PageStatus {
+    PUBLISHED = "published",
+    UNPUBLISHED = "unpublished",
+    REVIEW_REQUESTED = "reviewRequested",
+    CHANGES_REQUESTED = "changesRequested",
+    DRAFT = "draft"
+}
+
 export enum PageImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",

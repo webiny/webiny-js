@@ -1,4 +1,6 @@
 import React, { useMemo, useRef } from "react";
+import ApolloClient from "apollo-client";
+import { useApolloClient } from "@apollo/react-hooks";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { PbPageData, PbPageRevision } from "~/types";
 import { AsyncProcessor, composeAsync } from "./compose";
@@ -8,15 +10,22 @@ export const AdminPageBuilderContext = React.createContext(null);
 
 interface Page extends Pick<PbPageData, "path" | "content">, PbPageRevision {}
 
+export interface PublishPageOptions {
+    afterPublishMutation?: Function;
+    client: ApolloClient<object>;
+}
+
 export interface AdminPageBuilderContextValue extends PageBuilderContextValue {
-    publishPage: (page: Page) => Promise<OnPagePublish>;
+    publishPage: (page: Page, options?: PublishPageOptions) => Promise<OnPagePublish>;
     onPagePublish: (fn: OnPagePublishSubscriber) => () => void;
+    client: ApolloClient<object>;
 }
 
 type OnPagePublishSubscriber = AsyncProcessor<OnPagePublish>;
 
 interface OnPagePublish {
     page: Page;
+    options?: PublishPageOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: {
         message: string;
@@ -27,14 +36,16 @@ interface OnPagePublish {
 
 export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
     const pageBuilder = usePageBuilder();
+    const client = useApolloClient();
     const onPagePublish = useRef<OnPagePublishSubscriber[]>([]);
 
     const context: AdminPageBuilderContextValue = useMemo(() => {
         return {
             ...pageBuilder,
-            async publishPage(page) {
+            async publishPage(page, options) {
                 return await composeAsync([...onPagePublish.current].reverse())({
-                    page
+                    page,
+                    options
                 });
             },
             onPagePublish: (fn: OnPagePublishSubscriber) => {
@@ -43,7 +54,8 @@ export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
                     const index = onPagePublish.current.length;
                     onPagePublish.current.splice(index, 1);
                 };
-            }
+            },
+            client
         };
     }, [pageBuilder]);
 
