@@ -1,14 +1,11 @@
-/**
- * TODO: Figure out correct types.
- */
-interface Params {
-    ts: string;
-}
-export default ({ ts }: Params) =>
-    async (tree: Record<string, any>) => {
+import { NodeAPI } from "posthtml";
+import { RenderUrlPostHtmlParams } from "~/render/types";
+
+export default ({ ts }: Pick<RenderUrlPostHtmlParams, "ts">) =>
+    async (tree: NodeAPI) => {
         console.log("Injecting render timestamp (__PS_RENDER_TS__) into HTML.");
 
-        tree.match({ tag: "head" }, (node: Record<string, any>) => {
+        tree.match({ tag: "head" }, node => {
             node.content.push(`<script>window.__PS_RENDER_TS__ = "${ts}";</script>`);
             return node;
         });

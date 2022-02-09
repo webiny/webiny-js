@@ -1,3 +1,6 @@
+import { NodeAPI } from "posthtml";
+import { RenderUrlPostHtmlParams } from "~/render/types";
+
 const stringifyApolloState = (state?: any): string | undefined => {
     if (state === undefined || state === null) {
         return state;
@@ -11,8 +14,8 @@ const stringifyApolloState = (state?: any): string | undefined => {
     return undefined;
 };
 
-export default ({ render }) =>
-    async tree => {
+export default ({ render }: Pick<RenderUrlPostHtmlParams, "render">) =>
+    async (tree: NodeAPI) => {
         console.log("Injecting Apollo state into HTML.");
 
         tree.match({ tag: "head" }, node => {

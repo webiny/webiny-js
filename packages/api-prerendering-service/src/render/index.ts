@@ -1,4 +1,4 @@
-import renderUrl, { File } from "./renderUrl";
+import { renderUrl, File } from "./renderUrl";
 import path from "path";
 import S3 from "aws-sdk/clients/s3";
 import { getStorageName, getStorageFolder, getDbNamespace, getRenderUrl } from "~/utils";
@@ -36,11 +36,11 @@ const storeFile = (params: StoreFileParams) => {
         .promise();
 };
 
-export interface Params extends Configuration {
+export interface RenderParams extends Configuration {
     storageOperations: PrerenderingServiceStorageOperations;
 }
 
-export default (params: Params): HandlerPlugin => {
+export default (params: RenderParams): HandlerPlugin => {
     const { storageOperations, ...configuration } = params;
 
     return {

@@ -13,9 +13,8 @@ import injectTenantLocale from "./injectTenantLocale";
 import injectNotFoundPageFlag from "./injectNotFoundPageFlag";
 import getPsTags from "./getPsTags";
 import shortid from "shortid";
-import { HandlerContext } from "./types";
+import { RenderResult, RenderUrlParams, RenderUrlPostHtmlParams } from "./types";
 import { Browser, Page } from "puppeteer";
-import { Args as BaseHandlerArgs, Configuration } from "~/types";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {
     page.evaluateOnNewDocument(`
@@ -26,6 +25,14 @@ const windowSet = (page: Page, name: string, value: string | boolean) => {
     })`);
 };
 
+interface Meta {
+    url: string;
+    id: string;
+    ts: number;
+    render: RenderResult;
+    args: RenderUrlParams;
+}
+
 export interface File {
     type: string;
     body: any;
@@ -33,7 +40,7 @@ export interface File {
     meta: Record<string, any>;
 }
 
-export default async (url: string, args: Params): Promise<[File[], Meta]> => {
+export const renderUrl = async (url: string, args: RenderUrlParams): Promise<[File[], Meta]> => {
     const id = shortid.generate();
     const ts = new Date().getTime();
 
@@ -63,19 +70,14 @@ export default async (url: string, args: Params): Promise<[File[], Meta]> => {
         render.content = render.content.replace(regex, subst);
     }
 
-    const allArgs = { render, args, url, id, ts };
+    const allArgs: RenderUrlPostHtmlParams = { render, args, url, id, ts };
     const { html } = await posthtml([
         noopener(),
         posthtmlPluginLinkPreload(),
-        // @ts-ignore
         injectRenderId(allArgs),
-        // @ts-ignore
         injectRenderTs(allArgs),
-        // @ts-ignore
         injectApolloState(allArgs),
-        // @ts-ignore
         injectTenantLocale(allArgs),
-        // @ts-ignore
         injectNotFoundPageFlag(allArgs)
     ]).process(render.content);
 
@@ -107,26 +109,6 @@ export default async (url: string, args: Params): Promise<[File[], Meta]> => {
 
 let browser: Browser;
 
-export interface RenderResult {
-    content: string;
-    meta: Record<string, any>;
-}
-
-export interface Params {
-    context: HandlerContext;
-    args: BaseHandlerArgs;
-    configuration: Configuration;
-    renderUrlFunction?: (url: string) => RenderResult;
-}
-
-export interface Meta {
-    url: string;
-    id: string;
-    ts: number;
-    render: RenderResult;
-    args: Params;
-}
-
 interface GraphQLCache {
     query: any;
     variables: Record<string, any>;
@@ -135,7 +117,7 @@ interface GraphQLCache {
 
 export const defaultRenderUrlFunction = async (
     url: string,
-    params: Params
+    params: RenderUrlParams
 ): Promise<RenderResult> => {
     if (!browser) {
         browser = await chromium.puppeteer.launch({
