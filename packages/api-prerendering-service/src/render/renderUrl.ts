@@ -40,7 +40,7 @@ export interface File {
     meta: Record<string, any>;
 }
 
-export const renderUrl = async (url: string, args: RenderUrlParams): Promise<[File[], Meta]> => {
+export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta]> => {
     const id = shortid.generate();
     const ts = new Date().getTime();
 
