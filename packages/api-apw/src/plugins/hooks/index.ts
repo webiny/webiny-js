@@ -9,6 +9,7 @@ import { initializeContentReviewSteps } from "./initializeContentReviewSteps";
 import { updatePendingChangeRequestsCount } from "./updatePendingChangeRequests";
 import { updateTotalCommentsCount, updateLatestCommentId } from "./updateTotalComments";
 import { validateChangeRequest } from "./validateChangeRequest";
+import { validateContentReview } from "./validateContentReview";
 
 export default () => [
     extendPbPageSchema(),
@@ -24,6 +25,8 @@ export default () => [
             getPage: pageBuilder.getPage,
             updatePage: pageBuilder.updatePage
         };
+
+        validateContentReview({ apw });
 
         validateChangeRequest({ apw });
 

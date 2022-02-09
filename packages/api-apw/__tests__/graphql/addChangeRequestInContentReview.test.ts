@@ -349,13 +349,15 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
     });
 
     test(`should delete all "change requests" when a "content review" gets deleted`, async () => {
-        const { page } = await createSetupForContentReview(gqlHandler);
+        const { page, createPage } = await createSetupForContentReview(gqlHandler);
+        const page2 = await createPage(gqlHandler);
+        const pages = [page, page2];
         /*
          * Create two new content review entries.
          */
         const contentReviews = [];
         for (let i = 0; i < 2; i++) {
-            const contentReview = await createContentReview(page);
+            const contentReview = await createContentReview(pages[i]);
             contentReviews.push(contentReview);
         }
 

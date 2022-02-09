@@ -135,7 +135,8 @@ export const createSetupForContentReview = async gqlHandler => {
 
     return {
         page,
-        workflow
+        workflow,
+        createPage: setupPage
     };
 };
 
