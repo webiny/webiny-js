@@ -80,7 +80,13 @@ async function addToTelemetryPackage(data) {
 }
 
 async function handler(args) {
-    await initTelemetryTimer();
+    try {
+        await initTelemetryTimer();
+    } catch (error) {
+        console.log("Error initializing telemetry:");
+        console.log(error);
+    }
+
     const executionStarted = Date.now();
 
     try {
