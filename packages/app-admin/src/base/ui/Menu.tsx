@@ -116,6 +116,10 @@ export const AddMenu = ({ children, ...props }: MenuProps) => {
         menuItem: { ...props, children: [] },
         removeMenu(name) {
             (menu || navigation).setMenu(props.name, existing => {
+                if (!existing) {
+                    return undefined;
+                }
+
                 const childIndex = existing.children.findIndex(ch => ch.name === name);
                 if (childIndex > -1) {
                     return {
@@ -142,7 +146,7 @@ export const AddMenu = ({ children, ...props }: MenuProps) => {
                 if (childIndex === -1) {
                     return {
                         ...existing,
-                        children: [...subItems, updater(null)]
+                        children: [...subItems, updater(null)].filter(Boolean)
                     };
                 }
 
@@ -152,7 +156,7 @@ export const AddMenu = ({ children, ...props }: MenuProps) => {
                         ...subItems.slice(0, childIndex),
                         updater(subItems[childIndex]),
                         ...subItems.slice(childIndex + 1)
-                    ]
+                    ].filter(Boolean)
                 };
             });
         }
