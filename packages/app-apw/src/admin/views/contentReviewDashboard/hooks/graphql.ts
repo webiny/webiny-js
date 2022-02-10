@@ -58,16 +58,14 @@ export const LIST_CONTENT_REVIEWS_QUERY = /* GraphQL */ gql`
         $where: ApwListContentReviewsWhereInput,
         $limit: Int,
         $after: String,
-        $sort: [ApwListContentReviewsSort!],
-        $search: ApwListContentReviewsSearchInput
+        $sort: [ApwListContentReviewsSort!]
     ) {
         apw {
             listContentReviews(
                 where: $where,
                 limit: $limit,
                 after: $after,
-                sort: $sort,
-                search: $search
+                sort: $sort
             ) {
                 data ${getDataFields(`
                 activeStep {

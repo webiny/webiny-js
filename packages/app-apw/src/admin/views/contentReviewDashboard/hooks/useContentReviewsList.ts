@@ -1,5 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import get from "lodash/get";
+import debounce from "lodash/debounce";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import { LIST_CONTENT_REVIEWS_QUERY } from "./graphql";
@@ -35,13 +36,29 @@ interface UseContentReviewsListHook {
 export const useContentReviewsList: UseContentReviewsListHook = (config: Config) => {
     const defaultSorter = config.sorters.length ? config.sorters[0].value : null;
     const [filter, setFilter] = useState<string>("");
+    const [title, setTitle] = useState<string>("");
     const [sort, setSort] = useState<string>(defaultSorter);
     const [status, setStatus] = useState<ApwContentReviewStatus | "all">("all");
     const { history } = useRouter();
 
+    const performSearch = useMemo(() => {
+        return debounce(value => setTitle(value), 250);
+    }, []);
+    /**
+     * Perform debounced search whenever "filter" changes.
+     */
+    useEffect(() => {
+        performSearch(filter);
+    }, [filter]);
+
+    const where = {
+        status: status === "all" ? undefined : status,
+        title_contains: title ? title : undefined
+    };
+
     const listQuery = useQuery(LIST_CONTENT_REVIEWS_QUERY, {
         variables: {
-            where: status !== "all" ? { status } : {},
+            where: where,
             sort: [sort]
         }
     });
