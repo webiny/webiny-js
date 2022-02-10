@@ -2,7 +2,23 @@ const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 const fs = require("fs-extra");
-const { getProject, injectHandlerTelemetry } = require("@webiny/cli/utils");
+const { getProject } = require("@webiny/cli/utils");
+const telemetry = require("./telemetry");
+const path = require("path");
+
+async function injectHandlerTelemetry(cwd) {
+    await telemetry.updateTelemetryFunction();
+
+    fs.copyFileSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
+
+    // Create a new handler.js.
+    const telemetryFunction = await fs.readFile(path.join(__dirname, "/telemetryFunction.js"), {
+        encoding: "utf8",
+        flag: "r"
+    });
+
+    fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
+}
 
 module.exports = async options => {
     const duration = getDuration();
@@ -73,8 +89,9 @@ module.exports = async options => {
         encoding: "utf8",
         flag: "r"
     });
-    const includesGraphQl = handlerFile.includes("wcp-telemetry-tracker");
 
+    // TODO this wont include the headless CMS functions
+    const includesGraphQl = handlerFile.includes("handler-graphql");
     if (includesGraphQl) {
         await injectHandlerTelemetry(cwd);
     }

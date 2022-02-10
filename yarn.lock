@@ -21734,7 +21734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-request@npm:^3.3.0":
+"graphql-request@npm:^3.3.0, graphql-request@npm:^3.4.0":
   version: 3.7.0
   resolution: "graphql-request@npm:3.7.0"
   dependencies:
@@ -27460,6 +27460,24 @@ __metadata:
   checksum: 59d4b5ebff6c265b452d6630ae8873d573c82e36fdc1ed9c34c7901a0bf2d3d357022f49db8e9bded127b743f709c7ef7befec249a2b3967578d649a8029aa06
   languageName: node
   linkType: hard
+
+"my-new-graphql-api@workspace:my-new-graphql-api/code/graphql":
+  version: 0.0.0-use.local
+  resolution: "my-new-graphql-api@workspace:my-new-graphql-api/code/graphql"
+  dependencies:
+    "@webiny/cli": ^5.22.1
+    "@webiny/cli-plugin-deploy-pulumi": ^5.22.1
+    "@webiny/handler": ^5.22.1
+    "@webiny/handler-args": ^5.22.1
+    "@webiny/handler-aws": ^5.22.1
+    "@webiny/handler-client": ^5.22.1
+    "@webiny/handler-graphql": ^5.22.1
+    "@webiny/handler-http": ^5.22.1
+    "@webiny/handler-logs": ^5.22.1
+    "@webiny/project-utils": ^5.22.1
+    graphql-request: ^3.4.0
+  languageName: unknown
+  linkType: soft
 
 "mz@npm:^2.5.0":
   version: 2.7.0

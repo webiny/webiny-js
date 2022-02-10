@@ -1,6 +1,5 @@
 const userFunction = require("./_handler.js");
 const https = require("https");
-const packageData = require("../../package.json");
 
 const TELEMETRY_ENDPOINT = "d16ix00y8ek390.cloudfront.net";
 const MAXIMUM_MINUTES_UNTIL_REQUEST_FIRED = 5;
@@ -8,7 +7,7 @@ const MAXIMUM_LOGS_STORED_UNTIL_REQUEST_FIRED = 1000;
 
 const localData = {
     apiKey: process.env.WCP_API_KEY,
-    version: packageData.version,
+    version: "1.0.0",
     logs: []
 };
 
@@ -86,7 +85,6 @@ async function handler(args) {
         console.log("Error initializing telemetry:");
         console.log(error);
     }
-
     const executionStarted = Date.now();
 
     try {
