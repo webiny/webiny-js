@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
 import { GET_CONTENT_REVIEW_QUERY } from "./graphql";
 import { ApwContentReview } from "~/types";
+import { useParams } from "@webiny/react-router";
 
 interface UseContentReviewParams {
     id: string;
@@ -24,3 +25,8 @@ export function useContentReview(params: UseContentReviewParams): UseContentRevi
         loading
     };
 }
+
+export const useCurrentContentReview = (): UseContentReviewResult => {
+    const { contentReviewId } = useParams() as { contentReviewId: string };
+    return useContentReview({ id: contentReviewId });
+};

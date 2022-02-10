@@ -3,11 +3,13 @@ import upperCase from "lodash/upperCase";
 import { Box, Columns, Stack } from "~/admin/components/Layout";
 import { Circle, StatusText } from "~/admin/views/contentReviewDashboard/components/Styled";
 import { statusToLevel } from "~/admin/views/contentReviewDashboard/components/ContentReviewStatus";
-import { ApwContentReviewStatus } from "~/types";
+import { useCurrentContentReview } from "~/admin/views/contentReviewDashboard/hooks/useContentReview";
 
-function ContentReviewStatus() {
-    const status = ApwContentReviewStatus.UNDER_REVIEW;
+export const ContentReviewStatus = () => {
+    const { contentReview } = useCurrentContentReview();
+    const { status } = contentReview;
     const level = statusToLevel[status];
+
     return (
         <Stack space={2} paddingX={4}>
             <Columns space={4}>
@@ -20,6 +22,4 @@ function ContentReviewStatus() {
             </Box>
         </Stack>
     );
-}
-
-export default ContentReviewStatus;
+};

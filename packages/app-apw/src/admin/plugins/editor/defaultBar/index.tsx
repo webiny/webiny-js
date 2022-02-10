@@ -1,8 +1,8 @@
 import React from "react";
-import ContentReviewStatus from "./ContentReviewStatus";
-import BackButton from "./BackButton";
-import Divider from "./Divider";
-import Name from "./Name";
+import { ContentReviewStatus } from "./ContentReviewStatus";
+import { BackButton } from "./BackButton";
+import { Divider } from "./Divider";
+import { Name } from "./Name";
 
 export default [
     {

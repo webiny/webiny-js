@@ -8,7 +8,7 @@ const backStyles = css({
     marginLeft: -10
 });
 
-const BackButton = React.memo(() => {
+export const BackButton = React.memo(() => {
     const router = useRouter();
 
     return (
@@ -22,5 +22,3 @@ const BackButton = React.memo(() => {
 });
 
 BackButton.displayName = "BackButton";
-
-export default BackButton;
