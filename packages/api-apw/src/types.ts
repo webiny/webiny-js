@@ -367,7 +367,7 @@ export interface ApwContentReviewCrud
         CreateApwContentReviewParams,
         UpdateApwContentReviewParams
     > {
-    list(params: ListParams): Promise<[ApwContentReview[], ListMeta]>;
+    list(params: ApwContentReviewListParams): Promise<[ApwContentReview[], ListMeta]>;
 
     provideSignOff(id: string, step: string): Promise<Boolean>;
 
@@ -478,9 +478,11 @@ interface StorageOperationsUpdateWorkflowParams {
 type StorageOperationsDeleteWorkflowParams = StorageOperationsDeleteParams;
 type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
 
-interface ApwContentReviewListParams extends ListParams {
+export interface ApwContentReviewListParams extends ListParams {
     where: ListWhere & {
         status?: ApwContentReviewStatus;
+        title?: string;
+        title_contains?: string;
     };
 }
 

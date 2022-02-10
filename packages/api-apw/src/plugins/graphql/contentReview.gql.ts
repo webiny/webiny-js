@@ -1,7 +1,11 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { ApwContentReviewStep, ApwContentReviewStepStatus, ApwContext } from "~/types";
+import {
+    ApwContentReviewStep,
+    ApwContentReviewStepStatus,
+    ApwContext,
+    ApwContentReviewListParams
+} from "~/types";
 import resolve from "~/utils/resolve";
 
 const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -143,7 +147,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwContentReviewContent {
             id: ID!
             type: ApwContentReviewContentTypes!
-            workflowId: String!
             version: Int!
             settings: ApwContentReviewContentSettings
         }
@@ -161,11 +164,8 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         input ApwListContentReviewsWhereInput {
             id: ID
             status: ApwContentReviewStatus
-        }
-
-        input ApwListContentReviewsSearchInput {
-            # By specifying "query", the search will be performed against the "title" field.
-            query: String
+            title: String
+            title_contains: String
         }
 
         type ApwProvideSignOffResponse {
@@ -191,7 +191,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 limit: Int
                 after: String
                 sort: [ApwListContentReviewsSort!]
-                search: ApwListContentReviewsSearchInput
             ): ApwListContentReviewsResponse
 
             isReviewRequired(data: ApwContentReviewContentInput!): ApwIsReviewRequiredResponse
@@ -251,7 +250,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             getContentReview: async (_, args, context) => {
                 return resolve(() => context.apw.contentReview.get(args.id));
             },
-            listContentReviews: async (_, args: CmsEntryListParams, context) => {
+            listContentReviews: async (_, args: ApwContentReviewListParams, context) => {
                 try {
                     const [entries, meta] = await context.apw.contentReview.list(args);
                     return new ListResponse(entries, meta);

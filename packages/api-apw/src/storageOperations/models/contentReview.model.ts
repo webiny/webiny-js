@@ -50,7 +50,7 @@ const titleField = () =>
     createModelField({
         label: "Title",
         type: "text",
-        parent: "contentReview Content",
+        parent: "contentReview",
         validation: [{ name: "required", message: "Value is required." }]
     });
 

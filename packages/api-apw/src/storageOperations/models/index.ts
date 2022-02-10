@@ -62,6 +62,13 @@ export const createApwModels = context => {
             locale: context.i18nContent.locale.code,
             modelDefinition
         });
+        /**
+         * We want "title" field as the "titleField" for "ContentReview" model.
+         * so that we can later search entries by title.
+         */
+        if (cmsModelPlugin.contentModel.modelId === "apwContentReviewModelDefinition") {
+            cmsModelPlugin.contentModel.titleFieldId = "title";
+        }
         cmsModelPlugins.push(cmsModelPlugin);
     }
 
