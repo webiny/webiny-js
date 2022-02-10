@@ -2,22 +2,7 @@ const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 const fs = require("fs-extra");
-const telemetry = require("./telemetry");
-import { getProject } from "@webiny/cli/utils";
-
-async function injectHandlerTelemetry(cwd) {
-    await telemetry.updateTelemetryFunction();
-
-    fs.copyFileSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
-
-    // Create a new handler.js.
-    const telemetryFunction = await fs.readFile(path.join(__dirname, "/telemetryFunction.js"), {
-        encoding: "utf8",
-        flag: "r"
-    });
-
-    fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
-}
+const { getProject, injectHandlerTelemetry } = require("@webiny/cli/utils");
 
 module.exports = async options => {
     const duration = getDuration();
