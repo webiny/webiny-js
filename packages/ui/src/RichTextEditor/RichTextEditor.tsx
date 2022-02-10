@@ -8,9 +8,10 @@ import {
     SanitizerConfig,
     ToolSettings
 } from "@editorjs/editorjs/types";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
+import { FormComponentProps } from "@webiny/form";
 
 const classes = {
     wrapper: css({
@@ -48,6 +49,7 @@ export type RichTextEditorProps = {
     label?: string;
     description?: string;
     disabled?: boolean;
+    validation?: FormComponentProps["validation"];
 };
 
 export const RichTextEditor = (props: RichTextEditorProps) => {
@@ -96,7 +98,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
         };
     }, []);
 
-    const { label, description, disabled } = props;
+    const { label, description, disabled, validation } = props;
 
     return (
         <Fragment>
@@ -113,7 +115,12 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                 )}
                 <div id={elementId.current} />
             </div>
-            {description && <FormElementMessage>{description}</FormElementMessage>}
+            {validation.isValid === false && (
+                <FormElementMessage error>{validation.message}</FormElementMessage>
+            )}
+            {validation.isValid !== false && description && (
+                <FormElementMessage>{description}</FormElementMessage>
+            )}
         </Fragment>
     );
 };
