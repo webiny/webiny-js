@@ -10,6 +10,7 @@ import { updatePendingChangeRequestsCount } from "./updatePendingChangeRequests"
 import { updateTotalCommentsCount, updateLatestCommentId } from "./updateTotalComments";
 import { validateChangeRequest } from "./validateChangeRequest";
 import { validateContentReview } from "./validateContentReview";
+import { validateComment } from "./validateComment";
 
 export default () => [
     extendPbPageSchema(),
@@ -29,6 +30,8 @@ export default () => [
         validateContentReview({ apw });
 
         validateChangeRequest({ apw });
+
+        validateComment({ apw });
 
         createReviewerFromIdentity({ security, apw });
 

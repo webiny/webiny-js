@@ -5,7 +5,7 @@ import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 
 const pickIdFromChangeRequest = obj => {
     const rawValue = obj["changeRequest"];
-    if (!rawValue || !rawValue.id) {
+    if (!rawValue) {
         return obj;
     }
     obj["changeRequest"] = rawValue.id;
