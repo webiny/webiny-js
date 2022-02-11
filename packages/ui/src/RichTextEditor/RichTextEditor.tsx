@@ -115,10 +115,10 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                 )}
                 <div id={elementId.current} />
             </div>
-            {validation.isValid === false && (
+            {validation && validation.isValid === false && (
                 <FormElementMessage error>{validation.message}</FormElementMessage>
             )}
-            {validation.isValid !== false && description && (
+            {validation && validation.isValid !== false && description && (
                 <FormElementMessage>{description}</FormElementMessage>
             )}
         </Fragment>
