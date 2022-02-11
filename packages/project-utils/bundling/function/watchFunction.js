@@ -1,7 +1,5 @@
 const fs = require("fs-extra");
-const { getProject } = require("@webiny/cli/utils");
-const telemetry = require("./telemetry");
-const path = require("path");
+const { getProject, injectHandlerTelemetry } = require("@webiny/cli/utils");
 
 async function injectHandlerTelemetry(cwd) {
     await telemetry.updateTelemetryFunction();

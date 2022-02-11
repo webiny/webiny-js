@@ -1,5 +1,7 @@
 const fs = require("fs");
 const { https } = require("follow-redirects");
+const telemetry = require("./telemetry");
+const path = require("path");
 
 const TELEMETRY_BUCKET_URL = process.env.WCP_API_CLIENTS_URL || "d16ix00y8ek390.cloudfront.net";
 
@@ -35,6 +37,21 @@ async function updateTelemetryFunction() {
     fs.writeFileSync(__dirname + "/telemetryFunction.js", telemetryCode);
 }
 
+async function injectHandlerTelemetry(cwd) {
+    await telemetry.updateTelemetryFunction();
+
+    fs.copyFileSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
+
+    // Create a new handler.js.
+    const telemetryFunction = await fs.readFile(path.join(__dirname, "/telemetryFunction.js"), {
+        encoding: "utf8",
+        flag: "r"
+    });
+
+    fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
+}
+
 module.exports = {
-    updateTelemetryFunction
+    updateTelemetryFunction,
+    injectHandlerTelemetry
 };
