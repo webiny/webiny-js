@@ -13,14 +13,13 @@ export const deleteChangeRequestsWithContentReview = ({ apw }: LifeCycleHookCall
             const { id: stepId } = steps[i];
 
             let meta = {
-                hasMoreItems: true,
-                cursor: null
+                totalCount: 1
             };
             let changeRequests = [];
             /**
              * Paginate through change requests.
              */
-            while (meta.hasMoreItems) {
+            while (meta.totalCount > 0) {
                 /**
                  * Get all change requests.
                  */
@@ -28,14 +27,14 @@ export const deleteChangeRequestsWithContentReview = ({ apw }: LifeCycleHookCall
                     [changeRequests, meta] = await apw.changeRequest.list({
                         where: {
                             step: `${contentReview.id}#${stepId}`
-                        },
-                        after: meta.cursor
+                        }
                     });
                 } catch (e) {
-                    meta.hasMoreItems = false;
+                    meta.totalCount = 0;
                     if (e.message !== "index_not_found_exception") {
                         throw e;
                     }
+                    console.log(e);
                 }
 
                 /**

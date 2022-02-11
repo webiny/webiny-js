@@ -6,14 +6,13 @@ export const deleteCommentsAfterChangeRequest = ({ apw }: LifeCycleHookCallbackP
          * Also delete all associated comments with "changeRequest".
          */
         let meta = {
-            hasMoreItems: true,
-            cursor: null
+            totalCount: 1
         };
         let comments = [];
         /**
          * Paginate through comments.
          */
-        while (meta.hasMoreItems) {
+        while (meta.totalCount > 0) {
             /**
              * Get all comments.
              */
@@ -23,14 +22,14 @@ export const deleteCommentsAfterChangeRequest = ({ apw }: LifeCycleHookCallbackP
                         changeRequest: {
                             id: changeRequest.id
                         }
-                    },
-                    after: meta.cursor
+                    }
                 });
             } catch (e) {
-                meta.hasMoreItems = false;
+                meta.totalCount = 0;
                 if (e.message !== "index_not_found_exception") {
                     throw e;
                 }
+                console.log(e);
             }
 
             /**
