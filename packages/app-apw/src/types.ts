@@ -1,3 +1,5 @@
+import { RichTextEditorProps } from "@webiny/ui/RichTextEditor";
+
 export interface CreatedBy {
     /**
      * ID if the user.
@@ -93,11 +95,6 @@ export interface PbPage {
     title: string;
 }
 
-export interface ApwComment extends BaseFields {
-    body: Record<string, any>;
-    changeRequest: string;
-}
-
 export interface ApwContentReviewContent {
     id: string;
     type: ApwContentTypes;
@@ -123,4 +120,16 @@ export interface ApwContentReviewListItem extends BaseFields {
     totalComments: number;
     latestCommentId: string;
     reviewers: [string];
+}
+
+export interface ApwChangeRequest extends BaseFields {
+    title: string;
+    body: RichTextEditorProps["value"];
+    status: string;
+    resolved: boolean;
+}
+
+export interface ApwComment extends BaseFields {
+    body: RichTextEditorProps["value"];
+    changeRequest: string;
 }
