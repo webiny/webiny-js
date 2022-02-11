@@ -32,6 +32,10 @@ export const TypographySecondary = styled(TypographyBody)`
     overflow: hidden;
 `;
 
+export const AuthorName = styled(TypographyTitle)`
+    text-transform: capitalize;
+`;
+
 export const BadgeBox = styled(Box)`
     width: fit-content;
     height: 18px;

@@ -75,6 +75,10 @@ export const TypographySecondary = styled(Typography)`
     overflow: hidden;
 `;
 
+export const AuthorName = styled(TypographySecondary)`
+    text-transform: capitalize;
+`;
+
 export const StatusBox = styled(Box)`
     background-color: var(--mdc-theme-on-background);
     text-transform: uppercase;

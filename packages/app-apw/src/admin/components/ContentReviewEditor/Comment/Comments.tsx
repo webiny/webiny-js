@@ -1,8 +1,11 @@
 import styled from "@emotion/styled";
 import React from "react";
+import { ApwComment } from "~/types";
 import { Box, Columns, Stack } from "~/admin/components/Layout";
+import { fromNow } from "~/admin/components/utils";
 import { Avatar } from "~/admin/views/publishingWorkflows/components/ReviewersList";
-import { TypographyBody, TypographySecondary, TypographyTitle } from "../Styled";
+import { useCommentsList } from "~/admin/hooks/useCommentsList";
+import { TypographyBody, TypographySecondary, AuthorName } from "../Styled";
 
 const CommentsBox = styled(Stack)`
     background-color: var(--mdc-theme-background);
@@ -15,41 +18,43 @@ const CommentBox = styled(Box)`
     border-radius: 4px;
 `;
 
-const MOCK_COMMENT = `You sure about this? I mean, I’m looking at a shoot here: https://deploy-preview-333--webiny-docs.netlify.app/assets/images/full-stack-app-scaffold-31df83423c46fb20648943b39419d942.png
+interface CommentProps {
+    comment: ApwComment;
+    width?: string;
+}
 
-It’s 1) You want to include a sample GQL API? 2) You want to deploy ?`;
-
-const Comment = props => {
+const Comment: React.FC<CommentProps> = props => {
+    const { comment, ...restProps } = props;
     return (
-        <Stack space={2} {...props}>
+        <Stack space={2} {...restProps}>
             <Columns space={2.5} paddingLeft={1}>
                 <Box>
                     <Avatar index={0} />
                 </Box>
                 <Box>
-                    <TypographyTitle use={"subtitle1"}>{`Adrian Smijulj`}</TypographyTitle>
+                    <AuthorName use={"subtitle1"}>{comment.createdBy.displayName}</AuthorName>
                 </Box>
             </Columns>
             <CommentBox paddingX={3.5} paddingY={5}>
-                <TypographyBody use={"caption"}>{MOCK_COMMENT}</TypographyBody>
+                <TypographyBody use={"caption"}>{JSON.stringify(comment.body)}</TypographyBody>
             </CommentBox>
             <Box paddingLeft={3.5}>
-                <TypographySecondary use={"caption"}>{`5 min ago`}</TypographySecondary>
+                <TypographySecondary use={"caption"}>
+                    {fromNow(comment.createdOn)}
+                </TypographySecondary>
             </Box>
         </Stack>
     );
 };
 
-function Comments() {
+export const Comments = () => {
+    const { comments } = useCommentsList();
+
     return (
         <CommentsBox space={6} paddingX={6} paddingY={5}>
-            <Comment />
-            <Comment />
-            <Comment />
-            <Comment />
-            <Comment />
+            {comments.map(item => (
+                <Comment key={item.id} comment={item} />
+            ))}
         </CommentsBox>
     );
-}
-
-export default Comments;
+};

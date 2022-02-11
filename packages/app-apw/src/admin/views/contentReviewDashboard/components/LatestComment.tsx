@@ -2,7 +2,8 @@ import React from "react";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { useComment } from "~/admin/plugins/editor/comment/hooks/useComment";
-import { CommentStatusBox, TypographySecondary } from "./Styled";
+import { CommentStatusBox, TypographySecondary, AuthorName } from "./Styled";
+import { formatDate } from "~/admin/components/utils";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
@@ -25,13 +26,22 @@ export const LatestComment: React.FC<LatestCommentProps> = ({ id, ...boxProps })
 
     return (
         <CommentStatusBox {...boxProps} display={"flex"} paddingX={2.5} paddingY={2}>
-            <Typography use={"caption"}>
-                {t`{commentedBy} wrote on {commentedOn}:`({
-                    commentedBy: comment.createdBy.displayName,
-                    commentedOn: comment.createdOn
-                })}
-            </Typography>
-            <TypographySecondary use={"caption"}>{comment.body}</TypographySecondary>
+            <span>
+                <AuthorName use={"caption"}>
+                    {t`{commentedBy}`({
+                        commentedBy: comment.createdBy.displayName
+                    })}
+                </AuthorName>
+                &nbsp;
+                <Typography use={"caption"}>
+                    {t`wrote on {commentedOn}:`({
+                        commentedOn: formatDate(comment.createdOn)
+                    })}
+                </Typography>
+            </span>
+            <TypographySecondary use={"caption"}>
+                {JSON.stringify(comment.body)}
+            </TypographySecondary>
         </CommentStatusBox>
     );
 };
