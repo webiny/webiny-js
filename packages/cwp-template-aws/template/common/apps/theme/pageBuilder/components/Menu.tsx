@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Query } from "@apollo/react-components";
 import gql from "graphql-tag";
-import get from "lodash.get";
+import get from "lodash/get";
 import invariant from "invariant";
 
 declare global {
