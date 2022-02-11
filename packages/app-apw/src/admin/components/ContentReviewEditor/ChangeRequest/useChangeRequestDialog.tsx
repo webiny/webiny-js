@@ -1,21 +1,26 @@
 import React, { useState, useContext, createContext } from "react";
 
-const ChangeRequestDialogContext = createContext<{ open: boolean; setOpen: Function }>(null);
+const ChangeRequestDialogContext = createContext<ChangeRequestDialogContextValue>(null);
 
-export const useChangeRequestDialog = () => {
-    const { open, setOpen } = useContext(ChangeRequestDialogContext);
+export interface ChangeRequestDialogContextValue {
+    open: boolean;
+    setOpen: (isOpen: boolean) => void;
+    changeRequestId: string;
+    setChangeRequestId: (id: string) => void;
+}
 
-    return {
-        open,
-        setOpen
-    };
+export const useChangeRequestDialog = (): ChangeRequestDialogContextValue => {
+    return useContext(ChangeRequestDialogContext);
 };
 
 export const ChangeRequestDialogProvider = ({ children }) => {
     const [open, setOpen] = useState<boolean>(false);
+    const [changeRequestId, setChangeRequestId] = useState<string>(null);
 
     return (
-        <ChangeRequestDialogContext.Provider value={{ open, setOpen }}>
+        <ChangeRequestDialogContext.Provider
+            value={{ open, setOpen, changeRequestId, setChangeRequestId }}
+        >
             {children}
         </ChangeRequestDialogContext.Provider>
     );

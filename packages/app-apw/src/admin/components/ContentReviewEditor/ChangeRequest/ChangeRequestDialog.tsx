@@ -1,4 +1,5 @@
 import React from "react";
+import pick from "lodash/pick";
 import * as UiDialog from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { i18n } from "@webiny/app/i18n";
@@ -12,6 +13,7 @@ import { BindComponent } from "@webiny/form";
 import { useContentReviewId, useCurrentStepId } from "~/admin/hooks/useContentReviewId";
 import { useChangeRequest } from "~/admin/hooks/useChangeRequest";
 import { validation } from "@webiny/validation";
+import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 
 const t = i18n.ns("app-apw/content-review/editor/change-request");
 
@@ -77,12 +79,20 @@ const ChangeRequestMessage: React.FC<ChangeRequestMessageProps> = ({ Bind }) => 
                 <Stack space={6}>
                     <Box>
                         <Bind name={"title"} validators={validation.create("required")}>
-                            <Input type={"text"} placeholder={"Change request title"} />
+                            <Input
+                                type={"text"}
+                                label={"Title"}
+                                placeholder={"Change request title"}
+                            />
                         </Bind>
                     </Box>
                     <Box>
-                        <Bind name={"body"}>
-                            <Input rows={6} type={"text"} placeholder={"Message"} />
+                        <Bind name={"body"} validators={validation.create("required,minLength:1")}>
+                            <RichTextEditor
+                                minHeight={160}
+                                label={"Body"}
+                                placeholder={"Message..."}
+                            />
                         </Bind>
                     </Box>
                 </Stack>
@@ -105,21 +115,20 @@ const DialogContent = styled(UiDialog.DialogContent)`
 `;
 
 export const ChangeRequestDialog: React.FC = () => {
-    const { open, setOpen } = useChangeRequestDialog();
-    const { stepId } = useCurrentStepId();
+    const { open, setOpen, changeRequestId } = useChangeRequestDialog();
+    const { id: stepId } = useCurrentStepId();
     const { id: contentReviewId } = useContentReviewId();
-    const { create } = useChangeRequest({});
+    const { create, changeRequest } = useChangeRequest({ id: changeRequestId });
 
     const closeDialog = () => setOpen(false);
 
     return (
         <Form
-            data={{}}
+            data={pick(changeRequest, ["title", "body"])}
             onSubmit={async formData => {
                 const data = {
                     ...formData,
-                    step: `${contentReviewId}#${stepId}`,
-                    body: richTextMock
+                    step: `${contentReviewId}#${stepId}`
                 };
                 await create({ variables: { data } });
                 closeDialog();
@@ -133,7 +142,7 @@ export const ChangeRequestDialog: React.FC = () => {
                 >
                     <UiDialog.DialogTitle>{t`Change request`}</UiDialog.DialogTitle>
                     <DialogContent>
-                        <ChangeRequestMessage Bind={props.Bind} />
+                        <ChangeRequestMessage Bind={props.Bind} key={changeRequestId} />
                     </DialogContent>
                     <DialogActions>
                         <ButtonDefault onClick={closeDialog}>{t`Cancel`}</ButtonDefault>

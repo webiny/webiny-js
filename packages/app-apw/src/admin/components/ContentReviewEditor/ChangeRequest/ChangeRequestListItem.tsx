@@ -6,6 +6,8 @@ import { Box, Columns, Stack } from "~/admin/components/Layout";
 import { Avatar } from "~/admin/views/publishingWorkflows/components/ReviewersList";
 import { fromNow } from "~/admin/components/utils";
 import { ChangeRequestItem, TypographySecondary, TypographyTitle } from "../Styled";
+import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
+import { ApwChangeRequest } from "~/types";
 
 const statusToBackgroundColor = {
     new: "var(--mdc-theme-secondary)",
@@ -22,24 +24,10 @@ const StatusBadge = styled.div<{ status: string }>`
 
 const getRandomIndex = () => Math.round(Math.random() * 100) % 3;
 
-interface ChangeRequestItemProps {
-    createdBy: {
-        displayName: string;
-    };
-    createdOn: string;
-    title: string;
-    body: Record<string, any>;
-    status: string;
-    id: string;
-}
+type ChangeRequestItemProps = ApwChangeRequest;
 
-export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = ({
-    createdOn,
-    createdBy,
-    title,
-    status,
-    id
-}) => {
+export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => {
+    const { createdOn, createdBy, title, status, id, body } = props;
     const { history } = useRouter();
     const { url } = useRouteMatch();
 
@@ -76,7 +64,9 @@ export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = ({
                         <StatusBadge status={status} />
                     </Box>
                 </Columns>
-                <Box>{/*<TypographySecondary use={"caption"}>{body}</TypographySecondary>*/}</Box>
+                <Box>
+                    <RichTextEditor readOnly={true} value={body} />
+                </Box>
             </Stack>
         </ChangeRequestItem>
     );
