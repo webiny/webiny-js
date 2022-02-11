@@ -1,20 +1,6 @@
 const fs = require("fs-extra");
 const { getProject, injectHandlerTelemetry } = require("@webiny/cli/utils");
 
-async function injectHandlerTelemetry(cwd) {
-    await telemetry.updateTelemetryFunction();
-
-    fs.copyFileSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
-
-    // Create a new handler.js.
-    const telemetryFunction = await fs.readFile(path.join(__dirname, "/telemetryFunction.js"), {
-        encoding: "utf8",
-        flag: "r"
-    });
-
-    fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
-}
-
 module.exports = async options => {
     const webpack = require("webpack");
 
