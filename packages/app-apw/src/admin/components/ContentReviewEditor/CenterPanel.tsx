@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route, useRouteMatch, useParams } from "@webiny/react-router";
+import { Switch, Route, useRouteMatch } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { List } from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
@@ -35,7 +35,6 @@ export const CenterPanel = () => {
     const { setOpen } = useChangeRequestDialog();
     const { changeRequests, loading } = useChangeRequestsList({ sorters: [] });
     const { path } = useRouteMatch();
-    const { stepId } = useParams() as { stepId: string };
 
     if (loading) {
         return <Typography use={"caption"}>Loading Change requests...</Typography>;
@@ -63,7 +62,7 @@ export const CenterPanel = () => {
                     </PanelBox>
                 </Route>
                 <Route path={`${path}/:changeRequestId`}>
-                    <RightPanel currentStepId={stepId} />
+                    <RightPanel />
                 </Route>
             </Switch>
         </>

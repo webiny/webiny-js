@@ -48,10 +48,10 @@ export const ContentReviewEditor: React.FC = () => {
                         </Route>
                         <Route path={`${path}/:stepId`}>
                             <CenterPanel />
+                            <ChangeRequestDialog />
                         </Route>
                     </Switch>
                 </EditorColumns>
-                <ChangeRequestDialog />
             </Box>
         </ChangeRequestDialogProvider>
     );

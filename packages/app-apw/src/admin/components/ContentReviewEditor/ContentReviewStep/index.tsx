@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
+import noop from "lodash/noop";
 import { i18n } from "@webiny/app/i18n";
 import { ApwContentReviewStep, ApwContentReviewStepStatus } from "~/types";
 import { Box, Columns, Stack } from "~/admin/components/Layout";
@@ -64,13 +65,18 @@ export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
     const { history } = useRouter();
     const { url } = useRouteMatch();
 
+    const onClick = useMemo(() => {
+        if (disabled) {
+            return noop;
+        }
+        return () => history.push(`${url}/${encodeURIComponent(step.id)}`);
+    }, [disabled]);
+
     return (
         <PanelListItem
             selected={step.status === ApwContentReviewStepStatus.ACTIVE}
             disabled={disabled}
-            onClick={() =>
-                disabled ? null : history.push(`${url}/${encodeURIComponent(step.id)}`)
-            }
+            onClick={onClick}
         >
             <Columns space={3}>
                 <Box paddingTop={1}>

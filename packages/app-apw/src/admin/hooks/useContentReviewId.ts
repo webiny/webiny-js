@@ -1,4 +1,4 @@
-import { useRouter } from "@webiny/react-router";
+import { useParams, useRouter } from "@webiny/react-router";
 
 interface MatchQuery {
     contentReviewId: string;
@@ -19,15 +19,14 @@ export const useContentReviewId = (): UseContentReviewIdResult => {
 };
 
 interface UseCurrentStepIdResult {
-    stepId: string;
-    changeRequestId: string;
+    id: string;
+    encodedId: string;
 }
 
 export const useCurrentStepId = (): UseCurrentStepIdResult => {
-    const { location } = useRouter();
-    const query = new URLSearchParams(location.search);
+    const { stepId } = useParams() as { stepId: string };
     return {
-        stepId: query.get("stepId"),
-        changeRequestId: query.get("changeRequestId")
+        id: decodeURIComponent(stepId),
+        encodedId: stepId
     };
 };

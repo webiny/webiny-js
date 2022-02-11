@@ -16,7 +16,7 @@ export const useComment = ({ id }: UseCommentParams): UseCommentResult => {
     const { data, loading } = useQuery(GET_COMMENT_QUERY, { variables: { id } });
 
     return {
-        comment: get(data, "data.apw.getComment.data", null),
+        comment: get(data, "apw.getComment.data"),
         loading
     };
 };

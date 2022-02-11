@@ -1,19 +1,15 @@
 import React from "react";
-import { PanelBox } from "./Styled";
-import { useParams } from "@webiny/react-router";
+import { useCurrentChangeRequestId } from "~/admin/hooks/useCurrentChangeRequestId";
 import { Box, Stack } from "~/admin/components/Layout";
+import { PanelBox } from "./Styled";
 import ChangeRequest from "./ChangeRequest/ChangeRequest";
-import Comments from "./Comment/Comments";
-import CommentBox from "./Comment/CommentBox";
+import { Comments } from "./Comment/Comments";
+import { CommentBox } from "./Comment/CommentBox";
 
-interface RightPanelProps {
-    currentStepId: string;
-}
+export const RightPanel = () => {
+    const changeRequestId = useCurrentChangeRequestId();
 
-export const RightPanel: React.FC<RightPanelProps> = ({ currentStepId }) => {
-    const { changeRequestId } = useParams() as { changeRequestId: string };
-    console.log(JSON.stringify({ changeRequestId, currentStepId }, null, 2));
-    if (!currentStepId || !changeRequestId) {
+    if (!changeRequestId) {
         return (
             <PanelBox flex={"1 1 52%"}>
                 <Box>Placeholder</Box>
@@ -22,7 +18,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({ currentStepId }) => {
     }
     return (
         <PanelBox flex={"1 1 52%"}>
-            <ChangeRequest />
+            <ChangeRequest id={changeRequestId} />
             <Stack space={0}>
                 <Comments />
                 <CommentBox />

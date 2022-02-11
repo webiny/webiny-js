@@ -3,7 +3,7 @@ import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import { LIST_CHANGE_REQUESTS_QUERY } from "../graphql/changeRequest.gql";
-import { CreatedBy } from "~/types";
+import { ApwChangeRequest } from "~/types";
 
 const serializeSorters = data => {
     if (!data) {
@@ -20,14 +20,7 @@ interface Config {
 interface UseChangeRequestsListHook {
     (config: Config): {
         loading: boolean;
-        changeRequests: Array<{
-            id: string;
-            createdOn: string;
-            createdBy: CreatedBy;
-            title: string;
-            body: Record<string, any>;
-            status: string;
-        }>;
+        changeRequests: Array<ApwChangeRequest>;
         filter: string;
         setFilter: (filter: string) => void;
         sort: string;
