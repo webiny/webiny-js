@@ -19,7 +19,7 @@ const processingMessage = t`Exporting pages`;
 
 const INTERVAL = 0.5 * 1000;
 
-const MESSAGES = {
+const MESSAGES: Record<string, string> = {
     [PageImportExportTaskStatus.COMPLETED]: completionMessage,
     [PageImportExportTaskStatus.PROCESSING]: processingMessage,
     [PageImportExportTaskStatus.PENDING]: pendingMessage

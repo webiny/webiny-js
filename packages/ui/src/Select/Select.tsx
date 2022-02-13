@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Select as RmwcSelect, SelectProps as RmwcSelectProps } from "@rmwc/select";
-import { FormElementMessage } from "../FormElementMessage";
-import { FormComponentProps } from "./../types";
+import { FormElementMessage } from "~/FormElementMessage";
+import { FormComponentProps } from "~/types";
 import { css } from "emotion";
 import classNames from "classnames";
 
@@ -52,18 +52,23 @@ const noLabel = css({
  */
 const skipProps = ["validate"];
 
-const getRmwcProps = props => {
-    const newProps = {};
+const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps => {
+    const newProps: FormComponentProps & RmwcSelectProps = {};
     Object.keys(props)
         .filter(name => !skipProps.includes(name))
-        .forEach(name => (newProps[name] = props[name]));
+        // @ts-ignore
+        .forEach((name: any) => (newProps[name] = props[name]));
 
     return newProps;
 };
+/**
+ * We check for null and undefined in the value because React is complaining about those values.
+ * Error says to use the empty string in null/undefined case.
+ */
+export const Select: React.FC<SelectProps> = props => {
+    const { value: initialValue, description, validation, ...other } = props;
 
-export const Select = (props: SelectProps) => {
-    const { value, description, validation, ...other } = props;
-
+    const value = initialValue === null || initialValue === undefined ? "" : initialValue;
     return (
         <React.Fragment>
             <RmwcSelect
@@ -89,7 +94,7 @@ export const Select = (props: SelectProps) => {
 };
 
 Select.defaultProps = {
-    validation: { isValid: null }
+    validation: { isValid: null, message: null }
 };
 
 export default Select;

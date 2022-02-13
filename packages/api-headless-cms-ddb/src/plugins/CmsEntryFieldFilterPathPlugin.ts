@@ -9,7 +9,7 @@ export interface CreatePathCallableParams {
 export interface CreatePathCallable {
     (params: CreatePathCallableParams): string;
 }
-export interface Params {
+export interface CmsEntryFieldFilterPathPluginParams {
     fieldType: string;
     fieldId?: string[];
     path: string | CreatePathCallable;
@@ -17,13 +17,13 @@ export interface Params {
 export class CmsEntryFieldFilterPathPlugin extends Plugin {
     public static readonly type: string = "cms-field-filter-path";
 
-    private readonly config: Params;
+    private readonly config: CmsEntryFieldFilterPathPluginParams;
 
     public get fieldType(): string {
         return this.config.fieldType;
     }
 
-    public constructor(config: Params) {
+    public constructor(config: CmsEntryFieldFilterPathPluginParams) {
         super();
 
         this.config = config;

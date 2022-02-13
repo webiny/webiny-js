@@ -8,10 +8,14 @@ import { ReactComponent as PublishIcon } from "../../../../assets/round-publish-
 import { ReactComponent as UnpublishIcon } from "../../../../assets/unpublish.svg";
 import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisionHandler";
 import usePermission from "../../../../../hooks/usePermission";
+import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
 
-const PublishRevision = props => {
+interface PublishRevisionProps {
+    page: PbPageData;
+}
+const PublishRevision: React.FC<PublishRevisionProps> = props => {
     const { identity } = useSecurity();
     const { canPublish, canUnpublish } = usePermission();
     const { page } = props;

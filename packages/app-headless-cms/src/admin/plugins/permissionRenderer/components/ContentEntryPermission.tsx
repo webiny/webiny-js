@@ -7,17 +7,36 @@ import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { Note } from "./StyledComponents";
+import { BindComponent } from "@webiny/form/types";
+import { FormData } from "@webiny/form/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const pwOptions = [
+interface PermissionOption {
+    id: string;
+    name: string;
+}
+const pwOptions: PermissionOption[] = [
     { id: "p", name: t`Publish` },
     { id: "u", name: t`Unpublish` },
     { id: "r", name: t`Request review` },
     { id: "c", name: t`Request changes` }
 ];
 
-export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) => {
+interface ContentEntryPermissionProps {
+    Bind: BindComponent;
+    data: FormData;
+    entity: string;
+    setValue: (name: string, value: string) => void;
+    title: string;
+}
+export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
+    Bind,
+    data,
+    entity,
+    setValue,
+    title
+}) => {
     // Set "cms.contentEntry" access scope to "own" if "cms.contentModel" === "own".
     useEffect(() => {
         if (

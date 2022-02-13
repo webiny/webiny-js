@@ -1,7 +1,7 @@
 import { FilePlugin } from "~/plugins/definitions/FilePlugin";
 import createFileModel from "~/plugins/crud/utils/createFileModel";
 
-export default () => [
+export default (): FilePlugin[] => [
     new FilePlugin({
         beforeCreate: async ({ data }) => {
             const FileModel = createFileModel();

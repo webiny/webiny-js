@@ -1,7 +1,10 @@
-import { CmsModelFieldToGraphQLPlugin } from "~/types";
+import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
 
-const createListFilters = ({ field }) => {
+interface CreateListFiltersParams {
+    field: CmsModelField;
+}
+const createListFilters = ({ field }: CreateListFiltersParams) => {
     return `
         ${field.fieldId}: Number
         ${field.fieldId}_not: Number

@@ -1,10 +1,16 @@
 import React from "react";
+/**
+ *
+ * Package react-sortable-tree does not have types
+ */
+// @ts-ignore
 import SortableTree from "react-sortable-tree";
 import { plugins } from "@webiny/plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
-import { PbMenuItemPlugin } from "../../../../../types";
+import { PbMenuItemPlugin } from "~/types";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
 
 const TreeWrapper = styled("div")({
     width: "100%",
@@ -24,8 +30,15 @@ const EmptyTree = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-class MenuItemsList extends React.Component<any> {
-    static canHaveChildren(node) {
+export interface MenuItemsListProps {
+    items: MenuTreeItem[];
+    onChange: (items: MenuTreeItem[]) => void;
+    editItem: (item: MenuTreeItem) => void;
+    deleteItem: (item: MenuTreeItem) => void;
+    canSave: boolean;
+}
+class MenuItemsList extends React.Component<MenuItemsListProps> {
+    static canHaveChildren(node: MenuTreeItem): boolean {
         const pbMenuItemPlugins = plugins.byType<PbMenuItemPlugin>("pb-menu-item");
         const plugin = pbMenuItemPlugins.find(pl => pl.menuItem.type === node.type);
         return plugin ? plugin.menuItem.canHaveChildren : false;
@@ -48,7 +61,7 @@ class MenuItemsList extends React.Component<any> {
                     canNodeHaveChildren={MenuItemsList.canHaveChildren}
                     nodeContentRenderer={MenuItemRenderer}
                     rowHeight={80}
-                    getNodeKey={({ node }) => node.id}
+                    getNodeKey={({ node }: { node: MenuTreeItem }) => node.id}
                     generateNodeProps={() => ({
                         editItem,
                         deleteItem,

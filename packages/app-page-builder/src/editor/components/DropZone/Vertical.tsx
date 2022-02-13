@@ -11,11 +11,11 @@ const InnerDivVertical = styled("div")({
     display: "none"
 });
 
-type OuterDivVerticalProps = {
+interface OuterDivVerticalProps {
     isOver: boolean;
     last: boolean;
     children: React.ReactNode;
-};
+}
 
 const OuterDivVertical = React.memo<OuterDivVerticalProps>(
     styled("div")(
@@ -41,14 +41,14 @@ const OuterDivVertical = React.memo<OuterDivVerticalProps>(
     )
 );
 
-export type VerticalPropsType = {
+export interface VerticalPropsType {
     type: string;
     onDrop: DroppableOnDropPropType;
     last?: boolean;
     isVisible?: DroppableIsVisiblePropType;
-};
+}
 
-const VerticalComponent = ({ last, onDrop, isVisible, type }: VerticalPropsType) => {
+const VerticalComponent: React.FC<VerticalPropsType> = ({ last, onDrop, isVisible, type }) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (

@@ -1,5 +1,5 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { ApiKey, Group, SecurityContext } from "@webiny/api-security/types";
+import { ApiKey, Group } from "@webiny/api-security/types";
 import {
     createApiKeyEntity,
     createGroupEntity,
@@ -7,11 +7,8 @@ import {
     createLinkEntity
 } from "./entities";
 import { AdminUser, AdminUsersContext, CreateUserInput } from "~/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
-
-type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
 interface OldLink {
     id: string;
@@ -23,16 +20,16 @@ interface OldLink {
 const userPoolId = process.env.COGNITO_USER_POOL_ID;
 
 async function listAllCognitoUsers(cognito: CognitoIdentityServiceProvider) {
-    const users = [];
+    const users: CognitoIdentityServiceProvider.UserType[] = [];
     let paginationToken = null;
     while (true) {
-        const { Users, PaginationToken } = await cognito
+        const { Users, PaginationToken } = (await cognito
             .listUsers({
                 UserPoolId: userPoolId,
                 AttributesToGet: ["sub", "email"],
                 PaginationToken: paginationToken
             })
-            .promise();
+            .promise()) as CognitoIdentityServiceProvider.Types.ListUsersResponse;
 
         Users.forEach(user => users.push(user));
 
@@ -46,7 +43,7 @@ async function listAllCognitoUsers(cognito: CognitoIdentityServiceProvider) {
     return users;
 }
 
-export const migration = (context: Context) => {
+export const migration = (context: AdminUsersContext) => {
     const { security, tenancy, adminUsers } = context;
 
     if (!tenancy.getCurrentTenant()) {
@@ -148,7 +145,7 @@ export const migration = (context: Context) => {
         });
 
         // Create a map of old user ids to group slug
-        const oldUser2group = oldLinks.reduce(
+        const oldUser2group: Record<string, string> = oldLinks.reduce(
             (acc, item) => ({ ...acc, [item.id]: item.group.slug }),
             {}
         );

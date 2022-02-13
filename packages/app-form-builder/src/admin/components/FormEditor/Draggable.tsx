@@ -1,5 +1,7 @@
 import React, { ReactElement } from "react";
 import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
+import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
+import { DragObjectWithType } from "react-dnd/lib/interfaces/hooksApi";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
@@ -8,14 +10,26 @@ export type DraggableChildrenFunction = (params: {
     drag: ConnectDragSource;
 }) => ReactElement;
 
-export type DraggableProps = {
-    children: DraggableChildrenFunction;
-    beginDrag?: any;
-    endDrag?: any;
-    target?: string[];
-};
+interface BeginDragProps {
+    ui?: "row" | "field";
+    pos?: {
+        row: number;
+        index?: number;
+    };
+    name?: string;
+}
 
-function Draggable(props: DraggableProps) {
+type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;
+type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
+
+export interface DraggableProps extends BeginDragProps {
+    children: DraggableChildrenFunction;
+    beginDrag?: BeginDrag | BeginDragProps;
+    endDrag?: EndDrag;
+    target?: string[];
+}
+
+const Draggable: React.FC<DraggableProps> = props => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
@@ -24,16 +38,16 @@ function Draggable(props: DraggableProps) {
             isDragging: monitor.isDragging()
         }),
         begin(monitor) {
-            if (typeof beginDrag === "function") {
-                return beginDrag(props, monitor);
+            if (typeof beginDrag !== "function") {
+                return beginDrag as undefined;
             }
-            return beginDrag;
+            return beginDrag(props, monitor);
         },
         end(item, monitor) {
-            if (typeof endDrag === "function") {
-                return endDrag(item, monitor);
+            if (typeof endDrag !== "function") {
+                return endDrag as undefined;
             }
-            return endDrag;
+            return endDrag(item, monitor);
         }
     });
 
@@ -43,6 +57,6 @@ function Draggable(props: DraggableProps) {
             {children({ isDragging, drag })}
         </>
     );
-}
+};
 
 export default React.memo(Draggable);

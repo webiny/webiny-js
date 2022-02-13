@@ -15,6 +15,7 @@
     "@webiny/api-security": "^5.22.1",
     "@webiny/handler": "^5.22.1",
     "@webiny/handler-graphql": "^5.22.1",
+    "graphql": "^15.7.2",
     "lodash.get": "^4.4.2"
   },
   "devDependencies": {

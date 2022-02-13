@@ -4,6 +4,8 @@ import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import Revision from "./Revision";
+import { PbPageData } from "~/types";
+import { QueryResult } from "@apollo/react-common";
 
 const listWrapper = css({
     margin: 25,
@@ -19,7 +21,11 @@ const listWrapper = css({
     }
 });
 
-const RevisionsList = props => {
+interface RevisionsListProps {
+    page: PbPageData;
+    getPageQuery: QueryResult;
+}
+const RevisionsList: React.FC<RevisionsListProps> = props => {
     const { page, getPageQuery } = props;
     const { revisions = [] } = page;
 

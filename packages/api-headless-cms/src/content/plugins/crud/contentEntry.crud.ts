@@ -1,3 +1,7 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
@@ -106,7 +110,7 @@ const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsE
          */
         acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
         return acc;
-    }, {});
+    }, {} as CreateCmsEntryInput);
 };
 /**
  * Cleans the update input entry data.
@@ -124,7 +128,7 @@ const cleanUpdatedInputData = (
         }
         acc[field.fieldId] = input[field.fieldId];
         return acc;
-    }, {});
+    }, {} as CreateCmsEntryInput);
 };
 
 interface DeleteEntryParams {

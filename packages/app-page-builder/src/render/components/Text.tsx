@@ -1,17 +1,17 @@
 import React, { useMemo } from "react";
 import classNames from "classnames";
 import get from "lodash/get";
-import { usePageBuilder } from "../../hooks/usePageBuilder";
-import { DisplayMode, PbElement } from "../../types";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
+import { DisplayMode, PbElement } from "~/types";
 import { ElementRoot } from "./ElementRoot";
-import { applyFallbackDisplayMode } from "../../editor/plugins/elementSettings/elementSettingsUtils";
+import { applyFallbackDisplayMode } from "~/editor/plugins/elementSettings/elementSettingsUtils";
 
 const DATA_NAMESPACE = "data.text";
 
-type TextPropsType = {
+interface TextPropsType {
     element: PbElement;
     rootClassName?: string;
-};
+}
 const TextElement: React.FunctionComponent<TextPropsType> = ({ element, rootClassName }) => {
     const {
         responsiveDisplayMode: { displayMode }

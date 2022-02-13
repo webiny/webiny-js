@@ -40,14 +40,14 @@ const createElasticsearchQuery = (
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin> = context.plugins
+    const operatorPlugins = context.plugins
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )
         .reduce((acc, plugin) => {
             acc[plugin.getOperator()] = plugin;
             return acc;
-        }, {});
+        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
 
     const where = {
         ...initialWhere
@@ -115,12 +115,12 @@ export const createElasticsearchBody = (
 ): ElasticTsSearchBody => {
     const { context, sort: initialSort, limit: initialLimit, after, where } = params;
 
-    const fieldPlugins: Record<string, FileElasticsearchFieldPlugin> = context.plugins
+    const fieldPlugins = context.plugins
         .byType<FileElasticsearchFieldPlugin>(FileElasticsearchFieldPlugin.type)
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
             return acc;
-        }, {});
+        }, {} as Record<string, FileElasticsearchFieldPlugin>);
 
     const limit = createLimit(initialLimit, 100);
 

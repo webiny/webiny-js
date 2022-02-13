@@ -23,14 +23,14 @@ const addIcon = css({
     }
 });
 
-type BlockContainerPropsType = {
+interface BlockContainerPropsType {
     combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     customClasses: string[];
     elementId: string;
-};
-const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
+}
+const BlockContainer: React.FC<BlockContainerPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,
@@ -45,13 +45,15 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
 
     const containerStyle = elementStyle;
     // Use per-device style
-    const width = elementStyle[`--${kebabCase(displayMode)}-width`];
+    const width = elementStyle[`--${kebabCase(displayMode)}-width` as keyof CSSProperties];
     /**
      * We're swapping "justifyContent" & "alignItems" value here because
      * ".webiny-pb-layout-block" has "flex-direction: column"
      */
-    const alignItems = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
-    const justifyContent = elementStyle[`--${kebabCase(displayMode)}-align-items`];
+    const alignItems =
+        elementStyle[`--${kebabCase(displayMode)}-justify-content` as keyof CSSProperties];
+    const justifyContent =
+        elementStyle[`--${kebabCase(displayMode)}-align-items` as keyof CSSProperties];
 
     const onAddClick = () => {
         handler.trigger(
@@ -74,6 +76,15 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
             })
         );
     };
+    /**
+     * Figure out better types.
+     */
+    // TODO @ts-refactor
+    const style: CSSProperties = {
+        width,
+        justifyContent: justifyContent as any,
+        alignItems: alignItems as any
+    };
 
     const totalElements = elements.length;
     return (
@@ -82,14 +93,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
             className={"webiny-pb-layout-block-container " + css(containerStyle as any)}
             {...elementAttributes}
         >
-            <div
-                style={{
-                    width,
-                    justifyContent,
-                    alignItems
-                }}
-                className={combineClassNames(...customClasses)}
-            >
+            <div style={style} className={combineClassNames(...customClasses)}>
                 {totalElements === 0 && (
                     <DropZone.Center
                         id={id}

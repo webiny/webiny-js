@@ -42,7 +42,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "graphqlPluginsFolderPath",
                     message: "Enter GraphQL API plugins folder path:",
                     default: `api/code/graphql/src/plugins`,
-                    validate: location => {
+                    validate: (location: string) => {
                         if (location.length < 2) {
                             return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
                         }
@@ -54,7 +54,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "adminPluginsFolderPath",
                     message: "Enter Admin Area plugins folder path:",
                     default: `apps/admin/code/src/plugins`,
-                    validate: location => {
+                    validate: (location: string) => {
                         if (location.length < 2) {
                             return `Please enter Admin Area ${chalk.cyan("plugins")} folder path.`;
                         }
@@ -66,7 +66,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "dataModelName",
                     message: "Enter initial entity name:",
                     default: "Todo",
-                    validate: (dataModelName, answers) => {
+                    validate: (dataModelName: string, answers: Input) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
                             return "A valid name must consist of letters only.";
                         }

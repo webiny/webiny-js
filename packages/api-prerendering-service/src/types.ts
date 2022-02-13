@@ -134,3 +134,28 @@ export interface PrerenderingServiceStorageOperations
         PrerenderingServiceQueueJobStorageOperations {
     //
 }
+
+export interface Configuration {
+    db?: {
+        namespace?: string;
+        folder?: {
+            namespace?: string;
+        };
+    };
+    storage?: {
+        folder?: string;
+        name?: string;
+    };
+    website?: {
+        url?: string;
+    };
+    meta?: {
+        [key: string]: string;
+    };
+}
+
+export interface Args {
+    url?: string;
+    path?: string;
+    configuration?: Configuration;
+}

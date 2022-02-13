@@ -18,9 +18,14 @@ import { Provider as ContentEntriesProvider } from "~/admin/views/contentEntries
 import { Provider as ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
 import { useQuery } from "~/admin/hooks";
-import { GET_CONTENT_MODEL } from "~/admin/graphql/contentModels";
+import {
+    GET_CONTENT_MODEL,
+    GetCmsModelQueryResponse,
+    GetCmsModelQueryVariables
+} from "~/admin/graphql/contentModels";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { useNewRefEntryDialog } from "../hooks/useNewRefEntryDialog";
+import { CmsEditorContentEntry, CmsModel } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -31,11 +36,11 @@ const dialogContentStyles = css`
 const dialogContainerStyles = css`
     /*
 * By default, a Dialog component has the "z-index" value of 20.
-* As we are rendering the content entry form in a "Dialog", the File Manager view triggered by a "file" field 
+* As we are rendering the content entry form in a "Dialog", the File Manager view triggered by a "file" field
 * will render below the source form, rendering it useless for the user.
 *
 * To fix that issue, we're setting the "z-index" CSS property for this particular Dialog to less than 18,
-* which is the "z-index" value assigned to File Manager view, so that it will render below the File Manager view as expected.  
+* which is the "z-index" value assigned to File Manager view, so that it will render below the File Manager view as expected.
 */
 
     &.mdc-dialog {
@@ -43,7 +48,10 @@ const dialogContainerStyles = css`
     }
 `;
 
-const EntryForm = ({ onCreate }) => {
+interface EntryFormProps {
+    onCreate: (entry: CmsEditorContentEntry) => void;
+}
+const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     const { setFormRef, contentModel } = useContentEntry();
 
     return (
@@ -80,21 +88,22 @@ export const NewEntryButton = () => {
 interface NewRefEntryProps {
     modelId: string;
     children: React.ReactElement;
-    onChange: Function;
+    onChange: (entry: CmsEditorContentEntry) => void;
 }
 
 const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, onChange }) => {
-    const [contentModel, setContentModel] = useState<any>();
+    const [contentModel, setContentModel] = useState<CmsModel>();
 
     const { showSnackbar } = useSnackbar();
 
-    useQuery(GET_CONTENT_MODEL, {
+    useQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>(GET_CONTENT_MODEL, {
         skip: !modelId,
         variables: { modelId },
         onCompleted: data => {
-            const contentModelData = get(data, "getContentModel.data");
+            const contentModelData: CmsModel | null = get(data, "getContentModel.data");
             if (contentModelData) {
-                return setContentModel(contentModelData);
+                setContentModel(contentModelData);
+                return;
             }
 
             showSnackbar(
@@ -109,7 +118,7 @@ const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, 
     const hideDialog = useCallback(() => setOpen(false), []);
 
     const onCreate = useCallback(
-        entry => {
+        (entry: CmsEditorContentEntry) => {
             onChange({
                 ...entry,
                 /*
@@ -119,7 +128,7 @@ const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, 
                 modelId: contentModel.modelId,
                 modelName: contentModel.name
             });
-            /* 
+            /*
             Close the modal
              */
             setOpen(false);

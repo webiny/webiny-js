@@ -31,7 +31,7 @@ export const TitleContent = styled("div")({
 });
 
 export class PageSettingsTabElementRenderer extends UIRenderer<PageSettingsTabElement> {
-    render({ element }: UIRenderParams<PageSettingsTabElement>): React.ReactNode {
+    public render({ element }: UIRenderParams<PageSettingsTabElement>): React.ReactNode {
         const { setActiveSection } = element
             .getView<PageSettingsView>(PageSettingsView)
             .getPageSettingsHook();

@@ -40,7 +40,7 @@ const allBlockCategory: PbEditorBlockCategoryPlugin = {
     icon: <AllIcon />
 };
 
-const sortBlocks = blocks => {
+const sortBlocks = (blocks: PbEditorBlockPlugin[]): PbEditorBlockPlugin[] => {
     return blocks.sort(function (a, b) {
         if (a.name === "pb-editor-block-empty") {
             return -1;
@@ -224,14 +224,14 @@ const SearchBar = () => {
         return (
             <Styled.Input>
                 <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
-                <DelayedOnChange value={search} onChange={value => setSearch(value)}>
+                <DelayedOnChange value={search} onChange={(value: string) => setSearch(value)}>
                     {({ value, onChange }) => (
                         <input
                             autoFocus
                             type={"text"}
                             placeholder="Search blocks..."
                             value={value}
-                            onChange={e => onChange(e.target.value)}
+                            onChange={ev => onChange(ev.target.value)}
                         />
                     )}
                 </DelayedOnChange>
@@ -283,7 +283,7 @@ const SearchBar = () => {
                                     <BlocksList
                                         category={activeCategory}
                                         addBlock={addBlockToContent}
-                                        deactivatePlugin={deactivatePlugin}
+                                        // deactivatePlugin={deactivatePlugin}
                                         blocks={getBlocksList()}
                                         onEdit={plugin => setEditingBlock(plugin)}
                                         onDelete={plugin =>

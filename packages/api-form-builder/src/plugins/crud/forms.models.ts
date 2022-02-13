@@ -1,5 +1,13 @@
 import { validation } from "@webiny/validation";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { boolean, fields, string, withFields, number } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 
 export const FormFieldsModel = withFields({

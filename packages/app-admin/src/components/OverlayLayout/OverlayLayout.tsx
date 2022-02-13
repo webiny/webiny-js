@@ -8,6 +8,7 @@ import noop from "lodash/noop";
 
 import { ReactComponent as CloseIcon } from "./icons/close.svg";
 import { OverlayView } from "~/ui/views/OverlayView";
+import { ExitHandler } from "react-transition-group/Transition";
 
 const OverlayLayoutWrapper = styled("div")({
     position: "fixed",
@@ -38,35 +39,43 @@ const defaultStyle = {
     willChange: "opacity, transform"
 };
 
-const transitionStyles = {
-    entering: { transform: "translateY(75vh)", opacity: 0 },
-    entered: { transform: "translateY(0px)", opacity: 1 }
+const transitionStyles: Record<string, any> = {
+    entering: {
+        transform: "translateY(75vh)",
+        opacity: 0
+    },
+    entered: {
+        transform: "translateY(0px)",
+        opacity: 1
+    }
 };
 
-type OverlayLayoutProps = {
+interface OverlayLayoutProps {
     barMiddle?: React.ReactNode;
     barLeft?: React.ReactNode;
     barRight?: React.ReactNode;
     children: React.ReactNode;
-    onExited?: Function;
+    onExited?: ExitHandler<HTMLElement>;
     style?: React.CSSProperties;
-};
+}
 
-type State = {
+interface State {
     isVisible: boolean;
-};
+}
 
 export class OverlayLayout extends React.Component<OverlayLayoutProps, State> {
-    constructor(props) {
+    constructor(props: OverlayLayoutProps) {
         super(props);
         document.body.classList.add(noScroll);
     }
 
-    static defaultProps = {
+    static defaultProps: Partial<OverlayLayoutProps> = {
         onExited: noop
     };
 
-    state = { isVisible: true };
+    state: State = {
+        isVisible: true
+    };
 
     hideComponent() {
         this.setState({ isVisible: false });

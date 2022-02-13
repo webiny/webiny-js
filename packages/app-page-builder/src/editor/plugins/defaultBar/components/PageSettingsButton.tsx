@@ -4,7 +4,7 @@ import { TogglePluginActionEvent } from "../../../recoil/actions";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as SettingsIcon } from "./icons/settings.svg";
 
-const PageSettingsButton = () => {
+const PageSettingsButton: React.FC = () => {
     const handler = useEventActionHandler();
     const onClickHandler = () => {
         handler.trigger(

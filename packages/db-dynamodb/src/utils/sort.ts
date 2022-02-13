@@ -4,7 +4,7 @@ import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 
 interface Info {
     sorters: string[];
-    orders: string[];
+    orders: (boolean | "asc" | "desc")[];
 }
 
 interface Response {

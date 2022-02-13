@@ -44,13 +44,13 @@ const PositionWrapper = styled("div")({
     display: "flex"
 });
 
-type Props = {
+interface BackgroundPositionSelectorProps {
     disabled?: boolean;
     value?: string;
     onChange: Function;
-};
+}
 
-const BackgroundPositionSelector = (props: Props) => {
+const BackgroundPositionSelector: React.FC<BackgroundPositionSelectorProps> = props => {
     return (
         <PositionWrapper>
             <Typography style={{ width: "60%" }} use={"subtitle2"}>

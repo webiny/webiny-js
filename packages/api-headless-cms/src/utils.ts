@@ -11,7 +11,7 @@ import {
     CmsGroup
 } from "~/types";
 
-export const hasRwd = (permission, rwd) => {
+export const hasRwd = (permission: SecurityPermission, rwd: string): boolean => {
     if (typeof permission.rwd !== "string") {
         return true;
     }
@@ -19,7 +19,7 @@ export const hasRwd = (permission, rwd) => {
     return permission.rwd.includes(rwd);
 };
 
-export const hasPw = (permission, pw) => {
+export const hasPw = (permission: SecurityPermission, pw: string): boolean => {
     const isCustom = Object.keys(permission).length > 1; // "name" key is always present
 
     if (!isCustom) {
@@ -34,14 +34,14 @@ export const hasPw = (permission, pw) => {
     return permission.pw.includes(pw);
 };
 
-const PW = {
+const PW: Record<string, string> = {
     r: "request review",
     c: "request change",
     p: "publish",
     u: "unpublish"
 };
 
-const RWD = {
+const RWD: Record<string, string> = {
     r: "read",
     w: "write",
     d: "delete"
@@ -227,7 +227,7 @@ export const validateGroupAccess = (
     return true;
 };
 
-export const toSlug = text => {
+export const toSlug = (text: string): string => {
     return slugify(text, {
         replacement: "-",
         lower: true,
@@ -237,7 +237,7 @@ export const toSlug = text => {
 
 export const filterAsync = async <T = Record<string, any>>(
     items: T[],
-    predicate: (T) => Promise<boolean>
+    predicate: (param: T) => Promise<boolean>
 ): Promise<T[]> => {
     const filteredItems = [];
 

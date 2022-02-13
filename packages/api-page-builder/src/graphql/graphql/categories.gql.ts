@@ -2,7 +2,7 @@ import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { PbContext } from "../../types";
 
-const resolve = async fn => {
+const resolve = async (fn: () => Promise<any>): Promise<any> => {
     try {
         return new Response(await fn());
     } catch (e) {

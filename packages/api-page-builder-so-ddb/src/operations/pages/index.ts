@@ -852,7 +852,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
 
         const totalCount = sortedPages.length;
 
-        const start = decodeCursor(previousCursor) || 0;
+        const start = parseInt(decodeCursor(previousCursor)) || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const pages = sortedPages.slice(start, end);
@@ -936,7 +936,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
         }
 
         const tags = pages.reduce((collection, page) => {
-            let list = lodashGet(page, "settings.general.tags");
+            let list: string[] = lodashGet(page, "settings.general.tags");
             if (!list || list.length === 0) {
                 return collection;
             } else if (where.search) {
@@ -948,7 +948,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
                 collection[t] = undefined;
             }
             return collection;
-        }, {});
+        }, {} as Record<string, string>);
 
         return Object.keys(tags);
     };

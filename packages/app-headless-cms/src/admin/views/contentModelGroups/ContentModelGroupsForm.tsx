@@ -2,8 +2,7 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
-import pick from "lodash/pick";
-import { Form } from "@webiny/form";
+import { Form, FormRenderPropParams } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
@@ -26,6 +25,15 @@ import { useMutation, useQuery } from "../../hooks";
 import * as GQL from "./graphql";
 import usePermission from "../../hooks/usePermission";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import {
+    CmsGroup,
+    CreateCmsGroupMutationResponse,
+    CreateCmsGroupMutationVariables,
+    GetCmsGroupQueryResponse,
+    GetCmsGroupQueryVariables,
+    UpdateCmsGroupMutationResponse,
+    UpdateCmsGroupMutationVariables
+} from "./graphql";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/form");
 const ButtonWrapper = styled("div")({
@@ -33,10 +41,10 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-type ContentModelGroupsFormProps = {
+interface ContentModelGroupsFormProps {
     canCreate: boolean;
-};
-function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
+}
+const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCreate }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { canEdit } = usePermission();
@@ -44,24 +52,30 @@ function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
     const newEntry = new URLSearchParams(location.search).get("new") === "true";
     const id = new URLSearchParams(location.search).get("id");
 
-    const getQuery = useQuery(GQL.GET_CONTENT_MODEL_GROUP, {
-        variables: { id },
-        skip: !id,
-        onCompleted: data => {
-            if (!data) {
-                return;
-            }
+    const getQuery = useQuery<GetCmsGroupQueryResponse, GetCmsGroupQueryVariables>(
+        GQL.GET_CONTENT_MODEL_GROUP,
+        {
+            variables: { id },
+            skip: !id,
+            onCompleted: data => {
+                if (!data) {
+                    return;
+                }
 
-            const { error } = data.contentModelGroup;
-            if (error) {
-                history.push("/cms/content-model-group");
-                showSnackbar(error.message);
+                const { error } = data.contentModelGroup;
+                if (error) {
+                    history.push("/cms/content-model-group");
+                    showSnackbar(error.message);
+                }
             }
         }
-    });
+    );
 
     // Create a new group and update list cache
-    const [create, createMutation] = useMutation(GQL.CREATE_CONTENT_MODEL_GROUP, {
+    const [create, createMutation] = useMutation<
+        CreateCmsGroupMutationResponse,
+        CreateCmsGroupMutationVariables
+    >(GQL.CREATE_CONTENT_MODEL_GROUP, {
         update(cache, { data }) {
             if (data.contentModelGroup.error) {
                 return;
@@ -80,38 +94,66 @@ function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
             });
         }
     });
-    const [update, updateMutation] = useMutation(GQL.UPDATE_CONTENT_MODEL_GROUP);
+    const [update, updateMutation] = useMutation<
+        UpdateCmsGroupMutationResponse,
+        UpdateCmsGroupMutationVariables
+    >(GQL.UPDATE_CONTENT_MODEL_GROUP);
 
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
-    const onSubmit = useCallback(
-        async ({ id, ...group }) => {
-            const [operation, args] = id
-                ? [
-                      update,
-                      {
-                          variables: {
-                              id,
-                              data: pick(group, ["name", "description", "icon"])
-                          }
-                      }
-                  ]
-                : [create, { variables: { data: pick(group, ["name", "description", "icon"]) } }];
+    const createOperation = useCallback(
+        (group: Partial<CmsGroup>) => {
+            if (!group.id) {
+                return create({
+                    variables: {
+                        data: {
+                            name: group.name,
+                            description: group.description,
+                            icon: group.icon
+                        }
+                    }
+                });
+            }
+            return update({
+                variables: {
+                    id: group.id,
+                    data: {
+                        name: group.name,
+                        description: group.description,
+                        icon: group.icon
+                    }
+                }
+            });
+        },
+        [create, update]
+    );
 
-            const response = await operation(args);
+    const onSubmit = useCallback(
+        async (group: Partial<CmsGroup>): Promise<void> => {
+            /**
+             * Create or update, depends if group object has id property
+             */
+            const response = await createOperation(group);
 
             const { data, error } = response.data.contentModelGroup;
             if (error) {
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return;
             }
-
-            !id && history.push(`/cms/content-model-groups?id=${data.id}`);
+            /**
+             * Redirect to a new group
+             */
+            if (!group.id) {
+                history.push(`/cms/content-model-groups?id=${data.id}`);
+            }
             showSnackbar(t`Content model group saved successfully!`);
         },
         [id]
     );
 
-    const data = getQuery.loading ? null : get(getQuery, "data.contentModelGroup.data", null);
+    const data: CmsGroup = getQuery.loading
+        ? null
+        : get(getQuery, "data.contentModelGroup.data", null);
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content selected" view.
@@ -137,7 +179,7 @@ function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
 
     return (
         <Form onSubmit={onSubmit} data={data || { icon: "fas/star" }}>
-            {({ data, form, Bind }) => (
+            {({ data, form, Bind }: FormRenderPropParams<CmsGroup>) => (
                 <SimpleForm data-testid={"pb-content-model-groups-form"}>
                     <SimpleFormHeader title={data.name ? data.name : t`New content model group`} />
                     {loading && <CircularProgress />}
@@ -199,6 +241,6 @@ function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
             )}
         </Form>
     );
-}
+};
 
 export default ContentModelGroupsForm;

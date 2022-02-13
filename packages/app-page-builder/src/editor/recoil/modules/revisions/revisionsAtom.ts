@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-export type RevisionItemAtomType = {
+export interface RevisionItemAtomType {
     id: string;
     title: string;
     path: string;
@@ -9,7 +9,7 @@ export type RevisionItemAtomType = {
     published: boolean;
     locked: boolean;
     savedOn?: Date;
-};
+}
 export type RevisionsAtomType = RevisionItemAtomType[];
 export const revisionsAtom = atom<RevisionsAtomType>({
     key: "revisionsAtom",

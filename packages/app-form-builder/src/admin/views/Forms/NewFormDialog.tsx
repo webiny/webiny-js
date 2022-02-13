@@ -4,7 +4,11 @@ import { useRouter } from "@webiny/react-router";
 import { useMutation } from "@apollo/react-hooks";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
-import { CREATE_FORM } from "../../graphql";
+import {
+    CREATE_FORM,
+    CreateFormMutationResponse,
+    CreateFormMutationVariables
+} from "../../graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 
@@ -28,17 +32,19 @@ const narrowDialog = css({
     }
 });
 
-export type NewFormDialogProps = {
+export interface NewFormDialogProps {
     open: boolean;
     onClose: DialogOnClose;
-};
+}
 
 const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const [create] = useMutation(CREATE_FORM);
+    const [create] = useMutation<CreateFormMutationResponse, CreateFormMutationVariables>(
+        CREATE_FORM
+    );
 
     return (
         <Dialog
@@ -48,7 +54,7 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
             data-testid="fb-new-form-modal"
         >
             <Form
-                onSubmit={async formData => {
+                onSubmit={async (formData: CreateFormMutationVariables) => {
                     setLoading(true);
 
                     await create({

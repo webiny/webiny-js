@@ -2,9 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import * as GQL from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorField } from "~/types";
+import { CmsEditorField, CmsModel } from "~/types";
+import { CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables } from "./graphql";
 
-interface ValueEntry {
+export interface ReferencedEntry {
     id: string;
     modelId: string;
     modelName: string;
@@ -28,11 +29,11 @@ interface UseReferenceHookArgs {
 }
 
 interface UseReferenceHookValue {
-    onChange: (value: any, entry: ValueEntry) => void;
+    onChange: (value: any, entry: ReferencedEntry) => void;
     setSearch: (value: string) => void;
-    value: ValueEntry | null;
+    value: ReferencedEntry | null;
     loading: boolean;
-    options: ValueEntry[];
+    options: ReferencedEntry[];
 }
 
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
@@ -43,10 +44,10 @@ const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
     return data.reduce((collection, entry) => {
         collection[entry.id] = entry;
         return collection;
-    }, {});
+    }, {} as EntryCollection);
 };
 
-const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
+const convertValueEntryToData = (entry: ReferencedEntry): DataEntry => {
     return {
         id: entry.id,
         model: {
@@ -58,7 +59,7 @@ const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
     };
 };
 
-const convertDataEntryToValue = (entry: DataEntry): ValueEntry => {
+const convertDataEntryToValue = (entry: DataEntry): ReferencedEntry => {
     return {
         id: entry.id,
         modelId: entry.model.modelId,
@@ -68,7 +69,7 @@ const convertDataEntryToValue = (entry: DataEntry): ValueEntry => {
     };
 };
 
-const assignValueEntry = (entry: ValueEntry | null, collection: EntryCollection): void => {
+const assignValueEntry = (entry: ReferencedEntry | null, collection: EntryCollection): void => {
     if (!entry) {
         return;
     }
@@ -82,9 +83,9 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [entries, setEntries] = useState<EntryCollection>({});
     const [latestEntries, setLatestEntries] = useState<EntryCollection>({});
-    const [valueEntry, setValueEntry] = useState<ValueEntry>(null);
+    const [valueEntry, setValueEntry] = useState<ReferencedEntry>(null);
 
-    const { models } = field.settings;
+    const models = field.settings.models as Pick<CmsModel, "modelId" | "name">[];
     const modelsHash = models.join(",");
 
     const value = bind.value;
@@ -116,7 +117,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
 
     useEffect(() => {
         client
-            .query({
+            .query<CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables>({
                 query: GQL.SEARCH_CONTENT_ENTRIES,
                 variables: {
                     modelIds: models.map(m => m.modelId),
@@ -199,7 +200,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     // Format default options for the Autocomplete component.
     const defaultOptions = useMemo(() => getOptions(Object.values(latestEntries)), [latestEntries]);
 
-    const outputOptions: ValueEntry[] = search ? options : defaultOptions || [];
+    const outputOptions: ReferencedEntry[] = search ? options : defaultOptions || [];
 
     if (valueEntry && outputOptions.some(opt => opt.id === valueEntry.id) === false) {
         outputOptions.push(valueEntry);

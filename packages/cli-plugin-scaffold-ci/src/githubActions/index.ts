@@ -1,4 +1,4 @@
-import { CliPluginsScaffoldCi } from "../types";
+import { CliPluginsScaffoldCi } from "~/types";
 import { Octokit } from "octokit";
 import chalk from "chalk";
 import commitWorkflows from "./commitWorkflows";
@@ -10,6 +10,7 @@ type Await<T> = T extends PromiseLike<infer U> ? U : T;
 
 interface Input {
     provider: string;
+    githubAccessTokenCreate: string;
     githubAccessToken: string;
     newOrExistingRepo: "newRepo" | "existingRepo";
     newRepoName: string;
@@ -65,11 +66,11 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                     return `Your GitHub personal access token:`;
                 },
                 required: true,
-                when: answers => {
+                when: (answers: Input) => {
                     answers.githubAccessTokenCreate && open(NEW_TOKEN_URL);
                     return true;
                 },
-                validate: async answer => {
+                validate: async (answer: Input) => {
                     octokit = new Octokit({ auth: answer });
 
                     try {
@@ -94,15 +95,17 @@ const plugin: CliPluginsScaffoldCi<Input> = {
 
             {
                 name: "newRepoOrgName",
-                when: answers => answers.newOrExistingRepo === "newRepo",
+                when: (answers: Input) => answers.newOrExistingRepo === "newRepo",
                 message:
                     "Select an organization within which the new repository will be created (optional):",
                 type: "list",
-                default: null,
                 choices: async () => {
                     const organizations = await octokit.rest.orgs.listForAuthenticatedUser();
                     return [
-                        { name: "Create within my own account", value: null },
+                        /**
+                         * We must cast as any becaues TS is complaining about null value. Which is legitimate in choices.
+                         */
+                        { name: "Create within my own account", value: null } as any,
                         { type: "separator" },
                         ...organizations.data.map(item => item.login)
                     ];
@@ -112,8 +115,8 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 name: "newRepoName",
                 message: `Enter your code repository name:`,
                 required: true,
-                when: answers => answers.newOrExistingRepo === "newRepo",
-                validate: async (answer, answers) => {
+                when: (answers: Input) => answers.newOrExistingRepo === "newRepo",
+                validate: async (answer: string, answers: Input) => {
                     const repositories = await fetchAllRepositories({ octokit });
                     for (let i = 0; i < repositories.length; i++) {
                         const repository = repositories[i];
@@ -132,7 +135,7 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             {
                 name: "newRepoPrivacyType",
                 message: "Please select the type of code repository to create:",
-                when: answers => answers.newOrExistingRepo === "newRepo",
+                when: (answers: Input) => answers.newOrExistingRepo === "newRepo",
                 type: "list",
                 default: "private",
                 choices: [
@@ -143,7 +146,7 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             {
                 name: "existingRepo",
                 message: "Please select your code repository:",
-                when: answers => answers.newOrExistingRepo === "existingRepo",
+                when: (answers: Input) => answers.newOrExistingRepo === "existingRepo",
                 type: "list",
                 choices: async () => {
                     return fetchAllRepositories({ octokit }).then(repositories =>

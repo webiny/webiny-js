@@ -3,7 +3,7 @@ import writeJson from "write-json-file";
 
 import { PackageJson } from "~/types";
 
-export default async (packageJsonPath, pathToAdd) => {
+export default async (packageJsonPath: string, pathToAdd: string): Promise<void> => {
     // Ensure forward slashes are used.
     pathToAdd = pathToAdd.replace(/\\/g, "/");
 

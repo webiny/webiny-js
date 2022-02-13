@@ -1,7 +1,8 @@
+// TODO @ts-refactor figure out correct bind types and remove any
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection from "../DynamicSection";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
@@ -11,12 +12,14 @@ import styled from "@emotion/styled";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (field, bind, index) => {
+const getKey = (field: CmsEditorField, bind: any, index: number): string => {
     const formId = bind.index.form.data.id || "new";
     return `${formId}.${field.fieldId}.${index}`;
 };
 
-const emptyValue = [{ type: "paragraph", data: { textAlign: "left", className: null, text: "" } }];
+const emptyValue: Record<string, any>[] = [
+    { type: "paragraph", data: { textAlign: "left", className: null, text: "" } }
+];
 
 const EditorWrapper = styled("div")({
     position: "relative",

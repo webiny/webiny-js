@@ -87,7 +87,10 @@ export type HandlerPlugin<
     C9 = Context
 > = Plugin & {
     type: "handler";
-    handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, next: Function): any;
+    handle(
+        context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9,
+        next: () => Promise<void>
+    ): any;
 };
 /**
  * Left for backwards-compatibility.

@@ -10,12 +10,12 @@ import {
     PageAtomType
 } from "./recoil/modules";
 import { flattenElements } from "./helpers";
-import { PbEditorElement } from "../types";
+import { PbEditorElement } from "~/types";
 
-type EditorPropsType = {
+interface EditorPropsType {
     page: PageAtomType & PbEditorElement;
     revisions: RevisionsAtomType;
-};
+}
 
 export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisions }) => {
     return (
@@ -28,8 +28,11 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
                 Object.keys(elements).forEach(key => {
                     set(elementsAtom(key), elements[key]);
                 });
-
-                const pageData = { ...page, content: undefined };
+                /**
+                 * We always unset the content because we are not using it via the page atom.
+                 */
+                const pageData = { ...page };
+                delete pageData.content;
                 set(pageAtom, pageData);
             }}
         >

@@ -1,19 +1,19 @@
-import { LifeCycleHookCallbackParams } from "~/types";
+import { ApwComment, LifeCycleHookCallbackParams, ListMeta } from "~/types";
 
 export const deleteCommentsAfterChangeRequest = ({ apw }: LifeCycleHookCallbackParams) => {
     apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
         /**
          * Also delete all associated comments with "changeRequest".
          */
-        let meta = {
+        let meta: Omit<ListMeta, "totalCount"> = {
             hasMoreItems: true,
             cursor: null
         };
-        let comments = [];
         /**
          * Paginate through comments.
          */
         while (meta.hasMoreItems) {
+            let comments: ApwComment[] = [];
             /**
              * Get all comments.
              */

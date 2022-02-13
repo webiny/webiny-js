@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from "react";
 
-type SimpleTextPropsType = {
+interface SimpleTextPropsType {
     value?: string;
     onFocus?: () => void;
     onBlur?: () => void;
@@ -9,8 +9,8 @@ type SimpleTextPropsType = {
     element?: string;
     className?: string;
     focusInput?: boolean;
-};
-const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
+}
+const SimpleEditableText: React.FC<SimpleTextPropsType> = ({
     value: defaultValue = "",
     onFocus,
     onBlur,

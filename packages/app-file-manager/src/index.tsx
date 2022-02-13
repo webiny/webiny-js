@@ -3,7 +3,7 @@ import { Plugins, Layout, AddMenu, AddRoute } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import FileManagerSettings from "~/admin/views/FileManagerSettings";
 
-export const FileManager = () => {
+export const FileManager: React.FC = () => {
     return (
         <Plugins>
             <HasPermission name={"fm.settings"}>

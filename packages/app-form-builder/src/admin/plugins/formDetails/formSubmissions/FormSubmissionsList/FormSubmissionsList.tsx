@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+/**
+ * Package timeago-react does not have types
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
@@ -10,7 +14,8 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
 import Block from "../Block";
-import useSubmissions from "./useSubmissions";
+import { useSubmissions } from "./useSubmissions";
+import { FbFormSubmissionData } from "~/types";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 
@@ -24,7 +29,10 @@ const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
-const FullName = ({ submission }) => {
+interface FullNameProps {
+    submission: FbFormSubmissionData;
+}
+const FullName: React.FC<FullNameProps> = ({ submission }) => {
     const {
         data: { firstName, lastName, email }
     } = submission;
@@ -33,30 +41,22 @@ const FullName = ({ submission }) => {
     return <span>{output || "N/A"}</span>;
 };
 
-const FormVersion = ({ submission }) => {
+interface FormVersionProps {
+    submission: FbFormSubmissionData;
+}
+const FormVersion: React.FC<FormVersionProps> = ({ submission }) => {
     return <span>Form revision #{submission.form.version}</span>;
 };
 
-type Props = {
+interface FormSubmissionsListProps {
     form: {
         id: string;
     };
-};
+}
 
 const { DataList, ListItem, ListItemMeta, ListItemText, ListTextOverline } = ListComponents;
 
-// const sorters = [
-//     {
-//         label: t`Newest to oldest`,
-//         sorters: { createdOn: -1 }
-//     },
-//     {
-//         label: t`Oldest to newest`,
-//         sorters: { createdOn: 1 }
-//     }
-// ];
-
-export const FormSubmissionsList = ({ form }: Props) => {
+export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }) => {
     const {
         loading,
         refresh,

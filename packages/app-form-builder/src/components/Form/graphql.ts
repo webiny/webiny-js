@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { FbErrorResponse, FbFormModel } from "~/types";
 
 export const FIELDS_FIELDS = `
         _id
@@ -48,7 +49,22 @@ export const DATA_FIELDS = `
         }
     }
 `;
-
+/**
+ * ################
+ * Get Published Form Query
+ */
+export interface GetPublishedFormQueryResponse {
+    formBuilder: {
+        getPublishedForm: {
+            data: FbFormModel | null;
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface GetPublishedFormQueryVariables {
+    revision?: string;
+    parent?: string;
+}
 export const GET_PUBLISHED_FORM = gql`
     query GetPublishedForm($revision: ID, $parent: ID) {
         formBuilder {

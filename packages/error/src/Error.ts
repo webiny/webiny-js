@@ -1,4 +1,4 @@
-interface ErrorOptions<TData> {
+export interface ErrorOptions<TData = any> {
     message?: string;
     code?: string;
     data?: TData;

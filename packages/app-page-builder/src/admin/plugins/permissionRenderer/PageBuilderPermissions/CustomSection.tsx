@@ -4,10 +4,25 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
+import { BindComponent } from "@webiny/form/types";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permission-renderer");
 
-const CustomSection = ({ Bind, data, entity, setValue, title, children = null }) => {
+interface CustomSectionProps {
+    Bind: BindComponent;
+    data: Record<string, string>;
+    entity: string;
+    setValue: (permission: string, type: string) => void;
+    title: string;
+}
+const CustomSection: React.FC<CustomSectionProps> = ({
+    Bind,
+    data,
+    entity,
+    setValue,
+    title,
+    children = null
+}) => {
     const rwdSelectEnabled = ["full"].includes(data[`${entity}AccessScope`]);
 
     return (
@@ -21,7 +36,7 @@ const CustomSection = ({ Bind, data, entity, setValue, title, children = null })
                         <Cell span={12}>
                             <Bind
                                 name={`${entity}AccessScope`}
-                                beforeChange={(value, cb) => {
+                                beforeChange={(value: string, cb: (value: string) => void) => {
                                     if (value === "own") {
                                         setValue(`${entity}RWD`, "rwd");
                                     }

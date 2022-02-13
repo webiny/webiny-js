@@ -140,7 +140,7 @@ describe("Settings Test", () => {
         // Wait until all are created.
         await until(
             listPublishedPages,
-            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 5
+            ([res]: any) => res.data.pageBuilder.listPublishedPages.data.length === 5
         );
 
         await listPublishedPages();

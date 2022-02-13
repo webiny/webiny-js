@@ -1,7 +1,12 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import Quote, { className } from "./Quote";
-import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
+import {
+    DisplayMode,
+    PbEditorElement,
+    PbEditorPageElementPlugin,
+    PbEditorTextElementPluginsArgs
+} from "~/types";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -43,7 +48,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         create({ content = {}, ...options }) {
             const previewText = content.text || `<blockquote><q>${defaultText}</q></blockquote>`;
 
-            const defaultValue = {
+            const defaultValue: Partial<PbEditorElement> = {
                 type: this.elementType,
                 elements: [],
                 data: {

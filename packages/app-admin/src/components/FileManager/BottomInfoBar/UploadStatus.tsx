@@ -25,7 +25,10 @@ const UploadingLabel = styled("div")({
     marginRight: 5
 });
 
-const UploadStatus = ({ uploading }) => {
+export interface UploadStatusProps {
+    uploading: boolean;
+}
+const UploadStatus: React.FC<UploadStatusProps> = ({ uploading }) => {
     if (!uploading) {
         return null;
     }

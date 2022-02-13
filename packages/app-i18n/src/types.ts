@@ -6,3 +6,26 @@ export type I18NLocaleContextPlugin = Plugin<{
         name: string;
     };
 }>;
+
+export interface I18NCurrentLocaleItem {
+    context: string;
+    locale: string;
+}
+export interface I18NLocaleItem {
+    code: string;
+    default: boolean;
+    createdOn?: string;
+}
+
+export interface GetI18NInformationResponse {
+    i18n: {
+        getI18NInformation: {
+            currentLocales: I18NCurrentLocaleItem[];
+            locales: I18NLocaleItem[];
+            defaultLocale: {
+                default: boolean;
+                code: string;
+            };
+        };
+    };
+}

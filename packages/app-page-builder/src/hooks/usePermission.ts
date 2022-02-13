@@ -1,15 +1,24 @@
 import { useCallback, useMemo } from "react";
 import get from "lodash/get";
 import { useSecurity } from "@webiny/app-security";
+import { SecurityPermission } from "@webiny/app-security/types";
 
+interface CreatableItem {
+    createdBy: {
+        id: string;
+    };
+}
 const usePermission = () => {
     const { identity } = useSecurity();
 
-    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
-    const hasFullAccess = useMemo(() => identity.getPermission("pb.*"), []);
+    const pbPagePermission = useMemo(
+        (): SecurityPermission => identity.getPermission("pb.page"),
+        []
+    );
+    const hasFullAccess = useMemo((): SecurityPermission => identity.getPermission("pb.*"), []);
 
     const canEdit = useCallback(
-        item => {
+        (item: CreatableItem): boolean => {
             if (hasFullAccess) {
                 return true;
             }
@@ -29,7 +38,7 @@ const usePermission = () => {
     );
 
     const canDelete = useCallback(
-        item => {
+        (item: CreatableItem): boolean => {
             if (hasFullAccess) {
                 return true;
             }
@@ -47,7 +56,7 @@ const usePermission = () => {
         [pbPagePermission, hasFullAccess]
     );
 
-    const canPublish = useCallback(() => {
+    const canPublish = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -60,7 +69,7 @@ const usePermission = () => {
         return false;
     }, [pbPagePermission, hasFullAccess]);
 
-    const canUnpublish = useCallback(() => {
+    const canUnpublish = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -73,7 +82,7 @@ const usePermission = () => {
         return false;
     }, [pbPagePermission, hasFullAccess]);
 
-    const canRequestReview = useCallback(() => {
+    const canRequestReview = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -86,7 +95,7 @@ const usePermission = () => {
         return false;
     }, [pbPagePermission, hasFullAccess]);
 
-    const canRequestChange = useCallback(() => {
+    const canRequestChange = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }

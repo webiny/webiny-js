@@ -13,13 +13,11 @@ import {
     DialogButton as RmwcDialogButton,
     DialogButtonProps as RmwcDialogButtonProps
 } from "@rmwc/dialog";
-import { getClasses } from "../Helpers";
+import { getClasses } from "~/Helpers";
 
 export type DialogOnClose = (event: DialogOnCloseEventT) => void;
 
 export type DialogProps = RmwcDialogProps & {
-    children: any;
-
     className?: string;
 
     // Component's custom in-line styles.
@@ -36,7 +34,7 @@ export type DialogProps = RmwcDialogProps & {
 export class Dialog extends React.Component<DialogProps> {
     container?: Element;
 
-    constructor(props) {
+    constructor(props: DialogProps) {
         super(props);
 
         this.container = document.getElementById("dialog-container");

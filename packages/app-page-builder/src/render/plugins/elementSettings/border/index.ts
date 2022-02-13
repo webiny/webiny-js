@@ -7,7 +7,7 @@ import { applyPerDeviceStyleWithFallback } from "../../../utils";
 const borderRadiusSides = ["top-left", "top-right", "bottom-left", "bottom-right"];
 const boxSides = ["top", "right", "bottom", "left"];
 
-const removeUnitFromEnd = (value: string, unit = "px") => {
+const removeUnitFromEnd = (value: string, unit = "px"): string => {
     if (value) {
         return value.replace(unit, "");
     }

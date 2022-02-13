@@ -14,6 +14,7 @@ import { FileManagerElement } from "@webiny/app-admin/ui/elements/form/FileManag
 import appendOgImageDimensions from "./appendOgImageDimensions";
 import { HiddenElement } from "@webiny/app-admin/ui/elements/form/HiddenElement";
 import { SEOSettingsView } from "~/editor/ui/views/SEOSettingsView";
+import { PageBuilderFormDataFileItem, PageBuilderFormDataSettings } from "~/types";
 
 const plugins: PluginCollection = [
     new UIViewPlugin<PageSettingsView>(PageSettingsView, view => {
@@ -53,20 +54,22 @@ const plugins: PluginCollection = [
         const ogImageTags = new HiddenElement("socialMeta", { name: "settings.social.meta" });
         ogImageTags.moveToTheEndOf(view.getFormContentElement());
 
-        image.addAfterChange((value, form) => {
-            const src = get(form.data, "settings.social.image.src");
+        image.addAfterChange<PageBuilderFormDataFileItem, PageBuilderFormDataSettings>(
+            (value, form) => {
+                const src = get(form.data, "settings.social.image.src");
 
-            const hasOgImage = typeof src === "string" && src && !src.startsWith("data:");
+                const hasOgImage = typeof src === "string" && src && !src.startsWith("data:");
 
-            // If not already set, set selectedImage as og:image too.
-            if (value && !hasOgImage) {
-                appendOgImageDimensions({
-                    data: form.data,
-                    value,
-                    setValue: form.setValue
-                });
+                // If not already set, set selectedImage as og:image too.
+                if (value && !hasOgImage) {
+                    appendOgImageDimensions({
+                        data: form.data,
+                        value,
+                        setValue: form.setValue
+                    });
+                }
             }
-        });
+        );
     }),
     new AddQuerySelectionPlugin({
         operationName: "PbGetPage",

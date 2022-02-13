@@ -11,23 +11,32 @@ export type BindComponentRenderPropValidation = {
 
 export type BindComponentRenderPropOnChange = (value: any) => Promise<void>;
 
-export type BindComponentRenderProp = {
+export type BindComponentRenderProp<T = any> = {
+    // TODO @ts-refactor change to Form type
     form: Object;
     onChange: BindComponentRenderPropOnChange;
-    value: any;
+    value: T;
     validate: () => Promise<boolean | any>;
     validation: BindComponentRenderPropValidation;
 };
 
-export type BindComponentProps = {
-    name: string;
-    beforeChange?: Function;
-    afterChange?: Function;
+export type BindComponentPropsValue = string | number | boolean | null | undefined;
+export interface BindComponentProps {
+    // TODO @ts-refactor verify that this property can be undefined
+    name?: string;
+    beforeChange?: (
+        value: BindComponentPropsValue,
+        cb: (value: BindComponentPropsValue) => void
+    ) => void;
+    afterChange?: (
+        value: BindComponentPropsValue,
+        cb: (value: BindComponentPropsValue) => void
+    ) => void;
     defaultValue?: any;
     validators?: Function | Array<Function>;
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
     validate?: Function;
-};
+}
 
 export type BindComponent = (props: BindComponentProps) => React.ReactElement;
 

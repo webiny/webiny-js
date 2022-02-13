@@ -36,7 +36,7 @@ interface NothingToShowElementConfig extends UIElementConfig {
 }
 
 export class NothingToShowElement extends NavigationMenuElement {
-    constructor(id, config: NothingToShowElementConfig) {
+    constructor(id: string, config: NothingToShowElementConfig) {
         super(id, config);
 
         this.addRenderer(new NothingToShowRenderer());

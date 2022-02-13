@@ -1,22 +1,17 @@
 import React, { createContext, useCallback, useMemo, useState } from "react";
-
-export interface Theme {
-    name: string;
-    label: string;
-    load: () => Promise<any>;
-}
+import { ThemeSource } from "~/types";
 
 export interface ThemeManagerContext {
-    themes: any[];
-    addTheme(theme: Theme): void;
+    themes: ThemeSource[];
+    addTheme(theme: ThemeSource): void;
 }
 
 export const ThemeManagerContext = createContext<ThemeManagerContext>(null);
 ThemeManagerContext.displayName = "ThemeManagerContext";
 
-export const ThemeManagerProviderHOC = PreviousProvider => {
+export const ThemeManagerProviderHOC = (PreviousProvider: React.FC): React.FC => {
     return function ThemeProvider({ children }) {
-        const [themes, setThemes] = useState([]);
+        const [themes, setThemes] = useState<ThemeSource[]>([]);
 
         const addTheme = useCallback(
             theme => {

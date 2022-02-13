@@ -5,7 +5,7 @@ import {
     EventActionCallable,
     EventActionHandlerCallableState,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { plugins } from "@webiny/plugins";
 import { DropElementActionArgsType } from "./types";
 

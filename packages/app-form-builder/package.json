@@ -58,6 +58,7 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
+    "@types/react-google-recaptcha": "^1.1.2",
     "@webiny/cli": "^5.22.1",
     "@webiny/project-utils": "^5.22.1",
     "babel-plugin-emotion": "^9.2.8",

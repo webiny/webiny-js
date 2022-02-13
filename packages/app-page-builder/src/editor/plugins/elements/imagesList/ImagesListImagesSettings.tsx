@@ -1,5 +1,9 @@
 import * as React from "react";
 import { css } from "emotion";
+/**
+ * Package react-sortable does not have types.
+ */
+// @ts-ignore
 import { sortable } from "react-sortable";
 import { FileManager } from "@webiny/app-admin/components";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -10,6 +14,8 @@ import {
     SimpleButton,
     ButtonContainer
 } from "../../elementSettings/components/StyledComponents";
+import { BindComponent } from "@webiny/form";
+import { FileItem } from "@webiny/app-admin/components/FileManager/types";
 
 const style = {
     addImagesButton: css({ clear: "both", padding: "20px 10px", textAlign: "center" }),
@@ -30,13 +36,17 @@ class Item extends React.Component {
 
 const SortableItem = sortable(Item);
 
-const ImagesListImagesSettings = props => {
+interface ImagesListImagesSettingsProps {
+    Bind: BindComponent;
+    submit: () => void;
+}
+const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props => {
     const { Bind, submit } = props;
     return (
         <Accordion title={"Images"} defaultValue={true}>
             <Grid className={classes.simpleGrid}>
                 <Cell span={12}>
-                    <Bind name={"images"} afterChange={submit}>
+                    <Bind name={"images"} afterChange={() => submit()}>
                         {({ onChange, value: images }) => {
                             /**
                              * We're creating a fresh copy of value here because all of sudden
@@ -48,7 +58,7 @@ const ImagesListImagesSettings = props => {
                                 <FileManager
                                     images
                                     multiple
-                                    onChange={files => {
+                                    onChange={(files: FileItem[]) => {
                                         Array.isArray(value)
                                             ? onChange([...value, ...files])
                                             : onChange([...files]);
@@ -80,7 +90,7 @@ const ImagesListImagesSettings = props => {
                                                     ))}
                                             </ul>
                                             <ButtonContainer>
-                                                <SimpleButton onClick={showFileManager}>
+                                                <SimpleButton onClick={() => showFileManager()}>
                                                     Add images...
                                                 </SimpleButton>
                                             </ButtonContainer>

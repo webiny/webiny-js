@@ -13,7 +13,7 @@ const BottomRight = styled("div")({
     right: 20 + SIDEBAR_WIDTH
 });
 
-const AddBlock = () => {
+const AddBlock: React.FC = () => {
     const handler = useEventActionHandler();
 
     const onClickHandler = () => {

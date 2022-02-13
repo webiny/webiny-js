@@ -10,7 +10,7 @@ export interface SecurityContext {
 
 export const SecurityContext = React.createContext<SecurityContext>(null);
 
-export const SecurityProvider = props => {
+export const SecurityProvider: React.FC = props => {
     const [identity, setIdentity] = useState<SecurityIdentity>(null);
 
     const getPermission = useCallback(

@@ -1,6 +1,11 @@
 import React from "react";
 import { CSSObject, cx } from "@emotion/css";
 
+/**
+ * TODO @ts-refactor
+ * We should have a single type for all page builder apps elements.
+ * Currently we have Element, bElement and PbEditorElement.
+ */
 export interface Element {
     id: string;
     type: string;

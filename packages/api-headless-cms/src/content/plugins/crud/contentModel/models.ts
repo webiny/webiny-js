@@ -1,6 +1,14 @@
 import { validation } from "@webiny/validation";
 import flow from "lodash/flow";
+/**
+ * Package commodo-fields-object does not have types
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
+/**
+ * Package commodo-fields does not have object.
+ */
+// @ts-ignore
 import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
 import idValidation from "./idValidation";
 
@@ -29,7 +37,7 @@ const RendererModel = withFields({
 export const ContentModelFieldModel = withFields({
     id: string({ validation: requiredShortString }),
     fieldId: flow(
-        onSet(value => value && value.trim()),
+        onSet((value?: string) => value && value.trim()),
         setOnce()
     )(string({ validation: idValidation })),
     label: string({ validation: requiredShortString }),

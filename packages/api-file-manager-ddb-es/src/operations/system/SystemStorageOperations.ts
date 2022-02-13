@@ -10,7 +10,7 @@ import WebinyError from "@webiny/error";
 import defineSystemEntity from "~/definitions/systemEntity";
 import defineTable from "~/definitions/table";
 
-interface ConstructorParams {
+interface SystemStorageOperationsConstructorParams {
     context: FileManagerContext;
 }
 
@@ -28,7 +28,7 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
         return `T#${tenant.id}#SYSTEM`;
     }
 
-    public constructor({ context }: ConstructorParams) {
+    public constructor({ context }: SystemStorageOperationsConstructorParams) {
         this._context = context;
         const table = defineTable({
             context

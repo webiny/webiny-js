@@ -3,11 +3,11 @@ import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "
 import styled from "@emotion/styled";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
-type ContainerProps = {
+interface ContainerProps {
     isOver: boolean;
     highlight: boolean;
     children: React.ReactNode;
-};
+}
 
 const Container = React.memo<ContainerProps>(
     styled("div")(({ isOver }: ContainerProps) => ({
@@ -39,15 +39,21 @@ const Add = styled("div")({
 
 const isVisible: DroppableIsVisiblePropType = () => true;
 
-type Props = {
+export interface CenterProps {
     id: string;
     type: string;
     onDrop: DroppableOnDropPropType;
     children: React.ReactNode;
     isHighlighted: boolean;
-};
+}
 
-const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children, isHighlighted }) => {
+const CenterComponent: React.FunctionComponent<CenterProps> = ({
+    id,
+    type,
+    onDrop,
+    children,
+    isHighlighted
+}) => {
     const [activeElementId] = useActiveElementId();
     const isActive = activeElementId === id;
 
@@ -67,4 +73,4 @@ const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children, is
     );
 };
 
-export default React.memo(Center);
+export const Center = React.memo(CenterComponent);

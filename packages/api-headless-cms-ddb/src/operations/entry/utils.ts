@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import lodashSortBy from "lodash.sortby";
+import lodashSortBy from "lodash/sortBy";
 import dotProp from "dot-prop";
 import {
     CmsEntry,
@@ -14,7 +14,7 @@ import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/Value
 import { PluginsContainer } from "@webiny/plugins";
 import {
     CmsEntryFieldFilterPathPlugin,
-    Params as CmsEntryFieldFilterPathPluginParams,
+    CmsEntryFieldFilterPathPluginParams,
     CreatePathCallable as CmsEntryFieldFieldCreatePathCallable
 } from "~/plugins/CmsEntryFieldFilterPathPlugin";
 
@@ -45,7 +45,7 @@ interface ItemFilter {
 }
 
 export interface FilterItemFromStorage {
-    (field: CmsModelField, value: any): Promise<any>;
+    <T = any>(field: CmsModelField, value: any): Promise<T>;
 }
 interface FilterItemsParams {
     items: CmsEntry[];
@@ -325,7 +325,10 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
                     continue;
                 }
 
-                const plainValue = await fromStorage(fields[filter.fieldId].def, rawValue);
+                const plainValue = await fromStorage<Record<string, string>[]>(
+                    fields[filter.fieldId].def,
+                    rawValue
+                );
                 /**
                  * We cannot go through the value because it is not array. Log the error and continue.
                  */
@@ -500,7 +503,7 @@ const getMappedPlugins = <T extends Plugin>(params: {
         }
         collection[key] = plugin;
         return collection;
-    }, {});
+    }, {} as MappedPlugins<T>);
 };
 
 export const buildModelFields = ({

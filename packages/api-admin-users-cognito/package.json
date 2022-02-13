@@ -29,8 +29,7 @@
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
     "dynamodb-toolbox": "^0.3.4",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.flatten": "^4.4.0",
+    "lodash": "^4.5.0",
     "md5": "^2.3.0",
     "mdbid": "^1.0.0"
   },

@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-const emptyFunction = () => {
+const emptyFunction = (): undefined => {
     return undefined;
 };
+
+interface ApplyValueCb {
+    (value: string, cb: (value: string) => void): void;
+}
 /**
  * This component is used to wrap Input and Textarea components to optimize form re-render.
  * These 2 are the only components that trigger form model change on each character input.
@@ -12,14 +16,34 @@ const emptyFunction = () => {
  * The logic behind this component is to serve as a middleware between Form and Input/Textarea, and only notify form of a change when
  * a user stops typing for given period of time (400ms by default).
  */
-type Props = {
+interface OnChangeCallable {
+    (value: string, cb?: ApplyValueCb): void;
+}
+interface OnBlurCallable {
+    (ev: React.SyntheticEvent): void;
+}
+interface OnKeyDownCallable {
+    (ev: React.SyntheticEvent): void;
+}
+interface ChildrenCallableParams {
+    value: string;
+    onChange: OnChangeCallable;
+}
+interface ChildrenCallable {
+    (params: ChildrenCallableParams): React.ReactElement;
+}
+export interface DelayedOnChangeProps {
     value?: string;
     delay?: number;
-    onChange?: Function;
-    onBlur?: Function;
-    onKeyDown?: Function;
-};
-export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...other }) => {
+    onChange?: OnChangeCallable;
+    onBlur?: OnBlurCallable;
+    onKeyDown?: OnKeyDownCallable;
+    children: React.ReactNode | ChildrenCallable;
+}
+export const DelayedOnChange: React.FunctionComponent<DelayedOnChangeProps> = ({
+    children,
+    ...other
+}) => {
     const { onChange, delay = 400, value: initialValue } = other;
     const [value, setValue] = useState<string>(initialValue);
     // Sync state and props
@@ -31,7 +55,7 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...o
 
     const localTimeout = React.useRef<number>(undefined);
 
-    const applyValue = (value: any, callback: Function = emptyFunction) => {
+    const applyValue = (value: string, callback: ApplyValueCb = emptyFunction) => {
         localTimeout.current && clearTimeout(localTimeout.current);
         localTimeout.current = null;
         onChange(value, callback);
@@ -69,7 +93,7 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...o
         onChange: onChangeLocal
     };
 
-    const renderProp = typeof children === "function" ? children : false;
+    const renderProp = typeof children === "function" ? (children as ChildrenCallable) : null;
     const child = renderProp
         ? renderProp(newProps)
         : React.cloneElement(children as React.ReactElement, newProps);
@@ -79,20 +103,20 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...o
     const realOnBlur = props.onBlur || emptyFunction;
 
     // Need to apply value if input lost focus
-    const onBlur = e => {
-        e.persist();
-        applyValue(e.target.value, () => realOnBlur(e));
+    const onBlur: OnBlurCallable = ev => {
+        ev.persist();
+        applyValue((ev.target as HTMLInputElement).value, () => realOnBlur(ev));
     };
 
     // Need to listen for TAB key to apply new value immediately, without delay. Otherwise validation will be triggered with old value.
-    const onKeyDown = e => {
-        e.persist();
-        if (e.key === "Tab") {
-            applyValue(e.target.value, () => realOnKeyDown(e));
-        } else if (e.key === "Enter" && props["data-on-enter"]) {
-            applyValue(e.target.value, () => realOnKeyDown(e));
+    const onKeyDown: OnKeyDownCallable = (ev: React.KeyboardEvent<HTMLInputElement>) => {
+        ev.persist();
+        if (ev.key === "Tab") {
+            applyValue((ev.target as HTMLInputElement).value, () => realOnKeyDown(ev));
+        } else if (ev.key === "Enter" && props["data-on-enter"]) {
+            applyValue((ev.target as HTMLInputElement).value, () => realOnKeyDown(ev));
         } else {
-            realOnKeyDown(e);
+            realOnKeyDown(ev);
         }
     };
 

@@ -16,10 +16,10 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
     const authorizers: Authorizer[] = [];
     let performAuthorization = true;
 
-    let permissions;
-    let permissionsLoader;
+    let permissions: SecurityPermission[];
+    let permissionsLoader: Promise<SecurityPermission[]>;
 
-    const loadPermissions = (security: Security) => {
+    const loadPermissions = async (security: Security): Promise<SecurityPermission[]> => {
         if (permissions) {
             return permissions;
         }
@@ -30,7 +30,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
         const shouldEnableAuthorization = performAuthorization;
 
-        permissionsLoader = new Promise(async resolve => {
+        permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
             // Authorizers often need to query business-related data, and since the identity is not yet
             // authorized, these operations can easily trigger a NOT_AUTHORIZED error.
             // To avoid this, we disable permission checks (assume `full-access` permissions) for
@@ -58,7 +58,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         return permissionsLoader;
     };
 
-    const security: Security = {
+    return {
         ...authentication,
         onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),
@@ -79,11 +79,12 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         getAuthorizers() {
             return authorizers;
         },
-        setIdentity(identity) {
+        setIdentity(this: Security, identity) {
             authentication.setIdentity(identity);
             this.onIdentity.publish({ identity });
         },
         async getPermission<TPermission extends SecurityPermission = SecurityPermission>(
+            this: Security,
             permission: string
         ): Promise<TPermission | null> {
             if (!performAuthorization) {
@@ -107,11 +108,11 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             return null;
         },
 
-        async getPermissions(): Promise<SecurityPermission[]> {
+        async getPermissions(this: Security): Promise<SecurityPermission[]> {
             return await loadPermissions(this);
         },
 
-        async hasFullAccess(): Promise<boolean> {
+        async hasFullAccess(this: Security): Promise<boolean> {
             const permissions = (await this.getPermissions()) as SecurityPermission[];
 
             return permissions.some(p => p.name === "*");
@@ -121,6 +122,4 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         ...createApiKeysMethods(config),
         ...createSystemMethods(config)
     };
-
-    return security;
 };

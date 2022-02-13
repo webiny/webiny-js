@@ -30,17 +30,24 @@ const dialogBody = css({
     }
 });
 
-type EditFieldDialogProps = {
+interface EditFieldDialogProps {
     field: CmsEditorField;
-    onClose: Function;
-    onSubmit: (data: any) => void;
-};
+    onClose: () => void;
+    onSubmit: (data: CmsEditorField) => void;
+}
 
+interface Validator {
+    optional: boolean;
+    validator: CmsEditorFieldValidatorPlugin["validator"];
+}
 const getValidators = (
     fieldPlugin: CmsEditorFieldTypePlugin,
-    key: string,
+    /**
+     * We only have validators and listValidators, thats why the strict string types
+     */
+    key: "validators" | "listValidators",
     defaultValidators: string[] = []
-) => {
+): Validator[] => {
     return plugins
         .byType<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
         .map(plugin => plugin.validator)
@@ -92,14 +99,15 @@ const fieldEditorDialog = css({
     }
 });
 
-const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
-    const [current, setCurrent] = useState(null);
+const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
+    const [current, setCurrent] = useState<CmsEditorField>(null);
 
     const { getFieldPlugin } = useFieldEditor();
 
-    useEffect(() => {
+    useEffect((): void => {
         if (!field) {
-            return setCurrent(field);
+            setCurrent(field);
+            return;
         }
 
         const clonedField = cloneDeep(field);
@@ -117,7 +125,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
         setCurrent(clonedField);
     }, [field]);
 
-    const onClose = useCallback(() => {
+    const onClose = useCallback((): void => {
         setCurrent(null);
         props.onClose();
     }, undefined);
@@ -241,6 +249,8 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         <AppearanceTab
                                             form={form}
                                             field={form.data as CmsEditorField}
+                                            // TODO @ts-refactor verify that this actually worked? There was no fieldPlugin in AppearanceTab props
+                                            // @ts-ignore
                                             fieldPlugin={fieldPlugin}
                                         />
                                     </Tab>

@@ -1,9 +1,10 @@
+// TODO @ts-refactor @pavel
 // @ts-nocheck
 import { AuthorizationPlugin } from "@webiny/api-security/plugins/AuthorizationPlugin";
 import { CmsContext } from "~/types";
 
 export class InternalAuthorizationPlugin extends AuthorizationPlugin {
-    private _identityType: string;
+    private readonly _identityType: string;
 
     constructor(identityType: string) {
         super();

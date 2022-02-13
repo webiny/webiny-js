@@ -8,7 +8,7 @@ import {
     EditRevision,
     RevisionSelector
 } from "./HeaderComponents";
-import { FbFormDetailsPluginRenderParams, FbRevisionModel } from "../../../../types";
+import { FbFormDetailsPluginRenderParams, FbRevisionModel } from "~/types";
 
 const headerTitle = css({
     "&.mdc-layout-grid": {
@@ -36,12 +36,12 @@ const headerActions = css({
     alignItems: "center"
 });
 
-type HeaderProps = FbFormDetailsPluginRenderParams & {
+interface HeaderProps extends FbFormDetailsPluginRenderParams {
     revision: FbRevisionModel;
     selectRevision: (revision: FbRevisionModel) => void;
-};
+}
 
-const Header = (props: HeaderProps) => {
+const Header: React.FC<HeaderProps> = props => {
     const { revision } = props;
     return (
         <React.Fragment>

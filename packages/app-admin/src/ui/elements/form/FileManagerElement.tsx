@@ -26,7 +26,7 @@ export interface FileManagerElementConfig extends FormFieldElementConfig {
 }
 
 export class FileManagerElement extends FormFieldElement<FileManagerElementConfig> {
-    private _emptyStateElement: UIElement;
+    private readonly _emptyStateElement: UIElement;
 
     constructor(id: string, config: FileManagerElementConfig) {
         super(id, config);

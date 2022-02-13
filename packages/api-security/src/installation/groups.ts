@@ -1,6 +1,6 @@
 import { Security, Group } from "~/types";
 
-export const attachGroupInstaller = (security: Security) => {
+export const attachGroupInstaller = (security: Security): void => {
     const createdGroups: Group[] = [];
 
     const createDefaultGroups = async () => {

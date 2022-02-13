@@ -7,6 +7,7 @@ import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Form } from "@webiny/form";
+import { Form as FormDef, FormData } from "@webiny/form/Form";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorElement,
@@ -97,14 +98,14 @@ const validateHeight = (value: string | undefined) => {
 
 const DATA_NAMESPACE = "data.settings.height";
 
-const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const updateSettings = async (data, form) => {
+    const updateSettings = async (data: FormData, form: FormDef) => {
         const valid = await form.validate();
         if (!valid) {
             return null;

@@ -34,7 +34,11 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-const GroupForm = () => {
+export interface GroupsFormProps {
+    // TODO @ts-refactor delete and go up the tree and sort it out
+    [key: string]: any;
+}
+export const GroupsForm: React.FC<GroupsFormProps> = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const newGroup = new URLSearchParams(location.search).get("new") === "true";
@@ -216,5 +220,3 @@ const GroupForm = () => {
         </Form>
     );
 };
-
-export default GroupForm;

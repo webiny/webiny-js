@@ -5,8 +5,9 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
     DisplayMode,
-    PbEditorElementPluginArgs
-} from "../../../../types";
+    PbEditorElementPluginArgs,
+    PbEditorElement
+} from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 // Icons
 import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
@@ -65,7 +66,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
                     : defaultSettings,
             target: ["cell", "block"],
             create(options) {
-                const defaultValue = {
+                const defaultValue: Partial<PbEditorElement> = {
                     type: this.elementType,
                     elements: [],
                     data: {

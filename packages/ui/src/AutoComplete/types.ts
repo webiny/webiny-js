@@ -1,4 +1,4 @@
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 
 export type AutoCompleteBaseProps = FormComponentProps & {
     /**

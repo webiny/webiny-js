@@ -6,26 +6,31 @@ import { i18n } from "@webiny/app/i18n";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { Provider as ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
-import { GET_CONTENT_MODEL } from "~/admin/graphql/contentModels";
+import {
+    GET_CONTENT_MODEL,
+    GetCmsModelQueryResponse,
+    GetCmsModelQueryVariables
+} from "~/admin/graphql/contentModels";
 import { useQuery } from "../../hooks";
 import ContentEntriesList from "~/admin/views/contentEntries/ContentEntriesList";
-import ContentEntry from "~/admin/views/contentEntries/ContentEntry";
+import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { Provider as ContentEntryProvider } from "./ContentEntry/ContentEntryContext";
+import { CmsModel } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries");
 
-const ContentEntries = () => {
+const ContentEntries: React.FC = () => {
     const { match } = useRouter();
-    const [contentModel, setContentModel] = useState<any>();
+    const [contentModel, setContentModel] = useState<CmsModel>();
     const { history } = useRouter();
     const modelId = get(match, "params.modelId");
     const { showSnackbar } = useSnackbar();
 
-    useQuery(GET_CONTENT_MODEL, {
+    useQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>(GET_CONTENT_MODEL, {
         skip: !modelId,
         variables: { modelId },
         onCompleted: data => {
-            const contentModel = get(data, "getContentModel.data");
+            const contentModel = get(data, "getContentModel.data", null);
             if (contentModel) {
                 return setContentModel(contentModel);
             }

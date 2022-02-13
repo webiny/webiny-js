@@ -16,6 +16,7 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 import { View } from "@webiny/app/components/View";
+import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 
 const IS_INSTALLED = gql`
     query IsAdminUsersInstalled {
@@ -38,8 +39,10 @@ const INSTALL = gql`
         }
     }
 `;
-
-const Install = ({ onInstalled }) => {
+export interface InstallProps {
+    onInstalled: () => void;
+}
+const Install: React.FC<InstallProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -150,19 +153,19 @@ const Install = ({ onInstalled }) => {
     );
 };
 
-export default [
-    {
-        name: "admin-installation-admin-users",
-        type: "admin-installation",
-        dependencies: ["admin-installation-security"],
-        secure: false,
-        title: "Admin User",
-        async getInstalledVersion({ client }) {
-            const { data } = await client.query({ query: IS_INSTALLED });
-            return data.adminUsers.version;
-        },
-        render({ onInstalled }) {
-            return <Install onInstalled={onInstalled} />;
-        }
+const installationPlugin: AdminInstallationPlugin = {
+    name: "admin-installation-admin-users",
+    type: "admin-installation",
+    dependencies: ["admin-installation-security"],
+    secure: false,
+    title: "Admin User",
+    async getInstalledVersion({ client }) {
+        const { data } = await client.query({ query: IS_INSTALLED });
+        return data.adminUsers.version;
+    },
+    render({ onInstalled }) {
+        return <Install onInstalled={onInstalled} />;
     }
-];
+};
+
+export default [installationPlugin];

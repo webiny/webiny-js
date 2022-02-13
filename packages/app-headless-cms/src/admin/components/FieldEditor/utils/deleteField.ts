@@ -1,19 +1,20 @@
 import dot from "dot-prop-immutable";
-import { CmsEditorField, CmsEditorFieldsLayout } from "~/types";
+import { CmsEditorField, CmsModel } from "~/types";
 
-interface Data {
-    fields: CmsEditorField[];
-    layout: CmsEditorFieldsLayout;
+type Data = Pick<CmsModel, "fields" | "layout">;
+interface Params {
+    field: CmsEditorField;
+    data: Data;
 }
-
-export default ({ field, data }: { field: CmsEditorField; data: Data }) => {
+export default (params: Params) => {
+    const { field, data: prev } = params;
     // Remove the field from fields list...
-    const fieldIndex = data.fields.findIndex(item => item.id === field.id);
-    data = dot.delete(data, `fields.${fieldIndex}`) as Data;
+    const fieldIndex = prev.fields.findIndex(item => item.id === field.id);
+    const data = dot.delete(prev, `fields.${fieldIndex}`) as Data;
 
     // ...and rebuild the layout object.
-    return dot.set(data, "layout", layout => {
-        const newLayout = [];
+    return dot.set(data, "layout", (layout: Data["layout"]) => {
+        const newLayout: Data["layout"] = [];
         let currentRowIndex = 0;
         layout.forEach(row => {
             row.forEach(fieldId => {

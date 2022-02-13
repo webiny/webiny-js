@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as History from "history";
 import { useRouter } from "@webiny/react-router";
 
 export type UseMultiSelectParams = {
@@ -20,7 +21,7 @@ export type MultiListProps = {
 const useMultiSelect = (params: UseMultiSelectParams) => {
     const [multiSelectedItems, multiSelect] = useState([]);
     let history = null;
-    let location = null;
+    let location: History.Location = null;
     const routerHook = useRouter();
     const { getValue } = params;
 
@@ -30,7 +31,7 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
     }
 
     const multiListProps: MultiListProps = {
-        multiSelect(items, value): void {
+        multiSelect(items: Record<string, any>[], value): void {
             if (!Array.isArray(items)) {
                 items = [items];
             }

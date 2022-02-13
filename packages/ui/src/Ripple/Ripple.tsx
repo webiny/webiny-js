@@ -1,21 +1,18 @@
 import * as React from "react";
 import { Ripple as RmwcRipple } from "@rmwc/ripple";
 
-type Props = {
-    // Any element that needs to be highlighted.
-    children?: React.ReactNode;
-
+interface Props {
     // Choose the type of ripple.
     type?: "unbounded" | "primary" | "accent";
 
     // Makes the ripple disabled.
     disabled?: boolean;
-};
+}
 
 /**
  * Use Ripple component to display a list of choices, once the handler is triggered.
  */
-const Ripple = (props: Props) => {
+const Ripple: React.FC<Props> = props => {
     // Let's pass "unbounded" / "primary" / "accent" flags as "type" prop instead.
     const type = props.type || "surface";
 

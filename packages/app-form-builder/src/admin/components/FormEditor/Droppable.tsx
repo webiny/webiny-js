@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
+import { FieldLayoutPositionType } from "~/types";
 
 export type DroppableChildrenFunction = (params: {
     isDragging: boolean;
@@ -8,28 +9,57 @@ export type DroppableChildrenFunction = (params: {
     drop: ConnectDropTarget;
 }) => React.ReactElement;
 
-export type DroppableProps = {
+export type DroppableDragObject = DragObjectWithType;
+
+export interface DroppableDropResult {
+    // TODO @ts-refactor delete and go up the tree
+    [key: string]: any;
+}
+export interface DroppableCollectedProps {
+    item: any;
+    isOver: boolean;
+}
+
+export interface IsVisibleCallableParams {
+    type: string;
+    // item: any;
+    isDragging: boolean;
+    ui: string;
+    pos?: Partial<FieldLayoutPositionType>;
+}
+export interface IsVisibleCallable {
+    (params: IsVisibleCallableParams): boolean;
+}
+export interface OnDropCallable {
+    (item: DragObjectWithType): DroppableDropResult | undefined;
+}
+export interface DroppableProps {
     type?: string;
     children: DroppableChildrenFunction;
     isDragging?: boolean;
     isDroppable?: (item: any) => boolean;
-    isVisible?: (params: { type: string; item: any; isDragging: boolean }) => boolean;
-    onDrop?: (item: DragObjectWithType) => void;
-};
+    isVisible?: IsVisibleCallable;
+    onDrop?: OnDropCallable;
+}
 
-function Droppable(props: DroppableProps) {
+const DroppableComponent: React.FC<DroppableProps> = props => {
     const { children, onDrop, isVisible = () => true } = props;
 
-    const [{ item, isOver }, drop] = useDrop({
+    const [{ item, isOver }, drop] = useDrop<
+        DroppableDragObject,
+        DroppableDropResult,
+        DroppableCollectedProps
+    >({
         accept: "element",
         collect: monitor => ({
             isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
             item: monitor.getItem()
         }),
         drop(_, monitor) {
-            if (typeof onDrop === "function") {
-                onDrop(monitor.getItem());
+            if (typeof onDrop !== "function") {
+                return undefined;
             }
+            return onDrop(monitor.getItem());
         }
     });
 
@@ -38,6 +68,6 @@ function Droppable(props: DroppableProps) {
     }
 
     return children({ isDragging: Boolean(item), isOver, item, drop });
-}
+};
 
-export default React.memo(Droppable);
+export const Droppable: React.FC<DroppableProps> = React.memo(DroppableComponent);

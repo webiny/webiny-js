@@ -1,18 +1,18 @@
 import React from "react";
 import preview from "./preview.png";
 import { createElement } from "../../../helpers";
-import { PbEditorBlockPlugin } from "../../../../types";
+import { PbEditorBlockPlugin, PbEditorElement } from "~/types";
 
 const width = 500;
 const height = 73;
 const aspectRatio = width / height;
 
-export default {
+const plugin: PbEditorBlockPlugin = {
     name: "pb-editor-grid-block",
     type: "pb-editor-block",
     category: "general",
     title: "Grid block",
-    create() {
+    create(): PbEditorElement {
         return createElement("block", {
             elements: [createElement("grid")]
         });
@@ -24,7 +24,9 @@ export default {
             aspectRatio
         }
     },
-    preview() {
+    tags: [],
+    preview(): React.ReactElement {
         return <img src={preview} alt={"Empty grid block"} />;
     }
-} as PbEditorBlockPlugin;
+};
+export default plugin;

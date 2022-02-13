@@ -18,7 +18,7 @@ interface ContentEntryFormProps extends UseContentEntryFormParams {
     onForm?: (form: FormAPI) => void;
 }
 
-export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) => {
+export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
     const { contentModel } = props;
     const { loading, data, onChange, onSubmit, invalidFields } = useContentEntryForm(props);
 
@@ -44,7 +44,7 @@ export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) =>
                 );
 
                 return acc;
-            }, {});
+            }, {} as Record<string, React.ReactElement>);
             return formRenderer.render({ ...formRenderProps, contentModel, fields });
         },
         [formRenderer]

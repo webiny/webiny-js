@@ -1,12 +1,12 @@
 import { validation } from "@webiny/validation";
 import { FbFormFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: FbFormFieldValidatorPlugin = {
     type: "fb-form-field-validator",
     name: "form-field-validator-min-length",
     validator: {
         name: "minLength",
-        validate: (value, validator) => {
+        validate: async (value, validator) => {
             const minLengthValue = validator.settings.value;
             if (typeof minLengthValue === "undefined") {
                 return true;
@@ -14,4 +14,5 @@ export default {
             return validation.validate(value, `minLength:${minLengthValue}`);
         }
     }
-} as FbFormFieldValidatorPlugin;
+};
+export default plugin;

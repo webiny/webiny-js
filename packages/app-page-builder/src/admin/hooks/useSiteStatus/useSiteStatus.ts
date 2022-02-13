@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { pingSite } from "./utils";
 
-export const useSiteStatus = url => {
+type UseSiteStatus = [boolean, () => void];
+export const useSiteStatus = (url: string): UseSiteStatus => {
     const [active, setActive] = useState(false);
 
-    useEffect(() => {
-        if (url) {
-            pingSite({ url, cb: setActive, ignoreCache: false });
+    useEffect((): void => {
+        if (!url) {
+            return;
         }
+        pingSite({ url, cb: setActive, ignoreCache: false });
     }, [url]);
 
     return [

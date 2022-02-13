@@ -9,6 +9,7 @@ import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { CmsEditorField } from "~/types";
+import { BindComponent, BindComponentRenderProp } from "@webiny/form/Bind";
 
 const t = i18n.ns("app-headless-cms/admin/fields/dynamic-fieldset-predefined-values");
 
@@ -46,14 +47,14 @@ const Header = styled("div")({
 interface OnSelectedParams {
     bind: any;
     field: CmsEditorField;
-    index: string;
+    index: number;
     value: boolean;
 }
 const onSelectedChange = (params: OnSelectedParams) => {
     const { bind, field, index: targetIndex, value: setToValue } = params;
     bind.form.setValue(
         "predefinedValues.values",
-        bind.value.map((value, index) => {
+        bind.value.map((value: Record<string, string>, index: number) => {
             const defaultValue = field.multipleValues ? value.selected : false;
             return {
                 ...value,
@@ -64,8 +65,8 @@ const onSelectedChange = (params: OnSelectedParams) => {
 };
 
 export interface Props {
-    getBind: (value?: any) => any;
-    renderValueInput?: any;
+    getBind: (value?: any) => BindComponent;
+    renderValueInput?: (Bind: BindComponent) => React.ReactNode;
     field: CmsEditorField;
 }
 const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
@@ -79,7 +80,7 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
         <Grid>
             <Cell span={12}>
                 <Bind>
-                    {bind => {
+                    {(bind: BindComponentRenderProp) => {
                         return (
                             <DynamicFieldset {...bind}>
                                 {({ actions, header, row, empty }) => (
@@ -111,7 +112,9 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
                                                         <Cell span={2}>
                                                             <Fieldset>
                                                                 <Bind name={"selected"}>
-                                                                    {selectedBind => {
+                                                                    {(
+                                                                        selectedBind: BindComponentRenderProp
+                                                                    ) => {
                                                                         return (
                                                                             <Switch
                                                                                 {...selectedBind}

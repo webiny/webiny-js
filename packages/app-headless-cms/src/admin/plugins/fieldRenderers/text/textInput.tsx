@@ -1,3 +1,4 @@
+// TODO @ts-refactor figure out correct bind types and remove any
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorFieldRendererPlugin } from "~/types";
@@ -25,7 +26,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    {bind => (
+                    {(bind: any) => (
                         <Input
                             {...bind}
                             label={field.label}

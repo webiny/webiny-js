@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
-import { Form } from "@webiny/form";
+import { Form, FormData } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "~/editor/components";
 import { DelayedOnChange } from "~/editor/components/DelayedOnChange";
@@ -45,7 +45,7 @@ const LinkSettingsComponent: React.FunctionComponent<
         );
     };
 
-    const updateSettings = data => {
+    const updateSettings = (data: FormData) => {
         // Skip update if nothing is change.
         if (data.newTab === newTab && data.href === href) {
             return;

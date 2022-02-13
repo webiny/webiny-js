@@ -1,4 +1,4 @@
-import { Operator } from "../../types";
+import { Operator } from "~/types";
 
 const lte: Operator = {
     canProcess: ({ value }) => {

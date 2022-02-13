@@ -4,42 +4,31 @@ import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { Cell } from "@webiny/ui/Grid";
 import { BindComponent } from "@webiny/form";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import {
+    GetValueCallable,
+    OnChangeCallable,
+    PermissionSelectorCmsGroup,
+    PermissionSelectorCmsModel
+} from "./types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-export type PermissionSelectorCheckList = {
-    id: string;
-    name: string;
-};
+interface RenderItemsProps {
+    onChange: OnChangeCallable;
+    getValue: GetValueCallable;
+    items: PermissionSelectorCmsModel[] | PermissionSelectorCmsGroup[];
+}
 
-type Model = {
-    id: string;
-    label: string;
-    [key: string]: any;
-};
-
-type Group = {
-    id: string;
-    label: string;
-    [key: string]: any;
-};
-
-type RenderItemsProps = {
-    onChange: Function;
-    getValue: Function;
-    items: Model[] | Group[];
-};
-
-export type PermissionSelectorProps = {
+export interface PermissionSelectorProps {
     Bind: BindComponent;
     selectorKey: string;
     locales: string[];
     entity: string;
-    getItems: (code: string) => Model[] | Group[];
+    getItems: (code: string) => PermissionSelectorCmsModel[] | PermissionSelectorCmsGroup[];
     RenderItems?: React.FunctionComponent<RenderItemsProps>;
-};
+}
 
-const DefaultRenderItems = ({ items, getValue, onChange }: RenderItemsProps) => {
+const DefaultRenderItems: React.FC<RenderItemsProps> = ({ items, getValue, onChange }) => {
     return (
         <React.Fragment>
             {items.map(({ id, label }) => (
@@ -51,14 +40,14 @@ const DefaultRenderItems = ({ items, getValue, onChange }: RenderItemsProps) => 
     );
 };
 
-export const PermissionSelector = ({
+export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
     Bind,
     entity,
     locales,
     selectorKey,
     getItems,
     RenderItems = DefaultRenderItems
-}: PermissionSelectorProps) => {
+}) => {
     const description = t`Select the {selectorKey} user will be allowed to access.`({
         selectorKey
     });
@@ -89,7 +78,7 @@ export const PermissionSelector = ({
     );
 };
 
-export const PermissionSelectorWrapper = ({ children }) => (
+export const PermissionSelectorWrapper: React.FC = ({ children }) => (
     <Fragment>
         <Cell span={1} />
         <Cell span={11}>{children}</Cell>

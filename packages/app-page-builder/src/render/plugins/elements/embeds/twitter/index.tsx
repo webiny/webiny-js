@@ -1,9 +1,9 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import OEmbed from "../../../../components/OEmbed";
-import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../../types";
+import { OEmbed, OEmbedProps } from "~/render/components/OEmbed";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
 
-const oembed = {
+const oembed: Partial<OEmbedProps> = {
     global: "twttr",
     sdk: "https://platform.twitter.com/widgets.js",
     init({ node }) {

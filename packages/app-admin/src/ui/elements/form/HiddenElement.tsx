@@ -12,7 +12,7 @@ export class HiddenElement extends FormFieldElement {
         this.applyPlugins(HiddenElement);
     }
 
-    render(props: FormFieldElementRenderProps): React.ReactNode {
+    public render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`HiddenElement must be placed inside of a FormElement.`);
         }
@@ -24,8 +24,8 @@ export class HiddenElement extends FormFieldElement {
                 name={this.getName()}
                 validators={this.getValidators(props)}
                 defaultValue={this.getDefaultValue(props)}
-                beforeChange={(value, cb) => this.onBeforeChange(value, cb)}
-                afterChange={(value, form) => this.onAfterChange(value, form)}
+                beforeChange={(value: string, cb) => this.onBeforeChange(value, cb)}
+                afterChange={(value: string, form) => this.onAfterChange(value, form)}
             />
         );
     }

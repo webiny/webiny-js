@@ -28,10 +28,10 @@ export const Footer = styled("div")({
     }
 });
 
-type InputContainerProps = {
+interface InputContainerProps {
     width?: number | string;
     margin?: number | string;
-};
+}
 
 export const InputContainer = styled<"div", InputContainerProps>("div")(props => ({
     "> .mdc-text-field.mdc-text-field--upgraded": {

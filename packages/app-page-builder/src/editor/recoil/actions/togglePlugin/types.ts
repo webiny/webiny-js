@@ -1,7 +1,7 @@
 import { PluginsAtomPluginParamsType } from "../../modules";
 
-export type TogglePluginActionArgsType = {
+export interface TogglePluginActionArgsType {
     name: string;
     params?: PluginsAtomPluginParamsType;
     closeOtherInGroup?: boolean;
-};
+}

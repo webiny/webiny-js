@@ -32,7 +32,7 @@ const imagesStyle = css({
 // Do not apply editping for following image types.
 // const noImageEditorTypes = ["image/svg+xml", "image/gif"];
 
-type Props = FormComponentProps & {
+interface Props extends FormComponentProps {
     // Component label.
     label?: string;
 
@@ -65,22 +65,22 @@ type Props = FormComponentProps & {
 
     // Cropper options
     cropper?: { [key: string]: any };
-};
+}
 
-type State = {
+interface State {
     errors?: FileError[];
-    selectedImages: Object;
+    selectedImages: Record<string, any>;
     loading: boolean;
     imageEditor: {
         image?: SelectedFile;
         open: boolean;
         index?: number;
     };
-};
+}
 
 class MultiImageUpload extends React.Component<Props, State> {
-    static defaultProps = {
-        validation: { isValid: null },
+    static defaultProps: Partial<Props> = {
+        validation: { isValid: null, message: null },
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         maxSize: "5mb",
         imageEditor: {},
@@ -91,7 +91,7 @@ class MultiImageUpload extends React.Component<Props, State> {
         }
     };
 
-    state = {
+    state: State = {
         errors: null,
         selectedImages: {},
         loading: false,
@@ -110,7 +110,7 @@ class MultiImageUpload extends React.Component<Props, State> {
 
     handleSelectedImages = async (images: Array<SelectedFile>, selectedIndex = 0) => {
         this.setState({ errors: null, loading: true }, async () => {
-            const selectedImages = {};
+            const selectedImages: Record<number, any> = {};
             for (let i = 0; i < images.length; i++) {
                 const image = images[i];
                 selectedImages[selectedIndex + i] = { ...image };
@@ -164,10 +164,15 @@ class MultiImageUpload extends React.Component<Props, State> {
             maxSize,
             className
         } = this.props;
-
+        /**
+         * TODO: figure out the correct type
+         */
         let imageEditorImageSrc = "";
         if (this.state.imageEditor.image) {
+            // @ts-ignore
             imageEditorImageSrc = this.state.imageEditor.image.src;
+            console.warn("Figure out correct type if this.state.imageEditor.image.src");
+            console.log(this.state.imageEditor.image.src);
         }
 
         return (
@@ -299,11 +304,18 @@ class MultiImageUpload extends React.Component<Props, State> {
                         Your selection of images failed because of the following images:
                         <ul>
                             {this.state.errors.map((error: FileError, index) => {
+                                /**
+                                 * We need to cast as existing keys in errorMessages, otherwise TS throws an error
+                                 */
+                                const errorType = error.type as
+                                    | "maxSizeExceeded"
+                                    | "unsupportedFileType"
+                                    | "default";
+                                const message = this.props.errorMessages[errorType];
                                 return (
                                     <li key={error.file.name + index}>
                                         {index + 1}. <strong>{error.file.name}</strong> -&nbsp;
-                                        {this.props.errorMessages[error.type] ||
-                                            this.props.errorMessages.default}
+                                        {message || this.props.errorMessages.default}
                                     </li>
                                 );
                             })}

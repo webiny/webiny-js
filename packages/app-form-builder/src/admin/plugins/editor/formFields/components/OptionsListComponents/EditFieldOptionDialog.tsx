@@ -1,9 +1,13 @@
 import React from "react";
 import { css } from "emotion";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";
+/**
+ * Package react-hotkeys does not have types.
+ */
+// @ts-ignore
 import { Hotkeys } from "react-hotkeyz";
 import { validation } from "@webiny/validation";
 
@@ -17,16 +21,18 @@ const narrowDialog = css({
     }
 });
 
-type EditFieldOptionDialogProps = {
+interface EditFieldOptionDialogProps<T = any> {
     option: any;
     optionIndex: number;
     open: boolean;
     onClose: () => void;
-    onSubmit: (data: any) => void;
+    onSubmit: FormOnSubmit<T>;
     options: any[];
-};
+}
 
-const EditFieldOptionDialog = (props: EditFieldOptionDialogProps) => {
+const EditFieldOptionDialog: React.FC<EditFieldOptionDialogProps> = (
+    props: EditFieldOptionDialogProps
+) => {
     const { onClose, options, open, onSubmit, option, optionIndex } = props;
 
     return (
@@ -35,9 +41,9 @@ const EditFieldOptionDialog = (props: EditFieldOptionDialogProps) => {
                 <Hotkeys
                     zIndex={115}
                     keys={{
-                        esc(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
+                        esc(event: React.KeyboardEvent) {
+                            event.preventDefault();
+                            event.stopPropagation();
                             onClose();
                         }
                     }}
@@ -56,17 +62,17 @@ const EditFieldOptionDialog = (props: EditFieldOptionDialogProps) => {
                                         <Cell span={12}>
                                             <Bind
                                                 name={"value"}
-                                                validators={value => {
+                                                validators={(value: string) => {
                                                     validation.validateSync(value, "required");
-                                                    if (!Array.isArray(options)) {
+                                                    if (Array.isArray(options) === false) {
                                                         return true;
                                                     }
 
-                                                    for (let i = 0; i < options.length; i++) {
-                                                        const current = options[i];
+                                                    for (let key = 0; key < options.length; key++) {
+                                                        const current = options[key];
                                                         if (
                                                             current.value === value &&
-                                                            i !== optionIndex
+                                                            key !== optionIndex
                                                         ) {
                                                             throw new Error(
                                                                 `Option with value "${value}" already exists.`

@@ -2,10 +2,10 @@ import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { PbEditorElement } from "../../../../types";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { uiAtom } from "../../../recoil/modules";
+import { PbEditorElement, PbElementDataImageType } from "~/types";
+import { uiAtom } from "~/editor/recoil/modules";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 
 const AlignImage = styled("div")((props: any) => ({
     img: {
@@ -13,10 +13,10 @@ const AlignImage = styled("div")((props: any) => ({
     }
 }));
 
-type ImageContainerType = {
+interface ImageContainerType {
     element: PbEditorElement;
-};
-const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }) => {
+}
+const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
     const {
@@ -25,9 +25,16 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }
     } = element || {};
     const { horizontalAlignFlex } = settings;
     // Use per-device style
-    const align = horizontalAlignFlex[displayMode] || "center";
+    /**
+     * Figure out better type.
+     */
+    // TODO @ts-refactor
+    const align = horizontalAlignFlex[displayMode as any] || "center";
 
-    const imgStyle = { width: null, height: null };
+    const imgStyle: PbElementDataImageType = {
+        width: null,
+        height: null
+    };
     if (image.width) {
         const { width } = image;
         imgStyle.width = width;

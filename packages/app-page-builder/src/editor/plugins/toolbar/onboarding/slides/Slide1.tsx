@@ -50,7 +50,7 @@ type Props = {
     nextSlide: (e: SyntheticEvent) => void;
 };
 
-const Slide1 = (props: Props) => {
+const Slide1: React.FC<Props> = props => {
     return (
         <SlideContainer>
             <Logo>

@@ -12,7 +12,7 @@ const globDefaultOptions = {
 export default async (
     globPattern: Parameters<typeof glob.sync>[0],
     options: Parameters<typeof glob.sync>[1]
-) => {
+): Promise<void> => {
     const globOptions = {
         ...globDefaultOptions,
         ...options

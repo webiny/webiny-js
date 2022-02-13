@@ -5,12 +5,12 @@ import { PbPageData } from "@webiny/app-page-builder/types";
 
 const menuName = "main-menu";
 
-type HeaderProps = {
+interface HeaderProps {
     settings: Record<string, any>;
     page: PbPageData;
-};
+}
 
-const Header = ({ settings }: HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({ settings }) => {
     const { name, logo } = settings;
 
     const [mobileMenu, showMobileMenu] = useState(false);

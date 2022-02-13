@@ -1,11 +1,11 @@
 import * as React from "react";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import { css } from "emotion";
 
 import AceEditor from "react-ace";
 import "brace/theme/github";
 import "brace/theme/twilight";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 
 /**
  * Controls the helper text below the checkbox.
@@ -33,8 +33,11 @@ type Props = FormComponentProps & {
  * CodeEditor component can be used to store simple boolean values.
  */
 class CodeEditor extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<Props> = {
+        validation: {
+            isValid: null,
+            message: null
+        }
     };
 
     onChange = (value: string) => {

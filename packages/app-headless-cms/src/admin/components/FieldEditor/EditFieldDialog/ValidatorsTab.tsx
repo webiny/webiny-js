@@ -11,25 +11,39 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
-import { CmsEditorField } from "~/types";
+import {
+    CmsEditorField,
+    CmsEditorFieldValidator,
+    CmsEditorFieldValidatorPluginValidator
+} from "~/types";
 
-const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
+interface OnChangeValidationCallable {
+    (validators: CmsEditorFieldValidator[]): void;
+}
+interface OnEnabledChangeParams {
+    data: CmsEditorFieldValidator;
+    validationValue: CmsEditorFieldValidator[];
+    onChangeValidation: OnChangeValidationCallable;
+    validator: CmsEditorFieldValidatorPluginValidator;
+}
+const onEnabledChange = (params: OnEnabledChangeParams): void => {
+    const { data, validationValue, onChangeValidation, validator } = params;
     if (data) {
         const index = validationValue.findIndex(item => item.name === validator.name);
         onChangeValidation([
             ...validationValue.slice(0, index),
             ...validationValue.slice(index + 1)
         ]);
-    } else {
-        onChangeValidation([
-            ...validationValue,
-            {
-                name: validator.name,
-                settings: validator.defaultSettings,
-                message: validator.defaultMessage
-            }
-        ]);
+        return;
     }
+    onChangeValidation([
+        ...validationValue,
+        {
+            name: validator.name,
+            settings: validator.defaultSettings,
+            message: validator.defaultMessage
+        }
+    ]);
 };
 
 const onFormChange = debounce(({ data, validationValue, onChangeValidation, validatorIndex }) => {
@@ -52,6 +66,11 @@ interface ValidatorsTabProps {
     field: CmsEditorField;
 }
 
+interface ValidatorsTabBindParams {
+    value: CmsEditorFieldValidator[];
+    onChange: OnChangeValidationCallable;
+}
+
 const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
     const {
         field,
@@ -62,7 +81,8 @@ const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
 
     return (
         <Bind name={name} defaultValue={[]}>
-            {({ value: validationValue, onChange: onChangeValidation }) => {
+            {(bind: ValidatorsTabBindParams) => {
+                const { value: validationValue, onChange: onChangeValidation } = bind;
                 return validators.map(({ optional, validator }) => {
                     const validatorIndex = (validationValue || []).findIndex(
                         item => item.name === validator.name
@@ -126,8 +146,8 @@ const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
                                                 validator.renderSettings({
                                                     field,
                                                     setValue,
-                                                    setMessage: message => {
-                                                        setValue("message", message);
+                                                    setMessage: (message: string) => {
+                                                        setValue<string>("message", message);
                                                     },
                                                     data,
                                                     Bind

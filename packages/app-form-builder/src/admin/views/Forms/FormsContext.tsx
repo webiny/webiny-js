@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { QueryResult } from "@apollo/react-common";
 import { useSecurity } from "@webiny/app-security";
-import { LIST_FORMS } from "../../graphql";
+import { LIST_FORMS, ListFormsQueryResponse } from "../../graphql";
 
 export interface FormsContextValue {
     canCreate: boolean;
@@ -11,11 +11,15 @@ export interface FormsContextValue {
 
 export const FormsContext = React.createContext<FormsContextValue>(null);
 
-export const FormsProvider = ({ children }) => {
+export interface FormContextProvider {
+    canCreate: boolean;
+    listQuery: QueryResult<ListFormsQueryResponse>;
+}
+export const FormsProvider: React.FC = ({ children }) => {
     const { identity } = useSecurity();
-    const listQuery = useQuery(LIST_FORMS);
+    const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS);
 
-    const canCreate = useMemo(() => {
+    const canCreate = useMemo((): boolean => {
         const permission = identity.getPermission("fb.form");
         if (!permission) {
             return false;
@@ -28,7 +32,7 @@ export const FormsProvider = ({ children }) => {
         return permission.rwd.includes("w");
     }, []);
 
-    const value = {
+    const value: FormContextProvider = {
         canCreate,
         listQuery
     };

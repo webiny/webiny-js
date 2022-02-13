@@ -1,3 +1,7 @@
+/**
+ * File not used anymore.
+ */
+// @ts-nocheck
 import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import {

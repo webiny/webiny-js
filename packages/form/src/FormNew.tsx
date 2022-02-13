@@ -4,18 +4,26 @@ import set from "lodash/fp/set";
 import { Bind } from "./BindNew";
 import ValidationError from "./ValidationError";
 import { useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
-import { BindComponentProps, FormAPI, FormProps, Validation } from "~/types";
+import { BindComponentProps, FormAPI, FormProps, FormData, Validation } from "~/types";
 
-type State = {
+interface State {
     data: FormData;
     originalData: FormData;
     wasSubmitted: boolean;
     validation: Validation;
-};
+}
 
 interface GetOnChangeFn {
     name: string;
     beforeChange: any;
+}
+
+interface OnChangeCallable {
+    (value?: any): void;
+}
+
+interface OnValidateCallable {
+    (): void;
 }
 
 export const FormContext = React.createContext<FormAPI>(null);
@@ -38,12 +46,12 @@ export const useBind = (props: BindComponentProps) => {
 };
 
 export const Form = React.forwardRef(function Form(props: FormProps, ref) {
-    const [state, setState] = useState(() => ({
+    const [state, setState] = useState<State>({
         data: props.data || {},
         originalData: props.data || {},
         wasSubmitted: false,
         validation: {}
-    }));
+    });
 
     const [prevData, setPrevData] = useState(null);
 
@@ -81,11 +89,11 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
         }
     }
 
-    const inputs = useRef({});
-    const afterChange = useRef({});
+    const inputs = useRef<Record<string, any>>({});
+    const afterChange = useRef<Record<string, boolean>>({});
     const lastRender = useRef([]);
-    const validateFns = useRef({});
-    const onChangeFns = useRef({});
+    const validateFns = useRef<Record<string, OnValidateCallable>>({});
+    const onChangeFns = useRef<Record<string, OnChangeCallable>>({});
 
     const getOnChangeFn = ({ name, beforeChange }: GetOnChangeFn) => {
         if (!onChangeFns.current[name]) {
@@ -179,7 +187,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
     ): Promise<any> => {
         validators = Array.isArray(validators) ? [...validators] : [validators];
 
-        const results = {};
+        const results: Record<string, any> = {};
         for (let i = 0; i < validators.length; i++) {
             const validator = validators[i];
             try {
@@ -373,7 +381,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
         return false;
     };
 
-    const getValidationState = name => {
+    const getValidationState = (name: string): Validation => {
         return (
             state.validation[name] || {
                 isValid: null,

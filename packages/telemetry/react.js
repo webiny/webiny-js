@@ -3,7 +3,12 @@ const createSendEvent = require("./sendEvent");
 const setProperties = data => {
     return sendEvent("$identify", data);
 };
-
+/**
+ *
+ * @param event {String}
+ * @param data {Record<string, string>}
+ * @return {Promise<T>}
+ */
 const sendEvent = (event, data = {}) => {
     let properties = {};
     let extraPayload = {};

@@ -6,7 +6,7 @@ export interface ComposeProps {
     with: HigherOrderComponent | HigherOrderComponent[];
 }
 
-export const Compose = (props: ComposeProps) => {
+export const Compose: React.FC<ComposeProps> = props => {
     const { addComponentWrappers } = useAdmin();
 
     useEffect(() => {

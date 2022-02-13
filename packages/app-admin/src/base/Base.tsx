@@ -11,7 +11,7 @@ import { FileManager } from "~/components";
 
 import adminPlugins from "../plugins";
 
-const BaseExtension = () => {
+const BaseExtension: React.FC = () => {
     plugins.register(adminPlugins());
 
     return (

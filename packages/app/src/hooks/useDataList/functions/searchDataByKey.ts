@@ -1,4 +1,4 @@
-const searchDataByKey = (searchKey, object) => {
+const searchDataByKey = (searchKey: string, object: Record<string, any>): string | null => {
     if (!object || typeof object !== "object") {
         return null;
     }

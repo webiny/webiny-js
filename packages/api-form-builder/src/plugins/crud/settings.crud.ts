@@ -95,7 +95,7 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
              * Assign specific properties, just to be sure nothing else gets in the record.
              */
             const settings: Settings = Object.keys(newSettings).reduce(
-                (collection, key) => {
+                (collection, key: keyof Settings) => {
                     if (newSettings[key] === undefined) {
                         return collection;
                     }
@@ -106,7 +106,7 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
                     ...original,
                     tenant: getTenant().id,
                     locale: getLocale().code
-                }
+                } as Settings
             );
             try {
                 return await this.storageOperations.updateSettings({

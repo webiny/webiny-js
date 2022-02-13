@@ -15,7 +15,10 @@ interface CreateListResponseParams<T> {
 
 export const createListResponse = <T>(params: CreateListResponseParams<T>): [T[], MetaResponse] => {
     const { items: initialItems, after, totalCount, limit } = params;
-    const start = decodeCursor(after) || 0;
+    let start = Number(decodeCursor(after));
+    if (isNaN(start) === true) {
+        start = 0;
+    }
     const hasMoreItems = totalCount > start + limit;
     const end = limit > totalCount + start + limit ? undefined : start + limit;
     const items = end ? initialItems.slice(start, end) : initialItems;

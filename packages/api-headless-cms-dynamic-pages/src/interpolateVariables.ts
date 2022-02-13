@@ -1,6 +1,8 @@
+// TODO @ts-refactor @pavel
+// @ts-nocheck
 import { get } from "dot-prop-immutable";
 
-function convertToType(value, type) {
+function convertToType(value: string, type: string) {
     switch (type) {
         case "Number":
             return value.includes(".") ? parseFloat(value) : parseInt(value);

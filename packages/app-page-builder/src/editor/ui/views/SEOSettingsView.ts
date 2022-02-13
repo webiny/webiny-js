@@ -10,7 +10,7 @@ import { DynamicFieldsetElement } from "@webiny/app-admin/ui/elements/form/Dynam
 import { ButtonGroupElement } from "@webiny/app-admin/ui/elements/ButtonGroupElement";
 
 export class SEOSettingsView extends PageSettingsFormView {
-    constructor() {
+    public constructor() {
         super("SEOSettingsView");
 
         this.setTitle("SEO Media");

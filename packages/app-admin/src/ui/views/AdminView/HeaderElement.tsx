@@ -7,7 +7,7 @@ import { HeaderSectionLeftElement } from "./HeaderSectionLeftElement";
 import { HeaderSectionCenterElement } from "./HeaderSectionCenterElement";
 import { HeaderSectionRightElement } from "./HeaderSectionRightElement";
 import Hamburger from "./components/Hamburger";
-import { UIRenderer } from "~/ui/UIRenderer";
+import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 
 enum ElementID {
     MenuButton = "headerMenuButton",
@@ -15,13 +15,13 @@ enum ElementID {
 }
 
 class HeaderElementRenderer extends UIRenderer<HeaderElement> {
-    render({ next }): React.ReactNode {
+    public render({ next }: UIRenderParams<HeaderElement>): React.ReactNode {
         return <TopAppBarPrimary fixed>{next()}</TopAppBarPrimary>;
     }
 }
 
 export class HeaderElement extends UIElement {
-    constructor(id: string) {
+    public constructor(id: string) {
         super(id);
 
         this.useGrid(false);
@@ -39,19 +39,19 @@ export class HeaderElement extends UIElement {
         this.applyPlugins(HeaderElement);
     }
 
-    getLeftSection(): HeaderSectionLeftElement {
+    public getLeftSection(): HeaderSectionLeftElement {
         return this.getElement("headerLeft");
     }
 
-    getCenterSection(): HeaderSectionCenterElement {
+    public getCenterSection(): HeaderSectionCenterElement {
         return this.getElement("headerCenter");
     }
 
-    getRightSection(): HeaderSectionRightElement {
+    public getRightSection(): HeaderSectionRightElement {
         return this.getElement("headerRight");
     }
 
-    setLogo(logo: React.ReactElement) {
+    public setLogo(logo: React.ReactElement): void {
         // TODO: extract into a `LogoElement` class
         this.getElement(ElementID.Logo).replaceWith(
             new GenericElement(ElementID.Logo, () => {
@@ -60,7 +60,7 @@ export class HeaderElement extends UIElement {
         );
     }
 
-    setMenuButton(menuButton: React.ReactElement) {
+    public setMenuButton(menuButton: React.ReactElement): void {
         this.getElement(ElementID.MenuButton).replaceWith(
             new GenericElement(ElementID.MenuButton, () => {
                 return menuButton;

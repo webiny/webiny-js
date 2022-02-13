@@ -9,9 +9,11 @@ import {
 } from "~/types";
 import { invokeHandlerClient } from "~/importPages/client";
 import { HandlerArgs as CreateHandlerArgs } from "~/importPages/create";
-import { initialStats, zeroPad } from "~/importPages/utils";
+import { initialStats } from "~/importPages/utils";
 import { HandlerArgs as ExportPagesProcessHandlerArgs } from "~/exportPages/process";
 import { EXPORT_PAGES_FOLDER_KEY } from "~/exportPages/utils";
+import { MetaResponse } from "@webiny/api-page-builder/types";
+import { zeroPad } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.page";
 const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PAGES_PROCESS_HANDLER;
@@ -66,7 +68,11 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             if (!initialPageIds || (Array.isArray(initialPageIds) && initialPageIds.length === 0)) {
                 pageIds = [];
                 let pages = [];
-                let meta = { hasMoreItems: true, cursor: null };
+                let meta: MetaResponse = {
+                    hasMoreItems: true,
+                    cursor: null,
+                    totalCount: 0
+                };
                 // Paginate pages
                 while (meta.hasMoreItems) {
                     [pages, meta] = await context.pageBuilder.listLatestPages({
@@ -98,7 +104,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
                 // Create sub task.
                 await context.pageBuilder.pageImportExportTask.createSubTask(
                     task.id,
-                    zeroPad(i + 1),
+                    zeroPad(i + 1, 5),
                     {
                         status: PageImportExportTaskStatus.PENDING,
                         input: {

@@ -32,17 +32,14 @@ const classes = {
     })
 };
 
-type IconsType = {
-    [key: string]: React.ReactElement;
-};
 // Icons map for dynamic render
-const icons: IconsType = {
+const icons: Record<string, React.ReactElement> = {
     "flex-start": <AlignLeftIcon />,
     center: <AlignCenterIcon />,
     "flex-end": <AlignRightIcon />
 };
 
-const iconDescriptions = {
+const iconDescriptions: Record<string, string> = {
     "flex-start": "Align left",
     center: "Align center",
     "flex-end": "Align right"

@@ -1,7 +1,11 @@
 import _ from "lodash";
-import { Processor } from "../types";
+import { Modifier, Processor } from "~/types";
 
-const processTextPart = (part: string, values: Object, modifiers): string => {
+const processTextPart = (
+    part: string,
+    values: Record<string, any>,
+    modifiers: Record<string, Modifier>
+): string => {
     if (!_.startsWith(part, "{")) {
         return part;
     }
@@ -17,7 +21,7 @@ const processTextPart = (part: string, values: Object, modifiers): string => {
     const output = { value: values[variable] };
 
     if (modifier) {
-        const parameters = modifier.split(":");
+        const parameters: string[] = modifier.split(":");
         const name = parameters.shift();
         if (modifiers[name]) {
             const modifier = modifiers[name];
@@ -30,7 +34,7 @@ const processTextPart = (part: string, values: Object, modifiers): string => {
 
 const processor: Processor = {
     name: "default",
-    canExecute(data: { values }) {
+    canExecute(data) {
         for (const key in data.values) {
             const value = data.values[key];
             if (

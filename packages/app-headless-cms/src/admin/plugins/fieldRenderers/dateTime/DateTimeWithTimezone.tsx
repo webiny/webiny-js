@@ -12,6 +12,7 @@ import {
     getCurrentTimeZone
 } from "./utils";
 import { CmsEditorField } from "~/types";
+import { BindComponentRenderProp } from "@webiny/form";
 
 interface State {
     date: string;
@@ -53,7 +54,9 @@ const parseTime = (value?: string): Pick<State, "time" | "timezone"> => {
 };
 
 export interface Props {
-    bind: any;
+    bind: BindComponentRenderProp;
+    // TODO @ts-refactor figure out correct trailing icon type
+    // @ts-ignore
     trailingIcon?: any;
     field: CmsEditorField;
 }
@@ -92,7 +95,7 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
                         onChange: (value: string) => {
                             if (!value) {
                                 if (!bind.value) {
-                                    return;
+                                    return null;
                                 }
                                 return bind.onChange("");
                             }
@@ -118,7 +121,7 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
                         onChange: value => {
                             if (!value) {
                                 if (!bind.value) {
-                                    return;
+                                    return null;
                                 }
                                 return bind.onChange("");
                             }
@@ -142,7 +145,7 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
                     onChange={value => {
                         if (!value) {
                             if (!bind.value) {
-                                return;
+                                return null;
                             }
                             return bind.onChange("");
                         }

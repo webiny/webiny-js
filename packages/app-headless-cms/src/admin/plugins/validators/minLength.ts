@@ -1,7 +1,7 @@
 import { validation } from "@webiny/validation";
 import { CmsModelFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: CmsModelFieldValidatorPlugin = {
     type: "cms-model-field-validator",
     name: "cms-model-field-validator-min-length",
     validator: {
@@ -14,4 +14,6 @@ export default {
             return validation.validate(value, `minLength:${minLengthValue}`);
         }
     }
-} as CmsModelFieldValidatorPlugin;
+};
+
+export default plugin;

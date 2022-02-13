@@ -80,8 +80,10 @@ export default [
     pinterest(),
     pagesList(),
     imagesList(),
+
     // Page settings
     pageSettings(),
+
     // Page element settings
     align,
     animation,

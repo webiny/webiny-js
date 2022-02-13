@@ -4,7 +4,7 @@ import {
     EventActionCallable,
     EventActionHandlerActionCallableResponse,
     EventActionHandlerMeta
-} from "../../../types";
+} from "~/types";
 
 export const executeAction = <T extends EventActionHandlerCallableArgs = any>(
     state: PbState,

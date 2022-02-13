@@ -1,3 +1,7 @@
+/**
+ * File not used anymore.
+ */
+// @ts-nocheck
 import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 
 interface MappedModels {

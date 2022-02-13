@@ -16,7 +16,12 @@ const PAGE_BUILDER_SETTINGS_LINK = "/settings/page-builder/website";
 
 export const configureWebsiteUrlTitle = t`Configure website URL`;
 
-export const ConfigureWebsiteUrlMessage = ({ websiteUrl }) => {
+interface ConfigureWebsiteUrlMessageProps {
+    websiteUrl?: string;
+}
+export const ConfigureWebsiteUrlMessage: React.FC<ConfigureWebsiteUrlMessageProps> = ({
+    websiteUrl
+}) => {
     if (typeof websiteUrl !== "string") {
         return (
             <span className={confirmationMessageStyles}>
@@ -55,7 +60,7 @@ export const ConfigureWebsiteUrlMessage = ({ websiteUrl }) => {
     );
 };
 
-export const useConfigureWebsiteUrlDialog = (websiteUrl, onAccept = null) => {
+export const useConfigureWebsiteUrlDialog = (websiteUrl?: string, onAccept: () => void = null) => {
     const { showDialog } = useDialog();
 
     return {

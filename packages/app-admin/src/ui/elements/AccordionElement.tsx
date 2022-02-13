@@ -1,5 +1,5 @@
 import React from "react";
-import { UIElement, UIElementConfig } from "~/ui/UIElement";
+import { UIElement, UIElementConfig, UiElementRenderProps } from "~/ui/UIElement";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 
 interface GetterWithProps<TProps, T> {
@@ -15,19 +15,19 @@ interface Item<TProps = any> extends UIElementConfig {
 }
 
 export class AccordionItemElement extends UIElement<Item> {
-    constructor(id, config: Item) {
+    public constructor(id: string, config: Item) {
         super(id, config);
     }
 
-    setTitle(title: string) {
+    public setTitle(title: string): void {
         this.config.title = title;
     }
 
-    setDescription(description: string) {
+    public setDescription(description: string): void {
         this.config.description = description;
     }
 
-    render(props) {
+    public render(props: UiElementRenderProps): React.ReactNode {
         const { open, ...rest } = this.config;
         const isOpened = typeof open === "function" ? open(props) : open;
         return (
@@ -43,7 +43,7 @@ interface Config extends UIElementConfig {
 }
 
 export class AccordionElement extends UIElement<Config> {
-    constructor(id, config: Config) {
+    public constructor(id: string, config: Config) {
         super(id, config);
 
         this.useGrid(false);
@@ -53,11 +53,15 @@ export class AccordionElement extends UIElement<Config> {
         });
     }
 
-    getAccordionItemElement(id: string): AccordionItemElement {
+    public getAccordionItemElement(id: string): AccordionItemElement {
         return this.getElement(id);
     }
 
-    render(props) {
+    public render(props: UiElementRenderProps): React.ReactNode {
+        /**
+         * Figure out correct way to have props.children typed.
+         * TODO @ts-refactor
+         */
         // @ts-ignore
         return <Accordion elevation={0}>{super.render(props)}</Accordion>;
     }

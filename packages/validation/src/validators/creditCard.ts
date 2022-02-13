@@ -1,4 +1,4 @@
-import ValidationError from "./../validationError";
+import ValidationError from "~/validationError";
 
 /**
  * @name creditCard

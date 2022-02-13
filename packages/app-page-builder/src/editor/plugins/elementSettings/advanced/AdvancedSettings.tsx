@@ -7,13 +7,14 @@ import { withActiveElement } from "../../../components";
 import { Form } from "@webiny/form";
 import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import { FormData } from "@webiny/form/Form";
 
-const emptyElement = { data: {}, type: null };
+const emptyElement: Partial<PbEditorElement> = { data: {}, type: null };
 
-type AdvancedSettingsPropsType = {
+interface AdvancedSettingsPropsType {
     element: PbEditorElement;
-};
-const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ element }) => {
+}
+const AdvancedSettings: React.FC<AdvancedSettingsPropsType> = ({ element }) => {
     const { data, type } = element || cloneDeep(emptyElement);
 
     const updateElement = useUpdateElement();
@@ -28,14 +29,14 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
     }, [element.type]);
 
     const onSubmit = (formData: FormData) => {
-        formData = advancedSettingsPlugin.reduce((formData, pl) => {
+        const newFormData = advancedSettingsPlugin.reduce((formData, pl) => {
             if (pl.onSave) {
                 return pl.onSave(formData);
             }
             return formData;
         }, formData);
 
-        updateElement(merge(element, "data", formData));
+        updateElement(merge(element, "data", newFormData));
     };
 
     if (!advancedSettingsPlugin.length) {

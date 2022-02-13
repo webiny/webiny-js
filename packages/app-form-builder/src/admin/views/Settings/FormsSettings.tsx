@@ -7,7 +7,11 @@ import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { useSnackbar, CenteredView } from "@webiny/app-admin";
 import { CircularProgress } from "@webiny/ui/Progress";
-import graphql from "./graphql";
+import graphql, {
+    GetFormSettingsQueryResponse,
+    UpdateFormSettingsMutationResponse,
+    UpdateFormSettingsMutationVariables
+} from "./graphql";
 
 import {
     SimpleForm,
@@ -15,23 +19,27 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
+import { FbSettings } from "~/types";
 
-const FormsSettings = () => {
+const FormsSettings: React.FC = () => {
     const { showSnackbar } = useSnackbar();
 
-    const getSettingsQuery = useQuery(graphql.query);
+    const getSettingsQuery = useQuery<GetFormSettingsQueryResponse>(graphql.query);
 
     const settings = getSettingsQuery?.data?.formBuilder?.getSettings?.data || {};
     const queryInProgress = getSettingsQuery?.loading;
 
-    const [updateSettings, updateSettingsMutation] = useMutation(graphql.mutation);
+    const [updateSettings, updateSettingsMutation] = useMutation<
+        UpdateFormSettingsMutationResponse,
+        UpdateFormSettingsMutationVariables
+    >(graphql.mutation);
     const mutationInProgress = updateSettingsMutation?.loading;
 
     return (
         <CenteredView>
             <Form
                 data={settings}
-                onSubmit={async data => {
+                onSubmit={async (data: FbSettings) => {
                     await updateSettings({
                         variables: {
                             data

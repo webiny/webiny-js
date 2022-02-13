@@ -1,9 +1,12 @@
 import { SystemStorageOperations } from "./SystemStorageOperations";
-import { SystemStorageOperationsProviderPlugin } from "@webiny/api-file-manager/plugins/definitions/SystemStorageOperationsProviderPlugin";
+import {
+    SystemStorageOperationsProviderPlugin,
+    SystemStorageOperationsProviderPluginParams
+} from "@webiny/api-file-manager/plugins/definitions/SystemStorageOperationsProviderPlugin";
 
 export class SystemStorageOperationsProviderDdbPlugin extends SystemStorageOperationsProviderPlugin {
     public name = "fm.storageOperationsProvider.system.ddb";
-    async provide({ context }) {
+    async provide({ context }: SystemStorageOperationsProviderPluginParams) {
         return new SystemStorageOperations({
             context
         });

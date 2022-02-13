@@ -33,7 +33,7 @@ interface FormHeaderConfig extends UIElementConfig {
 }
 
 export class FormHeaderElement extends UIElement<FormHeaderConfig> {
-    constructor(id, config: FormHeaderConfig) {
+    constructor(id: string, config: FormHeaderConfig) {
         super(id, config);
 
         this.useGrid(false);
@@ -47,7 +47,7 @@ export class FormHeaderElement extends UIElement<FormHeaderConfig> {
         this.addElement(element);
     }
 
-    render(props: any): any {
+    render(props: FormElementRenderProps): React.ReactNode {
         const { icon, getTitle } = this.config;
 
         return (

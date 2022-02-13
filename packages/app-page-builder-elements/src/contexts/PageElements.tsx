@@ -149,9 +149,11 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
 
     return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;
 };
-
-export const PageElementsConsumer = ({ children }) => (
+/**
+ * TODO: figure out why React.cloneElement is complaining about cloning React.FC.children
+ */
+export const PageElementsConsumer: React.FC = ({ children }) => (
     <PageElementsContext.Consumer>
-        {props => React.cloneElement(children, props)}
+        {props => React.cloneElement(children as any, props)}
     </PageElementsContext.Consumer>
 );

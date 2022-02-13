@@ -5,7 +5,7 @@ import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
 import { IconButton, ButtonDefault } from "../../Button";
-import { Tooltip } from "../../Tooltip";
+import { Tooltip } from "~/Tooltip";
 
 let cropper: Cropper = null;
 
@@ -47,7 +47,7 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Flip"}>
-                <IconButton icon={<FlipIcon />} onClick={activateTool} />
+                <IconButton icon={<FlipIcon />} onClick={() => activateTool("flip")} />
             </Tooltip>
         );
     },

@@ -1,7 +1,6 @@
 import invariant from "invariant";
 import { customAlphabet } from "nanoid";
 import { set } from "dot-prop-immutable";
-import omit from "lodash/omit";
 import { DragObjectWithTypeWithTarget } from "./components/Droppable";
 import { plugins } from "@webiny/plugins";
 import {
@@ -15,11 +14,11 @@ import {
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 
-type FlattenElementsType = {
+interface FlattenElementsType {
     [id: string]: PbEditorElement;
-};
-export const flattenElements = (el, parent = undefined): FlattenElementsType => {
-    const els = {};
+}
+export const flattenElements = (el: PbEditorElement, parent?: string): FlattenElementsType => {
+    const els: Record<string, PbEditorElement> = {};
     els[el.id] = set(
         el,
         "elements",
@@ -29,7 +28,11 @@ export const flattenElements = (el, parent = undefined): FlattenElementsType => 
             }
             const children = flattenElements(child, el.id);
             Object.keys(children).forEach(id => {
-                els[id] = omit(children[id], ["path"]);
+                const childElement = {
+                    ...children[id]
+                };
+                delete childElement.path;
+                els[id] = childElement;
             });
             return child.id;
         })
@@ -40,11 +43,22 @@ export const flattenElements = (el, parent = undefined): FlattenElementsType => 
     return els;
 };
 
-interface CreateElement {
-    (type: string, options?: { [key: string]: any }, parent?: PbEditorElement): PbEditorElement;
+interface CreateElementCallableOptions {
+    [key: string]: any;
+}
+interface CreateElementCallable {
+    (
+        type: string,
+        options?: CreateElementCallableOptions,
+        parent?: PbEditorElement
+    ): PbEditorElement;
 }
 
-export const createElement: CreateElement = (type, options = {}, parent) => {
+export const createElement: CreateElementCallable = (
+    type,
+    options = {},
+    parent
+): PbEditorElement => {
     const plugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(pl => pl.elementType === type);
@@ -101,9 +115,19 @@ export const createDroppedElement = (
 
     return createElement(source.type, {}, target);
 };
-// Add unique id to elements recur
-const addElementId = (element: Omit<PbEditorElement, "id">) => {
-    element.id = getNanoid();
+/**
+ * Add unique id to elements recur
+ */
+const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorElement => {
+    /**
+     * Need to cast because typescript thinks we removed everything via Omit???
+     */
+    // TODO @ts-refactor
+    const element: PbEditorElement = {
+        ...(target as PbEditorElement),
+        id: getNanoid()
+    };
+    // element.id = getNanoid();
 
     if (Array.isArray(element.elements)) {
         element.elements = element.elements.map((el: PbEditorElement) => {
@@ -113,7 +137,7 @@ const addElementId = (element: Omit<PbEditorElement, "id">) => {
     return element;
 };
 
-export const createBlockElements = (name: string) => {
+export const createBlockElements = (name: string): PbEditorElement => {
     const plugin = plugins.byName<PbEditorBlockPlugin>(name);
 
     invariant(plugin, `Missing block plugin "${name}"!`);
@@ -126,7 +150,7 @@ export const createBlockElements = (name: string) => {
     };
 };
 
-export const userElementSettingsPlugins = (elementType: string) => {
+export const userElementSettingsPlugins = (elementType: string): string[] => {
     return plugins
         .byType<PbEditorPageElementSettingsPlugin>("pb-editor-page-element-settings")
         .filter(pl => {
@@ -142,7 +166,7 @@ export const userElementSettingsPlugins = (elementType: string) => {
         .map(pl => pl.name);
 };
 
-export const userElementStyleSettingsPlugins = (elementType: string) => {
+export const userElementStyleSettingsPlugins = (elementType: string): string[] => {
     return plugins
         .byType<PbEditorPageElementStyleSettingsPlugin>("pb-editor-page-element-style-settings")
         .filter(pl => {
@@ -173,18 +197,28 @@ export const createEmptyElement: CreateEmptyElementCallableType = ({ id, type })
     };
 };
 
-export const updateBlockPosition = ({ parent, sourcePosition, targetPosition }) => {
-    if (sourcePosition === targetPosition) {
+export interface UpdateBlockPositionParams {
+    parent: PbEditorElement;
+    sourcePosition: number;
+    targetPosition: number;
+}
+export const updateBlockPosition = (params: UpdateBlockPositionParams): PbEditorElement => {
+    const { parent, sourcePosition: source, targetPosition: target } = params;
+    if (source === target) {
         return parent;
     }
 
     return {
         ...parent,
-        elements: moveInPlace(parent.elements, sourcePosition, targetPosition)
+        elements: moveInPlace(parent.elements as PbEditorElement[], source, target)
     };
 };
 
-export const moveInPlace = (arr: any[], from: number, to: number): any[] => {
+export const moveInPlace = (
+    arr: PbEditorElement[],
+    from: number,
+    to: number
+): PbEditorElement[] => {
     const newArray = [...arr];
 
     const [item] = newArray.splice(from, 1);

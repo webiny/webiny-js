@@ -6,7 +6,16 @@ import { IMPORT_PAGES } from "~/admin/graphql/pageImportExport.gql";
 import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageDialog";
 import useImportPageLoadingDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageLoadingDialog";
 
-const useImportPage = ({ setLoadingLabel, clearLoadingLabel, closeDialog }) => {
+interface UseImportPageParams {
+    setLoadingLabel: () => void;
+    clearLoadingLabel: () => void;
+    closeDialog: () => void;
+}
+const useImportPage = ({
+    setLoadingLabel,
+    clearLoadingLabel,
+    closeDialog
+}: UseImportPageParams) => {
     const [importPage] = useMutation(IMPORT_PAGES);
     const { showSnackbar } = useSnackbar();
     const { showImportPageDialog } = useImportPageDialog();

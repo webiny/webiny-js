@@ -1,4 +1,7 @@
-export default args => async tree => {
+import { RenderUrlPostHtmlParams } from "~/render/types";
+import { NodeAPI } from "posthtml";
+
+export default (args: Pick<RenderUrlPostHtmlParams, "args">) => async (tree: NodeAPI) => {
     const meta = args?.args?.args?.configuration?.meta;
     if (!meta || !meta.notFoundPage) {
         return;

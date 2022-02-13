@@ -20,7 +20,7 @@ const options = ["none", "solid", "dashed", "dotted"];
 const DATA_NAMESPACE = "data.settings.border";
 const BORDER_SETTINGS_COUNT = 4;
 
-const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+const BorderSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const element = useActiveElement();
@@ -45,7 +45,7 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
     });
 
     const getUpdateValueWithDisplayMode = useCallback(
-        name => value => getUpdateValue(`${displayMode}.${name}`)(value),
+        (name: string) => (value: string) => getUpdateValue(`${displayMode}.${name}`)(value),
         [getUpdateValue, displayMode]
     );
 

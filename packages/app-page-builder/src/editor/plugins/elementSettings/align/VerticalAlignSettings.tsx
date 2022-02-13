@@ -32,10 +32,6 @@ const classes = {
     })
 };
 
-type IconsType = {
-    [key: string]: React.ReactElement;
-};
-
 enum AlignTypesEnum {
     start = "flex-start",
     center = "center",
@@ -43,14 +39,14 @@ enum AlignTypesEnum {
 }
 
 // Icons map for dynamic render
-const icons: IconsType = {
+const icons: Record<string, React.ReactElement> = {
     [AlignTypesEnum.start]: <AlignTopIcon />,
     [AlignTypesEnum.center]: <AlignCenterIcon />,
     [AlignTypesEnum.end]: <AlignBottomIcon />
 };
 const alignments = Object.keys(icons);
 
-const iconDescriptions = {
+const iconDescriptions: Record<string, string> = {
     [AlignTypesEnum.start]: "Align top",
     [AlignTypesEnum.center]: "Align center",
     [AlignTypesEnum.end]: "Align bottom"

@@ -1,15 +1,21 @@
-import { FbFormModelField, FieldIdType, FieldLayoutPositionType } from "../../../../../types";
+import { FbFormModel, FbFormModelField, FieldIdType, FieldLayoutPositionType } from "~/types";
 import getFieldPosition from "./getFieldPosition";
 
 /**
  * Remove all rows that have zero fields in it.
  * @param data
  */
-const cleanupEmptyRows = data => {
+const cleanupEmptyRows = (data: FbFormModel): void => {
     data.layout = data.layout.filter(row => row.length > 0);
 };
 
-const moveField = ({ field, position, data }) => {
+interface Params {
+    field: FieldIdType | FbFormModelField;
+    position: FieldLayoutPositionType;
+    data: FbFormModel;
+}
+
+const moveField = ({ field, position, data }: Params) => {
     const { row, index } = position;
     const fieldId = typeof field === "string" ? field : field._id;
 
@@ -34,11 +40,7 @@ const moveField = ({ field, position, data }) => {
     data.layout[row].splice(index, 0, fieldId);
 };
 
-export default (params: {
-    field: FieldIdType | FbFormModelField;
-    position: FieldLayoutPositionType;
-    data: object;
-}) => {
+export default (params: Params) => {
     moveField(params);
     cleanupEmptyRows(params.data);
 };

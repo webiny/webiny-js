@@ -1,4 +1,11 @@
-import { CmsModelManager, CmsModel, CmsContext, CmsEntryListParams } from "~/types";
+import {
+    CmsModelManager,
+    CmsModel,
+    CmsContext,
+    CmsEntryListParams,
+    CreateCmsEntryInput,
+    UpdateCmsEntryInput
+} from "~/types";
 import { parseIdentifier } from "@webiny/utils";
 
 export class DefaultCmsModelManager implements CmsModelManager {
@@ -10,7 +17,7 @@ export class DefaultCmsModelManager implements CmsModelManager {
         this._model = model;
     }
 
-    public async create(data) {
+    public async create(data: CreateCmsEntryInput) {
         return this._context.cms.createEntry(this._model, data);
     }
 
@@ -43,7 +50,7 @@ export class DefaultCmsModelManager implements CmsModelManager {
         return this._context.cms.getLatestEntriesByIds(this._model, ids);
     }
 
-    public async update(id, data) {
+    public async update(id: string, data: UpdateCmsEntryInput) {
         return this._context.cms.updateEntry(this._model, id, data);
     }
 }

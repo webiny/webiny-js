@@ -10,7 +10,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 
 const t = i18n.ns("app-headless-cms/admin/content-details/header/request-review");
 
-const RequestReview = () => {
+const RequestReview: React.FC = () => {
     const { entry } = useContentEntry();
     const { requestReview } = useRevision({ revision: entry });
     const { canRequestReview } = usePermission();
@@ -22,8 +22,8 @@ const RequestReview = () => {
         )
     });
 
-    const onClick = useCallback(() => {
-        showConfirmation(async () => {
+    const onClick = useCallback((): void => {
+        showConfirmation(async (): Promise<void> => {
             await requestReview(entry.id);
         });
     }, [entry.id]);

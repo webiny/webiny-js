@@ -1,4 +1,4 @@
-import React, { Fragment, FC } from "react";
+import React, { Fragment } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { Tenant } from "@webiny/app-tenancy";
 
@@ -6,7 +6,7 @@ interface IsTenantProps {
     condition(tenant: Tenant): boolean;
 }
 
-export const IsTenant: FC<IsTenantProps> = ({ condition, children }) => {
+export const IsTenant: React.FC<IsTenantProps> = ({ condition, children }) => {
     const security = useSecurity();
 
     if (!security) {
@@ -22,10 +22,10 @@ export const IsTenant: FC<IsTenantProps> = ({ condition, children }) => {
     return <Fragment>{children}</Fragment>;
 };
 
-export const IsRootTenant: FC = ({ children }) => {
+export const IsRootTenant: React.FC = ({ children }) => {
     return <IsTenant condition={tenant => tenant.id === "root"}>{children}</IsTenant>;
 };
 
-export const IsNotRootTenant: FC = ({ children }) => {
+export const IsNotRootTenant: React.FC = ({ children }) => {
     return <IsTenant condition={tenant => tenant.id !== "root"}>{children}</IsTenant>;
 };

@@ -63,7 +63,7 @@ function updateImageInPageSettings({
         );
     }
 
-    return settings;
+    return newSettings;
 }
 
 function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesInPageDataParams) {
@@ -402,7 +402,7 @@ function preparePageDataDirMap({
     return map;
 }
 
-async function deleteS3Folder(key) {
+async function deleteS3Folder(key: string): Promise<void> {
     // Append trailing slash i.e "/" to key to make sure we only delete a specific folder.
     if (!key.endsWith("/")) {
         key = `${key}/`;
@@ -418,9 +418,9 @@ async function deleteS3Folder(key) {
     console.log(`Successfully deleted ${deleteFilePromises.length} files.`);
 }
 
-export const zeroPad = version => `${version}`.padStart(5, "0");
+// export const zeroPad = version => `${version}`.padStart(5, "0");
 
-export function initialStats(total) {
+export function initialStats(total: number) {
     return {
         [PageImportExportTaskStatus.PENDING]: total,
         [PageImportExportTaskStatus.PROCESSING]: 0,
@@ -432,13 +432,13 @@ export function initialStats(total) {
 
 function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
-        const pageZipFilePaths = [];
+        const pageZipFilePaths: string[] = [];
         const uniqueFolderNameForExport = getFileNameWithoutExt(exportFileZipPath);
         const EXPORT_FILE_EXTRACTION_PATH = path.join(INSTALL_DIR, uniqueFolderNameForExport);
         // Make sure DIR exists
         ensureDirSync(EXPORT_FILE_EXTRACTION_PATH);
 
-        yauzl.open(exportFileZipPath, { lazyEntries: true }, function (err, zipFile) {
+        yauzl.open(exportFileZipPath, { lazyEntries: true }, function (err: Error, zipFile) {
             if (err) {
                 console.warn("ERROR: Failed to extract zip: ", exportFileZipPath, err);
                 reject(err);
@@ -498,7 +498,7 @@ function extractZipAndUploadToS3(
 ): Promise<PageImportData> {
     return new Promise((resolve, reject) => {
         const filePaths = [];
-        const fileUploadPromises = [];
+        const fileUploadPromises: Promise<S3.ManagedUpload.SendData>[] = [];
         const uniquePageKey = getFileNameWithoutExt(pageDataZipFilePath);
         let dataMap: PageImportData = {
             key: uniquePageKey,

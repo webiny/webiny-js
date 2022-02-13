@@ -2,7 +2,11 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
 
-export default (params: { context: FileManagerContext; table: Table }): Entity<any> => {
+export interface SystemEntityParams {
+    context: FileManagerContext;
+    table: Table;
+}
+export default (params: SystemEntityParams): Entity<any> => {
     const { context, table } = params;
     const entityName = "System";
     const attributes = getExtraAttributes(context, entityName);

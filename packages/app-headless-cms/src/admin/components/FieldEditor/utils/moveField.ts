@@ -1,45 +1,59 @@
 import dot from "dot-prop-immutable";
-import { CmsEditorField, CmsEditorFieldId, FieldLayoutPosition } from "~/types";
+import {
+    CmsEditorField,
+    CmsEditorFieldId,
+    CmsModel as BaseCmsModel,
+    FieldLayoutPosition
+} from "~/types";
 import getFieldPosition from "./getFieldPosition";
 
-const moveField = ({ field, position, data }) => {
+type CmsModel = Pick<BaseCmsModel, "fields" | "layout">;
+
+interface MoveFieldParams<T> {
+    field: CmsEditorFieldId | CmsEditorField;
+    position: FieldLayoutPosition;
+    data: T;
+}
+
+const moveField = <T extends CmsModel>(params: MoveFieldParams<T>) => {
+    const { field, position, data: prev } = params;
     const { row, index } = position;
     const fieldId = typeof field === "string" ? field : field.id;
 
-    const existingPosition = getFieldPosition({ field: fieldId, data });
+    let next: T = {
+        ...prev
+    };
+
+    const existingPosition = getFieldPosition({ field: fieldId, data: prev });
 
     if (existingPosition) {
-        data = dot.delete(data, `layout.${existingPosition.row}.${existingPosition.index}`);
+        next = dot.delete(prev, `layout.${existingPosition.row}.${existingPosition.index}`) as T;
     }
 
     // Setting a form field into a new non-existing row.
-    if (!data.layout[row]) {
-        return dot.set(data, `layout.${row}`, [fieldId]);
+    if (!next.layout[row]) {
+        return dot.set(next, `layout.${row}`, [fieldId]);
     }
 
     // Drop the field at the specified index.
     if (index === null) {
         // Create a new row with the new field at the given row index,
-        return dot.set(data, "layout", layout => {
+        return dot.set(next, "layout", (layout: string[][]) => {
             const newLayout = [...layout];
             newLayout.splice(row, 0, [fieldId]);
             return newLayout;
         });
     }
 
-    return dot.set(data, `layout.${row}`, layout => {
+    return dot.set(next, `layout.${row}`, (layout: string[]) => {
         const newLayout = [...layout];
         newLayout.splice(index, 0, fieldId);
         return newLayout;
     });
 };
 
-export default (params: {
-    field: CmsEditorFieldId | CmsEditorField;
-    position: FieldLayoutPosition;
-    data: object;
-}) => {
-    return dot.set(moveField(params), "layout", layout => {
+export default <T extends CmsModel>(params: MoveFieldParams<T>): T => {
+    return dot.set(moveField<T>(params), "layout", (layout: string[][]) => {
         return [...layout].filter(row => row.length > 0);
     });
 };

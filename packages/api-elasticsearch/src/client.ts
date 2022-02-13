@@ -1,5 +1,9 @@
 import { Client, ClientOptions } from "@elastic/elasticsearch";
 import AWS from "aws-sdk";
+/**
+ * Package aws-elasticsearch-connector does not have types.
+ */
+// @ts-ignore
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
 
 export interface ElasticsearchClientOptions extends ClientOptions {

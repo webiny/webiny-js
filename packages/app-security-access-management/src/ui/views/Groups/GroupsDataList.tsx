@@ -25,32 +25,37 @@ import { Select } from "@webiny/ui/Select";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { deserializeSorters, serializeSorters } from "../utils";
+import { deserializeSorters } from "../utils";
+import { Group } from "~/types";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
 
 const SORTERS = [
     {
         label: t`Newest to oldest`,
-        sorters: { createdOn: "desc" }
+        sorter: "createdOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { createdOn: "asc" }
+        sorter: "createdOn_ASC"
     },
     {
         label: t`Name A-Z`,
-        sorters: { name: "asc" }
+        sorter: "name_ASC"
     },
     {
         label: t`Name Z-A`,
-        sorters: { name: "desc" }
+        sorter: "name_DESC"
     }
 ];
 
-const GroupsDataList = () => {
+export interface GroupsDataListProps {
+    // TODO @ts-refactor delete and go up the tree and sort it out
+    [key: string]: any;
+}
+export const GroupsDataList: React.FC<GroupsDataListProps> = () => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
+    const [sort, setSort] = useState(SORTERS[0].sorter);
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
@@ -82,8 +87,8 @@ const GroupsDataList = () => {
             if (!sort) {
                 return groups;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
-            return orderBy(groups, [key], [value]);
+            const [key, sortBy] = deserializeSorters(sort);
+            return orderBy(groups, [key], [sortBy]);
         },
         [sort]
     );
@@ -116,9 +121,9 @@ const GroupsDataList = () => {
                 <Grid>
                     <Cell span={12}>
                         <Select value={sort} onChange={setSort} label={t`Sort by`}>
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sorter }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorter}>
                                         {label}
                                     </option>
                                 );
@@ -158,7 +163,7 @@ const GroupsDataList = () => {
                 />
             }
         >
-            {({ data }) => (
+            {({ data }: { data: Group[] }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === id}>
@@ -195,5 +200,3 @@ const GroupsDataList = () => {
         </DataList>
     );
 };
-
-export default GroupsDataList;

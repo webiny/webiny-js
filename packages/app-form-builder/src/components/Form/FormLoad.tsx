@@ -1,11 +1,15 @@
 import React from "react";
-import { GET_PUBLISHED_FORM } from "./graphql";
+import {
+    GET_PUBLISHED_FORM,
+    GetPublishedFormQueryResponse,
+    GetPublishedFormQueryVariables
+} from "./graphql";
 import { useQuery } from "@apollo/react-hooks";
 import FormRender from "./FormRender";
-import { FormLoadComponentPropsType } from "../../types";
+import { FormLoadComponentPropsType } from "~/types";
 
-const FormLoad = (props: FormLoadComponentPropsType) => {
-    const variables = {};
+const FormLoad: React.FC<FormLoadComponentPropsType> = props => {
+    const variables: GetPublishedFormQueryVariables = {};
 
     if (props.parentId) {
         variables["parent"] = props.parentId;
@@ -13,7 +17,10 @@ const FormLoad = (props: FormLoadComponentPropsType) => {
         variables["revision"] = props.revisionId;
     }
 
-    const { data, loading, error } = useQuery(GET_PUBLISHED_FORM, {
+    const { data, loading, error } = useQuery<
+        GetPublishedFormQueryResponse,
+        GetPublishedFormQueryVariables
+    >(GET_PUBLISHED_FORM, {
         variables
     });
 

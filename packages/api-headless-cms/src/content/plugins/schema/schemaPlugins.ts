@@ -18,7 +18,7 @@ export const generateSchemaPlugins = async (
         .reduce((acc, pl) => {
             acc[pl.fieldType] = pl;
             return acc;
-        }, {});
+        }, {} as Record<string, CmsModelFieldToGraphQLPlugin>);
 
     // Load model data
     context.security.disableAuthorization();

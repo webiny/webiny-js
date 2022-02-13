@@ -20,12 +20,13 @@ import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPl
 const fieldName = "richText";
 
 export class FileManagerElasticsearchRichTextFieldPlugin extends FileElasticsearchFieldPlugin {
-    getBasePath(field: string): string {
+    getBasePath(field: string): string | undefined {
         if (field === "richTextText") {
             return `${fieldName}.text`;
         } else if (field === "richTextEditor") {
             return `${fieldName}.editor`;
         }
+        return undefined;
     }
 }
 

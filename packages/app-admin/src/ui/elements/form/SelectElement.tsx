@@ -42,8 +42,8 @@ export class SelectElement extends FormFieldElement<SelectElementConfig> {
                 name={this.getName()}
                 validators={this.getValidators(props)}
                 defaultValue={this.getDefaultValue(props)}
-                beforeChange={(value, cb) => this.onBeforeChange(value, cb)}
-                afterChange={(value, form) => this.onAfterChange(value, form)}
+                beforeChange={(value: string, cb) => this.onBeforeChange(value, cb)}
+                afterChange={(value: string, form) => this.onAfterChange(value, form)}
             >
                 <Select
                     label={this.getLabel(props)}

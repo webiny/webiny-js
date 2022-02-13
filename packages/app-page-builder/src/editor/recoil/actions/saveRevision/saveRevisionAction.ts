@@ -6,12 +6,12 @@ import { ToggleSaveRevisionStateActionEvent } from "./event";
 import { EventActionCallable } from "~/types";
 import { PageAtomType } from "../../modules";
 
-type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> & {
+interface PageRevisionType extends Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> {
     category: string;
     content: any;
-};
+}
 
-let lastSavedRevisionData: any = {};
+let lastSavedRevisionData: PageRevisionType = undefined;
 
 const isDataEqualToLastSavedData = (data: PageRevisionType) => {
     return lodashIsEqual(data, lastSavedRevisionData);
@@ -23,8 +23,8 @@ const triggerOnFinish = (args?: SaveRevisionActionArgsType): void => {
     }
     args.onFinish();
 };
-
-let debouncedSave = null;
+// TODO @ts-refactor not worth it
+let debouncedSave: any = null;
 
 export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType> = async (
     state,
@@ -92,11 +92,15 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
     };
 
     if (args && args.debounce === false) {
+        /**
+         * TODO @ts-refactor should we await for this to finish?
+         */
         runSave();
-    } else {
-        debouncedSave = lodashDebounce(runSave, 2000);
-        debouncedSave();
+        return {};
     }
+
+    debouncedSave = lodashDebounce(runSave, 2000);
+    debouncedSave();
 
     return {};
 };

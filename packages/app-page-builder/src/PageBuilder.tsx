@@ -12,7 +12,7 @@ import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
 import { EditorProps, EditorRenderer } from "./admin/components/Editor";
 
-const PageBuilderProviderHOC = Component => {
+const PageBuilderProviderHOC = (Component: React.FC): React.FC => {
     return function PageBuilderProvider({ children }) {
         return (
             <ContextProvider>
@@ -22,7 +22,7 @@ const PageBuilderProviderHOC = Component => {
     };
 };
 
-const PageBuilderMenu = () => {
+const PageBuilderMenu: React.FC = () => {
     return (
         <HasPermission any={["pb.menu", "pb.category", "pb.page"]}>
             <Menu name="pageBuilder" label={"Page Builder"} icon={<PagesIcon />}>

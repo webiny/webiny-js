@@ -48,7 +48,7 @@ declare global {
     }
 }
 
-const ContentEntry = () => {
+export const ContentEntry: React.FC = () => {
     const {
         contentModel,
         loading,
@@ -112,5 +112,3 @@ const ContentEntry = () => {
         </DetailsContainer>
     );
 };
-
-export default ContentEntry;

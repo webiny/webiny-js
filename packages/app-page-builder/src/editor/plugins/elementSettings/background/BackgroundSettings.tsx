@@ -46,14 +46,12 @@ const imageSelect = css({
 const DATA_NAMESPACE = "data.settings.background";
 const BACKGROUND_SETTINGS_COUNT = 2;
 
-type SettingsPropsType = {
+interface SettingsPropsType extends PbEditorPageElementSettingsRenderComponentProps {
     options: {
         [key: string]: any;
     };
-};
-const BackgroundSettings: React.FunctionComponent<
-    SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = ({ options, defaultAccordionValue }) => {
+}
+const BackgroundSettings: React.FC<SettingsPropsType> = ({ options, defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));

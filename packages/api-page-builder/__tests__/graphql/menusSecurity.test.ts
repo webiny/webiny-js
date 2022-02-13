@@ -1,15 +1,21 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 
-function Mock(prefix = "") {
-    this.slug = `${prefix}slug`;
-    this.title = `${prefix}title`;
-    this.description = `${prefix}description`;
-    this.items = [
-        {
-            [`${prefix}items`]: "items"
-        }
-    ];
+class Mock {
+    public readonly slug: string;
+    public readonly title: string;
+    public readonly description: string;
+    public readonly items: Record<string, string>[];
+    constructor(prefix = "") {
+        this.slug = `${prefix}slug`;
+        this.title = `${prefix}title`;
+        this.description = `${prefix}description`;
+        this.items = [
+            {
+                [`${prefix}items`]: "items"
+            }
+        ];
+    }
 }
 
 const defaultHandler = useGqlHandler({

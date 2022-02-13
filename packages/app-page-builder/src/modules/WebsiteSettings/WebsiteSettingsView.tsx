@@ -8,7 +8,7 @@ import { usePbWebsiteSettings } from "./usePbWebsiteSettings";
 
 export const SettingsFields = makeComposable("SettingsFields", () => null);
 
-export const WebsiteSettingsView = () => {
+export const WebsiteSettingsView: React.FC = () => {
     const { fetching, saving, settings, saveSettings } = usePbWebsiteSettings();
 
     return (

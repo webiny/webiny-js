@@ -42,7 +42,10 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
 
     const { svg = null, position = "left" } = icon || {};
     // Use per-device style
-    const justifyContent = elementStyle[`--${kebabCase(uiAtomValue.displayMode)}-justify-content`];
+    const justifyContent =
+        elementStyle[
+            `--${kebabCase(uiAtomValue.displayMode)}-justify-content` as keyof CSSProperties
+        ];
 
     const onChange = useCallback(
         (received: string) => {
@@ -71,13 +74,16 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         );
     }, [elementId, element.data]);
 
+    const style: CSSProperties = {
+        display: "flex",
+        /**
+         * Figure out better types
+         */
+        // TODO @ts-refactor
+        justifyContent: justifyContent as any
+    };
     return (
-        <div
-            style={{
-                display: "flex",
-                justifyContent
-            }}
-        >
+        <div style={style}>
             <a
                 href={null}
                 style={elementStyle}

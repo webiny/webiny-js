@@ -1,13 +1,14 @@
+// TODO @ts-refactor figure out correct bind types and remove any
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
 import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { plugins } from "@webiny/plugins";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (field, bind) => {
+const getKey = (field: CmsEditorField, bind: any): string => {
     const formId = bind.form.data.id || "new";
     return `${formId}.${field.fieldId}`;
 };
@@ -35,17 +36,19 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    {bind => (
-                        <RichTextEditor
-                            key={getKey(field, bind)}
-                            {...rteProps}
-                            {...bind}
-                            onChange={bind.onChange}
-                            label={field.label}
-                            placeholder={field.placeholderText}
-                            description={field.helpText}
-                        />
-                    )}
+                    {bind => {
+                        return (
+                            <RichTextEditor
+                                key={getKey(field, bind)}
+                                {...rteProps}
+                                {...bind}
+                                onChange={bind.onChange}
+                                label={field.label}
+                                placeholder={field.placeholderText}
+                                description={field.helpText}
+                            />
+                        );
+                    }}
                 </Bind>
             );
         }

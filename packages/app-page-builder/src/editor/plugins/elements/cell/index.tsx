@@ -1,24 +1,24 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import CellContainer from "./CellContainer";
-import { executeAction } from "../../../recoil/eventActions";
-import { UpdateElementActionArgsType } from "../../../recoil/actions/updateElement/types";
-import {
-    CreateElementActionEvent,
-    DeleteElementActionEvent,
-    updateElementAction
-} from "../../../recoil/actions";
-import { addElementToParent, createDroppedElement, createElement } from "../../../helpers";
 import {
     DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
     PbEditorElement,
     PbEditorElementPluginArgs
-} from "../../../../types";
+} from "~/types";
 import { Plugin } from "@webiny/plugins/types";
-import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
-import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
+import { createInitialPerDeviceSettingValue } from "~/editor/plugins/elementSettings/elementSettingsUtils";
+import { addElementToParent, createDroppedElement, createElement } from "~/editor/helpers";
+import { executeAction } from "~/editor/recoil/eventActions";
+import { UpdateElementActionArgsType } from "~/editor/recoil/actions/updateElement/types";
+import {
+    CreateElementActionEvent,
+    DeleteElementActionEvent,
+    updateElementAction
+} from "~/editor/recoil/actions";
+import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
 
 const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const defaultSettings = [
@@ -42,7 +42,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
             return false;
         },
         create: (options = {}) => {
-            const defaultValue = {
+            const defaultValue: Partial<PbEditorElement> = {
                 type: elementType,
                 elements: [],
                 data: {

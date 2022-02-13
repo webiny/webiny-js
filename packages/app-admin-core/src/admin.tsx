@@ -13,8 +13,11 @@ import { Routes as SortRoutes } from "./components/utils/Routes";
 import { DebounceRender } from "./components/utils/DebounceRender";
 import { PluginsProvider } from "./components/core/Plugins";
 
-const compose = (...fns) => {
-    return Base => {
+/**
+ * TODO: Determine the exact type
+ */
+const compose = (...fns: any[]) => {
+    return (Base: any) => {
         return fns.reduceRight((Component, hoc) => hoc(Component), Base);
     };
 };

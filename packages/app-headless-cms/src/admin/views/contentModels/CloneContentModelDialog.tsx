@@ -14,9 +14,17 @@ import { ButtonDefault } from "@webiny/ui/Button";
 import * as UID from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
-import * as GQL from "../../viewsGraphql";
-import { CmsEditorContentModel } from "~/types";
+import { CmsEditorContentModel, CmsModel } from "~/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import {
+    CREATE_CONTENT_MODEL_FROM,
+    LIST_MENU_CONTENT_GROUPS_MODELS,
+    CreateCmsModelFromMutationResponse,
+    CreateCmsModelFromMutationVariables,
+    ListMenuCmsGroupsQueryResponse
+} from "../../viewsGraphql";
+import { CmsGroup } from "~/admin/views/contentModelGroups/graphql";
+import { CmsGroupOption } from "~/admin/views/contentModels/types";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/clone-content-model-dialog");
 
@@ -44,7 +52,10 @@ export interface Props {
  */
 const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
 
-const getSelectedGroup = (groups: any[], model: CmsEditorContentModel): string | null => {
+const getSelectedGroup = (
+    groups: CmsGroupOption[],
+    model: CmsEditorContentModel
+): string | null => {
     if (groups.length === 0 || !model) {
         return "";
     }
@@ -54,7 +65,7 @@ const getSelectedGroup = (groups: any[], model: CmsEditorContentModel): string |
         return group.value;
     }
     const defaultSelected = groups.find(() => true);
-    return defaultSelected ? defaultSelected.value : group.id;
+    return defaultSelected ? defaultSelected.value : null;
 };
 
 const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel, closeModal }) => {
@@ -64,9 +75,12 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
     const { getLocales, getCurrentLocale, setCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale();
-    const [locale, setLocale] = React.useState(currentLocale);
+    const [locale, setLocale] = React.useState<string>(currentLocale);
 
-    const [createContentModelFrom] = useMutation(GQL.CREATE_CONTENT_MODEL_FROM, {
+    const [createContentModelFrom] = useMutation<
+        CreateCmsModelFromMutationResponse,
+        CreateCmsModelFromMutationVariables
+    >(CREATE_CONTENT_MODEL_FROM, {
         onError(error) {
             setLoading(false);
             showSnackbar(error.message);
@@ -76,7 +90,8 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
 
             if (error) {
                 setLoading(false);
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return;
             }
 
             if (currentLocale !== locale) {
@@ -93,17 +108,22 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
         }
     });
 
-    const { data, loading: loadingGroups } = useQueryLocale(
-        GQL.LIST_MENU_CONTENT_GROUPS_MODELS,
+    const { data, loading: loadingGroups } = useQueryLocale<ListMenuCmsGroupsQueryResponse>(
+        LIST_MENU_CONTENT_GROUPS_MODELS,
         locale,
         {
             skip: !open
         }
     );
 
-    const contentModelGroups = get(data, "listContentModelGroups.data", []).map(item => {
-        return { value: item.id, label: item.name };
-    });
+    const contentModelGroups: CmsGroupOption[] = get(data, "listContentModelGroups.data", []).map(
+        (item: CmsGroup): CmsGroupOption => {
+            return {
+                value: item.id,
+                label: item.name
+            };
+        }
+    );
 
     const selectedGroup = getSelectedGroup(contentModelGroups, contentModel);
 
@@ -150,7 +170,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                         locale,
                         name: contentModel.name
                     }}
-                    onSubmit={async data => {
+                    onSubmit={async (data: CmsModel) => {
                         setLoading(true);
                         await createContentModelFrom({
                             variables: {
@@ -196,7 +216,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                                         <Bind
                                             name={"locale"}
                                             validators={validation.create("required")}
-                                            afterChange={value => {
+                                            afterChange={(value?: string) => {
                                                 if (!value) {
                                                     return;
                                                 }

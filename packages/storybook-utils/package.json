@@ -34,6 +34,7 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@emotion/styled": "^10.0.17",
+    "@types/highlight.js": "^9.1.0",
     "@webiny/cli": "^5.22.1",
     "@webiny/project-utils": "^5.22.1",
     "execa": "^5.0.0",

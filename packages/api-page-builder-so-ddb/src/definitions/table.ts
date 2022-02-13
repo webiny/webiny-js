@@ -2,7 +2,7 @@ import { Table } from "dynamodb-toolbox";
 import { TableModifier } from "~/types";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-export interface Params {
+interface Params {
     table?: TableModifier;
     documentClient: DocumentClient;
 }

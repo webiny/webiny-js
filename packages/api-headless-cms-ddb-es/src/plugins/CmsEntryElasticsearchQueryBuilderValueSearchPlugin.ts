@@ -19,7 +19,7 @@ export interface TransformCallable<T = any> {
     (params: TransformCallableParams<T>): string;
 }
 
-export interface Params {
+export interface CmsEntryElasticsearchQueryBuilderValueSearchPluginParams {
     fieldType: string;
     path?: string | CreatePathCallable;
     transform: TransformCallable;
@@ -27,13 +27,13 @@ export interface Params {
 export class CmsEntryElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
     public static readonly type: string = "cms-elastic-search-query-builder-value-search";
 
-    private readonly config: Params;
+    private readonly config: CmsEntryElasticsearchQueryBuilderValueSearchPluginParams;
 
     public get fieldType(): string {
         return this.config.fieldType;
     }
 
-    public constructor(params: Params) {
+    public constructor(params: CmsEntryElasticsearchQueryBuilderValueSearchPluginParams) {
         super();
 
         this.config = params;

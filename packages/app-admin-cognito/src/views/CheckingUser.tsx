@@ -2,7 +2,7 @@ import React from "react";
 import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
 import { CircularProgress } from "@webiny/ui/Progress";
 
-const CheckingUser = () => {
+const CheckingUser: React.FC = () => {
     const { checkingUser } = useAuthenticator();
 
     return checkingUser ? <CircularProgress label={"Verifying user..."} /> : null;

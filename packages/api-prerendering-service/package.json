@@ -30,6 +30,7 @@
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",
     "posthtml-plugin-link-preload": "^1.0.0",
+    "puppeteer": "^5.5.0",
     "shortid": "^2.2.16"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@babel/plugin-proposal-export-default-from": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
+    "@types/object-hash": "^2.2.1",
     "@webiny/cli": "^5.22.1",
     "@webiny/handler-aws": "^5.22.1",
     "@webiny/project-utils": "^5.22.1",

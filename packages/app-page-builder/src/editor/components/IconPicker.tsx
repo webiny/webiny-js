@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { CSSProperties, useCallback, useMemo, useState } from "react";
 import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
@@ -13,7 +13,17 @@ import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
 // Icons
 import { ReactComponent as IconPickerIcon } from "../assets/icons/icon-picker.svg";
 
-const noop = () => null;
+interface RenderCellCallableParams {
+    columnIndex: number;
+    rowIndex: number;
+    key: string;
+    style: CSSProperties;
+}
+interface RenderCellCallable {
+    (params: RenderCellCallableParams): React.ReactElement;
+}
+
+const noop = (): React.ReactElement => null;
 const gridItem = css({
     position: "relative",
     display: "flex",
@@ -214,7 +224,7 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     }, [filter, selectedIconPrefix, selectedIconName]);
 
     const renderCell = useCallback(
-        ({ closeMenu }) => {
+        ({ closeMenu }): RenderCellCallable => {
             return function renderCell({ columnIndex, key, rowIndex, style }) {
                 const item = icons[rowIndex * columnCount + columnIndex];
                 if (!item) {

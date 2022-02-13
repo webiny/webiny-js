@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy } from "react";
+import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -37,9 +37,12 @@ const INSTALL = gql`
     }
 `;
 
-const FBInstaller = ({ onInstalled }) => {
+interface FBInstallerProps {
+    onInstalled: () => void;
+}
+const FBInstaller: React.FC<FBInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         // Temporary fix for the ES index creation failure.
@@ -99,18 +102,18 @@ const plugin: AdminInstallationPlugin = {
         return <FBInstaller onInstalled={onInstalled} />;
     },
     upgrades: [
-        {
-            version: "5.0.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.0.0"));
-            }
-        },
-        {
-            version: "5.16.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.16.0"));
-            }
-        }
+        // {
+        //     version: "5.0.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.0.0"));
+        //     }
+        // },
+        // {
+        //     version: "5.16.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.16.0"));
+        //     }
+        // }
     ]
 };
 

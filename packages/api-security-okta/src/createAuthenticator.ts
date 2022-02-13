@@ -8,7 +8,7 @@ import { ContextPlugin } from "@webiny/handler";
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
 // All JWTs are split into 3 parts by two periods
-const isJwt = token => token.split(".").length === 3;
+const isJwt = (token: string) => token.split(".").length === 3;
 
 type Context = SecurityContext;
 
@@ -33,7 +33,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
         return jwksCache.get(key);
     };
 
-    const oktaAuthenticator = async idToken => {
+    const oktaAuthenticator = async (idToken?: string) => {
         if (typeof idToken === "string" && isJwt(idToken)) {
             try {
                 const jwks = await getJWKs();
@@ -43,7 +43,11 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                 if (!jwk) {
                     return null;
                 }
-
+                /**
+                 * Figure out the types.
+                 * TODO @ts-refactor
+                 */
+                // @ts-ignore
                 const token = await verify(idToken, jwkToPem(jwk));
                 if (!token.jti.startsWith("ID.")) {
                     throw new Error("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");
@@ -59,7 +63,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
     };
 
     return new ContextPlugin<Context>(({ security }) => {
-        security.addAuthenticator(async idToken => {
+        security.addAuthenticator(async (idToken?: string) => {
             const token = await oktaAuthenticator(idToken);
 
             if (!token) {

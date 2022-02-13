@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 import Error from "@webiny/error";
-import flatten from "lodash.flatten";
+import flatten from "lodash/flatten";
 import { AdminUsersStorageOperations, AdminUser } from "~/types";
 
 interface Config {
@@ -25,7 +25,7 @@ export const createUserLoaders = ({ storageOperations }: Config) => {
         const byTenant = ids.reduce((acc, item) => {
             acc[item.tenant] = [...(acc[item.tenant] || []), item.id];
             return acc;
-        }, {});
+        }, {} as Record<string, string[]>);
 
         try {
             const results = await Promise.all(

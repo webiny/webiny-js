@@ -1,11 +1,12 @@
 import * as React from "react";
 import Breadcrumbs from "./Breadcrumbs";
-import { PbEditorContentPlugin } from "../../../types";
+import { PbEditorContentPlugin } from "~/types";
 
-export default {
+const plugin: PbEditorContentPlugin = {
     name: "pb-editor-breadcrumbs",
     type: "pb-editor-content",
     render() {
         return <Breadcrumbs />;
     }
-} as PbEditorContentPlugin;
+};
+export default plugin;

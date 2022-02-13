@@ -1,13 +1,16 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
 
-type ResolveRequestChanges = ResolverFactory<any, { revision: string }>;
+interface ResolveRequestChangesArgs {
+    revision: string;
+}
+type ResolveRequestChanges = ResolverFactory<any, ResolveRequestChangesArgs>;
 
 export const resolveRequestChanges: ResolveRequestChanges =
     ({ model }) =>
-    async (_, args, { cms }) => {
+    async (_, args, context) => {
         try {
-            const entry = await cms.requestEntryChanges(model, args.revision);
+            const entry = await context.cms.requestEntryChanges(model, args.revision);
 
             return new Response(entry);
         } catch (e) {

@@ -1,3 +1,5 @@
-export default (args, configuration) => {
-    return args?.configuration?.db?.namespace || configuration?.db?.folder?.namepace || "";
+import { Args, Configuration } from "~/types";
+
+export default (args: Args, configuration: Configuration): string => {
+    return args?.configuration?.db?.namespace || configuration?.db?.folder?.namespace || "";
 };

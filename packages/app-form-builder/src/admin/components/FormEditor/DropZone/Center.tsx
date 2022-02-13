@@ -1,10 +1,11 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import Droppable from "./../Droppable";
-import { DragObjectWithType } from "react-dnd";
+import { Droppable, OnDropCallable } from "./../Droppable";
 
-// @ts-ignore
-const Container = styled("div")(({ isOver }: { isOver: boolean }) => ({
+interface ContainerProps {
+    isOver: boolean;
+}
+const Container = styled("div")(({ isOver }: ContainerProps) => ({
     backgroundColor: "transparent",
     boxSizing: "border-box",
     height: "100%",
@@ -18,8 +19,10 @@ const Container = styled("div")(({ isOver }: { isOver: boolean }) => ({
     opacity: 1
 }));
 
-// @ts-ignore
-const Add = styled("div")(({ isOver }: { isOver: boolean }) => ({
+interface AddProps {
+    isOver: boolean;
+}
+const Add = styled("div")(({ isOver }: AddProps) => ({
     position: "absolute",
     top: "50%",
     left: "50%",
@@ -28,15 +31,15 @@ const Add = styled("div")(({ isOver }: { isOver: boolean }) => ({
     color: isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)"
 }));
 
-type Props = {
+export interface CenterProps {
     type?: string;
-    onDrop(item: DragObjectWithType): void;
+    onDrop: OnDropCallable;
     children: React.ReactNode;
     active?: boolean;
     highlight?: boolean;
-};
+}
 
-export default function Center({ onDrop, children }: Props) {
+export const Center: React.FC<CenterProps> = ({ onDrop, children }) => {
     return (
         <Droppable onDrop={onDrop}>
             {({ isOver, drop }) => (
@@ -52,4 +55,4 @@ export default function Center({ onDrop, children }: Props) {
             )}
         </Droppable>
     );
-}
+};

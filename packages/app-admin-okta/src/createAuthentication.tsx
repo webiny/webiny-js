@@ -12,13 +12,18 @@ import { useSecurity } from "@webiny/app-serverless-cms";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 import { useTenancy, withTenant } from "@webiny/app-tenancy";
 import OktaSignInWidget from "./OktaSignInWidget";
-import { createGetIdentityData, LOGIN_MT, LOGIN_ST } from "./createGetIdentityData";
+import {
+    createGetIdentityData,
+    GetIdentityDataCallable,
+    LOGIN_MT,
+    LOGIN_ST
+} from "./createGetIdentityData";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
 
 export interface Config {
-    getIdentityData?: any;
+    getIdentityData?: GetIdentityDataCallable;
     loginMutation?: DocumentNode;
     oktaAuth: OktaAuth;
     oktaSignIn: OktaSignIn;
@@ -30,8 +35,19 @@ export interface Props {
     children: React.ReactNode;
 }
 
+interface WithGetIdentityDataProps {
+    getIdentityData: GetIdentityDataCallable;
+}
+
+interface AuthState {
+    isAuthenticated?: boolean;
+    idToken: {
+        clientId?: string;
+    };
+}
+
 export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config }: Config) => {
-    const withGetIdentityData = Component => {
+    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>): React.FC => {
         return function WithGetIdentityData({ children }) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
@@ -41,7 +57,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
         };
     };
 
-    const Authentication = ({ getIdentityData, children }: Props) => {
+    const Authentication: React.FC<Props> = ({ getIdentityData, children }) => {
         const timerRef = useRef(null);
         const apolloClient = useApolloClient();
         const { identity, setIdentity } = useSecurity();
@@ -89,7 +105,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
             );
         }, []);
 
-        const authStateChanged = useCallback(async authState => {
+        const authStateChanged = useCallback(async (authState: AuthState) => {
             setIsAuthenticated(authState.isAuthenticated);
             if (authState.isAuthenticated) {
                 // Make sure current app client ID matches token's clientId.

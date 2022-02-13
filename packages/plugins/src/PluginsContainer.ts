@@ -1,8 +1,8 @@
-import { Plugin } from "./types";
+import { Plugin, PluginCollection } from "./types";
 import uniqid from "uniqid";
 
-const isOptionsObject = item => item && !Array.isArray(item) && !item.type && !item.name;
-const normalizeArgs = args => {
+const isOptionsObject = (item?: any) => item && !Array.isArray(item) && !item.type && !item.name;
+const normalizeArgs = (args: any[]) => {
     let options = {};
 
     // Check if last item in the plugins array is actually an options object.
@@ -13,7 +13,7 @@ const normalizeArgs = args => {
     return [args, options];
 };
 
-const assign = (plugins: any, options, target: Object): void => {
+const assign = (plugins: any, options: any, target: Record<string, any>): void => {
     for (let i = 0; i < plugins.length; i++) {
         const plugin = plugins[i];
         if (Array.isArray(plugin)) {
@@ -38,7 +38,7 @@ export class PluginsContainer {
     private plugins: Record<string, Plugin> = {};
     private _byTypeCache: Record<string, Plugin[]> = {};
 
-    constructor(...args) {
+    constructor(...args: PluginCollection) {
         this.register(...args);
     }
 

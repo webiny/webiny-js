@@ -8,6 +8,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import usePermission from "../../../../../hooks/usePermission";
+import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-page-builder/page-details/header/request-changes");
 
@@ -29,8 +30,10 @@ const REQUEST_CHANGES = gql`
         }
     }
 `;
-
-const RequestChanges = props => {
+interface RequestChangesProps {
+    page: PbPageData;
+}
+const RequestChanges: React.FC<RequestChangesProps> = props => {
     const { page } = props;
     const { canRequestChange } = usePermission();
     const { showSnackbar } = useSnackbar();

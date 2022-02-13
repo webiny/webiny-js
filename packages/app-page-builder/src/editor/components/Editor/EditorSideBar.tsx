@@ -43,7 +43,7 @@ const PanelHighLight = styled("div")({
     "@keyframes wf-blink-in": { "40%": { opacity: 1 } }
 });
 
-const EditorSideBar = () => {
+const EditorSideBar: React.FC = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const [sidebarAtomValue, setSidebarAtomValue] = useRecoilState(sidebarAtom);

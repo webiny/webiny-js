@@ -12,7 +12,7 @@ import Accordion from "../components/Accordion";
 
 const DATA_NAMESPACE = "data.settings.shadow";
 
-const Settings: React.FunctionComponent = () => {
+const Settings: React.FC = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
@@ -25,7 +25,8 @@ const Settings: React.FunctionComponent = () => {
             <ContentWrapper direction={"column"}>
                 <Wrapper label={"Color"} containerClassName={classes.simpleGrid}>
                     <BaseColorPickerComponent
-                        label={"Color"}
+                        // @ts-refactor label does not exist on BaseColorPicker nor are props passed on
+                        // label={"Color"}
                         valueKey={DATA_NAMESPACE + ".color"}
                         updateValue={getUpdateValue("color")}
                         updatePreview={getUpdatePreview("color")}

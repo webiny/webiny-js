@@ -26,7 +26,7 @@ const createEntity = (entityName: string, table: Table, attributes: Attributes):
     });
 };
 
-export const createGroupEntity = (table, attributes = {}) => {
+export const createGroupEntity = (table: Table, attributes: Attributes = {}) => {
     return createEntity(ENTITIES.GROUP, table, {
         id: {
             type: "string"
@@ -62,7 +62,7 @@ export const createGroupEntity = (table, attributes = {}) => {
     });
 };
 
-export const createApiKeyEntity = (table, attributes = {}) => {
+export const createApiKeyEntity = (table: Table, attributes: Attributes = {}) => {
     return createEntity(ENTITIES.API_KEY, table, {
         id: {
             type: "string"
@@ -95,7 +95,7 @@ export const createApiKeyEntity = (table, attributes = {}) => {
     });
 };
 
-export const createSystemEntity = (table, attributes = {}) => {
+export const createSystemEntity = (table: Table, attributes: Attributes = {}) => {
     return createEntity(ENTITIES.SYSTEM, table, {
         tenant: {
             type: "string"
@@ -107,7 +107,7 @@ export const createSystemEntity = (table, attributes = {}) => {
     });
 };
 
-export const createTenantLinkEntity = (table, attributes = {}) => {
+export const createTenantLinkEntity = (table: Table, attributes: Attributes = {}) => {
     return createEntity(ENTITIES.TENANT_LINK, table, {
         createdOn: {
             type: "string"

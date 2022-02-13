@@ -2,8 +2,11 @@ import React from "react";
 import kebabCase from "lodash/kebabCase";
 import PagesList from "./PagesList";
 import GridPageList from "./components/GridPageList";
-import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../types";
-import { PbPageElementPagesListComponentPlugin } from "../../../../types";
+import {
+    PbRenderElementPluginArgs,
+    PbRenderElementPlugin,
+    PbPageElementPagesListComponentPlugin
+} from "~/types";
 import { PluginCollection } from "@webiny/plugins/types";
 
 export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
@@ -15,6 +18,11 @@ export default (args: PbRenderElementPluginArgs = {}): PluginCollection => {
             type: "pb-render-page-element",
             elementType: elementType,
             render({ element, theme }) {
+                /**
+                 * Figure out correct type for element data or PagesList.data
+                 */
+                // TODO @ts-refactor
+                // @ts-ignore
                 return <PagesList data={element.data} theme={theme} />;
             }
         } as PbRenderElementPlugin,

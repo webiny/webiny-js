@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { FbErrorResponse, FbSettings } from "~/types";
 
 const fields = /* GraphQL */ `
     {
@@ -11,11 +12,39 @@ const fields = /* GraphQL */ `
             domain
         }
         error {
+            data
+            code
             message
         }
     }
 `;
 
+export interface GetFormSettingsQueryResponse {
+    formBuilder: {
+        getSettings: {
+            data: FbSettings;
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface UpdateFormSettingsMutationResponse {
+    formBuilder: {
+        updateSettings: {
+            data: FbSettings;
+            error?: FbErrorResponse;
+        };
+    };
+}
+export interface UpdateFormSettingsMutationVariables {
+    data: {
+        domain: string;
+        reCaptcha: {
+            enabled: boolean;
+            siteKey: string;
+            secretKey: string;
+        };
+    };
+}
 const graphql = {
     query: gql`
             query GetSettings { 

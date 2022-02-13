@@ -1,5 +1,17 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { string, withFields } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import { ContextPlugin } from "@webiny/handler";

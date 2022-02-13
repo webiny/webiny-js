@@ -3,6 +3,7 @@ import { css } from "emotion";
 import { renderPlugins } from "@webiny/app/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
+import { PbPageData } from "~/types";
 
 const headerTitle = css({
     "&.mdc-layout-grid": {
@@ -30,7 +31,10 @@ const headerActions = css({
     alignItems: "center"
 });
 
-const Header = props => {
+interface HeaderProps {
+    page: PbPageData;
+}
+const Header: React.FC<HeaderProps> = props => {
     const { page } = props;
     return (
         <React.Fragment>

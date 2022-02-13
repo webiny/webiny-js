@@ -2,20 +2,27 @@ import { API } from "@editorjs/editorjs";
 
 const COLOR_TOOL_CLASS = "cdx-text-color";
 
-class TextColorTool {
-    _state: boolean;
-    color: string;
-    api: API;
-    tag: string;
-    class: string;
-    colorPicker: HTMLDivElement;
-    button: HTMLButtonElement;
-    config: {
-        themeColors: string[];
-    };
-    _CSS: any;
+interface Config {
+    themeColors: string[];
+}
 
-    constructor({ api, config }) {
+interface TextColorToolParams {
+    api: API;
+    config: Config;
+}
+
+class TextColorTool {
+    private _state: boolean;
+    private color: string;
+    private readonly api: API;
+    private readonly tag: string;
+    private readonly class: string;
+    private colorPicker: HTMLDivElement;
+    private button: HTMLButtonElement;
+    private readonly config: Config;
+    private readonly _CSS: any;
+
+    constructor({ api, config }: TextColorToolParams) {
         this.api = api;
         this.button = null;
         this._state = false;
@@ -44,7 +51,10 @@ class TextColorTool {
         // so markup added by Inline Tool will be removed on pasting or on saving.
         // We need this config so that `class` & `style` attributes will remain intact for "span".
         return {
-            span: el => {
+            /**
+             * TODO: figure out the element type
+             */
+            span: (el: Record<string, any>) => {
                 // Respect `class` and `style` attributes if this condition is meet.
                 if (el.classList.contains(COLOR_TOOL_CLASS)) {
                     return {
@@ -124,9 +134,8 @@ class TextColorTool {
     /**
      * Finally, when button is pressed Editor calls
      * surround method of the tool with Range object as an argument.
-     * @param range
      */
-    surround(range): void {
+    surround(range: Range): void {
         if (this.state) {
             this.unwrap(range);
             return;
@@ -135,7 +144,7 @@ class TextColorTool {
         this.wrap(range);
     }
 
-    wrap(range): void {
+    wrap(range: Range): void {
         const selectedText = range.extractContents();
         const mark = document.createElement(this.tag);
 
@@ -147,7 +156,7 @@ class TextColorTool {
         this.api.selection.expandToTag(mark);
     }
 
-    unwrap(range): void {
+    unwrap(range: Range): void {
         const mark = this.api.selection.findParentTag(this.tag, this.class);
         const text = range.extractContents();
 
@@ -156,7 +165,7 @@ class TextColorTool {
         range.insertNode(text);
     }
 
-    showActions(mark): void {
+    showActions(mark: HTMLElement): void {
         this.colorPicker.onclick = () => {
             mark.style.color = this.color;
         };
@@ -184,7 +193,7 @@ class TextColorTool {
         }
     }
 
-    convertToHex(color): string {
+    convertToHex(color: string): string {
         const rgb = color.match(/(\d+)/g);
 
         let hexR = parseInt(rgb[0]).toString(16);

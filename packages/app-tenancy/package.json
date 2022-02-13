@@ -21,6 +21,7 @@
     "@webiny/app-admin": "^5.22.1",
     "@webiny/plugins": "^5.22.1",
     "@webiny/ui": "^5.22.1",
+    "apollo-client": "^2.6.10",
     "graphql-tag": "^2.12.6",
     "react": "16.14.0",
     "react-dom": "16.14.0",

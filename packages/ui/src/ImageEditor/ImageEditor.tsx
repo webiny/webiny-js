@@ -1,10 +1,21 @@
 import * as React from "react";
-import * as toolbar from "./toolbar";
-import { ImageEditorTool } from "./toolbar/types";
+import { flip, filter, crop, rotate } from "./toolbar";
+import { ImageEditorTool, ToolbarTool } from "./toolbar/types";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import { ButtonSecondary, ButtonPrimary } from "../Button";
+/**
+ * Package load-script does not have types.
+ */
+// @ts-ignore
 import loadScript from "load-script";
+
+const toolbar = {
+    flip,
+    filter,
+    crop,
+    rotate
+};
 
 const Toolbar = styled("div")({
     display: "flex",
@@ -48,55 +59,64 @@ const initScripts = () => {
     });
 };
 
-export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
-
-type RenderPropArgs = {
+interface RenderPropArgs {
     render: Function;
     getCanvasDataUrl: () => string;
     activeTool?: ImageEditorTool;
     applyActiveTool: Function;
     cancelActiveTool: Function;
-};
+}
 
-type Props = {
+interface PropsOptions {
+    autoEnable: boolean;
+}
+
+interface Props {
     src: string;
     tools: ToolbarTool[];
-    options?: { [key: string]: any };
+    options?: {
+        flip: PropsOptions;
+        filter: PropsOptions;
+        crop: PropsOptions;
+        rotate: PropsOptions;
+    };
     onToolActivate?: Function;
     onToolDeactivate?: Function;
     children?: (props: RenderPropArgs) => React.ReactNode;
-};
+}
 
-type State = {
-    tool?: { [key: string]: any };
+interface State {
+    tool?: ImageEditorTool;
     src: string;
-};
+}
 
 class ImageEditor extends React.Component<Props, State> {
-    static defaultProps = {
+    static defaultProps: Partial<Props> = {
         tools: ["crop", "flip", "rotate", "filter"]
     };
 
-    state = {
+    state: State = {
         tool: null,
         src: ""
     };
 
-    canvas = React.createRef();
-    image = null;
+    public canvas = React.createRef<HTMLCanvasElement>();
+    public image: HTMLImageElement = null;
 
     componentDidMount() {
         initScripts().then(() => {
             this.updateCanvas();
             setTimeout(() => {
                 const { options } = this.props;
-                if (typeof options === "object" && options) {
-                    for (const key in options) {
-                        if (options[key].autoEnable === true) {
-                            const tool: ImageEditorTool | null = toolbar[key];
-                            tool && this.activateTool(tool);
-                            break;
-                        }
+                if (!options || typeof options !== "object") {
+                    return;
+                }
+                for (const key in options) {
+                    const option = options[key as ToolbarTool];
+                    if (option.autoEnable === true) {
+                        const tool: ImageEditorTool | null = toolbar[key as ToolbarTool];
+                        tool && this.activateTool(tool);
+                        break;
                     }
                 }
             }, 250);
@@ -106,7 +126,7 @@ class ImageEditor extends React.Component<Props, State> {
     updateCanvas = () => {
         const { src } = this.props;
         this.image = new window.Image();
-        const canvas = this.canvas.current as HTMLCanvasElement;
+        const canvas = this.canvas.current;
         if (canvas) {
             this.image.onload = () => {
                 if (this.image) {
@@ -121,9 +141,9 @@ class ImageEditor extends React.Component<Props, State> {
         }
     };
 
-    activateTool = (tool: string | ImageEditorTool) => {
+    activateTool = (tool: ToolbarTool | ImageEditorTool) => {
         if (typeof tool === "string") {
-            tool = toolbar[tool] as ImageEditorTool;
+            tool = toolbar[tool];
         }
 
         this.setState({ tool }, () => {
@@ -183,7 +203,7 @@ class ImageEditor extends React.Component<Props, State> {
             return {};
         }
 
-        return options[tool.name] || {};
+        return options[tool.name as ToolbarTool] || {};
     };
 
     render() {
@@ -213,7 +233,7 @@ class ImageEditor extends React.Component<Props, State> {
                         <>
                             {typeof tool.renderForm === "function" &&
                                 tool.renderForm({
-                                    options: this.getToolOptions(tool),
+                                    options: this.getToolOptions(tool as ImageEditorTool),
                                     image: this.image,
                                     canvas: this.canvas
                                 })}

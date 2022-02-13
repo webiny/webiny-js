@@ -1,7 +1,7 @@
 import { PageAtomType } from "../../modules";
 
-export type UpdatePageRevisionActionArgsType = {
+export interface UpdatePageRevisionActionArgsType {
     debounce?: boolean;
-    page: Omit<PageAtomType, "content">;
+    page: Omit<Partial<PageAtomType>, "content">;
     onFinish?: () => void;
-};
+}

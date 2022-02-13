@@ -1,3 +1,7 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import uniqid from "uniqid";
 import lodashGet from "lodash/get";
@@ -22,7 +26,6 @@ import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { PagePlugin } from "~/plugins/PagePlugin";
 import WebinyError from "@webiny/error";
 import lodashTrimEnd from "lodash/trimEnd";
-import { getZeroPaddedVersionNumber } from "~/utils/zeroPaddedVersionNumber";
 import {
     FlushParams,
     OnAfterPageCreateFromTopicParams,
@@ -43,7 +46,7 @@ import {
     RenderParams
 } from "~/graphql/types";
 import { createTopic } from "@webiny/pubsub";
-import { parseIdentifier } from "@webiny/utils";
+import { parseIdentifier, zeroPad } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
@@ -269,7 +272,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const pageId = mdbid();
             const version = 1;
 
-            const id = `${pageId}#${getZeroPaddedVersionNumber(version)}`;
+            const id = `${pageId}#${zeroPad(version)}`;
 
             const updateSettingsModel = new UpdateSettingsModel().populate({
                 general: {
@@ -381,7 +384,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             const version = latestPage.version + 1;
 
-            const newId = `${original.pid}#${getZeroPaddedVersionNumber(version)}`;
+            const newId = `${original.pid}#${zeroPad(version)}`;
 
             const page: Page = {
                 ...original,
@@ -573,13 +576,13 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 throw new NotFoundError("Non-existing page.");
             }
 
-            const [pageId] = id.split("#");
+            const { id: pageId } = parseIdentifier(id);
 
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, page, "ownedBy");
 
             const settings = await this.getCurrentSettings();
-            const pages = settings && settings.pages ? settings.pages : {};
+            const pages: Record<string, string> = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 // We don't allow delete operation for "published" version of special pages.
                 if (pages[key] === page.pid && page.status === "published") {
@@ -841,7 +844,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
 
             const settings = await this.getCurrentSettings();
-            const pages = settings && settings.pages ? settings.pages : {};
+            const pages: Record<string, string> = settings && settings.pages ? settings.pages : {};
             for (const key in pages) {
                 if (pages[key] === original.pid) {
                     throw new WebinyError(
@@ -1289,7 +1292,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
         },
 
         async listPageRevisions(pageId) {
-            const [pid] = pageId.split("#");
+            const { id: pid } = parseIdentifier(pageId);
 
             try {
                 const pages = await storageOperations.pages.listRevisions({

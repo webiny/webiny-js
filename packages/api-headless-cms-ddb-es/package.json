@@ -35,9 +35,7 @@
     "dataloader": "^2.0.0",
     "dynamodb-toolbox": "^0.3.4",
     "jsonpack": "^1.1.5",
-    "lodash.chunk": "^4.2.0",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.omit": "^4.5.0"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

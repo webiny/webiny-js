@@ -1,4 +1,4 @@
-export default location => {
+export default (location: Location) => {
     const params: { [key: string]: any } = {};
 
     if (location) {

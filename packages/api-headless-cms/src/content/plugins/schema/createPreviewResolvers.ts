@@ -5,13 +5,15 @@ import { createFieldResolversFactory } from "~/content/plugins/schema/createFiel
 import { createReadTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
 import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
 
+interface CreateReadResolversParams {
+    models: CmsModel[];
+    model: CmsModel;
+    context: CmsContext;
+    fieldTypePlugins: CmsFieldTypePlugins;
+}
 export interface CreateReadResolvers {
-    (params: {
-        models: CmsModel[];
-        model: CmsModel;
-        context: CmsContext;
-        fieldTypePlugins: CmsFieldTypePlugins;
-    }): any;
+    // TODO @ts-refactor determine correct type.
+    (params: CreateReadResolversParams): any;
 }
 
 export const createPreviewResolvers: CreateReadResolvers = ({

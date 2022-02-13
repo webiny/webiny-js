@@ -1,9 +1,12 @@
+import WebinyError from "@webiny/error";
 import { Table } from "dynamodb-toolbox";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import WebinyError from "@webiny/error";
 import { getDocumentClient } from "~/operations/utils";
 
-export default (params: { context: FileManagerContext }): Table => {
+export interface TableElasticsearchParams {
+    context: FileManagerContext;
+}
+export default (params: TableElasticsearchParams): Table => {
     const { context } = params;
     const tableName = process.env.DB_TABLE_ELASTICSEARCH;
 

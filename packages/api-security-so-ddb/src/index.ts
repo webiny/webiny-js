@@ -2,7 +2,9 @@ import { ENTITIES, SecurityStorageParams } from "~/types";
 import {
     ApiKey,
     Group,
+    ListTenantLinksByTypeParams,
     SecurityStorageOperations,
+    StorageOperationsGetTenantLinkByIdentityParams,
     System,
     TenantLink
 } from "@webiny/api-security/types";
@@ -19,20 +21,21 @@ import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/qu
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 
-const reservedFields = ["PK", "SK", "index", "data"];
+const reservedFields: string[] = ["PK", "SK", "index", "data"];
 
-const isReserved = name => {
-    if (reservedFields.includes(name)) {
-        throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
-            name
-        });
+const isReserved = (name: string): void => {
+    if (reservedFields.includes(name) === false) {
+        return;
     }
+    throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
+        name
+    });
 };
 
 export const createStorageOperations = (
     params: SecurityStorageParams
 ): SecurityStorageOperations => {
-    const { table: tableName, documentClient, attributes = {} } = params;
+    const { table: tableName, documentClient, attributes } = params;
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
             Object.keys(attrs).forEach(isReserved);
@@ -42,10 +45,13 @@ export const createStorageOperations = (
     const table = createTable({ table: tableName, documentClient });
 
     const entities = {
-        apiKeys: createApiKeyEntity(table, attributes[ENTITIES.API_KEY]),
-        system: createSystemEntity(table, attributes[ENTITIES.SYSTEM]),
-        groups: createGroupEntity(table, attributes[ENTITIES.GROUP]),
-        tenantLinks: createTenantLinkEntity(table, attributes[ENTITIES.TENANT_LINK])
+        apiKeys: createApiKeyEntity(table, attributes ? attributes[ENTITIES.API_KEY] : {}),
+        system: createSystemEntity(table, attributes ? attributes[ENTITIES.SYSTEM] : {}),
+        groups: createGroupEntity(table, attributes ? attributes[ENTITIES.GROUP] : {}),
+        tenantLinks: createTenantLinkEntity(
+            table,
+            attributes ? attributes[ENTITIES.TENANT_LINK] : {}
+        )
     };
 
     const createApiKeyKeys = ({ id, tenant }: Pick<ApiKey, "id" | "tenant">) => ({
@@ -63,7 +69,7 @@ export const createStorageOperations = (
         GSI1_SK: group.slug
     });
 
-    const createSystemKeys = tenant => ({
+    const createSystemKeys = (tenant: string) => ({
         PK: `T#${tenant}#SYSTEM`,
         SK: "SECURITY"
     });
@@ -262,7 +268,7 @@ export const createStorageOperations = (
         async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>({
             tenant,
             identity
-        }): Promise<TLink> {
+        }: StorageOperationsGetTenantLinkByIdentityParams): Promise<TLink> {
             try {
                 const result = await queryOne<TLink>({
                     entity: entities.tenantLinks,
@@ -351,7 +357,10 @@ export const createStorageOperations = (
 
             return cleanupItems(entities.tenantLinks, links);
         },
-        async listTenantLinksByType<TLink = TenantLink>({ type, tenant }): Promise<TLink[]> {
+        async listTenantLinksByType<TLink = TenantLink>({
+            type,
+            tenant
+        }: ListTenantLinksByTypeParams): Promise<TLink[]> {
             const links = await queryAll<TLink>({
                 entity: entities.tenantLinks,
                 partitionKey: `T#${tenant}`,

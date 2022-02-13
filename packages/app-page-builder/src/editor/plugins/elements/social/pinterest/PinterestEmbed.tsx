@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { get } from "lodash";
-import { PbEditorElement } from "../../../../../types";
+import { PbEditorElement } from "~/types";
 import useRenderEmptyEmbed from "../../../elements/utils/oembed/useRenderEmptyEmbed";
 
 declare global {
@@ -11,7 +11,11 @@ declare global {
     }
 }
 
-function appendSDK(props) {
+interface PinterestEmbedProps {
+    element: PbEditorElement;
+}
+
+async function appendSDK(props: PinterestEmbedProps): Promise<void> {
     const { element } = props;
     const { url } = get(element, "data.source") || {};
 
@@ -25,12 +29,14 @@ function appendSDK(props) {
         script.src = encodeURI("https://assets.pinterest.com/js/pinit.js");
         script.setAttribute("async", "");
         script.setAttribute("charset", "utf-8");
-        script.onload = resolve;
+        script.onload = () => {
+            return resolve();
+        };
         document.body.appendChild(script);
     });
 }
 
-function initEmbed(props) {
+async function initEmbed(props: PinterestEmbedProps): Promise<void> {
     const { element } = props;
     const node = document.getElementById(element.id);
     if (node && window.PinUtils) {
@@ -42,7 +48,7 @@ const centerAlign = css({
     textAlign: "center"
 });
 
-const getHTML = data => {
+const getHTML = (data: Record<string, any>): string => {
     return `<a
         data-pin-do="embedPin"
         data-pin-width="${data.size || "small"}"
@@ -50,7 +56,7 @@ const getHTML = data => {
     />`;
 };
 
-function PinterestEmbed(props: { element: PbEditorElement }) {
+const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
     const { element } = props;
 
     useEffect(() => {
@@ -59,8 +65,8 @@ function PinterestEmbed(props: { element: PbEditorElement }) {
 
     const renderEmpty = useRenderEmptyEmbed(element);
 
-    const renderEmbed = useCallback(() => {
-        const data = get(element, "data.source");
+    const renderEmbed = useCallback((): React.ReactElement => {
+        const data: Record<string, any> = get(element, "data.source");
         return (
             <div
                 id={element.id}
@@ -73,6 +79,6 @@ function PinterestEmbed(props: { element: PbEditorElement }) {
     const { url } = get(element, "data.source") || {};
 
     return url ? renderEmbed() : renderEmpty();
-}
+};
 
 export default React.memo(PinterestEmbed, (props, nextProps) => isEqual(props, nextProps));

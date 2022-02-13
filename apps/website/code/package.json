@@ -22,7 +22,7 @@
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
     "invariant": "^2.2.4",
-    "lodash.trim": "^4.4.2",
+    "lodash": "^4.4.2",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "react-helmet": "^6.1.0",
@@ -30,6 +30,7 @@
     "theme": "^0.1.0"
   },
   "devDependencies": {
+    "@types/react-helmet": "^6.1.0",
     "cross-env": "^5.0.2"
   },
   "scripts": {

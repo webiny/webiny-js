@@ -6,11 +6,14 @@ import { ReactComponent as InfoIcon } from "./assets/graphql.svg";
 import Playground from "./plugins/Playground";
 import playgroundPlugins from "./plugins";
 
+interface CreateApolloClientParams {
+    uri: string;
+}
 interface GraphQLPlaygroundProps {
-    createApolloClient({ uri: string }): ApolloClient<any>;
+    createApolloClient(params: CreateApolloClientParams): ApolloClient<any>;
 }
 
-const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundProps) => {
+const GraphQLPlaygroundExtension: React.FC<GraphQLPlaygroundProps> = ({ createApolloClient }) => {
     plugins.register(playgroundPlugins);
 
     return (

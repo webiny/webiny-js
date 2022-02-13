@@ -14,7 +14,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
         onInstall: createTopic<InstallEvent>("security.onInstall"),
         onAfterInstall: createTopic<InstallEvent>("security.onAfterInstall"),
         onCleanup: createTopic<ErrorEvent>("security.onCleanup"),
-        async getVersion() {
+        async getVersion(): Promise<string | null> {
             const tenantId = getTenant();
 
             if (!tenantId) {
@@ -53,7 +53,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async install(this: Security) {
+        async install(this: Security): Promise<void> {
             if (await this.getVersion()) {
                 throw new Error("Security is already installed.", "SECURITY_INSTALL_ABORTED");
             }

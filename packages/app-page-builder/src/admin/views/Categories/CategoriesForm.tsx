@@ -19,15 +19,16 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { categoryUrlValidator } from "./validators";
 import { plugins } from "@webiny/plugins";
-import { PbPageLayoutPlugin } from "../../../types";
+import { PbCategory, PbPageLayoutPlugin } from "~/types";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
-import pick from "object.pick";
+import pick from "lodash/pick";
 import get from "lodash/get";
 import set from "lodash/set";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-page-builder/admin/categories/form");
 
@@ -36,10 +37,10 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-type CategoriesFormProps = {
+interface CategoriesFormProps {
     canCreate: boolean;
-};
-const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
+}
+const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -114,16 +115,16 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
         [loadedCategory.slug]
     );
 
-    const data = useMemo(() => {
+    const data = useMemo((): PbCategory => {
         return getQuery.data?.pageBuilder?.getCategory.data || {};
     }, [loadedCategory.slug]);
 
     const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
+    const pbMenuPermission = useMemo((): SecurityPermission => {
         return identity.getPermission("pb.category");
     }, []);
 
-    const canSave = useMemo(() => {
+    const canSave = useMemo((): boolean => {
         // User should be able to save the form
         // if it's a new entry and user has the "own" permission set.
         if (!loadedCategory.slug && pbMenuPermission.own) {

@@ -1,7 +1,7 @@
 import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
 
-const fieldGraphQLTypes = {
+const fieldGraphQLTypes: Record<string, string> = {
     time: "Time",
     dateTimeWithoutTimezone: "DateTime",
     dateTimeWithTimezone: "DateTimeZ",
@@ -9,14 +9,17 @@ const fieldGraphQLTypes = {
 };
 
 const getFieldGraphQLType = (field: CmsModelField): string => {
-    const type = field.settings.type;
+    const type = field.settings?.type as string | undefined;
     if (!type || !fieldGraphQLTypes[type]) {
         return "DateTime";
     }
     return fieldGraphQLTypes[type];
 };
 
-const createListFilters = ({ field }) => {
+interface CreateListFiltersParams {
+    field: CmsModelField;
+}
+const createListFilters = ({ field }: CreateListFiltersParams) => {
     return `
         ${field.fieldId}: ${getFieldGraphQLType(field)}
         ${field.fieldId}_not: ${getFieldGraphQLType(field)}

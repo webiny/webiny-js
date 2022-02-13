@@ -27,6 +27,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
+import { PbMenu } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
@@ -49,10 +50,14 @@ const SORTERS = [
     }
 ];
 
-type PageBuilderMenusDataListProps = {
+interface MenuDataListResponse {
+    data: PbMenu[];
+}
+
+interface PageBuilderMenusDataListProps {
     canCreate: boolean;
-};
-const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) => {
+}
+const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ canCreate }) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const { history } = useRouter();
@@ -81,7 +86,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                 return menus;
             }
             const [field, order] = sort.split("_");
-            return orderBy(menus, field, order.toLowerCase());
+            return orderBy(menus, field, order.toLowerCase() as "asc" | "desc");
         },
         [sort]
     );
@@ -186,7 +191,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                 />
             }
         >
-            {({ data }) => (
+            {({ data }: MenuDataListResponse) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.slug} selected={item.slug === slug}>

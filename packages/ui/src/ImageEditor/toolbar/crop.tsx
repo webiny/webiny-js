@@ -1,8 +1,8 @@
 import React from "react";
 import { ImageEditorTool } from "./types";
 import { ReactComponent as CropIcon } from "./icons/crop.svg";
-import { IconButton } from "../../Button";
-import { Tooltip } from "../../Tooltip";
+import { IconButton } from "~/Button";
+import { Tooltip } from "~/Tooltip";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
@@ -21,7 +21,7 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Crop"}>
-                <IconButton icon={<CropIcon />} onClick={activateTool} />
+                <IconButton icon={<CropIcon />} onClick={() => activateTool("crop")} />
             </Tooltip>
         );
     },

@@ -4,7 +4,7 @@ import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
 import { ReactComponent as HeadlessCMSIcon } from "../../icons/devices_other-black-24px.svg";
 import { CMSPermissions } from "./CmsPermissions";
 
-export default {
+const plugin: AdminAppPermissionRendererPlugin = {
     type: "admin-app-permissions-renderer",
     name: "admin-app-permissions-renderer-cms",
     render(props) {
@@ -19,4 +19,5 @@ export default {
             </AccordionItem>
         );
     }
-} as AdminAppPermissionRendererPlugin;
+};
+export default plugin;

@@ -13,7 +13,7 @@ const t = i18n.ns("app-page-builder/editor/plugins/toolbar/navigator");
 
 export const NavigatorContext = createContext(null);
 
-const Navigator = () => {
+const Navigator: React.FC = () => {
     const [elementTree, setElementTree] = useState(null);
     const [expandAll, setExpandAll] = useState(false);
     const [activeElementPath, setActiveElementPath] = useState([]);

@@ -10,13 +10,13 @@ import { FormRenderPropParams } from "@webiny/form/types";
 import { useFieldEditor } from "~/admin/components/FieldEditor";
 import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
 
-type GeneralTabProps = {
+interface GeneralTabProps {
     field: CmsEditorField;
     form: FormRenderPropParams;
     fieldPlugin: CmsEditorFieldTypePlugin;
-};
+}
 
-const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
+const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { data } = useContentModelEditor();
@@ -34,15 +34,18 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         }, 200);
     }, []);
 
-    const afterChangeLabel = useCallback(value => {
+    const afterChangeLabel = useCallback((value: string) => {
         setValue("fieldId", camelCase(value));
     }, []);
 
-    const beforeChangeFieldId = useCallback((value, baseOnChange) => {
-        const newValue = value.trim();
+    const beforeChangeFieldId = useCallback(
+        (value: string, baseOnChange: (value: string) => void) => {
+            const newValue = value.trim();
 
-        baseOnChange(newValue);
-    }, []);
+            baseOnChange(newValue);
+        },
+        []
+    );
 
     const fieldIdValidator = useCallback(fieldId => {
         if (fieldId.trim().toLowerCase() !== "id") {
@@ -52,7 +55,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         throw new Error(`Cannot use "id" as Field ID.`);
     }, undefined);
 
-    const uniqueFieldIdValidator = useCallback(fieldId => {
+    const uniqueFieldIdValidator = useCallback((fieldId: string) => {
         const existingField = getField({ fieldId });
         if (!existingField) {
             return false;
@@ -64,7 +67,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         throw new Error("Please enter a unique Field ID.");
     }, undefined);
 
-    let additionalSettings = null;
+    let additionalSettings: React.ReactNode = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
             form,
@@ -75,7 +78,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     }
 
     const predefinedValuesEnabled = useMemo(
-        () =>
+        (): boolean =>
             fieldPlugin.field.allowPredefinedValues &&
             typeof fieldPlugin.field.renderPredefinedValues === "function",
         [field.fieldId]

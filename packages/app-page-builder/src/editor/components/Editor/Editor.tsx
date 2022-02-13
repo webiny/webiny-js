@@ -62,10 +62,10 @@ const triggerActionButtonClick = (name: string): void => {
     element.click();
 };
 
-type EditorPropsType = {
+interface EditorPropsType {
     page: PageAtomType;
     revisions: RevisionsAtomType;
-};
+}
 export const Editor: React.FunctionComponent<EditorPropsType> = ({ revisions }) => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();

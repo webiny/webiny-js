@@ -29,8 +29,8 @@ import {
 } from "~/helpers";
 import configurations from "~/configurations";
 import WebinyError from "@webiny/error";
-import lodashCloneDeep from "lodash.clonedeep";
-import lodashOmit from "lodash.omit";
+import lodashCloneDeep from "lodash/cloneDeep";
+import lodashOmit from "lodash/omit";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
@@ -49,6 +49,7 @@ import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 
 const createType = (): string => {
     return "cms.entry";
@@ -86,13 +87,20 @@ const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntr
     });
 };
 
-export interface Params {
+interface ElasticsearchDbRecord {
+    index: string;
+    data: Record<string, string>;
+}
+
+export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
-export const createEntriesStorageOperations = (params: Params): CmsEntryStorageOperations => {
+export const createEntriesStorageOperations = (
+    params: CreateEntriesStorageOperationsParams
+): CmsEntryStorageOperations => {
     const { entity, esEntity, elasticsearch, plugins } = params;
 
     const dataLoaders = new DataLoadersHandler({
@@ -599,7 +607,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             parentPath: "values"
         });
 
-        let response;
+        let response: ElasticsearchSearchResponse;
         try {
             response = await elasticsearch.search({
                 index,
@@ -675,9 +683,9 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             SK: createPublishedSortKey()
         };
 
-        let latestEsEntry = null;
+        let latestEsEntry: ElasticsearchDbRecord = null;
         try {
-            latestEsEntry = await getRecord({
+            latestEsEntry = await getRecord<ElasticsearchDbRecord>({
                 entity: esEntity,
                 keys: latestKeys
             });

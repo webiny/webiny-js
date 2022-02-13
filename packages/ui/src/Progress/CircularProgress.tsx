@@ -4,14 +4,14 @@ import styled from "@emotion/styled";
 import Spinner from "react-spinner-material";
 import { Typography } from "../Typography";
 
-type Props = {
+interface Props {
     label?: React.ReactNode;
-    size: number;
-    spinnerColor: string;
-    spinnerWidth: number;
-    visible: boolean;
+    size?: number;
+    spinnerColor?: string;
+    spinnerWidth?: number;
+    visible?: boolean;
     style?: React.CSSProperties;
-};
+}
 
 const SpinnerWrapper = styled("div")({
     width: "100%",
@@ -38,7 +38,14 @@ const Label = styled("div")({
     marginTop: 15
 });
 
-const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible, style }: Props) => {
+const CircularProgress: React.FC<Props> = ({
+    label,
+    size,
+    spinnerWidth,
+    spinnerColor,
+    visible,
+    style
+}) => {
     return (
         <SpinnerWrapper style={style}>
             <div className={"spinner__inner-wrapper"}>

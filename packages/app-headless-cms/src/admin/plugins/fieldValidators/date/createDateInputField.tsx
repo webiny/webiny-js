@@ -4,8 +4,9 @@ import { DateTimeWithTimezone } from "../../fieldRenderers/dateTime/DateTimeWith
 import { Time } from "../../fieldRenderers/dateTime/Time";
 import { CmsEditorField } from "~/types";
 import { DateOnly } from "~/admin/plugins/fieldRenderers/dateTime/DateOnly";
+import { BindComponentRenderProp } from "@webiny/form";
 
-export const createInputField = (field: CmsEditorField, bind: any) => {
+export const createInputField = (field: CmsEditorField, bind: BindComponentRenderProp) => {
     if (field.settings.type === "dateTimeWithoutTimezone") {
         return <DateTimeWithoutTimezone field={field} bind={bind} />;
     } else if (field.settings.type === "dateTimeWithTimezone") {
