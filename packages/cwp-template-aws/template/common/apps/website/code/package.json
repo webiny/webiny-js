@@ -29,7 +29,8 @@
     "theme": "^0.1.0"
   },
   "devDependencies": {
-    "cross-env": "^5.0.2"
+    "cross-env": "^5.0.2",
+    "@types/react-helmet": "^6.1.0"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",

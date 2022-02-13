@@ -25,7 +25,8 @@
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": false,
     "noStrictGenericChecks": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "strictBindCallApply": true
   },
   "exclude": [
     "node_modules",
