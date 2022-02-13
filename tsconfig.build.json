@@ -19,10 +19,13 @@
     "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }],
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "noImplicitUseStrict": true,
+    "noImplicitUseStrict": false,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": false,
+    "noStrictGenericChecks": false,
+    "noFallthroughCasesInSwitch": true
   },
   "exclude": [
     "node_modules",
