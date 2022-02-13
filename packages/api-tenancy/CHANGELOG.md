@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* **api-tenancy:** update CreateTenantInput interface and make tenant parent required ([ed0b473](https://github.com/webiny/webiny-js/commit/ed0b473610b0efe04e843bec914146dfcf9069f0))
+
+
+
+
+
 ## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
 
 **Note:** Version bump only for package @webiny/api-tenancy

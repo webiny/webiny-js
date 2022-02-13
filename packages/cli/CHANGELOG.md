@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* check project ID ([fe56278](https://github.com/webiny/webiny-js/commit/fe562788ace11ae3b571aa39d06328bcd220b100))
+* correct comment ([54c3686](https://github.com/webiny/webiny-js/commit/54c36860132ac4c6ee6f09cc4035223ba977c4f2))
+* eslint ([ad11ead](https://github.com/webiny/webiny-js/commit/ad11ead640111993e0cf6fb97ff6395633239cca))
+* remove redundant code ([d1dde23](https://github.com/webiny/webiny-js/commit/d1dde23233f04f09eae9fc42374752eb46f36512))
+* update deps ([6879623](https://github.com/webiny/webiny-js/commit/6879623d98b04229f07796fd601f4a3f0f534c3b))
+* use the right hooks ([318db7a](https://github.com/webiny/webiny-js/commit/318db7acb30a85fe15ad3f4082536a2bf7a52f22))
+
+
+
+
+
 ## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
 
 **Note:** Version bump only for package @webiny/cli

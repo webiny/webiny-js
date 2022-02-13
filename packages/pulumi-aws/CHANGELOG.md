@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* **pulumi-aws:** make sure S3 folder paths end with a trailing slash ([4042f86](https://github.com/webiny/webiny-js/commit/4042f8617e2d93a149efe0933877237c3be4bac9))
+
+
+
+
+
 ## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
 
 **Note:** Version bump only for package @webiny/pulumi-aws
