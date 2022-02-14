@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
     Menu as BaseMenu,
     MenuProps as RmwcMenuProps,
@@ -55,7 +55,6 @@ type State = {
  */
 class Menu extends React.Component<MenuProps, State> {
     static defaultProps: Partial<MenuProps> = {
-        handle: null,
         anchor: "topStart"
     };
 

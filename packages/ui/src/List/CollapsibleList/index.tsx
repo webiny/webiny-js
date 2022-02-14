@@ -1,5 +1,5 @@
 import "./index.css";
-import * as React from "react";
+import React from "react";
 import {
     CollapsibleList as RmwcCollapsibleList,
     CollapsibleListProps as RmwcCollapsibleListProps
@@ -9,7 +9,7 @@ export type CollapsibleListProps = RmwcCollapsibleListProps & {
     children: React.ReactNode; // import { CollapsibleList } from "@rmwc/list";
 };
 
-export const CollapsibleList = (props: CollapsibleListProps) => {
+export const CollapsibleList: React.FC<CollapsibleListProps> = props => {
     return <RmwcCollapsibleList {...props} />;
 };
 

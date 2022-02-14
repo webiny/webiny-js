@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Downshift, { ControllerStateAndHelpers, PropGetters } from "downshift";
 import { Input } from "~/Input";
 import classNames from "classnames";
@@ -57,11 +57,11 @@ function Spinner() {
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
     options: AutoCompleteProps["options"];
-    placement: AutoCompleteProps["placement"];
+    placement?: Placement;
 }
 
 interface OptionsListProps {
-    placement: Placement;
+    placement?: Placement;
     getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
 }
 
@@ -136,7 +136,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
     /**
      * Renders options - based on user's input. It will try to match input text with available options.
      */
-    renderOptions({
+    private renderOptions({
         options,
         isOpen,
         highlightedIndex,
@@ -224,7 +224,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         );
     }
 
-    render() {
+    public render() {
         const {
             className,
             options,
@@ -278,7 +278,9 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                         const keyCode: string = keycode(ev as unknown as Event);
 
                                         if (keyCode === "backspace") {
-                                            onChange(null);
+                                            if (onChange) {
+                                                onChange(null);
+                                            }
                                             setTimeout(() => openMenu(), 50);
                                         }
                                     },

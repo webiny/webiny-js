@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { css } from "emotion";
 import classNames from "classnames";
 const avatar = css({
@@ -34,7 +34,7 @@ const avatar = css({
     }
 });
 
-export type AvatarProps = {
+export interface AvatarProps {
     /**
      * CSS class name.
      */
@@ -75,12 +75,12 @@ export type AvatarProps = {
      * Text that will be shown when there is no image (usually user's initials).
      */
     fallbackText: string;
-};
+}
 
 /**
  * Use Avatar component to display user's avatar.
  */
-export const Avatar = (props: AvatarProps) => {
+export const Avatar: React.FC<AvatarProps> = props => {
     const { className, width, height, src, alt, fallbackText, renderImage, ...rest } = props;
 
     let renderedImage;

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ImageEditor } from "~/ImageEditor";
 import { Tooltip } from "~/Tooltip";
 import { css } from "emotion";
@@ -44,9 +44,9 @@ const imageEditorDialog = css({
 });
 
 class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolean }> {
-    imageEditor: React.RefObject<ImageEditor> = React.createRef();
+    public imageEditor: React.RefObject<ImageEditor> = React.createRef();
 
-    render() {
+    public render() {
         const { src, options, onAccept, open, dialogZIndex, ...dialogProps } = this.props;
 
         return (
@@ -57,11 +57,7 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
                 {...dialogProps}
             >
                 {open && (
-                    <ImageEditor
-                        ref={this.imageEditor as React.Ref<any>}
-                        src={src}
-                        options={options}
-                    >
+                    <ImageEditor ref={this.imageEditor} src={src} options={options}>
                         {({ render, activeTool }) => (
                             <>
                                 <DialogContent>{render()}</DialogContent>
@@ -76,11 +72,14 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
                                         </Tooltip>
                                     ) : (
                                         <DialogAccept
-                                            onClick={() =>
-                                                onAccept(
-                                                    this.imageEditor.current.getCanvasDataUrl()
-                                                )
-                                            }
+                                            onClick={() => {
+                                                /**
+                                                 * We are certain that ref exists.
+                                                 */
+                                                return onAccept(
+                                                    this.imageEditor.current!.getCanvasDataUrl()
+                                                );
+                                            }}
                                         >
                                             Save
                                         </DialogAccept>

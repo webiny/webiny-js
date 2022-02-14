@@ -83,7 +83,7 @@ const transitionStyles = {
     }
 };
 
-export type AccordionItemProps = {
+export interface AccordionItemProps {
     /**
      * Left side icon
      */
@@ -100,11 +100,6 @@ export type AccordionItemProps = {
     description?: string;
 
     /**
-     * Element displayed when accordion is expanded
-     */
-    children?: React.ReactNode;
-
-    /**
      * Append a class name
      */
     className?: string;
@@ -117,17 +112,17 @@ export type AccordionItemProps = {
      * For testing purpose
      */
     "data-testid"?: string;
-};
+}
 
-const AccordionItem = (props: AccordionItemProps) => {
-    const [open, setState] = useState(props.open ? props.open : false);
+const AccordionItem: React.FC<AccordionItemProps> = props => {
+    const [open, setState] = useState<boolean>(props.open ? props.open : false);
 
     const toggleState = useCallback(() => {
         setState(!open);
     }, [open]);
 
     useEffect(() => {
-        setState(props.open);
+        setState(props.open ? true : false);
     }, [props.open]);
 
     return (

@@ -1,5 +1,4 @@
 import React from "react";
-import { Form } from "./Form";
 
 export interface BindComponentRenderPropValidation {
     isValid: boolean;
@@ -28,17 +27,16 @@ export interface BindComponentRenderProp<T = any> {
 }
 
 export interface BindComponentProps {
-    // TODO @ts-refactor verify that name can be undefined
-    name?: string;
+    name: string;
     beforeChange?: (value: any, cb: (value: string | string[]) => void) => void;
-    afterChange?: (value: any, form: Form) => void;
+    afterChange?: (value: any, form: FormAPI) => void;
     defaultValue?: any;
     validators?: Function | Array<Function>;
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
     validate?: Function;
 }
 
-export type BindComponent = (props: BindComponentProps) => React.ReactElement;
+export type BindComponent = (props: BindComponentProps) => React.ReactElement | null;
 
 export type FormRenderPropParamsSubmit = (event?: React.SyntheticEvent<any, any>) => Promise<void>;
 
@@ -58,7 +56,7 @@ export type FormData = { [key: string]: any };
 
 export type Validation = { [key: string]: any };
 
-export type FormOnSubmit<T = FormData> = (data: T, form?: Form) => void;
+export type FormOnSubmit<T = FormData> = (data: T, form?: FormAPI) => void;
 
 export interface FormProps<T extends Record<string, any> = Record<string, any>> {
     invalidFields?: { [key: string]: any };

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import classNames from "classnames";
 import { ReactComponent as AddImageIcon } from "./icons/round-add_photo_alternate-24px.svg";
 import { ReactComponent as RemoveImageIcon } from "./icons/round-close-24px.svg";
@@ -14,7 +14,7 @@ import {
     RemoveImage
 } from "./styled";
 
-type Props = {
+interface Props {
     uploadImage: Function;
     removeImage?: Function;
     editImage?: Function;
@@ -26,7 +26,7 @@ type Props = {
     renderImagePreview?: (props: any) => React.ReactElement<any>;
     round?: boolean;
     containerStyle?: React.CSSProperties;
-};
+}
 
 class Image extends React.Component<Props> {
     static defaultProps = {

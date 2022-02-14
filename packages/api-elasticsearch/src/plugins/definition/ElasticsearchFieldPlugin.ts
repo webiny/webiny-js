@@ -5,8 +5,10 @@ export type UnmappedTypes = "date" | "long" | string;
 
 const keywordLessUnmappedType = ["date", "long"];
 
-const unmappedTypeHasKeyword = (type: string): boolean => {
-    if (keywordLessUnmappedType.includes(type)) {
+const unmappedTypeHasKeyword = (type?: string): boolean => {
+    if (!type) {
+        return true;
+    } else if (keywordLessUnmappedType.includes(type)) {
         return false;
     }
     return true;
@@ -26,7 +28,7 @@ export interface ToSearchValueParams {
      */
     basePath: string;
 }
-export interface Params {
+export interface ElasticsearchFieldPluginParams {
     /**
      * Which field is this plugin for.
      */
@@ -67,7 +69,7 @@ export abstract class ElasticsearchFieldPlugin extends Plugin {
     private readonly _field: string;
     private readonly _path: string;
     private readonly _keyword: boolean;
-    private readonly _unmappedType: string;
+    private readonly _unmappedType?: string;
     private readonly _sortable: boolean;
     private readonly _searchable: boolean;
 
@@ -95,7 +97,7 @@ export abstract class ElasticsearchFieldPlugin extends Plugin {
         return this._searchable;
     }
 
-    constructor(params: Params) {
+    constructor(params: ElasticsearchFieldPluginParams) {
         super();
         this._field = params.field;
         this._path = params.path || params.field;

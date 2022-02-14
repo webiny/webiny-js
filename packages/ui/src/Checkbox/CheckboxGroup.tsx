@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { FormComponentProps } from "./../types";
 import { webinyCheckboxTitle } from "./Checkbox.styles";
 import { FormElementMessage } from "../FormElementMessage";

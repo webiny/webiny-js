@@ -1,5 +1,11 @@
 import * as React from "react";
-import _ from "lodash";
+import lodashGet from "lodash/get";
+import lodashCloneDeep from "lodash/cloneDeep";
+import lodashIsPlainObject from "lodash/isPlainObject";
+import lodashIsEqual from "lodash/isEqual";
+import lodashNoop from "lodash/noop";
+import lodashEach from "lodash/each";
+import lodashHas from "lodash/has";
 import set from "lodash/fp/set";
 import { Bind } from "./BindNew";
 import ValidationError from "./ValidationError";
@@ -26,7 +32,13 @@ interface OnValidateCallable {
     (): void;
 }
 
-export const FormContext = React.createContext<FormAPI>(null);
+export const FormContext = React.createContext<FormAPI>({
+    data: {},
+    submit: async () => {},
+    setValue: () => {},
+    validate: () => {},
+    validateInput: async () => {}
+});
 
 export const useForm = () => {
     return useContext(FormContext);
@@ -36,7 +48,7 @@ export const useBind = (props: BindComponentProps) => {
     const form = useForm();
 
     useEffect(() => {
-        if (props.defaultValue !== undefined && _.get(form.data, props.name) === undefined) {
+        if (props.defaultValue !== undefined && lodashGet(form.data, props.name) === undefined) {
             form.setValue(props.name, props.defaultValue);
         }
     }, []);
@@ -53,26 +65,31 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
         validation: {}
     });
 
-    const [prevData, setPrevData] = useState(null);
+    const [prevData, setPrevData] = useState<FormData | null>(null);
 
     // This simulates "getDerivedStateFromProps"
     if (props.data !== prevData) {
-        setPrevData(props.data);
+        setPrevData(() => {
+            return props.data || null;
+        });
 
         // If we received new `data`, overwrite current `data` in the state
-        if (!_.isEqual(state.originalData, props.data)) {
+        if (!lodashIsEqual(state.originalData, props.data)) {
             setState(state => ({
                 ...state,
-                data: props.data,
-                originalData: props.data,
+                data: props.data || {},
+                originalData: props.data || {},
                 validation: {}
             }));
         }
 
         // Check for validation errors
-        let validation = _.cloneDeep(state.validation);
-        if (_.isPlainObject(props.invalidFields) && Object.keys(props.invalidFields).length) {
-            _.each(props.invalidFields, (message, name) => {
+        let validation = lodashCloneDeep(state.validation);
+        if (
+            lodashIsPlainObject(props.invalidFields) &&
+            Object.keys(props.invalidFields || {}).length
+        ) {
+            lodashEach(props.invalidFields, (message, name) => {
                 validation = {
                     ...validation,
                     [name]: {
@@ -84,14 +101,14 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
         }
 
         // Return new state only if something has changed
-        if (!_.isEqual(validation, state.validation)) {
+        if (!lodashIsEqual(validation, state.validation)) {
             setState(state => ({ ...state, validation }));
         }
     }
 
     const inputs = useRef<Record<string, any>>({});
     const afterChange = useRef<Record<string, boolean>>({});
-    const lastRender = useRef([]);
+    const lastRender = useRef<string[]>([]);
     const validateFns = useRef<Record<string, OnValidateCallable>>({});
     const onChangeFns = useRef<Record<string, OnChangeCallable>>({});
 
@@ -99,7 +116,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
         if (!onChangeFns.current[name]) {
             const linkStateChange = (
                 value: any,
-                inlineCallback: Function = _.noop
+                inlineCallback: Function = lodashNoop
             ): Promise<any> => {
                 return new Promise(resolve => {
                     afterChange.current[name] = true;
@@ -137,20 +154,23 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
 
         return validateFns.current[name];
     };
-
-    const formRef = useRef(null);
-    const stateRef = useRef(null);
+    /**
+     * We need to cast so we can avoid a lot of casting later on.
+     */
+    const formRef = useRef<FormAPI>(null as unknown as FormAPI);
+    const stateRef = useRef<State>(null as unknown as State);
 
     useEffect(() => {
-        Object.keys(inputs.current).forEach(name => {
-            if (!lastRender.current.includes(name)) {
-                delete inputs.current[name];
-                setState((state: State) => {
-                    const validation = { ...state.validation };
-                    delete validation[name];
-                    return { ...state, validation };
-                });
+        Object.keys(inputs.current).forEach((name: string) => {
+            if (lastRender.current.includes(name)) {
+                return;
             }
+            delete inputs.current[name];
+            setState((state: State) => {
+                const validation = { ...state.validation };
+                delete validation[name];
+                return { ...state, validation };
+            });
         });
 
         formRef.current = getFormRef();
@@ -169,7 +189,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
             // Execute onAfterChange
             if (inputs.current[name].afterChange) {
                 inputs.current[name].afterChange(
-                    _.get(formRef.current.data, name),
+                    lodashGet(formRef.current.data, name),
                     formRef.current
                 );
             }
@@ -234,7 +254,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
                 const inputNames = Object.keys(inputs.current);
                 inputNames.forEach(name => {
                     const defaultValue = inputs.current[name].defaultValue;
-                    if (!_.has(data, name) && typeof defaultValue !== "undefined") {
+                    if (!lodashHas(data, name) && typeof defaultValue !== "undefined") {
                         data = set(name, defaultValue, data);
                     }
                 });
@@ -288,9 +308,9 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
         ) {
             return Promise.resolve(null);
         }
-        const value = _.get(stateRef.current.data, name, inputs.current[name].defaultValue);
+        const value = lodashGet(stateRef.current.data, name, inputs.current[name].defaultValue);
         const { validators } = inputs.current[name];
-        const hasValidators = _.keys(validators).length;
+        const hasValidators = Object.keys(validators).length > 0;
 
         // Validate input
         const formData = {
@@ -405,7 +425,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
             disabled: isDisabled(),
             validate: getValidateFn(name),
             validation: getValidationState(name),
-            value: _.get(state.data, name, defaultValue),
+            value: lodashGet(state.data, name, defaultValue),
             onChange: getOnChangeFn({ name, beforeChange })
         };
     };
@@ -421,7 +441,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
     lastRender.current = [];
 
     const children = props.children;
-    if (!_.isFunction(children)) {
+    if (typeof children !== "function") {
         throw new Error("Form must have a function as its only child!");
     }
 
@@ -453,5 +473,5 @@ Form.defaultProps = {
     data: {},
     disabled: false,
     validateOnFirstSubmit: false,
-    onSubmit: null
+    onSubmit: () => {}
 };

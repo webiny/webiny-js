@@ -1,14 +1,20 @@
-import * as React from "react";
+import React from "react";
 import { default as RcTooltip } from "rc-tooltip";
 import "rc-tooltip/assets/bootstrap_white.css";
 import "./style.scss";
+
+type TooltipPropsContent =
+    | (() => React.ReactChild)
+    | React.ReactChild
+    | React.ReactFragment
+    | React.ReactPortal;
 
 interface TooltipProps {
     // A component (eg. button) which will trigger the tooltip.
     children: React.ReactNode;
 
     // Content which will be shown inside the tooltip.
-    content: React.ReactNode;
+    content: TooltipPropsContent;
 
     // Defines which action will trigger the tooltip: "hover", "click" or "focus".
     trigger?: string;

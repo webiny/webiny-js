@@ -8,7 +8,7 @@ import { IconButton } from "~/Button";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
-let cropper: Cropper = null;
+let cropper: Cropper;
 
 class RenderForm extends React.Component<any, any> {
     state = {
@@ -52,7 +52,10 @@ const tool: ImageEditorTool = {
         return <RenderForm {...props} />;
     },
     onActivate: ({ canvas }) => {
-        cropper = new Cropper(canvas.current, {
+        /**
+         * We can safely cast canvas.current as HTMLCanvasElement
+         */
+        cropper = new Cropper(canvas.current as HTMLCanvasElement, {
             background: false,
             modal: false,
             guides: false,
@@ -73,7 +76,7 @@ const tool: ImageEditorTool = {
             const src = cropper.getCroppedCanvas().toDataURL();
             if (current) {
                 const image = new window.Image();
-                const ctx = current.getContext("2d");
+                const ctx = current.getContext("2d") as CanvasRenderingContext2D;
                 image.onload = () => {
                     ctx.drawImage(image, 0, 0);
                     current.width = image.width;

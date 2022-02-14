@@ -2,6 +2,7 @@ import * as React from "react";
 import { get } from "lodash";
 import { Form } from "./Form";
 import invariant from "invariant";
+import { FormAPI } from "~/types";
 
 export type BindComponentRenderPropValidation = {
     isValid: boolean;
@@ -12,8 +13,7 @@ export type BindComponentRenderPropValidation = {
 export type BindComponentRenderPropOnChange = (value: any) => Promise<void>;
 
 export type BindComponentRenderProp<T = any> = {
-    // TODO @ts-refactor change to Form type
-    form: Object;
+    form: FormAPI;
     onChange: BindComponentRenderPropOnChange;
     value: T;
     validate: () => Promise<boolean | any>;
@@ -38,7 +38,7 @@ export interface BindComponentProps {
     validate?: Function;
 }
 
-export type BindComponent = (props: BindComponentProps) => React.ReactElement;
+export type BindComponent = (props: BindComponentProps) => React.ReactElement | null;
 
 const createBind = (form: Form) => {
     const Bind: BindComponent = props => {

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Radio as RmwcRadio } from "@rmwc/radio";
 import { FormComponentProps } from "~/types";
 import { FormElementMessage } from "~/FormElementMessage";
@@ -19,16 +19,15 @@ type Props = FormComponentProps & {
  * Each Radio component must receive value and onChange callback via props.
  */
 class Radio extends React.Component<Props> {
-    static defaultProps: Partial<Props> = {
-        validation: { isValid: null, message: null }
-    };
-
     onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
         this.props.onChange && this.props.onChange((e.target as any).checked);
     };
 
     render() {
         const { value, label, disabled, description, validation } = this.props;
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
         return (
             <React.Fragment>
                 <RmwcRadio
@@ -38,11 +37,11 @@ class Radio extends React.Component<Props> {
                     // @ts-ignore Although the label is React.ReactNode internally, an error is still thrown.
                     label={label}
                 />
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>

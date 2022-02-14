@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { flip, filter, crop, rotate } from "./toolbar";
 import { ImageEditorTool, ToolbarTool } from "./toolbar/types";
 import styled from "@emotion/styled";
@@ -96,12 +96,12 @@ class ImageEditor extends React.Component<Props, State> {
     };
 
     state: State = {
-        tool: null,
+        tool: undefined,
         src: ""
     };
 
     public canvas = React.createRef<HTMLCanvasElement>();
-    public image: HTMLImageElement = null;
+    public image?: HTMLImageElement;
 
     componentDidMount() {
         initScripts().then(() => {
@@ -132,7 +132,7 @@ class ImageEditor extends React.Component<Props, State> {
                 if (this.image) {
                     canvas.width = this.image.width;
                     canvas.height = this.image.height;
-                    const ctx = canvas.getContext("2d");
+                    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
                     ctx.drawImage(this.image, 0, 0);
                 }
             };
@@ -154,7 +154,9 @@ class ImageEditor extends React.Component<Props, State> {
     };
 
     deactivateTool = () => {
-        this.setState({ tool: null });
+        this.setState({
+            tool: undefined
+        });
     };
 
     getCanvasDataUrl = () => {
@@ -234,16 +236,26 @@ class ImageEditor extends React.Component<Props, State> {
                             {typeof tool.renderForm === "function" &&
                                 tool.renderForm({
                                     options: this.getToolOptions(tool as ImageEditorTool),
-                                    image: this.image,
+                                    image: this.image as HTMLImageElement,
                                     canvas: this.canvas
                                 })}
 
                             <ApplyCancelActions>
-                                <ButtonSecondary onClick={this.cancelActiveTool}>
+                                <ButtonSecondary
+                                    onClick={() => {
+                                        this.cancelActiveTool();
+                                    }}
+                                >
                                     Cancel
                                 </ButtonSecondary>
                                 &nbsp;
-                                <ButtonPrimary onClick={this.applyActiveTool}>Apply</ButtonPrimary>
+                                <ButtonPrimary
+                                    onClick={() => {
+                                        this.applyActiveTool();
+                                    }}
+                                >
+                                    Apply
+                                </ButtonPrimary>
                             </ApplyCancelActions>
                         </>
                     ) : (

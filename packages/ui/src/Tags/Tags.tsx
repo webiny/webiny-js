@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Input } from "~/Input";
+import React from "react";
+import { Input, InputProps } from "~/Input";
 import { Chips, Chip } from "../Chips";
 import { FormComponentProps } from "~/types";
 import { css } from "emotion";
@@ -55,9 +55,9 @@ type Props = FormComponentProps & {
     autoFocus?: boolean;
 };
 
-type State = {
+interface State {
     inputValue: string;
-};
+}
 
 const tagsStyle = css({
     position: "relative",
@@ -86,15 +86,11 @@ export class Tags extends React.Component<Props, State> {
         inputValue: ""
     };
 
-    static defaultProps: Partial<Props> = {
-        validation: { isValid: null, message: null }
-    };
-
     render() {
         const { validation, value, disabled, onChange, description, ...otherInputProps } =
             this.props;
 
-        const inputProps = {
+        const inputProps: InputProps = {
             ...otherInputProps,
             value: this.state.inputValue,
             onChange: (inputValue: string) => {
@@ -128,15 +124,17 @@ export class Tags extends React.Component<Props, State> {
             }
         };
 
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
         return (
             <div className={tagsStyle}>
                 <div>
                     <Input {...inputProps} />
 
-                    {validation.isValid === false && (
-                        <FormElementMessage error>{validation.message}</FormElementMessage>
+                    {validationIsValid === false && (
+                        <FormElementMessage error>{validationMessage}</FormElementMessage>
                     )}
-                    {validation.isValid !== false && description && (
+                    {validationIsValid !== false && description && (
                         <FormElementMessage>{description}</FormElementMessage>
                     )}
 

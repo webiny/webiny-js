@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Select as RmwcSelect, SelectProps as RmwcSelectProps } from "@rmwc/select";
 import { FormElementMessage } from "~/FormElementMessage";
 import { FormComponentProps } from "~/types";
@@ -69,6 +69,9 @@ export const Select: React.FC<SelectProps> = props => {
     const { value: initialValue, description, validation, ...other } = props;
 
     const value = initialValue === null || initialValue === undefined ? "" : initialValue;
+
+    const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
     return (
         <React.Fragment>
             <RmwcSelect
@@ -82,19 +85,15 @@ export const Select: React.FC<SelectProps> = props => {
                 }}
             />
 
-            {validation.isValid === false && (
-                <FormElementMessage error>{validation.message}</FormElementMessage>
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
             )}
 
-            {validation.isValid !== false && description && (
+            {validationIsValid !== false && description && (
                 <FormElementMessage>{description}</FormElementMessage>
             )}
         </React.Fragment>
     );
-};
-
-Select.defaultProps = {
-    validation: { isValid: null, message: null }
 };
 
 export default Select;

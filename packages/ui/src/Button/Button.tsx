@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import * as R from "@rmwc/button";
 import { Fab, FabProps } from "@rmwc/fab";
 import { Icon, IconProps } from "../Icon/Icon";
@@ -33,9 +33,6 @@ export interface ButtonProps {
 
 /**
  * Shows a default button, used typically when action is not of high priority.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ButtonDefault: React.FC<ButtonProps> = props => {
     const { disabled, onClick, children, small, ripple = true, className = "", style } = props;
@@ -57,9 +54,6 @@ export const ButtonDefault: React.FC<ButtonProps> = props => {
 
 /**
  * Shows primary button, eg. for submitting forms.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ButtonPrimary: React.FC<ButtonProps> = props => {
     const {
@@ -69,7 +63,7 @@ export const ButtonPrimary: React.FC<ButtonProps> = props => {
         small = false,
         flat = false,
         ripple = true,
-        style = null,
+        style = {},
         className = null
     } = props;
     return (
@@ -91,9 +85,6 @@ export const ButtonPrimary: React.FC<ButtonProps> = props => {
 
 /**
  * Shows a secondary button - eg. for doing a reset on a form.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ButtonSecondary: React.FC<ButtonProps> = props => {
     const {
@@ -103,7 +94,7 @@ export const ButtonSecondary: React.FC<ButtonProps> = props => {
         small = false,
         ripple = true,
         className = null,
-        style = null
+        style = {}
     } = props;
 
     return (
@@ -132,9 +123,6 @@ export type ButtonFloatingProps = ButtonProps &
 
 /**
  * A floating button, shown on the side of the screen, typically used for creating new content or accessing settings.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
     const {
@@ -164,8 +152,5 @@ export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
 
 /**
  * Shows an icon, suitable to be shown inside of a button.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ButtonIcon: React.FC<IconProps> = props => <Icon {...props} />;

@@ -7862,7 +7862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/rc-tooltip@npm:^3.7.6":
+"@types/rc-tooltip@npm:^3.7.2":
   version: 3.7.6
   resolution: "@types/rc-tooltip@npm:3.7.6"
   dependencies:
@@ -11930,7 +11930,7 @@ __metadata:
     "@storybook/react": ^5.2.8
     "@svgr/webpack": ^6.1.1
     "@types/nprogress": ^0.2.0
-    "@types/rc-tooltip": ^3.7.6
+    "@types/rc-tooltip": ^3.7.2
     "@types/react-custom-scrollbars": ^4.0.10
     "@types/react-transition-group": ^4.4.4
     "@types/shortid": ^0.0.29

@@ -1,5 +1,4 @@
-import * as React from "react";
-import noop from "lodash/noop";
+import React from "react";
 
 import {
     Dialog,
@@ -17,11 +16,11 @@ interface ChildrenRenderProp {
 }
 
 interface ConfirmationCallbacks {
-    onAccept: Function;
-    onCancel: Function;
+    onAccept?: () => void;
+    onCancel?: () => void;
 }
 
-type Props = {
+interface Props {
     // Title of confirmation dialog
     title?: React.ReactNode;
 
@@ -42,7 +41,7 @@ type Props = {
 
     // Dialog component's custom in-line styles.
     style?: React.CSSProperties;
-};
+}
 
 type State = {
     show: boolean;
@@ -62,8 +61,8 @@ class ConfirmationDialog extends React.Component<Props, State> {
     __isMounted = false;
 
     callbacks: ConfirmationCallbacks = {
-        onAccept: noop,
-        onCancel: noop
+        onAccept: () => {},
+        onCancel: () => {}
     };
 
     state = {
@@ -79,8 +78,11 @@ class ConfirmationDialog extends React.Component<Props, State> {
         this.__isMounted = false;
     }
 
-    showConfirmation = (onAccept?: Function, onCancel?: Function) => {
-        this.callbacks = { onAccept, onCancel };
+    showConfirmation = (onAccept?: () => void, onCancel?: () => void) => {
+        this.callbacks = {
+            onAccept,
+            onCancel
+        };
         this.setState({ show: true });
     };
 

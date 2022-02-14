@@ -90,7 +90,7 @@ export class Form extends React.Component<FormProps, State> {
         data: {},
         disabled: false,
         validateOnFirstSubmit: false,
-        onSubmit: null
+        onSubmit: () => {}
     };
 
     public state: State = {
@@ -100,7 +100,7 @@ export class Form extends React.Component<FormProps, State> {
         validation: {}
     };
 
-    public isValid: boolean = null;
+    public isValid: boolean | null = null;
     public inputs: Record<string, any> = {};
     public lastRender: Record<string, any> = [];
     public validateFns: Record<string, any> = {};

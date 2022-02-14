@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import dotProp from "dot-prop-immutable";
 import { FormElementMessage } from "~/FormElementMessage";
 import styled from "@emotion/styled";
@@ -31,7 +31,7 @@ interface FieldsetProps {
     value?: Array<Object>;
     description?: string;
     validation?: { isValid: null | boolean; message?: string };
-    onChange?: Function;
+    onChange: Function;
     children: (props: ChildrenRenderProp) => React.ReactNode;
 }
 
@@ -44,8 +44,7 @@ const DynamicFieldsetRow = styled("div")({
 
 class Fieldset extends React.Component<FieldsetProps> {
     static defaultProps: Partial<FieldsetProps> = {
-        value: [],
-        description: null
+        value: []
     };
 
     header: React.ReactNode = null;
@@ -69,7 +68,11 @@ class Fieldset extends React.Component<FieldsetProps> {
     };
 
     addData = (index = -1) => {
-        const { value, onChange } = this.props;
+        const { onChange } = this.props;
+        let value = this.props.value;
+        if (!value) {
+            value = [];
+        }
         if (index < 0) {
             onChange([...value, {}]);
         } else {
@@ -84,6 +87,9 @@ class Fieldset extends React.Component<FieldsetProps> {
 
     renderRow = (cb: ChildrenRenderPropRowCallable): React.ReactNode => {
         const { value } = this.props;
+        if (!value) {
+            return null;
+        }
         this.rows = value.map((record, index) => {
             return (
                 <DynamicFieldsetRow key={index}>{cb({ data: record, index })}</DynamicFieldsetRow>
@@ -97,7 +103,7 @@ class Fieldset extends React.Component<FieldsetProps> {
         return null;
     };
 
-    renderComponent() {
+    public renderComponent() {
         const { value } = this.props;
         const { children } = this.props;
 
@@ -108,19 +114,19 @@ class Fieldset extends React.Component<FieldsetProps> {
             empty: this.renderEmpty
         });
 
-        if (value.length) {
-            return (
-                <React.Fragment>
-                    {this.header}
-                    {this.rows}
-                </React.Fragment>
-            );
+        if (!value) {
+            return this.empty;
         }
 
-        return this.empty;
+        return (
+            <React.Fragment>
+                {this.header}
+                {this.rows}
+            </React.Fragment>
+        );
     }
 
-    render() {
+    public render() {
         const { description, validation = { isValid: null } } = this.props;
 
         return (

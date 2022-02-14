@@ -33,7 +33,9 @@ interface RunUpgradeArgs {
 }
 export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     const { upgradePlugins, installedAppVersion, upgradeToVersion } = args;
-    const { version: deployedVersion } = coerce(args.deployedVersion);
+    const semverResult = coerce(args.deployedVersion);
+
+    const deployedVersion = semverResult?.version;
 
     if (upgradeToVersion !== deployedVersion) {
         throw new Error(
