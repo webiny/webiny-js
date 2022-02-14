@@ -7,12 +7,12 @@ import { Avatar } from "~/admin/views/publishingWorkflows/components/ReviewersLi
 import { fromNow } from "~/admin/components/utils";
 import { ChangeRequestItem, TypographySecondary, TypographyTitle } from "../Styled";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
-import { ApwChangeRequest } from "~/types";
+import { ApwChangeRequest, ApwChangeRequestStatus } from "~/types";
 
 const statusToBackgroundColor = {
-    new: "var(--mdc-theme-secondary)",
-    active: "var(--mdc-theme-primary)",
-    inactive: "var(--mdc-theme-on-background)"
+    [ApwChangeRequestStatus.RESOLVED]: "var(--mdc-theme-secondary)",
+    [ApwChangeRequestStatus.ACTIVE]: "var(--mdc-theme-primary)",
+    [ApwChangeRequestStatus.PENDING]: "var(--mdc-theme-on-background)"
 };
 
 const StatusBadge = styled.div<{ status: string }>`
@@ -27,12 +27,22 @@ const getRandomIndex = () => Math.round(Math.random() * 100) % 3;
 type ChangeRequestItemProps = ApwChangeRequest;
 
 export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => {
-    const { createdOn, createdBy, title, status, id, body } = props;
-    const { history } = useRouter();
+    const { createdOn, createdBy, title, id, body } = props;
+    const { history, location } = useRouter();
     const { url } = useRouteMatch();
 
+    const status = ApwChangeRequestStatus.ACTIVE;
+    /**
+     * Get active "changeRequestId" from pathname.
+     */
+    const tokens = location.pathname.split("/");
+    const activeChangeRequestId = tokens[tokens.length - 1];
+
     return (
-        <ChangeRequestItem onClick={() => history.push(`${url}/${encodeURIComponent(id)}`)}>
+        <ChangeRequestItem
+            onClick={() => history.push(`${url}/${encodeURIComponent(id)}`)}
+            selected={encodeURIComponent(id) === activeChangeRequestId}
+        >
             <Stack space={1} width={"100%"}>
                 <Columns space={1} justifyContent={"space-between"}>
                     <Columns space={2.5} alignItems={"center"}>

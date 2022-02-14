@@ -122,10 +122,15 @@ export interface ApwContentReviewListItem extends BaseFields {
     reviewers: [string];
 }
 
+export enum ApwChangeRequestStatus {
+    ACTIVE = "active",
+    PENDING = "pending",
+    RESOLVED = "resolved"
+}
+
 export interface ApwChangeRequest extends BaseFields {
     title: string;
     body: RichTextEditorProps["value"];
-    status: string;
     resolved: boolean;
 }
 
