@@ -48,6 +48,10 @@ const DefaultButton = styled(ButtonDefault)`
     &.mdc-button:not(:disabled) {
         color: var(--mdc-theme-text-secondary-on-background);
     }
+
+    &.mdc-button {
+        text-transform: none;
+    }
 `;
 
 interface ChangeRequestProps {
@@ -56,7 +60,7 @@ interface ChangeRequestProps {
 
 export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
     const { id } = props;
-    const { deleteChangeRequest, changeRequest } = useChangeRequest({ id });
+    const { deleteChangeRequest, changeRequest, markResolved } = useChangeRequest({ id });
     const { setOpen, setChangeRequestId } = useChangeRequestDialog();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -86,7 +90,7 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     </Box>
                     <Box>
                         <TypographyBody use={"caption"}>
-                            {`Overall the structure of the document is good. We just need to tackle a couple of consistency / missing-context thingies, and we should be good to go. `}
+                            {JSON.stringify(changeRequest.body)}
                         </TypographyBody>
                     </Box>
                 </Stack>
@@ -115,9 +119,15 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                         </DefaultButton>
                     </ButtonBox>
                     <ButtonBox paddingY={1}>
-                        <DefaultButton onClick={() => console.log("Mark resolved ", id)}>
+                        <DefaultButton
+                            onClick={async () => {
+                                await markResolved(!changeRequest.resolved);
+                            }}
+                        >
                             <ButtonIcon icon={<MarkTaskIcon />} />
-                            Mark resolved
+                            {t`{label}`({
+                                label: changeRequest.resolved ? "Mark unresolved" : "Mark resolved"
+                            })}
                         </DefaultButton>
                     </ButtonBox>
                 </ActionColumns>

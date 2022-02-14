@@ -21,6 +21,7 @@ interface UseChangeRequestResult {
     update: Function;
     deleteChangeRequest: (id: string) => Promise<any>;
     changeRequest: ApwChangeRequest;
+    markResolved: (resolved: boolean) => Promise<void>;
 }
 
 export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeRequestResult => {
@@ -83,10 +84,15 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
+    const markResolved = async (resolved: boolean) => {
+        await update({ variables: { id, data: { resolved } } });
+    };
+
     return {
         create,
         update,
         deleteChangeRequest: async id => deleteChangeRequest({ variables: { id } }),
-        changeRequest: get(getQuery, "data.apw.getChangeRequest.data")
+        changeRequest: get(getQuery, "data.apw.getChangeRequest.data"),
+        markResolved
     };
 };

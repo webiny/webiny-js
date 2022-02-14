@@ -27,11 +27,11 @@ const getRandomIndex = () => Math.round(Math.random() * 100) % 3;
 type ChangeRequestItemProps = ApwChangeRequest;
 
 export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => {
-    const { createdOn, createdBy, title, id, body } = props;
+    const { createdOn, createdBy, title, id, body, resolved } = props;
     const { history, location } = useRouter();
     const { url } = useRouteMatch();
 
-    const status = ApwChangeRequestStatus.ACTIVE;
+    const status = resolved ? ApwChangeRequestStatus.RESOLVED : ApwChangeRequestStatus.ACTIVE;
     /**
      * Get active "changeRequestId" from pathname.
      */
