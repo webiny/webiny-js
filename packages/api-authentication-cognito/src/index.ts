@@ -28,13 +28,19 @@ export default (config: Config) => {
                 return config.getIdentity({ identityType: config.identityType, token: tokenObj });
             }
 
+            // We ensure `undefined` doesn't end up in the `displayName` property.
+            // If first name and last name is not present, we end up with an empty string.
+            const firstName = tokenObj.given_name || "";
+            const lastName = tokenObj.family_name || "";
+            const displayName = `${firstName} ${lastName}`.trim();
+
             return {
                 id: tokenObj.sub,
                 type: config.identityType,
-                displayName: `${tokenObj.given_name} ${tokenObj.family_name}`,
+                displayName,
                 email: tokenObj.email,
-                firstName: tokenObj.given_name,
-                lastName: tokenObj.family_name
+                firstName,
+                lastName
             };
         });
     });
