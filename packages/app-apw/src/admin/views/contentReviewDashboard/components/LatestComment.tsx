@@ -23,6 +23,12 @@ export const LatestComment: React.FC<LatestCommentProps> = ({ id, ...boxProps })
     if (loading) {
         return <TypographySecondary use={"caption"}>t{`Loading comments...`}</TypographySecondary>;
     }
+    /**
+     * The latest comment is not tracked on real-time after comments deletion.
+     */
+    if (!comment) {
+        return null;
+    }
 
     return (
         <CommentStatusBox {...boxProps} display={"flex"} paddingX={2.5} paddingY={2}>

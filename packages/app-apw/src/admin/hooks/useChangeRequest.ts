@@ -4,7 +4,8 @@ import {
     CREATE_CHANGE_REQUEST_MUTATION,
     GET_CHANGE_REQUEST_QUERY,
     LIST_CHANGE_REQUESTS_QUERY,
-    DELETE_CHANGE_REQUEST_MUTATION
+    DELETE_CHANGE_REQUEST_MUTATION,
+    UPDATE_CHANGE_REQUEST_MUTATION
 } from "../graphql/changeRequest.gql";
 import { useSnackbar } from "@webiny/app-admin";
 import { useRouter } from "@webiny/react-router";
@@ -17,6 +18,7 @@ interface UseChangeRequestParams {
 
 interface UseChangeRequestResult {
     create: Function;
+    update: Function;
     deleteChangeRequest: (id: string) => Promise<any>;
     changeRequest: ApwChangeRequest;
 }
@@ -53,10 +55,23 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
+    const [update] = useMutation(UPDATE_CHANGE_REQUEST_MUTATION, {
+        refetchQueries: [{ query: LIST_CHANGE_REQUESTS_QUERY }],
+        onCompleted: response => {
+            const error = get(response, "apw.changeRequest.error");
+            if (error) {
+                showSnackbar(error.message);
+                return;
+            }
+            const { id } = get(response, "apw.changeRequest.data");
+            showSnackbar("Change request updated successfully!");
+            history.push(`/apw/content-reviews/${encodedId}/${stepId}/${encodeURIComponent(id)}`);
+        }
+    });
+
     const [deleteChangeRequest] = useMutation(DELETE_CHANGE_REQUEST_MUTATION, {
         refetchQueries: [{ query: LIST_CHANGE_REQUESTS_QUERY }],
         onCompleted: response => {
-            console.log(JSON.stringify({ response }, null, 2));
             const error = get(response, "apw.deleteChangeRequest.error");
             if (error) {
                 showSnackbar(error.message);
@@ -70,6 +85,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
 
     return {
         create,
+        update,
         deleteChangeRequest: async id => deleteChangeRequest({ variables: { id } }),
         changeRequest: get(getQuery, "data.apw.getChangeRequest.data")
     };

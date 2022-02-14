@@ -75,6 +75,17 @@ export const CREATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
     }
 `;
 
+export const UPDATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
+    mutation UpdateChangeRequestMutation($id: ID!, $data: ApwUpdateChangeRequestInput!) {
+        apw {
+            changeRequest: updateChangeRequest(id: $id, data: $data) {
+                data ${getDataFields()}
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
 export const DELETE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
     mutation DeleteChangeRequestMutation($id: ID!) {
         apw {

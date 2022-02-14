@@ -118,7 +118,7 @@ export const ChangeRequestDialog: React.FC = () => {
     const { open, setOpen, changeRequestId } = useChangeRequestDialog();
     const { id: stepId } = useCurrentStepId();
     const { id: contentReviewId } = useContentReviewId();
-    const { create, changeRequest } = useChangeRequest({ id: changeRequestId });
+    const { create, changeRequest, update } = useChangeRequest({ id: changeRequestId });
 
     const closeDialog = () => setOpen(false);
 
@@ -130,7 +130,16 @@ export const ChangeRequestDialog: React.FC = () => {
                     ...formData,
                     step: `${contentReviewId}#${stepId}`
                 };
-                await create({ variables: { data } });
+                /**
+                 * If "changeRequestId" exists it means we're editing the change request.
+                 */
+                if (changeRequestId) {
+                    await update({
+                        variables: { id: changeRequestId, data: pick(data, ["title", "body"]) }
+                    });
+                } else {
+                    await create({ variables: { data } });
+                }
                 closeDialog();
             }}
         >
