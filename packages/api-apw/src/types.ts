@@ -62,6 +62,7 @@ export interface PageWithWorkflow extends Page {
     settings: Page["settings"] & {
         apw: {
             workflowId: string;
+            contentReviewId?: string;
         };
     };
 }
@@ -265,6 +266,7 @@ export interface CreateApwContentReviewParams {
 interface UpdateApwContentReviewParams {
     title?: string;
     steps?: ApwContentReviewStep[];
+    status?: ApwContentReviewStatus;
 }
 
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {

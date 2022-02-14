@@ -103,9 +103,9 @@ export function createContentReviewMethods({
 
             return true;
         },
-        async provideSignOff(id, stepId) {
+        async provideSignOff(this: ApwContentReviewCrud, id, stepId) {
             const entry: ApwContentReview = await this.get(id);
-            const { steps } = entry;
+            const { steps, status } = entry;
             const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
             const previousStep = steps[stepIndex - 1];
@@ -175,10 +175,34 @@ export function createContentReviewMethods({
                 return step;
             });
             /**
+             * Check for pending steps
+             */
+            let newStatus = status;
+            const pendingRequiredSteps = updatedSteps.filter(step => {
+                const isRequiredStep = [
+                    ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                    ApwWorkflowStepTypes.MANDATORY_NON_BLOCKING
+                ].includes(step.type);
+
+                if (!isRequiredStep) {
+                    return false;
+                }
+
+                return typeof step.signOffProvidedOn !== "string";
+            });
+            /**
+             * If there are no required steps that are pending, set the status to "READY_TO_BE_PUBLISHED".
+             */
+            if (pendingRequiredSteps.length === 0) {
+                newStatus = ApwContentReviewStatus.READY_TO_BE_PUBLISHED;
+            }
+
+            /**
              * Save updated steps.
              */
             await this.update(id, {
-                steps: updatedSteps
+                steps: updatedSteps,
+                status: newStatus
             });
             return true;
         },

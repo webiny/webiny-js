@@ -37,6 +37,15 @@ export const linkWorkflowToPage = ({
     onBeforePageCreateFrom.subscribe<ApwOnBeforePageCreateFromTopicParams>(async params => {
         const { page, original } = params;
         /**
+         * If the previous revision(original) already had the "contentReviewId",
+         * we need to unlink it so that new "contentReview" can be request for the new revision.
+         */
+        const previousContentReviewId = get(original, "settings.apw.contentReviewId");
+        if (previousContentReviewId) {
+            page.settings.apw.contentReviewId = null;
+        }
+
+        /**
          * If the previous revision(original) already had the "workflowId",
          * we don't need to do anything we'll just let it be copied over.
          */
