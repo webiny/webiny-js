@@ -43,7 +43,6 @@ export const useComment = (id?: string): UseCommentResult => {
     const [deleteComment] = useMutation(DELETE_COMMENT_MUTATION, {
         refetchQueries: [{ query: LIST_COMMENTS_QUERY, variables: listCommentsVariables }],
         onCompleted: response => {
-            console.log(JSON.stringify({ response }, null, 2));
             const error = get(response, "apw.deleteComment.error");
             if (error) {
                 showSnackbar(error.message);
