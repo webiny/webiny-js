@@ -2,7 +2,7 @@ import get from "lodash/get";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
 import { ApwComment } from "~/types";
-import { DEFAULT_SORT } from "~/admin/hooks/useCommentsList";
+import { useListCommentsVariables } from "~/admin/hooks/useCommentsList";
 import {
     CREATE_COMMENT_MUTATION,
     DELETE_COMMENT_MUTATION,
@@ -27,8 +27,10 @@ export const useComment = (id?: string): UseCommentResult => {
 
     const comment = get(data, "apw.getComment.data");
 
+    const listCommentsVariables = useListCommentsVariables();
+
     const [createComment] = useMutation(CREATE_COMMENT_MUTATION, {
-        refetchQueries: [{ query: LIST_COMMENTS_QUERY, variables: { sort: DEFAULT_SORT } }],
+        refetchQueries: [{ query: LIST_COMMENTS_QUERY, variables: listCommentsVariables }],
         onCompleted: response => {
             const error = get(response, "apw.comment.error");
             if (error) {
@@ -39,7 +41,7 @@ export const useComment = (id?: string): UseCommentResult => {
     });
 
     const [deleteComment] = useMutation(DELETE_COMMENT_MUTATION, {
-        refetchQueries: [{ query: LIST_COMMENTS_QUERY, variables: { DEFAULT_SORT } }],
+        refetchQueries: [{ query: LIST_COMMENTS_QUERY, variables: listCommentsVariables }],
         onCompleted: response => {
             console.log(JSON.stringify({ response }, null, 2));
             const error = get(response, "apw.deleteComment.error");

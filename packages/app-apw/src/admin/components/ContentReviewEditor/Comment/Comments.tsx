@@ -11,6 +11,7 @@ const CommentsBox = styled(Stack)`
     background-color: var(--mdc-theme-background);
     overflow: auto;
     height: calc(100vh - 64px - 178px - 56px);
+    overscroll-behavior: contain;
 `;
 
 const CommentBox = styled(Box)`
@@ -47,14 +48,17 @@ const Comment: React.FC<CommentProps> = props => {
     );
 };
 
-export const Comments = () => {
+export const Comments = React.forwardRef<HTMLDivElement>(function comments(_, ref) {
     const { comments } = useCommentsList();
 
     return (
         <CommentsBox space={6} paddingX={6} paddingY={5}>
-            {comments.map(item => (
-                <Comment key={item.id} comment={item} />
-            ))}
+            <Box>
+                {comments.map(item => (
+                    <Comment key={item.id} comment={item} />
+                ))}
+            </Box>
+            <Box ref={ref} />
         </CommentsBox>
     );
-};
+});

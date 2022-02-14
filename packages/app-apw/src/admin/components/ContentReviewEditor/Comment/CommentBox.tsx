@@ -10,6 +10,11 @@ import { ReactComponent as SendIcon } from "~/admin/assets/icons/send_24dp.svg";
 import { useComment } from "~/admin/hooks/useComment";
 import { useCurrentChangeRequestId } from "~/admin/hooks/useCurrentChangeRequestId";
 import { Box, Columns } from "~/admin/components/Layout";
+import Spinner from "react-spinner-material";
+
+const Loader = () => (
+    <Spinner size={24} spinnerWidth={2} spinnerColor={"var(--mdc-theme-primary)"} visible={true} />
+);
 
 const CommentBoxColumns = styled(Columns)`
     height: 56px;
@@ -27,7 +32,12 @@ const InputBox = styled(Box)`
     flex: 1 1 100%;
 `;
 
-export const CommentBox = () => {
+interface CommentBoxProps {
+    scrollToLatestComment: Function;
+}
+
+export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment }) => {
+    const [loading, setLoading] = useState<boolean>(false);
     const { createComment } = useComment();
     const changeRequestId = useCurrentChangeRequestId();
     const [commentBoxKey, setCommentBoxKey] = useState<string>("");
@@ -40,12 +50,15 @@ export const CommentBox = () => {
                     ...formData,
                     changeRequest: changeRequestId
                 };
+                setLoading(true);
                 const response = await createComment({ variables: { data } });
                 /*
                  * After submitting comment we're using the "id" state to re-mount entire Form component,
                  * so that we have a clean slate for "RichTextEditor" for new comment.
                  */
                 setCommentBoxKey(get(response, "data.apw.comment.data.id"));
+                setLoading(false);
+                scrollToLatestComment();
             }}
         >
             {({ Bind, submit }) => (
@@ -61,9 +74,10 @@ export const CommentBox = () => {
                     </InputBox>
                     <Box>
                         <IconButton
-                            icon={<SendIcon />}
+                            icon={loading ? <Loader /> : <SendIcon />}
                             fill={"var(--mdc-theme-secondary)"}
                             onClick={submit}
+                            disabled={loading}
                         />
                     </Box>
                 </CommentBoxColumns>
