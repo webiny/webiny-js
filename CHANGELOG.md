@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* remove duplicated function ([607ad8e](https://github.com/webiny/webiny-js/commit/607ad8ee675a519a9a0cc3785019dd237814ac8f))
+* telemetryFunction not firing ([af7ae1b](https://github.com/webiny/webiny-js/commit/af7ae1b924e0094f62e7e53486f071b8864b6bed))
+* **api-page-builder-import-export:** handle error in stream pipeline ([061deb6](https://github.com/webiny/webiny-js/commit/061deb64a13121263db85f482fd0e73c391a04f6))
+* **api-prerendering-service:** injectApolloState escapes "<" ([500ea0c](https://github.com/webiny/webiny-js/commit/500ea0ca8633612790bcbb88db5154065c496e92))
+* **app-admin:** remove dark theme variation to speed up build ([aa3dcdd](https://github.com/webiny/webiny-js/commit/aa3dcdd67f1ac6852e0d2cbfe20aecf310ff2041))
+* **app-page-builder:** don't trim leading and trailing hyphens ([020f64e](https://github.com/webiny/webiny-js/commit/020f64e98278a5090cedffdbbb8ecef2cb377ee8)), closes [#2224](https://github.com/webiny/webiny-js/issues/2224)
+* **handler:** export context params ([#2197](https://github.com/webiny/webiny-js/issues/2197)) ([fdda248](https://github.com/webiny/webiny-js/commit/fdda24823d6051d249d7f5e2512076f32cbea49a))
+* check project ID ([fe56278](https://github.com/webiny/webiny-js/commit/fe562788ace11ae3b571aa39d06328bcd220b100))
+* correct comment ([54c3686](https://github.com/webiny/webiny-js/commit/54c36860132ac4c6ee6f09cc4035223ba977c4f2))
+* correct if statement ([a72f30f](https://github.com/webiny/webiny-js/commit/a72f30f41ce289b17ff418042c33538fc41a6b46))
+* eslint ([ad11ead](https://github.com/webiny/webiny-js/commit/ad11ead640111993e0cf6fb97ff6395633239cca))
+* remove redundant code ([d1dde23](https://github.com/webiny/webiny-js/commit/d1dde23233f04f09eae9fc42374752eb46f36512))
+* update deps ([6879623](https://github.com/webiny/webiny-js/commit/6879623d98b04229f07796fd601f4a3f0f534c3b))
+* use the right hooks ([318db7a](https://github.com/webiny/webiny-js/commit/318db7acb30a85fe15ad3f4082536a2bf7a52f22))
+* **api-security-okta:** add an explicit return value ([876e90f](https://github.com/webiny/webiny-js/commit/876e90fc41d7415bcfffe72ddffa14a6b87cf85d))
+* **api-security-so-ddb:** add GSI key on API key update ([d3e7161](https://github.com/webiny/webiny-js/commit/d3e7161ee800a7438d93f94563bf31e95682ec2b))
+* **api-security-so-ddb:** add test to verify token is accessible after update ([0839ac3](https://github.com/webiny/webiny-js/commit/0839ac311ffb0a0da467425f410d1bc6ee524075))
+* **api-tenancy:** update CreateTenantInput interface and make tenant parent required ([ed0b473](https://github.com/webiny/webiny-js/commit/ed0b473610b0efe04e843bec914146dfcf9069f0))
+* **app-headless-cms:** add addEntryToListCache prop in UseContentEntryFormParams ([1cadcd9](https://github.com/webiny/webiny-js/commit/1cadcd9b7d6c95ae8df16881b98c3ec3dc6668d4))
+* **app-headless-cms:** add meta info for AutoComplete ([91f3b4a](https://github.com/webiny/webiny-js/commit/91f3b4a4e00c51bd6c62c96313126e64be2390e0))
+* **app-headless-cms:** typo in referenceMultipleModelsLabel ([001339c](https://github.com/webiny/webiny-js/commit/001339c7143a32f44e8fd17d1a7f52af9fbe2ac9))
+* **app-headless-cms:** update fetchPolicy for latest entries query ([d0a6b0f](https://github.com/webiny/webiny-js/commit/d0a6b0f6d1e4892a6baa84852711f20b21f5927a))
+* **app-headless-cms:** use newRevision id ([f4c4347](https://github.com/webiny/webiny-js/commit/f4c43477d4d8e3cd685f34d66cb7e962e7c408fa))
+* **app-page-builder:** add most common editor hooks ([2bb649a](https://github.com/webiny/webiny-js/commit/2bb649a197433362c3981e6ec476f9cba7f9aa41))
+* **app-page-builder:** improve editor loading mechanics ([347c86f](https://github.com/webiny/webiny-js/commit/347c86fc0125588ab246124243a5973d52c354df))
+* **css-loader:** don't resolve inline assets and absolute paths ([a11a7d0](https://github.com/webiny/webiny-js/commit/a11a7d03e71bb002088db9d2a278800a31d72a98))
+* **cwp-template-aws:** switch to node 14 ([#2200](https://github.com/webiny/webiny-js/issues/2200)) ([b2408a0](https://github.com/webiny/webiny-js/commit/b2408a044bc0ce2c252f5b4dcc122be079c122b8))
+* **handler-http:** move @webiny/utils to production dependencies ([58a0e8d](https://github.com/webiny/webiny-js/commit/58a0e8d4fb52624204ec69c95e7df3a2a3cef6e9))
+* **pulumi-aws:** make sure S3 folder paths end with a trailing slash ([4042f86](https://github.com/webiny/webiny-js/commit/4042f8617e2d93a149efe0933877237c3be4bac9))
+* **tsconfig:** add esnext to lib ([ca51f00](https://github.com/webiny/webiny-js/commit/ca51f00fc93cc83578bcc46b2ccd757e519714f1))
+* **ui:** add hint text ([87c15c4](https://github.com/webiny/webiny-js/commit/87c15c4483df5d62cd507cceebe94c774eab07f7))
+* Add https to adiorc ([527bf1b](https://github.com/webiny/webiny-js/commit/527bf1b7d8e9c86f8d0ac97a19537ac338c940d7))
+* aws function name ([72e7a4a](https://github.com/webiny/webiny-js/commit/72e7a4ab665cadeb235810fdc6d4a72c67e3cced))
+* project tsconfig reference paths ([#2195](https://github.com/webiny/webiny-js/issues/2195)) ([1dc7f24](https://github.com/webiny/webiny-js/commit/1dc7f24fc1e23dec6b00ba6c526a00df59acfedd))
+* rename handler and remove error catch ([db89663](https://github.com/webiny/webiny-js/commit/db8966339ae8f1d849206c89ef41175d24b05ba5))
+
+
+### Features
+
+* add check on watch command ([a262b66](https://github.com/webiny/webiny-js/commit/a262b668ac85bb5997aac53f0fdc1f45f2f50744))
+* **app-headless-cms:** add ability to create ref field value within the form ([b5fa10c](https://github.com/webiny/webiny-js/commit/b5fa10c7d1e2c3d4d64be889de935bc2a9495d21))
+* github workflows to node 14 ([258ade1](https://github.com/webiny/webiny-js/commit/258ade152d485bcfcc07c40e0d84f182c6cd6ee8))
+* system switch to node 14 build and lambdas ([#2196](https://github.com/webiny/webiny-js/issues/2196)) ([daf2f89](https://github.com/webiny/webiny-js/commit/daf2f891e4396b50f4d6e5b8f9c0842a6f11143d))
+* telemetry push feature ([8b6bac0](https://github.com/webiny/webiny-js/commit/8b6bac02bef9c1ec25310cacd0187199c7536b3a))
+* upgrade to tsconfig compilerOptions ([#2209](https://github.com/webiny/webiny-js/issues/2209)) ([31fd79d](https://github.com/webiny/webiny-js/commit/31fd79dd51eb35e65b47d1096caae2cec8e50789))
+
+
+
+
+
 ## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
 
 **Note:** Version bump only for package webiny-js

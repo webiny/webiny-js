@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* **api-prerendering-service:** injectApolloState escapes "<" ([500ea0c](https://github.com/webiny/webiny-js/commit/500ea0ca8633612790bcbb88db5154065c496e92))
+* **handler:** export context params ([#2197](https://github.com/webiny/webiny-js/issues/2197)) ([fdda248](https://github.com/webiny/webiny-js/commit/fdda24823d6051d249d7f5e2512076f32cbea49a))
+* project tsconfig reference paths ([#2195](https://github.com/webiny/webiny-js/issues/2195)) ([1dc7f24](https://github.com/webiny/webiny-js/commit/1dc7f24fc1e23dec6b00ba6c526a00df59acfedd))
+
+
+
+
+
 ## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
 
 **Note:** Version bump only for package @webiny/api-prerendering-service
