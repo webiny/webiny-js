@@ -41,7 +41,8 @@
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "react-helmet": "^6.1.0"
+    "react-helmet": "^6.1.0",
+    "react-spinner-material": "1.1.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
