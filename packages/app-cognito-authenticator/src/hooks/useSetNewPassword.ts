@@ -5,7 +5,7 @@ import { useAuthenticator } from "./useAuthenticator";
 export interface SetNewPassword {
     shouldRender: boolean;
     setPassword(params: { code: string; password: string }): Promise<void>;
-    error: string;
+    error: string | null;
     loading: boolean;
 }
 
@@ -26,10 +26,19 @@ export function useSetNewPassword(): SetNewPassword {
 
     const setPassword = useCallback(
         async data => {
+            /**
+             * Stop the callback because we are missing auth data
+             */
+            if (!authData) {
+                return;
+            }
             setState({ loading: true });
             const { code, password } = data;
-
             try {
+                /**
+                 * TODO @pavel check this please? authData is a Record<string, ...>, not a string.
+                 */
+                // @ts-ignore
                 await Auth.forgotPasswordSubmit(authData.toLowerCase(), code, password);
                 changeState("signIn", null, {
                     title: "Password updated",

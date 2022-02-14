@@ -20,7 +20,7 @@ interface UILayoutRenderer {
 }
 
 export class UILayout {
-    private _renderer: UILayoutRenderer;
+    private _renderer?: UILayoutRenderer;
     private _grid = true;
     private _layout: LayoutItem[][] = [];
     private readonly _getElement: ElementGetter;

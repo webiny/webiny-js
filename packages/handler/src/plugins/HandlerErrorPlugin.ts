@@ -15,7 +15,7 @@ export class HandlerErrorPlugin<T extends Context = Context> extends Plugin {
         this._callable = callable;
     }
 
-    async handle(context: T, error: Error, next: Function): Promise<any> {
+    public async handle(context: T, error: Error, next: Function): Promise<any> {
         return this._callable(context, error, next);
     }
 }

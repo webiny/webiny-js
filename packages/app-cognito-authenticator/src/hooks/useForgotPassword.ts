@@ -6,8 +6,8 @@ export interface ForgotPassword {
     shouldRender: boolean;
     requestCode(params: { username: string }): Promise<void>;
     setPassword(params: { username: string }): Promise<void>;
-    codeSent: boolean;
-    error: string;
+    codeSent: boolean | null;
+    error: string | null;
     loading: boolean;
 }
 

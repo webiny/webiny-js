@@ -6,7 +6,7 @@ interface Renderer<TRenderProps> {
 }
 
 export class GenericElement<TRenderProps = any> extends UIElement {
-    private readonly _render: Renderer<TRenderProps>;
+    private readonly _render?: Renderer<TRenderProps>;
 
     constructor(id: string, render?: Renderer<TRenderProps>) {
         super(id);

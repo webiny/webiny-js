@@ -6,7 +6,7 @@ interface SignIn {
     shouldRender: boolean;
     signIn(params: { username: string; password: string }): void;
     loading: boolean;
-    error: Error;
+    error: Error | null;
 }
 
 interface State {

@@ -3,10 +3,10 @@
  */
 class ValidationError extends Error {
     message: string;
-    validator: string;
+    validator: string | null;
     value: any;
 
-    constructor(message = "", validator: string = null, value: string = null) {
+    constructor(message = "", validator: string | null = null, value: string | null = null) {
         super();
         this.message = message;
         this.validator = validator;

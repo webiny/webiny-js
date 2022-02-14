@@ -15,7 +15,7 @@ export default (...plugins: PluginCollection) =>
             /**
              * Inserted via webpack on build time.
              */
-            WEBINY_VERSION: process.env.WEBINY_VERSION
+            WEBINY_VERSION: process.env.WEBINY_VERSION as string
         });
 
         const result = await handle(context);

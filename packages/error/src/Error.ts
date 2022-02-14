@@ -5,22 +5,23 @@ export interface ErrorOptions<TData = any> {
 }
 
 export default class WError<TData = any> extends Error {
-    message: string;
-    code?: string;
-    data?: TData;
-    constructor(message: string | ErrorOptions<TData>, code: string = null, data: TData = null) {
+    public message: string = "";
+    public code: string | null = null;
+    public data: TData | null = null;
+
+    public constructor(message: string | ErrorOptions<TData>, code?: string, data?: TData) {
         super();
 
         if (typeof message === "string") {
             this.message = message;
-            this.code = code;
-            this.data = data;
+            this.code = code || null;
+            this.data = data || null;
         } else {
             Object.assign(this, message);
         }
     }
 
-    static from<TData = any>(err: any, options: ErrorOptions<TData> = {}) {
+    public static from<TData = any>(err: Partial<WError>, options: ErrorOptions<TData> = {}) {
         return new WError({
             message: err.message || options.message,
             code: err.code || options.code,

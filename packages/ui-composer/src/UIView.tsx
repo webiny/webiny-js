@@ -25,7 +25,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
     private _events = new Map();
     private _hookDefinitions: Record<string, Function> = {};
     private _hookValues: Record<string, any> = {};
-    private _props: UIViewProps;
+    private _props?: UIViewProps;
     private _isRendered = false;
     private _wrappers: UIElementWrapper[] = [];
 
@@ -35,7 +35,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         this.useGrid(false);
     }
 
-    get props(): UIViewProps {
+    get props(): UIViewProps | undefined {
         return this._props;
     }
 
@@ -55,10 +55,14 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
             .forEach(plugin => plugin.apply(this));
     }
 
-    async awaitElement<TElement extends UIElement = UIElement<any>>(id: string): Promise<TElement> {
+    public async awaitElement<TElement extends UIElement = UIElement<any>>(
+        id: string
+    ): Promise<TElement> {
         await pWaitFor(() => this.getElement<TElement>(id) !== undefined);
-
-        return this.getElement<TElement>(id);
+        /**
+         * TODO @pavel check if casting is ok
+         */
+        return this.getElement<TElement>(id) as TElement;
     }
 
     public getHookDefinitions(): Record<string, Function> {

@@ -17,7 +17,7 @@ export type AuthState =
     | "forgotPassword";
 
 export interface AuthData {
-    [key: string]: any;
+    [key: string]: string | null | boolean | undefined;
 }
 
 export interface AuthMessage {
@@ -27,15 +27,15 @@ export interface AuthMessage {
 }
 
 export interface AuthChangeState {
-    (state: AuthState, data?: AuthData, message?: AuthMessage): Promise<void>;
+    (state: AuthState, data?: AuthData | null, message?: AuthMessage | null): Promise<void>;
 }
 
 export interface AuthContextValue {
     authState: AuthState;
-    authData: AuthData;
+    authData: AuthData | null;
     changeState: AuthChangeState;
     checkingUser?: boolean;
-    message: AuthMessage;
+    message: AuthMessage | null;
 }
 
 export interface AuthenticatorProps extends AuthOptions {
@@ -47,7 +47,7 @@ export const AuthenticatorContext = React.createContext<AuthContextValue>({} as 
 
 interface State {
     authState: AuthState;
-    authData: AuthData;
+    authData: AuthData | null;
     message: AuthMessage | null;
     checkingUser: boolean;
 }
@@ -99,10 +99,12 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
 
     const onChangeState = async (
         authState: State["authState"],
-        data: AuthData = null,
-        message: AuthMessage = null
+        data?: AuthData,
+        message?: AuthMessage
     ) => {
-        setState({ message });
+        setState({
+            message: message || null
+        });
 
         if (authState === state.authState) {
             return;
@@ -123,7 +125,10 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
             });
         }
 
-        setState({ authState, authData: data });
+        setState({
+            authState,
+            authData: data || null
+        });
     };
 
     const value = useMemo(() => {

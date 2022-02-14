@@ -26,7 +26,7 @@ export const createAuthenticator =
             return `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
         };
 
-        const getJWKs = async () => {
+        const getJWKs = async (): Promise<Record<string, string>[] | undefined> => {
             const { region, userPoolId } = config;
             const key = `${region}:${userPoolId}`;
 
@@ -43,7 +43,14 @@ export const createAuthenticator =
         }
 
         const jwks = await getJWKs();
-        const { header } = jwt.decode(idToken, { complete: true });
+        if (!jwks) {
+            return null;
+        }
+        const decodedData = jwt.decode(idToken, { complete: true });
+        if (!decodedData) {
+            return null;
+        }
+        const { header } = decodedData;
         /**
          * TODO: figure out which type is the jwk variable.
          */

@@ -13,5 +13,5 @@ export interface Topic<TEvent = Event> {
 
     getSubscribers(): Subscriber<TEvent>[];
 
-    publish(event?: TEvent): Promise<any>;
+    publish(event: TEvent): Promise<any>;
 }

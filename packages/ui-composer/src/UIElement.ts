@@ -30,14 +30,17 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     private readonly _config: TConfig;
     private readonly _tags: Set<string> = new Set();
     private readonly _id: string;
-    private _parent: UIElement;
+    private _parent?: UIElement;
     private _renderers: UIRenderer<any>[] = [];
     private _shouldRender: ShouldRender[] = [defaultShouldRender];
 
     public constructor(id: string, config?: TConfig) {
         this._id = id;
         this._config = config || ({} as TConfig);
-        this._layout = new UILayout(elementId => this.getElement(elementId));
+        /**
+         * TODO @pavel verify that casting as UIElement is correct. Try to remove and see what happens.
+         */
+        this._layout = new UILayout(elementId => this.getElement(elementId) as UIElement);
 
         if (!config) {
             return;
@@ -119,7 +122,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     }
 
     public getParent(): UIElement {
-        return this._parent;
+        return this._parent as UIElement;
     }
 
     public getParentByType<TParent extends UIElement = UIElement>(type: Class<TParent>): TParent {
@@ -207,7 +210,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         this._layout.setGrid(flag);
     }
 
-    public getElement<T extends UIElement = UIElement>(id: string): T {
+    public getElement<T extends UIElement = UIElement>(id: string): T | null {
         const ownElement = this._elements.get(id);
         if (ownElement) {
             return ownElement as T;
@@ -305,24 +308,31 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     }
 
     public render(props?: UiElementRenderProps): React.ReactNode {
-        const layoutRenderer = (props: Record<string, any>) => {
-            return this._layout.render(props, this.hasParentGrid);
+        if (!props) {
+            props = {};
+        }
+        const layoutRenderer = (layoutRendererProps: Record<string, any>) => {
+            return this._layout.render(layoutRendererProps, this.hasParentGrid);
         };
 
         const renderers: UIRenderer<any>[] = [...this._renderers].filter(pl =>
             pl.canRender(this, props)
         );
 
-        const next = (props: Record<string, any>): React.ReactNode => {
+        const next = (nextProps: Record<string, any>): React.ReactNode => {
             if (renderers.length > 0) {
-                return renderers.pop().render({
+                const renderer = renderers.pop();
+                if (!renderer) {
+                    return layoutRenderer(nextProps);
+                }
+                return renderer.render({
                     element: this,
-                    props,
-                    next: () => next(props),
-                    children: () => layoutRenderer(props)
+                    props: nextProps,
+                    next: () => next(nextProps),
+                    children: () => layoutRenderer(nextProps)
                 });
             }
-            return layoutRenderer(props);
+            return layoutRenderer(nextProps);
         };
 
         return next(props);
@@ -340,8 +350,15 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
 
     public shouldRender(props: Record<string, any>): boolean {
         const shouldRender = [...this._shouldRender];
-        const next = (props: any) => {
-            return shouldRender.pop()({ props, next: () => next(props) });
+        const next = (nextProps: Record<string, any>) => {
+            const shouldRenderCallable = shouldRender.pop();
+            if (!shouldRenderCallable) {
+                return false;
+            }
+            return shouldRenderCallable({
+                props: nextProps,
+                next: () => next(nextProps)
+            });
         };
 
         return next(props);

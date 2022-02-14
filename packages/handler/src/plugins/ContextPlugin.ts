@@ -9,12 +9,12 @@ export class ContextPlugin<T extends Context = Context> extends Plugin {
     public static readonly type: string = "context";
     private readonly _callable: ContextPluginCallable<T>;
 
-    constructor(callable?: ContextPluginCallable<T>) {
+    constructor(callable: ContextPluginCallable<T>) {
         super();
         this._callable = callable;
     }
 
-    apply(context: T): void | Promise<void> {
+    public async apply(context: T): Promise<void> {
         if (typeof this._callable !== "function") {
             throw Error(
                 `Missing callable in ContextPlugin! Either pass a callable to plugin constructor or extend the plugin and override the "apply" method.`

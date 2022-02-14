@@ -26,7 +26,9 @@
     "noUncheckedIndexedAccess": false,
     "noStrictGenericChecks": false,
     "noFallthroughCasesInSwitch": true,
-    "strictBindCallApply": true
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true
   },
   "exclude": [
     "node_modules",

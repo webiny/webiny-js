@@ -15,7 +15,7 @@ export class HandlerResultPlugin<T extends Context = Context> extends Plugin {
         this._callable = callable;
     }
 
-    async handle(context: T, result: any): Promise<any> {
+    public async handle(context: T, result: any): Promise<any> {
         return this._callable(context, result);
     }
 }

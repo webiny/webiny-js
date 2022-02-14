@@ -51,6 +51,9 @@ export function useRequireNewPassword(): RequireNewPassword {
     return {
         confirm,
         shouldRender: authState === "requireNewPassword",
-        requiredAttributes: get(authData, "challengeParam.requiredAttributes", [])
+        /**
+         * It is safe to cast.
+         */
+        requiredAttributes: get(authData, "challengeParam.requiredAttributes", []) as string[]
     };
 }

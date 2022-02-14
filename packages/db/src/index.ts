@@ -1,3 +1,6 @@
+/**
+ * TODO Remove when moved all packages to standalone storage opts.
+ */
 interface KeyField {
     name: string;
 }
@@ -90,41 +93,43 @@ const getCreateLogData = (args: Args): LogData => {
 };
 
 class Db {
-    driver: DbDriver;
-    table: string;
-    logTable?: string;
+    public driver: DbDriver;
+    public table: string;
+    public logTable?: string;
+
     constructor({ driver, table, logTable }: ConstructorArgs) {
         this.driver = driver;
+        // @ts-ignore
         this.table = table;
         this.logTable = logTable;
     }
 
-    async create(args: Args): Promise<Result<true>> {
+    public async create(args: Args): Promise<Result<true>> {
         const createArgs = { ...args, table: args.table || this.table };
         await this.createLog("create", createArgs);
         return this.driver.create(createArgs);
     }
 
-    async read<T = Record<string, any>>(args: Args): Promise<Result<T[]>> {
+    public async read<T = Record<string, any>>(args: Args): Promise<Result<T[]>> {
         const readArgs = { ...args, table: args.table || this.table };
         await this.createLog("read", readArgs);
         return this.driver.read(readArgs);
     }
 
-    async update(args: Args): Promise<Result<true>> {
+    public async update(args: Args): Promise<Result<true>> {
         const updateArgs = { ...args, table: args.table || this.table };
         await this.createLog("update", updateArgs);
         return this.driver.update(updateArgs);
     }
 
-    async delete(args: Args): Promise<Result<true>> {
+    public async delete(args: Args): Promise<Result<true>> {
         const deleteArgs = { ...args, table: args.table || this.table };
         await this.createLog("delete", deleteArgs);
         return this.driver.delete(deleteArgs);
     }
 
     // Logging functions.
-    async createLog(operation: string, args: Args): Promise<Result<true>> {
+    public async createLog(operation: string, args: Args): Promise<Result<true> | null> {
         if (!this.logTable) {
             return null;
         }
@@ -133,7 +138,7 @@ class Db {
         return this.driver.createLog({ operation, data, table: this.logTable, id: shortId() });
     }
 
-    async readLogs<T = Record<string, any>>(): Promise<Result<T[]>> {
+    public async readLogs<T = Record<string, any>>(): Promise<Result<T[]> | null> {
         if (!this.logTable) {
             return null;
         }
@@ -143,7 +148,7 @@ class Db {
         });
     }
 
-    batch<
+    public batch<
         T0 = any,
         T1 = any,
         T2 = any,
@@ -154,7 +159,7 @@ class Db {
         T7 = any,
         T8 = any,
         T9 = any
-    >() {
+    >(): Batch {
         return new Batch<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(this);
     }
 }
