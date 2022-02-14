@@ -30,7 +30,7 @@ import {
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import { CREATE_CATEGORY, GET_CATEGORY } from "./graphql/categories";
-import { CREATE_PAGE, GET_PAGE, PUBLISH_PAGE, DELETE_PAGE } from "./graphql/pages";
+import { CREATE_PAGE, GET_PAGE, PUBLISH_PAGE, DELETE_PAGE, UPDATE_PAGE } from "./graphql/pages";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
     DELETE_CONTENT_REVIEW_MUTATION,
@@ -254,6 +254,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         // Pages
         async createPage(variables) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
+        },
+        async updatePage(variables) {
+            return invoke({ body: { query: UPDATE_PAGE, variables } });
         },
         async publishPage(variables) {
             return invoke({ body: { query: PUBLISH_PAGE, variables } });

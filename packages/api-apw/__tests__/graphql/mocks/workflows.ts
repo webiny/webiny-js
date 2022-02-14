@@ -51,7 +51,7 @@ export default {
                 reviewers
             }),
             createWorkflowStep({
-                title: "Legal Review",
+                title: "Design Review",
                 type: ApwWorkflowStepTypes.MANDATORY_NON_BLOCKING,
                 reviewers
             }),
