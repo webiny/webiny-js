@@ -6,7 +6,7 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
         return null;
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!verticalAlign[breakpointName]) {
             return returnStyles;
         }

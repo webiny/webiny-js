@@ -2,7 +2,7 @@ import * as React from "react";
 import { Plugin } from "@webiny/plugins";
 
 interface Config {
-    route: React.ReactElement;
+    route: React.ReactElement | null;
 }
 
 export class RoutePlugin extends Plugin {
@@ -15,6 +15,9 @@ export class RoutePlugin extends Plugin {
     }
 
     get route(): Config["route"] {
+        if (!this._config.route) {
+            return null;
+        }
         return this._config.route;
     }
 }

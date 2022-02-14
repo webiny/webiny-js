@@ -39,7 +39,13 @@ export const createButton = (args: Params = {}): ElementRenderer => {
 
         const { getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
 
-        const themeClassNames = getThemeClassNames(theme => theme.styles.buttons[type]);
+        const themeClassNames = getThemeClassNames(theme => {
+            if (!theme.styles || !theme.styles.buttons) {
+                return "";
+            }
+
+            return theme.styles.buttons[type];
+        });
         const elementClassNames = getElementClassNames(element);
 
         const classNames = combineClassNames(themeClassNames, elementClassNames);

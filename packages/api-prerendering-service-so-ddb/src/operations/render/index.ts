@@ -80,7 +80,9 @@ export const createRenderStorageOperations = (
         return "ps.tagUrlLink";
     };
 
-    const getRender = async (params: PrerenderingServiceStorageOperationsGetRenderParams) => {
+    const getRender = async (
+        params: PrerenderingServiceStorageOperationsGetRenderParams
+    ): Promise<Render | null> => {
         const { where } = params;
 
         const keys = {

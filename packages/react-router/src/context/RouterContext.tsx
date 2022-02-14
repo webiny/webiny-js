@@ -9,7 +9,9 @@ export type ReactRouterContextValue = {
 };
 
 export const RouterContext = React.createContext<ReactRouterContextValue>({
-    onLink() {}
+    onLink: () => {
+        return void 0;
+    }
 });
 
 export const RouterProvider: React.FC = ({ children }) => {

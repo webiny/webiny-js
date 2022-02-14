@@ -61,8 +61,12 @@ class ConfirmationDialog extends React.Component<Props, State> {
     __isMounted = false;
 
     callbacks: ConfirmationCallbacks = {
-        onAccept: () => {},
-        onCancel: () => {}
+        onAccept: () => {
+            return void 0;
+        },
+        onCancel: () => {
+            return void 0;
+        }
     };
 
     state = {

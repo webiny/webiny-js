@@ -25,7 +25,37 @@ import {
     defaultStylesCallback
 } from "~/utils";
 
-export const PageElementsContext = createContext(null);
+export const PageElementsContext = createContext<PageElementsContextValue>(
+    /**
+     * Defaults are empty objects, functions...
+     */
+    {
+        theme: {},
+        renderers: undefined,
+        modifiers: {
+            styles: {}
+        },
+        getElementClassNames: () => [],
+        combineClassNames: () => "",
+        getElementStyles: () => [],
+        getStyles: () => [],
+        getClassNames: () => [],
+        getThemeStyles: () => [],
+        getThemeClassNames: () => [],
+        setAssignStylesCallback: () => {
+            return void 0;
+        },
+        setElementStylesCallback: () => {
+            return void 0;
+        },
+        setThemeStylesCallback: () => {
+            return void 0;
+        },
+        setStylesCallback: () => {
+            return void 0;
+        }
+    }
+);
 
 export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     children,
@@ -35,7 +65,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
 }) => {
     // Styles-related callback customization.
     const [customAssignStylesCallback, setCustomAssignStylesCallback] =
-        useState<AssignStylesCallback>(null);
+        useState<AssignStylesCallback>(() => {
+            return {};
+        });
     const [customElementStylesCallback, setCustomElementStylesCallback] =
         useState<ElementStylesCallback>();
     const [customThemeStylesCallback, setCustomThemeStylesCallback] =
@@ -150,10 +182,10 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;
 };
 /**
- * TODO: figure out why React.cloneElement is complaining about cloning React.FC.children
+ * TODO @ts-refactor the props: any
  */
 export const PageElementsConsumer: React.FC = ({ children }) => (
     <PageElementsContext.Consumer>
-        {props => React.cloneElement(children as any, props)}
+        {(props: any) => React.cloneElement(children as React.ReactElement, props)}
     </PageElementsContext.Consumer>
 );

@@ -85,10 +85,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
                 onReady({ editor: editorRef.current, initialData });
             },
             tools: Object.keys(props.tools || {}).reduce((tools, name) => {
-                /**
-                 * We are certain that props.tools[name] exist.
-                 */
-                const tool = props.tools![name];
+                const tool = props.tools ? props.tools[name] : null;
+                if (!tool) {
+                    return tools;
+                }
                 tools[name] = tool;
                 if (!tool.config) {
                     tool.config = { context };

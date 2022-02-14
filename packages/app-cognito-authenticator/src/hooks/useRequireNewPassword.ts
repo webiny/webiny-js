@@ -3,13 +3,14 @@ import Auth from "@aws-amplify/auth";
 import get from "lodash.get";
 import { useAuthenticator } from "./useAuthenticator";
 
+interface RequireNewPasswordConfirmParams {
+    password: string;
+    requiredAttributes: { [key: string]: string };
+}
 export interface RequireNewPassword {
     shouldRender: boolean;
 
-    confirm(params: {
-        password: string;
-        requiredAttributes: { [key: string]: string };
-    }): Promise<void>;
+    confirm(params: RequireNewPasswordConfirmParams): Promise<void>;
 
     requiredAttributes: string[];
 }

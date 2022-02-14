@@ -5,7 +5,7 @@ export interface ErrorOptions<TData = any> {
 }
 
 export default class WError<TData = any> extends Error {
-    public message: string = "";
+    public message = "";
     public code: string | null = null;
     public data: TData | null = null;
 

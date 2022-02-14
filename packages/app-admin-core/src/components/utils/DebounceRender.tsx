@@ -21,7 +21,7 @@ export const DebounceRender: React.FC<Props> = ({ wait = 50, children }) => {
 
     useEffect(() => {
         if (render) {
-            return null;
+            return;
         }
 
         debouncedRender();

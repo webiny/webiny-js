@@ -133,7 +133,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             const adminPackageJsonPath = path.relative(
                 context.project.root,
-                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath })
+                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath }) as string
             );
 
             const adminDependenciesUpdates = [];
@@ -147,7 +147,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             const graphqlPackageJsonPath = path.relative(
                 context.project.root,
-                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath })
+                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath }) as string
             );
 
             // Get needed dependencies updates.

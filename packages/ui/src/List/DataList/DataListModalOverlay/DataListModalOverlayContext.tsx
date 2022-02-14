@@ -7,7 +7,9 @@ interface DataListModalOverlayProviderContext {
 export const DataListModalOverlayContext = React.createContext<DataListModalOverlayProviderContext>(
     {
         isOpen: false,
-        setIsOpen: () => {}
+        setIsOpen: () => {
+            return void 0;
+        }
     }
 );
 

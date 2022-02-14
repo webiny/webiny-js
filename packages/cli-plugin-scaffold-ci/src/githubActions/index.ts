@@ -246,6 +246,10 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 text: `${chalk.green(newRepoName)} code repository created.`
             });
         } else {
+            /**
+             * TODO @ts-refactor try to get the heads and tails of this.
+             */
+            // @ts-ignore
             repo = await octokit.rest.repos
                 .get({
                     repo: existingRepo.name,
@@ -263,8 +267,8 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 repo: repo.name,
                 branch: repo.default_branch,
                 author: {
-                    name: user.name,
-                    email: user.email
+                    name: user.name as string,
+                    email: user.email as string
                 }
             });
 

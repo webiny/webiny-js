@@ -17,7 +17,7 @@ export type HookCallbackFunction = (args: {
     context: HandlerContext;
     configuration: Configuration;
     args: Args;
-    render: Render;
+    render: Render | null;
 }) => void | Promise<void>;
 
 export interface FlushHookPlugin extends Plugin {

@@ -17,6 +17,11 @@ interface Reducer {
     (prev: State, next: Partial<State>): State;
 }
 
+interface SetPasswordParams {
+    code: string;
+    password: string;
+}
+
 export function useSetNewPassword(): SetNewPassword {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         error: null,
@@ -25,21 +30,17 @@ export function useSetNewPassword(): SetNewPassword {
     const { authState, authData, changeState } = useAuthenticator();
 
     const setPassword = useCallback(
-        async data => {
+        async (data: SetPasswordParams) => {
             /**
              * Stop the callback because we are missing auth data
              */
-            if (!authData) {
+            if (!authData || !authData.username) {
                 return;
             }
             setState({ loading: true });
             const { code, password } = data;
             try {
-                /**
-                 * TODO @pavel check this please? authData is a Record<string, ...>, not a string.
-                 */
-                // @ts-ignore
-                await Auth.forgotPasswordSubmit(authData.toLowerCase(), code, password);
+                await Auth.forgotPasswordSubmit(authData.username.toLowerCase(), code, password);
                 changeState("signIn", null, {
                     title: "Password updated",
                     text: "You can now login using your new password!",

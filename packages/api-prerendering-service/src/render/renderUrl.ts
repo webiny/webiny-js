@@ -171,8 +171,8 @@ export const defaultRenderUrlFunction = async (
         const request = response.request();
         const url = request.url();
         if (url.includes("/graphql") && request.method() === "POST") {
-            const responses: Record<string, any> = await response.json();
-            const postData = JSON.parse(request.postData());
+            const responses = (await response.json()) as Record<string, any>;
+            const postData = JSON.parse(request.postData() as string);
             const operations = Array.isArray(postData) ? postData : [postData];
 
             for (let i = 0; i < operations.length; i++) {

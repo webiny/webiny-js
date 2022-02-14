@@ -17,9 +17,13 @@ const runHookCallback = async (hookName: string, args: CliCommandScaffoldCallabl
         .byType<CliPluginsScaffoldCi<Input>>("cli-plugin-scaffold-ci")
         .find(item => item.provider === input.provider);
 
-    if (typeof plugin[hookName] === "function") {
-        await plugin[hookName](...args);
+    if (!plugin) {
+        return;
+    } else if (typeof plugin[hookName] !== "function") {
+        return;
     }
+
+    await plugin[hookName](...args);
 };
 
 const SCAFFOLD_DOCS_LINK = "https://www.webiny.com/docs/how-to-guides/scaffolding/ci-cd";

@@ -1,6 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
 import { TableModifier } from "~/types";
+import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 
 export interface Params {
     table?: TableModifier;
@@ -10,8 +11,8 @@ export interface Params {
 export const createTable = (params: Params): Table => {
     const { table, documentClient } = params;
 
-    const tableConfig = {
-        name: process.env.DB_TABLE_PRERENDERING_SERVICE || process.env.DB_TABLE,
+    const tableConfig: TableConstructor = {
+        name: (process.env.DB_TABLE_PRERENDERING_SERVICE || process.env.DB_TABLE) as string,
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: documentClient

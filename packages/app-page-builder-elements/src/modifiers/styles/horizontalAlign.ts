@@ -6,7 +6,7 @@ const horizontalAlign: ElementStylesModifier = ({ element, theme }) => {
         return null;
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!horizontalAlign || !horizontalAlign[breakpointName]) {
             return returnStyles;
         }

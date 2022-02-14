@@ -1,5 +1,5 @@
 import React from "react";
-import * as R from "@rmwc/button";
+import * as RmwcButton from "@rmwc/button";
 import { Fab, FabProps } from "@rmwc/fab";
 import { Icon, IconProps } from "../Icon/Icon";
 import classNames from "classnames";
@@ -38,7 +38,7 @@ export const ButtonDefault: React.FC<ButtonProps> = props => {
     const { disabled, onClick, children, small, ripple = true, className = "", style } = props;
 
     return (
-        <R.Button
+        <RmwcButton.Button
             style={style}
             disabled={disabled}
             dense={small}
@@ -48,7 +48,7 @@ export const ButtonDefault: React.FC<ButtonProps> = props => {
             data-testid={props["data-testid"]}
         >
             {children}
-        </R.Button>
+        </RmwcButton.Button>
     );
 };
 
@@ -67,7 +67,7 @@ export const ButtonPrimary: React.FC<ButtonProps> = props => {
         className = null
     } = props;
     return (
-        <R.Button
+        <RmwcButton.Button
             raised={!flat}
             dense={small}
             disabled={disabled}
@@ -79,7 +79,7 @@ export const ButtonPrimary: React.FC<ButtonProps> = props => {
             data-testid={props["data-testid"]}
         >
             {children}
-        </R.Button>
+        </RmwcButton.Button>
     );
 };
 
@@ -98,7 +98,7 @@ export const ButtonSecondary: React.FC<ButtonProps> = props => {
     } = props;
 
     return (
-        <R.Button
+        <RmwcButton.Button
             disabled={disabled}
             outlined
             dense={small}
@@ -109,7 +109,7 @@ export const ButtonSecondary: React.FC<ButtonProps> = props => {
             data-testid={props["data-testid"]}
         >
             {children}
-        </R.Button>
+        </RmwcButton.Button>
     );
 };
 

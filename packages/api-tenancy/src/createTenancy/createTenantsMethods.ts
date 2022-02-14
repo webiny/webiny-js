@@ -34,10 +34,13 @@ function createTenantLoaders(storageOperations: TenancyStorageOperations) {
 
     return {
         get getTenant() {
-            if (!loaders.get("getTenant")) {
-                loaders.set("getTenant", new DataLoader<string, any>(ids => getTenant(ids)));
+            let tenantLoader = loaders.get("getTenant");
+            if (tenantLoader) {
+                return tenantLoader;
             }
-            return loaders.get("getTenant");
+            tenantLoader = new DataLoader<string, any>(ids => getTenant(ids));
+            loaders.set("getTenant", tenantLoader);
+            return tenantLoader;
         }
     };
 }

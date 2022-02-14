@@ -34,10 +34,18 @@ interface OnValidateCallable {
 
 export const FormContext = React.createContext<FormAPI>({
     data: {},
-    submit: async () => {},
-    setValue: () => {},
-    validate: () => {},
-    validateInput: async () => {}
+    submit: async () => {
+        return void 0;
+    },
+    setValue: () => {
+        return void 0;
+    },
+    validate: () => {
+        return void 0;
+    },
+    validateInput: async () => {
+        return void 0;
+    }
 });
 
 export const useForm = () => {
@@ -473,5 +481,7 @@ Form.defaultProps = {
     data: {},
     disabled: false,
     validateOnFirstSubmit: false,
-    onSubmit: () => {}
+    onSubmit: () => {
+        return void 0;
+    }
 };

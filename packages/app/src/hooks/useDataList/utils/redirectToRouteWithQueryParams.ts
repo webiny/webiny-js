@@ -20,7 +20,7 @@ export default (params: Params, options: Options) => {
         }
     });
 
-    const keys = ["limit", "after", "before", "where", "search", "sort"];
+    const keys: string[] = ["limit", "after", "before", "where", "search", "sort"];
 
     const query = new URLSearchParams(location.search);
     keys.forEach((key: keyof Params) => {

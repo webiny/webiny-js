@@ -44,7 +44,7 @@ const imageEditorDialog = css({
 });
 
 class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolean }> {
-    public imageEditor: React.RefObject<ImageEditor> = React.createRef();
+    public imageEditor = React.createRef<ImageEditor>();
 
     public render() {
         const { src, options, onAccept, open, dialogZIndex, ...dialogProps } = this.props;
@@ -73,12 +73,13 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
                                     ) : (
                                         <DialogAccept
                                             onClick={() => {
+                                                const url = this.imageEditor.current
+                                                    ? this.imageEditor.current.getCanvasDataUrl()
+                                                    : "";
                                                 /**
                                                  * We are certain that ref exists.
                                                  */
-                                                return onAccept(
-                                                    this.imageEditor.current!.getCanvasDataUrl()
-                                                );
+                                                onAccept(url);
                                             }}
                                         >
                                             Save

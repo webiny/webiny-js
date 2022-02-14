@@ -5,7 +5,7 @@ export interface AuthenticationContext<TIdentity = Identity> extends Context {
 }
 
 export interface Authenticator<TIdentity = Identity> {
-    (token: string): Promise<TIdentity>;
+    (token: string): Promise<TIdentity | null>;
 }
 
 export interface Authentication<TIdentity = Identity> {

@@ -151,7 +151,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
             renderImagePreview
         } = this.props;
 
-        let imageEditorImageSrc: string = "";
+        let imageEditorImageSrc = "";
         if (this.state.imageEditor.image && this.state.imageEditor.image.src) {
             imageEditorImageSrc = this.state.imageEditor.image.src;
         }

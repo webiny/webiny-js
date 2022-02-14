@@ -1,5 +1,6 @@
 import { setContext } from "apollo-link-context";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin";
+import { ApolloLink } from "apollo-link";
 
 declare global {
     interface Window {
@@ -11,7 +12,7 @@ declare global {
  * Append `x-i18n-locale` header from URL query (necessary for prerendering service).
  */
 export class LocaleHeaderLinkPlugin extends ApolloLinkPlugin {
-    private locale: string;
+    private readonly locale: string;
 
     constructor(locale?: string) {
         super();
@@ -24,7 +25,7 @@ export class LocaleHeaderLinkPlugin extends ApolloLinkPlugin {
         this.locale = locale;
     }
 
-    createLink() {
+    public createLink(): ApolloLink {
         return setContext((_, { headers }) => {
             if (this.locale) {
                 return {

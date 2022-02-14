@@ -14,7 +14,7 @@ const useComponent = (Component: ComponentType): ComponentType => {
     return recipe.component;
 };
 
-const ComposableContext = createContext([]);
+const ComposableContext = createContext<string[]>([]);
 ComposableContext.displayName = "ComposableContext";
 
 function useComposableParents() {
@@ -57,7 +57,7 @@ export function makeComposable<TProps>(name: string, Component?: ComponentType<T
     }
     const Composable: ComposableFC<TProps> = props => {
         const parents = useComposableParents();
-        const WrappedComponent = useComponent(Component);
+        const WrappedComponent = useComponent(Component as ComponentType<TProps>);
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 

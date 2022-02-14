@@ -83,7 +83,11 @@ const ForgotPassword: React.FC = () => {
 
                                         <Grid>
                                             <Cell span={12} className={alignRight}>
-                                                <ButtonPrimary onClick={submit}>
+                                                <ButtonPrimary
+                                                    onClick={ev => {
+                                                        submit(ev);
+                                                    }}
+                                                >
                                                     {"Send me the code"}
                                                 </ButtonPrimary>
                                             </Cell>
@@ -106,13 +110,17 @@ const ForgotPassword: React.FC = () => {
                                         <Grid>
                                             <Cell span={12} className={alignRight}>
                                                 <ButtonDefault
-                                                    onClick={() =>
-                                                        requestCode({ username: data.username })
-                                                    }
+                                                    onClick={() => {
+                                                        requestCode({ username: data.username });
+                                                    }}
                                                 >
                                                     {"Resend code"}
                                                 </ButtonDefault>
-                                                <ButtonPrimary onClick={submit}>
+                                                <ButtonPrimary
+                                                    onClick={ev => {
+                                                        submit(ev);
+                                                    }}
+                                                >
                                                     I got the code!
                                                 </ButtonPrimary>
                                             </Cell>

@@ -9,8 +9,8 @@ interface ApolloLinkFactory {
 export class ApolloLinkPlugin extends Plugin {
     public static readonly type = "apollo-link";
     public readonly cacheKey;
-    private readonly factory: ApolloLinkFactory;
-    private cache: ApolloLink;
+    private readonly factory?: ApolloLinkFactory;
+    private cache?: ApolloLink;
 
     constructor(factory?: ApolloLinkFactory) {
         super();

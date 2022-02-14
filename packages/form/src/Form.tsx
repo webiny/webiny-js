@@ -90,7 +90,9 @@ export class Form extends React.Component<FormProps, State> {
         data: {},
         disabled: false,
         validateOnFirstSubmit: false,
-        onSubmit: () => {}
+        onSubmit: () => {
+            return void 0;
+        }
     };
 
     public state: State = {

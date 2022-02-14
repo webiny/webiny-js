@@ -326,9 +326,12 @@ class MultiImageUpload extends React.Component<Props, State> {
                                     | "unsupportedFileType"
                                     | "default";
                                 const message = this.props.errorMessages[errorType];
+
+                                const errorFileName = error.file ? error.file.name : "";
+
                                 return (
-                                    <li key={error.file!.name + index}>
-                                        {index + 1}. <strong>{error.file!.name}</strong> -&nbsp;
+                                    <li key={errorFileName + index}>
+                                        {index + 1}. <strong>{errorFileName}</strong> -&nbsp;
                                         {message || this.props.errorMessages.default}
                                     </li>
                                 );

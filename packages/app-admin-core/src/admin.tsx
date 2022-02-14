@@ -22,6 +22,17 @@ const compose = (...fns: any[]) => {
     };
 };
 
+interface Wrapper {
+    component: ComponentType<unknown>;
+    wrappers: HigherOrderComponent[];
+}
+interface State {
+    routes: Record<string, ReactElement<RouteProps>>;
+    plugins: JSX.Element[];
+    wrappers: Map<ComponentType<unknown>, Wrapper>;
+    providers: HigherOrderComponent[];
+}
+
 interface AdminContext extends State {
     addRoute(route: JSX.Element): void;
     addProvider(hoc: HigherOrderComponent): void;
@@ -32,7 +43,24 @@ interface AdminContext extends State {
     ): void;
 }
 
-const AdminContext = createContext<AdminContext>(null);
+const AdminContext = createContext<AdminContext>({
+    routes: {},
+    plugins: [],
+    wrappers: new Map(),
+    providers: [],
+    addComponentWrappers: () => {
+        return void 0;
+    },
+    addPlugin: () => {
+        return void 0;
+    },
+    addProvider: () => {
+        return void 0;
+    },
+    addRoute: () => {
+        return void 0;
+    }
+});
 AdminContext.displayName = "AdminContext";
 
 export const useAdmin = () => {
@@ -41,16 +69,6 @@ export const useAdmin = () => {
 
 export interface HigherOrderComponent<TInputProps = unknown, TOutputProps = TInputProps> {
     (Component: React.ComponentType<TInputProps>): React.ComponentType<TOutputProps>;
-}
-
-interface State {
-    routes: Record<string, ReactElement<RouteProps>>;
-    plugins: JSX.Element[];
-    wrappers: Map<
-        ComponentType<unknown>,
-        { component: ComponentType<unknown>; wrappers: HigherOrderComponent[] }
-    >;
-    providers: HigherOrderComponent[];
 }
 
 export interface AdminProps {
@@ -115,7 +133,7 @@ export const Admin = ({ children }: AdminProps) => {
         return () => {
             setState(state => {
                 const wrappers = new Map(state.wrappers);
-                const recipe = wrappers.get(component);
+                const recipe = wrappers.get(component) || { component: null, wrappers: [] };
 
                 const newHOCs = [...recipe.wrappers].filter(hoc => !hocs.includes(hoc));
                 const NewComponent = compose(...[...newHOCs].reverse())(component);

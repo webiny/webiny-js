@@ -33,7 +33,7 @@ export default () => {
                 console.log(
                     `Path wasn't passed via "args.path", trying to extract it from "args.url"...`
                 );
-                path = url.parse(args.url).pathname;
+                path = url.parse(args.url as string).pathname as string;
             }
 
             if (!path) {

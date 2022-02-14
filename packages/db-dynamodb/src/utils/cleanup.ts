@@ -20,7 +20,7 @@ const attributesToRemove = [
 
 export const cleanupItem = <T>(
     entity: Entity<any>,
-    item?: T & Record<string, any>,
+    item?: (T & Record<string, any>) | null,
     removeAttributes: string[] = []
 ): T | null => {
     if (!item) {
@@ -48,5 +48,5 @@ export const cleanupItems = <T>(
     items: (T & Record<string, any>)[],
     removeAttributes: string[] = []
 ): T[] => {
-    return items.map(item => cleanupItem<T>(entity, item, removeAttributes));
+    return items.map(item => cleanupItem<T>(entity, item, removeAttributes) as T);
 };

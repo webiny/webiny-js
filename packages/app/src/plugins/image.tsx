@@ -48,7 +48,7 @@ const sanitizeTransformArgs = (args: { [key: string]: any }): Object => {
     return output;
 };
 
-const getSizes = (width: any): string | null => {
+const getSizes = (width: any): string | undefined => {
     // Check if width was set as percentage, with "%" in the value.
     if (typeof width === "string" && width.endsWith("%")) {
         return `${parseInt(width)}vw`;
@@ -63,10 +63,10 @@ const getSizes = (width: any): string | null => {
         return `${parseInt(width)}em`;
     }
 
-    return null;
+    return undefined;
 };
 
-const isFixedImageWidth = (width: number | string) => {
+const isFixedImageWidth = (width?: number | string) => {
     if (Number.isFinite(width)) {
         return true;
     }
@@ -119,7 +119,7 @@ export default () => {
         render(props: { [key: string]: any }) {
             const { transform, srcSet: srcSetInitial, ...imageProps } = props;
             let srcSet = srcSetInitial;
-            let sizes;
+            let sizes: string | undefined;
             const src = imageProps.src;
             if (srcSet && srcSet === "auto") {
                 srcSet = {};

@@ -7,15 +7,19 @@ const text: ElementStylesModifier = ({ element, theme }) => {
         return null;
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!text[breakpointName]) {
             return returnStyles;
         }
 
         const values = text[breakpointName];
-        const breakpointStyles = {
-            ...theme.styles.typography[values.typography]
-        };
+
+        let breakpointStyles: Record<string, any> = {};
+        if (theme.styles && theme.styles.typography) {
+            breakpointStyles = {
+                ...theme.styles.typography[values.typography]
+            };
+        }
 
         if (values.color) {
             breakpointStyles.color = values.color;

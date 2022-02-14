@@ -4,7 +4,7 @@ interface ErrorResponseParams {
     data?: any;
 }
 
-const defaultParams: ErrorResponseParams = {
+const defaultParams: Required<ErrorResponseParams> = {
     code: "",
     message: "",
     data: null

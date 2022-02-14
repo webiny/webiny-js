@@ -9,6 +9,9 @@ export interface Props {
 
 export const Element: React.FC<Props> = props => {
     const { renderers } = usePageElements();
+    if (!renderers) {
+        return null;
+    }
 
     const { element } = props;
     if (!element) {

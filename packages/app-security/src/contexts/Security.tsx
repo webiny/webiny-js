@@ -5,16 +5,24 @@ import { SecurityIdentity, SecurityPermission } from "~/types";
 export interface SecurityContext {
     identity: SecurityIdentity | null;
     setIdentity: Dispatch<SetStateAction<SecurityIdentity>>;
-    getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T;
+    getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T | null;
 }
 
-export const SecurityContext = React.createContext<SecurityContext>(null);
+export const SecurityContext = React.createContext<SecurityContext>({
+    identity: null,
+    setIdentity: () => {
+        return void 0;
+    },
+    getPermission: () => {
+        return null;
+    }
+});
 
 export const SecurityProvider: React.FC = props => {
-    const [identity, setIdentity] = useState<SecurityIdentity>(null);
+    const [identity, setIdentity] = useState<SecurityIdentity | null>(null);
 
     const getPermission = useCallback(
-        <T extends SecurityPermission = SecurityPermission>(name: string): T => {
+        <T extends SecurityPermission = SecurityPermission>(name: string): T | null => {
             if (!identity) {
                 return null;
             }

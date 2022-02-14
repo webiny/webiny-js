@@ -17,6 +17,7 @@ export type AuthState =
     | "forgotPassword";
 
 export interface AuthData {
+    username?: string;
     [key: string]: string | null | boolean | undefined;
 }
 
@@ -55,7 +56,12 @@ interface Reducer {
     (prev: State, next: Partial<State>): State;
 }
 
-export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
+interface QueryData {
+    state?: AuthState;
+    [key: string]: string | undefined;
+}
+
+export const Authenticator: React.FC<AuthenticatorProps> = ({ onToken, children }) => {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
         authData: null,
@@ -65,7 +71,7 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
 
     const checkUrl = async () => {
         const query = new URLSearchParams(window.location.search);
-        const queryData: any = {};
+        const queryData: QueryData = {};
         query.forEach((value, key) => (queryData[key] = value));
         const { state, ...params } = queryData;
 

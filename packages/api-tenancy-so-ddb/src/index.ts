@@ -10,6 +10,16 @@ import { createDomainEntity } from "~/definitions/domainEntity";
 import { CreateTenancyStorageOperations, ENTITIES } from "~/types";
 import { ListTenantsParams, System, Tenant, TenantDomain } from "@webiny/api-tenancy/types";
 
+interface TenantDomainRecord {
+    PK: string;
+    SK: string;
+    GSI1_PK: string;
+    GSI1_SK: string;
+    tenant: string;
+    fqdn: string;
+    webinyVersion: string;
+}
+
 const reservedFields = ["PK", "SK", "index", "data"];
 
 const isReserved = (name: string): void => {
@@ -55,9 +65,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         SK: "TENANCY"
     };
 
-    const createNewDomainsRecords = (tenant: Tenant, existingDomains: TenantDomain[] = []) => {
+    const createNewDomainsRecords = (
+        tenant: Tenant,
+        existingDomains: TenantDomain[] = []
+    ): TenantDomainRecord[] => {
         return tenant.settings.domains
-            .map(({ fqdn }) => {
+            .map(({ fqdn }): TenantDomainRecord | null => {
                 // If domain is already in the DB, skip it.
                 if (existingDomains.find(d => d.fqdn === fqdn)) {
                     return null;
@@ -71,10 +84,10 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                     GSI1_SK: `T#${tenant.id}#${fqdn}`,
                     tenant: tenant.id,
                     fqdn,
-                    webinyVersion: tenant.webinyVersion
+                    webinyVersion: tenant.webinyVersion as string
                 };
             })
-            .filter(Boolean);
+            .filter(Boolean) as TenantDomainRecord[];
     };
 
     return {
@@ -99,7 +112,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 });
             }
         },
-        async getSystemData(): Promise<System> {
+        async getSystemData(): Promise<System | null> {
             try {
                 const result = await entities.system.get(systemKeys);
                 if (!result || !result.Item) {

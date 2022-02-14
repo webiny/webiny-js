@@ -7,8 +7,8 @@ export interface ExtractorResults {
 }
 class Extractor {
     private glob: string | undefined;
-    public content: string = "";
-    public listOnly: boolean = false;
+    public content = "";
+    public listOnly = false;
 
     public setGlob(value: string): Extractor {
         this.glob = value;
@@ -38,7 +38,7 @@ class Extractor {
         return results;
     }
 
-    public setListOnly(flag: boolean = true): Extractor {
+    public setListOnly(flag = true): Extractor {
         this.listOnly = flag;
         return this;
     }
