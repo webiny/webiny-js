@@ -29,7 +29,10 @@ export class PermissionRendererPlugin extends Plugin {
         return Boolean(this._config.system);
     }
 
-    public render(props: RenderParams): React.ReactElement {
+    public render(props: RenderParams): React.ReactElement | null {
+        if (!this._config.render) {
+            return null;
+        }
         return this._config.render(props);
     }
 }

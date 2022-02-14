@@ -23,6 +23,9 @@ export default function getFileTypePlugin(file: FileItem) {
     for (let i = 0; i < fileTypePlugins.length; i++) {
         // We don't want to include the global wildcard in this check.
         const types = fileTypePlugins[i].types;
+        if (!types) {
+            continue;
+        }
         if (types.find(t => minimatch(file.type, t))) {
             plugin = fileTypePlugins[i];
         }

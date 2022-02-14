@@ -34,11 +34,11 @@ function toDataUrl(url: string): Promise<string> {
 }
 interface State {
     showImageEditor: boolean;
-    dataUrl: string;
+    dataUrl: string | null;
 }
 interface Action {
     type: "setDataUrl" | "hideImageEditor";
-    dataUrl?: string;
+    dataUrl?: string | null;
 }
 const initialState: State = {
     showImageEditor: false,
@@ -49,7 +49,7 @@ const reducer = (state: State, action: Action): State => {
 
     switch (action.type) {
         case "setDataUrl":
-            next.dataUrl = action.dataUrl;
+            next.dataUrl = action.dataUrl as string;
             next.showImageEditor = true;
             break;
         case "hideImageEditor":
@@ -95,7 +95,7 @@ const EditAction: React.FC<EditActionProps> = props => {
                     data-testid={"fm-image-editor-dialog"}
                     dialogZIndex={100}
                     open={state.showImageEditor}
-                    src={state.dataUrl}
+                    src={state.dataUrl as string}
                     onClose={() => dispatch({ type: "hideImageEditor" })}
                     onAccept={src => {
                         const blob = dataURLtoBlob(src);

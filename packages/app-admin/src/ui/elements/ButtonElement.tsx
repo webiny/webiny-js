@@ -35,7 +35,8 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
 
     public getLabel(props?: TRenderProps): string {
         if (typeof this.config.label === "function") {
-            return this.config.label(props);
+            // TODO @ts-refactor find out correct types to pass
+            return this.config.label(props as TRenderProps);
         }
         return this.config.label;
     }
@@ -46,7 +47,8 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
 
     public getType(props?: TRenderProps): ButtonElementType {
         if (typeof this.config.type === "function") {
-            return this.config.type(props);
+            // TODO @ts-refactor find out correct types to pass
+            return this.config.type(props as TRenderProps);
         }
         return this.config.type;
     }

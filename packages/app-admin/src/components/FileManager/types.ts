@@ -28,17 +28,18 @@ export interface UpdateFileResponse {
         };
     };
 }
+export interface ListFilesListFilesResponse {
+    data: FileItem[];
+    error?: Error | null;
+    meta: {
+        hasMoreItems: boolean;
+        totalItem: number;
+        cursor: string | null;
+    };
+}
 export interface ListFilesResponse {
     fileManager: {
-        listFiles: {
-            data: FileItem[];
-            error?: Error | null;
-            meta: {
-                hasMoreItems: boolean;
-                totalItem: number;
-                cursor: string | null;
-            };
-        };
+        listFiles: ListFilesListFilesResponse;
     };
 }
 

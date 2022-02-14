@@ -44,6 +44,9 @@ export class FileManagerFileTypePlugin extends Plugin {
     }
 
     public render(params: RenderParams): React.ReactNode {
+        if (!this.config.render) {
+            return null;
+        }
         return this.config.render(params);
     }
 }

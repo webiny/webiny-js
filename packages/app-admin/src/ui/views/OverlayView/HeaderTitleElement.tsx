@@ -4,7 +4,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 
 interface HeaderTitleElementConfig extends UIElementConfig {
-    title: () => string;
+    title: () => string | null;
 }
 
 export class HeaderTitleElementRenderer extends UIRenderer<HeaderTitleElement> {

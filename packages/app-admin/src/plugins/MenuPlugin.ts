@@ -47,6 +47,9 @@ export class MenuPlugin extends Plugin {
     }
 
     render(props: Props): React.ReactNode {
+        if (!this._config.render) {
+            return null;
+        }
         return this._config.render(props);
     }
 }

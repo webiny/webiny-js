@@ -15,13 +15,13 @@ const ButtonWrapper = styled("div")({
 });
 
 export class FormFooterElement extends UIElement {
-    constructor(id: string) {
+    public constructor(id: string) {
         super(id);
 
         this.useGrid(false);
     }
 
-    render(props: UiElementRenderProps) {
+    public render(props: UiElementRenderProps) {
         return <ButtonWrapper>{super.render(props)}</ButtonWrapper>;
     }
 }

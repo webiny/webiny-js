@@ -33,7 +33,9 @@ export default class SearchBarDropdown extends React.Component<SearchBarDropdown
         } = this.props;
 
         downshift.selectItem(plugins.current);
-        downshift.setHighlightedIndex(plugins.list.indexOf(plugins.current));
+        downshift.setHighlightedIndex(
+            plugins.list.indexOf(plugins.current as AdminGlobalSearchPlugin)
+        );
         downshift.openMenu();
     }
 

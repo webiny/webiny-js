@@ -22,11 +22,11 @@ export class SelectElement extends FormFieldElement<SelectElementConfig> {
         this.applyPlugins(SelectElement);
     }
 
-    setOptions(options: SelectElementOption[]) {
+    public setOptions(options: SelectElementOption[]): void {
         this.config.options = options;
     }
 
-    getOptions() {
+    public getOptions(): SelectElementOption[] | undefined {
         return this.config.options;
     }
 
@@ -50,7 +50,7 @@ export class SelectElement extends FormFieldElement<SelectElementConfig> {
                     disabled={this.getIsDisabled(props)}
                     description={this.getDefaultValue(props)}
                 >
-                    {this.getOptions().map(({ value, label }) => (
+                    {(this.getOptions() || []).map(({ value, label }) => (
                         <option key={value} value={value}>
                             {label}
                         </option>

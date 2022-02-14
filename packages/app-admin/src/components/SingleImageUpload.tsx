@@ -63,13 +63,6 @@ export interface SingleImageUploadProps extends FormComponentProps {
 }
 
 export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
-    static defaultProps: Partial<SingleImageUploadProps> = {
-        validation: {
-            isValid: null,
-            message: null
-        }
-    };
-
     render() {
         const {
             className,
@@ -86,6 +79,8 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
             imagePreviewProps,
             round
         } = this.props;
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <ImageUploadWrapper className={className}>
@@ -118,10 +113,10 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
                     )}
                 </FileManager>
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </ImageUploadWrapper>

@@ -106,7 +106,7 @@ const FileList = styled("div")({
     marginBottom: 95
 });
 
-type FileManagerViewProps = {
+export interface FileManagerViewProps {
     onChange: Function;
     onClose: Function;
     files?: FilesRules;
@@ -116,7 +116,7 @@ type FileManagerViewProps = {
     multipleMaxCount: number;
     multipleMaxSize: number | string;
     onUploadCompletion?: Function;
-};
+}
 
 interface RenderFileProps extends Omit<FileProps, "children"> {
     file: FileItem;
@@ -125,6 +125,9 @@ interface RenderFileProps extends Omit<FileProps, "children"> {
 const renderFile: React.FC<RenderFileProps> = props => {
     const { file } = props;
     const plugin = getFileTypePlugin(file);
+    if (!plugin) {
+        return null;
+    }
     return (
         <File {...props} key={file.id}>
             {plugin.render({
@@ -195,7 +198,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const { showSnackbar } = useSnackbar();
 
     const { identity } = useSecurity();
-    const fmFilePermission = useMemo(() => identity.getPermission("fm.file"), []);
+    const fmFilePermission = useMemo(() => {
+        if (!identity || !identity.getPermission) {
+            return undefined;
+        }
+        return identity.getPermission("fm.file");
+    }, []);
     const canCreate = useMemo(() => {
         // Bail out early if no access
         if (!fmFilePermission) {
@@ -221,7 +229,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             const creatorId = get(item, "createdBy.id");
 
             if (fmFilePermission.own && creatorId) {
-                const identityId = identity.id || identity.login;
+                const identityId = identity ? identity.id || identity.login : null;
                 return creatorId === identityId;
             }
 
@@ -278,18 +286,18 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             variables: queryParams,
             data: {
                 fileManager: {
-                    ...data.fileManager,
+                    ...(data?.fileManager || {}),
                     listFiles: {
-                        ...data.fileManager.listFiles,
-                        data: [newFileData, ...(data.fileManager.listFiles.data || [])]
+                        ...(data?.fileManager || {}).listFiles,
+                        data: [newFileData, ...((data?.fileManager?.listFiles || {}).data || [])]
                     }
                 }
             }
         });
     };
 
-    const getFileDetailsFile = useCallback(({ src, list }: GetFileDetailsFileParams) => {
-        return list.find(item => item.src === src);
+    const getFileDetailsFile = useCallback(({ src, list }: GetFileDetailsFileParams): FileItem => {
+        return list.find(item => item.src === src) as FileItem;
     }, []);
 
     useHotkeys({
@@ -299,7 +307,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         }
     });
 
-    const searchInput = useRef();
+    const searchInput = useRef<HTMLInputElement>(null);
 
     const apolloClient = useApolloClient();
 
@@ -431,7 +439,9 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             multipleMaxSize={multipleMaxSize}
             multipleMaxCount={multipleMaxCount}
             accept={accept}
-            onSuccess={files => uploadFile(files.map(file => file.src.file))}
+            onSuccess={files => {
+                uploadFile(files.map(file => file.src.file as FileItem).filter(Boolean));
+            }}
             onError={errors => {
                 const message = outputFileSelectionError(errors);
                 showSnackbar(message);
@@ -459,10 +469,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                         selected.length > 0 ? (
                             <ButtonPrimary
                                 disabled={uploading}
-                                onClick={async () => {
-                                    await onChange(multiple ? selected : selected[0]);
+                                onClick={() => {
+                                    (async () => {
+                                        await onChange(multiple ? selected : selected[0]);
 
-                                    onClose();
+                                        onClose();
+                                    })();
                                 }}
                             >
                                 {t`Select`} {multiple && `(${selected.length})`}
@@ -525,7 +537,9 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                                                   ),
                                                   onSelect:
                                                       typeof onChange === "undefined"
-                                                          ? undefined
+                                                          ? () => {
+                                                                return void 0;
+                                                            }
                                                           : async () => {
                                                                 if (multiple) {
                                                                     toggleSelected(file);

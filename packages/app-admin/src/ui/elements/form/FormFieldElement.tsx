@@ -2,7 +2,6 @@ import React from "react";
 import { FormRenderPropParams, FormAPI } from "@webiny/form";
 import { UIElement, UIElementConfig } from "~/ui/UIElement";
 import { FormElementRenderProps } from "~/ui/elements/form/FormElement";
-import { Form } from "@webiny/form/Form";
 
 export interface FormFieldElementConfig<TRenderProps = FormRenderPropParams>
     extends UIElementConfig<TRenderProps> {
@@ -66,7 +65,7 @@ export class FormFieldElement<
             return () => true;
         }
 
-        return this.config.validators(props);
+        return this.config.validators(props as FormFieldElementRenderProps);
     }
 
     public getDefaultValue(props?: FormFieldElementRenderProps): any {
@@ -79,26 +78,26 @@ export class FormFieldElement<
 
     public getLabel(props?: FormFieldElementRenderProps): string {
         if (typeof this.config.label === "function") {
-            return this.config.label(props);
+            return this.config.label(props as FormFieldElementRenderProps);
         }
 
-        return this.config.label;
+        return this.config.label as string;
     }
 
     public getDescription(props?: FormFieldElementRenderProps): string | React.ReactElement {
         if (typeof this.config.description === "function") {
-            return this.config.description(props);
+            return this.config.description(props as FormFieldElementRenderProps);
         }
 
-        return this.config.description;
+        return this.config.description as string;
     }
 
     public getPlaceholder(props?: FormFieldElementRenderProps): string {
         if (typeof this.config.placeholder === "function") {
-            return this.config.placeholder(props);
+            return this.config.placeholder(props as FormFieldElementRenderProps);
         }
 
-        return this.config.placeholder;
+        return this.config.placeholder as string;
     }
 
     public setLabel(label: string | GetterWithProps<string>): void {
@@ -121,9 +120,9 @@ export class FormFieldElement<
 
     public getIsDisabled(props?: FormFieldElementRenderProps): boolean {
         if (typeof this.config.isDisabled === "function") {
-            return this.config.isDisabled(props);
+            return this.config.isDisabled(props as FormFieldElementRenderProps);
         }
-        return this.config.isDisabled;
+        return this.config.isDisabled as boolean;
     }
 
     public setIsDisabled(isDisabled: boolean | GetterWithProps<boolean>): void {
@@ -137,23 +136,25 @@ export class FormFieldElement<
     public onBeforeChange(value: string, cb: (value: string) => void): void {
         const callbacks = [...this._beforeChange];
         const next = (val: string) => {
-            if (!callbacks.length) {
+            const callbackCallable = callbacks.pop();
+            if (!callbackCallable) {
                 cb(val);
                 return;
             }
-            callbacks.pop()(val, next);
+            callbackCallable(val, next);
         };
 
         next(value);
     }
 
-    public onAfterChange(value: string, form: Form): void {
+    public onAfterChange(value: string, form: FormAPI): void {
         const callbacks = [...this._afterChange];
         const next = (val: string) => {
-            if (!callbacks.length) {
+            const callbackCallable = callbacks.pop();
+            if (!callbackCallable) {
                 return;
             }
-            callbacks.pop()(val, form);
+            callbackCallable(val, form);
         };
 
         next(value);

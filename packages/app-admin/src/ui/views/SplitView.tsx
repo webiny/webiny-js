@@ -47,8 +47,8 @@ interface SplitViewConfig {
 
 export class SplitView extends UIView {
     private _classNames = new Set();
-    private _leftPanel: SplitViewPanelElement;
-    private _rightPanel: SplitViewPanelElement;
+    private _leftPanel?: SplitViewPanelElement;
+    private _rightPanel?: SplitViewPanelElement;
 
     public constructor(id: string, config: SplitViewConfig = {}) {
         super(`SplitView.${id}`);
@@ -76,11 +76,11 @@ export class SplitView extends UIView {
     }
 
     public getLeftPanel(): SplitViewPanelElement {
-        return this.getElement("leftPanel");
+        return this.getElement("leftPanel") as SplitViewPanelElement;
     }
 
     public getRightPanel(): SplitViewPanelElement {
-        return this.getElement("rightPanel");
+        return this.getElement("rightPanel") as SplitViewPanelElement;
     }
 
     public render(props?: any): React.ReactNode {

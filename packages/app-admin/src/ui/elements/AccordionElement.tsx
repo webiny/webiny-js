@@ -54,7 +54,7 @@ export class AccordionElement extends UIElement<Config> {
     }
 
     public getAccordionItemElement(id: string): AccordionItemElement {
-        return this.getElement(id);
+        return this.getElement(id) as AccordionItemElement;
     }
 
     public render(props: UiElementRenderProps): React.ReactNode {
