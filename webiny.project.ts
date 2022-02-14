@@ -1,6 +1,7 @@
 // @ts-nocheck
 export default {
-    id: "webiny-js",
+    // Uncomment to apply WCP telemetry
+    // id: "webiny-js",
     name: "webiny-js",
     cli: {
         // No need to track anything when developing Webiny.
