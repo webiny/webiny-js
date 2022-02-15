@@ -16,7 +16,7 @@ export interface SelectElementConfig extends FormFieldElementConfig {
 }
 
 export class SelectElement extends FormFieldElement<SelectElementConfig> {
-    constructor(id: string, config: SelectElementConfig) {
+    public constructor(id: string, config: SelectElementConfig) {
         super(id, config);
 
         this.applyPlugins(SelectElement);
@@ -30,7 +30,7 @@ export class SelectElement extends FormFieldElement<SelectElementConfig> {
         return this.config.options;
     }
 
-    render(props: FormFieldElementRenderProps): React.ReactNode {
+    public render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`SelectElement must be placed inside of a FormElement.`);
         }

@@ -6,7 +6,7 @@ import {
 } from "~/ui/elements/form/FormFieldElement";
 
 export class HiddenElement extends FormFieldElement {
-    constructor(id: string, config: FormFieldElementConfig) {
+    public constructor(id: string, config: FormFieldElementConfig) {
         super(id, config);
 
         this.applyPlugins(HiddenElement);

@@ -77,20 +77,20 @@ export class OverlayLayout extends React.Component<OverlayLayoutProps, State> {
         isVisible: true
     };
 
-    hideComponent() {
+    public hideComponent(): void {
         this.setState({ isVisible: false });
         if (OverlayView.openedViews === 0) {
             document.body.classList.remove(noScroll);
         }
     }
 
-    componentWillUnmount() {
+    public componentWillUnmount(): void {
         if (OverlayView.openedViews === 0) {
             document.body.classList.remove(noScroll);
         }
     }
 
-    render() {
+    public render() {
         const { onExited, barLeft, barMiddle, barRight, children, style, ...rest } = this.props;
 
         return (

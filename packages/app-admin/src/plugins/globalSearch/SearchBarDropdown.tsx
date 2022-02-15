@@ -6,22 +6,24 @@ import { searchBarDropdown, iconSearchType } from "./styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Icon } from "@webiny/ui/Icon";
 import { Actions as DownshiftActions, DownshiftState, PropGetters } from "downshift";
-
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { SearchBarState } from "~/plugins/globalSearch/SearchBar";
 
-// TODO @ts-refactor
+interface SearchBarDropdownPropsContextDownshiftCurrent
+    extends DownshiftActions<any>,
+        PropGetters<any> {
+    state: DownshiftState<any>;
+}
+interface SearchBarDropdownPropsContextDownshift {
+    current: SearchBarDropdownPropsContextDownshiftCurrent;
+}
+interface SearchBarDropdownPropsContext {
+    downshift: SearchBarDropdownPropsContextDownshift;
+    submitSearchTerm: (item: AdminGlobalSearchPlugin) => void;
+    state: SearchBarState;
+}
 interface SearchBarDropdownProps {
-    context: {
-        downshift: {
-            current: DownshiftActions<any> &
-                PropGetters<any> & {
-                    state: DownshiftState<any>;
-                };
-        };
-        submitSearchTerm: (item: AdminGlobalSearchPlugin) => void;
-        state: SearchBarState;
-    };
+    context: SearchBarDropdownPropsContext;
 }
 export default class SearchBarDropdown extends React.Component<SearchBarDropdownProps> {
     componentDidMount() {

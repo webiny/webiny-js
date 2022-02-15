@@ -34,7 +34,7 @@ export class FileManagerElementRenderer extends UIRenderer<
     FileManagerElement,
     FormFieldElementRenderProps
 > {
-    render({
+    public render({
         element,
         props
     }: UIRenderParams<FileManagerElement, FormFieldElementRenderProps>): React.ReactNode {

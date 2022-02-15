@@ -17,6 +17,7 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": { "~/*": ["./src/*"] },
-    "baseUrl": "."
+    "baseUrl": ".",
+      "skipLibCheck": true
   }
 }

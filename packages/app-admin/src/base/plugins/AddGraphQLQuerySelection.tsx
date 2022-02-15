@@ -14,11 +14,12 @@ export const AddGraphQLQuerySelection: React.FC<Props> = props => {
     useEffect(() => {
         const plugin = new AddQuerySelectionPlugin(props);
 
-        plugin.name = nanoid();
+        const name = nanoid();
+        plugin.name = name;
         plugins.register(plugin);
 
         return () => {
-            plugins.unregister(plugin.name);
+            plugins.unregister(name);
         };
     }, []);
 

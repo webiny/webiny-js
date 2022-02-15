@@ -17,9 +17,9 @@ interface StateQueryParams {
     sort: number;
 }
 interface State {
-    showingFileDetails: string;
+    showingFileDetails: string | null;
     selected: FileItem[];
-    hasPreviouslyUploadedFiles: boolean;
+    hasPreviouslyUploadedFiles: boolean | null;
     queryParams: StateQueryParams;
     dragging: boolean;
     uploading: boolean;

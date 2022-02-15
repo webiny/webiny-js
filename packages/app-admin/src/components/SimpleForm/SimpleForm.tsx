@@ -42,12 +42,13 @@ const footer = css({
     }
 });
 
-export const SimpleForm = (props: {
+interface SimpleFormProps {
     children: React.ReactNode;
     "data-testid"?: string;
     noElevation?: boolean;
     className?: string;
-}) => {
+}
+export const SimpleForm: React.FC<SimpleFormProps> = props => {
     return (
         <SimpleFormContainer
             className={classNames("webiny-data-list", props.className)}

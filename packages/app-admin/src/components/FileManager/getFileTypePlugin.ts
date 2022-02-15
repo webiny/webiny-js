@@ -5,7 +5,9 @@ import { AdminFileManagerFileTypePlugin } from "~/types";
 import { FileManagerFileTypePlugin } from "~/plugins/FileManagerFileTypePlugin";
 import { FileItem } from "./types";
 
-export default function getFileTypePlugin(file: FileItem) {
+export default function getFileTypePlugin(
+    file: FileItem
+): AdminFileManagerFileTypePlugin | FileManagerFileTypePlugin | null {
     if (!file) {
         return null;
     }

@@ -61,7 +61,6 @@ const reducer = (state: State, action: Action): State => {
     return next;
 };
 
-// TODO: @adrian
 interface EditActionProps {
     file: FileItem;
     uploadFile: (file: FileItem) => void;

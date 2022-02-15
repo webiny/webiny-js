@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Plugin } from "@webiny/plugins";
 
 interface Permission {
@@ -18,7 +18,7 @@ interface Config {
 
 export class PermissionRendererPlugin extends Plugin {
     public static readonly type = "admin-app-permissions-renderer";
-    private _config: Partial<Config>;
+    private readonly _config: Partial<Config>;
 
     public constructor(config?: Config) {
         super();

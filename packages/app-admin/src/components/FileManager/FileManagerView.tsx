@@ -7,7 +7,15 @@ import { Icon } from "@webiny/ui/Icon";
 import File, { FileProps } from "./File";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { FilesRules } from "react-butterfiles";
-import { LIST_FILES, CREATE_FILE, GET_FILE_SETTINGS } from "./graphql";
+import {
+    LIST_FILES,
+    CREATE_FILE,
+    GET_FILE_SETTINGS,
+    CreateFileMutationVariables,
+    CreateFileMutationResponse,
+    ListFilesQueryResponse,
+    ListFilesQueryVariables
+} from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
@@ -33,9 +41,10 @@ import { useFileManager } from "./FileManagerContext";
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
 import NoPermissionView from "./NoPermissionView";
-import { CreateFileResponse, FileItem, ListFilesResponse } from "~/components/FileManager/types";
+import { FileItem } from "~/components/FileManager/types";
 import { MutationUpdaterFn } from "apollo-client/core/watchQueryOptions";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { ObservableQueryFields } from "@apollo/react-common/lib/types/types";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -159,6 +168,13 @@ const renderEmpty: React.FC<RenderEmptyProps> = ({
     return <DropFilesHere empty onClick={() => browseFiles()} />;
 };
 
+interface RefreshOnScrollParams {
+    fetchMore: ObservableQueryFields<ListFilesQueryResponse, ListFilesQueryVariables>["fetchMore"];
+    scrollFrame: {
+        top: number;
+    };
+}
+
 interface FileError {
     file: FileItem;
     e: Error;
@@ -273,10 +289,13 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
         return e.message;
     }, []);
 
-    const updateCacheAfterCreateFile: MutationUpdaterFn<CreateFileResponse> = (cache, newFile) => {
+    const updateCacheAfterCreateFile: MutationUpdaterFn<CreateFileMutationResponse> = (
+        cache,
+        newFile
+    ) => {
         const newFileData = get(newFile, "data.fileManager.createFile.data");
 
-        const data = cache.readQuery<ListFilesResponse>({
+        const data = cache.readQuery<ListFilesQueryResponse>({
             query: LIST_FILES,
             variables: queryParams
         });
@@ -311,7 +330,7 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
 
     const apolloClient = useApolloClient();
 
-    const gqlQuery = useQuery(LIST_FILES, {
+    const gqlQuery = useQuery<ListFilesQueryResponse, ListFilesQueryVariables>(LIST_FILES, {
         variables: queryParams,
         onCompleted: response => {
             const list = get(response, "fileManager.listFiles.data") || [];
@@ -322,15 +341,15 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     });
 
     const refreshOnScroll = useCallback(
-        debounce(({ scrollFrame, fetchMore }) => {
+        debounce(({ scrollFrame, fetchMore }: RefreshOnScrollParams) => {
             if (scrollFrame.top > 0.9) {
                 const cursor = get(gqlQuery.data, "fileManager.listFiles.meta.cursor");
                 if (cursor) {
                     fetchMore({
                         variables: { after: cursor },
                         updateQuery: (
-                            prev: ListFilesResponse,
-                            { fetchMoreResult }: { fetchMoreResult: ListFilesResponse }
+                            prev: ListFilesQueryResponse,
+                            { fetchMoreResult }: { fetchMoreResult: ListFilesQueryResponse }
                         ) => {
                             if (!fetchMoreResult) {
                                 return prev;
@@ -355,9 +374,12 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const { data, fetchMore, loading } = gqlQuery;
 
     const list: FileItem[] = get(data, "fileManager.listFiles.data") || [];
-    const [createFile] = useMutation<CreateFileResponse>(CREATE_FILE, {
-        update: updateCacheAfterCreateFile
-    });
+    const [createFile] = useMutation<CreateFileMutationResponse, CreateFileMutationVariables>(
+        CREATE_FILE,
+        {
+            update: updateCacheAfterCreateFile
+        }
+    );
     const uploadFile = async (files: FileItem[] | FileItem): Promise<number | null> => {
         setUploading(true);
         const list: FileItem[] = Array.isArray(files) ? files : [files];
