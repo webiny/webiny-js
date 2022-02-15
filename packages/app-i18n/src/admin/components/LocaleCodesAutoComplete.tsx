@@ -20,7 +20,6 @@ interface LocaleCodesAutoCompleteProps {
     description?: string;
 }
 const LocaleCodesAutoComplete: React.FC<LocaleCodesAutoCompleteProps> = props => {
-    // TODO validate that this is correct
     const autoComplete = useAutocomplete({
         query: SEARCH_LOCALE_CODES
     });

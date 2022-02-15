@@ -98,7 +98,11 @@ export const createAuthentication: AuthenticationFactory = ({
                     type,
                     permissions,
                     ...data,
-                    logout
+                    logout:
+                        logout ||
+                        (() => {
+                            return void 0;
+                        })
                 });
             } catch (err) {
                 console.log("ERROR", err);

@@ -100,7 +100,11 @@ const SetNewPassword: React.FC = () => {
                                             </Bind>
                                         </Cell>
                                         <Cell span={12} className={alignRight}>
-                                            <ButtonPrimary onClick={submit}>
+                                            <ButtonPrimary
+                                                onClick={ev => {
+                                                    submit(ev);
+                                                }}
+                                            >
                                                 {"Set new password"}
                                             </ButtonPrimary>
                                         </Cell>

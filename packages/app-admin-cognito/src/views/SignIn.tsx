@@ -77,7 +77,9 @@ const SignIn: React.FC = () => {
                                 <Cell span={12} className={alignRight}>
                                     <ButtonPrimary
                                         data-testid="submit-sign-in-form-button"
-                                        onClick={submit}
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
                                     >
                                         {"Submit"}
                                     </ButtonPrimary>

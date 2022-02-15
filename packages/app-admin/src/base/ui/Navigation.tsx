@@ -140,12 +140,12 @@ export const Navigation = () => {
 export const NavigationRenderer = makeComposable("NavigationRenderer");
 
 interface MenuItemContext {
-    menuItem: MenuData | null;
+    menuItem: MenuData;
     depth: number;
 }
 
 const MenuItemContext = React.createContext<MenuItemContext>({
-    menuItem: null,
+    menuItem: null as any,
     depth: -1
 });
 MenuItemContext.displayName = "MenuItemContext";

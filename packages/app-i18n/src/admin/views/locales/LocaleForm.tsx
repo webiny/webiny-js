@@ -72,7 +72,11 @@ const I18NLocaleForm: React.FC = () => {
                     <SimpleFormFooter>
                         <ButtonWrapper>
                             <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
-                            <ButtonPrimary onClick={form.submit}>{t`Save locale`}</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >{t`Save locale`}</ButtonPrimary>
                         </ButtonWrapper>
                     </SimpleFormFooter>
                 </SimpleForm>

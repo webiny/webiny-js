@@ -99,7 +99,7 @@ export const MenuGroupRenderer = (PrevMenuItem: React.FC): React.FC => {
         const withLink = (content: React.ReactNode): React.ReactElement => {
             return (
                 <Link
-                    to={menuItem.path}
+                    to={menuItem.path || ""}
                     data-testid={menuItem.testId}
                     onClick={menuItem.onClick || hideMenu}
                 >

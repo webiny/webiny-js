@@ -19,7 +19,7 @@ export const MenuLinkRenderer = (PrevMenuItem: React.FC): React.FC => {
         const { menuItem, depth } = useMenuItem();
 
         const hideMenu = useCallback(() => setVisible(false), []);
-        const shouldRender = depth === 0 && menuItem.tags.includes("footer");
+        const shouldRender = depth === 0 && (menuItem.tags || []).includes("footer");
 
         if (!shouldRender) {
             return <PrevMenuItem />;
@@ -28,7 +28,7 @@ export const MenuLinkRenderer = (PrevMenuItem: React.FC): React.FC => {
         const withLink = (content: React.ReactNode): React.ReactElement => {
             return (
                 <Link
-                    to={menuItem.path}
+                    to={menuItem.path || ""}
                     target={menuItem.target}
                     data-testid={menuItem.testId}
                     onClick={menuItem.onClick || hideMenu}

@@ -57,7 +57,15 @@ export const MenuSectionItemRenderer = (PrevMenuItem: React.FC): React.FC => {
                             {menuItem.label}
                         </Link>
                     ) : (
-                        <span onClick={menuItem.onClick || null} className={linkStyle}>
+                        <span
+                            onClick={() => {
+                                if (!menuItem.onClick) {
+                                    return;
+                                }
+                                menuItem.onClick();
+                            }}
+                            className={linkStyle}
+                        >
                             {menuItem.label}
                         </span>
                     )}

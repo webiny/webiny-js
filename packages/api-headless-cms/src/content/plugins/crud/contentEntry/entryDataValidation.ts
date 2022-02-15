@@ -107,7 +107,7 @@ const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<st
 const runFieldValueValidations = async (args: ValidateArgs): Promise<string | null> => {
     const { data, field } = args;
     const value = data[field.fieldId];
-    const error = await validateValue(args, field.validation, value);
+    const error = await validateValue(args, field.validation || [], value);
     if (error) {
         return error;
     }
@@ -125,7 +125,7 @@ export interface Params {
     context: CmsContext;
     model: CmsModel;
     data: InputData;
-    entry?: CmsEntry;
+    entry: CmsEntry;
 }
 export const validateModelEntryData = async (params: Params) => {
     const { context, model, entry, data } = params;

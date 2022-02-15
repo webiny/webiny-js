@@ -28,7 +28,8 @@
     "noFallthroughCasesInSwitch": true,
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",

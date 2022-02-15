@@ -85,7 +85,11 @@ const FileManagerSettings: React.FC = () => {
                                                 </Grid>
                                             </SimpleFormContent>
                                             <SimpleFormFooter>
-                                                <ButtonPrimary onClick={form.submit}>
+                                                <ButtonPrimary
+                                                    onClick={ev => {
+                                                        form.submit(ev);
+                                                    }}
+                                                >
                                                     Save
                                                 </ButtonPrimary>
                                             </SimpleFormFooter>

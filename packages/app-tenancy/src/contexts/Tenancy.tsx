@@ -2,7 +2,6 @@ import React, { useMemo, useCallback, Fragment, useState } from "react";
 import { default as localStorage } from "store";
 import { plugins } from "@webiny/plugins";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
-export const TenancyContext = React.createContext(null);
 import { config as appConfig } from "@webiny/app/config";
 
 export interface Tenant {
@@ -10,11 +9,19 @@ export interface Tenant {
     name: string;
 }
 
-export type TenancyContextValue = {
+export interface TenancyContextValue {
     tenant: string | null;
     setTenant(tenant: string): void;
     isMultiTenant: boolean;
-};
+}
+
+export const TenancyContext = React.createContext<TenancyContextValue>({
+    tenant: null,
+    setTenant: () => {
+        return void 0;
+    },
+    isMultiTenant: false
+});
 
 const LOCAL_STORAGE_KEY = "webiny_tenant";
 
