@@ -13,10 +13,11 @@ describe("Page publishing workflow", () => {
         createContentReviewMutation,
         getContentReviewQuery,
         updatePage,
-        publishPage,
         createPage,
+        getPageQuery,
         provideSignOffMutation,
-        retractSignOffMutation
+        retractSignOffMutation,
+        publishContentMutation
     } = gqlHandler;
 
     /**
@@ -74,14 +75,14 @@ describe("Page publishing workflow", () => {
         /**
          * Should not let us publish a page.
          */
-        let [publishPageResponse] = await publishPage({ id: page.id });
-        expect(publishPageResponse).toEqual({
+        let [publishContentResponse] = await publishContentMutation({ id: contentReview.id });
+        expect(publishContentResponse).toEqual({
             data: {
-                pageBuilder: {
-                    publishPage: {
+                apw: {
+                    publishContent: {
                         data: null,
                         error: {
-                            code: "REVIEW_ALREADY_EXIST",
+                            code: "NOT_READY_TO_BE_PUBLISHED",
                             message: expect.any(String),
                             data: expect.any(Object)
                         }
@@ -234,18 +235,43 @@ describe("Page publishing workflow", () => {
          * After providing sign-off to every step of the workflow,
          * Should be able to publish the page.
          */
-        [publishPageResponse] = await publishPage({ id: page.id });
-        expect(publishPageResponse).toEqual({
+        [publishContentResponse] = await publishContentMutation({ id: contentReview.id });
+        expect(publishContentResponse).toEqual({
+            data: {
+                apw: {
+                    publishContent: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Let's confirm that the content is "published".
+         */
+        const [getPageResponse] = await getPageQuery({ id: page.id });
+        expect(getPageResponse).toEqual({
             data: {
                 pageBuilder: {
-                    publishPage: {
+                    getPage: {
                         data: expect.any(Object),
                         error: null
                     }
                 }
             }
         });
-        expect(publishPageResponse.data.pageBuilder.publishPage.data.status).toEqual("published");
-        expect(publishPageResponse.data.pageBuilder.publishPage.data.version).toEqual(1);
+
+        expect(getPageResponse.data.pageBuilder.getPage.data.status).toEqual("published");
+        expect(getPageResponse.data.pageBuilder.getPage.data.version).toEqual(1);
+
+        /**
+         * Fetch the content review and check if the status has been updated successful.
+         */
+        [getContentReviewResponse] = await getContentReviewQuery({
+            id: createdContentReview.id
+        });
+
+        expect(getContentReviewResponse.data.apw.getContentReview.data.status).toEqual("published");
     });
 });

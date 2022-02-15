@@ -135,3 +135,14 @@ export const RETRACT_SIGN_OFF_MUTATION = /* GraphQL */ `
         }
     }
 `;
+
+export const PUBLISH_CONTENT_MUTATION = /* GraphQL */ `
+    mutation PublishContentMutation($id: ID!) {
+        apw {
+            publishContent(id: $id) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
