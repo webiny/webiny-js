@@ -11,6 +11,7 @@ import { useSnackbar } from "@webiny/app-admin";
 import { useRouter } from "@webiny/react-router";
 import { useContentReviewId, useCurrentStepId } from "~/admin/hooks/useContentReviewId";
 import { ApwChangeRequest } from "~/types";
+import { GET_CONTENT_REVIEW_QUERY } from "~/admin/views/contentReviewDashboard/hooks/graphql";
 
 interface UseChangeRequestParams {
     id?: string;
@@ -28,7 +29,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { encodedId: stepId } = useCurrentStepId();
-    const { encodedId } = useContentReviewId();
+    const { encodedId, id: contentReviewId } = useContentReviewId();
 
     const getQuery = useQuery(GET_CHANGE_REQUEST_QUERY, {
         variables: { id },
@@ -84,8 +85,29 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
+    const [updateMutation] = useMutation(UPDATE_CHANGE_REQUEST_MUTATION, {
+        refetchQueries: [
+            { query: LIST_CHANGE_REQUESTS_QUERY },
+            {
+                query: GET_CONTENT_REVIEW_QUERY,
+                variables: { id: contentReviewId }
+            }
+        ],
+        onCompleted: response => {
+            const error = get(response, "apw.changeRequest.error");
+            if (error) {
+                showSnackbar(error.message);
+                return;
+            }
+            const { title, resolved } = get(response, "apw.changeRequest.data");
+            showSnackbar(
+                `Successfully marked "${title}" as ${resolved ? "resolved" : "unresolved"}!`
+            );
+        }
+    });
+
     const markResolved = async (resolved: boolean) => {
-        await update({ variables: { id, data: { resolved } } });
+        await updateMutation({ variables: { id, data: { resolved } } });
     };
 
     return {

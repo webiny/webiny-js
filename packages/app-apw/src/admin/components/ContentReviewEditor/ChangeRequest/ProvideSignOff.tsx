@@ -9,6 +9,7 @@ import { useStepSignOff } from "~/admin/hooks/useStepSignoff";
 import { useContentReview } from "~/admin/views/contentReviewDashboard/hooks/useContentReview";
 import { useContentReviewId, useCurrentStepId } from "~/admin/hooks/useContentReviewId";
 import { i18n } from "@webiny/app/i18n";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 const t = i18n.ns("app-apw/content-reviews/editor/steps/changeRequest");
 
@@ -34,6 +35,13 @@ export const ProvideSignOff = () => {
         return null;
     }, [contentReview, stepId]);
 
+    const changeRequestsPending = useMemo(() => {
+        if (contentReview && Array.isArray(contentReview.steps)) {
+            return contentReview.steps.some(step => step.pendingChangeRequests !== 0);
+        }
+        return true;
+    }, [contentReview, stepId]);
+
     if (loading) {
         return <CircularProgress label={"Loading"} />;
     }
@@ -49,12 +57,27 @@ export const ProvideSignOff = () => {
         );
     }
 
+    const disabledButtonTooltip = t`A sign off can only be provided once all change requests have been resolved.`;
+    const provideSignOffButtonLabel = t`Provide Sign off`;
+
     return (
         <SignOffBox paddingX={5}>
-            <ButtonPrimary style={SignOffButtonStyles} onClick={async () => await provideSignOff()}>
-                <ButtonIcon icon={<CheckIcon />} />
-                {t`Provide Sign off`}
-            </ButtonPrimary>
+            {changeRequestsPending ? (
+                <Tooltip content={disabledButtonTooltip}>
+                    <ButtonPrimary onClick={async () => await provideSignOff()} disabled={true}>
+                        <ButtonIcon icon={<CheckIcon />} />
+                        {provideSignOffButtonLabel}
+                    </ButtonPrimary>
+                </Tooltip>
+            ) : (
+                <ButtonPrimary
+                    style={SignOffButtonStyles}
+                    onClick={async () => await provideSignOff()}
+                >
+                    <ButtonIcon icon={<CheckIcon />} />
+                    {provideSignOffButtonLabel}
+                </ButtonPrimary>
+            )}
         </SignOffBox>
     );
 };
