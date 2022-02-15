@@ -7,11 +7,13 @@ import {
     AdvancedPublishingWorkflow,
     ApwContentTypes,
     ContentGetter,
+    ContentPublisher,
     CreateApwParams
 } from "~/types";
 
 export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow => {
     const contentGetters = new Map<ApwContentTypes, ContentGetter>();
+    const contentPublisher = new Map<ApwContentTypes, ContentPublisher>();
 
     const workflowMethods = createWorkflowMethods(params);
     const reviewerMethods = createReviewerMethods(params);
@@ -25,7 +27,20 @@ export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow =
         return contentGetters.get(type);
     };
 
+    const getContentPublisher = type => {
+        if (!contentPublisher.has(type)) {
+            throw new Error(
+                `No "ContentPublisher" loader found for type: "${type}". You must define a loader.`
+            );
+        }
+        return contentPublisher.get(type);
+    };
+
     return {
+        addContentPublisher(type, func) {
+            contentPublisher.set(type, func);
+        },
+        getContentPublisher,
         addContentGetter(type, func) {
             contentGetters.set(type, func);
         },
@@ -37,7 +52,8 @@ export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow =
         contentReview: createContentReviewMethods({
             ...params,
             getReviewer: reviewerMethods.get.bind(reviewerMethods),
-            getContentGetter
+            getContentGetter,
+            getContentPublisher
         })
     };
 };

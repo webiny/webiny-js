@@ -183,6 +183,11 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             error: ApwError
         }
 
+        type ApwPublishContentResponse {
+            data: Boolean
+            error: ApwError
+        }
+
         extend type ApwQuery {
             getContentReview(id: ID!): ApwContentReviewResponse
 
@@ -204,6 +209,8 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             provideSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
 
             retractSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
+
+            publishContent(id: ID!): ApwPublishContentResponse
         }
     `,
     resolvers: {
@@ -274,6 +281,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             },
             retractSignOff: async (_, args, context) => {
                 return resolve(() => context.apw.contentReview.retractSignOff(args.id, args.step));
+            },
+            publishContent: async (_, args, context) => {
+                return resolve(() => context.apw.contentReview.publishContent(args.id));
             }
         }
     }

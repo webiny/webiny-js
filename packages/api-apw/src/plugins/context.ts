@@ -52,12 +52,22 @@ export default () => [
          * Move these call into a separate package let say "ap-apw-page-builder"
          */
         context.apw.addContentGetter(ApwContentTypes.PAGE, async id => {
-            return await context.pageBuilder.getPage<PageWithWorkflow>(id);
+            return context.pageBuilder.getPage<PageWithWorkflow>(id);
         });
         context.apw.addContentGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
             const model = await context.cms.getModel(settings.modelId);
             const entry = await context.cms.getEntry(model, { where: { id: id } });
             return { ...entry, title: "NO_TITLE" };
+        });
+        context.apw.addContentPublisher(ApwContentTypes.PAGE, async id => {
+            await context.pageBuilder.publishPage<PageWithWorkflow>(id);
+            return true;
+        });
+        context.apw.addContentPublisher(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+            const model = await context.cms.getModel(settings.modelId);
+            const publishedEntry = await context.cms.publishEntry(model, id);
+            console.log(JSON.stringify({ publishedEntry }, null, 2));
+            return true;
         });
 
         apwPageBuilderPlugins({ pageBuilder: context.pageBuilder, apw: context.apw });

@@ -1,5 +1,6 @@
 import get from "lodash/get";
 import { createTopic } from "@webiny/pubsub";
+import Error from "@webiny/error";
 import {
     AdvancedPublishingWorkflow,
     ApwContentReview,
@@ -30,13 +31,15 @@ import {
 interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
     getContentGetter: AdvancedPublishingWorkflow["getContentGetter"];
+    getContentPublisher: AdvancedPublishingWorkflow["getContentPublisher"];
 }
 
 export function createContentReviewMethods({
     getIdentity,
     storageOperations,
     getReviewer,
-    getContentGetter
+    getContentGetter,
+    getContentPublisher
 }: CreateContentReviewMethodsParams): ApwContentReviewCrud {
     const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
     const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>();
@@ -299,6 +302,29 @@ export function createContentReviewMethods({
                 isReviewRequired,
                 contentReviewId
             };
+        },
+        async publishContent(this: ApwContentReviewCrud, id: string) {
+            const { content, status } = await this.get(id);
+
+            if (status !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
+                throw new Error({
+                    message: `Cannot publish content because it is not yet ready to be published.`,
+                    code: "NOT_READY_TO_BE_PUBLISHED",
+                    data: {
+                        id,
+                        status,
+                        content
+                    }
+                });
+            }
+
+            const contentPublisher = getContentPublisher(content.type);
+
+            await contentPublisher(content.id, content.settings);
+
+            await this.update(id, { status: ApwContentReviewStatus.PUBLISHED });
+
+            return true;
         }
     };
 }

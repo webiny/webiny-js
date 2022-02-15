@@ -383,6 +383,8 @@ export interface ApwContentReviewCrud
         contentReviewId?: string;
     }>;
 
+    publishContent(id: string): Promise<Boolean>;
+
     /**
      * Lifecycle events
      */
@@ -399,9 +401,13 @@ export type ContentGetter = (
     settings: { modelId?: string }
 ) => Promise<PageWithWorkflow | { title: string; version: number }>;
 
+export type ContentPublisher = (id: string, settings: { modelId?: string }) => Promise<Boolean>;
+
 export interface AdvancedPublishingWorkflow {
     addContentGetter: (type: ApwContentTypes, func: ContentGetter) => void;
     getContentGetter: (type: ApwContentTypes) => ContentGetter;
+    addContentPublisher: (type: ApwContentTypes, func: ContentPublisher) => void;
+    getContentPublisher: (type: ApwContentTypes) => ContentPublisher;
     workflow: ApwWorkflowCrud;
     reviewer: ApwReviewerCrud;
     comment: ApwCommentCrud;
