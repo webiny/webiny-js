@@ -77,7 +77,8 @@ module.exports = async (inputs, context) => {
         }
     });
     const stack = await application.createOrSelectStack({
-        root: projectApplication.root,
+        appDir: projectApplication.root,
+        projectDir: projectApplication.project.root,
         env,
         pulumi: pulumi
     });

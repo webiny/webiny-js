@@ -3,7 +3,9 @@ import { ApplicationConfig } from "./ApplicationConfig";
 
 interface StackArgs {
     /** Root path of the application */
-    root: string;
+    appDir: string;
+    /** Root dir of the project */
+    projectDir: string;
     env: string;
     pulumi: Pulumi;
     debug?: boolean;

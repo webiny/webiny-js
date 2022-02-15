@@ -1,4 +1,6 @@
 import os from "os";
+import path from "path";
+import fs from "fs";
 import { LocalWorkspace } from "@pulumi/pulumi/automation";
 
 import { Pulumi } from "./Pulumi";
@@ -11,7 +13,9 @@ export interface ApplicationGenericConfig extends ApplicationConfig {
 
 interface StackArgs {
     /** Root path of the application */
-    root: string;
+    appDir: string;
+    /** Root dir of the project */
+    projectDir: string;
     env: string;
     pulumi: Pulumi;
     debug?: boolean;
@@ -44,6 +48,13 @@ export class ApplicationGeneric implements Readonly<ApplicationConfig> {
         // Use ";" when on Windows. For Mac and Linux, use ":".
         const PATH_SEPARATOR = os.platform() === "win32" ? ";" : ":";
 
+        const relativePath = path.relative(args.projectDir, args.appDir);
+        const pulumiWorkDir = path.join(args.projectDir, ".pulumi", relativePath);
+
+        if (!fs.existsSync(pulumiWorkDir)) {
+            fs.mkdirSync(pulumiWorkDir, { recursive: true });
+        }
+
         const stack = await LocalWorkspace.createOrSelectStack(
             {
                 projectName: this.name,
@@ -51,7 +62,7 @@ export class ApplicationGeneric implements Readonly<ApplicationConfig> {
                 program: () => this.config.app.run()
             },
             {
-                workDir: args.root,
+                workDir: pulumiWorkDir,
                 projectSettings: {
                     name: this.name,
                     runtime: "nodejs",
