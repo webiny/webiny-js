@@ -10,11 +10,12 @@ import { ButtonSecondary, ButtonPrimary, ButtonDefault, IconButton } from "@webi
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Icon } from "@webiny/ui/Icon";
 import { Form } from "@webiny/form";
-import { useSnackbar } from "../../../hooks/useSnackbar";
+import { useSnackbar } from "~/hooks/useSnackbar";
 import { useFileManager } from "./../FileManagerContext";
 import { UPDATE_FILE, LIST_FILES, LIST_TAGS } from "./../graphql";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { ReactComponent as LabelIcon } from "./../icons/round-label-24px.svg";
+import { FileItem, ListFilesResponse, ListFileTagsResponse } from "../types";
 
 const chipsStyle = css({
     "&.mdc-chip-set": {
@@ -46,7 +47,11 @@ const actionWrapperStyle = css({
     }
 });
 
-function Tags({ file, canEdit }) {
+interface TagsProps {
+    file: FileItem;
+    canEdit: (file: FileItem) => boolean;
+}
+const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
     const client = useApolloClient();
 
     const [editing, setEdit] = useState(false);
@@ -61,7 +66,7 @@ function Tags({ file, canEdit }) {
     const isEditingAllowed = canEdit(file);
 
     const renderHeaderContent = useCallback(
-        ({ data }) => {
+        ({ data }: { data: { tags: { name: string }[] } }) => {
             if (editing) {
                 return null;
             }
@@ -116,10 +121,13 @@ function Tags({ file, canEdit }) {
                             data: { tags }
                         },
                         update: (cache, updated) => {
-                            const newFileData = get(updated, "data.fileManager.updateFile.data");
+                            const newFileData: FileItem = get(
+                                updated,
+                                "data.fileManager.updateFile.data"
+                            );
 
                             // 1. Update files list cache
-                            const data: any = cloneDeep(
+                            const data: ListFilesResponse = cloneDeep(
                                 cache.readQuery({
                                     query: LIST_FILES,
                                     variables: queryParams
@@ -140,7 +148,7 @@ function Tags({ file, canEdit }) {
                             // 2. Update "LIST_TAGS" cache
                             if (Array.isArray(newFileData.tags)) {
                                 // Get list tags data
-                                const listTagsData: any = cloneDeep(
+                                const listTagsData: ListFileTagsResponse = cloneDeep(
                                     cache.readQuery({
                                         query: LIST_TAGS
                                     })
@@ -177,13 +185,20 @@ function Tags({ file, canEdit }) {
                 <React.Fragment>
                     <li-title>
                         <Icon className={"list-item__icon"} icon={<LabelIcon />} />
-                        {renderHeaderContent({ data })}
+                        {renderHeaderContent({
+                            // TODO @ts-refactor
+                            // @ts-ignore
+                            data
+                        })}
                     </li-title>
                     {editing && (
                         <li-content>
                             <Bind
                                 name={"tags"}
-                                beforeChange={(tags, baseOnChange) => {
+                                beforeChange={(
+                                    tags: string[],
+                                    baseOnChange: (tags: string[]) => void
+                                ) => {
                                     const formattedTags = tags.map(tag => tag.toLowerCase());
                                     baseOnChange(formattedTags);
                                 }}
@@ -222,6 +237,6 @@ function Tags({ file, canEdit }) {
             )}
         </Form>
     );
-}
+};
 
 export default Tags;

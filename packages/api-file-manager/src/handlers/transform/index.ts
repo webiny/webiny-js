@@ -1,23 +1,26 @@
 import S3 from "aws-sdk/clients/s3";
 import transformImage from "./transformImage";
 import optimizeImage from "./optimizeImage";
-import { createHandler, getEnvironment, getObjectParams } from "../utils";
+import { createHandler, EventHandlerCallable, getEnvironment, getObjectParams } from "../utils";
 import { getImageKey } from "./utils";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
+import { TransformHandlerEventArgs } from "~/handlers/types";
 
-export default (): HandlerPlugin<ArgsContext> => ({
+export default (): HandlerPlugin<ArgsContext<TransformHandlerEventArgs>> => ({
     type: "handler",
     name: "handler-download-file",
     async handle(context) {
-        const event = context.invocationArgs;
-
-        const handler = createHandler(async ({ body: { transformations, key } }) => {
+        // TODO @ts-refactor check in createHandler for returns types that eventHandler must return
+        // @ts-ignore
+        const eventHandler: EventHandlerCallable<TransformHandlerEventArgs> = async ({
+            body: { transformations, key }
+        }) => {
             try {
                 const env = getEnvironment();
                 const s3 = new S3({ region: env.region });
 
-                let optimizedImageObject;
+                let optimizedImageObject: S3.Types.GetObjectOutput;
 
                 const params = {
                     initial: getObjectParams(key),
@@ -64,8 +67,9 @@ export default (): HandlerPlugin<ArgsContext> => ({
             } catch (e) {
                 return { error: true, message: e.message };
             }
-        });
+        };
+        const handler = createHandler(eventHandler);
 
-        return await handler(event);
+        return await handler(context.invocationArgs);
     }
 });

@@ -223,7 +223,12 @@ const deleteIconStyles = css({
     color: "var(--mdc-theme-text-secondary-on-background) !important"
 });
 
-export const RemoveFieldButton = ({ trailingIcon }) => {
+interface RemoveFieldButtonProps {
+    // TODO @ts-refactor figure out correct trailing icon type
+    // @ts-ignore
+    trailingIcon: any;
+}
+export const RemoveFieldButton: React.FC<RemoveFieldButtonProps> = ({ trailingIcon }) => {
     if (!trailingIcon) {
         return null;
     }

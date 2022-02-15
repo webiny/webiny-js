@@ -8,7 +8,7 @@ const DialogsContainer = styled("div")({
     zIndex: 5
 });
 
-const Dialogs = () => {
+const Dialogs: React.FC = () => {
     const actions = [
         ...plugins.byType<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top"),
         ...plugins.byType<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom")

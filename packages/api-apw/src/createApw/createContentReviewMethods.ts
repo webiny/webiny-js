@@ -140,7 +140,7 @@ export function createContentReviewMethods({
             if (currentStep.status !== ApwContentReviewStepStatus.ACTIVE) {
                 throw new StepInActiveError({ entry, input: { id, step: stepSlug } });
             }
-            let previousStepStatus;
+            let previousStepStatus: ApwContentReviewStepStatus;
             /*
              * Provide sign-off for give step.
              */
@@ -203,7 +203,7 @@ export function createContentReviewMethods({
             if (currentStep.status !== ApwContentReviewStepStatus.DONE) {
                 throw new NoSignOffProvidedError({ entry, input: { id, step: stepSlug } });
             }
-            let previousStepStatus;
+            let previousStepStatus: ApwContentReviewStepStatus;
 
             /*
              * Retract sign-off for give step.

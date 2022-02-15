@@ -3,12 +3,12 @@ import { FbFormModelField } from "@webiny/app-form-builder/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import HelperMessage from "../components/HelperMessage";
 
-type Props = {
+interface SelectProps {
     bind: BindComponentRenderProp;
     field: FbFormModelField;
-};
+}
 
-const Select = (props: Props) => {
+const Select: React.FC<SelectProps> = props => {
     const { onChange, value, validation } = props.bind;
 
     return (

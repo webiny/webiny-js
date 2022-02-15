@@ -1,15 +1,30 @@
 import { UpdateElementActionEvent } from "..";
-import { EventActionCallable, PbEditorElement } from "../../../../types";
+import { EventActionCallable, EventActionHandlerCallableState, PbEditorElement } from "~/types";
 import { CloneElementActionArgsType } from "../cloneElement/types";
 import { getNanoid } from "../../../helpers";
 
-export const cloneElement = async (state, element: PbEditorElement): Promise<PbEditorElement> => {
+/**
+ * TODO @ts-refactor verify that element really is PbEditorElement
+ */
+export const cloneElement = async (
+    state: EventActionHandlerCallableState,
+    element: PbEditorElement
+): Promise<PbEditorElement> => {
     return {
         ...(element as PbEditorElement),
         id: getNanoid(),
         elements: await Promise.all(
-            element.elements.map(async el => {
-                return cloneElement(state, await state.getElementById(el));
+            /**
+             *
+             */
+            element.elements.map(async (el: PbEditorElement | string) => {
+                return cloneElement(
+                    state,
+                    /**
+                     *
+                     */
+                    await state.getElementById(typeof el === "string" ? el : el.id)
+                );
             })
         )
     };

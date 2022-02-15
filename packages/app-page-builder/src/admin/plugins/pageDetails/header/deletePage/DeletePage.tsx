@@ -11,10 +11,14 @@ import { DELETE_PAGE } from "~/admin/graphql/pages";
 import { i18n } from "@webiny/app/i18n";
 import usePermission from "~/hooks/usePermission";
 import * as GQLCache from "~/admin/views/Pages/cache";
+import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
 
-const DeletePage = props => {
+interface DeletePageProps {
+    page: PbPageData;
+}
+const DeletePage: React.FC<DeletePageProps> = props => {
     const { page } = props;
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();

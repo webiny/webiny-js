@@ -1,4 +1,8 @@
 import _ from "lodash";
+/**
+ * Package short-hash has no types.
+ */
+// @ts-ignore
 import hash from "short-hash";
 import * as fecha from "fecha";
 import accounting from "accounting";
@@ -217,7 +221,10 @@ export default class I18N {
             outputFormat = _.assign({}, this.defaultFormats.number, outputFormat);
         }
         return accounting.formatNumber(
-            value,
+            /**
+             * Cast as number because method transforms it internally.
+             */
+            value as number,
             outputFormat.precision,
             outputFormat.thousand,
             outputFormat.decimal

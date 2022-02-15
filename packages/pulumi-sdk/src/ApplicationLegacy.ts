@@ -40,7 +40,7 @@ export class ApplicationLegacy implements Readonly<ApplicationConfig> {
         });
 
         return {
-            async refresh() {
+            refresh: async () => {
                 return await args.pulumi.run({
                     command: "refresh",
                     args: {
@@ -56,7 +56,7 @@ export class ApplicationLegacy implements Readonly<ApplicationConfig> {
                     }
                 });
             },
-            async preview() {
+            preview: async () => {
                 return await args.pulumi.run({
                     command: "preview",
                     args: {
@@ -74,7 +74,7 @@ export class ApplicationLegacy implements Readonly<ApplicationConfig> {
                     }
                 });
             },
-            async up() {
+            up: async () => {
                 return await args.pulumi.run({
                     command: "up",
                     args: {

@@ -1,7 +1,18 @@
+/**
+ * Package @commodo/fields does not have types
+ */
+// @ts-ignore
 import { withFields, string, number, onSet } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 
+/**
+ * TODO @ts-refactor change for JOI or some other validation library
+ */
 export default (create = true) => {
     return withFields({
         key: string({
@@ -11,7 +22,7 @@ export default (create = true) => {
         size: number(),
         type: string({ validation: validation.create("maxLength:255") }),
         meta: object({ value: { private: false } }),
-        tags: onSet(value => {
+        tags: onSet((value: string[]) => {
             if (!Array.isArray(value)) {
                 return null;
             }
@@ -20,7 +31,7 @@ export default (create = true) => {
         })(
             string({
                 list: true,
-                validation: tags => {
+                validation: (tags: string[]) => {
                     if (!Array.isArray(tags)) {
                         return;
                     }

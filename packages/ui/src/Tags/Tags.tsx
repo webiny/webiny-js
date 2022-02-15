@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Input } from "../Input";
+import { Input } from "~/Input";
 import { Chips, Chip } from "../Chips";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import { css } from "emotion";
 import keycode from "keycode";
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
+import { SyntheticEvent } from "react";
 
 type Props = FormComponentProps & {
     /**
@@ -81,12 +82,12 @@ const tagsStyle = css({
 });
 
 export class Tags extends React.Component<Props, State> {
-    state = {
+    state: State = {
         inputValue: ""
     };
 
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<Props> = {
+        validation: { isValid: null, message: null }
     };
 
     render() {
@@ -96,18 +97,20 @@ export class Tags extends React.Component<Props, State> {
         const inputProps = {
             ...otherInputProps,
             value: this.state.inputValue,
-            onChange: inputValue => {
+            onChange: (inputValue: string) => {
                 this.setState({ inputValue });
             },
-            onKeyDown: e => {
+            onKeyDown: (ev: SyntheticEvent) => {
                 if (!onChange) {
                     return;
                 }
 
                 const newValue = Array.isArray(value) ? [...value] : [];
                 const inputValue = this.state.inputValue || "";
-
-                switch (keycode(e)) {
+                /**
+                 * We must cast as keycode only works with Event | string type.
+                 */
+                switch (keycode(ev as unknown as Event)) {
                     case "enter":
                         if (inputValue) {
                             newValue.push(inputValue);

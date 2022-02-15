@@ -8,13 +8,13 @@ import Field from "./Field";
 import { ReactComponent as HandleIcon } from "../../../../icons/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "../../Context";
-import { FieldLayoutPositionType } from "../../../../../types";
+import { FbFormModelField, FieldLayoutPositionType } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
 
-export const EditTab = () => {
+export const EditTab: React.FC = () => {
     const {
-        getFields,
+        getLayoutFields,
         insertField,
         updateField,
         deleteField,
@@ -23,45 +23,58 @@ export const EditTab = () => {
         moveRow,
         getFieldPlugin
     } = useFormEditor();
-    const [editingField, setEditingField] = useState(null);
-    const [dropTarget, setDropTarget]: [FieldLayoutPositionType, Function] = useState(null);
+    const [editingField, setEditingField] = useState<FbFormModelField>(null);
+    const [dropTarget, setDropTarget] = useState<FieldLayoutPositionType>(null);
 
-    const editField = useCallback(field => {
+    const editField = useCallback((field: FbFormModelField) => {
         setEditingField(cloneDeep(field));
     }, undefined);
 
-    const handleDropField = useCallback((source, dropTarget) => {
-        const { pos, name, ui } = source;
+    const handleDropField = useCallback(
+        (source, dropTarget: FieldLayoutPositionType): undefined => {
+            const { pos, name, ui } = source;
 
-        if (name === "custom") {
-            editField({});
-            setDropTarget(dropTarget);
-            return;
-        }
+            if (name === "custom") {
+                /**
+                 * We can cast because field is empty in the start
+                 */
+                editField({} as FbFormModelField);
+                setDropTarget(dropTarget);
+                return undefined;
+            }
 
-        if (ui === "row") {
-            // Reorder rows.
-            // Reorder logic is different depending on the source and target position.
-            return moveRow(pos.row, dropTarget.row);
-        }
+            if (ui === "row") {
+                // Reorder rows.
+                // Reorder logic is different depending on the source and target position.
+                moveRow(pos.row, dropTarget.row);
+                return undefined;
+            }
 
-        // If source pos is set, we are moving an existing field.
-        if (pos) {
-            const fieldId = data.layout[pos.row][pos.index];
-            return moveField({ field: fieldId, position: dropTarget });
-        }
+            // If source pos is set, we are moving an existing field.
+            if (pos) {
+                const fieldId = data.layout[pos.row][pos.index];
+                moveField({ field: fieldId, position: dropTarget });
+                return undefined;
+            }
 
-        // Find field plugin which handles the dropped field type "name".
-        const plugin = getFieldPlugin({ name });
-        insertField(plugin.field.createField(), dropTarget);
-    }, undefined);
+            // Find field plugin which handles the dropped field type "name".
+            const plugin = getFieldPlugin({ name });
+            insertField(plugin.field.createField(), dropTarget);
+            return undefined;
+        },
+        undefined
+    );
 
-    const fields: Array<any> = getFields(true);
+    const fields = getLayoutFields();
 
     return (
         <EditContainer>
             {fields.length === 0 && (
-                <Center onDrop={item => handleDropField(item, { row: 0, index: 0 })}>
+                <Center
+                    onDrop={item => {
+                        return handleDropField(item, { row: 0, index: 0 });
+                    }}
+                >
                     {t`Drop your first field here`}
                 </Center>
             )}
@@ -79,7 +92,9 @@ export const EditTab = () => {
                                 <Icon icon={<HandleIcon />} />
                             </div>
                             <Horizontal
-                                onDrop={item => handleDropField(item, { row: index, index: null })}
+                                onDrop={item => {
+                                    return handleDropField(item, { row: index, index: null });
+                                }}
                             />
                             {/* Row start - includes field drop zones and fields */}
                             <Row>
@@ -98,12 +113,12 @@ export const EditTab = () => {
                                         {({ drag }) => (
                                             <div className={fieldContainer} ref={drag}>
                                                 <Vertical
-                                                    onDrop={item =>
-                                                        handleDropField(item, {
+                                                    onDrop={item => {
+                                                        return handleDropField(item, {
                                                             row: index,
                                                             index: fieldIndex
-                                                        })
-                                                    }
+                                                        });
+                                                    }}
                                                     isVisible={item =>
                                                         item.ui === "field" &&
                                                         (row.length < 4 || item?.pos?.row === index)
@@ -127,12 +142,12 @@ export const EditTab = () => {
                                                             (row.length < 4 ||
                                                                 item?.pos?.row === index)
                                                         }
-                                                        onDrop={item =>
-                                                            handleDropField(item, {
+                                                        onDrop={item => {
+                                                            return handleDropField(item, {
                                                                 row: index,
                                                                 index: fieldIndex + 1
-                                                            })
-                                                        }
+                                                            });
+                                                        }}
                                                     />
                                                 )}
                                             </div>
@@ -144,12 +159,12 @@ export const EditTab = () => {
                             {index === fields.length - 1 && (
                                 <Horizontal
                                     last
-                                    onDrop={item =>
-                                        handleDropField(item, {
+                                    onDrop={item => {
+                                        return handleDropField(item, {
                                             row: index + 1,
                                             index: null
-                                        })
-                                    }
+                                        });
+                                    }}
                                 />
                             )}
                         </RowContainer>
@@ -160,7 +175,7 @@ export const EditTab = () => {
             <EditFieldDialog
                 field={editingField}
                 onClose={editField}
-                onSubmit={data => {
+                onSubmit={(data: FbFormModelField) => {
                     if (data._id) {
                         updateField(data);
                     } else {

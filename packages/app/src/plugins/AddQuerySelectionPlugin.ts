@@ -9,7 +9,7 @@ interface Config {
 }
 
 export class AddQuerySelectionPlugin extends ApolloLinkPlugin {
-    private config: Config;
+    private readonly config: Config;
 
     constructor(config: Config) {
         super();

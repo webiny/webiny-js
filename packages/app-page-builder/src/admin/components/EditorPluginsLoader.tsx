@@ -1,15 +1,24 @@
 import React, { useEffect, useReducer } from "react";
+import * as History from "history";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
 
-const globalState = { render: false, editor: false };
+const globalState: State = { render: false, editor: false };
 
 // Since these plugins are loaded asynchronously, and some overrides might've been registered
 // already by the developer (e.g. in the main App.tsx file), we only register new plugins.
 // In other words, if the plugin with a particular name already exists, we skip its registration.
-export function EditorPluginsLoader({ children, location }) {
+
+interface State {
+    render?: boolean;
+    editor?: boolean;
+}
+interface EditorPluginsLoaderProps {
+    location: History.Location;
+}
+export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ children, location }) => {
     const [loaded, setLoaded] = useReducer(
-        (state, newState) => ({ ...state, ...newState }),
+        (state: State, newState: Partial<State>) => ({ ...state, ...newState }),
         globalState
     );
 
@@ -63,12 +72,12 @@ export function EditorPluginsLoader({ children, location }) {
     }, []);
 
     if (location.pathname.startsWith("/page-builder/pages") && loaded.render) {
-        return children;
+        return children as React.ReactElement;
     }
 
     if (location.pathname.startsWith("/page-builder/editor") && loaded.editor) {
-        return children;
+        return children as React.ReactElement;
     }
 
     return <CircularProgress />;
-}
+};

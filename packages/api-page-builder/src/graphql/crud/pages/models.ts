@@ -1,4 +1,12 @@
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string, fields, boolean, onSet } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import Error from "@webiny/error";
@@ -33,7 +41,7 @@ export const UpdateSettingsModel = withFields({
         instanceOf: withFields({
             tags: string({
                 list: true,
-                validation: value => {
+                validation: (value?: string[]) => {
                     if (!Array.isArray(value)) {
                         return;
                     }
@@ -60,7 +68,7 @@ export const UpdateSettingsModel = withFields({
             meta: fields({
                 list: true,
                 value: [],
-                validation: value => {
+                validation: (value?: string[]) => {
                     if (!Array.isArray(value)) {
                         return;
                     }
@@ -85,7 +93,7 @@ export const UpdateSettingsModel = withFields({
             meta: fields({
                 value: [],
                 list: true,
-                validation: value => {
+                validation: (value?: string[]) => {
                     if (!Array.isArray(value)) {
                         return;
                     }

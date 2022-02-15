@@ -16,7 +16,7 @@ const activeStyle = css({
     }
 });
 
-type ActionProps = {
+interface ActionProps {
     plugin?: string;
     icon?: ReactElement;
     tooltip?: string;
@@ -24,9 +24,9 @@ type ActionProps = {
     shortcut?: string[];
     // For testing purposes.
     "data-testid"?: string;
-};
+}
 
-const Action: React.FunctionComponent<ActionProps> = ({
+const Action: React.FC<ActionProps> = ({
     plugin,
     icon,
     tooltip,
@@ -41,7 +41,7 @@ const Action: React.FunctionComponent<ActionProps> = ({
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
-    const clickHandler = useCallback(() => {
+    const clickHandler = useCallback((): void => {
         if (typeof onClick === "function") {
             return onClick();
         }
@@ -53,7 +53,7 @@ const Action: React.FunctionComponent<ActionProps> = ({
         );
     }, [plugin, onClick]);
 
-    useEffect(() => {
+    useEffect((): (() => void) => {
         shortcut.map(short => {
             addKeyHandler(short, e => {
                 if (settingsActive) {

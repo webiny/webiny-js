@@ -1,14 +1,15 @@
 import { Context as ContextInterface, HandlerArgs } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
+import { PluginCollection } from "@webiny/plugins/types";
 
 interface Waiter {
     targets: string[];
     cb: (context: ContextInterface) => void;
 }
 
-export interface Params {
+export interface ContextParams {
     args?: HandlerArgs;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginsContainer;
+    plugins?: PluginCollection;
     WEBINY_VERSION: string;
 }
 export class Context implements ContextInterface {
@@ -19,7 +20,7 @@ export class Context implements ContextInterface {
 
     private readonly waiters: Waiter[] = [];
 
-    public constructor(params: Params) {
+    public constructor(params: ContextParams) {
         const { plugins, args, WEBINY_VERSION } = params;
         this.plugins = new PluginsContainer(plugins || []);
         this.args = args || [];
@@ -47,7 +48,8 @@ export class Context implements ContextInterface {
         /**
          * We go only through the first level properties
          */
-        for (const target of initialTargets) {
+        for (const key in initialTargets) {
+            const target = initialTargets[key] as keyof this;
             /**
              * If property already exists, there is no need to wait for it, so we just continue the loop.
              */
@@ -64,13 +66,14 @@ export class Context implements ContextInterface {
                  * We cannot set it on exact property name it is defined because it would go into loop of setting itself.
                  * And that is why we add __ around the property name.
                  */
-                set: value => {
-                    this[`__${target}__`] = value;
+                set: (value: any) => {
+                    const newTargetKey = `__${target}__` as keyof this;
+                    this[newTargetKey] = value;
                     /**
                      * WWhen the property is set, we will go through all the waiters and, if any of them include currently set property, act on it.
                      */
                     for (const waiter of this.waiters) {
-                        if (waiter.targets.includes(target) === false) {
+                        if (waiter.targets.includes(target as string) === false) {
                             continue;
                         }
                         /**
@@ -93,15 +96,16 @@ export class Context implements ContextInterface {
                 /**
                  * As we have set property with __ around it, we must get it as well.
                  */
-                get: () => {
-                    return this[`__${target}__`];
+                get: (): any => {
+                    const newTargetKey = `__${target}__` as keyof this;
+                    return this[newTargetKey];
                 },
                 configurable: false
             });
             /**
              * We add the target to be awaited.
              */
-            targets.push(target);
+            targets.push(target as string);
         }
         /**
          * If there are no targets to be awaited, just fire the callable.

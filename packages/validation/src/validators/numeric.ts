@@ -1,4 +1,8 @@
-import ValidationError from "./../validationError";
+import ValidationError from "~/validationError";
+/**
+ * Package isnumeric does not have types so we ignore it.
+ */
+// @ts-ignore
 import isNumeric from "isnumeric";
 
 /**

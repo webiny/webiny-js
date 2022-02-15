@@ -1,6 +1,13 @@
 import { ElementStylesModifier } from "~/types";
 
-const SCALING_MAP = {
+interface Scaling {
+    backgroundSize: string;
+    backgroundRepeat: string;
+}
+interface ScalingMap {
+    [key: string]: Scaling;
+}
+const SCALING_MAP: ScalingMap = {
     cover: {
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat"
@@ -34,6 +41,17 @@ const DEFAULT_SCALING = {
 
 const DEFAULT_POSITION = "top left";
 
+interface Values {
+    color: string;
+    image: {
+        scaling: keyof ScalingMap;
+        position: string;
+        file: {
+            src: string;
+        };
+    };
+}
+
 const background: ElementStylesModifier = ({ element, theme }) => {
     const { background } = element.data.settings;
     if (!background) {
@@ -41,7 +59,7 @@ const background: ElementStylesModifier = ({ element, theme }) => {
     }
 
     return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
-        const values = background[breakpointName];
+        const values = background[breakpointName] as Values | undefined;
         if (!values) {
             return returnStyles;
         }

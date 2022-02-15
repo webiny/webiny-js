@@ -32,7 +32,7 @@ interface GetterWithoutProps<T> {
 }
 
 export class FormView extends UIView<FormViewConfig> {
-    constructor(id, config?: FormViewConfig) {
+    public constructor(id: string, config?: FormViewConfig) {
         if (!("setupForm" in config)) {
             config.setupForm = true;
         }
@@ -45,7 +45,7 @@ export class FormView extends UIView<FormViewConfig> {
         this.applyPlugins(FormView);
     }
 
-    addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
+    public addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
         if (element.id === "form" || element.id === "formContainer") {
             return super.addElement(element);
         }
@@ -53,43 +53,43 @@ export class FormView extends UIView<FormViewConfig> {
         return this.getFormContainer().addElement(element);
     }
 
-    setTitle(title: string | GetterWithProps<string>) {
+    public setTitle(title: string | GetterWithProps<string>): void {
         if (typeof title === "string") {
             this.config.getTitle = () => title;
-        } else {
-            this.config.getTitle = title;
+            return;
         }
+        this.config.getTitle = title;
     }
 
-    setOnSubmit(onSubmit: FormOnSubmit) {
+    public setOnSubmit(onSubmit: FormOnSubmit): void {
         this.config.onSubmit = onSubmit;
     }
 
-    setFormData(getter: GetterWithoutProps<Record<string, any>>) {
+    public setFormData(getter: GetterWithoutProps<Record<string, any>>): void {
         this.config.getFormData = getter;
     }
 
-    getFormContainer(): FormContainerElement {
+    public getFormContainer(): FormContainerElement {
         return this.getElement("formContainer");
     }
 
-    getFormContentElement(): FormContentElement {
+    public getFormContentElement(): FormContentElement {
         return this.getElement("formContent");
     }
 
-    getFormHeaderElement(): FormHeaderElement {
+    public getFormHeaderElement(): FormHeaderElement {
         return this.getElement("formHeader");
     }
 
-    getFormFooterElement(): FormFooterElement {
+    public getFormFooterElement(): FormFooterElement {
         return this.getElement("formFooter");
     }
 
-    getSubmitButtonElement(): ButtonElement {
+    public getSubmitButtonElement(): ButtonElement {
         return this.getFormFooterElement().getElement("submit");
     }
 
-    private addElements() {
+    private addElements(): void {
         const formContainer = new FormContainerElement("formContainer", {
             testId: this.config.testId,
             className: this.config.className,

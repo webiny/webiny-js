@@ -6,7 +6,7 @@ import {
 } from "@webiny/app-admin";
 import Welcome from "./Welcome";
 
-const DashboardRendererHOC = () => {
+const DashboardRendererHOC = (): React.FC => {
     return function DashboardRenderer() {
         return (
             <CenteredView maxWidth={1300}>
@@ -16,6 +16,6 @@ const DashboardRendererHOC = () => {
     };
 };
 
-export const Dashboard = () => {
+export const Dashboard: React.FC = () => {
     return <Compose component={DashboardRendererSpec} with={DashboardRendererHOC} />;
 };

@@ -1,6 +1,10 @@
 import chromium from "chrome-aws-lambda";
 import posthtml from "posthtml";
 import { noopener } from "posthtml-noopener";
+/**
+ * Package posthtml-plugin-link-preload has no types.
+ */
+// @ts-ignore
 import posthtmlPluginLinkPreload from "posthtml-plugin-link-preload";
 import injectApolloState from "./injectApolloState";
 import injectRenderId from "./injectRenderId";
@@ -9,9 +13,10 @@ import injectTenantLocale from "./injectTenantLocale";
 import injectNotFoundPageFlag from "./injectNotFoundPageFlag";
 import getPsTags from "./getPsTags";
 import shortid from "shortid";
-import { Args as BaseHandlerArgs, Configuration, HandlerContext } from "./types";
+import { RenderResult, RenderUrlParams, RenderUrlPostHtmlParams } from "./types";
+import { Browser, Page } from "puppeteer";
 
-const windowSet = (page, name, value) => {
+const windowSet = (page: Page, name: string, value: string | boolean) => {
     page.evaluateOnNewDocument(`
     Object.defineProperty(window, '${name}', {
       get() {
@@ -20,6 +25,14 @@ const windowSet = (page, name, value) => {
     })`);
 };
 
+interface Meta {
+    url: string;
+    id: string;
+    ts: number;
+    render: RenderResult;
+    args: RenderUrlParams;
+}
+
 export interface File {
     type: string;
     body: any;
@@ -27,7 +40,7 @@ export interface File {
     meta: Record<string, any>;
 }
 
-export default async (url: string, args: Params): Promise<[File[], Meta]> => {
+export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta]> => {
     const id = shortid.generate();
     const ts = new Date().getTime();
 
@@ -57,19 +70,14 @@ export default async (url: string, args: Params): Promise<[File[], Meta]> => {
         render.content = render.content.replace(regex, subst);
     }
 
-    const allArgs = { render, args, url, id, ts };
+    const allArgs: RenderUrlPostHtmlParams = { render, args, url, id, ts };
     const { html } = await posthtml([
         noopener(),
         posthtmlPluginLinkPreload(),
-        // @ts-ignore
         injectRenderId(allArgs),
-        // @ts-ignore
         injectRenderTs(allArgs),
-        // @ts-ignore
         injectApolloState(allArgs),
-        // @ts-ignore
         injectTenantLocale(allArgs),
-        // @ts-ignore
         injectNotFoundPageFlag(allArgs)
     ]).process(render.content);
 
@@ -99,31 +107,17 @@ export default async (url: string, args: Params): Promise<[File[], Meta]> => {
     ];
 };
 
-let browser;
+let browser: Browser;
 
-export interface RenderResult {
-    content: string;
-    meta: Record<string, any>;
-}
-
-export interface Params {
-    context: HandlerContext;
-    args: BaseHandlerArgs;
-    configuration: Configuration;
-    renderUrlFunction?: (url: string) => RenderResult;
-}
-
-export interface Meta {
-    url: string;
-    id: string;
-    ts: number;
-    render: RenderResult;
-    args: Params;
+interface GraphQLCache {
+    query: any;
+    variables: Record<string, any>;
+    data: Record<string, any>;
 }
 
 export const defaultRenderUrlFunction = async (
     url: string,
-    params: Params
+    params: RenderUrlParams
 ): Promise<RenderResult> => {
     if (!browser) {
         browser = await chromium.puppeteer.launch({
@@ -162,7 +156,7 @@ export const defaultRenderUrlFunction = async (
     const skipResources = ["image", "stylesheet"];
     await browserPage.setRequestInterception(true);
 
-    const gqlCache = [];
+    const gqlCache: GraphQLCache[] = [];
 
     browserPage.on("request", request => {
         if (skipResources.includes(request.resourceType())) {
@@ -177,7 +171,7 @@ export const defaultRenderUrlFunction = async (
         const request = response.request();
         const url = request.url();
         if (url.includes("/graphql") && request.method() === "POST") {
-            const responses = await response.json();
+            const responses: Record<string, any> = await response.json();
             const postData = JSON.parse(request.postData());
             const operations = Array.isArray(postData) ? postData : [postData];
 

@@ -1,9 +1,9 @@
-export interface Params {
+export interface CreateEntryUrlParams {
     id: string;
     modelId: string;
 }
 
-export const createEntryUrl = ({ modelId, id }: Params): string => {
+export const createEntryUrl = ({ modelId, id }: CreateEntryUrlParams): string => {
     return `/cms/content-entries/${modelId}?id=${encodeURIComponent(id)}`;
 };
 

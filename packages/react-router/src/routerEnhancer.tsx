@@ -1,15 +1,18 @@
 import React from "react";
 import { RouterProvider } from "./context/RouterContext";
 
-const routerEnhancer = BaseComponent => {
-    // eslint-disable-next-line react/display-name
-    return props => {
+/**
+ * @internal
+ */
+const routerEnhancer = (BaseComponent: any) => {
+    const EnhancedComponent: React.FC = props => {
         return (
             <RouterProvider>
                 <BaseComponent {...props} />
             </RouterProvider>
         );
     };
+    return EnhancedComponent;
 };
 
 export default routerEnhancer;

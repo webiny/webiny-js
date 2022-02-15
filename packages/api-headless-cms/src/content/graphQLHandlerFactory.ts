@@ -10,6 +10,9 @@ import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { getWebinyVersionHeaders } from "@webiny/utils";
+import { HttpObject } from "@webiny/handler-http/types";
+import { HandlerPlugin } from "@webiny/handler/types";
+import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
 
 export interface CreateGraphQLHandlerOptions {
     debug?: boolean;
@@ -22,11 +25,6 @@ interface Args {
     context: CmsContext;
     type: string;
     locale: I18NLocale;
-}
-interface ParsedBody {
-    query: string;
-    variables: any;
-    operationName: string;
 }
 
 const DEFAULT_HEADERS: Record<string, string> = {
@@ -44,7 +42,7 @@ const OPTIONS_HEADERS: Record<string, string> = {
     "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
 };
 
-const respond = (http, result: unknown) => {
+const respond = (http: HttpObject, result: unknown) => {
     return http.response({
         body: JSON.stringify(result),
         statusCode: 200,
@@ -63,9 +61,12 @@ const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { context } = args;
 
     context.plugins.register(await buildSchemaPlugins(context));
-
-    const typeDefs = [];
-    const resolvers = [];
+    /**
+     * Really hard to type this to satisfy the makeExecutableSchema
+     */
+    // TODO @ts-refactor
+    const typeDefs: any = [];
+    const resolvers: any = [];
 
     // Get schema definitions from plugins
     const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>(GraphQLSchemaPlugin.type);
@@ -125,49 +126,48 @@ export const graphQLHandlerFactory = (
 ): PluginCollection => {
     const debug = boolean(options.debug);
 
-    return [
-        ...(debug ? debugPlugins() : []),
-        {
-            type: "handler",
-            name: "handler-graphql-content-model",
-            async handle(context: CmsContext, next) {
-                const { http } = context;
+    const handler: HandlerPlugin = {
+        type: "handler",
+        name: "handler-graphql-content-model",
+        async handle(context: CmsContext, next) {
+            const { http } = context;
 
-                if (!http || !http.request) {
-                    return next();
-                }
-
-                if (http.request.method === "OPTIONS") {
-                    return http.response({
-                        statusCode: 204,
-                        headers: {
-                            ...DEFAULT_HEADERS,
-                            ...OPTIONS_HEADERS
-                        }
-                    });
-                }
-
-                if (http.request.method !== "POST") {
-                    return next();
-                }
-
-                try {
-                    await checkEndpointAccess(context);
-                } catch (ex) {
-                    return respond(http, new NotAuthorizedResponse(ex));
-                }
-
-                const schema = await getSchema({
-                    context,
-                    locale: context.cms.getLocale(),
-                    type: context.cms.type
-                });
-
-                const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
-
-                const result = await processRequestBody(body, schema, context);
-                return respond(http, result);
+            if (!http || !http.request) {
+                return next();
             }
+
+            if (http.request.method === "OPTIONS") {
+                return http.response({
+                    statusCode: 204,
+                    headers: {
+                        ...DEFAULT_HEADERS,
+                        ...OPTIONS_HEADERS
+                    }
+                });
+            }
+
+            if (http.request.method !== "POST") {
+                return next();
+            }
+
+            try {
+                await checkEndpointAccess(context);
+            } catch (ex) {
+                return respond(http, new NotAuthorizedResponse(ex));
+            }
+
+            const schema = await getSchema({
+                context,
+                locale: context.cms.getLocale(),
+                type: context.cms.type
+            });
+
+            const body: GraphQLRequestBody | GraphQLRequestBody[] = JSON.parse(http.request.body);
+
+            const result = await processRequestBody(body, schema, context);
+            return respond(http, result);
         }
-    ];
+    };
+
+    return [...(debug ? debugPlugins() : []), handler];
 };

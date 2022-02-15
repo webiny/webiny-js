@@ -1,13 +1,22 @@
 import { FlushHookPlugin } from "@webiny/api-prerendering-service/flush/types";
 import CloudFront from "aws-sdk/clients/cloudfront";
 import url from "url";
+import { Args, Configuration } from "~/types";
+
+interface AfterFlushParams {
+    log: (...args: string[]) => void;
+    render: {
+        args: Args;
+        configuration: Configuration;
+    };
+}
 
 // This plugin will issue a cache invalidation request to CloudFront, every time a page has been deleted. This is
 // mostly important when a user unpublishes a new page, and we want to make the page immediately publicly available.
 export default () => {
     return {
         type: "ps-flush-hook",
-        afterFlush: async ({ log, render }) => {
+        afterFlush: async ({ log, render }: AfterFlushParams) => {
             if (!render) {
                 return;
             }

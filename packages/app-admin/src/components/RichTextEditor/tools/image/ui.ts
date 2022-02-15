@@ -1,5 +1,18 @@
 import { API } from "@editorjs/editorjs";
+import { ImageToolConfig, ImageToolData } from "./types";
 
+interface OnSelectFileCallable {
+    (): void;
+}
+interface UiStatus {
+    [key: string]: string;
+}
+interface UiParams {
+    api: API;
+    config: ImageToolConfig;
+    onSelectFile: OnSelectFileCallable;
+    readOnly: boolean;
+}
 /**
  * Class for working with UI:
  *  - rendering base structure
@@ -8,11 +21,11 @@ import { API } from "@editorjs/editorjs";
  */
 export default class Ui {
     private api: API;
-    private config: any;
-    private readOnly: boolean;
-    private onSelectFile: Function;
+    private config: ImageToolConfig;
+    private readonly readOnly: boolean;
+    private readonly onSelectFile: OnSelectFileCallable;
 
-    nodes: {
+    public readonly nodes: {
         wrapper: HTMLElement;
         imageContainer: HTMLElement;
         fileButton: HTMLElement;
@@ -21,13 +34,13 @@ export default class Ui {
     };
 
     /**
-     * @param {object} ui - image tool Ui module
-     * @param {object} ui.api - Editor.js API
-     * @param {ImageConfig} ui.config - user config
-     * @param {Function} ui.onSelectFile - callback for clicks on Select file button
-     * @param {boolean} ui.readOnly - read-only mode flag
+     * @param ui - image tool Ui module
+     * @param ui.api - Editor.js API
+     * @param ui.config - user config
+     * @param ui.onSelectFile - callback for clicks on Select file button
+     * @param ui.readOnly - read-only mode flag
      */
-    constructor({ api, config, onSelectFile, readOnly }) {
+    constructor({ api, config, onSelectFile, readOnly }: UiParams) {
         this.api = api;
         this.config = config;
         this.onSelectFile = onSelectFile;
@@ -83,7 +96,7 @@ export default class Ui {
      *
      * @returns {{EMPTY: string, UPLOADING: string, FILLED: string}}
      */
-    static get status() {
+    static get status(): UiStatus {
         return {
             EMPTY: "empty",
             FILLED: "filled"
@@ -96,7 +109,7 @@ export default class Ui {
      * @param {ImageToolData} toolData - saved tool data
      * @returns {Element}
      */
-    render(toolData) {
+    render(toolData: ImageToolData) {
         if (!toolData.file || Object.keys(toolData.file).length === 0) {
             this.toggleStatus(Ui.status.EMPTY);
         }
@@ -127,7 +140,7 @@ export default class Ui {
      * @param {string} url - image source
      * @returns {void}
      */
-    fillImage(url) {
+    public fillImage(url: string): void {
         /**
          * Check for a source extension to compose element correctly: video tag for mp4, img — for others
          */
@@ -191,10 +204,11 @@ export default class Ui {
      * @param {string} text - caption text
      * @returns {void}
      */
-    fillCaption(text) {
-        if (this.nodes.caption) {
-            this.nodes.caption.innerHTML = text;
+    public fillCaption(text: string): void {
+        if (!this.nodes.caption) {
+            return;
         }
+        this.nodes.caption.innerHTML = text;
     }
 
     /**
@@ -203,14 +217,16 @@ export default class Ui {
      * @param {string} status - see {@link Ui.status} constants
      * @returns {void}
      */
-    toggleStatus(status) {
+    public toggleStatus(status: string): void {
         for (const statusType in Ui.status) {
-            if (Object.prototype.hasOwnProperty.call(Ui.status, statusType)) {
-                this.nodes.wrapper.classList.toggle(
-                    `${this.CSS.wrapper}--${Ui.status[statusType]}`,
-                    status === Ui.status[statusType]
-                );
+            if (Object.prototype.hasOwnProperty.call(Ui.status, statusType) === false) {
+                continue;
             }
+            const newStatus = Ui.status[statusType];
+            this.nodes.wrapper.classList.toggle(
+                `${this.CSS.wrapper}--${newStatus}`,
+                status === newStatus
+            );
         }
     }
 
@@ -221,7 +237,7 @@ export default class Ui {
      * @param {boolean} status - true for enable, false for disable
      * @returns {void}
      */
-    applyTune(tuneName, status) {
+    public applyTune(tuneName: string, status: boolean) {
         this.nodes.wrapper.classList.toggle(`${this.CSS.wrapper}--${tuneName}`, status);
     }
 }
@@ -232,10 +248,14 @@ export default class Ui {
  * @param  {string} tagName           - new Element tag name
  * @param  {Array|string} classNames  - list or name of CSS class
  * @param  {object} attributes        - any attributes
- * @returns {Element}
+ * @returns {HTMLElement}
  */
-export const make = function make(tagName, classNames = null, attributes = {}) {
-    const el = document.createElement(tagName);
+export const make = function make(
+    tagName: string,
+    classNames: string[] | string = null,
+    attributes?: Record<string, string | number | boolean>
+): HTMLElement {
+    const el: HTMLElement = document.createElement(tagName);
 
     if (Array.isArray(classNames)) {
         el.classList.add(...classNames);
@@ -243,8 +263,15 @@ export const make = function make(tagName, classNames = null, attributes = {}) {
         el.classList.add(classNames);
     }
 
+    if (!attributes) {
+        return el;
+    }
     for (const attrName in attributes) {
-        el[attrName] = attributes[attrName];
+        /**
+         * Unfortunately it is a problem to map attributes to element because element is complaining
+         * that attrName is a string, which cannot index the HTMLElement
+         */
+        (el as any)[attrName] = (attributes as any)[attrName];
     }
 
     return el;

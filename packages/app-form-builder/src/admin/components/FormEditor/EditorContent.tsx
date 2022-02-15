@@ -43,8 +43,7 @@ const formTabs = css({
         }
     }
 });
-
-export default function EditorContent() {
+const EditorContent: React.FC = () => {
     const tabsRef = useRef();
     return (
         <ContentContainer>
@@ -81,4 +80,6 @@ export default function EditorContent() {
             </SplitView>
         </ContentContainer>
     );
-}
+};
+
+export default EditorContent;

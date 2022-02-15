@@ -1,9 +1,16 @@
 import * as React from "react";
-import { usePageBuilder } from "../../../../hooks/usePageBuilder";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { plugins } from "@webiny/plugins";
-import { PbPageElementImagesListComponentPlugin } from "../../../../types";
+import { PbPageElementImagesListComponentPlugin } from "~/types";
+import { Image } from "react-images";
 
-const ImagesList = ({ data }) => {
+interface ImagesListProps {
+    data: {
+        component: string;
+        images: Image[];
+    };
+}
+const ImagesList: React.FC<ImagesListProps> = ({ data }) => {
     const { theme } = usePageBuilder();
     const { component, images } = data;
     const components = plugins.byType<PbPageElementImagesListComponentPlugin>(

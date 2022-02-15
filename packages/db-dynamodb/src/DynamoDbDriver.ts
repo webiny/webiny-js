@@ -1,13 +1,14 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import BatchProcess from "./BatchProcess";
 import QueryGenerator from "./QueryGenerator";
-import { DbDriver, Args, Result } from "@webiny/db";
+import { DbDriver, Args, Result, ArgsBatch } from "@webiny/db";
+import { QueryKeys } from "~/types";
 
 type ConstructorArgs = {
     documentClient?: DocumentClient;
 };
 
-const LOG_KEYS = [
+const LOG_KEYS: QueryKeys = [
     {
         primary: true,
         unique: true,
@@ -15,6 +16,26 @@ const LOG_KEYS = [
         fields: [{ name: "PK" }, { name: "SK" }]
     }
 ];
+
+interface Update {
+    UpdateExpression: string;
+    ExpressionAttributeNames: Record<string, any>;
+    ExpressionAttributeValues: Record<string, any>;
+}
+
+interface ReadLogsParams {
+    table: string;
+}
+
+interface CreateLogParams {
+    id: string;
+    operation: string;
+    /**
+     * TODO: determine the data type.
+     */
+    data: any;
+    table: string;
+}
 
 class DynamoDbDriver implements DbDriver {
     batchProcesses: Record<string, BatchProcess>;
@@ -56,7 +77,7 @@ class DynamoDbDriver implements DbDriver {
 
     async update({ query, data, table, meta, __batch: batch }: Args): Promise<Result> {
         if (!batch) {
-            const update = {
+            const update: Update = {
                 UpdateExpression: "SET ",
                 ExpressionAttributeNames: {},
                 ExpressionAttributeValues: {}
@@ -183,7 +204,7 @@ class DynamoDbDriver implements DbDriver {
         return [[], { response: batchProcess.response }];
     }
 
-    async createLog({ id, operation, data, table }): Promise<Result> {
+    async createLog({ id, operation, data, table }: CreateLogParams): Promise<Result> {
         await this.create({
             table: table,
             keys: LOG_KEYS,
@@ -199,7 +220,7 @@ class DynamoDbDriver implements DbDriver {
         return [true, {}];
     }
 
-    async readLogs<T>({ table }) {
+    async readLogs<T>({ table }: ReadLogsParams) {
         return this.read<T>({
             table,
             keys: LOG_KEYS,
@@ -210,7 +231,7 @@ class DynamoDbDriver implements DbDriver {
         });
     }
 
-    getBatchProcess(__batch): BatchProcess {
+    getBatchProcess(__batch: ArgsBatch): BatchProcess {
         if (!this.batchProcesses[__batch.instance.id]) {
             this.batchProcesses[__batch.instance.id] = new BatchProcess(
                 __batch.instance,

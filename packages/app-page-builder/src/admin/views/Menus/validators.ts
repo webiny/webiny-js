@@ -1,4 +1,4 @@
-export const menuUrlValidator = (value: string) => {
+export const menuUrlValidator = (value: string): boolean => {
     if (value.startsWith("/") && value.endsWith("/")) {
         return true;
     }

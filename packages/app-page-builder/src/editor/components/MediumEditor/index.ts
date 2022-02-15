@@ -11,35 +11,37 @@ const editorClass = css({
     }
 });
 
-type ReactMediumEditorProps = {
+interface ReactMediumEditorProps {
     value: string;
     onChange: (value: string) => void;
     onSelect: () => void;
     tag: string | [string, Record<string, any>];
     options?: CoreOptions;
     [key: string]: any;
-};
+}
 
-const ReactMediumEditor = ({
+const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
     tag = "div",
     value,
     onChange,
     options = {},
     onSelect
-}: ReactMediumEditorProps) => {
+}) => {
     const elementRef = React.useRef();
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
-    const handleChange = (_, editable) => {
-        if (typeof onChange === "function") {
-            onChange(editable.innerHTML);
+    const handleChange = (_: any, editable: HTMLElement): void => {
+        if (typeof onChange !== "function") {
+            return;
         }
+        onChange(editable.innerHTML);
     };
 
-    const handleSelect = () => {
-        if (typeof onSelect === "function") {
-            onSelect();
+    const handleSelect = (): void => {
+        if (typeof onSelect !== "function") {
+            return;
         }
+        onSelect();
     };
 
     const tagName = Array.isArray(tag) ? tag[0] : tag;
@@ -63,10 +65,11 @@ const ReactMediumEditor = ({
             options
         );
         // Add "removeFormat" button to toolbar
-        mediumEditorOptions = dotProp.set(mediumEditorOptions, "toolbar.buttons", buttons => [
-            ...buttons,
-            "removeFormat"
-        ]);
+        mediumEditorOptions = dotProp.set(
+            mediumEditorOptions,
+            "toolbar.buttons",
+            (buttons: string[]) => [...buttons, "removeFormat"]
+        );
         // Create "MediumEditor" instance
         editorRef.current = new MediumEditor(elementRef.current, mediumEditorOptions);
 

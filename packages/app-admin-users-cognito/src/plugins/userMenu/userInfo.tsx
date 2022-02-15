@@ -62,7 +62,7 @@ const linkStyles = css({
     }
 });
 
-export const UserInfo = () => {
+export const UserInfo: React.FC = () => {
     const security = useSecurity();
 
     if (!security || !security.identity) {

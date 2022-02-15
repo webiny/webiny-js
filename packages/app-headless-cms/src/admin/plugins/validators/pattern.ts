@@ -1,7 +1,7 @@
 import { plugins } from "@webiny/plugins";
-import { CmsModelFieldValidatorPatternPlugin } from "~/types";
+import { CmsModelFieldValidatorPatternPlugin, CmsModelFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: CmsModelFieldValidatorPlugin = {
     type: "cms-model-field-validator",
     name: "cms-model-field-validator-pattern",
     validator: {
@@ -36,3 +36,4 @@ export default {
         }
     }
 };
+export default plugin;

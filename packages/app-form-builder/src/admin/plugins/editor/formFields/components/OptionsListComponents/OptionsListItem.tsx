@@ -7,7 +7,8 @@ import { IconButton } from "@webiny/ui/Button";
 import { Switch } from "@webiny/ui/Switch";
 import { ReactComponent as EditIcon } from "../../../../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../../../../icons/delete.svg";
-import { BindComponent } from "@webiny/form/Bind";
+import { BindComponent } from "@webiny/form/types";
+import { FieldOption } from "~/admin/plugins/editor/formFields/components/types";
 
 const optionsListItemLeft = css({
     display: "flex",
@@ -30,19 +31,19 @@ const optionsListItemRight = css({
     alignItems: "center"
 });
 
-type DefaultValueSwitchProps = {
+interface DefaultValueSwitchProps {
     multiple: boolean;
-    option: any;
-    value: any;
-    onChange: any;
-};
+    option: FieldOption;
+    value: string[] | string;
+    onChange: (value: string[] | string) => void;
+}
 
-const DefaultValueSwitch = ({
+const DefaultValueSwitch: React.FC<DefaultValueSwitchProps> = ({
     multiple,
     option,
     value: currentDefaultValue,
     onChange: setDefaultValue
-}: DefaultValueSwitchProps) => {
+}) => {
     if (multiple) {
         const selected =
             Array.isArray(currentDefaultValue) && currentDefaultValue.includes(option.value);

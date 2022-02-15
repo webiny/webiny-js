@@ -12,9 +12,9 @@ type ElementAnimationChildrenFunction = (params: {
     refresh: () => void;
 }) => React.ReactNode;
 
-type ElementAnimationProps = {
+interface ElementAnimationProps {
     children: React.ReactNode | ElementAnimationChildrenFunction;
-};
+}
 
 const ElementAnimation: React.FunctionComponent<ElementAnimationProps> = ({ children }) => {
     useEffect(() => {

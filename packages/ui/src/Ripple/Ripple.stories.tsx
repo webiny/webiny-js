@@ -8,7 +8,7 @@ import {
     StorySandboxExample
 } from "@webiny/storybook-utils/Story";
 import readme from "./../Ripple/README.md";
-import { Icon } from "./../Icon";
+import { Icon } from "~/Icon";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
 
 import { ReactComponent as AutoRenewIcon } from "./svg/baseline-autorenew-24px.svg";

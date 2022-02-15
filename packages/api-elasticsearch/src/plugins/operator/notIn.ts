@@ -20,7 +20,9 @@ export class ElasticsearchQueryBuilderOperatorNotInPlugin extends ElasticsearchQ
             );
         }
 
-        const useBasePath = values.some(value => typeof value !== "string");
+        const useBasePath = values.some(
+            (value: string | number | boolean | null | undefined) => typeof value !== "string"
+        );
 
         query.must_not.push({
             terms: {

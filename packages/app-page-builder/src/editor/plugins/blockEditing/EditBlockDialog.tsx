@@ -17,7 +17,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
-import { PbEditorBlockCategoryPlugin } from "../../../types";
+import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "~/types";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -40,15 +40,15 @@ const PreviewBox = styled("div")({
     }
 });
 
-type EditBlockDialogProps = {
+interface EditBlockDialogProps {
     open: boolean;
-    plugin: any;
+    plugin: PbEditorBlockPlugin;
     onClose: DialogOnClose;
     onSubmit: FormOnSubmit;
     loading: boolean;
-};
+}
 
-const EditBlockDialog = (props: EditBlockDialogProps) => {
+const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
     const { open, onClose, onSubmit, plugin, loading } = props;
 
     const blockCategoryPlugins = plugins.byType<PbEditorBlockCategoryPlugin>(

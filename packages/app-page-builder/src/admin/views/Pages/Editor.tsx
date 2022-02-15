@@ -1,14 +1,24 @@
-import React, { useCallback, useState } from "react";
-import editorMock from "../../assets/editor-mock.png";
-import { createElement } from "~/editor/helpers";
-import { useRouter } from "@webiny/react-router";
-import { useQuery, useMutation } from "@apollo/react-hooks";
-import { Editor as PbEditor } from "../../../editor";
-import { useSavedElements } from "../../hooks/useSavedElements";
+import React, { useMemo, useState } from "react";
+import { useApolloClient, useMutation } from "@apollo/react-hooks";
+import { useHistory, useParams } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { Typography } from "@webiny/ui/Typography";
-import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
-import { GET_PAGE, CREATE_PAGE_FROM } from "./graphql";
+import get from "lodash/get";
+import { Editor as PbEditor } from "~/admin/components/Editor";
+import { createElement } from "~/editor/helpers";
+import {
+    GET_PAGE,
+    CREATE_PAGE_FROM,
+    CreatePageFromMutationResponse,
+    CreatePageFromMutationVariables
+} from "./graphql";
+import { EditorLoadingScreen } from "~/admin/components/EditorLoadingScreen";
+import {
+    LIST_PAGE_ELEMENTS,
+    ListPageElementsQueryResponse,
+    ListPageElementsQueryResponseData
+} from "~/admin/graphql/pages";
+import createElementPlugin from "~/admin/utils/createElementPlugin";
+import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 
 const extractPageGetPage = (data: any): any => {
     return data.pageBuilder?.getPage || {};
@@ -24,82 +34,91 @@ const extractPageErrorData = (data: any): any => {
     return getPageData.error || {};
 };
 
-const Editor: React.FunctionComponent = () => {
-    const { match, history } = useRouter();
+const Editor: React.FC = () => {
+    const client = useApolloClient();
+    const params = useParams<{ id: string }>();
+    const history = useHistory();
     const { showSnackbar } = useSnackbar();
-    const ready = useSavedElements();
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState(null);
+    const [data, setData] = useState({ page: null, revisions: null });
+    const [createPageFrom] = useMutation<
+        CreatePageFromMutationResponse,
+        CreatePageFromMutationVariables
+    >(CREATE_PAGE_FROM);
 
-    const params: { id: string } = match.params as any;
+    const { page, revisions } = data;
 
-    const renderEditor = useCallback(
-        ({ data, loading }) => {
-            if (loading || !ready) {
-                return (
-                    <LoadingEditor>
-                        <img src={editorMock} alt={"page builder editor mock"} />
-                        <LoadingTitle>
-                            <Typography tag={"div"} use={"headline6"}>
-                                Loading Editor<span>.</span>
-                                <span>.</span>
-                                <span>.</span>
-                            </Typography>
-                        </LoadingTitle>
-                    </LoadingEditor>
-                );
-            }
-
-            if (!data) {
-                return null;
-            }
-
-            const { revisions = [], content, ...restOfPageData } = data;
-            const page = {
-                ...restOfPageData,
-                content: content || createElement("document")
-            };
-
-            return <PbEditor page={page} revisions={revisions} />;
-        },
-        [ready]
-    );
-
-    const [createPageFrom] = useMutation(CREATE_PAGE_FROM);
-
-    useQuery(GET_PAGE, {
-        variables: { id: decodeURIComponent(params.id) },
-        fetchPolicy: "network-only",
-        onCompleted: async data => {
-            const errorData = extractPageErrorData(data);
-            const error = errorData.message;
-            if (error) {
-                setLoading(false);
-                history.push(`/page-builder/pages`);
-                showSnackbar(error);
-                return;
-            }
-
-            const page = extractPageData(data);
-            if (page.status === "draft") {
-                setData(page);
-            } else {
-                const response = await createPageFrom({
-                    variables: { from: page.id }
+    const LoadData = useMemo(() => {
+        const savedElements = client
+            .query<ListPageElementsQueryResponse>({ query: LIST_PAGE_ELEMENTS })
+            .then(({ data }) => {
+                const elements: ListPageElementsQueryResponseData[] =
+                    get(data, "pageBuilder.listPageElements.data") || [];
+                elements.forEach(element => {
+                    if (element.type === "element") {
+                        createElementPlugin({
+                            ...element,
+                            data: {},
+                            elements: []
+                        });
+                    } else {
+                        createBlockPlugin({
+                            ...element
+                        });
+                    }
                 });
+            });
 
-                history.push(
-                    `/page-builder/editor/${encodeURIComponent(
-                        response.data.pageBuilder.createPage.data.id
-                    )}`
-                );
-                setTimeout(() => showSnackbar("New revision created."), 1500);
-            }
-            setLoading(false);
-        }
-    });
+        const pageData = client
+            .query({
+                query: GET_PAGE,
+                variables: { id: decodeURIComponent(params.id) },
+                fetchPolicy: "network-only"
+            })
+            .then(async ({ data }) => {
+                const errorData = extractPageErrorData(data);
+                const error = errorData.message;
+                if (error) {
+                    history.push(`/page-builder/pages`);
+                    showSnackbar(error);
+                    return;
+                }
 
-    return renderEditor({ loading, data });
+                const { revisions = [], content, ...restOfPageData } = extractPageData(data);
+                const page = {
+                    ...restOfPageData,
+                    content: content || createElement("document")
+                };
+
+                if (page.status === "draft") {
+                    setData({ page, revisions });
+                } else {
+                    const response = await createPageFrom({
+                        variables: { from: page.id }
+                    });
+
+                    history.push(
+                        `/page-builder/editor/${encodeURIComponent(
+                            response.data.pageBuilder.createPage.data.id
+                        )}`
+                    );
+                    setTimeout(() => showSnackbar("New revision created."), 1500);
+                }
+            });
+
+        return React.lazy(() =>
+            Promise.all([savedElements, pageData]).then(() => {
+                return { default: ({ children }: { children: React.ReactElement }) => children };
+            })
+        );
+    }, []);
+
+    return (
+        <React.Suspense fallback={<EditorLoadingScreen />}>
+            <LoadData>
+                <PbEditor page={page} revisions={revisions} />
+            </LoadData>
+        </React.Suspense>
+    );
 };
 
 export default Editor;

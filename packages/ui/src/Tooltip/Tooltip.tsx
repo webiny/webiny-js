@@ -3,7 +3,7 @@ import { default as RcTooltip } from "rc-tooltip";
 import "rc-tooltip/assets/bootstrap_white.css";
 import "./style.scss";
 
-type TooltipProps = {
+interface TooltipProps {
     // A component (eg. button) which will trigger the tooltip.
     children: React.ReactNode;
 
@@ -18,17 +18,17 @@ type TooltipProps = {
 
     // CSS class name
     className?: string;
-};
+}
 
-type State = {
+interface State {
     tooltipIsOpen: boolean;
-};
+}
 
 /**
  * Use Tooltip component to display a list of choices, once the handler is triggered.
  */
 class Tooltip extends React.Component<TooltipProps, State> {
-    state = { tooltipIsOpen: false };
+    state: State = { tooltipIsOpen: false };
 
     onVisibleChange = (visible: boolean) => {
         this.setState({
@@ -39,6 +39,10 @@ class Tooltip extends React.Component<TooltipProps, State> {
     render() {
         return (
             <RcTooltip
+                /**
+                 * rc-tooltip types do not have animation as prop, but the rc-tooltip lib has.
+                 */
+                // @ts-ignore
                 animation={"fade"}
                 onVisibleChange={this.onVisibleChange}
                 overlay={this.props.content}

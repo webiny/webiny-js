@@ -1,10 +1,11 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { PageImportExportTaskStatus, PbPageImportExportContext } from "~/types";
-import { importPage, zeroPad } from "~/importPages/utils";
+import { importPage } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockSecurity } from "~/mockSecurity";
+import { zeroPad } from "@webiny/utils";
 
 export type HandlerArgs = {
     taskId: string;
@@ -53,7 +54,7 @@ export default (
 
             subTask = await pageBuilder.pageImportExportTask.getSubTask(
                 taskId,
-                zeroPad(subTaskIndex)
+                zeroPad(subTaskIndex, 5)
             );
 
             /**

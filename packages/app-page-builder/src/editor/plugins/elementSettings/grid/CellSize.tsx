@@ -41,27 +41,22 @@ const classes = {
     })
 };
 
-type CellSizePropsType = {
+interface CellSizePropsType {
     value: number;
     maxAllowed: number;
     label: string;
     onChange: (value: number) => void;
-};
-const CellSize: React.FunctionComponent<CellSizePropsType> = ({
-    value,
-    label,
-    onChange,
-    maxAllowed
-}) => {
+}
+const CellSize: React.FC<CellSizePropsType> = ({ value, label, onChange, maxAllowed }) => {
     const [errorMessage, setErrorMessage] = useState("");
     // Hide error message after 2s.
-    useEffect(() => {
+    useEffect((): void => {
         if (errorMessage.length) {
             setTimeout(() => setErrorMessage(""), 2000);
         }
     }, [errorMessage]);
 
-    const onReduceHandler = () => {
+    const onReduceHandler = (): boolean => {
         const newValue = value - 1;
         if (newValue <= 0) {
             setErrorMessage("Cell can't get smaller than this.");
@@ -71,7 +66,7 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
         return true;
     };
 
-    const onAddHandler = () => {
+    const onAddHandler = (): boolean => {
         if (maxAllowed <= 0) {
             setErrorMessage("Cell can't get bigger than this.");
             return false;

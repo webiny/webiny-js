@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CmsEditorContentEntry, CmsEditorContentModel } from "~/types";
 import { ApolloClient } from "apollo-client";
 import { createListEntriesQuery } from "~/admin/plugins/upgrades/5.19.0/createListEntriesQuery";

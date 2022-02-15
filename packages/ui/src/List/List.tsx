@@ -11,7 +11,7 @@ import {
     SimpleListItem as RmwcSimpleListItem,
     SimpleListItemProps as RmwcSimpleListItemProps
 } from "@rmwc/list";
-import { Typography } from "../Typography";
+import { Typography } from "~/Typography";
 import classNames from "classnames";
 import styled from "@emotion/styled";
 

@@ -1,6 +1,6 @@
-import { Modifier } from "../types";
+import { Modifier, ModifierOptions } from "~/types";
 
-export default ({ i18n }): Modifier => ({
+export default ({ i18n }: ModifierOptions): Modifier => ({
     name: "number",
     execute(value: string) {
         return i18n.number(value);

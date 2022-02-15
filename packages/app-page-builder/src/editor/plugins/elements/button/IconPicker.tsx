@@ -1,16 +1,16 @@
-import { PbIcon } from "../../../../types";
 import React from "react";
+import IconPickerComponent from "../../../components/IconPicker";
+import { PbIcon } from "~/types";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell } from "@webiny/ui/Grid";
-import IconPickerComponent from "../../../components/IconPicker";
 
-type IconPickerProps = {
+interface IconPickerProps {
     label: string;
     value: [string, string];
     updateValue: (item: PbIcon) => void;
-};
+}
 
-const IconPicker: React.FunctionComponent<IconPickerProps> = ({ label, value, updateValue }) => {
+const IconPicker: React.FC<IconPickerProps> = ({ label, value, updateValue }) => {
     return (
         <>
             <Cell span={4}>

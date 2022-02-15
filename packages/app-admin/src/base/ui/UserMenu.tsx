@@ -21,7 +21,7 @@ export function useUserMenu() {
     return React.useContext(UserMenuContext);
 }
 
-export const UserMenuProvider = Component => {
+export const UserMenuProvider = (Component: React.FC): React.FC => {
     return function UserMenuProvider({ children, ...props }) {
         const [menuItems, setItems] = useState([]);
 
@@ -82,7 +82,7 @@ export const UserMenuItem = makeComposable<UserMenuItemProps>("UserMenuItem", ({
 
 export const UserMenuItemRenderer = makeComposable("UserMenuItemRenderer");
 
-export const AddUserMenuItem = (props: UserMenuItemProps["menuItem"]) => {
+export const AddUserMenuItem: React.FC<UserMenuItemProps["menuItem"]> = props => {
     const { addMenuItem } = useUserMenu();
 
     useEffect(() => {

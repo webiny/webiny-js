@@ -1,4 +1,4 @@
-import { LifeCycleHookCallbackParams } from "~/types";
+import { ApwChangeRequest, LifeCycleHookCallbackParams, ListMeta } from "~/types";
 
 export const deleteChangeRequestsWithContentReview = ({ apw }: LifeCycleHookCallbackParams) => {
     apw.contentReview.onAfterContentReviewDelete.subscribe(async ({ contentReview }) => {
@@ -12,15 +12,15 @@ export const deleteChangeRequestsWithContentReview = ({ apw }: LifeCycleHookCall
         for (let i = 0; i < steps.length; i++) {
             const { slug } = steps[i];
 
-            let meta = {
+            let meta: Omit<ListMeta, "totalCount"> = {
                 hasMoreItems: true,
                 cursor: null
             };
-            let changeRequests = [];
             /**
              * Paginate through change requests.
              */
             while (meta.hasMoreItems) {
+                let changeRequests: ApwChangeRequest[] = [];
                 /**
                  * Get all change requests.
                  */

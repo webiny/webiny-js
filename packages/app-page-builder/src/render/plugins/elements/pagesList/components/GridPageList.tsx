@@ -5,7 +5,7 @@ import { Link } from "@webiny/react-router";
 import { ReactComponent as PrevIcon } from "./icons/round-navigate_before-24px.svg";
 import { ReactComponent as NextIcon } from "./icons/round-navigate_next-24px.svg";
 
-const formatDate = date => {
+const formatDate = (date: string | Date): string => {
     const d = new Date(date);
     const year = d.getFullYear();
     const month = d.getMonth();
@@ -29,12 +29,16 @@ const formatDate = date => {
     return monthNames[month] + " " + day + ", " + year;
 };
 
-export type PageItemProps = {
-    data: any; // TODO: create a better type
+/**
+ * Figure out better data type.
+ */
+// TODO @ts-refactor
+export interface PageItemProps {
+    data: any;
     className?: string;
-};
+}
 
-const PageItem = ({ data, className }: PageItemProps) => {
+const PageItem: React.FC<PageItemProps> = ({ data, className }) => {
     const image = get(data, "images.general.src");
     return (
         <Link to={data.url} className={"webiny-pb-page-element-page-list__item " + className}>
@@ -75,7 +79,12 @@ const PageItem = ({ data, className }: PageItemProps) => {
     );
 };
 
-const GridPageList = ({ data, nextPage, prevPage }) => {
+interface GridPageListProps {
+    data: PageItemProps["data"][];
+    nextPage?: PageItemProps["data"];
+    prevPage?: PageItemProps["data"];
+}
+const GridPageList: React.FC<GridPageListProps> = ({ data, nextPage, prevPage }) => {
     return (
         <div className={"webiny-pb-page-element-page-list webiny-pb-page-element-page-list--grid"}>
             <div className={"webiny-pb-page-element-page-list__items"}>

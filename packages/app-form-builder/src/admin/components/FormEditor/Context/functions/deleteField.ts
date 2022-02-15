@@ -1,6 +1,10 @@
-import { FbFormModelField, FbFormModel } from "~/types";
+import { FbFormModelField, FbFormModel, FbFormModelFieldsLayout } from "~/types";
 
-export default ({ field, data }: { field: FbFormModelField; data: FbFormModel }) => {
+interface Params {
+    field: FbFormModelField;
+    data: FbFormModel;
+}
+export default ({ field, data }: Params) => {
     // Remove the field from fields list...
     const fieldIndex = data.fields.findIndex(item => item._id === field._id);
     data.fields.splice(fieldIndex, 1);
@@ -12,7 +16,7 @@ export default ({ field, data }: { field: FbFormModelField; data: FbFormModel })
     }
 
     // ...and rebuild the layout object.
-    const layout = [];
+    const layout: FbFormModelFieldsLayout = [];
     let currentRowIndex = 0;
     data.layout.forEach(row => {
         row.forEach(fieldId => {

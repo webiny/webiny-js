@@ -2,25 +2,29 @@ import React from "react";
 import { Input } from "@webiny/ui/Input";
 import { trim } from "lodash";
 import { BindComponentRenderPropValidation, Form } from "@webiny/form";
+/**
+ * Package react-hotkeys does not have types.
+ */
+// @ts-ignore
 import { Hotkeys } from "react-hotkeyz";
+import { FieldOption } from "~/admin/plugins/editor/formFields/components/types";
 
-type AddOptionInputProps = {
+interface AddOptionInputProps {
     onAdd: (value: string) => void;
-    options: any;
+    options: FieldOption[];
     validation: BindComponentRenderPropValidation;
-};
-
-export default function AddOptionInput({
+}
+const AddOptionInput: React.FC<AddOptionInputProps> = ({
     options,
     onAdd,
     validation: optionsValidation
-}: AddOptionInputProps) {
+}) => {
     return (
         <Form>
             {({ Bind }) => (
                 <Bind
                     name={"newOption"}
-                    validators={value => {
+                    validators={(value: string) => {
                         if (!Array.isArray(options)) {
                             return true;
                         }
@@ -64,4 +68,6 @@ export default function AddOptionInput({
             )}
         </Form>
     );
-}
+};
+
+export default AddOptionInput;

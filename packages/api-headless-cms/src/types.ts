@@ -15,6 +15,7 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
 
+export type ApiEndpoint = "manage" | "preview" | "read";
 export interface HeadlessCms
     extends CmsSettingsContext,
         CmsSystemContext,
@@ -24,7 +25,7 @@ export interface HeadlessCms
     /**
      * API type
      */
-    type: "manage" | "preview" | "read" | string;
+    type: ApiEndpoint;
     /**
      * Requested locale
      */
@@ -399,14 +400,15 @@ export interface CmsModelFieldDefinition {
     typeDefs?: string;
 }
 
+interface CmsModelFieldToGraphQLCreateResolverParams {
+    models: CmsModel[];
+    model: CmsModel;
+    graphQLType: string;
+    field: CmsModelField;
+    createFieldResolvers: any;
+}
 export interface CmsModelFieldToGraphQLCreateResolver {
-    (params: {
-        models: CmsModel[];
-        model: CmsModel;
-        graphQLType: string;
-        field: CmsModelField;
-        createFieldResolvers: any;
-    }):
+    (params: CmsModelFieldToGraphQLCreateResolverParams):
         | GraphQLFieldResolver
         | { resolver: GraphQLFieldResolver; typeResolvers: Resolvers<CmsContext> }
         | false;
@@ -533,10 +535,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createSchema?: (params: {
-            models: CmsModel[];
-            model: CmsModel;
-        }) => GraphQLSchemaDefinition<CmsContext>;
+        createSchema?: (params: { models: CmsModel[] }) => GraphQLSchemaDefinition<CmsContext>;
     };
     manage: {
         /**
@@ -573,10 +572,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          *     }
          * ```
          */
-        createSchema?: (params: {
-            models: CmsModel[];
-            model: CmsModel;
-        }) => GraphQLSchemaDefinition<CmsContext>;
+        createSchema?: (params: { models: CmsModel[] }) => GraphQLSchemaDefinition<CmsContext>;
         /**
          * Definition of the field type for GraphQL - be aware if multiple values is selected. Probably same as `read.createTypeField`.
          *
@@ -1225,11 +1221,11 @@ export interface CmsModelManager {
     /**
      * Create a entry.
      */
-    create: (data: Record<string, any>) => Promise<CmsEntry>;
+    create: (data: CreateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Update a entry.
      */
-    update: (id: string, data: Record<string, any>) => Promise<CmsEntry>;
+    update: (id: string, data: UpdateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Delete a entry.
      */

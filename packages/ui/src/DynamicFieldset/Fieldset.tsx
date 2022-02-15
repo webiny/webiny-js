@@ -1,22 +1,39 @@
 import * as React from "react";
 import dotProp from "dot-prop-immutable";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 import styled from "@emotion/styled";
 
-interface ChildrenRenderProp {
-    actions: { add: Function; remove: Function };
-    header: Function;
-    row: Function;
-    empty: Function;
+interface ChildrenRenderPropRowCallableParams {
+    index: number;
+    data: Record<string, any>;
+}
+interface ChildrenRenderPropRowCallable {
+    (params: ChildrenRenderPropRowCallableParams): React.ReactNode;
 }
 
-type FieldsetProps = {
+interface ChildrenRenderPropHeaderCallable {
+    (): React.ReactNode;
+}
+interface ChildrenRenderPropEmptyCallable {
+    (): React.ReactNode;
+}
+interface ChildrenRenderProp {
+    actions: {
+        add: Function;
+        remove: Function;
+    };
+    header: (cb: ChildrenRenderPropHeaderCallable) => React.ReactNode;
+    row: (cb: ChildrenRenderPropRowCallable) => React.ReactNode;
+    empty: (cb: ChildrenRenderPropEmptyCallable) => React.ReactNode;
+}
+
+interface FieldsetProps {
     value?: Array<Object>;
     description?: string;
     validation?: { isValid: null | boolean; message?: string };
     onChange?: Function;
     children: (props: ChildrenRenderProp) => React.ReactNode;
-};
+}
 
 const DynamicFieldsetRow = styled("div")({
     paddingBottom: 10,
@@ -26,7 +43,7 @@ const DynamicFieldsetRow = styled("div")({
 });
 
 class Fieldset extends React.Component<FieldsetProps> {
-    static defaultProps = {
+    static defaultProps: Partial<FieldsetProps> = {
         value: [],
         description: null
     };
@@ -60,21 +77,24 @@ class Fieldset extends React.Component<FieldsetProps> {
         }
     };
 
-    renderHeader = (cb: () => React.ReactNode) => {
+    renderHeader = (cb: () => React.ReactNode): React.ReactNode => {
         this.header = cb();
+        return null;
     };
 
-    renderRow = (cb: (params: Object) => React.ReactNode) => {
+    renderRow = (cb: ChildrenRenderPropRowCallable): React.ReactNode => {
         const { value } = this.props;
         this.rows = value.map((record, index) => {
             return (
                 <DynamicFieldsetRow key={index}>{cb({ data: record, index })}</DynamicFieldsetRow>
             );
         });
+        return null;
     };
 
-    renderEmpty = (cb: () => React.ReactNode) => {
+    renderEmpty = (cb: () => React.ReactNode): React.ReactNode => {
         this.empty = cb();
+        return null;
     };
 
     renderComponent() {

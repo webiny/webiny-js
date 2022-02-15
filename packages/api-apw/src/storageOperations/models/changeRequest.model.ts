@@ -1,4 +1,5 @@
 import { createModelField } from "./utils";
+import { WorkflowModelDefinition } from "~/types";
 
 const bodyField = () =>
     createModelField({
@@ -41,10 +42,12 @@ const stepField = () =>
         ]
     });
 
-export const createChangeRequestModelDefinition = () => ({
-    name: "APW - Change Request",
-    modelId: "apwChangeRequestModelDefinition",
-    titleFieldId: "changeRequest_title",
-    layout: [["changeRequest_body"], ["changeRequest_title"]],
-    fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()]
-});
+export const createChangeRequestModelDefinition = (): WorkflowModelDefinition => {
+    return {
+        name: "APW - Change Request",
+        modelId: "apwChangeRequestModelDefinition",
+        titleFieldId: "changeRequest_title",
+        layout: [["changeRequest_body"], ["changeRequest_title"]],
+        fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()]
+    };
+};

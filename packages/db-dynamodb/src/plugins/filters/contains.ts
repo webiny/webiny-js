@@ -6,7 +6,7 @@ export default new ValueFilterPlugin({
         if (typeof value !== "string") {
             if (Array.isArray(value) === true) {
                 const re = new RegExp(compareValue, "i");
-                return value.some(v => {
+                return value.some((v: string) => {
                     return v.match(re) !== null;
                 });
             }

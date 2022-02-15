@@ -2,8 +2,9 @@ import React from "react";
 import { Form as FormsForm } from "../../../components/Form";
 import { get } from "lodash";
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
+import { FormComponentPropsType } from "~/types";
 
-export default {
+const plugin: PbRenderElementPlugin = {
     name: "pb-render-page-element-form",
     type: "pb-render-page-element",
     elementType: "form",
@@ -15,7 +16,7 @@ export default {
         };
 
         if (form.revision) {
-            const props = {
+            const props: FormComponentPropsType = {
                 parentId: null,
                 revisionId: null
             };
@@ -31,4 +32,5 @@ export default {
 
         return render;
     }
-} as PbRenderElementPlugin;
+};
+export default plugin;

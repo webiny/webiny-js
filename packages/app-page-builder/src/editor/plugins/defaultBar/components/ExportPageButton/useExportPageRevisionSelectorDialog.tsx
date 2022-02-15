@@ -20,8 +20,10 @@ const gridStyles = css`
         padding-top: 0;
     }
 `;
-
-const ExportPageDialogMessage: React.FC<{ selected: string[] }> = ({ selected }) => {
+interface ExportPageDialogMessageProps {
+    selected: string[];
+}
+const ExportPageDialogMessage: React.FC<ExportPageDialogMessageProps> = ({ selected }) => {
     const { exportPageData } = usePageBuilder();
     const { revisionType: value, setRevisionType: setValue } = exportPageData;
 
@@ -80,7 +82,17 @@ const ExportPageDialogMessage: React.FC<{ selected: string[] }> = ({ selected })
     );
 };
 
-const useExportPageRevisionSelectorDialog = () => {
+interface UseExportPageRevisionSelectorDialogShowParams {
+    onAccept: () => void;
+    selected: string[];
+}
+interface UseExportPageRevisionSelectorDialog {
+    showExportPageRevisionSelectorDialog: (
+        params: UseExportPageRevisionSelectorDialogShowParams
+    ) => void;
+    hideDialog: () => void;
+}
+const useExportPageRevisionSelectorDialog = (): UseExportPageRevisionSelectorDialog => {
     const { showDialog, hideDialog } = useDialog();
 
     return {

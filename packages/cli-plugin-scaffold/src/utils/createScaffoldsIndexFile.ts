@@ -5,7 +5,7 @@ const content = `// This file is automatically updated via various scaffolding u
 
 export default () => [];`;
 
-export default folder => {
+export default (folder: string): void => {
     fs.mkdirSync(folder, { recursive: true });
 
     const indexPath = path.join(folder, "index.ts");

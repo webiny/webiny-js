@@ -9,6 +9,9 @@ export type I18NData = {
     i18n: I18N;
 };
 
+export interface ModifierOptions {
+    i18n: I18N;
+}
 /**
  * @name Modifier
  * @description I18N Modifier - used for modifying text dynamically.

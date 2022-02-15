@@ -1,13 +1,14 @@
+import middleware from "./middleware";
 import { HandlerPlugin } from "~/plugins/HandlerPlugin";
 import { ContextPlugin } from "~/plugins/ContextPlugin";
-import middleware from "./middleware";
 import { BeforeHandlerPlugin } from "~/plugins/BeforeHandlerPlugin";
 import { Context } from "~/plugins/Context";
 import { HandlerErrorPlugin } from "~/plugins/HandlerErrorPlugin";
 import { HandlerResultPlugin } from "~/plugins/HandlerResultPlugin";
+import { PluginCollection } from "@webiny/plugins/types";
 
-export default (...plugins) =>
-    async (...args) => {
+export default (...plugins: PluginCollection) =>
+    async (...args: string[]) => {
         const context = new Context({
             plugins,
             args,

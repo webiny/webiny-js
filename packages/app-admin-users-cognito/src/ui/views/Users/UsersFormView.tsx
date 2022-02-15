@@ -27,7 +27,7 @@ const AvatarWrapper = styled("div")({
 });
 
 export class UsersFormView extends UIView {
-    constructor() {
+    public constructor() {
         super("UsersFormView");
 
         this.useGrid(false);
@@ -40,20 +40,20 @@ export class UsersFormView extends UIView {
         this.applyPlugins(UsersFormView);
     }
 
-    getUserFormHook(): UseUserForm {
+    public getUserFormHook(): UseUserForm {
         return this.getHook("userForm");
     }
 
-    submit(data: FormData, form?: FormAPI) {
+    public submit(data: FormData, form?: FormAPI): void {
         this.dispatchEvent("onSubmit", { data, form });
         this.getUserFormHook().onSubmit(data);
     }
 
-    onSubmit(cb: (data: any, form: FormAPI) => void) {
+    public onSubmit(cb: (data: any, form: FormAPI) => void): void {
         this.addEventListener("onSubmit", cb);
     }
 
-    private addElements() {
+    private addElements(): void {
         const simpleForm = this.addElement<FormView>(
             new FormView("UsersForm", {
                 isLoading: () => {

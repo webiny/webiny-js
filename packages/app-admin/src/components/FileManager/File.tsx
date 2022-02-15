@@ -1,4 +1,8 @@
 import React from "react";
+/**
+ * Package react-lazy-load has no types.
+ */
+// @ts-ignore
 import LazyLoad from "react-lazy-load";
 import classNames from "classnames";
 import { css, keyframes } from "emotion";
@@ -95,61 +99,58 @@ const styles = css({
     }
 });
 
-type Props = {
-    file: { [key: string]: any };
+export interface FileProps {
+    file: FileItem;
     selected: boolean;
-    uploadFile: Function;
+    uploadFile: (item: FileItem[] | FileItem) => Promise<number | null>;
     onSelect: (event?: React.MouseEvent) => void;
-    onClick: (event?: React.MouseEvent) => void;
+    onClick?: (event?: React.MouseEvent) => void;
     options?: Array<{ label: string; onClick: (file: Object) => void }>;
     children: React.ReactNode;
     showFileDetails: (event?: React.MouseEvent) => void;
+}
+
+const File: React.FC<FileProps> = props => {
+    const { file, selected, onSelect, children, showFileDetails } = props;
+
+    return (
+        <div
+            className={classNames(styles, { "disable-select": !onSelect })}
+            data-testid={"fm-list-wrapper-file"}
+        >
+            <div className={"body"}>
+                <div className={"checkedIcon"} onClick={onSelect}>
+                    {selected ? <Checked /> : null}
+                </div>
+                <div className={"infoIcon"}>
+                    <IconButton
+                        icon={<SettingsIcon />}
+                        onClick={showFileDetails}
+                        data-testid={"fm-file-wrapper-file-info-icon"}
+                    />
+                </div>
+                <LazyLoad height={200} offsetVertical={300}>
+                    <Ripple>
+                        <div className={"filePreview"}>
+                            <div className="clickableArea" onClick={onSelect} />
+                            {children}
+                        </div>
+                    </Ripple>
+                </LazyLoad>
+            </div>
+            <div className={"label"} onClick={onSelect}>
+                {file.name}
+            </div>
+        </div>
+    );
 };
 
-export default React.memo(
-    function File(props: Props) {
-        const { file, selected, onSelect, children, showFileDetails } = props;
-
-        return (
-            <div
-                className={classNames(styles, { "disable-select": !onSelect })}
-                data-testid={"fm-list-wrapper-file"}
-            >
-                <div className={"body"}>
-                    <div className={"checkedIcon"} onClick={onSelect}>
-                        {selected ? <Checked /> : null}
-                    </div>
-                    <div className={"infoIcon"}>
-                        <IconButton
-                            icon={<SettingsIcon />}
-                            onClick={showFileDetails}
-                            data-testid={"fm-file-wrapper-file-info-icon"}
-                        />
-                    </div>
-                    <LazyLoad height={200} offsetVertical={300}>
-                        <Ripple>
-                            <div className={"filePreview"}>
-                                <div className="clickableArea" onClick={onSelect} />
-                                {children}
-                            </div>
-                        </Ripple>
-                    </LazyLoad>
-                </div>
-                <div className={"label"} onClick={onSelect}>
-                    {file.name}
-                </div>
-            </div>
-        );
-    },
-    (prev, next) => {
-        if (prev.selected !== next.selected) {
-            return false;
-        }
-
-        if (prev.file.name !== next.file.name) {
-            return false;
-        }
-
-        return true;
+export default React.memo(File, (prev, next) => {
+    if (prev.selected !== next.selected) {
+        return false;
+    } else if (prev.file.name !== next.file.name) {
+        return false;
     }
-);
+
+    return true;
+});

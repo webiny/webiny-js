@@ -26,37 +26,42 @@ import { Select } from "@webiny/ui/Select";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { serializeSorters, deserializeSorters } from "../utils";
+import { deserializeSorters } from "../utils";
 import usePermission from "../../hooks/usePermission";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { ListCmsGroupsQueryResponse, CmsGroupWithModels } from "./graphql";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/data-list");
 
-const SORTERS = [
+interface Sort {
+    label: string;
+    sorters: string;
+}
+const SORTERS: Sort[] = [
     {
         label: t`Newest to oldest`,
-        sorters: { createdOn: "desc" }
+        sorters: "createdOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { createdOn: "asc" }
+        sorters: "createdOn_ASC"
     },
     {
         label: t`Name A-Z`,
-        sorters: { name: "asc" }
+        sorters: "name_ASC"
     },
     {
         label: t`Name Z-A`,
-        sorters: { name: "desc" }
+        sorters: "name_DESC"
     }
 ];
 
-type ContentModelGroupsDataListProps = {
+interface ContentModelGroupsDataListProps {
     canCreate: boolean;
-};
-const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListProps) => {
-    const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
+}
+const ContentModelGroupsDataList: React.FC<ContentModelGroupsDataListProps> = ({ canCreate }) => {
+    const [filter, setFilter] = useState<string>("");
+    const [sort, setSort] = useState<string>(SORTERS[0].sorters);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -75,17 +80,19 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
     );
 
     const sortData = useCallback(
-        list => {
+        (list: CmsGroupWithModels[]): CmsGroupWithModels[] => {
             if (!sort) {
                 return list;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
-            return orderBy(list, [key], [value]);
+            const [sortField, sortOrderBy] = deserializeSorters(sort);
+            return orderBy(list, [sortField], [sortOrderBy]);
         },
         [sort]
     );
 
-    const data = listQuery.loading ? [] : get(listQuery, "data.listContentModelGroups.data", []);
+    const data: CmsGroupWithModels[] = listQuery.loading
+        ? []
+        : get(listQuery, "data.listContentModelGroups.data", []);
     const groupId = new URLSearchParams(location.search).get("id");
 
     const deleteItem = useCallback(
@@ -97,12 +104,14 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                     update(cache, { data }) {
                         const { error } = data.deleteContentModelGroup;
                         if (error) {
+                            showSnackbar(error.message);
                             return;
                         }
 
                         // Delete the item from list cache
                         const gqlParams = { query: GQL.LIST_CONTENT_MODEL_GROUPS };
-                        const { listContentModelGroups } = cache.readQuery(gqlParams);
+                        const { listContentModelGroups } =
+                            cache.readQuery<ListCmsGroupsQueryResponse>(gqlParams);
                         const index = listContentModelGroups.data.findIndex(
                             item => item.id === group.id
                         );
@@ -147,7 +156,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                         >
                             {SORTERS.map(({ label, sorters }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorters}>
                                         {label}
                                     </option>
                                 );
@@ -193,7 +202,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                 />
             }
         >
-            {({ data }) => (
+            {({ data }: { data: CmsGroupWithModels[] }) => (
                 <List data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === groupId}>

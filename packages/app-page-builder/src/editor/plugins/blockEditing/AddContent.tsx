@@ -57,7 +57,7 @@ const AddBlockContent = styled<"div", { displayMode: string }>("div")(({ display
     alignItems: "center"
 }));
 
-const AddContent = () => {
+const AddContent: React.FC = () => {
     const { displayMode } = useRecoilValue(uiAtom);
     const totalElements = useRecoilValue(elementsInContentTotalSelector);
     const eventActionHandler = useEventActionHandler();

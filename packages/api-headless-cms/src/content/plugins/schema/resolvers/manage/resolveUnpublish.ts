@@ -1,7 +1,12 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
 
-export const resolveUnpublish: ResolverFactory =
+interface ResolveUnpublishArgs {
+    revision: string;
+}
+type ResolveUnpublish = ResolverFactory<any, ResolveUnpublishArgs>;
+
+export const resolveUnpublish: ResolveUnpublish =
     ({ model }) =>
     async (_, args, context) => {
         try {

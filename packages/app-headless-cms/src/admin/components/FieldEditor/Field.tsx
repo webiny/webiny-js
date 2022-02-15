@@ -54,7 +54,7 @@ const menuStyles = css({
     }
 });
 
-const allowedTitleFieldTypes = ["text", "number"];
+const allowedTitleFieldTypes: string[] = ["text", "number"];
 
 const isFieldAllowedToBeTitle = (field: CmsEditorField, parent?: CmsEditorField) => {
     if (field.multipleValues || parent) {
@@ -65,13 +65,13 @@ const isFieldAllowedToBeTitle = (field: CmsEditorField, parent?: CmsEditorField)
     return true;
 };
 
-export interface Props {
+export interface FieldProps {
     field: CmsEditorField;
-    onDelete: Function;
-    onEdit: Function;
+    onDelete: (field: CmsEditorField) => void;
+    onEdit: (field: CmsEditorField) => void;
     parent?: CmsEditorField;
 }
-const Field: React.FC<Props> = props => {
+const Field: React.FC<FieldProps> = props => {
     const { field, onEdit, parent } = props;
     const { showSnackbar } = useSnackbar();
     const { setData, data } = useContentModelEditor();
@@ -81,7 +81,7 @@ const Field: React.FC<Props> = props => {
         props.onDelete(field);
     }, [field.fieldId]);
 
-    const setAsTitle = useCallback(async () => {
+    const setAsTitle = useCallback(async (): Promise<void> => {
         const response = await setData(data => {
             return { ...data, titleFieldId: field.fieldId };
         });

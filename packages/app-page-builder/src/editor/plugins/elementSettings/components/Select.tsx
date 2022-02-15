@@ -14,7 +14,7 @@ const selectStyle = css({
     }
 });
 
-type SelectProps = {
+interface SelectProps {
     label: string;
     value?: string;
     valueKey?: string;
@@ -25,9 +25,9 @@ type SelectProps = {
     // One or more <option> or <optgroup> elements.
     children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
     className?: string;
-};
+}
 
-const Select = ({
+const Select: React.FC<SelectProps> = ({
     label,
     value,
     valueKey,
@@ -36,7 +36,7 @@ const Select = ({
     options,
     children,
     className
-}: SelectProps) => {
+}) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const keyValue = valueKey ? get(element, valueKey, defaultValue) : value;

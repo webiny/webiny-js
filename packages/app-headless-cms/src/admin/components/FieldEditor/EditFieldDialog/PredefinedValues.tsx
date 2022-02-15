@@ -1,16 +1,24 @@
+// TODO @ts-refactor figure out correct bind types and remove any
 import React, { useCallback, useRef, cloneElement } from "react";
 import getValue from "./functions/getValue";
 import setValue from "./functions/setValue";
 import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
 import { FormRenderPropParams } from "@webiny/form";
 
-export interface Props {
+export interface PredefinedValuesProps {
     field: CmsEditorField;
     fieldPlugin: CmsEditorFieldTypePlugin;
     form: FormRenderPropParams;
 }
-const PredefinedValues: React.FC<Props> = ({ field, fieldPlugin, form }) => {
-    const memoizedBindComponents = useRef({});
+interface MemoizedBindComponents {
+    // TODO @ts-refactor
+    [key: string]: any;
+}
+interface BindProps {
+    name: string;
+}
+const PredefinedValues: React.FC<PredefinedValuesProps> = ({ field, fieldPlugin, form }) => {
+    const memoizedBindComponents = useRef<MemoizedBindComponents>({});
     const { Bind: BaseFormBind } = form;
 
     const getBind = useCallback((index = -1) => {
@@ -19,14 +27,14 @@ const PredefinedValues: React.FC<Props> = ({ field, fieldPlugin, form }) => {
             return memoizedBindComponents.current[memoKey];
         }
 
-        memoizedBindComponents.current[memoKey] = function Bind({ children, name }) {
+        const Bind: React.FC<BindProps> = ({ children, name }) => {
             return (
                 <BaseFormBind name={"predefinedValues.values"}>
                     {bind => {
                         const props = {
                             ...bind,
                             value: getValue({ bind, index, name }),
-                            onChange: value => {
+                            onChange: (value: string[]) => {
                                 setValue({ value, bind, index, name });
                             }
                         };
@@ -35,11 +43,13 @@ const PredefinedValues: React.FC<Props> = ({ field, fieldPlugin, form }) => {
                             return children(props);
                         }
 
-                        return cloneElement(children, props);
+                        return cloneElement(children as React.ReactElement, props);
                     }}
                 </BaseFormBind>
             );
         };
+
+        memoizedBindComponents.current[memoKey] = Bind;
 
         return memoizedBindComponents.current[memoKey];
     }, []);

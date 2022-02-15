@@ -31,11 +31,11 @@ const DetailsContainer = styled("div")({
         backgroundColor: "var(--mdc-theme-surface)"
     }
 });
-type EmptyPageDetailsProps = {
+interface EmptyPageDetailsProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
-};
-const EmptyPageDetails = ({ onCreatePage, canCreate }: EmptyPageDetailsProps) => {
+}
+const EmptyPageDetails: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCreate }) => {
     return (
         <EmptyView
             title={t`Click on the left side list to display page details {message} `({
@@ -51,11 +51,11 @@ const EmptyPageDetails = ({ onCreatePage, canCreate }: EmptyPageDetailsProps) =>
         />
     );
 };
-type PageDetailsProps = {
+interface PageDetailsProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
-};
-const PageDetails = ({ onCreatePage, canCreate }: PageDetailsProps) => {
+}
+const PageDetails: React.FC<PageDetailsProps> = ({ onCreatePage, canCreate }) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
 

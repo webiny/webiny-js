@@ -5,8 +5,9 @@ import { createContentReviewModelDefinition } from "./contentReview.model";
 import { createReviewerModelDefinition } from "./reviewer.model";
 import { createCommentModelDefinition } from "./comment.model";
 import { createChangeRequestModelDefinition } from "./changeRequest.model";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 
-export const createApwModels = context => {
+export const createApwModels = (context: CmsContext) => {
     /**
      * This should never happen in the actual project.
      * It is to make sure that we load setup context before the CRUD init in our internal code.

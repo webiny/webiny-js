@@ -11,11 +11,22 @@ import {
 import { ApolloClient } from "apollo-client";
 import { SecurityContext } from "@webiny/app-security";
 
-export type FbBuilderFieldValidator = {
+export interface FbErrorResponse {
+    message: string;
+    code: string;
+    data?: Record<string, any>;
+}
+export interface FbMetaResponse {
+    totalCount: number;
+    cursor: string;
+    hasMoreItems: boolean;
+}
+
+export interface FbBuilderFieldValidator {
     name: string;
     message: string;
     settings: any;
-};
+}
 
 export type FbBuilderFormFieldValidatorPlugin = Plugin & {
     type: "form-editor-field-validator";
@@ -51,27 +62,27 @@ export type FbFormFieldPatternValidatorPlugin = Plugin & {
     };
 };
 
-export type FbFormFieldValidator = {
+export interface FbFormFieldValidator {
     name: string;
     message: any;
     settings: any;
-};
+}
 
 export type FbFormFieldValidatorPlugin = Plugin & {
     type: "fb-form-field-validator";
     validator: {
         name: string;
-        validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;
+        validate: (value: string, validator: FbFormFieldValidator) => Promise<any>;
     };
 };
 
 export type FieldIdType = string;
 export type FbFormModelFieldsLayout = FieldIdType[][];
 
-export type FieldLayoutPositionType = {
+export interface FieldLayoutPositionType {
     row: number;
     index: number;
-};
+}
 
 export type FbBuilderFieldPlugin = Plugin & {
     type: "form-editor-field-type";
@@ -93,26 +104,29 @@ export type FbBuilderFieldPlugin = Plugin & {
     };
 };
 
-export type FbRevisionModel = {
+export interface FbCreatedBy {
+    id: string;
+    displayName: string;
+    type: string;
+}
+
+export interface FbRevisionModel {
     id: string;
     name: string;
     version: number;
     published: boolean;
     status: string;
     savedOn: string;
-    createdBy: {
-        id: string;
-        displayName: string;
-    };
-};
+    createdBy: FbCreatedBy;
+}
 
-export type FbFormDetailsPluginRenderParams = {
+export interface FbFormDetailsPluginRenderParams {
     security: SecurityContext;
     refreshForms: () => Promise<void>;
     form: FbFormModel;
     revisions: FbRevisionModel[];
     loading: boolean;
-};
+}
 
 export type FbFormDetailsPluginType = Plugin & {
     type: "forms-form-details-revision-content";
@@ -124,12 +138,13 @@ export type FbFormDetailsSubmissionsPlugin = Plugin & {
     render: (props: { form: FbFormModel }) => React.ReactNode;
 };
 
-export type FbFormModel = {
+export interface FbFormModel {
     id: FieldIdType;
     version: number;
     parent: string;
     layout: FbFormModelFieldsLayout;
     fields: FbFormModelField[];
+    published: boolean;
     name: string;
     settings: any;
     status: string;
@@ -140,9 +155,14 @@ export type FbFormModel = {
         views: number;
         conversionRate: number;
     };
-};
+    createdBy: FbCreatedBy;
+    triggers: Record<string, any>;
+}
+export interface FbFormRenderModel extends Omit<FbFormModel, "fields"> {
+    fields: FormRenderFbFormModelField[];
+}
 
-export type FbFormModelField = {
+export interface FbFormModelField {
     _id?: string;
     type: string;
     name: string;
@@ -153,9 +173,9 @@ export type FbFormModelField = {
     validation?: FbBuilderFieldValidator[];
     options?: Array<{ value: string; label: string }>;
     settings: { [key: string]: any };
-};
+}
 
-export type FbFormSubmissionData = {
+export interface FbFormSubmissionData {
     id: string;
     locale: string;
     data: Record<string, any>;
@@ -165,10 +185,10 @@ export type FbFormSubmissionData = {
         parent: string;
         name: string;
         version: number;
-        fields: Record<string, any>[];
+        fields: FbFormModelField[];
         layout: string[][];
     };
-};
+}
 
 export type FbFormTriggerHandlerPlugin = Plugin & {
     type: "form-trigger-handler";
@@ -225,44 +245,41 @@ export type FbEditorTrigger = Plugin & {
 // ------------------------------------------------------------------------------------------------------------
 
 export type FormRenderFbFormModelField = FbFormModelField & {
-    validators: Array<(value: any) => boolean>;
+    validators: ((value: string) => Promise<boolean>)[];
 };
 
 export type FormRenderPropsType = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => Array<Array<FormRenderFbFormModelField>>;
+    getFields: () => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponent;
     TermsOfService: TermsOfServiceComponent;
-    submit: (data: Object) => Promise<FormSubmitResponseType>;
+    submit: (data: Record<string, any>) => Promise<FormSubmitResponseType>;
     formData: FbFormModel;
 };
 
 export type FormLayoutComponent = (props: FormRenderPropsType) => React.ReactNode;
 
-export type FormComponentPropsType = {
+export interface FormComponentPropsType {
     preview?: boolean;
-    data?: any;
+    data?: FbFormModel;
     revisionId?: string;
     parentId?: string;
     slug?: string;
-};
+}
 
-export type FbFormRenderComponentProps = {
+export interface FbFormRenderComponentProps {
     preview?: boolean;
     data?: FbFormModel;
     client?: ApolloClient<any>;
-};
+}
 
-export type FormSubmitResponseType = {
+export interface FormSubmitResponseType {
     data: any;
     preview: boolean;
-    error: {
-        message: string;
-        code: string;
-    };
-};
+    error: FbErrorResponse;
+}
 
 export type FormLoadComponentPropsType = {
     preview?: boolean;
@@ -272,11 +289,11 @@ export type FormLoadComponentPropsType = {
     version?: number;
 };
 
-export type UseFormEditorReducerStateType = {
+export interface UseFormEditorReducerStateType {
     apolloClient: ApolloClient<any>;
     id: string;
     defaultLayoutRenderer: string;
-};
+}
 
 export type FormSettingsPluginType = Plugin & {
     title: string;
@@ -290,3 +307,72 @@ export type FormSettingsPluginRenderFunctionType = (props: {
     formData: any; // Form settings.
     form: any;
 }) => React.ReactElement<any>;
+
+/**
+ * Data types
+ */
+export interface FbSettings {
+    domain: string;
+    reCaptcha: {
+        enabled: boolean;
+        siteKey: string;
+        secretKey: string;
+    };
+}
+
+/**
+ * GraphQL Variables Input
+ */
+export interface FbFieldOptionsInput {
+    label: string;
+    value: string;
+}
+export interface FbFieldValidationInput {
+    name: string;
+    message: string;
+    settings: Record<string, string>;
+}
+export interface FbFormFieldInput {
+    _id: string;
+    fieldId: string;
+    type: string;
+    name: string;
+    label: string;
+    placeholderText: string;
+    helpText: string;
+    options: FbFieldOptionsInput[];
+    validation: FbFieldValidationInput[];
+    settings: Record<string, string>;
+}
+export interface FbFormSettingsLayoutInput {
+    renderer: string;
+}
+export interface FbTermsOfServiceMessageInput {
+    enabled: boolean;
+    message: Record<string, string>;
+    errorMessage: string;
+}
+export interface FbFormReCaptchaSettingsInput {
+    enabled: boolean;
+    siteKey: string;
+    secretKey: string;
+}
+export interface FbReCaptchaInput {
+    enabled: boolean;
+    errorMessage: Record<string, string>;
+    settings: FbFormReCaptchaSettingsInput;
+}
+export interface FbFormSettingsInput {
+    layout: FbFormSettingsLayoutInput;
+    submitButtonLabel: string;
+    successMessage: Record<string, string>;
+    termsOfServiceMessage: FbTermsOfServiceMessageInput;
+    reCaptcha: FbReCaptchaInput;
+}
+export interface FbUpdateFormInput {
+    name?: string;
+    fields?: FbFormFieldInput[];
+    layout?: FbFormModelFieldsLayout;
+    settings?: FbFormSettingsInput;
+    triggers?: Record<string, string>;
+}

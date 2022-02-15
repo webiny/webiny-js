@@ -25,7 +25,7 @@ import { CenteredView, useSnackbar } from "@webiny/app-admin";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
-const UserAccountForm = () => {
+const UserAccountForm: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const { setIdentity } = useSecurity();
@@ -33,7 +33,7 @@ const UserAccountForm = () => {
     const currentUser = useQuery(GET_CURRENT_USER);
     const [updateUser] = useMutation(UPDATE_CURRENT_USER);
 
-    const onSubmit = async formData => {
+    const onSubmit = async (formData: Record<string, string>) => {
         setLoading(true);
         const { data: response } = await updateUser({
             variables: { data: omit(formData, ["id"]) }

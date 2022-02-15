@@ -17,7 +17,7 @@ import SignedIn from "~/views/SignedIn";
 import { useSecurity } from "@webiny/app-security";
 import { config as appConfig } from "@webiny/app/config";
 
-const createApolloLinkPlugin = () => {
+const createApolloLinkPlugin = (): ApolloLinkPlugin => {
     return new ApolloLinkPlugin(() => {
         return setContext(async (_, { headers }) => {
             const user = await Auth.currentSession();
@@ -63,11 +63,22 @@ export interface Config extends AuthOptions {
     }): Promise<{ [key: string]: any }>;
 }
 
-export const createAuthentication = ({ getIdentityData, onError, ...config }: Config) => {
+interface AuthenticationFactory {
+    (params: Config): React.FC;
+}
+export const createAuthentication: AuthenticationFactory = ({
+    getIdentityData,
+    onError,
+    ...config
+}: Config) => {
+    /**
+     * TODO @ts-refactor
+     */
+    // @ts-ignore
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
     Auth.configure({ ...defaultOptions, ...config });
 
-    const Authentication = (props: Props) => {
+    const Authentication: React.FC<Props> = props => {
         const { children } = props;
         const { setIdentity } = useSecurity();
         const client = useApolloClient();

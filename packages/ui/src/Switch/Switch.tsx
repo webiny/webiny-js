@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Switch as RmwcSwitch, SwitchProps } from "@rmwc/switch";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import pick from "lodash/pick";
-import { FormElementMessage } from "../FormElementMessage";
-import { getClasses } from "../Helpers";
+import { FormElementMessage } from "~/FormElementMessage";
+import { getClasses } from "~/Helpers";
 
 type Props = FormComponentProps &
     SwitchProps & {
@@ -18,8 +18,8 @@ type Props = FormComponentProps &
  * Switch component can be used to store simple boolean values.
  */
 class Switch extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<Props> = {
+        validation: { isValid: null, message: null }
     };
 
     static rmwcProps = ["id", "disabled", "checked", "label", "rootProps", "className"];

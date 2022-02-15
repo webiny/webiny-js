@@ -1,14 +1,19 @@
 import React from "react";
 import preview from "./preview.png";
 import { createElement } from "../../../helpers";
-import { PbEditorBlockPlugin } from "../../../../types";
+import { PbEditorBlockPlugin, PbEditorElement } from "~/types";
 
-export default {
+const plugin: PbEditorBlockPlugin = {
     name: "pb-editor-block-empty",
     type: "pb-editor-block",
     category: "general",
     title: "Empty block",
-    create(options = {}, parent) {
+    /**
+     * Validate if this is at all possible? Types say it is not.
+     * TODO @ts-refactor
+     */
+    // @ts-ignore
+    create(options = {}, parent): PbEditorElement {
         return createElement("block", options, parent);
     },
     image: {
@@ -18,7 +23,8 @@ export default {
             aspectRatio: 500 / 73
         }
     },
-    preview() {
+    preview(): React.ReactElement {
         return <img src={preview} alt={"Empty block"} />;
     }
-} as PbEditorBlockPlugin;
+};
+export default plugin;

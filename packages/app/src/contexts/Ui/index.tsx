@@ -1,5 +1,5 @@
 import React from "react";
-import { UiStatePlugin } from "../../types";
+import { UiStatePlugin } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 export const UiContext = React.createContext({});
@@ -44,6 +44,9 @@ export class UiProvider extends React.Component<Props, State> {
     }
 }
 
-export const UiConsumer = ({ children }) => {
+export interface UiConsumerProps {
+    children: React.ReactElement;
+}
+export const UiConsumer: React.FC<UiConsumerProps> = ({ children }) => {
     return <UiContext.Consumer>{ui => React.cloneElement(children, { ui })}</UiContext.Consumer>;
 };

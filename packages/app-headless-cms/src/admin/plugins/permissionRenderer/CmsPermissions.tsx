@@ -1,15 +1,20 @@
+/**
+ * @pavel Please review types for security permissions
+ * TODO @ts-refactor
+ */
 import React, { Fragment, useCallback, useMemo } from "react";
+import ContentModelGroupPermission from "./components/ContentModelGroupPermission";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
-import ContentModelGroupPermission from "./components/ContentModelGroupPermission";
 import { ContentModelPermission } from "./components/ContentModelPermission";
 import { ContentEntryPermission } from "./components/ContentEntryPermission";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { Link } from "@webiny/react-router";
+import { CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
@@ -28,7 +33,11 @@ const API_ENDPOINTS = [
 const GRAPHQL_API_TYPES_LINK =
     "https://www.webiny.com/docs/key-topics/webiny-applications/headless-cms/graphql-api/#graphql-api-types";
 
-export const CMSPermissions = ({ value, onChange }) => {
+export interface CMSPermissionsProps {
+    value: CmsSecurityPermission[];
+    onChange: (value: CmsSecurityPermission[]) => void;
+}
+export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
     const canRead = useCallback((value: any[], permissionName: string) => {
@@ -57,8 +66,8 @@ export const CMSPermissions = ({ value, onChange }) => {
     };
 
     const onFormChange = useCallback(
-        data => {
-            let newValue = [];
+        (data: CmsSecurityPermission) => {
+            let newValue: CmsSecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `cms*` permission objects.
                 // Based on the `data` we rebuild new permission object from scratch.
@@ -93,7 +102,7 @@ export const CMSPermissions = ({ value, onChange }) => {
             ENTITIES.forEach(entity => {
                 const accessScope = data[`${entity}AccessScope`];
                 if (accessScope && accessScope !== NO_ACCESS) {
-                    const permission = {
+                    const permission: CmsSecurityPermission = {
                         name: `${CMS_PERMISSION}.${entity}`,
                         own: false,
                         rwd: "r",

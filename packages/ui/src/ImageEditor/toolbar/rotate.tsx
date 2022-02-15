@@ -2,8 +2,8 @@ import React from "react";
 import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import { ImageEditorTool } from "./types";
 import { Slider } from "../../Slider";
-import { Tooltip } from "../../Tooltip";
-import { IconButton } from "../../Button";
+import { Tooltip } from "~/Tooltip";
+import { IconButton } from "~/Button";
 
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
@@ -26,7 +26,7 @@ class RenderForm extends React.Component<any, any> {
                     step={10}
                     discrete={true}
                     displayMarkers={true}
-                    onInput={value => {
+                    onInput={(value: string) => {
                         this.setState({ rangeInput: value }, async () => {
                             if (cropper) {
                                 cropper.rotateTo(parseInt(value, 10));
@@ -44,7 +44,7 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Rotate"}>
-                <IconButton icon={<RotateRight />} onClick={activateTool} />
+                <IconButton icon={<RotateRight />} onClick={() => activateTool("rotate")} />
             </Tooltip>
         );
     },

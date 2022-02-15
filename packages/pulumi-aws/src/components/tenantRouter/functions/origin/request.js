@@ -27,8 +27,9 @@ exports.handler = async event => {
     const { Item } = await documentClient.get(params).promise();
 
     if (Item) {
-        const from = request.uri;
+        const from = request.uri.endsWith("/") ? request.uri : request.uri + "/";
         request.uri = `/${Item.tenant}${from}`;
+
         console.log(`Rewriting request from "${from}" to "${request.uri}"`);
     } else {
         console.log(`Failed to find a tenant for domain "${requestedDomain}"`);

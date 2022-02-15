@@ -1,8 +1,7 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
+import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
 import IconPicker from "../../../components/IconPicker";
 import Accordion from "../../elementSettings/components/Accordion";
@@ -11,6 +10,7 @@ import InputField from "../../elementSettings/components/InputField";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import { updateIconElement } from "../utils/iconUtils";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 
 const classes = {
     grid: css({

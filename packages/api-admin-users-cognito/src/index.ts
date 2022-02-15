@@ -1,6 +1,4 @@
 import { ContextPlugin } from "@webiny/handler";
-import { SecurityContext } from "@webiny/api-security/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
 import { createAdminUsers } from "./createAdminUsers";
 import { AdminUsersContext, AdminUsersStorageOperations } from "./types";
 import base from "./graphql/base.gql";
@@ -9,15 +7,13 @@ import user from "./graphql/user.gql";
 import { subscribeToEvents } from "~/subscribeToEvents";
 import { applyMultiTenancyPlugins } from "~/enterprise/multiTenancy";
 
-type Context = SecurityContext & TenancyContext & AdminUsersContext;
-
 export interface Config {
     storageOperations: AdminUsersStorageOperations;
 }
 
 export default ({ storageOperations }: Config) => {
     return [
-        new ContextPlugin<Context>(async context => {
+        new ContextPlugin<AdminUsersContext>(async context => {
             const { security, tenancy } = context;
 
             const getTenant = () => {

@@ -1,10 +1,9 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import Error from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
-import { SecurityContext } from "@webiny/api-security/types";
-import { AdminUsersContext, BaseUserAttributes } from "~/types";
+import { AdminUser, AdminUsersContext, BaseUserAttributes } from "~/types";
 
-type Context = SecurityContext & AdminUsersContext;
+type MappedAttrType = (user: AdminUser) => string | keyof AdminUser;
 
 const defaultUpdateAttributes = {
     family_name: "lastName",
@@ -49,11 +48,12 @@ export const syncWithCognito = ({
 
     const cognito = new CognitoIdentityServiceProvider({ region });
 
-    return new ContextPlugin<Context>(({ adminUsers }) => {
+    return new ContextPlugin<AdminUsersContext>(({ adminUsers }) => {
         adminUsers.onUserBeforeCreate.subscribe(async ({ user, inputData }) => {
             // Immediately delete password from `user`, as that object will be stored to the database.
             // Password field is attached by Cognito plugin, so we only want this plugin to handle it.
-            delete user["password"];
+            // Casting as any because password does not exist on user, but we know it does
+            delete (user as any)["password"];
 
             const username = getUsername(inputData);
 
@@ -79,7 +79,7 @@ export const syncWithCognito = ({
                 // User does not exist.
             }
 
-            const params = {
+            const params: CognitoIdentityServiceProvider.Types.AdminCreateUserRequest = {
                 UserPoolId: userPoolId,
                 Username: username,
                 DesiredDeliveryMediums: [],
@@ -135,12 +135,13 @@ export const syncWithCognito = ({
 
         adminUsers.onUserBeforeUpdate.subscribe(({ updateData }) => {
             // Immediately delete password from `updateData`, as that object will be merged with the `user` data.
-            delete updateData["password"];
+            // Casting as any because password does not exist on user, but we know it does
+            delete (updateData as any)["password"];
         });
 
         adminUsers.onUserAfterUpdate.subscribe(async ({ originalUser, updatedUser, inputData }) => {
             const newAttributes = Object.keys(updateAttributes).map(attr => {
-                const mappedAttr = updateAttributes[attr];
+                const mappedAttr = updateAttributes[attr] as MappedAttrType;
                 const attrValue =
                     typeof mappedAttr === "function"
                         ? mappedAttr(updatedUser)

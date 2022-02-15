@@ -4,10 +4,10 @@ import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/S
 import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
 import ContentModelGroupsForm from "./ContentModelGroupsForm";
 
-function ContentModelGroups() {
+const ContentModelGroups: React.FC = () => {
     const { identity } = useSecurity();
 
-    const canCreate = useMemo(() => {
+    const canCreate = useMemo((): boolean => {
         const permission = identity.getPermission("cms.contentModelGroup");
         if (!permission) {
             return false;
@@ -30,6 +30,6 @@ function ContentModelGroups() {
             </RightPanel>
         </SplitView>
     );
-}
+};
 
 export default ContentModelGroups;

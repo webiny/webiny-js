@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const LIST_GROUPS: any = gql`
+export const LIST_GROUPS = gql`
     query listGroups {
         security {
             groups: listGroups {

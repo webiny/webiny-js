@@ -1,6 +1,6 @@
 import { CmsEditorFieldValidatorPatternPlugin } from "~/types";
 
-export default {
+const plugin: CmsEditorFieldValidatorPatternPlugin = {
     type: "cms-editor-field-validator-pattern",
     name: "cms-editor-field-validator-pattern-url",
     pattern: {
@@ -8,4 +8,5 @@ export default {
         name: "url",
         label: "URL"
     }
-} as CmsEditorFieldValidatorPatternPlugin;
+};
+export default plugin;

@@ -10,6 +10,7 @@ import { Input } from "@webiny/ui/Input";
 import { CmsIcon, CmsIconsPlugin } from "~/types";
 import { FormComponentProps } from "@webiny/ui/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { GridCellProps } from "react-virtualized/dist/es/Grid";
 
 /**
  * Controls the helper text below the checkbox.
@@ -87,15 +88,16 @@ const searchInput = css({
 
 const { useState, useCallback, useMemo } = React;
 
-const IconPicker = ({
+interface IconPickerProps extends FormComponentProps {
+    label?: React.ReactNode;
+    description?: React.ReactNode;
+}
+const IconPicker: React.FC<IconPickerProps> = ({
     value,
     onChange,
     label,
     description,
     validation
-}: FormComponentProps & {
-    label?: React.ReactNode;
-    description?: React.ReactNode;
 }) => {
     const [filter, setFilter] = useState("");
     const [mustRenderGrid, setMustRenderGrid] = useState(false);
@@ -121,7 +123,12 @@ const IconPicker = ({
 
     const renderCell = useCallback(
         ({ closeMenu }) => {
-            return function renderCell({ columnIndex, key, rowIndex, style }) {
+            return function renderCell({
+                columnIndex,
+                key,
+                rowIndex,
+                style
+            }: GridCellProps): React.ReactNode {
                 const item = icons[rowIndex * COLUMN_COUNT + columnIndex];
                 if (!item) {
                     return null;

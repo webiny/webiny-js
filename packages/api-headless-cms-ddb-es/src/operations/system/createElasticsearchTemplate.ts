@@ -2,11 +2,11 @@ import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
 import { IndicesPutTemplate } from "@elastic/elasticsearch/api/requestParams";
 
-export interface Params {
+export interface CreateElasticsearchTemplateParams {
     elasticsearch: Client;
 }
 
-export const createElasticsearchTemplate = async (params: Params) => {
+export const createElasticsearchTemplate = async (params: CreateElasticsearchTemplateParams) => {
     const { elasticsearch } = params;
 
     const options: IndicesPutTemplate = {

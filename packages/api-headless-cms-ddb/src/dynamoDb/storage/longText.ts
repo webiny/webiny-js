@@ -6,7 +6,7 @@ const GZIP = "gzip";
 const TO_STORAGE_ENCODING = "base64";
 const FROM_STORAGE_ENCODING = "utf8";
 
-const convertToBuffer = value => {
+const convertToBuffer = (value: string | Buffer): Buffer => {
     if (typeof value === "string") {
         return Buffer.from(value, TO_STORAGE_ENCODING);
     }

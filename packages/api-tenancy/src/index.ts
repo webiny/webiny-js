@@ -38,6 +38,10 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
         // we still need to register the base tenancy types, so other plugins can extend and use them
         // in other GraphQLSchema plugins.
         context.plugins.register(baseGraphQLTypes);
+
+        // Add WCP telemetry identifier
+        // This tenancy package is used by GraphQL, Headless CMS, and PB import/export functions
+        context.plugins.register({ type: "wcp-telemetry-tracker" });
     });
 };
 

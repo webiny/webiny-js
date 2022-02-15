@@ -18,7 +18,7 @@ enum Operation {
     IMPORT = "import"
 }
 
-const Pages = () => {
+const Pages: React.FC = () => {
     const [operation, setOperation] = useState<string>(Operation.CREATE);
     const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);

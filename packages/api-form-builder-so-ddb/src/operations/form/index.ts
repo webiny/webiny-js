@@ -402,7 +402,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             fields: formDynamoDbFields
         });
 
-        const start = decodeCursor(after) || 0;
+        const start = parseInt(decodeCursor(after)) || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const items = sortedItems.slice(start, end);

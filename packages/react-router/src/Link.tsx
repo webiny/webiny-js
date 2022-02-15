@@ -1,10 +1,11 @@
 import React, { useContext, useEffect } from "react";
+// @ts-ignore
 import { Link as RouterLink, LinkProps as RouterLinkProps } from "react-router-dom";
 import { RouterContext } from "./context/RouterContext";
 
 export type LinkProps = RouterLinkProps;
 
-function Link({ children, ...props }: LinkProps) {
+const Link: React.FC<LinkProps> = ({ children, ...props }) => {
     const { onLink } = useContext(RouterContext);
 
     let { to } = props;
@@ -25,6 +26,6 @@ function Link({ children, ...props }: LinkProps) {
     };
 
     return <LinkComponent {...componentProps}>{children}</LinkComponent>;
-}
+};
 
 export { Link };

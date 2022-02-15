@@ -6,7 +6,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { UPDATE_FORMS_SETTINGS } from "./graphql";
-import { useFormEditor } from "../../../../components/FormEditor/Context";
+import { useFormEditor } from "~/admin/components/FormEditor";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("Forms.ReCaptchaSettingsDialog");
@@ -14,14 +14,19 @@ const t = i18n.namespace("Forms.ReCaptchaSettingsDialog");
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
 
-type Props = {
+interface ReCapchaSettingsDialogProps {
     open: boolean;
     onClose: () => void;
     onSubmit: () => void;
     reCaptchaSettings: any;
-};
+}
 
-const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }: Props) => {
+const ReCaptchaSettingsDialog: React.FC<ReCapchaSettingsDialogProps> = ({
+    open,
+    onClose,
+    reCaptchaSettings,
+    onSubmit
+}) => {
     const [loading, setLoading] = React.useState(false);
     const { setData } = useFormEditor();
     const { showSnackbar } = useSnackbar();

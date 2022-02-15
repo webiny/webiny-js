@@ -110,7 +110,7 @@ export interface AfterDeleteParams {
  *
  * @category FilePlugin
  */
-export interface Params {
+export interface FilePluginParams {
     beforeCreate?: (params: BeforeCreateParams) => Promise<void>;
     afterCreate?: (params: AfterCreateParams) => Promise<void>;
     beforeUpdate?: (params: BeforeUpdateParams) => Promise<void>;
@@ -123,9 +123,9 @@ export interface Params {
 
 export class FilePlugin extends Plugin {
     public static readonly type = "fm.file";
-    private readonly _params: Params;
+    private readonly _params: FilePluginParams;
 
-    public constructor(params?: Params) {
+    public constructor(params?: FilePluginParams) {
         super();
         this._params = params || ({} as any);
     }
@@ -161,8 +161,10 @@ export class FilePlugin extends Plugin {
     public async afterDelete(params: AfterDeleteParams): Promise<void> {
         await this._execute("afterDelete", params);
     }
-
-    private async _execute(callback: string, params: any): Promise<void> {
+    /**
+     * Keep any here because it can be a number of params. Method is internal so no need to complicate the code.
+     */
+    private async _execute(callback: keyof FilePluginParams, params: any): Promise<void> {
         if (typeof this._params[callback] !== "function") {
             return;
         }

@@ -8,7 +8,11 @@ const entries = (validators: ParsedValidators): Array<[string, Array<string>]> =
 
 const invalidRules = "Validators must be specified as a string (eg. required,minLength:10,email).";
 
-const createdValidators = {
+interface CreatedValidators {
+    async: Record<string, Validator>;
+    sync: Record<string, Validator>;
+}
+const createdValidators: CreatedValidators = {
     async: {},
     sync: {}
 };

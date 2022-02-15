@@ -5,8 +5,9 @@ import {
     DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
-    PbEditorElementPluginArgs
-} from "../../../../types";
+    PbEditorElementPluginArgs,
+    PbEditorElement
+} from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ButtonSettings from "./ButtonSettings";
 import Button from "./Button";
@@ -17,7 +18,7 @@ const buttonWrapper = css({
 });
 
 const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
-    const defaultSettings = [
+    const defaultSettings: string[] = [
         "pb-editor-page-element-style-settings-button",
         "pb-editor-page-element-style-settings-action",
         "pb-editor-page-element-style-settings-horizontal-align-flex",
@@ -26,7 +27,7 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
         "pb-editor-page-element-settings-delete"
     ];
 
-    const defaultToolbar = {
+    const defaultToolbar: PbEditorPageElementPlugin["toolbar"] = {
         title: "Button",
         group: "pb-editor-element-group-basic",
         preview() {
@@ -53,7 +54,7 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
                     : defaultSettings,
             target: ["cell", "block"],
             create(options) {
-                const defaultValue = {
+                const defaultValue: Partial<PbEditorElement> = {
                     type: this.elementType,
                     elements: [],
                     data: {
@@ -66,7 +67,7 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
                             horizontalAlignFlex: createInitialPerDeviceSettingValue(
                                 "center",
                                 DisplayMode.DESKTOP
-                            )
+                            ) as unknown as "flex-start" | "center" | "flex-end"
                         }
                     },
                     ...options

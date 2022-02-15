@@ -17,7 +17,7 @@ const buttonStyles = css({
     marginRight: 10
 });
 
-export const LocaleSelector = () => {
+export const LocaleSelector: React.FC = () => {
     const { setCurrentLocale, getCurrentLocale, getLocales } = useI18N();
     const { identity } = useSecurity();
 

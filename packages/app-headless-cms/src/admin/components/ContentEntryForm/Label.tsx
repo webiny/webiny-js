@@ -9,7 +9,7 @@ const style = {
     })
 };
 
-const Label = ({ children }) => (
+const Label: React.FC = ({ children }) => (
     <div
         className={classNames(
             "mdc-text-field-helper-text mdc-text-field-helper-text--persistent",

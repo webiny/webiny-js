@@ -1,4 +1,6 @@
-export default {
+import { CmsModelFieldValidatorPatternPlugin } from "~/types";
+
+const plugin: CmsModelFieldValidatorPatternPlugin = {
     type: "cms-model-field-validator-pattern",
     name: "cms-model-field-validator-pattern-email",
     pattern: {
@@ -7,3 +9,5 @@ export default {
         flags: "i"
     }
 };
+
+export default plugin;

@@ -1,4 +1,4 @@
-import { PbEditorElement } from "../../../../../types";
+import { PbEditorElement } from "~/types";
 import { selectorFamily } from "recoil";
 import { elementsAtom } from "../elementsAtom";
 

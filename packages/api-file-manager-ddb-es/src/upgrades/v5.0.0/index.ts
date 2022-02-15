@@ -1,3 +1,7 @@
+/**
+ * Not used anymore so ignore
+ */
+// @ts-nocheck
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { paginateBatch } from "../utils";
 import { configurations } from "~/operations/configurations";

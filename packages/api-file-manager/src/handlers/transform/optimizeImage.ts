@@ -1,7 +1,11 @@
+/**
+ * Sharp is included in the AWS Lambda layer
+ */
 // @ts-ignore
 import sharp from "sharp";
+import { Body } from "aws-sdk/clients/s3";
 
-export default async (buffer, type) => {
+export default async (buffer: Body, type: string): Promise<Body> => {
     switch (type) {
         case "image/png": {
             return await sharp(buffer)

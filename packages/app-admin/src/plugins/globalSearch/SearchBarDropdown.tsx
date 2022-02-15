@@ -1,14 +1,29 @@
 import * as React from "react";
-import { AdminGlobalSearchPlugin } from "../../types";
+import { AdminGlobalSearchPlugin } from "~/types";
 import classnames from "classnames";
 import { List, ListItem, ListItemGraphic, ListItemText, ListItemMeta } from "@webiny/ui/List";
 import { searchBarDropdown, iconSearchType } from "./styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Icon } from "@webiny/ui/Icon";
+import { Actions as DownshiftActions, DownshiftState, PropGetters } from "downshift";
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
+import { SearchBarState } from "~/plugins/globalSearch/SearchBar";
 
-export default class SearchBarDropdown extends React.Component<any> {
+// TODO @ts-refactor
+interface SearchBarDropdownProps {
+    context: {
+        downshift: {
+            current: DownshiftActions<any> &
+                PropGetters<any> & {
+                    state: DownshiftState<any>;
+                };
+        };
+        submitSearchTerm: (item: AdminGlobalSearchPlugin) => void;
+        state: SearchBarState;
+    };
+}
+export default class SearchBarDropdown extends React.Component<SearchBarDropdownProps> {
     componentDidMount() {
         const {
             context: {

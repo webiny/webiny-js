@@ -1,11 +1,20 @@
+import React from "react";
 import { omit, omitBy, isNull } from "lodash";
 import uniqid from "uniqid";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { plugins } from "@webiny/plugins";
 import findObject from "./findObject";
-import { PbMenuItemPlugin } from "../../../../../types";
+import { PbMenuItemPlugin } from "~/types";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
 
-const MenuItemForm = props => {
+interface MenuItemFormProps {
+    currentMenuItem: MenuTreeItem;
+    onChange: (items: MenuTreeItem[]) => void;
+    editItem: (item: MenuTreeItem) => void;
+    deleteItem: (item: MenuTreeItem) => void;
+    items: MenuTreeItem[];
+}
+const MenuItemForm: React.FC<MenuItemFormProps> = props => {
     const { onCancel, onSubmit } = useHandlers(props, {
         onCancel:
             ({ editItem, currentMenuItem, deleteItem }) =>

@@ -1,7 +1,11 @@
 import React, { useEffect, useCallback, useState } from "react";
+/**
+ * Package dataurl-to-blob does not have types.
+ */
+// @ts-ignore
 import dataURLtoBlob from "dataurl-to-blob";
 import SaveDialog from "./SaveDialog";
-import pick from "lodash.pick";
+import pick from "lodash/pick";
 import get from "lodash/get";
 import createElementPlugin from "../../../../admin/utils/createElementPlugin";
 import createBlockPlugin from "../../../../admin/utils/createBlockPlugin";
@@ -10,18 +14,20 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useKeyHandler } from "../../../hooks/useKeyHandler";
-import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "../../../../admin/graphql/pages";
+import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "~/admin/graphql/pages";
 import { useRecoilValue } from "recoil";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import { FileUploaderPlugin } from "@webiny/app/types";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
-    PbEditorElement
-} from "../../../../types";
+    PbEditorElement,
+    PbElement
+} from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { FormData } from "@webiny/form";
 
-const removeIds = el => {
+const removeIds = (el: PbElement): PbElement => {
     delete el.id;
 
     el.elements = el.elements.map(el => {
@@ -69,7 +75,7 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
     const [isDialogOpened, setOpenDialog] = useState<boolean>(false);
     const client = useApolloClient();
 
-    const onSubmit = async formData => {
+    const onSubmit = async (formData: FormData) => {
         formData.content = pluginOnSave(removeIds(await getElementTree(element)));
 
         const meta = await getDataURLImageDimensions(formData.preview);

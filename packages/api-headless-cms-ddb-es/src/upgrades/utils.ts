@@ -1,3 +1,7 @@
+/**
+ * File not used anymore.
+ */
+// @ts-nocheck
 export const paginateBatch = async (items, perPage, execute) => {
     const pages = Math.ceil(items.length / perPage);
 

@@ -14,7 +14,7 @@ export interface Props {
     modelId: string;
     id: string;
 }
-export const renderItem = (props: Props) => {
+export const renderItem: React.FC<Props> = props => {
     return (
         <Typography use={"body2"}>
             <Link to={createEntryUrl(props)}>{props.name}</Link>

@@ -13,8 +13,8 @@ import {
 } from "@webiny/app-admin";
 import { TopAppBarPrimary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 
-const RMWCLayout = () => {
-    return function RMWCLayout({ title, children }: LayoutProps) {
+const RMWCLayout = (): React.FC<LayoutProps> => {
+    return function RMWCLayout({ title, children }) {
         return (
             <Fragment>
                 {title ? <Helmet title={title} /> : null}

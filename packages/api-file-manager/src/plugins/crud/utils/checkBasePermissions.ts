@@ -17,7 +17,7 @@ export default async (
     return filePermission;
 };
 
-const hasRwd = (filesFilePermission, rwd) => {
+const hasRwd = (filesFilePermission: FilePermission, rwd: string): boolean => {
     if (typeof filesFilePermission.rwd !== "string") {
         return true;
     }

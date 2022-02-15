@@ -6,11 +6,11 @@ import { createPageElementsCrud } from "./crud/pageElements.crud";
 import { createSettingsCrud } from "./crud/settings.crud";
 import { createSystemCrud } from "./crud/system.crud";
 import { ContextPlugin } from "@webiny/handler";
-import { PbContext } from "~/graphql/types";
-import WebinyError from "@webiny/error";
+import { PbContext, PrerenderingHandlers } from "~/graphql/types";
 import { JsonpackContentCompressionPlugin } from "~/plugins/JsonpackContentCompressionPlugin";
 import { createTopic } from "@webiny/pubsub";
 import { PageBuilderStorageOperations } from "~/types";
+import WebinyError from "@webiny/error";
 
 export interface Params {
     storageOperations: PageBuilderStorageOperations;
@@ -21,7 +21,7 @@ export interface Params {
 // Ultimately, this `createPageBuilder` factory function should be located in package root.
 // So, for example: `packages/api-page-builder/src/createPageBuilder.ts`.
 const createPageBuilder = () => {
-    let prerenderingHandlers = {
+    let prerenderingHandlers: PrerenderingHandlers = {
         render: async () => {
             // empty
         },
@@ -35,7 +35,7 @@ const createPageBuilder = () => {
         onPageAfterRender: createTopic("pageBuilder.onAfterRenderPage"),
         onPageBeforeFlush: createTopic("pageBuilder.onBeforeFlushPage"),
         onPageAfterFlush: createTopic("pageBuilder.onAfterFlushPage"),
-        setPrerenderingHandlers: handlers => {
+        setPrerenderingHandlers: (handlers: PrerenderingHandlers) => {
             prerenderingHandlers = handlers;
         },
         getPrerenderingHandlers: () => prerenderingHandlers

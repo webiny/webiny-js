@@ -29,8 +29,8 @@ const useQueryOnce = (QUERY: DocumentNode) => {
     return data;
 };
 
-export const useCurrentTheme = () => {
+export const useCurrentTheme = (): string | null => {
     const data = useQueryOnce(GET_THEME);
 
-    return get(data, "pageBuilder.getSettings.data.theme");
+    return get(data, "pageBuilder.getSettings.data.theme", null);
 };

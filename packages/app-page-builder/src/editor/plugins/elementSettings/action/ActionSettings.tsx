@@ -8,13 +8,11 @@ import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "../../../components";
 import { DelayedOnChange } from "../../../components/DelayedOnChange";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
 import {
     PbButtonElementClickHandlerPlugin,
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps
-} from "../../../../types";
+} from "~/types";
 import { plugins } from "@webiny/plugins";
 
 // Components
@@ -22,6 +20,7 @@ import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
 import SelectField from "../components/SelectField";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 
 const classes = {
     gridClass: css({
@@ -38,13 +37,14 @@ const classes = {
     })
 };
 
-type ActionSettingsPropsType = {
+interface ActionSettingsPropsType extends PbEditorPageElementSettingsRenderComponentProps {
     element: PbEditorElement;
-};
-const ActionSettingsComponent: React.FunctionComponent<
-    ActionSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = ({ element, defaultAccordionValue }) => {
-    const handler = useEventActionHandler();
+}
+const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
+    element,
+    defaultAccordionValue
+}) => {
+    const updateElement = useUpdateElement();
 
     // Let's preserve backwards compatibility by extracting href and newTab properties from deprecated
     //  "link" element object if it exists, otherwise we'll use the newer "action" element object
@@ -60,16 +60,7 @@ const ActionSettingsComponent: React.FunctionComponent<
 
     const { clickHandler, actionType, variables } = element.data?.action || {};
 
-    const updateElement = (element: PbEditorElement) => {
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element,
-                history: true
-            })
-        );
-    };
-
-    const updateSettings = data => {
+    const updateSettings = (data: Record<string, string>): void => {
         const attrKey = `data.action`;
         const newElement: PbEditorElement = merge(element, attrKey, data);
         updateElement(newElement);
@@ -147,7 +138,8 @@ const ActionSettingsComponent: React.FunctionComponent<
                                     >
                                         <Bind name="variables" defaultValue={{}}>
                                             <DelayedOnChange>
-                                                {({ value, onChange }) => {
+                                                {({ value, onChange }: any) => {
+                                                    // TODO @ts-refactor need to have generic on DelayedOnChange
                                                     if (!selectedHandler?.variables) {
                                                         return (
                                                             <Typography use="body2">

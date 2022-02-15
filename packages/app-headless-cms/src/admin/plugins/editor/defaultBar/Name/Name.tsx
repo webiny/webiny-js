@@ -1,6 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
+/**
+ * Package react-hotkeyz does not have types.
+ */
+// @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import { FormName, formNameWrapper, NameInputWrapper, NameWrapper } from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";
@@ -14,23 +18,23 @@ declare global {
     }
 }
 
-export const Name = () => {
+export const Name: React.FC = () => {
     const { data, setData } = useContentModelEditor();
-    const [localName, setLocalName] = useState(null);
-    const [editingEnabled, setEditing] = useState(false);
+    const [localName, setLocalName] = useState<string>(null);
+    const [editingEnabled, setEditing] = useState<boolean>(false);
 
     const cancelChanges = () => {
         setEditing(false);
     };
 
-    const startEditing = () => {
+    const startEditing = (): void => {
         setLocalName(data.name);
         setEditing(true);
     };
 
     const saveName = useCallback(
-        e => {
-            e.preventDefault();
+        (event: React.SyntheticEvent) => {
+            event.preventDefault();
             setData(data => {
                 data.name = localName;
                 return data;
@@ -51,8 +55,8 @@ export const Name = () => {
         zIndex: 101,
         disabled: !editingEnabled,
         keys: {
-            esc: e => {
-                e.preventDefault();
+            esc: (event: React.SyntheticEvent) => {
+                event.preventDefault();
                 cancelChanges();
             },
             enter: saveName

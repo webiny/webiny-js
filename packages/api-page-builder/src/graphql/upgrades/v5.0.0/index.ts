@@ -1,10 +1,10 @@
 /**
  * Not used so ts-ignore on non-existing import is correct.
  */
+// @ts-nocheck
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { PbContext } from "../../../types";
 import { paginateBatch } from "../utils";
-// @ts-ignore
 import defaults from "../../crud/utils/defaults";
 
 const plugin: UpgradePlugin<PbContext> = {
@@ -13,7 +13,6 @@ const plugin: UpgradePlugin<PbContext> = {
     app: "page-builder",
     version: "5.0.0",
     async apply(context) {
-        // @ts-ignore
         const { elasticsearch, fileManager, db } = context;
         const limit = 1000;
         let hasMoreItems = true;

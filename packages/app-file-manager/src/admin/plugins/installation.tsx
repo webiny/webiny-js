@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy } from "react";
+import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -38,8 +38,10 @@ const INSTALL = gql`
         }
     }
 `;
-
-const FMInstaller = ({ onInstalled }) => {
+interface FileManagerInstallerProps {
+    onInstalled: () => Promise<void>;
+}
+const FMInstaller: React.FC<FileManagerInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [error, setError] = useState(null);
 
@@ -94,14 +96,7 @@ const plugin: AdminInstallationPlugin = {
     render({ onInstalled }) {
         return <FMInstaller onInstalled={onInstalled} />;
     },
-    upgrades: [
-        {
-            version: "5.0.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.0.0"));
-            }
-        }
-    ]
+    upgrades: []
 };
 
 export default plugin;

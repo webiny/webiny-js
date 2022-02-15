@@ -17,6 +17,10 @@ import indentString from "indent-string";
 import WebinyError from "@webiny/error";
 import execa from "execa";
 import validateNpmPackageName from "validate-npm-package-name";
+/**
+ * TODO: rewrite cli into typescript
+ */
+// @ts-ignore
 import { getProject } from "@webiny/cli/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
@@ -65,7 +69,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "location",
                     message: `Enter the package location`,
-                    default: answers => {
+                    default: (answers: Input) => {
                         return `packages/${Case.kebab(answers.componentName)}`;
                     },
                     validate: location => {
@@ -84,7 +88,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "packageName",
                     message: "Enter the package name",
-                    default: answers => {
+                    default: (answers: Input) => {
                         return `@custom-components/${Case.kebab(answers.componentName)}`;
                     },
                     validate: packageName => {

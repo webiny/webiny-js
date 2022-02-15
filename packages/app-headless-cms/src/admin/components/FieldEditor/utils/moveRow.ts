@@ -1,16 +1,13 @@
 import dot from "dot-prop-immutable";
-import { CmsEditorFieldsLayout } from "~/types";
+import { CmsModel } from "~/types";
 
-export default ({
-    data,
-    source,
-    destination
-}: {
+interface Params {
     source: number;
     destination: number;
-    data: { layout: CmsEditorFieldsLayout };
-}) => {
-    return dot.set(data, "layout", layout => {
+    data: Pick<CmsModel, "layout">;
+}
+export default ({ data, source, destination }: Params) => {
+    return dot.set(data, "layout", (layout: string[][]) => {
         return source < destination
             ? [
                   ...layout.slice(0, source),

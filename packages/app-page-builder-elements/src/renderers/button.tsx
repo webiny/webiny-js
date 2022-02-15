@@ -3,7 +3,7 @@ import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
 
 declare global {
-    //eslint-disable-next-line
+    // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "pb-button": any;
@@ -17,7 +17,11 @@ export interface Params {
     LinkComponent?: React.ComponentType<{ href: string; newTab: boolean }>;
 }
 
-const DefaultLinkComponent = ({ href, newTab, children }) => {
+interface DefaultLinkComponentProps {
+    href: string;
+    newTab?: boolean;
+}
+const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTab, children }) => {
     return (
         <a href={href} target={newTab ? "_blank" : "_self"} rel={"noreferrer"}>
             {children}
@@ -28,7 +32,9 @@ const DefaultLinkComponent = ({ href, newTab, children }) => {
 export const createButton = (args: Params = {}): ElementRenderer => {
     const LinkComponent = args?.LinkComponent || DefaultLinkComponent;
 
-    const Button = ({ element }) => {
+    // TODO @ts-refactor fix "Component definition is missing display name"
+    // eslint-disable-next-line
+    return ({ element }) => {
         const { buttonText, link, type, icon } = element.data;
 
         const { getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
@@ -47,6 +53,4 @@ export const createButton = (args: Params = {}): ElementRenderer => {
             </pb-button>
         );
     };
-
-    return Button;
 };

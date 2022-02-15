@@ -1,14 +1,13 @@
-import { activeElementAtom } from "../../recoil/modules";
 import React from "react";
 import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";
-import { useRecoilValue } from "recoil";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
-type ContainerProps = {
+interface ContainerProps {
     isOver: boolean;
     highlight: boolean;
     children: React.ReactNode;
-};
+}
 
 const Container = React.memo<ContainerProps>(
     styled("div")(({ isOver }: ContainerProps) => ({
@@ -40,17 +39,24 @@ const Add = styled("div")({
 
 const isVisible: DroppableIsVisiblePropType = () => true;
 
-type Props = {
+export interface CenterProps {
     id: string;
     type: string;
     onDrop: DroppableOnDropPropType;
     children: React.ReactNode;
     isHighlighted: boolean;
-};
+}
 
-const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children, isHighlighted }) => {
-    const activeElementId = useRecoilValue(activeElementAtom);
+const CenterComponent: React.FunctionComponent<CenterProps> = ({
+    id,
+    type,
+    onDrop,
+    children,
+    isHighlighted
+}) => {
+    const [activeElementId] = useActiveElementId();
     const isActive = activeElementId === id;
+
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
             {({ isOver, isDroppable, drop }) => (
@@ -67,4 +73,4 @@ const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children, is
     );
 };
 
-export default React.memo(Center);
+export const Center = React.memo(CenterComponent);

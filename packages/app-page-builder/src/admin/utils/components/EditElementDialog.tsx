@@ -35,54 +35,56 @@ const PreviewBox = styled("div")({
     }
 });
 
-type Props = {
+interface EditElementDialogComponentProps {
     open: boolean;
     plugin: string;
     onClose: () => void;
     onSubmit: FormOnSubmit;
+}
+
+const EditElementDialogComponent: React.FC<EditElementDialogComponentProps> = props => {
+    const { open, onClose, onSubmit, plugin: pluginName } = props;
+
+    const plugin: any = plugins.byName(pluginName);
+
+    return (
+        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+            {plugin && (
+                <Form onSubmit={onSubmit} data={plugin}>
+                    {({ submit, Bind }) => (
+                        <React.Fragment>
+                            <DialogTitle>Update {plugin.title}</DialogTitle>
+                            <DialogContent>
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name={"title"}
+                                            validators={validation.create("required")}
+                                        >
+                                            <Input label={"Name"} autoFocus />
+                                        </Bind>
+                                    </Cell>
+                                </Grid>
+                                <Grid>
+                                    <Cell span={12}>
+                                        <PreviewBox>{plugin.toolbar.preview()}</PreviewBox>
+                                    </Cell>
+                                </Grid>
+                            </DialogContent>
+                            <DialogActions>
+                                <DialogCancel>Cancel</DialogCancel>
+                                <DialogButton onClick={submit}>Save</DialogButton>
+                            </DialogActions>
+                        </React.Fragment>
+                    )}
+                </Form>
+            )}
+        </Dialog>
+    );
 };
 
 const EditElementDialog = React.memo(
-    (props: Props) => {
-        const { open, onClose, onSubmit, plugin: pluginName } = props;
-
-        const plugin: any = plugins.byName(pluginName);
-
-        return (
-            <Dialog open={open} onClose={onClose} className={narrowDialog}>
-                {plugin && (
-                    <Form onSubmit={onSubmit} data={plugin}>
-                        {({ submit, Bind }) => (
-                            <React.Fragment>
-                                <DialogTitle>Update {plugin.title}</DialogTitle>
-                                <DialogContent>
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name={"title"}
-                                                validators={validation.create("required")}
-                                            >
-                                                <Input label={"Name"} autoFocus />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <PreviewBox>{plugin.toolbar.preview()}</PreviewBox>
-                                        </Cell>
-                                    </Grid>
-                                </DialogContent>
-                                <DialogActions>
-                                    <DialogCancel>Cancel</DialogCancel>
-                                    <DialogButton onClick={submit}>Save</DialogButton>
-                                </DialogActions>
-                            </React.Fragment>
-                        )}
-                    </Form>
-                )}
-            </Dialog>
-        );
-    },
+    EditElementDialogComponent,
     (props, nextProps) => props.open === nextProps.open
 );
 

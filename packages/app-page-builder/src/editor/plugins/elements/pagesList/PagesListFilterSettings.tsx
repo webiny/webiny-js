@@ -12,6 +12,7 @@ import {
     SimpleButton
 } from "../../elementSettings/components/StyledComponents";
 import { Cell, Grid } from "@webiny/ui/Grid";
+import { BindComponent } from "@webiny/form";
 
 const autoCompleteStyle = css({
     "& .mdc-text-field": {
@@ -35,7 +36,11 @@ const autoCompleteStyle = css({
     }
 });
 
-const PagesListFilterSettings = ({ Bind, submit }) => {
+interface PagesListFilterSettingsProps {
+    Bind: BindComponent;
+    submit: (event: React.MouseEvent) => void;
+}
+const PagesListFilterSettings: React.FC<PagesListFilterSettingsProps> = ({ Bind, submit }) => {
     return (
         <Accordion title={"Filter"} defaultValue={true}>
             <React.Fragment>

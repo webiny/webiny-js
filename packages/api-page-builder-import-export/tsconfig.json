@@ -17,7 +17,8 @@
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy" },
     { "path": "../api-tenancy-so-ddb" },
-    { "path": "../db" }
+    { "path": "../db" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -56,7 +57,9 @@
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"]
+      "@webiny/db": ["../db/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

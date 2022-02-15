@@ -1,18 +1,18 @@
 import { atom } from "recoil";
-import { DisplayMode } from "../../../../types";
+import { DisplayMode } from "~/types";
 
-export type PagePreviewDimension = {
+export interface PagePreviewDimension {
     width: number;
     height: number;
-};
+}
 
-export type UiAtomType = {
+export interface UiAtomType {
     isDragging: boolean;
     isResizing: boolean;
     isSaving: boolean;
     displayMode: DisplayMode;
     pagePreviewDimension: PagePreviewDimension;
-};
+}
 export const uiAtom = atom<UiAtomType>({
     key: "uiAtom",
     default: {

@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { plugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
+import { FormRenderPropParams } from "@webiny/form";
 
 const t = i18n.ns(
     "app-headless-cms/admin/views/components/editor/tabs/edit-field-dialog/appearance-tab"
@@ -25,26 +26,29 @@ const style = {
     })
 };
 
-const AppearanceTab = props => {
+interface AppearanceTabProps {
+    field: CmsEditorField;
+    form: FormRenderPropParams;
+}
+const AppearanceTab: React.FC<AppearanceTabProps> = props => {
     const { field, form } = props;
 
     const renderPlugins = plugins
         .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
         .filter(item => item.renderer.canUse({ field }));
 
-    useEffect(() => {
+    useEffect((): void => {
         // If the currently selected render plugin is no longer available, select the first available one.
         const currentlySelectedRenderAvailable = renderPlugins.find(
             item => item.renderer.rendererName === field.renderer.name
         );
-
-        if (!currentlySelectedRenderAvailable) {
-            if (renderPlugins[0]) {
-                form.setValue("renderer.name", renderPlugins[0].renderer.rendererName);
-            } else {
-                console.log(`No renderers for field ${field.fieldId} found.`, field);
-            }
+        if (currentlySelectedRenderAvailable) {
+            return;
+        } else if (renderPlugins[0]) {
+            form.setValue("renderer.name", renderPlugins[0].renderer.rendererName);
+            return;
         }
+        console.log(`No renderers for field ${field.fieldId} found.`, field);
     });
 
     if (renderPlugins.length === 0) {

@@ -6,6 +6,10 @@ import { useQuery } from "@apollo/react-hooks";
 import debounce from "lodash/debounce";
 import get from "lodash/get";
 import { LIST_PAGES } from "../../graphql/pages";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import {
     DataList,
@@ -37,6 +41,7 @@ import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/co
 import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportPageButton/useImportPageDialog";
 import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
 import { ExportPagesButton } from "~/editor/plugins/defaultBar/components/ExportPageButton";
+import { PbCategory } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
@@ -60,7 +65,11 @@ const Actions = styled("div")({
         marginLeft: 16
     }
 });
-const SORTERS = [
+interface Sorter {
+    label: string;
+    sort: string;
+}
+const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
         sort: "createdOn_DESC"
@@ -79,18 +88,23 @@ const SORTERS = [
     }
 ];
 
-type PagesDataListProps = {
+interface PagesDataListWhereState {
+    status?: string;
+    category?: string;
+}
+
+interface PagesDataListProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
     onImportPage: (event?: React.SyntheticEvent) => void;
-};
-const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListProps) => {
+}
+const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, onImportPage }) => {
     const [filter, setFilter] = useState("");
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
 
     const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
-    const [where, setWhere] = useState({});
+    const [where, setWhere] = useState<PagesDataListWhereState>({});
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const search = {
         query: query.get("search") || undefined
@@ -132,7 +146,11 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
     const selectedPageId = new URLSearchParams(location.search).get("id");
 
     const categoriesQuery = useQuery(LIST_CATEGORIES);
-    const categoriesData = get(categoriesQuery, "data.pageBuilder.listCategories.data", []);
+    const categoriesData: PbCategory[] = get(
+        categoriesQuery,
+        "data.pageBuilder.listCategories.data",
+        []
+    );
 
     const loading = [listQuery].find(item => item.loading);
     // Load more pages on page list scroll
@@ -144,7 +162,13 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                     setFetchMoreLoading(true);
                     fetchMore({
                         variables: { after: meta.cursor },
-                        updateQuery: (prev, { fetchMoreResult }) => {
+                        /**
+                         * Figure out better types.
+                         * @param prev
+                         * @param fetchMoreResult
+                         */
+                        // TODO @ts-refactor
+                        updateQuery: (prev: any, { fetchMoreResult }: any) => {
                             if (!fetchMoreResult) {
                                 return prev;
                             }
@@ -172,7 +196,7 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
                     data={{ ...where, sort }}
                     onChange={({ status, category, sort }) => {
                         // Update "where" filter.
-                        const where = { category, status: undefined };
+                        const where: PagesDataListWhereState = { category, status: undefined };
                         if (status !== "all") {
                             where.status = status;
                         }
@@ -287,7 +311,9 @@ const PagesDataList = ({ onCreatePage, canCreate, onImportPage }: PagesDataListP
             isAllMultiSelected={multiSelectProps.isAllMultiSelected}
             isNoneMultiSelected={multiSelectProps.isNoneMultiSelected}
         >
-            {({ data }) => (
+            {(
+                { data }: any // TODO @ts-refactor
+            ) => (
                 <>
                     <Scrollbar
                         data-testid="default-data-list"

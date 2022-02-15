@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import Droppable from "../Droppable";
-import { DragObjectWithType } from "react-dnd";
+import { Droppable, IsVisibleCallable, OnDropCallable } from "../Droppable";
 
 const InnerDivVertical = styled("div")({
     position: "absolute",
@@ -20,12 +19,12 @@ const BackgroundColorDiv = styled("div")({
     height: "100%"
 });
 
-type OuterDivVerticalProps = {
+interface OuterDivVerticalProps {
     isOver: boolean;
     last?: boolean;
-    isVisible?: any;
+    isVisible?: boolean;
     isDragging?: boolean;
-};
+}
 
 const OuterDivVertical = styled("div")(
     {
@@ -55,13 +54,13 @@ const OuterDivVertical = styled("div")(
     })
 );
 
-type VerticalProps = {
-    onDrop(item: DragObjectWithType): void;
+export interface VerticalProps {
+    onDrop: OnDropCallable;
     last?: boolean;
-    isVisible?: any;
-};
+    isVisible?: IsVisibleCallable;
+}
 
-const Vertical = ({ last, onDrop, isVisible }: VerticalProps) => {
+export const Vertical: React.FC<VerticalProps> = ({ last, onDrop, isVisible }) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
@@ -87,5 +86,3 @@ const Vertical = ({ last, onDrop, isVisible }: VerticalProps) => {
         </Droppable>
     );
 };
-
-export default Vertical;

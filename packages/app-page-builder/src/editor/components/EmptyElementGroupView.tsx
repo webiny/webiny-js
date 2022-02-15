@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 
@@ -25,12 +25,12 @@ const EmptyViewWrapper = styled("div")({
         textAlign: "center"
     }
 });
-export type EmptyElementGroupViewProps = {
-    icon: ReactElement;
+export interface EmptyElementGroupViewProps {
+    icon: React.ReactElement;
     title: string;
     body: string;
-};
-const EmptyElementGroupView = ({ icon, title, body }: EmptyElementGroupViewProps) => {
+}
+const EmptyElementGroupView: React.FC<EmptyElementGroupViewProps> = ({ icon, title, body }) => {
     return (
         <EmptyViewWrapper>
             <div className={"media"}>{icon}</div>

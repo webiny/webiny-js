@@ -4,7 +4,7 @@ import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
 import { FbBuilderFormFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: FbBuilderFormFieldValidatorPlugin = {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-min-length",
     validator: {
@@ -31,4 +31,5 @@ export default {
             );
         }
     }
-} as FbBuilderFormFieldValidatorPlugin;
+};
+export default plugin;

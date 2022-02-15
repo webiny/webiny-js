@@ -1,23 +1,23 @@
 import React, { useMemo } from "react";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
 import { withActiveElement } from "../../../components";
 import { Form } from "@webiny/form";
-import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "../../../../types";
+import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "~/types";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
+import { FormData } from "@webiny/form/Form";
 
-const emptyElement = { data: {}, type: null };
+const emptyElement: Partial<PbEditorElement> = { data: {}, type: null };
 
-type AdvancedSettingsPropsType = {
+interface AdvancedSettingsPropsType {
     element: PbEditorElement;
-};
-const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ element }) => {
+}
+const AdvancedSettings: React.FC<AdvancedSettingsPropsType> = ({ element }) => {
     const { data, type } = element || cloneDeep(emptyElement);
 
-    const eventActionHandler = useEventActionHandler();
+    const updateElement = useUpdateElement();
 
     // Get element settings plugins
     const advancedSettingsPlugin = useMemo(() => {
@@ -29,19 +29,14 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
     }, [element.type]);
 
     const onSubmit = (formData: FormData) => {
-        formData = advancedSettingsPlugin.reduce((formData, pl) => {
+        const newFormData = advancedSettingsPlugin.reduce((formData, pl) => {
             if (pl.onSave) {
                 return pl.onSave(formData);
             }
             return formData;
         }, formData);
 
-        eventActionHandler.trigger(
-            new UpdateElementActionEvent({
-                element: merge(element, "data", formData),
-                history: true
-            })
-        );
+        updateElement(merge(element, "data", newFormData));
     };
 
     if (!advancedSettingsPlugin.length) {

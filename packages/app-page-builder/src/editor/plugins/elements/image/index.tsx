@@ -11,7 +11,8 @@ import {
     PbEditorPageElementStyleSettingsPlugin,
     PbEditorEventActionPlugin,
     DisplayMode,
-    PbEditorElementPluginArgs
+    PbEditorElementPluginArgs,
+    PbEditorElement
 } from "../../../../types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
@@ -66,7 +67,7 @@ export default (args: PbEditorElementPluginArgs = {}): Plugin[] => {
                     : defaultSettings,
             target: ["cell", "block"],
             create(options) {
-                const defaultValue = {
+                const defaultValue: Partial<PbEditorElement> = {
                     type: this.elementType,
                     elements: [],
                     data: {

@@ -4,7 +4,10 @@ import { ClientContext } from "@webiny/handler-client/types";
 
 export type HandlerPlugin = DefaultHandlerPlugin<ClientContext>;
 
-export type HookCallbackFunction = ({ context: ClientContext }) => void | Promise<void>;
+export interface HookCallbackFunctionParams {
+    context: ClientContext;
+}
+export type HookCallbackFunction = (params: HookCallbackFunctionParams) => void | Promise<void>;
 
 export interface ProcessHookPlugin extends Plugin {
     type: "ps-queue-process-hook";

@@ -1,7 +1,7 @@
 import { validation } from "@webiny/validation";
 import { CmsModelFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: CmsModelFieldValidatorPlugin = {
     type: "cms-model-field-validator",
     name: "cms-model-field-validator-required",
     validator: {
@@ -10,4 +10,5 @@ export default {
             return validation.validate(value, "required");
         }
     }
-} as CmsModelFieldValidatorPlugin;
+};
+export default plugin;

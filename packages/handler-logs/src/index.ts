@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
 const consoleLog = console.log;
 
-const logs = [];
-console.log = (...args) => {
+const logs: any[] = [];
+console.log = (...args: any) => {
     logs.push({
         args,
         meta: {

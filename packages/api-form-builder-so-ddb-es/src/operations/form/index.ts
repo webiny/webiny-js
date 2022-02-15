@@ -6,6 +6,7 @@ import {
     FormBuilderStorageOperationsDeleteFormRevisionParams,
     FormBuilderStorageOperationsGetFormParams,
     FormBuilderStorageOperationsListFormRevisionsParams,
+    FormBuilderStorageOperationsListFormRevisionsParamsWhere,
     FormBuilderStorageOperationsListFormsParams,
     FormBuilderStorageOperationsListFormsResponse,
     FormBuilderStorageOperationsPublishFormParams,
@@ -27,6 +28,7 @@ import { createElasticsearchBody, createFormElasticType } from "./elasticsearchB
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { PluginsContainer } from "@webiny/plugins";
 import { FormBuilderFormCreateKeyParams, FormBuilderFormStorageOperations } from "~/types";
+import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 
 export type DbRecord<T = any> = T & {
     PK: string;
@@ -410,7 +412,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             body
         };
 
-        let response;
+        let response: ElasticsearchSearchResponse<FbForm>;
         try {
             response = await elasticsearch.search(query);
         } catch (ex) {
@@ -481,7 +483,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 }
             );
         }
-        const where = {
+        const where: Partial<FormBuilderStorageOperationsListFormRevisionsParamsWhere> = {
             ...initialWhere,
             id: undefined,
             formId: undefined

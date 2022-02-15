@@ -31,10 +31,10 @@ const styles = {
     })
 };
 
-export const NotAuthorizedError = () => {
+export const NotAuthorizedError: React.FC = () => {
     const { setTenant } = useTenancy();
 
-    const resetTenant = () => {
+    const resetTenant = (): void => {
         setTenant(null);
     };
 

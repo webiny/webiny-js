@@ -1,7 +1,7 @@
 import * as React from "react";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import BrowseFiles, { SelectedFile, FileError } from "react-butterfiles";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import Image from "./Image";
@@ -24,7 +24,7 @@ const ImageUploadWrapper = styled("div")({
     }
 });
 
-type Props = FormComponentProps & {
+interface Props extends FormComponentProps {
     // Component label.
     label?: string;
 
@@ -62,7 +62,7 @@ type Props = FormComponentProps & {
         multipleNotAllowed: string;
         multipleMaxSizeExceeded: string;
     };
-};
+}
 
 type State = {
     loading: boolean;
@@ -81,9 +81,19 @@ type State = {
 // Do not apply editing for following image types.
 const noImageEditingTypes = ["image/svg+xml", "image/gif"];
 
+type ErrorType =
+    | "maxSizeExceeded"
+    | "unsupportedFileType"
+    | "default"
+    | "multipleNotAllowed"
+    | "multipleMaxSizeExceeded";
+
 export class SingleImageUpload extends React.Component<Props, State> {
-    static defaultProps = {
-        validation: { isValid: null },
+    static defaultProps: Partial<Props> = {
+        validation: {
+            isValid: null,
+            message: null
+        },
         maxSize: "10mb",
         imageEditor: {},
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
@@ -97,7 +107,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
         }
     };
 
-    state = {
+    state: State = {
         loading: false,
         error: null,
         imageEditor: {
@@ -150,6 +160,8 @@ export class SingleImageUpload extends React.Component<Props, State> {
         }
 
         const src = value ? value.src : null;
+
+        const errorType = this.state.error ? (this.state.error.type as ErrorType) : null;
 
         return (
             <ImageUploadWrapper className={classNames(className)}>
@@ -214,8 +226,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
                 {this.state.error && (
                     <FormElementMessage error>
-                        {this.props.errorMessages[this.state.error.type] ||
-                            this.props.errorMessages.default}
+                        {this.props.errorMessages[errorType] || this.props.errorMessages.default}
                     </FormElementMessage>
                 )}
             </ImageUploadWrapper>

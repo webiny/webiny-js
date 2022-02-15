@@ -1,4 +1,5 @@
 import { createModelField } from "./utils";
+import { WorkflowModelDefinition } from "~/types";
 
 const idField = () =>
     createModelField({
@@ -24,10 +25,12 @@ const typeField = () =>
         validation: [{ message: "Value is required.", name: "required" }]
     });
 
-export const createReviewerModelDefinition = () => ({
-    name: "APW - Reviewer",
-    modelId: "apwReviewerModelDefinition",
-    titleFieldId: "displayName",
-    layout: [["reviewer_id"], ["reviewer_displayName"]],
-    fields: [idField(), displayNameField(), typeField()]
-});
+export const createReviewerModelDefinition = (): WorkflowModelDefinition => {
+    return {
+        name: "APW - Reviewer",
+        modelId: "apwReviewerModelDefinition",
+        titleFieldId: "displayName",
+        layout: [["reviewer_id"], ["reviewer_displayName"]],
+        fields: [idField(), displayNameField(), typeField()]
+    };
+};

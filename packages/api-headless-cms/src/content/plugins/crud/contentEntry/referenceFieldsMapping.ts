@@ -207,7 +207,7 @@ export const referenceFieldsMapping = async (params: Params): Promise<Record<str
             };
         }
         return collection;
-    }, {});
+    }, {} as Record<string, CmsRefEntry>);
     /**
      * Verify that all referenced entries actually exist.
      */

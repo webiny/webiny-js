@@ -1,4 +1,4 @@
-import ValidationError from "./../validationError";
+import ValidationError from "~/validationError";
 
 /**
  * Validates that given value is a lesser than or equal date to a lteValue

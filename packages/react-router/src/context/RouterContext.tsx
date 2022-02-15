@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { plugins } from "@webiny/plugins";
 import { useApolloClient } from "@apollo/react-hooks";
-import { ReactRouterOnLinkPlugin } from "../types";
+import { ReactRouterOnLinkPlugin } from "~/types";
+import ApolloClient from "apollo-client";
 
 export type ReactRouterContextValue = {
     onLink(link: string): void;
@@ -9,8 +10,8 @@ export type ReactRouterContextValue = {
 
 export const RouterContext = React.createContext<ReactRouterContextValue>(null);
 
-export const RouterProvider = ({ children }) => {
-    let apolloClient = null;
+export const RouterProvider: React.FC = ({ children }) => {
+    let apolloClient: ApolloClient<any> = null;
     try {
         apolloClient = useApolloClient();
     } catch {
@@ -20,7 +21,7 @@ export const RouterProvider = ({ children }) => {
     const value = useMemo(() => {
         const onLinkPlugins = plugins.byType<ReactRouterOnLinkPlugin>("react-router-on-link");
         return {
-            onLink(link) {
+            onLink(link: string) {
                 for (let i = 0; i < onLinkPlugins.length; i++) {
                     const { onLink } = onLinkPlugins[i];
                     if (typeof onLink === "function") {
@@ -33,6 +34,8 @@ export const RouterProvider = ({ children }) => {
     return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 };
 
-export const RouterConsumer = ({ children }) => (
-    <RouterContext.Consumer>{props => React.cloneElement(children, props)}</RouterContext.Consumer>
+export const RouterConsumer: React.FC = ({ children }) => (
+    <RouterContext.Consumer>
+        {props => React.cloneElement(children as any, props)}
+    </RouterContext.Consumer>
 );

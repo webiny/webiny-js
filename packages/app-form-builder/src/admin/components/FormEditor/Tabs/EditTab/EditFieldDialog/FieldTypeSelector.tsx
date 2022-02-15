@@ -3,6 +3,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { Icon } from "@webiny/ui/Icon";
 import { css } from "emotion";
+import { FbBuilderFieldPlugin } from "~/types";
 const fieldTypeBox = css({
     width: 150,
     height: 150,
@@ -29,11 +30,18 @@ const fieldTypeBox = css({
     }
 });
 
-const FbFormModelFieldSelector = ({ fieldType, onClick }) => {
+interface FbFormModelFieldSelectorProps {
+    fieldType: FbBuilderFieldPlugin["field"];
+    onClick: (event: React.MouseEvent) => void;
+}
+const FbFormModelFieldSelector: React.FC<FbFormModelFieldSelectorProps> = ({
+    fieldType,
+    onClick
+}) => {
     return (
         <span onClick={onClick} style={{ display: "inline-block" }}>
             <Elevation z={2} className={fieldTypeBox}>
-                <Icon icon={fieldType.icon} />
+                <Icon icon={fieldType.icon as React.ReactElement} />
                 <Typography use={"headline5"}>{fieldType.label}</Typography>
                 <br />
                 <Typography use={"caption"}>{fieldType.description}</Typography>

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import Droppable from "../Droppable";
+import { Droppable, IsVisibleCallable } from "../Droppable";
 import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 
 const InnerDivVertical = styled("div")({
@@ -20,12 +20,12 @@ const BackgroundColorDiv = styled("div")({
     height: "100%"
 });
 
-type OuterDivVerticalProps = {
+interface OuterDivVerticalProps {
     isOver: boolean;
     last?: boolean;
-    isVisible?: any;
+    isVisible?: IsVisibleCallable;
     isDragging?: boolean;
-};
+}
 
 const OuterDivVertical = styled("div")(
     {
@@ -55,14 +55,14 @@ const OuterDivVertical = styled("div")(
     })
 );
 
-type VerticalProps = {
+interface VerticalProps {
     depth?: number;
     onDrop(item: DragSource): void;
     last?: boolean;
     isVisible?: any;
-};
+}
 
-const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
+const Vertical: React.FC<VerticalProps> = ({ depth, last, onDrop, isVisible }) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (

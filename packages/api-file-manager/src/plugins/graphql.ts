@@ -4,7 +4,15 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
 
-const resolve = async fn => {
+/**
+ * Use any because it really can be any.
+ * TODO @ts-refactor maybe use generics at some point?
+ */
+interface ResolveCallable {
+    (): Promise<any>;
+}
+
+const resolve = async (fn: ResolveCallable) => {
     try {
         return new Response(await fn());
     } catch (e) {

@@ -1,6 +1,7 @@
-import { ApolloLink } from "apollo-link";
+import { ApolloLink, NextLink } from "apollo-link";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin";
+import { Operation } from "apollo-link/lib/types";
 
 function createLink(plugin: ApolloLinkPlugin) {
     try {
@@ -15,7 +16,7 @@ function createLink(plugin: ApolloLinkPlugin) {
 export class ApolloDynamicLink extends ApolloLink {
     private cache = new Map();
 
-    request(operation, forward) {
+    request(operation: Operation, forward: NextLink) {
         const linkPlugins = plugins.byType<ApolloLinkPlugin>("apollo-link");
 
         if (!linkPlugins.length) {

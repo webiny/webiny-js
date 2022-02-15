@@ -1,5 +1,10 @@
 import lodashSet from "lodash/set";
-import { AdvancedPublishingWorkflow, ApwContentTypes, LifeCycleHookCallbackParams } from "~/types";
+import {
+    AdvancedPublishingWorkflow,
+    ApwContentReviewStepStatus,
+    ApwContentTypes,
+    LifeCycleHookCallbackParams
+} from "~/types";
 import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 
@@ -33,7 +38,7 @@ export const initializeContentReviewSteps = ({ apw }: LifeCycleHookCallbackParam
         const workflow = await apw.workflow.get(workflowId);
         const workflowSteps = workflow.steps;
 
-        let previousStepStatus;
+        let previousStepStatus: ApwContentReviewStepStatus;
         const updatedSteps = workflow.steps.map((step, index) => {
             const status = getContentReviewStepInitialStatus(
                 workflowSteps,

@@ -22,7 +22,14 @@ declare global {
     }
 }
 
-const extractPageInfo = (page: PageAtomType): any => {
+interface PageInfo {
+    pageTitle: string;
+    pageVersion: number;
+    pageLocked: boolean;
+    pageCategory?: string;
+    pageCategoryUrl?: string;
+}
+const extractPageInfo = (page: PageAtomType): PageInfo => {
     const { title, version, locked, category } = page;
     return {
         pageTitle: title,
@@ -42,7 +49,7 @@ const Title: React.FunctionComponent = () => {
     const [stateTitle, setTitle] = useState<string>(null);
     let title = stateTitle === null ? pageTitle : stateTitle;
 
-    const updatePage = data => {
+    const updatePage = (data: Partial<PageAtomType>) => {
         handler.trigger(
             new UpdatePageRevisionActionEvent({
                 page: data,

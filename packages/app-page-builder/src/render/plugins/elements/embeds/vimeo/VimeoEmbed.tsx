@@ -1,6 +1,7 @@
 import * as React from "react";
 import { css } from "emotion";
 import { get } from "dot-prop-immutable";
+import { PbElement } from "~/types";
 
 const outerWrapper = css({
     boxSizing: "border-box",
@@ -35,7 +36,10 @@ const scaleableVideo = css({
     }
 });
 
-const VimeoEmbed = props => {
+interface VimeoEmbedProps {
+    element: PbElement;
+}
+const VimeoEmbed: React.FC<VimeoEmbedProps> = props => {
     const { element } = props;
 
     return (

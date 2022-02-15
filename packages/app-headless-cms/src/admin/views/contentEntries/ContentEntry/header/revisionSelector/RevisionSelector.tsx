@@ -28,14 +28,14 @@ const menuStyles = css({
     }
 });
 
-const RevisionSelector = () => {
+const RevisionSelector: React.FC = () => {
     const { entry, revisions, loading } = useContentEntry();
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
     const currentRevision = {
-        version: get(entry, "meta.version", 1),
-        status: get(entry, "meta.status", "draft")
+        version: get(entry, "meta.version", 1) as number,
+        status: get(entry, "meta.status", "draft") as CmsContentEntryRevision["meta"]["status"]
     };
 
     const allRevisions: Partial<CmsContentEntryRevision>[] = revisions.length

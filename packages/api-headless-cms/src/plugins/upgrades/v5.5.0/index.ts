@@ -1,3 +1,7 @@
+/**
+ * Not used anymore so ignore.
+ */
+// @ts-nocheck
 import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { CmsContext } from "~/types";

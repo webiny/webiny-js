@@ -1,5 +1,4 @@
-import { parseIdentifier } from "@webiny/utils";
-import { getZeroPaddedVersionNumber } from "@webiny/api-page-builder/utils/zeroPaddedVersionNumber";
+import { parseIdentifier, zeroPad } from "@webiny/utils";
 
 interface BasePartitionKeyParams {
     tenant: string;
@@ -25,7 +24,7 @@ export interface SortKeyParams {
 }
 
 export const createSortKey = (params: SortKeyParams): string => {
-    return `REV#${getZeroPaddedVersionNumber(params.version)}`;
+    return `REV#${zeroPad(params.version)}`;
 };
 
 export const createPathPartitionKey = (params: BasePartitionKeyParams): string => {

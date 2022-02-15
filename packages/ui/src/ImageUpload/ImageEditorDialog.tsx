@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ImageEditor } from "../ImageEditor";
-import { Tooltip } from "../Tooltip";
+import { ImageEditor } from "~/ImageEditor";
+import { Tooltip } from "~/Tooltip";
 import { css } from "emotion";
 import {
     Dialog,
@@ -11,17 +11,21 @@ import {
     DialogOnClose
 } from "../Dialog";
 
-type Props = {
+interface Props {
     dialogZIndex?: number;
     onClose?: DialogOnClose;
     open?: boolean;
-    options?: Object;
+    /**
+     * We would need to drill down a lot to give correct options.
+     * TODO: figure out some other way.
+     */
+    options?: any;
     src?: string;
     onAccept: (src: string) => void;
 
     // For testing purposes.
     "data-testid"?: string;
-};
+}
 
 const imageEditorDialog = css({
     width: "100vw",

@@ -17,7 +17,8 @@
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
-    { "path": "../db/tsconfig.build.json" }
+    { "path": "../db/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

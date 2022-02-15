@@ -2,7 +2,12 @@ import React from "react";
 import { render } from "react-dom";
 import ErrorOverlay from "./ErrorOverlay";
 
-const createErrorOverlay = ({ query, networkError }) => {
+interface Params {
+    query: string;
+    networkError: Record<string, any>;
+}
+const createErrorOverlay = (params: Params) => {
+    const { query, networkError } = params;
     // If the element already present in DOM, return immediately.
     if (document.getElementById("overlay-root")) {
         return;

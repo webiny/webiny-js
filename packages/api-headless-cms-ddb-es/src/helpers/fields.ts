@@ -53,7 +53,7 @@ const createSystemField = (field: Partial<CmsModelField>): CmsModelField => {
     return field as unknown as CmsModelField;
 };
 
-export const systemFields = {
+export const systemFields: ModelFields = {
     id: {
         type: "text",
         isSystemField: true,
@@ -147,7 +147,7 @@ export const systemFields = {
  */
 export const createModelFields = (plugins: PluginsContainer, model: CmsModel): ModelFields => {
     // collect all unmappedType from elastic plugins
-    const unmappedTypes: UnmappedFieldTypes = plugins
+    const unmappedTypes = plugins
         .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
         .reduce((acc, plugin) => {
             if (!plugin.unmappedType) {
@@ -155,11 +155,11 @@ export const createModelFields = (plugins: PluginsContainer, model: CmsModel): M
             }
             acc[plugin.fieldType] = plugin.unmappedType;
             return acc;
-        }, {});
+        }, {} as UnmappedFieldTypes);
     /**
      * collect all field types from the plugins
      */
-    const fieldTypePlugins: FieldTypePlugins = plugins
+    const fieldTypePlugins = plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce((types, plugin) => {
             const { fieldType, isSearchable, isSortable } = plugin;
@@ -169,7 +169,7 @@ export const createModelFields = (plugins: PluginsContainer, model: CmsModel): M
                 isSortable: isSortable === true
             };
             return types;
-        }, {});
+        }, {} as FieldTypePlugins);
 
     return model.fields.reduce((fields, field) => {
         const { fieldId, type } = field;

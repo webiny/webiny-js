@@ -1,19 +1,29 @@
 import renderUrl, { File } from "./renderUrl";
 import path from "path";
 import S3 from "aws-sdk/clients/s3";
-import getStorageName from "./../utils/getStorageName";
-import getStorageFolder from "./../utils/getStorageFolder";
-import getDbNamespace from "./../utils/getDbNamespace";
-import getRenderUrl from "./../utils/getRenderUrl";
-import { HandlerPlugin, Configuration, RenderHookPlugin } from "./types";
-import { HandlerResponse, PrerenderingServiceStorageOperations, Render, TagUrlLink } from "~/types";
+import { getStorageName, getStorageFolder, getDbNamespace, getRenderUrl } from "~/utils";
+import { HandlerPlugin, RenderHookPlugin } from "./types";
+import {
+    Configuration,
+    HandlerResponse,
+    PrerenderingServiceStorageOperations,
+    Render,
+    TagUrlLink
+} from "~/types";
 import omit from "lodash/omit";
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-const storeFile = ({ key, contentType, body, storageName }) => {
+interface StoreFileParams {
+    key: string;
+    contentType: string;
+    body: string;
+    storageName: string;
+}
+const storeFile = (params: StoreFileParams) => {
+    const { storageName, key, contentType, body } = params;
     return s3
         .putObject({
             Bucket: storageName,
@@ -26,11 +36,11 @@ const storeFile = ({ key, contentType, body, storageName }) => {
         .promise();
 };
 
-export interface Params extends Configuration {
+export interface RenderParams extends Configuration {
     storageOperations: PrerenderingServiceStorageOperations;
 }
 
-export default (params: Params): HandlerPlugin => {
+export default (params: RenderParams): HandlerPlugin => {
     const { storageOperations, ...configuration } = params;
 
     return {
@@ -44,11 +54,8 @@ export default (params: Params): HandlerPlugin => {
 
             try {
                 await sleep();
-                for (let i = 0; i < handlerArgs.length; i++) {
-                    const args = handlerArgs[i];
-
-                    for (let j = 0; j < handlerHookPlugins.length; j++) {
-                        const plugin = handlerHookPlugins[j];
+                for (const args of handlerArgs) {
+                    for (const plugin of handlerHookPlugins) {
                         if (typeof plugin.beforeRender === "function") {
                             await plugin.beforeRender({
                                 context,

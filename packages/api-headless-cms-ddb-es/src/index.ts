@@ -23,7 +23,7 @@ import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
-        attributes = {},
+        attributes,
         table,
         esTable,
         documentClient,
@@ -45,32 +45,32 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
             table: tableInstance,
-            attributes: attributes[ENTITIES.SETTINGS]
+            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table: tableInstance,
-            attributes: attributes[ENTITIES.SYSTEM]
+            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
         }),
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
             table: tableInstance,
-            attributes: attributes[ENTITIES.GROUPS]
+            attributes: attributes ? attributes[ENTITIES.GROUPS] : {}
         }),
         models: createModelEntity({
             entityName: ENTITIES.MODELS,
             table: tableInstance,
-            attributes: attributes[ENTITIES.MODELS]
+            attributes: attributes ? attributes[ENTITIES.MODELS] : {}
         }),
         entries: createEntryEntity({
             entityName: ENTITIES.ENTRIES,
             table: tableInstance,
-            attributes: attributes[ENTITIES.ENTRIES]
+            attributes: attributes ? attributes[ENTITIES.ENTRIES] : {}
         }),
         entriesEs: createEntryElasticsearchEntity({
             entityName: ENTITIES.ENTRIES_ES,
             table: tableElasticsearchInstance,
-            attributes: attributes[ENTITIES.ENTRIES_ES]
+            attributes: attributes ? attributes[ENTITIES.ENTRIES_ES] : {}
         })
     };
 

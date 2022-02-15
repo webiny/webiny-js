@@ -1,8 +1,11 @@
-import { CmsModel, CmsContext, ModelManagerPlugin } from "~/types";
+import { CmsModel, CmsContext, ModelManagerPlugin, CmsModelManager } from "~/types";
 
 const defaultName = "content-model-manager-default";
 
-export const contentModelManagerFactory = async (context: CmsContext, model: CmsModel) => {
+export const contentModelManagerFactory = async (
+    context: CmsContext,
+    model: CmsModel
+): Promise<CmsModelManager> => {
     const pluginsByType = context.plugins
         .byType<ModelManagerPlugin>("cms-content-model-manager")
         .reverse();

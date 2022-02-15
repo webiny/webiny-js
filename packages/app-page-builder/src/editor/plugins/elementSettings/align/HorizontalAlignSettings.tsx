@@ -1,26 +1,17 @@
 import React from "react";
 import { css } from "emotion";
-import { useRecoilValue } from "recoil";
 import classNames from "classnames";
-import { plugins } from "@webiny/plugins";
-import {
-    PbEditorPageElementPlugin,
-    PbEditorElement,
-    PbEditorPageElementSettingsRenderComponentProps
-} from "../../../../types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
-// Components
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
-// Icons
 import { ReactComponent as AlignTextLeftIcon } from "./icons/format_align_left.svg";
 import { ReactComponent as AlignTextCenterIcon } from "./icons/format_align_center.svg";
 import { ReactComponent as AlignTextRightIcon } from "./icons/format_align_right.svg";
 import { ReactComponent as AlignTextJustifyIcon } from "./icons/format_align_justify.svg";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 
 const classes = {
     activeIcon: css({
@@ -35,18 +26,15 @@ const classes = {
     })
 };
 
-type IconsType = {
-    [key: string]: React.ReactElement;
-};
 // Icons map for dynamic render
-const icons: IconsType = {
+const icons: Record<string, React.ReactElement> = {
     left: <AlignTextLeftIcon />,
     center: <AlignTextCenterIcon />,
     right: <AlignTextRightIcon />,
     justify: <AlignTextJustifyIcon />
 };
 
-const iconDescriptions = {
+const iconDescriptions: Record<string, string> = {
     left: "Align left",
     center: "Align center",
     right: "Align right",
@@ -70,19 +58,10 @@ type HorizontalAlignActionPropsType = {
 const HorizontalAlignSettings: React.FunctionComponent<
     HorizontalAlignActionPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ options: { alignments = DEFAULT_ALIGNMENTS }, defaultAccordionValue }) => {
-    const handler = useEventActionHandler();
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const align = getAlignValue(element, defaultAlignValue);
+    const element = useActiveElement();
+    const updateElement = useUpdateElement();
 
-    const updateElement = (element: PbEditorElement) => {
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element,
-                history: true
-            })
-        );
-    };
+    const align = getAlignValue(element, defaultAlignValue);
 
     const onClick = (type: AlignTypesType = defaultAlignValue) => {
         updateElement({
@@ -96,14 +75,6 @@ const HorizontalAlignSettings: React.FunctionComponent<
             }
         });
     };
-
-    const plugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
-        .find(pl => pl.elementType === element.type);
-
-    if (!plugin) {
-        return null;
-    }
 
     return (
         <Accordion title={"Text align"} defaultValue={defaultAccordionValue}>

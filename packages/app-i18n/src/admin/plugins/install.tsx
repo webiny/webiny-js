@@ -15,6 +15,7 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 import LocaleCodesAutoComplete from "../components/LocaleCodesAutoComplete";
+import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-i18n/admin/installation");
 
@@ -40,12 +41,15 @@ const INSTALL = gql`
     }
 `;
 
-const I18NInstaller = ({ onInstalled }) => {
+interface I18NInstallerProps {
+    onInstalled: () => void;
+}
+const I18NInstaller: React.FC<I18NInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const onSubmit = useCallback(async form => {
+    const onSubmit = useCallback(async (form: Record<string, string>): Promise<void> => {
         setLoading(true);
         setError(null);
         const { data: res } = await client.mutate({ mutation: INSTALL, variables: { data: form } });
@@ -93,7 +97,7 @@ const I18NInstaller = ({ onInstalled }) => {
     );
 };
 
-export default {
+const installationPlugin: AdminInstallationPlugin = {
     name: "admin-installation-i18n",
     type: "admin-installation",
     title: "I18N",
@@ -107,3 +111,5 @@ export default {
         return <I18NInstaller onInstalled={onInstalled} />;
     }
 };
+
+export default installationPlugin;

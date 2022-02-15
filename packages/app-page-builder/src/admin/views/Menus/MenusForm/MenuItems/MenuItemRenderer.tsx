@@ -1,4 +1,13 @@
-import * as React from "react";
+/**
+ * TODO @ts-refactor
+ * verify that all types are correct.
+ */
+import React from "react";
+/**
+ *
+ * Package react-sortable-tree does not have types
+ */
+// @ts-ignore
 import { isDescendant } from "react-sortable-tree";
 import classnames from "classnames";
 import { plugins } from "@webiny/plugins";
@@ -11,20 +20,50 @@ import { rowHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/round-delete-24px.svg";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
-import { PbMenuItemPlugin } from "../../../../../types";
+import { PbMenuItemPlugin } from "~/types";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
+import { ConnectDragPreview, ConnectDragSource } from "react-dnd";
 
-class NodeRendererDefault extends React.Component<any> {
-    static defaultProps = {
+interface ToggleChildrenVisibilityCallableParams {
+    node: MenuTreeItem;
+    path: string;
+    treeIndex: string;
+}
+interface ToggleChildrenVisibilityCallable {
+    (params: ToggleChildrenVisibilityCallableParams): void;
+}
+interface NodeRendererDefaultProps {
+    scaffoldBlockPxWidth: number;
+    toggleChildrenVisibility: ToggleChildrenVisibilityCallable;
+    connectDragPreview: ConnectDragPreview;
+    connectDragSource: ConnectDragSource;
+    isDragging: string;
+    canDrop: boolean;
+    canDrag: boolean;
+    node: MenuTreeItem;
+    title: string;
+    draggedNode?: MenuTreeItem;
+    path: string;
+    treeIndex: string;
+    editItem: (item: MenuTreeItem) => void;
+    deleteItem: (item: MenuTreeItem) => void;
+    className: string;
+    style: React.CSSProperties;
+    didDrop: string;
+    canSave: boolean;
+}
+class NodeRendererDefault extends React.Component<NodeRendererDefaultProps> {
+    static defaultProps: Partial<NodeRendererDefaultProps> = {
         canDrag: false,
         toggleChildrenVisibility: null,
-        buttons: [],
+        // buttons: [],
         className: "",
         style: {},
-        parentNode: null,
+        // parentNode: null,
         draggedNode: null,
         canDrop: false,
         title: null,
-        subtitle: null,
+        // subtitle: null,
         canSave: false
     };
 

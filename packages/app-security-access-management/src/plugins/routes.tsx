@@ -4,8 +4,8 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
-import { Groups } from "../ui/views/Groups";
-import { ApiKeys } from "../ui/views/ApiKeys";
+import { Groups } from "~/ui/views/Groups";
+import { ApiKeys } from "~/ui/views/ApiKeys";
 import { Permission } from "./constants";
 
 const plugins: RoutePlugin[] = [

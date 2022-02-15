@@ -1,3 +1,7 @@
+/**
+ * TODO: @ts-refactor
+ * Verify that this file is used somewhere.
+ */
 import React, { useState } from "react";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
@@ -17,9 +21,9 @@ import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageS
 import { PbEditorPageSettingsPlugin } from "~/types";
 import { usePageSettings } from "~/editor/hooks/usePageSettings";
 
-type PageSettingsPropsType = {
+interface PageSettingsPropsType {
     [key: string]: any;
-};
+}
 const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}) => {
     const pluginsByType = plugins.byType<PbEditorPageSettingsPlugin>("pb-editor-page-settings");
     const [active, setActive] = useState(pluginsByType[0].name);
@@ -38,11 +42,11 @@ const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}
     );
 };
 
-type PageSettingsContentPropsType = {
+interface PageSettingsContentPropsType {
     pluginsByType: PbEditorPageSettingsPlugin[];
     setActive: (name: string) => void;
     activePlugin: PbEditorPageSettingsPlugin;
-};
+}
 const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType> = ({
     pluginsByType,
     setActive,

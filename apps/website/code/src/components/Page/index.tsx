@@ -1,8 +1,15 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import Render from "./Render";
-import trim from "lodash.trim";
-import { GET_SETTINGS, GET_PUBLISHED_PAGE } from "./graphql";
+import trim from "lodash/trim";
+import {
+    GET_SETTINGS,
+    GET_PUBLISHED_PAGE,
+    PublishedPageQueryResponse,
+    PublishedPageQueryVariables,
+    SettingsQueryResponse,
+    SettingsQueryResponseData
+} from "./graphql";
 
 declare global {
     interface Window {
@@ -28,7 +35,7 @@ const isNotFoundPage = window.__PS_NOT_FOUND_PAGE__;
 // allow navigating to other pages, in the `getPath` function below.
 const notFoundInitialPath = trimPath(location.pathname);
 
-const getPath = () => {
+const getPath = (): string => {
     let path = location.pathname;
     if (typeof path !== "string") {
         return null;
@@ -50,27 +57,31 @@ const getPath = () => {
  * `preview` query parameter is present, we're getting the page directly by its ID, instead of the URL.
  * The `preview` query parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
-const Page = () => {
+const Page: React.FC = () => {
     const path = getPath();
     const query = new URLSearchParams(location.search);
     const id = query.get("preview");
 
     // Here we get the page data for current URL, including its content.
-    const getPublishedPageQuery = useQuery(GET_PUBLISHED_PAGE(), {
-        variables: {
-            id,
-            path,
-            returnErrorPage: true, // API will immediately return the data for the error page, if one occurred.
-            returnNotFoundPage: true, // API will immediately return the data for the not-found page, if none was found.
-            preview: !!id
+    const getPublishedPageQuery = useQuery<PublishedPageQueryResponse, PublishedPageQueryVariables>(
+        GET_PUBLISHED_PAGE(),
+        {
+            variables: {
+                id,
+                path,
+                returnErrorPage: true, // API will immediately return the data for the error page, if one occurred.
+                returnNotFoundPage: true, // API will immediately return the data for the not-found page, if none was found.
+                preview: !!id
+            }
         }
-    });
+    );
 
     // Here we get all site data like website name, favicon image, social links etc.
-    const getSettingsQuery = useQuery(GET_SETTINGS);
+    const getSettingsQuery = useQuery<SettingsQueryResponse>(GET_SETTINGS);
 
     const { data: page, error } = getPublishedPageQuery.data?.pageBuilder?.getPublishedPage || {};
-    const settings = getSettingsQuery.data?.pageBuilder?.getSettings?.data || {};
+    const settings =
+        getSettingsQuery.data?.pageBuilder?.getSettings?.data || ({} as SettingsQueryResponseData);
 
     // Let's render the page.
     return <Render page={page} error={error} settings={settings} />;

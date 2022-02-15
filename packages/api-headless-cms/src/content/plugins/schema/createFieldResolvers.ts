@@ -1,6 +1,12 @@
-import get from "lodash/get";
 import set from "lodash/set";
-import { CmsModelField, CmsContext, CmsModelFieldToGraphQLCreateResolver } from "~/types";
+import {
+    CmsModelField,
+    CmsContext,
+    CmsModelFieldToGraphQLCreateResolver,
+    ApiEndpoint,
+    CmsModel,
+    CmsFieldTypePlugins
+} from "~/types";
 import { entryFieldFromStorageTransform } from "~/content/plugins/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
 
@@ -11,11 +17,31 @@ interface CreateFieldResolvers {
     extraResolvers?: Resolvers<any>;
 }
 
+interface CreateFieldResolversFactoryParams {
+    endpointType: ApiEndpoint;
+    models: CmsModel[];
+    model: CmsModel;
+    fieldTypePlugins: CmsFieldTypePlugins;
+}
+
+const getCreateResolver = (
+    plugins: CmsFieldTypePlugins,
+    field: CmsModelField,
+    endpointType: ApiEndpoint
+): CmsModelFieldToGraphQLCreateResolver => {
+    if (!plugins[field.type]) {
+        return null;
+    } else if (!plugins[field.type][endpointType]) {
+        return null;
+    }
+    return plugins[field.type][endpointType].createResolver;
+};
 /**
  * We use a factory to avoid passing the parameters for recursive invocations.
  * This way they will always be in the function scope and we can only pass "fields".
  */
-export function createFieldResolversFactory({ endpointType, models, model, fieldTypePlugins }) {
+export const createFieldResolversFactory = (factoryParams: CreateFieldResolversFactoryParams) => {
+    const { endpointType, models, model, fieldTypePlugins } = factoryParams;
     return function createFieldResolvers(params: CreateFieldResolvers) {
         const { graphQLType, fields, isRoot = false, extraResolvers = {} } = params;
 
@@ -27,12 +53,9 @@ export function createFieldResolversFactory({ endpointType, models, model, field
                 continue;
             }
 
-            const createResolver: CmsModelFieldToGraphQLCreateResolver = get(
-                fieldTypePlugins,
-                `${field.type}.${endpointType}.createResolver`
-            );
+            const createResolver = getCreateResolver(fieldTypePlugins, field, endpointType);
 
-            let resolver;
+            let resolver: any;
             const fieldResolver = createResolver
                 ? createResolver({ graphQLType, models, model, field, createFieldResolvers })
                 : null;
@@ -51,7 +74,8 @@ export function createFieldResolversFactory({ endpointType, models, model, field
             }
 
             const { fieldId } = field;
-
+            // TODO @ts-refactor figure out types for parameters
+            // @ts-ignore
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
                 // Get transformed value (eg. data decompression)
                 const transformedValue = await entryFieldFromStorageTransform({
@@ -73,4 +97,4 @@ export function createFieldResolversFactory({ endpointType, models, model, field
 
         return { [graphQLType]: fieldResolvers, ...typeResolvers };
     };
-}
+};

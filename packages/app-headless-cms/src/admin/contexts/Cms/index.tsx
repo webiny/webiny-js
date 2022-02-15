@@ -12,14 +12,18 @@ export interface CmsContextValue {
 
 export const CmsContext = React.createContext<CmsContextValue>(null);
 
-const apolloClientsCache = {};
+interface ApolloClientsCache {
+    [locale: string]: ApolloClient<any>;
+}
 
-export type CmsProviderProps = {
+const apolloClientsCache: ApolloClientsCache = {};
+
+export interface CmsProviderProps {
     createApolloClient: (params: { uri: string }) => ApolloClient<any>;
     children: React.ReactNode;
-};
+}
 
-export function CmsProvider(props: CmsProviderProps) {
+export const CmsProvider: React.FC<CmsProviderProps> = props => {
     const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
     const { getCurrentLocale } = useI18N();
 
@@ -55,4 +59,4 @@ export function CmsProvider(props: CmsProviderProps) {
     }
 
     return <CmsContext.Provider value={value} {...props} />;
-}
+};

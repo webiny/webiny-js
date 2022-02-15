@@ -1,11 +1,12 @@
 import React from "react";
-import OEmbed from "../../../../components/OEmbed";
-import { PbRenderElementPlugin } from "../../../../../types";
+import { OEmbed, OEmbedProps } from "~/render/components/OEmbed";
+import { PbRenderElementPlugin } from "~/types";
 
-const oembed = {
+const oembed: Partial<OEmbedProps> = {
     global: "instgrm",
     sdk: "https://www.instagram.com/embed.js",
     init({ node }) {
+        // TODO @ts-refactor any way to use key on window?
         // @ts-ignore
         window.instgrm.Embeds.process(node.firstChild);
     }

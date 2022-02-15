@@ -4,11 +4,16 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { Input } from "@webiny/ui/Input";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { useSnackbar } from "../../../hooks/useSnackbar";
+import { useSnackbar } from "~/hooks/useSnackbar";
 import { UPDATE_FILE, LIST_FILES } from "./../graphql";
 import { useFileManager } from "./../FileManagerContext";
+import { FileItem, ListFilesResponse, UpdateFileResponse } from "../types";
 
-function Name({ file, canEdit }) {
+interface NameProps {
+    file: FileItem;
+    canEdit: (file: FileItem) => boolean;
+}
+const Name: React.FC<NameProps> = ({ file, canEdit }) => {
     const name = file.name || "";
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -27,15 +32,18 @@ function Name({ file, canEdit }) {
                         return;
                     }
                     // Update file.
-                    await client.mutate({
+                    await client.mutate<UpdateFileResponse>({
                         mutation: UPDATE_FILE,
                         variables: {
                             id: file.id,
                             data: { name }
                         },
                         update: (cache, updated) => {
-                            const newFileData = get(updated, "data.fileManager.updateFile.data");
-                            const data: any = cloneDeep(
+                            const newFileData: FileItem = get(
+                                updated,
+                                "data.fileManager.updateFile.data"
+                            );
+                            const data: ListFilesResponse = cloneDeep(
                                 cache.readQuery({
                                     query: LIST_FILES,
                                     variables: queryParams
@@ -76,6 +84,6 @@ function Name({ file, canEdit }) {
     }, [name, file.name, canEdit]);
 
     return <li-content>{editContent}</li-content>;
-}
+};
 
 export default Name;

@@ -5,14 +5,41 @@ type BatchType = "batchWrite" | "batchGet";
 
 export type AddBatchOperationResponse = () => any | null;
 
+interface RejectBuildCallable {
+    ({ message }: { message: string }): void;
+}
+
+interface RejectExecutionCallable {
+    ({ message }: { message: string }): void;
+}
+
+interface AddBatchOperationArgs {
+    /**
+     * TODO: determine correct type.
+     */
+    [key: string]: any;
+}
+
+interface Response {
+    /**
+     * TODO: determine correct type.
+     */
+    [key: string]: any;
+}
+
+interface DocumentClientArgs {
+    ReturnConsumedCapacity: string;
+    RequestItems: Record<string, any>;
+}
+
 class BatchProcess {
     documentClient: DocumentClient;
     batch: Batch;
     resolveBuild: () => void;
-    rejectBuild: ({ message: string }) => void;
+    rejectBuild: RejectBuildCallable;
     queryBuild: Promise<void>;
     resolveExecution: () => void;
-    rejectExecution: ({ message: string }) => void;
+    rejectExecution: RejectExecutionCallable;
     queryExecution: Promise<void>;
     operations: [Record<string, any>, Record<string, any>][];
     batchType: BatchType;
@@ -51,7 +78,11 @@ class BatchProcess {
         return this.queryExecution;
     }
 
-    addBatchOperation(type: BatchType, args, meta = {}): AddBatchOperationResponse {
+    addBatchOperation(
+        type: BatchType,
+        args: AddBatchOperationArgs,
+        meta = {}
+    ): AddBatchOperationResponse {
         if (!this.batchType) {
             this.batchType = type;
         } else if (this.batchType !== type) {
@@ -68,15 +99,15 @@ class BatchProcess {
         return () => this.results[index];
     }
 
-    addBatchWrite(args): AddBatchOperationResponse {
+    addBatchWrite(args: AddBatchOperationArgs): AddBatchOperationResponse {
         return this.addBatchOperation("batchWrite", args);
     }
 
-    addBatchDelete(args): AddBatchOperationResponse {
+    addBatchDelete(args: AddBatchOperationArgs): AddBatchOperationResponse {
         return this.addBatchOperation("batchWrite", { ...args }, { delete: true });
     }
 
-    addBatchGet(args): AddBatchOperationResponse {
+    addBatchGet(args: AddBatchOperationArgs): AddBatchOperationResponse {
         return this.addBatchOperation("batchGet", args);
     }
 
@@ -87,17 +118,17 @@ class BatchProcess {
     startExecution() {
         this.resolveBuild();
 
-        const documentClientArgs = {
+        const documentClientArgs: DocumentClientArgs = {
             ReturnConsumedCapacity: "TOTAL",
             RequestItems: {}
         };
 
-        const reject = e => {
+        const reject = (e: Error) => {
             e.message = `An error occurred while executing "${this.batchType}" batch operation: ${e.message}`;
             return this.rejectExecution(e);
         };
 
-        let resolve = response => {
+        let resolve = (response: Response) => {
             this.response = response;
             this.resolveExecution();
         };
@@ -174,13 +205,16 @@ class BatchProcess {
                 break;
         }
 
-        return this.documentClient[this.batchType](documentClientArgs, (error, result) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(result);
+        return this.documentClient[this.batchType](
+            documentClientArgs,
+            (error: Error, result: Record<string, any>) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
             }
-        });
+        );
     }
 }
 

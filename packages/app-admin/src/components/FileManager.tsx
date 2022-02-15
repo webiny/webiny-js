@@ -1,30 +1,36 @@
-import * as React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import FileManagerView from "./FileManager/FileManagerView";
 import pick from "lodash/pick";
 import { FileManagerProvider } from "./FileManager/FileManagerContext";
+import { FileItem } from "./FileManager/types";
 
-type FileManagerProps = {
-    onChange?: Function;
+export interface ShowFileManagerCallable {
+    (onChange?: (file?: FileItem | FileItem[]) => void): void;
+}
+export interface FileManagerPropsChildren {
+    showFileManager: ShowFileManagerCallable;
+}
+
+export interface FileManagerProps {
+    onChange?: (files: FileItem[] | FileItem) => void;
     onChangePick?: string[];
     images?: boolean;
     multiple?: boolean;
     accept?: Array<string>;
-    children: ({ showFileManager: Function }) => React.ReactNode;
+    children: (params: FileManagerPropsChildren) => React.ReactNode;
     maxSize?: number | string;
     multipleMaxCount?: number;
     multipleMaxSize?: number | string;
     onClose?: Function;
-    onUploadCompletion?: Function;
-};
+    onUploadCompletion?: (files: FileItem[]) => void;
+}
 
-type FileManagerPortalProps = Omit<FileManagerProps, "children">;
-
-const { useState, useRef, useCallback, useEffect } = React;
+export type FileManagerPortalProps = Omit<FileManagerProps, "children">;
 
 class FileManagerPortal extends React.Component<FileManagerPortalProps> {
     container: Element;
-    constructor(props) {
+    constructor(props: FileManagerPortalProps) {
         super(props);
 
         if (!window) {
@@ -57,15 +63,22 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
 
         const container = this.container;
 
-        const handleFileOnChange = files => {
+        const handleFileOnChange = (files?: FileItem[] | FileItem) => {
+            if (!files || files.length === 0) {
+                return;
+            }
             const fields = Array.isArray(onChangePick)
                 ? onChangePick
                 : ["id", "name", "key", "src", "size", "type"];
-            if (Array.isArray(files)) {
-                onChange(files.map(file => pick(file, fields)));
-            } else {
-                onChange(pick(files, fields));
+
+            if (Array.isArray(files) === true) {
+                const items = (files as FileItem[]).map(file => pick(file, fields));
+                onChange(items as FileItem[]);
+                return;
             }
+            const file = pick(files as FileItem, fields);
+
+            onChange(file as FileItem);
         };
 
         const props = {
@@ -102,7 +115,7 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
     }
 }
 
-export function FileManager({ children, ...rest }: FileManagerProps) {
+export const FileManager: React.FC<FileManagerProps> = ({ children, ...rest }) => {
     const [show, setShow] = useState(false);
     const onChangeRef = useRef(rest.onChange);
 
@@ -129,4 +142,4 @@ export function FileManager({ children, ...rest }: FileManagerProps) {
             {children({ showFileManager })}
         </>
     );
-}
+};

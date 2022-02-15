@@ -1,12 +1,23 @@
 import * as React from "react";
 import { css } from "emotion";
 import { Form } from "../../../../components/Form";
-import { DATA_FIELDS } from "../../../../components/Form/graphql";
+import { DATA_FIELDS } from "~/components/Form/graphql";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import { FbFormModel, FbRevisionModel } from "../../../../types";
+import { FbErrorResponse, FbFormModel, FbRevisionModel } from "~/types";
 import CircularProgress from "@webiny/ui/Progress/CircularProgress";
 
+interface GetFormQueryResponse {
+    formBuilder: {
+        getForm: {
+            data: FbFormModel;
+            error?: FbErrorResponse;
+        };
+    };
+}
+interface GetFormQueryVariables {
+    revision: string;
+}
 const GET_FORM = gql`
     query FbGetForm($revision: ID!) {
         formBuilder {
@@ -31,13 +42,13 @@ const pageInnerWrapper = css({
     backgroundColor: "var(--webiny-theme-color-surface, #fff) !important"
 });
 
-type FormPreviewProps = {
+interface FormPreviewProps {
     revision: FbRevisionModel;
     form: FbFormModel;
-};
+}
 
-const FormPreview = ({ revision }: FormPreviewProps) => {
-    const { data, loading } = useQuery(GET_FORM, {
+const FormPreview: React.FC<FormPreviewProps> = ({ revision }) => {
+    const { data, loading } = useQuery<GetFormQueryResponse, GetFormQueryVariables>(GET_FORM, {
         variables: {
             revision: revision.id
         }

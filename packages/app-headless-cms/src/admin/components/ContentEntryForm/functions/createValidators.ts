@@ -1,7 +1,7 @@
 import { plugins } from "@webiny/plugins";
-import { CmsModelFieldValidatorPlugin } from "~/types";
+import { CmsEditorFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
 
-export const createValidators = validation => {
+export const createValidators = (validation: CmsEditorFieldValidator[]) => {
     const validatorPlugins = plugins.byType<CmsModelFieldValidatorPlugin>(
         "cms-model-field-validator"
     );
@@ -16,7 +16,7 @@ export const createValidators = validation => {
                 return null;
             }
 
-            return async value => {
+            return async (value: string | string[]) => {
                 let isInvalid;
                 try {
                     const result = await validatorPlugin.validator.validate(value, item);

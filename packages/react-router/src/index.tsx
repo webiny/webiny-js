@@ -1,10 +1,11 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import {
     BrowserRouter as RBrowserRouter,
+    BrowserRouterProps,
     RouteChildrenProps,
     StaticRouter as RStaticRouter
 } from "react-router-dom";
-import { __RouterContext } from "react-router";
+import { __RouterContext, StaticRouterProps } from "react-router";
 import { RouterContext, ReactRouterContextValue } from "./context/RouterContext";
 
 export * from "react-router-dom";
@@ -21,5 +22,5 @@ export function useRouter(): UseRouter {
 }
 
 import enhancer from "./routerEnhancer";
-export const BrowserRouter = enhancer(RBrowserRouter);
-export const StaticRouter = enhancer(RStaticRouter);
+export const BrowserRouter: React.FC<BrowserRouterProps> = enhancer(RBrowserRouter);
+export const StaticRouter: React.FC<StaticRouterProps> = enhancer(RStaticRouter);

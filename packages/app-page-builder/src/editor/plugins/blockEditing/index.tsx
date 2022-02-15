@@ -2,36 +2,34 @@ import React from "react";
 import AddBlock from "./AddBlock";
 import AddContent from "./AddContent";
 import SearchBlocks from "./SearchBlocks";
-import { PbEditorBarPlugin, PbEditorContentPlugin } from "../../../types";
+import { PbEditorBarPlugin, PbEditorContentPlugin } from "~/types";
 
-export default [
-    {
-        name: "add-block",
-        type: "pb-editor-content",
-        render() {
-            return <AddBlock />;
+const addBlockPlugin: PbEditorContentPlugin = {
+    name: "add-block",
+    type: "pb-editor-content",
+    render() {
+        return <AddBlock />;
+    }
+};
+const addContentPlugin: PbEditorContentPlugin = {
+    name: "add-content",
+    type: "pb-editor-content",
+    render() {
+        return <AddContent />;
+    }
+};
+const editorBarPlugin: PbEditorBarPlugin = {
+    name: "pb-editor-search-blocks-bar",
+    type: "pb-editor-bar",
+    shouldRender({ plugins }): boolean {
+        const active = plugins["pb-editor-bar"];
+        if (!active || active.length === 0) {
+            return false;
         }
-    } as PbEditorContentPlugin,
-    {
-        name: "add-content",
-        type: "pb-editor-content",
-        render() {
-            return <AddContent />;
-        }
-    } as PbEditorContentPlugin,
-    {
-        name: "pb-editor-search-blocks-bar",
-        type: "pb-editor-bar",
-        shouldRender({ plugins }) {
-            const active = plugins["pb-editor-bar"];
-            if (!active || active.length === 0) {
-                return false;
-            }
-            return active.find(pl => pl.name === "pb-editor-search-blocks-bar");
-        },
-
-        render() {
-            return <SearchBlocks />;
-        }
-    } as PbEditorBarPlugin
-];
+        return active.some(pl => pl.name === "pb-editor-search-blocks-bar");
+    },
+    render(): React.ReactElement {
+        return <SearchBlocks />;
+    }
+};
+export default [addBlockPlugin, addContentPlugin, editorBarPlugin];

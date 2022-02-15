@@ -320,7 +320,7 @@ export interface FileManagerFilesStorageOperationsListParams {
  * @category FilesStorageOperations
  * @category FilesStorageOperationsParams
  */
-interface FileManagerFilesStorageOperationsListResponseMeta {
+export interface FileManagerFilesStorageOperationsListResponseMeta {
     hasMoreItems: boolean;
     totalCount: number;
     cursor: string;

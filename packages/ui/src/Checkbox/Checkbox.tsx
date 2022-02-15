@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Checkbox as RmwcCheckbox } from "@rmwc/checkbox";
-import { FormElementMessage } from "../FormElementMessage";
-import { FormComponentProps } from "./../types";
+import { FormElementMessage } from "~/FormElementMessage";
+import { FormComponentProps } from "~/types";
 
-type Props = FormComponentProps & {
+interface Props extends FormComponentProps {
     // Component label.
     label?: React.ReactNode;
 
@@ -11,14 +11,14 @@ type Props = FormComponentProps & {
     disabled?: boolean;
 
     // onClick callback.
-    onClick?: Function;
+    onClick?: (value: boolean) => void;
 
     // Use when checkbox is not checked nor unchecked.
     indeterminate?: boolean;
 
     // Description beneath the checkbox.
     description?: string;
-};
+}
 
 /**
  * Single Checkbox component can be used to store simple boolean values.
@@ -27,8 +27,11 @@ type Props = FormComponentProps & {
  * In that case, each Checkbox component must receive value and onChange callback via props.
  */
 class Checkbox extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<Props> = {
+        validation: {
+            isValid: null,
+            message: null
+        }
     };
 
     onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {

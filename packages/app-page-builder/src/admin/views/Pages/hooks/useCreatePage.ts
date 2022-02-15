@@ -5,7 +5,16 @@ import * as GQLCache from "~/admin/views/Pages/cache";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 
-const useCreatePage = ({ setLoadingLabel, clearLoadingLabel, closeDialog }) => {
+interface UseCreatePageParams {
+    setLoadingLabel: () => void;
+    clearLoadingLabel: () => void;
+    closeDialog: () => void;
+}
+const useCreatePage = ({
+    setLoadingLabel,
+    clearLoadingLabel,
+    closeDialog
+}: UseCreatePageParams) => {
     const [create] = useMutation(CREATE_PAGE);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();

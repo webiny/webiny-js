@@ -9,7 +9,10 @@ import { DraggableItem } from "~/editor/components/Draggable";
 
 export const BLOCK = "block";
 
-export const useMoveBlock = elementId => {
+interface UseMoveBlock {
+    move: (current: number, next: number) => void;
+}
+export const useMoveBlock = (elementId: string): UseMoveBlock => {
     const rootElementId = useRecoilValue(rootElementAtom);
     const rootElementValue = useRecoilValue(elementByIdSelector(rootElementId));
     const handler = useEventActionHandler();

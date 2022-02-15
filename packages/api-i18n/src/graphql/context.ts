@@ -1,34 +1,41 @@
 import acceptLanguageParser from "accept-language-parser";
-import { ContextI18NGetLocales, I18NContext } from "~/types";
+import { ContextI18NGetLocales, I18NContext, I18NContextObject, I18NLocale } from "~/types";
 import { ContextPlugin } from "@webiny/handler";
-import { I18NLocaleContextPlugin } from "~/plugins/I18NLocaleContextPlugin";
+import { I18NLocaleContextPlugin, LocaleKeys } from "~/plugins/I18NLocaleContextPlugin";
 import { createCrudContext } from "~/graphql/crud";
+import { HttpObject } from "@webiny/handler-http/types";
+
+interface Locales {
+    content: string;
+    default: string;
+}
+const headerCache: Record<string, Locales> = {};
 /**
  * Parses "x-i18n-locale" header value (e.g. "default:en-US;content:hr-HR;").
  */
-const parseXI18NLocaleHeader = value => {
-    if (parseXI18NLocaleHeader.cache[value]) {
-        return parseXI18NLocaleHeader.cache[value];
+const parseXI18NLocaleHeader = (value: string): Locales => {
+    if (headerCache[value]) {
+        return headerCache[value];
     }
 
     /**
      * Parsing x-i18n-locale value (e.g. "default:en-US;content:hr-HR;").
      */
-    parseXI18NLocaleHeader.cache[value] = value
+    headerCache[value] = value
         .split(";")
         .filter(Boolean)
-        .map(item => item.split(":"))
+        .map(item => {
+            return item.split(":") as [keyof Locales, string];
+        })
         .reduce((current, [context, locale]) => {
             current[context] = locale;
             return current;
-        }, {});
+        }, {} as Locales);
 
-    return parseXI18NLocaleHeader.cache[value];
+    return headerCache[value];
 };
 
-parseXI18NLocaleHeader.cache = {};
-
-const getLocaleFromHeaders = (http, localeContext = "default") => {
+const getLocaleFromHeaders = (http: HttpObject, localeContext: LocaleKeys = "default") => {
     if (!http) {
         return null;
     }
@@ -71,7 +78,7 @@ const createBaseContextPlugin = () => {
 
         const { http, plugins } = context;
 
-        const __i18n = {
+        const __i18n: I18NContextObject["__i18n"] = {
             acceptLanguage: null,
             defaultLocale: null,
             locale: {}, // Contains one or more locales - for multiple locale contexts.
@@ -90,7 +97,7 @@ const createBaseContextPlugin = () => {
                 locale: getCurrentLocale(plugin.context.name)?.code
             }));
         };
-        const getCurrentLocale = (localeContext = "default") => {
+        const getCurrentLocale = (localeContext: LocaleKeys = "default"): I18NLocale => {
             if (__i18n.locale[localeContext]) {
                 return __i18n.locale[localeContext];
             }
@@ -124,10 +131,10 @@ const createBaseContextPlugin = () => {
 
             return __i18n.locale[localeContext];
         };
-        const getLocales = () => {
+        const getLocales = (): I18NLocale[] => {
             return __i18n.locales;
         };
-        const getLocale = code => {
+        const getLocale = (code: string): I18NLocale => {
             const item = __i18n.locales.find(
                 locale => locale.code.toLowerCase() === code.toLowerCase()
             );

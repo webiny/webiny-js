@@ -23,7 +23,7 @@ const ImageUploadWrapper = styled("div")({
     }
 });
 
-type SingleImageUploadProps = FormComponentProps & {
+export interface SingleImageUploadProps extends FormComponentProps {
     // Accept types
     accept?: string[];
 
@@ -50,7 +50,7 @@ type SingleImageUploadProps = FormComponentProps & {
     multipleMaxSize?: number | string;
 
     // onChange callback.
-    onChange?: Function;
+    onChange?: (value: any) => void;
 
     // Optional custom props, passed to the preview image.
     imagePreviewProps?: any;
@@ -60,11 +60,14 @@ type SingleImageUploadProps = FormComponentProps & {
 
     // Define the needed properties that are returned on file(s) selection.
     onChangePick?: string[];
-};
+}
 
 export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<SingleImageUploadProps> = {
+        validation: {
+            isValid: null,
+            message: null
+        }
     };
 
     render() {

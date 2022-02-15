@@ -1,3 +1,4 @@
+// TODO @bruno Verify that this file is required?
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { CmsEntryElasticsearchFieldPlugin } from "~/plugins/CmsEntryElasticsearchFieldPlugin";
 
@@ -6,7 +7,7 @@ const fieldsWithKeywords = ["text", "long-text", "rich-text", "id", "ref"];
 /**
  * We need to map entry system fields that have different paths, no keyword or not sortable.
  */
-const systemFields = {
+const systemFields: Record<string, CmsEntryElasticsearchFieldPlugin> = {
     createdBy: new CmsEntryElasticsearchFieldPlugin({
         field: "createdBy",
         path: "createdBy.id",

@@ -162,7 +162,7 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
     };
 };
 
-export interface Params {
+interface AssignBeforeModelCreateParams {
     onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
     onBeforeModelCreateFrom: Topic<BeforeModelCreateTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
@@ -173,7 +173,7 @@ export interface Params {
  * We attach both on before create and createFrom events here.
  * Callables are identical.
  */
-export const assignBeforeModelCreate = (params: Params) => {
+export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) => {
     const { onBeforeModelCreate, onBeforeModelCreateFrom, storageOperations, plugins } = params;
 
     onBeforeModelCreate.subscribe(

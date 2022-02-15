@@ -15,7 +15,7 @@ const iconWrapper = css({
     color: "var(--mdc-theme-on-surface)"
 });
 
-export const MenuSectionRenderer = PrevMenuItem => {
+export const MenuSectionRenderer = (PrevMenuItem: React.FC): React.FC => {
     return function MenuSection() {
         const { menuItem, depth } = useMenuItem();
 

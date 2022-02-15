@@ -1,16 +1,9 @@
 import React, { useCallback, useMemo } from "react";
-import { useRecoilValue } from "recoil";
 import get from "lodash/get";
 import set from "lodash/set";
 import merge from "lodash/merge";
-import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import {
-    PbEditorPageElementSettingsRenderComponentProps,
-    PbEditorResponsiveModePlugin
-} from "../../../../types";
-import { activeElementAtom, elementByIdSelector, uiAtom } from "../../../recoil/modules";
-import useUpdateHandlers from "../useUpdateHandlers";
+import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import Accordion from "../components/Accordion";
@@ -19,28 +12,24 @@ import { ContentWrapper, classes } from "../components/StyledComponents";
 import BoxInputs from "../components/BoxInputs";
 import SelectField from "../components/SelectField";
 import Wrapper from "../components/Wrapper";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
+import { useUpdateHandlers } from "~/editor/hooks/useUpdateHandlers";
 
 const options = ["none", "solid", "dashed", "dotted"];
 const DATA_NAMESPACE = "data.settings.border";
 const BORDER_SETTINGS_COUNT = 4;
 
-const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+const BorderSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
-    const { displayMode } = useRecoilValue(uiAtom);
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+    const element = useActiveElement();
+    const { displayMode, config } = useDisplayMode();
 
     const fallbackValue = useMemo(() => {
         return applyFallbackDisplayMode(displayMode, mode =>
             get(element, `${DATA_NAMESPACE}.${mode}`)
         );
-    }, [displayMode]);
-
-    const { config: activeDisplayModeConfig } = useMemo(() => {
-        return plugins
-            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
@@ -56,7 +45,7 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
     });
 
     const getUpdateValueWithDisplayMode = useCallback(
-        name => value => getUpdateValue(`${displayMode}.${name}`)(value),
+        (name: string) => (value: string) => getUpdateValue(`${displayMode}.${name}`)(value),
         [getUpdateValue, displayMode]
     );
 
@@ -78,8 +67,8 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
             title={"Border"}
             defaultValue={defaultAccordionValue}
             icon={
-                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
-                    {activeDisplayModeConfig.icon}
+                <Tooltip content={`Changes will apply for ${config.displayMode}`}>
+                    {config.icon}
                 </Tooltip>
             }
         >

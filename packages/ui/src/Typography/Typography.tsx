@@ -4,17 +4,17 @@ import {
     TypographyProps as RmwcTypographyProps
 } from "@rmwc/typography";
 
-type TypographyProps = RmwcTypographyProps & {
+export interface TypographyProps extends RmwcTypographyProps {
     children?: React.ReactNode;
     className?: string;
     style?: React.CSSProperties;
     tag?: string;
-};
+}
 
 /**
  * Use Ripple component to display a list of choices, once the handler is triggered.
  */
-const Typography = (props: TypographyProps) => {
+const Typography: React.FC<TypographyProps> = props => {
     return <RwmcTypography {...props}>{props.children}</RwmcTypography>;
 };
 

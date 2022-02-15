@@ -1,6 +1,18 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import crypto from "crypto";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import { NotAuthorizedError } from "~/index";
@@ -15,7 +27,7 @@ const APIKeyModel = withFields({
     permissions: object({ list: true, value: [] })
 })();
 
-const generateToken = (tokenLength = 48) => {
+const generateToken = (tokenLength = 48): string => {
     const token = crypto.randomBytes(Math.ceil(tokenLength / 2)).toString("hex");
 
     // API Keys are prefixed with a letter "a" to make token verification easier.
@@ -30,7 +42,7 @@ const generateToken = (tokenLength = 48) => {
 
 export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
     return {
-        async getApiKeyByToken(token) {
+        async getApiKeyByToken(token: string) {
             try {
                 return await storageOperations.getApiKeyByToken({
                     tenant: getTenant(),
@@ -47,7 +59,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
             }
         },
 
-        async getApiKey(this: Security, id) {
+        async getApiKey(this: Security, id: string) {
             // Check if it's an ID or an actual API key (API keys start with a letter "a")
             const permission = await this.getPermission<ApiKeyPermission>("security.apiKey");
 
@@ -128,7 +140,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
             }
         },
 
-        async updateApiKey(this: Security, id, data) {
+        async updateApiKey(this: Security, id: string, data: Record<string, any>) {
             const permission = await this.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
@@ -165,7 +177,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
             }
         },
 
-        async deleteApiKey(this: Security, id) {
+        async deleteApiKey(this: Security, id: string) {
             const permission = await this.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {

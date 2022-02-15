@@ -26,6 +26,7 @@ import configurations from "~/configurations";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { parseIdentifier } from "@webiny/utils";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 
 export interface Params {
     entity: Entity<any>;
@@ -274,7 +275,7 @@ export const createSubmissionStorageOperations = (
             body
         };
 
-        let response;
+        let response: ElasticsearchSearchResponse<FbSubmission>;
         try {
             response = await elasticsearch.search(query);
         } catch (ex) {

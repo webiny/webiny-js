@@ -1,10 +1,22 @@
 import dotProp from "dot-prop-immutable";
 import orderBy from "lodash/orderBy";
 import get from "lodash/get";
-import { PbPageData } from "~/types";
+import { PbPageData, PbPageRevision } from "~/types";
 import * as GQL from "~/admin/graphql/pages";
+import { DataProxy } from "apollo-cache";
 
-export const readPageListVariables = () => {
+interface PageListVariables {
+    sort?: string;
+    search?: {
+        query?: string;
+    };
+    where?: {
+        category?: string;
+        status?: string;
+    };
+    // [key: string]: any;
+}
+export const readPageListVariables = (): PageListVariables => {
     let variables;
 
     try {
@@ -14,18 +26,25 @@ export const readPageListVariables = () => {
     return variables;
 };
 
-export const writePageListVariablesToLocalStorage = variables => {
+export const writePageListVariablesToLocalStorage = (variables: PageListVariables): void => {
     // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
     localStorage.setItem("webiny_pb_pages_list_latest_variables", JSON.stringify(variables));
 };
 
-const extractVariables = key => {
+const extractVariables = (key: string): PageListVariables => {
     // TODO: Find a better way to parse the query/id from cache
     const variables = key.replace("$ROOT_QUERY.pageBuilder.listPages(", "").replace(")", "");
     return JSON.parse(variables);
 };
 
-const modifyCacheForAllListPagesQuery = (cache, operation: (variables: any) => void) => {
+const modifyCacheForAllListPagesQuery = (
+    cache: DataProxy,
+    operation: (variables: PageListVariables) => void
+) => {
+    /**
+     * Figure out correct type for cache object because DataProxy does not have data type on it.
+     */
+    // @ts-ignore
     const existingQueriesInCache = Object.keys(cache.data.data).filter(
         key => key.includes(".listPages") && !key.endsWith(".meta")
     );
@@ -40,17 +59,16 @@ const modifyCacheForAllListPagesQuery = (cache, operation: (variables: any) => v
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.
  * */
-const sortEntries = (list, sort) => {
-    if (!sort || typeof sort !== "object") {
+const sortEntries = (list: string[], sort?: string) => {
+    if (!sort) {
         return list;
     }
-    const [key] = Object.keys(sort);
-    const value = sort[key];
-    const order = value.toLowerCase() as "asc" | "desc";
-    return orderBy(list, [key], [order]);
+    const [sortBy, orderByValue] = sort.split("_");
+    const order = orderByValue.toLowerCase() as "asc" | "desc";
+    return orderBy(list, [sortBy], [order]);
 };
 
-export const addPageToListCache = (cache, page: PbPageData) => {
+export const addPageToListCache = (cache: DataProxy, page: PbPageData): void => {
     modifyCacheForAllListPagesQuery(cache, variables => {
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
@@ -70,12 +88,15 @@ export const addPageToListCache = (cache, page: PbPageData) => {
     });
 };
 
-export const updateLatestRevisionInListCache = (cache, revision) => {
+export const updateLatestRevisionInListCache = (
+    cache: DataProxy,
+    revision: PbPageRevision
+): void => {
     modifyCacheForAllListPagesQuery(cache, variables => {
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
 
-        const listPagesData = get(data, "pageBuilder.listPages.data");
+        const listPagesData: PbPageData[] = get(data, "pageBuilder.listPages.data");
         if (!listPagesData) {
             return;
         }
@@ -93,13 +114,13 @@ export const updateLatestRevisionInListCache = (cache, revision) => {
     });
 };
 
-export const removePageFromListCache = (cache, page) => {
+export const removePageFromListCache = (cache: DataProxy, page: PbPageData): void => {
     // Delete the item from list cache
     modifyCacheForAllListPagesQuery(cache, variables => {
         const gqlParams = { query: GQL.LIST_PAGES, variables };
         const data = cache.readQuery(gqlParams);
 
-        const listPagesData = get(data, "pageBuilder.listPages.data");
+        const listPagesData: PbPageData[] = get(data, "pageBuilder.listPages.data");
         if (!listPagesData) {
             return;
         }
@@ -117,19 +138,22 @@ export const removePageFromListCache = (cache, page) => {
     });
 };
 
-export const removeRevisionFromEntryCache = (cache, revision) => {
+export const removeRevisionFromEntryCache = (
+    cache: DataProxy,
+    revision: PbPageRevision
+): PbPageRevision[] => {
     const gqlParams = {
         query: GQL.GET_PAGE,
         variables: { id: revision.id }
     };
 
     const data = cache.readQuery(gqlParams);
-    const revisions = get(data, "pageBuilder.getPage.data.revisions");
+    const revisions: PbPageRevision[] = get(data, "pageBuilder.getPage.data.revisions");
     if (!revisions) {
         return null;
     }
     const index = revisions.findIndex(item => item.id === revision.id);
-    const newRevisions = dotProp.delete(revisions, index);
+    const newRevisions: PbPageRevision[] = dotProp.delete(revisions, index);
 
     cache.writeQuery({
         ...gqlParams,

@@ -1,10 +1,12 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
+import { CmsEntryListParams, CmsEntryResolverFactory as ResolverFactory } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 
-export const resolveGet: ResolverFactory =
+type ResolveGet = ResolverFactory<any, CmsEntryListParams>;
+
+export const resolveGet: ResolveGet =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_: any, args, context) => {
         try {
             const [[entry]] = await context.cms.listLatestEntries(model, {
                 ...args,

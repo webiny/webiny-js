@@ -85,7 +85,7 @@ type Props = {
     editorContent: React.ReactNode;
 };
 
-const SlideOutline = (props: Props) => {
+const SlideOutline: React.FC<Props> = props => {
     return (
         <SlideContainer>
             <EditorMock>

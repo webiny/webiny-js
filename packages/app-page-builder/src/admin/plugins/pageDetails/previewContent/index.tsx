@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
 import {
     PbPageDetailsRevisionContentPlugin,
     PbPageDetailsRevisionContentPreviewPlugin
-} from "../../../../types";
+} from "~/types";
 import { Tab } from "@webiny/ui/Tabs";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -19,34 +19,33 @@ const RenderBlock = styled("div")({
     padding: 25
 });
 
-const plugins = [
-    {
-        name: "pb-page-details-revision-content-preview",
-        type: "pb-page-details-revision-content",
-        render(props) {
-            const { getPageQuery } = props;
+const detailsRevisionContentPlugin: PbPageDetailsRevisionContentPlugin = {
+    name: "pb-page-details-revision-content-preview",
+    type: "pb-page-details-revision-content",
+    render(props) {
+        const { getPageQuery } = props;
 
-            return (
-                <Tab label={"Page preview"} disabled={getPageQuery.loading}>
-                    <RenderBlock>
-                        <Elevation z={2}>
-                            <div style={{ position: "relative" }}>
-                                {getPageQuery.loading && <CircularProgress />}
-                                {renderPlugins("pb-page-details-revision-content-preview", props)}
-                            </div>
-                        </Elevation>
-                    </RenderBlock>
-                </Tab>
-            );
-        }
-    } as PbPageDetailsRevisionContentPlugin,
-    {
-        name: "pb-page-details-revision-preview",
-        type: "pb-page-details-revision-content-preview",
-        render(props) {
-            return <PagePreview {...props} />;
-        }
-    } as PbPageDetailsRevisionContentPreviewPlugin
-];
+        return (
+            <Tab label={"Page preview"} disabled={getPageQuery.loading}>
+                <RenderBlock>
+                    <Elevation z={2}>
+                        <div style={{ position: "relative" }}>
+                            {getPageQuery.loading && <CircularProgress />}
+                            {renderPlugins("pb-page-details-revision-content-preview", props)}
+                        </div>
+                    </Elevation>
+                </RenderBlock>
+            </Tab>
+        );
+    }
+};
 
-export default plugins;
+const revisionContentPreviewPlugin: PbPageDetailsRevisionContentPreviewPlugin = {
+    name: "pb-page-details-revision-preview",
+    type: "pb-page-details-revision-content-preview",
+    render(props) {
+        return <PagePreview {...props} />;
+    }
+};
+
+export default [detailsRevisionContentPlugin, revisionContentPreviewPlugin];

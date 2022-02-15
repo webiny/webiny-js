@@ -12,7 +12,7 @@ export const listStyle = css({
 });
 
 export class PageSettingsTabsElementRenderer extends UIRenderer<PageSettingsTabsElement> {
-    render({ next }: UIRenderParams<PageSettingsTabsElement>): React.ReactNode {
+    public render({ next }: UIRenderParams<PageSettingsTabsElement>): React.ReactNode {
         return (
             <List twoLine className={listStyle}>
                 {next()}

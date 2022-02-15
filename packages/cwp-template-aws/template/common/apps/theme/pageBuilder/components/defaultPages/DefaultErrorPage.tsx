@@ -23,9 +23,11 @@ const getPbNotInstalledErrorMessage = () => {
     };
 };
 
-type DefaultErrorPageProps = { error?: any };
+interface DefaultErrorPageProps {
+    error?: any;
+}
 
-export default function DefaultErrorPage(props: DefaultErrorPageProps) {
+const DefaultErrorPage: React.FC<DefaultErrorPageProps> = (props: DefaultErrorPageProps) => {
     let pageProps = {
         message: <>The link is either broken or the page has been removed.</>,
         title: "An error occurred"
@@ -37,4 +39,5 @@ export default function DefaultErrorPage(props: DefaultErrorPageProps) {
     }
 
     return <DefaultPage {...pageProps} />;
-}
+};
+export default DefaultErrorPage;

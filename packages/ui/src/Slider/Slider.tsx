@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Slider as RmwcSlider } from "@rmwc/slider";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import styled from "@emotion/styled";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 
 type Props = FormComponentProps & {
     // Component label.
@@ -45,7 +45,12 @@ const Wrapper = styled("div")({
  * Slider component lets users choose a value from given range.
  */
 class Slider extends React.Component<Props> {
-    static defaultProps = { validation: { isValid: null } };
+    static defaultProps: Partial<Props> = {
+        validation: {
+            isValid: null,
+            message: null
+        }
+    };
 
     onChange = (e: { detail: { value: number } }) => {
         this.props.onChange && this.props.onChange(e.detail.value);

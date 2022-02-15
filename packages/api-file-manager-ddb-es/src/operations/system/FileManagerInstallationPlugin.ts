@@ -1,11 +1,19 @@
 import WebinyError from "@webiny/error";
 import { InstallationPlugin } from "@webiny/api-file-manager/plugins/definitions/InstallationPlugin";
 import { configurations } from "~/operations/configurations";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
+// TODO @ts-refactor remove when extracting context from this package
+interface FileManagerInstallationPluginBeforeInstallParams {
+    context: FileManagerContext & ElasticsearchContext;
+}
 export class FileManagerInstallationPlugin extends InstallationPlugin {
     public name = "fm.system.ddb-es-installation";
 
-    public async beforeInstall({ context }): Promise<void> {
+    public async beforeInstall({
+        context
+    }: FileManagerInstallationPluginBeforeInstallParams): Promise<void> {
         const { elasticsearch, tenancy } = context;
         const esIndex = configurations.es({
             tenant: tenancy.getCurrentTenant().id

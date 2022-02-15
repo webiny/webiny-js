@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
-import { usePageBuilder } from "../../../../hooks/usePageBuilder";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { plugins } from "@webiny/plugins";
 import get from "lodash/get";
 import trimEnd from "lodash/trimEnd";
 
-import { PbPageElementPagesListComponentPlugin } from "../../../../types";
+import { PbPageElementPagesListComponentPlugin } from "~/types";
 
 declare global {
     // eslint-disable-next-line
@@ -22,8 +22,19 @@ declare global {
     }
 }
 
-const PagesListRender = props => {
-    const { component, ...vars } = props.data || {};
+interface PagesListRenderProps {
+    data: {
+        component: string;
+        sortBy: string;
+        sortDirection: "asc" | "desc";
+        category: string;
+        resultsPerPage: string;
+        tags: string[];
+        tagsRule: "all" | "any";
+    };
+}
+const PagesListRender: React.FC<PagesListRenderProps> = props => {
+    const { component, ...vars } = props.data || ({} as PagesListRenderProps["data"]);
     const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
@@ -117,7 +128,7 @@ const PagesListRender = props => {
     );
 };
 
-const PagesList = props => {
+const PagesList: React.FC<PagesListRenderProps> = props => {
     const { component } = props.data || {};
 
     return (

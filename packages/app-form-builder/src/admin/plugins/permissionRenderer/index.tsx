@@ -7,7 +7,7 @@ import { FormBuilderPermissions } from "./FormBuilderPermissions";
 
 const t = i18n.ns("app-form-builder/admin/plugins/permissionRenderer");
 
-export default (): AdminAppPermissionRendererPlugin => ({
+const plugin: AdminAppPermissionRendererPlugin = {
     type: "admin-app-permissions-renderer",
     name: "admin-app-permissions-renderer-form-builder",
     render(props) {
@@ -22,4 +22,5 @@ export default (): AdminAppPermissionRendererPlugin => ({
             </AccordionItem>
         );
     }
-});
+};
+export default () => plugin;
