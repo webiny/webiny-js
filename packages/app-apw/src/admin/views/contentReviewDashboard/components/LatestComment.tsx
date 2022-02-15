@@ -4,6 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useComment } from "~/admin/plugins/editor/comment/hooks/useComment";
 import { CommentStatusBox, TypographySecondary, AuthorName } from "./Styled";
 import { formatDate } from "~/admin/components/utils";
+import { RichTextEditor } from "@webiny/ui/RichTextEditor";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
@@ -46,7 +47,7 @@ export const LatestComment: React.FC<LatestCommentProps> = ({ id, ...boxProps })
                 </Typography>
             </span>
             <TypographySecondary use={"caption"}>
-                {JSON.stringify(comment.body)}
+                <RichTextEditor readOnly={true} value={comment.body} />
             </TypographySecondary>
         </CommentStatusBox>
     );

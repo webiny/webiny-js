@@ -1,5 +1,6 @@
-import styled from "@emotion/styled";
 import React from "react";
+import styled from "@emotion/styled";
+import { RichTextEditor } from "@webiny/ui/RichTextEditor";
 import { ApwComment } from "~/types";
 import { Box, Columns, Stack } from "~/admin/components/Layout";
 import { fromNow } from "~/admin/components/utils";
@@ -37,7 +38,9 @@ const Comment: React.FC<CommentProps> = props => {
                 </Box>
             </Columns>
             <CommentBox paddingX={3.5} paddingY={5}>
-                <TypographyBody use={"caption"}>{JSON.stringify(comment.body)}</TypographyBody>
+                <TypographyBody use={"caption"}>
+                    <RichTextEditor readOnly={true} value={comment.body} />
+                </TypographyBody>
             </CommentBox>
             <Box paddingLeft={3.5}>
                 <TypographySecondary use={"caption"}>

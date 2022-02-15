@@ -11,6 +11,7 @@ import { useChangeRequest } from "~/admin/hooks/useChangeRequest";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { useChangeRequestDialog } from "~/admin/components/ContentReviewEditor/ChangeRequest/useChangeRequestDialog";
+import { RichTextEditor } from "@webiny/ui/RichTextEditor";
 
 const t = i18n.ns("app-apw/content-reviews/editor/steps/changeRequest");
 
@@ -34,6 +35,7 @@ const ContentStack = styled(Stack)`
     flex-direction: column;
     justify-content: space-between;
     border-right: 1px solid var(--mdc-theme-background);
+    flex-grow: 1;
 `;
 
 const ButtonBox = styled(Box)<{ border?: boolean }>`
@@ -90,7 +92,7 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     </Box>
                     <Box>
                         <TypographyBody use={"caption"}>
-                            {JSON.stringify(changeRequest.body)}
+                            <RichTextEditor readOnly={true} value={changeRequest.body} />
                         </TypographyBody>
                     </Box>
                 </Stack>
