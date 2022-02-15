@@ -6,6 +6,7 @@ import { LocalWorkspace } from "@pulumi/pulumi/automation";
 import { Pulumi } from "./Pulumi";
 import { PulumiApp } from "./PulumiApp";
 import { ApplicationConfig, ApplicationHook } from "./ApplicationConfig";
+import { getPulumiWorkDir } from "./utils/getPulumiWorkDir";
 
 export interface ApplicationGenericConfig extends ApplicationConfig {
     app: PulumiApp;
@@ -49,7 +50,7 @@ export class ApplicationGeneric implements Readonly<ApplicationConfig> {
         const PATH_SEPARATOR = os.platform() === "win32" ? ";" : ":";
 
         const relativePath = path.relative(args.projectDir, args.appDir);
-        const pulumiWorkDir = path.join(args.projectDir, ".pulumi", relativePath);
+        const pulumiWorkDir = getPulumiWorkDir(args.projectDir, relativePath);
 
         if (!fs.existsSync(pulumiWorkDir)) {
             fs.mkdirSync(pulumiWorkDir, { recursive: true });

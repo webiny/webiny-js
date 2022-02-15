@@ -4,3 +4,5 @@ export * from "./PulumiResource";
 export * from "./ApplicationConfig";
 export * from "./ApplicationGeneric";
 export * from "./ApplicationLegacy";
+
+export * from "./utils/getPulumiWorkDir";

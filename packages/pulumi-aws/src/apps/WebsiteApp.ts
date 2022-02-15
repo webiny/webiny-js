@@ -10,7 +10,7 @@ export interface WebsiteAppConfig extends ApplicationConfig {
 }
 
 export const WebsiteApp = defineApp({
-    name: "Admin",
+    name: "Website",
     config(app) {
         app.addHandler(() => {
             tagResources({

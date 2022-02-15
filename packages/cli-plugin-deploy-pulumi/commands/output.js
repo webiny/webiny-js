@@ -1,24 +1,35 @@
+const path = require("path");
+const fs = require("fs");
 const { red } = require("chalk");
 const { login, getPulumi, loadEnvVariables } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
-const path = require("path");
+const { getPulumiWorkDir } = require("@webiny/pulumi-sdk");
 
 module.exports = async (inputs, context) => {
     const { env, folder, json } = inputs;
     await loadEnvVariables(inputs, context);
 
-    // Get project application metadata.
+    const cwd = process.cwd();
 
+    // Get project application metadata.
     const projectApplication = getProjectApplication({
-        cwd: path.join(process.cwd(), inputs.folder)
+        cwd: path.join(cwd, inputs.folder)
     });
 
     // Will also install Pulumi, if not already installed.
     await login(projectApplication);
 
+    let pulumiWorkDir = getPulumiWorkDir(cwd, inputs.folder);
+
+    // With new Pulumi architecture Pulumi.yaml file should sit somewhere in .pulumi dir.
+    // For backwards compatibility we fall back to app source dir in case it doesn't exist.
+    if (!fs.existsSync(path.join(pulumiWorkDir, "Pulumi.yaml"))) {
+        pulumiWorkDir = projectApplication.root;
+    }
+
     const pulumi = await getPulumi({
         execa: {
-            cwd: projectApplication.root
+            cwd: pulumiWorkDir
         }
     });
 
