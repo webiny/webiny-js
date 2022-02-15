@@ -1,4 +1,6 @@
+import os from "os";
 import { LocalWorkspace } from "@pulumi/pulumi/automation";
+
 import { Pulumi } from "./Pulumi";
 import { PulumiApp } from "./PulumiApp";
 import { ApplicationConfig, ApplicationHook } from "./ApplicationConfig";
@@ -39,6 +41,9 @@ export class ApplicationGeneric implements Readonly<ApplicationConfig> {
     public async createOrSelectStack(args: StackArgs) {
         const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
+        // Use ";" when on Windows. For Mac and Linux, use ":".
+        const PATH_SEPARATOR = os.platform() === "win32" ? ";" : ":";
+
         const stack = await LocalWorkspace.createOrSelectStack(
             {
                 projectName: this.name,
@@ -58,7 +63,7 @@ export class ApplicationGeneric implements Readonly<ApplicationConfig> {
                     WEBINY_ENV: args.env,
                     WEBINY_PROJECT_NAME: this.name,
                     // Add Pulumi CLI path to env variable, so the CLI would be properly resolved.
-                    PATH: `${args.pulumi.pulumiFolder};${process.env.PATH ?? ""}`
+                    PATH: args.pulumi.pulumiFolder + PATH_SEPARATOR + (process.env.PATH ?? "")
                 }
             }
         );
