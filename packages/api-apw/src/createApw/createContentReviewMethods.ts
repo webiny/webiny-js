@@ -32,6 +32,7 @@ interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
     getContentGetter: AdvancedPublishingWorkflow["getContentGetter"];
     getContentPublisher: AdvancedPublishingWorkflow["getContentPublisher"];
+    getContentUnPublisher: AdvancedPublishingWorkflow["getContentUnPublisher"];
 }
 
 export function createContentReviewMethods({
@@ -39,7 +40,8 @@ export function createContentReviewMethods({
     storageOperations,
     getReviewer,
     getContentGetter,
-    getContentPublisher
+    getContentPublisher,
+    getContentUnPublisher
 }: CreateContentReviewMethodsParams): ApwContentReviewCrud {
     const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
     const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>();
@@ -323,6 +325,29 @@ export function createContentReviewMethods({
             await contentPublisher(content.id, content.settings);
 
             await this.update(id, { status: ApwContentReviewStatus.PUBLISHED });
+
+            return true;
+        },
+        async unpublishContent(this: ApwContentReviewCrud, id: string) {
+            const { content, status } = await this.get(id);
+
+            if (status !== ApwContentReviewStatus.PUBLISHED) {
+                throw new Error({
+                    message: `Cannot unpublish content because it is not yet published.`,
+                    code: "NOT_YET_PUBLISHED",
+                    data: {
+                        id,
+                        status,
+                        content
+                    }
+                });
+            }
+
+            const contentUnPublisher = getContentUnPublisher(content.type);
+
+            await contentUnPublisher(content.id, content.settings);
+
+            await this.update(id, { status: ApwContentReviewStatus.READY_TO_BE_PUBLISHED });
 
             return true;
         }

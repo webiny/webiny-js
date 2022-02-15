@@ -39,7 +39,8 @@ import {
     PROVIDE_SIGN_OFF_MUTATION,
     RETRACT_SIGN_OFF_MUTATION,
     IS_REVIEW_REQUIRED_QUERY,
-    PUBLISH_CONTENT_MUTATION
+    PUBLISH_CONTENT_MUTATION,
+    UNPUBLISH_CONTENT_MUTATION
 } from "./graphql/contentReview";
 import { LOGIN } from "./graphql/login";
 import { GET_REVIEWER_QUERY, LIST_REVIEWERS_QUERY } from "./graphql/reviewer";
@@ -292,6 +293,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async publishContentMutation(variables: Record<string, any>) {
             return invoke({ body: { query: PUBLISH_CONTENT_MUTATION, variables } });
+        },
+        async unpublishContentMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: UNPUBLISH_CONTENT_MUTATION, variables } });
         }
     };
 };

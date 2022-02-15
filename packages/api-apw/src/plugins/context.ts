@@ -69,6 +69,16 @@ export default () => [
             console.log(JSON.stringify({ publishedEntry }, null, 2));
             return true;
         });
+        context.apw.addContentUnPublisher(ApwContentTypes.PAGE, async id => {
+            await context.pageBuilder.unpublishPage<PageWithWorkflow>(id);
+            return true;
+        });
+        context.apw.addContentUnPublisher(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+            const model = await context.cms.getModel(settings.modelId);
+            const unpublishedEntry = await context.cms.unpublishEntry(model, id);
+            console.log(JSON.stringify({ unpublishedEntry }, null, 2));
+            return true;
+        });
 
         apwPageBuilderPlugins({ pageBuilder: context.pageBuilder, apw: context.apw });
     }),

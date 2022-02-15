@@ -146,3 +146,14 @@ export const PUBLISH_CONTENT_MUTATION = /* GraphQL */ `
         }
     }
 `;
+
+export const UNPUBLISH_CONTENT_MUTATION = /* GraphQL */ `
+    mutation UnPublishContentMutation($id: ID!) {
+        apw {
+            unpublishContent(id: $id) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;

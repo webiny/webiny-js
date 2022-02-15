@@ -211,6 +211,8 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             retractSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
 
             publishContent(id: ID!): ApwPublishContentResponse
+
+            unpublishContent(id: ID!): ApwPublishContentResponse
         }
     `,
     resolvers: {
@@ -284,6 +286,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             },
             publishContent: async (_, args, context) => {
                 return resolve(() => context.apw.contentReview.publishContent(args.id));
+            },
+            unpublishContent: async (_, args, context) => {
+                return resolve(() => context.apw.contentReview.unpublishContent(args.id));
             }
         }
     }
