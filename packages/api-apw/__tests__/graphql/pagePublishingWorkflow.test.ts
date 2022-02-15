@@ -15,7 +15,8 @@ describe("Page publishing workflow", () => {
         updatePage,
         publishPage,
         createPage,
-        provideSignOffMutation
+        provideSignOffMutation,
+        retractSignOffMutation
     } = gqlHandler;
 
     /**
@@ -182,6 +183,54 @@ describe("Page publishing workflow", () => {
         expect(updatedContentReview.title).toEqual(updatedPage.title);
 
         /**
+         * Let's retract the provided sign-off for a "required step" of the publishing workflow.
+         */
+        const [retractSignOffResponse] = await retractSignOffMutation({
+            id: contentReview.id,
+            step: step2.id
+        });
+        expect(retractSignOffResponse).toEqual({
+            data: {
+                apw: {
+                    retractSignOff: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * After retracting sign-off to a step of the workflow,
+         * Now the content should be back in "underReview" stage.
+         */
+        [getContentReviewResponse] = await getContentReviewQuery({
+            id: createdContentReview.id
+        });
+        expect(getContentReviewResponse.data.apw.getContentReview.data.status).toEqual(
+            "underReview"
+        );
+
+        /**
+         * Let's again provide the sign-off for step 2.
+         */
+        [provideSignOffResponse] = await provideSignOffMutation({
+            id: contentReview.id,
+            step: step2.id
+        });
+
+        expect(provideSignOffResponse).toEqual({
+            data: {
+                apw: {
+                    provideSignOff: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
          * After providing sign-off to every step of the workflow,
          * Should be able to publish the page.
          */
@@ -196,9 +245,7 @@ describe("Page publishing workflow", () => {
                 }
             }
         });
-        const publishedPage = publishPageResponse.data.pageBuilder.publishPage.data;
-        expect(publishedPage.status).toEqual("published");
-        expect(publishedPage.locked).toEqual(true);
-        expect(publishedPage.version).toEqual(1);
+        expect(publishPageResponse.data.pageBuilder.publishPage.data.status).toEqual("published");
+        expect(publishPageResponse.data.pageBuilder.publishPage.data.version).toEqual(1);
     });
 });

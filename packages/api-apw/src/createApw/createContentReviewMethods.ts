@@ -5,6 +5,7 @@ import {
     ApwContentReview,
     ApwContentReviewCrud,
     ApwContentReviewStatus,
+    ApwContentReviewStep,
     ApwContentReviewStepStatus,
     ApwContentTypes,
     ApwReviewerCrud,
@@ -178,18 +179,11 @@ export function createContentReviewMethods({
              * Check for pending steps
              */
             let newStatus = status;
-            const pendingRequiredSteps = updatedSteps.filter(step => {
-                const isRequiredStep = [
-                    ApwWorkflowStepTypes.MANDATORY_BLOCKING,
-                    ApwWorkflowStepTypes.MANDATORY_NON_BLOCKING
-                ].includes(step.type);
+            const pendingRequiredSteps = getPendingRequiredSteps(
+                updatedSteps,
+                step => typeof step.signOffProvidedOn !== "string"
+            );
 
-                if (!isRequiredStep) {
-                    return false;
-                }
-
-                return typeof step.signOffProvidedOn !== "string";
-            });
             /**
              * If there are no required steps that are pending, set the status to "READY_TO_BE_PUBLISHED".
              */
@@ -206,9 +200,9 @@ export function createContentReviewMethods({
             });
             return true;
         },
-        async retractSignOff(id, stepId) {
+        async retractSignOff(this: ApwContentReviewCrud, id, stepId) {
             const entry: ApwContentReview = await this.get(id);
-            const { steps } = entry;
+            const { steps, status } = entry;
             const stepIndex = steps.findIndex(step => step.id === stepId);
             const currentStep = steps[stepIndex];
 
@@ -264,8 +258,24 @@ export function createContentReviewMethods({
                 return step;
             });
 
+            /**
+             * Check for pending steps
+             */
+            let newStatus = status;
+            const pendingRequiredSteps = getPendingRequiredSteps(
+                updatedSteps,
+                step => step.signOffProvidedOn === null
+            );
+            /**
+             * If there are required steps that are pending, set the status to "UNDER_REVIEW".
+             */
+            if (pendingRequiredSteps.length !== 0) {
+                newStatus = ApwContentReviewStatus.UNDER_REVIEW;
+            }
+
             await this.update(id, {
-                steps: updatedSteps
+                steps: updatedSteps,
+                status: newStatus
             });
             return true;
         },
@@ -292,3 +302,25 @@ export function createContentReviewMethods({
         }
     };
 }
+
+interface GetPendingRequiredSteps {
+    (
+        steps: ApwContentReviewStep[],
+        predicate: (step: ApwContentReviewStep) => boolean
+    ): ApwContentReviewStep[];
+}
+
+const getPendingRequiredSteps: GetPendingRequiredSteps = (steps, predicate) => {
+    return steps.filter(step => {
+        const isRequiredStep = [
+            ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+            ApwWorkflowStepTypes.MANDATORY_NON_BLOCKING
+        ].includes(step.type);
+
+        if (!isRequiredStep) {
+            return false;
+        }
+
+        return predicate(step);
+    });
+};
