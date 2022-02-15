@@ -45,7 +45,7 @@ export const DelayedOnChange: React.FunctionComponent<DelayedOnChangeProps> = ({
     ...other
 }) => {
     const { onChange, delay = 400, value: initialValue } = other;
-    const [value, setValue] = useState<string>(initialValue);
+    const [value, setValue] = useState<string | undefined>(initialValue);
     // Sync state and props
     useEffect(() => {
         if (initialValue !== value) {
@@ -53,11 +53,14 @@ export const DelayedOnChange: React.FunctionComponent<DelayedOnChangeProps> = ({
         }
     }, [initialValue]);
 
-    const localTimeout = React.useRef<number>(undefined);
+    const localTimeout = React.useRef<number | null>(null);
 
     const applyValue = (value: string, callback: ApplyValueCb = emptyFunction) => {
         localTimeout.current && clearTimeout(localTimeout.current);
         localTimeout.current = null;
+        if (!onChange) {
+            return;
+        }
         onChange(value, callback);
     };
 
@@ -84,12 +87,12 @@ export const DelayedOnChange: React.FunctionComponent<DelayedOnChangeProps> = ({
     }, []);
 
     useEffect(() => {
-        onValueStateChanged(value);
+        onValueStateChanged(value || "");
     }, [value]);
 
     const newProps = {
         ...other,
-        value: value,
+        value: value || "",
         onChange: onChangeLocal
     };
 

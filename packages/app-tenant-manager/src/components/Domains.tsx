@@ -46,6 +46,9 @@ export const DomainsFieldset: React.FC<DomainsProps> = props => {
     const addDomain = () => {
         const newValue = Array.isArray(value) ? [...value] : [];
         newValue.push({ fqdn: "" });
+        if (!onChange) {
+            return;
+        }
         onChange(newValue);
     };
 

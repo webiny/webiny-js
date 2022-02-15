@@ -4,7 +4,7 @@ import { plugins } from "@webiny/plugins";
 import { ElementRoot } from "../../../components/ElementRoot";
 import { PbElement } from "~/types";
 import { Link } from "@webiny/react-router";
-import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
+import { PageBuilderContext } from "../../../../contexts/PageBuilder";
 
 interface ButtonProps {
     element: PbElement;
@@ -12,7 +12,7 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
-    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
+    } = React.useContext(PageBuilderContext);
     const { type = "default", icon = {}, action = {}, link = {} } = element.data || {};
     const { svg = null } = icon;
     const { position = "left" } = icon;
@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({ element }) => {
     // If `link.href` is truthy, assume we're using link, not action.
     if (link?.href && !action.href) {
         href = link?.href;
-        newTab = link?.newTab;
+        newTab = !!link?.newTab;
     } else {
         href = action?.href;
         newTab = action?.newTab;

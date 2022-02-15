@@ -9,7 +9,8 @@ import {
     PbEditorContentPlugin,
     PbPageLayout,
     PbPageLayoutPlugin,
-    PbEditorElement
+    PbEditorElement,
+    PbTheme
 } from "../../../types";
 import {
     isPluginActiveSelector,
@@ -24,17 +25,23 @@ import { usePageBuilder } from "../../../hooks/usePageBuilder";
 import Element from "../Element";
 
 const BREADCRUMB_HEIGHT = 33;
-const ContentContainer = styled("div")(({ theme }) => ({
-    backgroundColor: (theme as any)?.colors?.background,
-    position: "relative",
-    margin: "0 auto",
-    ".webiny-pb-page-document": {
-        overflowY: "visible", // cuts off the block selector tooltip
-        overflowX: "visible",
-        // We need this extra spacing so that editor content won't get cutoff
-        paddingBottom: BREADCRUMB_HEIGHT
-    }
-}));
+interface ContentContainerParams {
+    theme: PbTheme | null;
+}
+const ContentContainer = styled("div")(({ theme }: ContentContainerParams) => {
+    const backgroundColor = theme?.colors?.background;
+    return {
+        backgroundColor,
+        position: "relative",
+        margin: "0 auto",
+        ".webiny-pb-page-document": {
+            overflowY: "visible", // cuts off the block selector tooltip
+            overflowX: "visible",
+            // We need this extra spacing so that editor content won't get cutoff
+            paddingBottom: BREADCRUMB_HEIGHT
+        }
+    };
+});
 const contentContainerWrapper = css({
     margin: "95px 65px 50px 85px",
     padding: 0,
@@ -50,9 +57,16 @@ const BaseContainer = styled("div")({
     left: 52,
     margin: "0 auto"
 });
-const renderContent = (layout: PbPageLayout, rootElement: PbEditorElement, render: boolean) => {
+const renderContent = (
+    layout: PbPageLayout | null,
+    rootElement: PbEditorElement,
+    render: boolean
+) => {
     const content = <Element id={rootElement.id} />;
     if (!render) {
+        return content;
+    } else if (!layout) {
+        console.log("Missing layout variable in renderContent callable. Rendering content.");
         return content;
     }
     return React.createElement(layout.component, null, content);
@@ -64,7 +78,7 @@ const Content = () => {
     const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
     const layout = useRecoilValue(layoutSelector);
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
-    const pagePreviewRef = useRef();
+    const pagePreviewRef = useRef<HTMLDivElement>(null);
 
     const setPagePreviewDimension = useCallback(
         pagePreviewDimension => {
@@ -96,7 +110,7 @@ const Content = () => {
 
     const { theme } = usePageBuilder();
     const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
-    const layouts = React.useMemo(() => {
+    const layouts = React.useMemo((): PbPageLayout[] => {
         const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
         return (layoutPlugins || []).map(pl => pl.layout);
     }, []);
@@ -107,7 +121,7 @@ const Content = () => {
     return (
         <Elevation className={contentContainerWrapper} z={0}>
             <ContentContainer
-                theme={theme}
+                theme={theme as any}
                 className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
                     displayMode
                 )} webiny-pb-media-query--${kebabCase(displayMode)}`}
@@ -116,7 +130,7 @@ const Content = () => {
                     React.cloneElement(plugin.render(), { key: plugin.name })
                 )}
                 <BaseContainer ref={pagePreviewRef} className={"webiny-pb-editor-content-preview"}>
-                    {renderContent(themeLayout, rootElement, renderLayout)}
+                    {renderContent(themeLayout || null, rootElement, renderLayout)}
                 </BaseContainer>
             </ContentContainer>
         </Elevation>

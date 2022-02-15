@@ -218,7 +218,7 @@ export interface PbPageData {
     id: string;
     pid: string;
     path: string;
-    title?: string;
+    title: string;
     editor: string;
     createdFrom?: string;
     content: any;

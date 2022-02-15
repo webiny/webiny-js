@@ -6,13 +6,20 @@ import { useSecurity } from "@webiny/app-security";
 
 const Menus: React.FC = () => {
     const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
-        return identity.getPermission("pb.menu");
-    }, []);
+    const pbMenuPermissionRwd = useMemo((): string | null => {
+        if (!identity || !identity.getPermission) {
+            return null;
+        }
+        const permission = identity.getPermission("pb.menu");
+        if (!permission) {
+            return null;
+        }
+        return permission.rwd || null;
+    }, [identity]);
 
     const canCreate = useMemo(() => {
-        if (typeof pbMenuPermission.rwd === "string") {
-            return pbMenuPermission.rwd.includes("w");
+        if (typeof pbMenuPermissionRwd === "string") {
+            return pbMenuPermissionRwd.includes("w");
         }
 
         return true;

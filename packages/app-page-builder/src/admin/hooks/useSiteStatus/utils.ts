@@ -25,7 +25,9 @@ export async function fetchWithCache(params: FetchWithCacheParams): Promise<Cach
 
     const now = new Date().getTime();
 
-    if (!CACHE[url] || CACHE[url].cacheTimer < now || ignoreCache) {
+    const cacheItem = CACHE[url];
+
+    if (!cacheItem || (cacheItem.cacheTimer || 0) < now || ignoreCache) {
         try {
             const response = await fetch(url, {
                 method: "GET",
@@ -59,7 +61,7 @@ export const pingSite = async (params: PingSiteParams): Promise<void> => {
     try {
         const response = await fetchWithCache({ url, ignoreCache });
 
-        cb(response && response.active);
+        cb(response ? response.active || false : false);
     } catch (e) {
         console.error(e);
         cb(false);

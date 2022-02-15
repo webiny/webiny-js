@@ -38,9 +38,9 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
 }) => {
     const shallowElement = useMemo(
         () => ({
-            id: element ? element.id : null,
-            type: element ? element.type : null,
-            data: element ? element.data : null,
+            id: element.id,
+            type: element.type,
+            data: element.data,
             elements: []
         }),
         [element.id, element.data]

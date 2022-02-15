@@ -40,12 +40,9 @@ export default (el: PbEditorElement) => {
         create() {
             return cloneDeep(el.content);
         },
-        /**
-         * Must define as null because TS is complaining
-         * Verify that render can be null/undefined
-         * TODO @ts-refactor
-         */
-        render: null
+        render: () => {
+            return null;
+        }
     };
     plugins.register(plugin);
 };

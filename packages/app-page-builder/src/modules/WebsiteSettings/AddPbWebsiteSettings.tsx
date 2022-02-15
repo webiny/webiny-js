@@ -18,7 +18,11 @@ interface GroupContextValue {
     // TODO @ts-refactor
     addElement: (element: any) => void;
 }
-const GroupContext = createContext<GroupContextValue>(null);
+const GroupContext = createContext<GroupContextValue>({
+    addElement: () => {
+        return void 0;
+    }
+});
 
 const VIEW_NAME = "PbWebsiteSettings";
 

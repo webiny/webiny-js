@@ -1,11 +1,24 @@
 import * as React from "react";
 import { plugins } from "@webiny/plugins";
-import { PbThemePlugin, PbTheme, DisplayMode } from "~/types";
+import { DisplayMode, PbTheme, PbThemePlugin } from "~/types";
 
-export const PageBuilderContext = React.createContext(null);
+export const PageBuilderContext = React.createContext<PageBuilderContextValue>({
+    theme: null,
+    defaults: {
+        pages: {
+            notFound: undefined
+        }
+    },
+    responsiveDisplayMode: {
+        displayMode: DisplayMode.DESKTOP,
+        setDisplayMode: () => {
+            return void 0;
+        }
+    }
+});
 
 export interface ResponsiveDisplayMode {
-    displayMode: string;
+    displayMode: DisplayMode;
     setDisplayMode: Function;
 }
 
@@ -15,13 +28,13 @@ export interface ExportPageData {
 }
 
 export interface PageBuilderContextValue {
-    theme: PbTheme;
+    theme: PbTheme | null;
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
         };
     };
-    responsiveDisplayMode?: ResponsiveDisplayMode;
+    responsiveDisplayMode: ResponsiveDisplayMode;
     exportPageData?: ExportPageData;
 }
 

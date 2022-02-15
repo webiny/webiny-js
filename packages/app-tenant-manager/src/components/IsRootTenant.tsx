@@ -9,7 +9,7 @@ interface IsTenantProps {
 export const IsTenant: React.FC<IsTenantProps> = ({ condition, children }) => {
     const security = useSecurity();
 
-    if (!security) {
+    if (!security || !security.identity) {
         return null;
     }
 

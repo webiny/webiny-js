@@ -6,7 +6,7 @@ import { ElementRoot } from "../../../components/ElementRoot";
 import { PbElement } from "~/types";
 import ElementAnimation from "../../../components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
-import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
+import { PageBuilderContext } from "../../../../contexts/PageBuilder";
 
 interface BlockProps {
     element: PbElement;
@@ -14,7 +14,7 @@ interface BlockProps {
 const Block: React.FC<BlockProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
-    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
+    } = React.useContext(PageBuilderContext);
     return (
         <ElementAnimation>
             <ElementRoot element={element}>

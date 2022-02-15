@@ -8,14 +8,31 @@ interface CreatableItem {
         id: string;
     };
 }
-const usePermission = () => {
+
+interface UsePermission {
+    canEdit: (item: CreatableItem) => boolean;
+    canDelete: (item: CreatableItem) => boolean;
+    canPublish: () => boolean;
+    canUnpublish: () => boolean;
+    canRequestReview: () => boolean;
+    canRequestChange: () => boolean;
+}
+
+const usePermission = (): UsePermission => {
     const { identity } = useSecurity();
 
-    const pbPagePermission = useMemo(
-        (): SecurityPermission => identity.getPermission("pb.page"),
-        []
-    );
-    const hasFullAccess = useMemo((): SecurityPermission => identity.getPermission("pb.*"), []);
+    const pbPagePermission = useMemo((): SecurityPermission | null => {
+        if (!identity || !identity.getPermission) {
+            return null;
+        }
+        return identity.getPermission("pb.page");
+    }, []);
+    const hasFullAccess = useMemo((): SecurityPermission | null => {
+        if (!identity || !identity.getPermission) {
+            return null;
+        }
+        return identity.getPermission("pb.*");
+    }, []);
 
     const canEdit = useCallback(
         (item: CreatableItem): boolean => {
@@ -27,7 +44,7 @@ const usePermission = () => {
                 return false;
             }
             if (pbPagePermission.own && creatorId) {
-                return creatorId === identity.login;
+                return !!identity && creatorId === identity.login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("w");
@@ -46,7 +63,7 @@ const usePermission = () => {
                 return false;
             }
             if (pbPagePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+                return !!identity && get(item, "createdBy.id") === identity.login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("d");

@@ -28,6 +28,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { PbMenu } from "~/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
@@ -117,13 +118,19 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
     );
 
     const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
+    const pbMenuPermission = useMemo((): SecurityPermission => {
+        if (!identity || !identity.getPermission) {
+            return {
+                name: "unknown",
+                own: null
+            };
+        }
         return identity.getPermission("pb.menu");
-    }, []);
+    }, [identity]);
 
     const canDelete = useCallback(item => {
         if (pbMenuPermission.own) {
-            const identityId = identity.id || identity.login;
+            const identityId = identity ? identity.id || identity.login : null;
             return item.createdBy.id === identityId;
         }
 

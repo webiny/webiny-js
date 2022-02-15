@@ -23,7 +23,7 @@ interface RenderCellCallable {
     (params: RenderCellCallableParams): React.ReactElement;
 }
 
-const noop = (): React.ReactElement => null;
+const noop = (): React.ReactElement | null => null;
 const gridItem = css({
     position: "relative",
     display: "flex",

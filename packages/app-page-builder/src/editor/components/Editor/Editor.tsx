@@ -42,8 +42,15 @@ const registerPlugins = (handler: EventActionHandler): PluginRegistryType => {
 };
 const unregisterPlugins = (handler: EventActionHandler, registered: PluginRegistryType): void => {
     for (const name of registered.keys()) {
-        const cb = registered.get(name);
+        const cb =
+            registered.get(name) ||
+            (() => {
+                return void 0;
+            });
         const pl = plugins.byName<PbEditorEventActionPlugin>(name);
+        if (!pl) {
+            continue;
+        }
         if (typeof pl.onEditorUnmount === "function") {
             pl.onEditorUnmount(handler, cb);
             continue;
@@ -54,7 +61,7 @@ const unregisterPlugins = (handler: EventActionHandler, registered: PluginRegist
 
 const triggerActionButtonClick = (name: string): void => {
     const id = `#action-${name}`;
-    const element = document.querySelector<HTMLElement | null>(id);
+    const element = document.querySelector<HTMLElement>(id);
     if (!element) {
         console.warn(`There is no html element "${id}"`);
         return;
@@ -75,7 +82,7 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ revisions }) 
     const rootElementId = useRecoilValue(rootElementAtom);
 
     const firstRender = React.useRef<boolean>(true);
-    const registeredPlugins = React.useRef<PluginRegistryType>();
+    const registeredPlugins = React.useRef<PluginRegistryType>(new Map());
 
     useEffect(() => {
         addKeyHandler("mod+z", e => {

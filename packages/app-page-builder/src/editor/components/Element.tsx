@@ -22,7 +22,7 @@ import {
 import { DragElementWrapper, DragSourceOptions } from "react-dnd";
 
 interface RenderDraggableCallableParams {
-    drag: DragElementWrapper<DragSourceOptions>;
+    drag: DragElementWrapper<DragSourceOptions> | null;
 }
 interface RenderDraggableCallable {
     (params: RenderDraggableCallableParams): JSX.Element;
@@ -35,13 +35,13 @@ export interface ElementPropsType {
     isActive?: boolean;
 }
 
-const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin => {
+const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin | null => {
     if (!element) {
         return null;
     }
 
     const pluginsByType = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
-    return pluginsByType.find(pl => pl.elementType === element.type);
+    return pluginsByType.find(pl => pl.elementType === element.type) || null;
 };
 
 const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
@@ -61,7 +61,11 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         setTimeout(() => {
             setUiAtomValue(enableDraggingMutation);
         });
-        return { ...data, target: plugin.target };
+        const target = plugin ? plugin.target : null;
+        return {
+            ...data,
+            target
+        };
     }, [elementId]);
 
     const endDrag = useCallback(() => {
@@ -96,12 +100,13 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     }, [elementId]);
 
     const renderDraggable: RenderDraggableCallable = ({ drag }) => {
+        const pluginElementType = plugin ? plugin.elementType : "unknown";
         return (
             <div ref={drag} className={"type " + typeStyle}>
                 <div className="background" onClick={onClick} />
                 <div className={"element-holder"} onClick={onClick}>
                     {renderPlugins("pb-editor-page-element-action", { element, plugin })}
-                    <span>{plugin.elementType}</span>
+                    <span>{pluginElementType}</span>
                 </div>
             </div>
         );
@@ -114,7 +119,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     const renderedPlugin = tryRenderingPlugin(() =>
         plugin.render({
             element,
-            isActive
+            isActive: isActive || false
         })
     );
 
@@ -128,14 +133,14 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
                     onMouseOver={onMouseOver}
                     onMouseOut={onMouseOut}
                     highlight={isActive ? true : isHighlighted}
-                    active={isActive}
+                    active={isActive || false}
                     style={{ ...defaultStyle, ...transitionStyles[state] }}
                     className={"webiny-pb-page-element-container"}
                 >
                     <div className={["innerWrapper", className].filter(c => c).join(" ")}>
                         <Draggable
                             enabled={isDraggable}
-                            target={plugin.target}
+                            target={plugin ? plugin.target || [] : []}
                             beginDrag={beginDrag}
                             endDrag={endDrag}
                         >

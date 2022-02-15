@@ -28,6 +28,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { PbCategory } from "~/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-page-builder/admin/categories/data-list");
 
@@ -123,14 +124,21 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
     );
 
     const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
+    const pbMenuPermission = useMemo((): SecurityPermission => {
+        if (!identity || !identity.getPermission) {
+            return {
+                name: "unknown",
+                rwd: null,
+                own: null
+            };
+        }
         return identity.getPermission("pb.category");
-    }, []);
+    }, [identity]);
 
     const canDelete = useCallback((item: CreatableItem): boolean => {
         if (pbMenuPermission.own) {
-            const identityId = identity.id || identity.login;
-            return item.createdBy.id === identityId;
+            const identityId = identity ? identity.id || identity.login : null;
+            return item.createdBy?.id === identityId;
         }
 
         if (typeof pbMenuPermission.rwd === "string") {

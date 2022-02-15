@@ -65,13 +65,20 @@ export const createElement: CreateElementCallable = (
 
     invariant(plugin, `Missing element plugin for type "${type}"!`);
 
+    /**
+     * Used ts-ignore because TS is complaining about always overriding some properties
+     */
     return {
+        // @ts-ignore
         id: getNanoid(),
+        // @ts-ignore
         data: {
             settings: {}
         },
+        // @ts-ignore
         elements: [],
         parent: parent ? parent.id : undefined,
+        // @ts-ignore
         type,
         ...addElementId(plugin.create(options, parent))
     };
@@ -141,10 +148,15 @@ export const createBlockElements = (name: string): PbEditorElement => {
     const plugin = plugins.byName<PbEditorBlockPlugin>(name);
 
     invariant(plugin, `Missing block plugin "${name}"!`);
-
+    /**
+     * Used ts-ignore because TS is complaining about always overriding some properties
+     */
     return {
+        // @ts-ignore
         id: getNanoid(),
+        // @ts-ignore
         data: {},
+        // @ts-ignore
         elements: [],
         ...addElementId(plugin.create())
     };
@@ -163,7 +175,7 @@ export const userElementSettingsPlugins = (elementType: string): string[] => {
 
             return false;
         })
-        .map(pl => pl.name);
+        .map(pl => pl.name) as string[];
 };
 
 export const userElementStyleSettingsPlugins = (elementType: string): string[] => {
@@ -179,7 +191,7 @@ export const userElementStyleSettingsPlugins = (elementType: string): string[] =
 
             return false;
         })
-        .map(pl => pl.name);
+        .map(pl => pl.name) as string[];
 };
 
 type CreateEmptyElementCallableType = (

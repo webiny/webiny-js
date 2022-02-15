@@ -3,12 +3,21 @@ import ElementAnimation from "../../../components/ElementAnimation";
 import { ElementRoot } from "../../../components/ElementRoot";
 import { PbElement } from "../../../../types";
 import React from "react";
+import dotProp from "dot-prop-immutable";
 
-type GridPropsType = {
-    element: PbElement;
+const getSize = (element: Pick<PbElement, "data">): number | null => {
+    const size = dotProp.get(element, "data.settings.grid", null);
+    if (!size) {
+        return null;
+    }
+    return Number(size);
 };
+
+interface GridPropsType {
+    element: PbElement;
+}
 const Cell: React.FunctionComponent<GridPropsType> = ({ element }) => {
-    const { size } = element.data.settings?.grid;
+    const size = getSize(element);
     if (!size) {
         throw new Error(`Cell with id "${element.id}" does not have size defined.`);
     }

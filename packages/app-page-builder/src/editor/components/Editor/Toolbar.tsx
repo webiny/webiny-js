@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { ReactElement, useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import styled from "@emotion/styled";
@@ -71,7 +71,9 @@ const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
 }) => {
     const eventActionHandler = useEventActionHandler();
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
-    const last = useRef({ active: null });
+    const last = useRef<{ active: boolean | null }>({
+        active: null
+    });
     useEffect(() => {
         if (active && !last.current.active) {
             addKeyHandler("escape", e => {
@@ -88,7 +90,9 @@ const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
         }
     });
     useEffect(() => {
-        last.current = { active };
+        last.current = {
+            active
+        };
     });
     return (
         <DrawerContainer open={active}>
@@ -116,11 +120,11 @@ const Toolbar = () => {
                     .map(plugin => (
                         <ToolbarDrawer
                             key={plugin.name}
-                            name={plugin.name}
-                            active={Boolean(activePluginsTop.includes(plugin.name))}
+                            name={plugin.name as string}
+                            active={Boolean(activePluginsTop.includes(plugin.name as string))}
                             drawerClassName={plugin.toolbar && plugin.toolbar.drawerClassName}
                         >
-                            {plugin.renderDrawer()}
+                            {(plugin.renderDrawer as () => ReactElement)()}
                         </ToolbarDrawer>
                     ))}
             </ToolbarDrawerContainer>

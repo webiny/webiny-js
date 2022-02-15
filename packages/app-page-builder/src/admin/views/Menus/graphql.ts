@@ -1,5 +1,20 @@
 import gql from "graphql-tag";
-
+interface MenuDataError {
+    message: string;
+    code: string;
+    data: Record<string, any>;
+}
+export interface MenuData {
+    title: string;
+    slug: string;
+    description: string;
+    items: Record<string, any>[];
+    createdOn: string;
+    createdBy: {
+        id: string;
+        displayName: string;
+    };
+}
 const BASE_FIELDS = `
     title
     slug
@@ -23,7 +38,21 @@ export const LIST_MENUS = gql`
         }
     }
 `;
-
+/**
+ * #########################
+ * Get Menu Query Response
+ */
+export interface GetMenuQueryResponse {
+    pageBuilder: {
+        getMenu: {
+            data: MenuData | null;
+            error: MenuDataError | null;
+        };
+    };
+}
+export interface GetMenuQueryVariables {
+    slug: string;
+}
 export const GET_MENU = gql`
     query getMenu($slug: String!) {
         pageBuilder {

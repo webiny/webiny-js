@@ -40,7 +40,12 @@ const FolderForm: React.FC<FolderFormProps> = ({ data, onSubmit, onCancel }) => 
                         <Grid>
                             <Cell span={12}>
                                 <ButtonSecondary onClick={onCancel}>Cancel</ButtonSecondary>
-                                <ButtonPrimary onClick={submit} style={{ float: "right" }}>
+                                <ButtonPrimary
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
+                                    style={{ float: "right" }}
+                                >
                                     Save menu item
                                 </ButtonPrimary>
                             </Cell>
