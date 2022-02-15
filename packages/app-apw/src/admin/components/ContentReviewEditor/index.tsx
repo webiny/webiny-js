@@ -39,6 +39,7 @@ export const ContentReviewEditor: React.FC = () => {
                         steps={contentReview.steps}
                         reviewRequestedOn={contentReview.createdOn}
                         reviewRequestedBy={contentReview.createdBy}
+                        status={contentReview.status}
                     />
                     <Switch>
                         <Route exact path={path}>

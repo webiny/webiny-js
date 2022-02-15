@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { List } from "@webiny/ui/List";
 import {
+    ApwContentReviewStatus,
     ApwContentReviewStep,
     ApwContentReviewStepStatus,
     ApwWorkflowStepTypes,
@@ -10,7 +11,7 @@ import {
 import { formatDate } from "~/admin/components/utils";
 import { PanelBox } from "./Styled";
 import { ContentReviewStep } from "./ContentReviewStep";
-import PublishContent from "./ContentReviewStep/PublishContent";
+import { PublishContent } from "./ContentReviewStep/PublishContent";
 
 const ReviewRequestedStepData = {
     id: "123",
@@ -32,9 +33,11 @@ interface LeftPanelProps {
     steps: ApwContentReviewStep[];
     reviewRequestedOn: string;
     reviewRequestedBy: CreatedBy;
+    status: ApwContentReviewStatus;
 }
 
 export const LeftPanel: React.FC<LeftPanelProps> = ({
+    status,
     steps,
     reviewRequestedBy,
     reviewRequestedOn
@@ -52,7 +55,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                     <ContentReviewStep key={index} step={step} />
                 ))}
             </ContentReviewStepList>
-            <PublishContent />
+            <PublishContent status={status} />
         </PanelBox>
     );
 };
