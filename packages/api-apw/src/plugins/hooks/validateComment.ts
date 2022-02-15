@@ -17,5 +17,13 @@ export const validateComment = ({ apw }: LifeCycleHookCallbackParams) => {
                 }
             );
         }
+
+        /**
+         * Assign value for "step" field from "changeRequest".
+         */
+        const changeRequest = await apw.changeRequest.get(changeRequestId);
+        if (changeRequest) {
+            input.step = changeRequest.step;
+        }
     });
 };

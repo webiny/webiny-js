@@ -7,25 +7,13 @@ import {
 
 export const updateTotalCommentsCount = ({ apw }: LifeCycleHookCallbackParams) => {
     apw.comment.onAfterCommentDelete.subscribe(async ({ comment }) => {
-        /**
-         * There is a cycle between "ContentReview", "ChangeRequest" and "Comment" on
-         * delete event. So it is possible, "ChangeRequest" doesn't exists, in that case,
-         * we'll bail out early.
-         */
-        let changeRequest;
-        try {
-            changeRequest = await apw.changeRequest.get(comment.changeRequest);
-        } catch (e) {
-            if (e.code !== "NOT_FOUND") {
-                throw e;
-            }
-        }
+        const { step } = comment;
         /**
          * After a "comment" is deleted, decrement the "totalComments" count
          * in the corresponding step of the content review entry.
          */
-        if (changeRequest) {
-            const { id, stepId } = extractContentReviewIdAndStep(changeRequest.step);
+        if (step) {
+            const { id, stepId } = extractContentReviewIdAndStep(step);
 
             await updateContentReview({
                 contentReviewMethods: apw.contentReview,
@@ -48,9 +36,7 @@ export const updateTotalCommentsCount = ({ apw }: LifeCycleHookCallbackParams) =
          * After a "comment" is created, increment the "totalComments" count
          * of the corresponding step in the content review entry.
          */
-        const changeRequest = await apw.changeRequest.get(comment.changeRequest);
-
-        const { id, stepId } = extractContentReviewIdAndStep(changeRequest.step);
+        const { id, stepId } = extractContentReviewIdAndStep(comment.step);
 
         await updateContentReview({
             contentReviewMethods: apw.contentReview,
@@ -74,9 +60,7 @@ export const updateLatestCommentId = ({ apw }: LifeCycleHookCallbackParams) => {
          * After a "comment" is created, update the "latestCommentId" in
          *  the corresponding content review entry.
          */
-        const changeRequest = await apw.changeRequest.get(comment.changeRequest);
-
-        const { id } = extractContentReviewIdAndStep(changeRequest.step);
+        const { id } = extractContentReviewIdAndStep(comment.step);
 
         await updateContentReview({
             contentReviewMethods: apw.contentReview,
@@ -95,9 +79,7 @@ export const updateLatestCommentId = ({ apw }: LifeCycleHookCallbackParams) => {
          * After a "comment" is updated, update the "latestCommentId" in
          *  the corresponding content review entry.
          */
-        const changeRequest = await apw.changeRequest.get(comment.changeRequest);
-
-        const { id } = extractContentReviewIdAndStep(changeRequest.step);
+        const { id } = extractContentReviewIdAndStep(comment.step);
 
         await updateContentReview({
             contentReviewMethods: apw.contentReview,
@@ -109,5 +91,33 @@ export const updateLatestCommentId = ({ apw }: LifeCycleHookCallbackParams) => {
                 };
             }
         });
+    });
+
+    apw.comment.onAfterCommentDelete.subscribe(async ({ comment }) => {
+        /**
+         * After a "comment" is updated, update the "latestCommentId" in
+         *  the corresponding content review entry.
+         */
+        const { id } = extractContentReviewIdAndStep(comment.step);
+
+        const contentReview = await apw.contentReview.get(id);
+
+        if (contentReview && contentReview.latestCommentId === comment.id) {
+            const [[latestComment]] = await apw.comment.list({
+                where: { changeRequest: { id: comment.changeRequest } },
+                sort: ["createdOn_DESC"]
+            });
+
+            await updateContentReview({
+                contentReviewMethods: apw.contentReview,
+                id,
+                getNewContentReviewData: contentReview => {
+                    return {
+                        ...contentReview,
+                        latestCommentId: latestComment ? latestComment.id : null
+                    };
+                }
+            });
+        }
     });
 };

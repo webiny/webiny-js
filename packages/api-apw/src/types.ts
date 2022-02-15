@@ -132,6 +132,7 @@ export interface ApwReviewer extends BaseFields {
 export interface ApwComment extends BaseFields {
     body: JSON;
     changeRequest: string;
+    step: string;
 }
 
 export interface ApwChangeRequest extends BaseFields {
@@ -159,6 +160,7 @@ export interface ApwContentReview extends BaseFields {
     status: ApwContentReviewStatus;
     content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
+    latestCommentId: string | null;
 }
 
 export interface ApwWorkflow extends BaseFields {
@@ -230,6 +232,7 @@ interface CreateReviewerParams {
 interface CreateApwCommentParams {
     body: Record<string, any>;
     changeRequest: string;
+    step: string;
 }
 
 interface UpdateApwCommentParams {

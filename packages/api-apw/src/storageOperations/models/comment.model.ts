@@ -21,10 +21,23 @@ const changeRequestRef = modelId =>
         }
     });
 
+const stepField = () =>
+    createModelField({
+        label: "Step",
+        type: "text",
+        parent: "changeRequest",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required"
+            }
+        ]
+    });
+
 export const createCommentModelDefinition = ({ modelId }) => ({
     name: "APW - Comment",
     modelId: "apwCommentModelDefinition",
     titleFieldId: "displayName",
     layout: [["comment_body"], ["comment_displayName"]],
-    fields: [commentBody(), changeRequestRef(modelId)]
+    fields: [commentBody(), changeRequestRef(modelId), stepField()]
 });

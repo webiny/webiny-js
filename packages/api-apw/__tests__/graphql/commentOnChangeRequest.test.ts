@@ -405,7 +405,7 @@ describe("Comment on a change request test", () => {
                     createComment: {
                         data: null,
                         error: {
-                            code: "ENTRY_NOT_FOUND",
+                            code: "NOT_FOUND",
                             message: expect.any(String),
                             data: expect.any(Object)
                         }
