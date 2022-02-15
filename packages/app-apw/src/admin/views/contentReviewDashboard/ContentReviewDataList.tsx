@@ -89,7 +89,7 @@ export function ContentReviewDataList() {
                                 submittedBy={item.createdBy.displayName}
                                 reviewers={item.reviewers}
                                 comments={item.totalComments}
-                                activeStep={item.activeStep.title}
+                                activeStep={item.activeStep}
                                 latestCommentId={item.latestCommentId}
                                 contentTitle={item.title}
                                 contentRevisionNumber={item.content.version}

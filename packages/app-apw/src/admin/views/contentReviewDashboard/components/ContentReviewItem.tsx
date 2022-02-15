@@ -7,11 +7,12 @@ import { i18n } from "@webiny/app/i18n";
 import { ContentReviewBy, ContentReviewByProps } from "./ContentReviewSubmittedInfo";
 import { ContentReviewStatus, ContentReviewStatusProps } from "./ContentReviewStatus";
 import { LatestComment } from "./LatestComment";
+import { ApwContentReviewStep } from "~/types";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
 interface ContentReviewItemProps extends ContentReviewByProps, ContentReviewStatusProps {
-    activeStep: string;
+    activeStep: ApwContentReviewStep;
     contentTitle: string;
     contentRevisionNumber: number;
     latestCommentId: string;
@@ -55,7 +56,9 @@ export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => 
                     <Stack space={2}>
                         <ContentReviewBy submittedOn={submittedOn} submittedBy={submittedBy} />
                         <StatusBox display={"flex"} paddingX={2.5} width={"fit-content"}>
-                            <Typography use={"caption"}>{activeStep}</Typography>
+                            <Typography use={"caption"}>
+                                {activeStep && activeStep.title}
+                            </Typography>
                         </StatusBox>
                     </Stack>
                     {latestCommentId && <LatestComment id={latestCommentId} />}
