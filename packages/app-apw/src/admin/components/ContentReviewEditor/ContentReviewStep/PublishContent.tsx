@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
 import { Box } from "~/admin/components/Layout";
-import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonPrimary, ButtonDefault } from "@webiny/ui/Button";
 import { ReactComponent as CheckIcon } from "~/admin/assets/icons/check_24dp.svg";
 import { ApwContentReviewStatus } from "~/types";
 
@@ -24,8 +24,11 @@ interface PublishContentProps {
     status: ApwContentReviewStatus;
 }
 
+const defaultButtonStyles = { width: "217px" };
+const activeButtonStyles = { backgroundColor: "var(--mdc-theme-secondary)" };
+
 export const PublishContent: React.FC<PublishContentProps> = ({ status }) => {
-    const { loading, publishContent } = usePublishContent();
+    const { loading, publishContent, unpublishContent } = usePublishContent();
     const disabledButtonTooltip = t`Content can only be published once all sign offs have been provided.`;
     const alreadyPublishedMessage = t`Content has been already published.`;
 
@@ -33,7 +36,7 @@ export const PublishContent: React.FC<PublishContentProps> = ({ status }) => {
         return <CircularProgress label={"Loading"} />;
     }
 
-    if (status !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
+    if (status === ApwContentReviewStatus.UNDER_REVIEW) {
         return (
             <PublishContentBox paddingX={5}>
                 <Tooltip
@@ -43,7 +46,7 @@ export const PublishContent: React.FC<PublishContentProps> = ({ status }) => {
                             : alreadyPublishedMessage
                     }
                 >
-                    <ButtonPrimary style={{ width: "217px" }} disabled={true}>
+                    <ButtonPrimary style={defaultButtonStyles} disabled={true}>
                         <ButtonIcon icon={<CheckIcon />} />
                         {t` Publish Content`}
                     </ButtonPrimary>
@@ -52,10 +55,24 @@ export const PublishContent: React.FC<PublishContentProps> = ({ status }) => {
         );
     }
 
+    if (status === ApwContentReviewStatus.PUBLISHED) {
+        return (
+            <PublishContentBox paddingX={5}>
+                <ButtonDefault
+                    style={defaultButtonStyles}
+                    onClick={async () => await unpublishContent()}
+                >
+                    <ButtonIcon icon={<CheckIcon />} />
+                    {t`Un-Publish Content`}
+                </ButtonDefault>
+            </PublishContentBox>
+        );
+    }
+
     return (
         <PublishContentBox paddingX={5}>
             <ButtonPrimary
-                style={{ width: "217px", backgroundColor: "var(--mdc-theme-secondary)" }}
+                style={{ ...defaultButtonStyles, ...activeButtonStyles }}
                 onClick={async () => await publishContent()}
             >
                 <ButtonIcon icon={<CheckIcon />} />
