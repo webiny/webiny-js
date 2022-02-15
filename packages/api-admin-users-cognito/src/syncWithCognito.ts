@@ -98,6 +98,10 @@ export const syncWithCognito = ({
                     {
                         Name: "preferred_username",
                         Value: username
+                    },
+                    {
+                        Name: "email",
+                        Value: username
                     }
                 ]
             };

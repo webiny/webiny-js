@@ -2,7 +2,8 @@ const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 const fs = require("fs-extra");
-const { getProject, injectHandlerTelemetry } = require("@webiny/cli/utils");
+const { getProject } = require("@webiny/cli/utils");
+const { injectHandlerTelemetry } = require("./utils");
 
 module.exports = async options => {
     const duration = getDuration();
