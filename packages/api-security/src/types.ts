@@ -19,7 +19,7 @@ export interface SecurityAuthorizationPlugin extends Plugin {
 // Backwards compatibility - END
 
 export interface Authorizer {
-    (): Promise<SecurityPermission[]>;
+    (): Promise<SecurityPermission[] | null>;
 }
 
 export interface SecurityConfig {
@@ -69,8 +69,8 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     getPermissions(): Promise<SecurityPermission[]>;
     hasFullAccess(): Promise<boolean>;
     // API Keys
-    getApiKey(id: string): Promise<ApiKey>;
-    getApiKeyByToken(token: string): Promise<ApiKey>;
+    getApiKey(id: string): Promise<ApiKey | null>;
+    getApiKeyByToken(token: string): Promise<ApiKey | null>;
     listApiKeys(): Promise<ApiKey[]>;
     createApiKey(data: ApiKeyInput): Promise<ApiKey>;
     updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
@@ -92,20 +92,20 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]>;
     getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
         params: GetTenantLinkByIdentityParams
-    ): Promise<TLink>;
+    ): Promise<TLink | null>;
     // System
-    getVersion(): Promise<string>;
+    getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<System>;
     install(this: Security): Promise<void>;
 }
 
 export interface SecurityStorageOperations {
-    getGroup(params: StorageOperationsGetGroupParams): Promise<Group>;
+    getGroup(params: StorageOperationsGetGroupParams): Promise<Group | null>;
     listGroups(params: StorageOperationsListGroupsParams): Promise<Group[]>;
     createGroup(params: StorageOperationsCreateGroupParams): Promise<Group>;
     updateGroup(params: StorageOperationsUpdateGroupParams): Promise<Group>;
     deleteGroup(params: StorageOperationsDeleteGroupParams): Promise<void>;
-    getSystemData(params: StorageOperationsGetSystemParams): Promise<System>;
+    getSystemData(params: StorageOperationsGetSystemParams): Promise<System | null>;
     createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
     updateSystemData(params: StorageOperationsUpdateSystemParams): Promise<System>;
     createTenantLinks(params: StorageOperationsCreateTenantLinkParams[]): Promise<void>;
@@ -120,9 +120,9 @@ export interface SecurityStorageOperations {
     ): Promise<TenantLink[]>;
     getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
         params: StorageOperationsGetTenantLinkByIdentityParams
-    ): Promise<TLink>;
+    ): Promise<TLink | null>;
     getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey>;
-    getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey>;
+    getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey | null>;
     listApiKeys(params: StorageOperationsListApiKeysParams): Promise<ApiKey[]>;
     createApiKey(params: StorageOperationsCreateApiKeyParams): Promise<ApiKey>;
     updateApiKey(params: StorageOperationsUpdateApiKeyParams): Promise<ApiKey>;
@@ -151,7 +151,7 @@ export interface CreatedBy {
 export interface Group {
     tenant: string;
     createdOn: string;
-    createdBy: CreatedBy;
+    createdBy: CreatedBy | null;
     id: string;
     name: string;
     slug: string;

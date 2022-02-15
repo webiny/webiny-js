@@ -7,8 +7,19 @@ import {
     InstallEvent
 } from "../types";
 import { createTopic } from "@webiny/pubsub";
+import WebinyError from "@webiny/error";
 
-export const createSystemMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
+export const createSystemMethods = ({
+    getTenant: initialGetTenant,
+    storageOperations
+}: SecurityConfig) => {
+    const getTenant = () => {
+        const tenant = initialGetTenant();
+        if (!tenant) {
+            throw new WebinyError("Missing tenant.");
+        }
+        return tenant;
+    };
     return {
         onBeforeInstall: createTopic<InstallEvent>("security.onBeforeInstall"),
         onInstall: createTopic<InstallEvent>("security.onInstall"),
@@ -73,7 +84,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
             }
 
             // Store app version
-            await this.setVersion(process.env.WEBINY_VERSION);
+            await this.setVersion(process.env.WEBINY_VERSION as string);
         }
     };
 };

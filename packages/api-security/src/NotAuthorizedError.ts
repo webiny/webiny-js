@@ -6,10 +6,10 @@ type NotAuthorizedErrorArgsType = {
     data?: any;
 };
 class NotAuthorizedError extends Error {
-    public data?: string;
+    public data: any = null;
     constructor({ message, code, data }: NotAuthorizedErrorArgsType = {}) {
         super(message || `Not authorized!`, code || `SECURITY_NOT_AUTHORIZED`);
-        this.data = data;
+        this.data = data || null;
     }
 }
 
