@@ -3,6 +3,12 @@ const { getProject } = require("@webiny/cli/utils");
 const { injectHandlerTelemetry } = require("./utils");
 
 module.exports = async options => {
+    if (!options) {
+        options = {};
+    }
+    if (!options.cwd) {
+        options.cwd = process.cwd();
+    }
     const webpack = require("webpack");
 
     const { overrides } = options;
@@ -33,7 +39,9 @@ module.exports = async options => {
         });
     });
 
-    const project = getProject({ cwd });
+    const project = getProject({
+        cwd: options.cwd
+    });
 
     if (!project.config.id) {
         return result;
@@ -46,7 +54,7 @@ module.exports = async options => {
     const includesGraphQl = handlerFile.includes("wcp-telemetry-tracker");
 
     if (includesGraphQl) {
-        await injectHandlerTelemetry(cwd);
+        await injectHandlerTelemetry(options.cwd);
     }
 
     return result;
