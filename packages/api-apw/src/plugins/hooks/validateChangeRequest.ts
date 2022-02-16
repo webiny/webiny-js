@@ -29,5 +29,21 @@ export const validateChangeRequest = ({ apw }: LifeCycleHookCallbackParams) => {
                 `Unable to found "ContentReview" with given id "${revisionId}"`
             );
         }
+        /**
+         * Don't allow "change request" creation once the sign-off has been provided.
+         */
+        const { steps } = contentReview;
+        const currentStep = steps.find(step => step.id === stepId);
+
+        if (currentStep && currentStep.signOffProvidedOn) {
+            throw new WebinyError(
+                `Please retract the sign-off before opening a new change request.`,
+                "SIGN_OFF_PROVIDED",
+                {
+                    step: currentStep,
+                    stepId: stepId
+                }
+            );
+        }
     });
 };
