@@ -52,7 +52,7 @@ export class Container {
         }
     }
 
-    private injectCore<T>(symbol: symbol) {
+    private injectCore<T>(symbol: symbol): T | undefined {
         currentContainer = this;
 
         let instance = this.serviceInstances.get(symbol) as T | undefined;
@@ -66,6 +66,8 @@ export class Container {
             this.serviceInstances.set(symbol, instance);
             return instance;
         }
+
+        return undefined;
     }
 
     public provide<T>(service: T): void;
