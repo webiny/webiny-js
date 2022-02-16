@@ -2,16 +2,11 @@
   "name": "@rmwc/base",
   "version": "5.7.2",
   "description": "RMWC base module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "module": "next/index.js",
+  "main": "code/index.js",
+  "types": "code/index.d.ts",
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "publish:dist": "npm publish dist --access=public",
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
