@@ -1,9 +1,17 @@
 import * as aws from "@pulumi/aws";
 
 import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
-import { defineApp, ApplicationConfig, createGenericApplication } from "@webiny/pulumi-sdk";
+import {
+    defineApp,
+    ApplicationConfig,
+    createGenericApplication,
+    mergeAppHooks
+} from "@webiny/pulumi-sdk";
 
 import { createAppBucket } from "../createAppBucket";
+import { websiteUpload } from "./WebsiteHookUpload";
+import { websiteRender } from "./WebsiteHookRender";
+import { websiteUpdatePbSettings } from "./WebsiteHookUpdatePbSettings";
 
 export interface WebsiteAppConfig extends ApplicationConfig {
     config?(app: InstanceType<typeof WebsiteApp>): void;
@@ -167,6 +175,11 @@ export function createWebsiteApp(config: WebsiteAppConfig) {
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,
-        afterDeploy: config.afterDeploy
+        afterDeploy: mergeAppHooks(
+            websiteUpload,
+            websiteRender,
+            websiteUpdatePbSettings,
+            config.afterDeploy
+        )
     });
 }

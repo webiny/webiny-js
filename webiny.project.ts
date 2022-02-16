@@ -24,8 +24,7 @@ export default {
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
                     import("@webiny/cli-plugin-scaffold-react-app"),
                     import("@webiny/cli-plugin-scaffold-react-component"),
-                    import("@webiny/cli-plugin-scaffold-ci"),
-                    import("./apps/website/cli")
+                    import("@webiny/cli-plugin-scaffold-ci")
                 ]);
 
                 return modules

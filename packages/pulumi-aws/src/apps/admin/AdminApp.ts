@@ -9,7 +9,7 @@ import {
 } from "@webiny/pulumi-sdk";
 
 import { createAppBucket } from "../createAppBucket";
-import { afterDeploy } from "./AdminHooks";
+import { adminUpload } from "./AdminHookUpload";
 
 export interface AdminAppConfig extends ApplicationConfig {
     config?(app: InstanceType<typeof AdminApp>): void;
@@ -92,6 +92,6 @@ export function createAdminApp(config: AdminAppConfig) {
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(afterDeploy, config.afterDeploy)
+        afterDeploy: mergeAppHooks(adminUpload, config.afterDeploy)
     });
 }
