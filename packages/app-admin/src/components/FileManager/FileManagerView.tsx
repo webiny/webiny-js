@@ -317,7 +317,12 @@ function FileManagerView(props: FileManagerViewProps) {
             list.map(async file => {
                 try {
                     const response = await getFileUploader()(file, { apolloClient });
-                    const createFileResponse = await createFile({ variables: { data: response } });
+                    /**
+                     * Add "tags" while creating the new file.
+                     */
+                    const createFileResponse = await createFile({
+                        variables: { data: { ...response, tags: queryParams.tags } }
+                    });
                     // Save create file data for later
                     uploadedFiles.push(get(createFileResponse, "data.fileManager.createFile.data"));
                 } catch (e) {

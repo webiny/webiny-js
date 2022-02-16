@@ -7,12 +7,13 @@ enum ListFilesSort {
     SIZE_DESC
 }
 
-function init({ accept }) {
+function init({ accept, tags }) {
     return {
         showingFileDetails: null,
         selected: [],
         hasPreviouslyUploadedFiles: null,
         queryParams: {
+            tags,
             types: accept,
             limit: 50,
             sort: ListFilesSort.CREATED_ON_DESC
