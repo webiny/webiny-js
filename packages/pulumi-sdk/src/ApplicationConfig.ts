@@ -1,7 +1,4 @@
-// TODO add typing to deploy hooks
-export interface ApplicationHook {
-    (params: any, context: any): Promise<void> | void;
-}
+import { ApplicationHook } from "./ApplicationHook";
 
 export interface ApplicationConfig {
     id: string;

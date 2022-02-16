@@ -5,7 +5,8 @@ import { LocalWorkspace } from "@pulumi/pulumi/automation";
 
 import { Pulumi } from "./Pulumi";
 import { PulumiApp } from "./PulumiApp";
-import { ApplicationConfig, ApplicationHook } from "./ApplicationConfig";
+import { ApplicationConfig } from "./ApplicationConfig";
+import { ApplicationHook } from "./ApplicationHook";
 import { getPulumiWorkDir } from "./utils/getPulumiWorkDir";
 
 export interface ApplicationGenericConfig extends ApplicationConfig {

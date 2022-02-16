@@ -1,9 +1,15 @@
 import * as aws from "@pulumi/aws";
 
 import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
-import { defineApp, ApplicationConfig, createGenericApplication } from "@webiny/pulumi-sdk";
+import {
+    defineApp,
+    createGenericApplication,
+    mergeAppHooks,
+    ApplicationConfig
+} from "@webiny/pulumi-sdk";
 
-import { createAppBucket } from "./createAppBucket";
+import { createAppBucket } from "../createAppBucket";
+import { afterDeploy } from "./AdminHooks";
 
 export interface AdminAppConfig extends ApplicationConfig {
     config?(app: InstanceType<typeof AdminApp>): void;
@@ -70,6 +76,8 @@ export const AdminApp = defineApp({
     }
 });
 
+export type AdminApp = InstanceType<typeof AdminApp>;
+
 export function createAdminApp(config: AdminAppConfig) {
     const app = new AdminApp();
 
@@ -84,6 +92,6 @@ export function createAdminApp(config: AdminAppConfig) {
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,
-        afterDeploy: config.afterDeploy
+        afterDeploy: mergeAppHooks(afterDeploy, config.afterDeploy)
     });
 }

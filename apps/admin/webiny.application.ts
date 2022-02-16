@@ -4,7 +4,6 @@
  */
 
 import { createAdminApp } from "@webiny/pulumi-aws";
-import { afterDeploy } from "./cli/afterDeploy";
 
 export default createAdminApp({
     id: "admin",
@@ -30,5 +29,7 @@ export default createAdminApp({
     beforeDeploy() {
         console.log("BEFORE DEPLOY");
     },
-    afterDeploy: afterDeploy
+    afterDeploy() {
+        console.log("AFTER DEPLOY");
+    }
 });

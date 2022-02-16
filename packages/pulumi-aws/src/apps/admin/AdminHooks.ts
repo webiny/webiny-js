@@ -1,15 +1,11 @@
-const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
-const uploadFolderToS3 = require("@webiny/cli-plugin-deploy-pulumi/utils/aws/uploadFolderToS3");
-const path = require("path");
-const fs = require("fs");
+import path from "path";
+import fs from "fs";
 
-/**
- * This plugin uploads the Admin Area React application to the deployed Amazon S3 bucket.
- * The plugin is executed right after the Admin Area React application has been successfully built
- * and relevant cloud infrastructure resources have been deployed (via `webiny deploy` command).
- * https://www.webiny.com/docs/how-to-guides/deployment/deploy-your-project/
- */
-export async function afterDeploy(params: any, context: any) {
+import { defineAppHook } from "@webiny/pulumi-sdk";
+import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
+import uploadFolderToS3 from "@webiny/cli-plugin-deploy-pulumi/utils/aws/uploadFolderToS3";
+
+export const afterDeploy = defineAppHook(async (params, context) => {
     if (params.inputs.build === false) {
         context.info(`"--no-build" argument detected - skipping React application upload.`);
         return;
@@ -17,8 +13,9 @@ export async function afterDeploy(params: any, context: any) {
 
     context.info("Uploading React application...");
 
-    const buildFolderPath = path.join(__dirname, "..", "code", "build");
-    if (!fs.existsSync(buildFolderPath)) {
+    const appRoot = params.projectApplication.root;
+    const buildFolder = path.join(appRoot, "code", "build");
+    if (!fs.existsSync(buildFolder)) {
         throw new Error("Cannot continue, build folder not found.");
     }
 
@@ -29,7 +26,7 @@ export async function afterDeploy(params: any, context: any) {
     });
 
     await uploadFolderToS3({
-        path: buildFolderPath,
+        path: buildFolder,
         bucket: adminOutput.appStorage,
         acl: "private",
         onFileUploadSuccess(args: any) {
@@ -47,4 +44,4 @@ export async function afterDeploy(params: any, context: any) {
     const duration = (new Date().getTime() - start) / 1000;
 
     context.success(`React application successfully uploaded in ${context.success.hl(duration)}s.`);
-}
+});

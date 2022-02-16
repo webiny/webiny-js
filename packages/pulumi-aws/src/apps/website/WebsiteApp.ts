@@ -3,7 +3,7 @@ import * as aws from "@pulumi/aws";
 import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { defineApp, ApplicationConfig, createGenericApplication } from "@webiny/pulumi-sdk";
 
-import { createAppBucket } from "./createAppBucket";
+import { createAppBucket } from "../createAppBucket";
 
 export interface WebsiteAppConfig extends ApplicationConfig {
     config?(app: InstanceType<typeof WebsiteApp>): void;
@@ -150,6 +150,8 @@ export const WebsiteApp = defineApp({
         };
     }
 });
+
+export type WebsiteApp = InstanceType<typeof WebsiteApp>;
 
 export function createWebsiteApp(config: WebsiteAppConfig) {
     const app = new WebsiteApp();
