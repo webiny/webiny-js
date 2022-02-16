@@ -74,10 +74,17 @@ const ContentFormOptionsMenu: React.FC = () => {
             const [uniqueId] = entry.id.split("#");
             await deleteContentMutation({
                 variables: { revision: uniqueId },
-                update(cache, { data }) {
-                    const { error } = data.content;
+                update(cache, response) {
+                    if (!response || !response.data) {
+                        showDialog("Missing response data on Delete Entry Mutation.", {
+                            title: t`Could not delete content`
+                        });
+                        return;
+                    }
+                    const { error } = response.data.content;
                     if (error) {
-                        return showDialog(error.message, { title: t`Could not delete content` });
+                        showDialog(error.message, { title: t`Could not delete content` });
+                        return;
                     }
 
                     removeEntryFromListCache(contentModel, cache, entry, listQueryVariables);
@@ -91,7 +98,7 @@ const ContentFormOptionsMenu: React.FC = () => {
 
             setLoading(false);
         });
-    }, null);
+    }, []);
 
     if (!canDelete(entry, "cms.contentEntry")) {
         return null;

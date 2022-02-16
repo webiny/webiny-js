@@ -140,7 +140,9 @@ const IconPicker: React.FC<IconPickerProps> = ({
                         style={style}
                         className={gridItem}
                         onClick={() => {
-                            onChange(item.id.join("/"));
+                            if (onChange) {
+                                onChange(item.id.join("/"));
+                            }
                             closeMenu();
                         }}
                     >
@@ -193,6 +195,8 @@ const IconPicker: React.FC<IconPickerProps> = ({
     const fontAwesomeIconValue: any =
         typeof value === "string" && value.includes("/") ? value.split("/") : ["fas", "star"];
 
+    const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
     return (
         <>
             {label && (
@@ -213,10 +217,10 @@ const IconPicker: React.FC<IconPickerProps> = ({
                     {mustRenderGrid && renderGrid}
                 </Menu>
             </div>
-            {validation.isValid === false && (
-                <FormElementMessage error>{validation.message}</FormElementMessage>
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
             )}
-            {validation.isValid !== false && description && (
+            {validationIsValid !== false && description && (
                 <FormElementMessage>{description}</FormElementMessage>
             )}
         </>

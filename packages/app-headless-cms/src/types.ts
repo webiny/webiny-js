@@ -252,7 +252,7 @@ export interface CmsEditorFieldPredefinedValues {
 export type CmsEditorField<T = unknown> = T & {
     id?: string;
     type: string;
-    fieldId?: CmsEditorFieldId;
+    fieldId: CmsEditorFieldId;
     label?: string;
     helpText?: string;
     placeholderText?: string;

@@ -57,6 +57,11 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         CreateCmsModelMutationVariables
     >(GQL.CREATE_CONTENT_MODEL, {
         update(cache, { data }) {
+            if (!data) {
+                setLoading(false);
+                showSnackbar("Missing data on Create Content Model Mutation Response.");
+                return;
+            }
             const { data: model, error } = data.createContentModel;
 
             if (error) {
@@ -105,7 +110,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             throw new Error(`Model name that ends with "${ending}" is not allowed.`);
         }
         return true;
-    }, undefined);
+    }, []);
 
     const group = contentModelGroups?.length > 0 ? contentModelGroups[0].value : null;
 
@@ -174,7 +179,13 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                 </Grid>
                             </UID.DialogContent>
                             <UID.DialogActions>
-                                <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
+                                <ButtonDefault
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
+                                >
+                                    + {t`Create`}
+                                </ButtonDefault>
                             </UID.DialogActions>
                         </>
                     )}

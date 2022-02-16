@@ -19,7 +19,11 @@ const resolve = async (fn: () => any): Promise<Response | ErrorResponse> => {
         if (ex instanceof NotFoundError) {
             return new NotFoundResponse(ex.message);
         } else if (ex instanceof NotAuthorizedError) {
-            return new NotAuthorizedResponse(ex);
+            return new NotAuthorizedResponse({
+                code: ex.code,
+                message: ex.message,
+                data: ex.data || null
+            });
         }
         return new ErrorResponse(ex);
     }

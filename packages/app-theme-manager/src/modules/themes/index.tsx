@@ -95,7 +95,7 @@ const WebsiteSettings: React.FC = () => {
 
 const AppReloader: React.FC = () => {
     const theme = useCurrentTheme();
-    const themeRef = useRef(null);
+    const themeRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (!theme) {

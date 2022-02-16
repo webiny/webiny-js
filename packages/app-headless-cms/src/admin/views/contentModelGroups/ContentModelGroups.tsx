@@ -8,6 +8,9 @@ const ContentModelGroups: React.FC = () => {
     const { identity } = useSecurity();
 
     const canCreate = useMemo((): boolean => {
+        if (!identity || !identity.getPermission) {
+            return false;
+        }
         const permission = identity.getPermission("cms.contentModelGroup");
         if (!permission) {
             return false;
@@ -18,7 +21,7 @@ const ContentModelGroups: React.FC = () => {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     return (
         <SplitView>

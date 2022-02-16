@@ -36,7 +36,7 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
         delay: 400
     };
 
-    private delay: number = null;
+    private delay: number | null = null;
     public readonly state: DelayedOnChangeState = { value: "" };
 
     public componentDidMount() {
@@ -64,7 +64,7 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
 
     render(): React.ReactNode {
         const { children, ...other } = this.props;
-        const newProps = {
+        const newProps: Omit<DelayedOnChangeProps, "children"> = {
             ...other,
             value: this.state.value,
             onChange: this.onChange
@@ -72,7 +72,7 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
 
         const renderProp = typeof children === "function" ? children : false;
         const child = renderProp
-            ? renderProp(newProps)
+            ? renderProp(newProps as Required<DelayedOnChangeProps>)
             : React.cloneElement(children as React.ReactElement, newProps);
 
         const props = { ...child.props };

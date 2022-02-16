@@ -23,8 +23,8 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
             const original = await storageOperations.get();
 
             const system: I18NSystem = {
-                ...(original || ({} as any)),
-                tenant: original && original.tenant ? original.tenant : getTenantId,
+                ...(original || {}),
+                tenant: original && original.tenant ? original.tenant : getTenantId(),
                 version
             };
             if (original) {

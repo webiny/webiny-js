@@ -37,7 +37,15 @@ export interface ContentEntriesContext {
     insideDialog?: boolean;
 }
 
-export const Context = React.createContext<ContentEntriesContext>(null);
+export const Context = React.createContext<ContentEntriesContext>({
+    contentModel: null as unknown as CmsEditorContentModel,
+    sorters: [],
+    canCreate: false,
+    listQueryVariables: {},
+    setListQueryVariables: () => {
+        return void 0;
+    }
+});
 
 export interface ContentEntriesContextProviderProps {
     contentModel: CmsEditorContentModel;
@@ -57,6 +65,9 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
     });
 
     const canCreate = useMemo((): boolean => {
+        if (!identity || !identity.getPermission) {
+            return false;
+        }
         const permission = identity.getPermission("cms.contentEntry");
         if (!permission) {
             return false;
@@ -67,7 +78,7 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     const sorters = useMemo((): CmsEntriesSorter[] => {
         const titleField = contentModel.fields.find(

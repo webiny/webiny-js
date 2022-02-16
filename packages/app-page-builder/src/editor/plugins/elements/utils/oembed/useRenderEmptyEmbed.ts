@@ -5,7 +5,7 @@ import { PbEditorElement } from "~/types";
 interface Callable {
     (): React.ReactElement | null;
 }
-export default (element: PbEditorElement): Callable => {
+export default (element?: PbEditorElement | null): Callable => {
     return useCallback(() => {
         if (!element) {
             return (): React.ReactElement | null => null;

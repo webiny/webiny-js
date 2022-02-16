@@ -37,7 +37,7 @@ export const createLocalesCrud = (params: Params): LocalesCRUD => {
         onBeforeDelete,
         onAfterDelete,
         async getDefaultLocale() {
-            let locale: I18NLocale = null;
+            let locale: I18NLocale | null = null;
             try {
                 locale = await storageOperations.getDefault();
             } catch (ex) {
@@ -55,7 +55,7 @@ export const createLocalesCrud = (params: Params): LocalesCRUD => {
             };
         },
         async getLocale(code) {
-            let locale: I18NLocale = null;
+            let locale: I18NLocale | null = null;
             try {
                 locale = await storageOperations.get(code);
             } catch (ex) {

@@ -226,7 +226,7 @@ export interface CmsEntryCreateFromMutationVariables {
     /**
      * We have any here because we do not know which fields does entry have
      */
-    data: Record<string, any>;
+    data?: Record<string, any>;
 }
 export const createCreateFromMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);

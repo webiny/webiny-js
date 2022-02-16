@@ -4,6 +4,7 @@ import { ContextPlugin } from "@webiny/handler";
 import { I18NLocaleContextPlugin, LocaleKeys } from "~/plugins/I18NLocaleContextPlugin";
 import { createCrudContext } from "~/graphql/crud";
 import { HttpObject } from "@webiny/handler-http/types";
+import WebinyError from "@webiny/error";
 
 interface Locales {
     content: string;
@@ -35,14 +36,25 @@ const parseXI18NLocaleHeader = (value: string): Locales => {
     return headerCache[value];
 };
 
-const getLocaleFromHeaders = (http: HttpObject, localeContext: LocaleKeys = "default") => {
-    if (!http) {
-        return null;
+interface GetLocaleFromHeadersResult {
+    acceptLanguageHeader: string | null;
+    contextLocaleHeader: string | null;
+}
+const getLocaleFromHeaders = (
+    http: HttpObject,
+    localeContext: LocaleKeys = "default"
+): GetLocaleFromHeadersResult => {
+    let acceptLanguageHeader: string | null = null;
+    let contextLocaleHeader: string | null = null;
+    if (!http || !http.request || !http.request.headers) {
+        return {
+            acceptLanguageHeader,
+            contextLocaleHeader
+        };
     }
 
     const { headers = {} } = http.request;
 
-    let acceptLanguageHeader, contextLocaleHeader;
     for (const key in headers) {
         if (headers.hasOwnProperty(key) === false) {
             continue;
@@ -79,14 +91,28 @@ const createBaseContextPlugin = () => {
         const { http, plugins } = context;
 
         const __i18n: I18NContextObject["__i18n"] = {
-            acceptLanguage: null,
+            acceptLanguage: "",
             defaultLocale: null,
             locale: {}, // Contains one or more locales - for multiple locale contexts.
             locales
         };
-        const getDefaultLocale = () => {
+        const getDefaultLocale = (): I18NLocale => {
             const allLocales = getLocales();
-            return allLocales.find(item => item.default === true);
+            const locale = allLocales.find(item => item.default === true);
+
+            if (locale) {
+                return locale;
+            }
+            const enLocale = allLocales.find(item => {
+                return item.code.match("en") !== null;
+            });
+            if (enLocale) {
+                return enLocale;
+            }
+            throw new WebinyError(
+                `Missing locale that matches "en" keyword. No locales found in the system.`,
+                "NO_LOCALES"
+            );
         };
         const getCurrentLocales = () => {
             const localeContexts = plugins.byType<I18NLocaleContextPlugin>(
@@ -134,7 +160,7 @@ const createBaseContextPlugin = () => {
         const getLocales = (): I18NLocale[] => {
             return __i18n.locales;
         };
-        const getLocale = (code: string): I18NLocale => {
+        const getLocale = (code: string): I18NLocale | null => {
             const item = __i18n.locales.find(
                 locale => locale.code.toLowerCase() === code.toLowerCase()
             );

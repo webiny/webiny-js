@@ -20,8 +20,8 @@ export interface I18NLocale {
 
 export interface I18NContextObject {
     __i18n: {
-        acceptLanguage: string;
-        defaultLocale: I18NLocale;
+        acceptLanguage: string | null;
+        defaultLocale: I18NLocale | null;
         locale: Record<string, I18NLocale>;
         locales: I18NLocale[];
     };
@@ -47,7 +47,7 @@ export interface SystemCRUD {
     /**
      * Get the current version of the i18n.
      */
-    getSystemVersion(): Promise<string>;
+    getSystemVersion(): Promise<string | null>;
     /**
      * Set the current version of the i18n.
      */
