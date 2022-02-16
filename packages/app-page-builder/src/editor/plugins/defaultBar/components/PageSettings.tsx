@@ -62,7 +62,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                             <ListItem
                                 key={pl.name}
                                 className={listItem}
-                                onClick={() => setActive(pl.name)}
+                                onClick={() => setActive(pl.name || "")}
                             >
                                 <ListItemGraphic>
                                     <Icon icon={pl.icon as any} />
@@ -84,7 +84,13 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                                     {activePlugin.render({ Bind, form, data, setValue } as any)}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
-                                    <ButtonPrimary onClick={submit}>Save settings</ButtonPrimary>
+                                    <ButtonPrimary
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
+                                    >
+                                        Save settings
+                                    </ButtonPrimary>
                                 </SimpleFormFooter>
                             </SimpleForm>
                         )}

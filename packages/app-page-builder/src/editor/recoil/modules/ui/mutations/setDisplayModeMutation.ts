@@ -4,7 +4,7 @@ import { UiAtomType } from "../uiAtom";
 export const setDisplayModeMutation: EventActionHandlerMutationActionCallable<
     UiAtomType,
     DisplayMode
-> = (state, displayMode) => {
+> = (state, displayMode: DisplayMode) => {
     return {
         ...state,
         displayMode

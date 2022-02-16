@@ -2,21 +2,6 @@ import * as React from "react";
 import { plugins } from "@webiny/plugins";
 import { DisplayMode, PbTheme, PbThemePlugin } from "~/types";
 
-export const PageBuilderContext = React.createContext<PageBuilderContextValue>({
-    theme: null,
-    defaults: {
-        pages: {
-            notFound: undefined
-        }
-    },
-    responsiveDisplayMode: {
-        displayMode: DisplayMode.DESKTOP,
-        setDisplayMode: () => {
-            return void 0;
-        }
-    }
-});
-
 export interface ResponsiveDisplayMode {
     displayMode: DisplayMode;
     setDisplayMode: Function;
@@ -28,19 +13,43 @@ export interface ExportPageData {
 }
 
 export interface PageBuilderContextValue {
-    theme: PbTheme | null;
+    theme: PbTheme;
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
         };
     };
     responsiveDisplayMode: ResponsiveDisplayMode;
-    exportPageData?: ExportPageData;
+    exportPageData: ExportPageData;
 }
 
 export interface PageBuilderProviderProps {
     children?: React.ReactChild | React.ReactChild[];
 }
+
+export const PageBuilderContext = React.createContext<PageBuilderContextValue>({
+    /**
+     * Initial value. It will never be null
+     */
+    theme: null as unknown as PbTheme,
+    defaults: {
+        pages: {
+            notFound: undefined
+        }
+    },
+    responsiveDisplayMode: {
+        displayMode: DisplayMode.DESKTOP,
+        setDisplayMode: () => {
+            return void 0;
+        }
+    },
+    exportPageData: {
+        revisionType: "",
+        setRevisionType: () => {
+            return void 0;
+        }
+    }
+});
 
 export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
@@ -51,7 +60,12 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
             value={{
                 get theme() {
                     const [themePlugin] = plugins.byType<PbThemePlugin>("pb-theme");
-                    return themePlugin ? themePlugin.theme : null;
+                    if (!themePlugin) {
+                        throw new Error(
+                            "Theme plugin does not exist. Make sure that at least one plugin is loaded."
+                        );
+                    }
+                    return themePlugin.theme;
                 },
                 responsiveDisplayMode: {
                     displayMode,

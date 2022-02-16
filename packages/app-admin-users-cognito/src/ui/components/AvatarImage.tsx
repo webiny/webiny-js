@@ -16,7 +16,7 @@ const AvatarImage: React.FC<SingleImageUploadProps> = props => {
             {...props}
             imagePreviewProps={{
                 transform: { width: 300 },
-                style: getImagePreviewStyles(props.round)
+                style: getImagePreviewStyles(props.round || false)
             }}
         />
     );

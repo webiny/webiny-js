@@ -4,7 +4,7 @@ import { plugins } from "@webiny/plugins";
 import { PbEditorElement, PbEditorPageElementPlugin } from "~/types";
 import Title from "./components/Title";
 
-export default (el: PbEditorElement) => {
+export default (el: PbEditorElement): void => {
     const elementPlugins = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
     const rootPlugin = elementPlugins.find(pl => pl.elementType === el.content.type);
 

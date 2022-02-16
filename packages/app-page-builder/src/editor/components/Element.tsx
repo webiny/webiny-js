@@ -49,10 +49,13 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     className = "",
     isActive
 }) => {
-    const [element, setElementAtomValue] = useRecoilState(elementByIdSelector(elementId));
+    const elementAtomState = useRecoilState(elementByIdSelector(elementId));
+    const element = elementAtomState[0] as PbEditorElement;
+    const setElementAtomValue = elementAtomState[1];
     const setUiAtomValue = useSetRecoilState(uiAtom);
     const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
-    const { isHighlighted } = element;
+
+    const { isHighlighted } = element as PbEditorElement;
 
     const plugin = getElementPlugin(element);
 

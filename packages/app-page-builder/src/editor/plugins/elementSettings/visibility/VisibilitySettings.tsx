@@ -45,7 +45,7 @@ interface UseVisibilitySettingResult {
 }
 export const useVisibilitySetting = (elementId: string): UseVisibilitySettingResult => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId)) as PbEditorElement;
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE
@@ -69,13 +69,20 @@ const VisibilitySettings: React.FunctionComponent<
 > = ({ defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
-    const { element, updateVisibility } = useVisibilitySetting(activeElementId);
+    const { element, updateVisibility } = useVisibilitySetting(activeElementId as string);
 
-    const { config: activeDisplayModeConfig } = useMemo(() => {
+    const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
+
+    const { config: activeDisplayModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
 
     const fallbackValue = useMemo(
         () =>

@@ -12,13 +12,13 @@ interface DeleteActionPropsType {
 const DeleteAction: React.FC<DeleteActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+    const element = useRecoilValue(elementByIdSelector(activeElementId as string));
 
     if (!element) {
         return null;
     }
 
-    const onClick = useCallback(() => {
+    const onClick = useCallback((): void => {
         eventActionHandler.trigger(
             new DeleteElementActionEvent({
                 element

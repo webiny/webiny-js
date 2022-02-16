@@ -11,7 +11,7 @@ export interface Tenant {
 
 export interface TenancyContextValue {
     tenant: string | null;
-    setTenant(tenant: string): void;
+    setTenant(tenant: string | null): void;
     isMultiTenant: boolean;
 }
 

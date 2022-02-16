@@ -6,6 +6,7 @@ import { MoveBlockActionArgsType } from "~/editor/recoil/actions/moveBlock/types
 import { MoveBlockActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { DraggableItem } from "~/editor/components/Draggable";
+import { PbEditorElement } from "~/types";
 
 export const BLOCK = "block";
 
@@ -13,9 +14,11 @@ interface UseMoveBlock {
     move: (current: number, next: number) => void;
 }
 export const useMoveBlock = (elementId: string): UseMoveBlock => {
-    const rootElementId = useRecoilValue(rootElementAtom);
-    const rootElementValue = useRecoilValue(elementByIdSelector(rootElementId));
     const handler = useEventActionHandler();
+    const rootElementId = useRecoilValue(rootElementAtom);
+    const rootElementValue = useRecoilValue(
+        elementByIdSelector(rootElementId as string)
+    ) as PbEditorElement;
 
     const moveBlock = (args: MoveBlockActionArgsType) => {
         handler.trigger(new MoveBlockActionEvent(args));
@@ -33,7 +36,7 @@ export const useMoveBlock = (elementId: string): UseMoveBlock => {
                 position: next,
                 type: "block"
             },
-            rootElementId: rootElementId
+            rootElementId: rootElementId as string
         });
     };
 

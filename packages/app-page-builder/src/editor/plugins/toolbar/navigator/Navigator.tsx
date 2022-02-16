@@ -8,15 +8,31 @@ import { TreeView } from "./TreeView";
 import { ReactComponent as UnfoldMoreIcon } from "./assets/unfold_more_24px.svg";
 import { ReactComponent as UnfoldLessIcon } from "./assets/unfold_less_24px.svg";
 import { UpdateElementTreeActionEvent } from "~/editor/recoil/actions";
+import { PbEditorElement } from "~/types";
 
 const t = i18n.ns("app-page-builder/editor/plugins/toolbar/navigator");
 
-export const NavigatorContext = createContext(null);
+interface NavigatorContextValue {
+    refresh: () => Promise<void>;
+    expandAll: boolean;
+    setActiveElementPath: (value: string[]) => void;
+    activeElementPath: string[];
+}
+export const NavigatorContext = createContext<NavigatorContextValue>({
+    activeElementPath: [],
+    refresh: async () => {
+        return void 0;
+    },
+    expandAll: false,
+    setActiveElementPath: () => {
+        return void 0;
+    }
+});
 
 const Navigator: React.FC = () => {
-    const [elementTree, setElementTree] = useState(null);
-    const [expandAll, setExpandAll] = useState(false);
-    const [activeElementPath, setActiveElementPath] = useState([]);
+    const [elementTree, setElementTree] = useState<PbEditorElement | null>(null);
+    const [expandAll, setExpandAll] = useState<boolean>(false);
+    const [activeElementPath, setActiveElementPath] = useState<string[]>([]);
     const eventHandler = useEventActionHandler();
 
     const refreshElementTree = async () => {
@@ -29,7 +45,9 @@ const Navigator: React.FC = () => {
     useEffect(() => {
         eventHandler.on(UpdateElementTreeActionEvent, () => {
             refreshElementTree();
-            return {};
+            return {
+                actions: []
+            };
         });
     }, []);
 

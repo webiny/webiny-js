@@ -7392,6 +7392,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/classnames@npm:^2.2.7":
+  version: 2.3.0
+  resolution: "@types/classnames@npm:2.3.0"
+  dependencies:
+    classnames: "*"
+  checksum: e1bd6de60fc5e4ead601838078b10f378d6a66ad21112922856de59a1f450b1361f597aa3ca34f2cc33bc030f950112872fddfde43c5189bec89737a8b237f24
+  languageName: node
+  linkType: hard
+
 "@types/cookie@npm:^0.3.3":
   version: 0.3.3
   resolution: "@types/cookie@npm:0.3.3"
@@ -11949,6 +11958,7 @@ __metadata:
     "@storybook/react": ^5.2.8
     "@svgr/webpack": ^6.1.1
     "@testing-library/react": ^12.1.2
+    "@types/classnames": ^2.2.7
     "@types/nprogress": ^0.2.0
     "@types/rc-tooltip": ^3.7.2
     "@types/react-custom-scrollbars": ^4.0.10
@@ -11968,11 +11978,13 @@ __metadata:
     downshift: ^2.1.5
     emotion: 10.0.17
     execa: ^5.0.0
+    hyperform: ^0.9.9
     jest-dom: ^3.0.0
     keycode: ^2.2.0
     load-script: ^1.0.0
     lodash: ^4.17.11
     material-components-web: ^3.1.1
+    mutation-observer: ^1.0.3
     ncp: ^2.0.0
     nprogress: ^0.2.0
     nuka-carousel: 4.7.1
@@ -15722,7 +15734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classnames@npm:^2.2.6, classnames@npm:^2.3.1":
+"classnames@npm:*, classnames@npm:^2.2.6, classnames@npm:^2.3.1":
   version: 2.3.1
   resolution: "classnames@npm:2.3.1"
   checksum: 14db8889d56c267a591f08b0834989fe542d47fac659af5a539e110cc4266694e8de86e4e3bbd271157dbd831361310a8293e0167141e80b0f03a0f175c80960
@@ -22964,6 +22976,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hyperform@npm:^0.9.9":
+  version: 0.9.23
+  resolution: "hyperform@npm:0.9.23"
+  checksum: 8130a84a4e8fa8b86433a44e5c2cfbdddbdef8c315619b5b4a7f0798332a3523f0bc5a5f1f65cc3351f16ff1140b076d98553d7431919d25d0b6a00b5d7d5fcb
+  languageName: node
+  linkType: hard
+
 "hyphenate-style-name@npm:^1.0.1, hyphenate-style-name@npm:^1.0.2, hyphenate-style-name@npm:^1.0.3":
   version: 1.0.4
   resolution: "hyphenate-style-name@npm:1.0.4"
@@ -27785,6 +27804,13 @@ __metadata:
     arrify: ^1.0.1
     minimatch: ^3.0.4
   checksum: 0929c225a8f690e6f3d3aab724c3dab21136cccb5174844104903826ef93740e0a2965062b4943ab1894b66392592f18fca17d3294614a74de0443dfe4a24a03
+  languageName: node
+  linkType: hard
+
+"mutation-observer@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "mutation-observer@npm:1.0.3"
+  checksum: 6b550215af970471ec900a6c89397d032c49d13d402e1c93c3cb9b0324c49a2628f6a06839106075a005d640305d250b80f2960c27b2a379055f5bc54851c35e
   languageName: node
   linkType: hard
 

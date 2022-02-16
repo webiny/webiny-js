@@ -42,7 +42,7 @@ const PreviewBox = styled("div")({
 
 interface EditBlockDialogProps {
     open: boolean;
-    plugin: PbEditorBlockPlugin;
+    plugin: PbEditorBlockPlugin | null;
     onClose: DialogOnClose;
     onSubmit: FormOnSubmit;
     loading: boolean;

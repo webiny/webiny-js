@@ -6,6 +6,7 @@ import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security";
 import { ReactComponent as DoneIcon } from "./assets/done-24px.svg";
 import { ReactComponent as TranslateIcon } from "./assets/round-translate-24px.svg";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const menuList = css({
     width: 160,
@@ -21,7 +22,12 @@ export const LocaleSelector: React.FC = () => {
     const { setCurrentLocale, getCurrentLocale, getLocales } = useI18N();
     const { identity } = useSecurity();
 
-    const contentI18NPermission = useMemo(() => identity.getPermission("content.i18n"), []);
+    const contentI18NPermission = useMemo((): SecurityPermission | null => {
+        if (!identity || !identity.getPermission) {
+            return null;
+        }
+        return identity.getPermission("content.i18n");
+    }, [identity]);
 
     const locales = getLocales();
     const localeList = locales.filter(locale => {

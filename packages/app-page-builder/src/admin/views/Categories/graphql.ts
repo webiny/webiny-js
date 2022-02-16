@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { PbCategory, PbErrorResponse } from "~/types";
 
 const BASE_FIELDS = `
     slug
@@ -28,7 +29,21 @@ export const LIST_CATEGORIES = gql`
         }
     }
 `;
-
+/**
+ * ###########################
+ * Get Category Query Response
+ */
+export interface GetCategoryQueryResponse {
+    pageBuilder: {
+        getCategory: {
+            data: PbCategory | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface GetCategoryQueryVariables {
+    slug: string;
+}
 export const GET_CATEGORY = gql`
     query GetCategory($slug: String!) {
         pageBuilder {
@@ -45,7 +60,26 @@ export const GET_CATEGORY = gql`
         }
     }
 `;
-
+/**
+ * ###########################
+ * Create Category Mutation Response
+ */
+export interface CreateCategoryMutationResponse {
+    pageBuilder: {
+        category: {
+            data: PbCategory | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface CreateCategoryMutationVariables {
+    data: {
+        name: string;
+        slug: string;
+        url: string;
+        layout: string;
+    };
+}
 export const CREATE_CATEGORY = gql`
     mutation CreateCategory($data: PbCategoryInput!){
         pageBuilder {
@@ -63,6 +97,27 @@ export const CREATE_CATEGORY = gql`
     }
 `;
 
+/**
+ * ###########################
+ * Update Category Mutation Response
+ */
+export interface UpdateCategoryMutationResponse {
+    pageBuilder: {
+        category: {
+            data: PbCategory | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface UpdateCategoryMutationVariables {
+    slug: string;
+    data: {
+        name: string;
+        slug: string;
+        url: string;
+        layout: string;
+    };
+}
 export const UPDATE_CATEGORY = gql`
     mutation UpdateCategory($slug: String!, $data: PbCategoryInput!){
         pageBuilder {

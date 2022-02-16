@@ -35,7 +35,7 @@ export const createAuthentication = (config: CreateAuthenticationConfig = {}) =>
     };
 
     const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
-        const [error, setError] = useState(null);
+        const [error, setError] = useState<string | null>(null);
         const BaseAuthentication = useMemo(() => {
             return baseCreateAuthentication({
                 onError(error: Error) {

@@ -124,7 +124,11 @@ const UserAccountForm: React.FC = () => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormFooter>
-                            <ButtonPrimary onClick={form.submit}>{t`Update account`}</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >{t`Update account`}</ButtonPrimary>
                         </SimpleFormFooter>
                     </SimpleForm>
                 )}

@@ -65,6 +65,9 @@ const SelectField: React.FC<SelectProps> = ({
                 className={classNames(selectStyle, className)}
                 value={value}
                 onChange={({ target: { value } }) => {
+                    if (!onChange) {
+                        return;
+                    }
                     onChange(value);
                 }}
                 {...omit(props, "validate")}

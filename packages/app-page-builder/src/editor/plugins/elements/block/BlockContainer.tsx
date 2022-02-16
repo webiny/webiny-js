@@ -11,6 +11,7 @@ import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil
 import { elementByIdSelector, uiAtom, highlightElementAtom } from "../../../recoil/modules";
 import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
 import BlockContainerInnerWrapper from "./BlockContainerInnerWrapper";
+import { PbEditorElement } from "~/types";
 
 const addIcon = css({
     color: "var(--mdc-theme-secondary)",
@@ -39,7 +40,7 @@ const BlockContainer: React.FC<BlockContainerPropsType> = ({
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
-    const element = useRecoilValue(elementByIdSelector(elementId));
+    const element = useRecoilValue(elementByIdSelector(elementId)) as PbEditorElement;
     const highlightedElement = useRecoilValue(highlightElementAtom);
     const { id, path, type, elements } = element;
 

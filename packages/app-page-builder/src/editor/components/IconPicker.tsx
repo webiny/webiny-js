@@ -20,7 +20,7 @@ interface RenderCellCallableParams {
     style: CSSProperties;
 }
 interface RenderCellCallable {
-    (params: RenderCellCallableParams): React.ReactElement;
+    (params: RenderCellCallableParams): React.ReactElement | null;
 }
 
 const noop = (): React.ReactElement | null => null;
@@ -151,14 +151,14 @@ const iconPickerWrapper = css({
     }
 });
 
-type IconPickerPropsType = {
-    value: [string, string];
+interface IconPickerPropsType {
+    value?: [string, string];
     onChange: (item: PbIcon) => void;
     removable?: boolean;
     handlerClassName?: string;
     useInSidebar?: boolean;
     removeIcon?: () => void;
-};
+}
 const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     value,
     onChange,

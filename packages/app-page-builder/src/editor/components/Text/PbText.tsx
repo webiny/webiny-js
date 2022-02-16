@@ -15,7 +15,7 @@ const DATA_NAMESPACE = "data.text";
 
 interface TextElementProps {
     elementId: string;
-    mediumEditorOptions: CoreOptions;
+    mediumEditorOptions?: CoreOptions;
     rootClassName?: string;
 }
 const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, rootClassName }) => {

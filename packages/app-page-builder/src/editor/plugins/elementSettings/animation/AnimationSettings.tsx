@@ -2,7 +2,10 @@ import React, { useEffect } from "react";
 import { css } from "emotion";
 import get from "lodash/get";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
+import {
+    PbEditorElement,
+    PbEditorPageElementSettingsRenderComponentProps
+} from "../../../../types";
 import ElementAnimation from "../../../../render/components/ElementAnimation";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
@@ -45,7 +48,7 @@ type SettingsPropsType = {
 const Settings: React.FunctionComponent<
     SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ defaultAccordionValue }) => {
-    const element = useActiveElement();
+    const element = useActiveElement() as PbEditorElement;
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,

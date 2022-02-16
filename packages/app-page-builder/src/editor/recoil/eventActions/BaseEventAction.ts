@@ -5,7 +5,7 @@ export abstract class BaseEventAction<T extends object = any> implements EventAc
     private readonly _options: EventActionOptionsType;
 
     public constructor(args?: T, options?: EventActionOptionsType) {
-        this._args = args;
+        this._args = args as unknown as T;
         this._options = options || {};
     }
 

@@ -74,7 +74,7 @@ const renderContent = (
 
 const Content = () => {
     const rootElementId = useRecoilValue(rootElementAtom);
-    const rootElement = useRecoilValue(elementsAtom(rootElementId));
+    const rootElement = useRecoilValue(elementsAtom(rootElementId)) as PbEditorElement;
     const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
     const layout = useRecoilValue(layoutSelector);
     const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);

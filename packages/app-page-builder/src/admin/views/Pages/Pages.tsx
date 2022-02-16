@@ -53,6 +53,9 @@ const Pages: React.FC = () => {
     const { identity } = useSecurity();
 
     const canCreate = useMemo(() => {
+        if (!identity || !identity.getPermission) {
+            return false;
+        }
         const permission = identity.getPermission("pb.page");
         if (!permission) {
             return false;

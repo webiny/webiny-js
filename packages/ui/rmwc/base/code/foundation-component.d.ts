@@ -1,6 +1,6 @@
-import * as RMWC from '@rmwc/types';
-import { SpecificEventListener } from '@material/base/types';
-import * as React from 'react';
+import * as RMWC from "@rmwc/types";
+import { SpecificEventListener } from "@material/base/types";
+import * as React from "react";
 export declare class FoundationElement<Props, ElementType = HTMLElement> {
     private _classes;
     private _events;
@@ -23,9 +23,7 @@ export declare class FoundationElement<Props, ElementType = HTMLElement> {
     setProp(propName: keyof Props, value: any): void;
     getProp(propName: keyof Props): Partial<Props>[keyof Props];
     removeProp(propName: keyof Props): void;
-    props(propsToMerge: {
-        [key: string]: any;
-    }): any;
+    props(propsToMerge: { [key: string]: any }): any;
     /**************************************************
      * Styles
      **************************************************/
@@ -41,14 +39,21 @@ export declare class FoundationElement<Props, ElementType = HTMLElement> {
     setRef(el: any): void;
     readonly ref: ElementType | null;
 }
-declare type ExtractProps<TComponentOrTProps> = TComponentOrTProps extends React.Component<infer TProps, any> ? TProps : TComponentOrTProps;
-export interface FoundationProps extends RMWC.ComponentProps {
-}
-interface FoundationState {
-}
+declare type ExtractProps<TComponentOrTProps> = TComponentOrTProps extends React.Component<
+    infer TProps,
+    any
+>
+    ? TProps
+    : TComponentOrTProps;
+export interface FoundationProps extends RMWC.ComponentProps {}
+interface FoundationState {}
 declare type FoundationPropsT<P> = RMWC.MergeInterfacesT<P, FoundationProps>;
 declare type FoundationStateT<S> = S & FoundationState;
-export declare class FoundationComponent<Foundation extends any, P, S extends any = {}> extends React.Component<FoundationPropsT<P>, FoundationStateT<S>> {
+export declare class FoundationComponent<
+    Foundation extends any,
+    P,
+    S extends any = {}
+> extends React.Component<FoundationPropsT<P>, FoundationStateT<S>> {
     static shouldDebounce: boolean;
     foundation: Foundation;
     elements: {
@@ -58,7 +63,9 @@ export declare class FoundationComponent<Foundation extends any, P, S extends an
     componentDidMount(): void;
     componentDidUpdate(prevProps: FoundationPropsT<P>): void;
     componentWillUnmount(): void;
-    createElement<ElementType extends any = HTMLElement>(elementName: string): FoundationElement<ExtractProps<ElementType>, ElementType>;
+    createElement<ElementType extends HTMLElement = HTMLElement>(
+        elementName: string
+    ): FoundationElement<ExtractProps<ElementType>, ElementType>;
     update(): void;
     sync(props: any, prevProps?: any): void;
     syncProp(prop: any, prevProp: any, callback: () => void): void;

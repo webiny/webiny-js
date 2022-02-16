@@ -1,12 +1,23 @@
 import gql from "graphql-tag";
-import { PbErrorResponse } from "~/types";
+import { PbErrorResponse, PbPageRevision } from "~/types";
 
 const error = `
-error {
-    code
-    message
+    error {
+        code
+        message
+        data
 }`;
 
+export interface PageResponseData {
+    id: string;
+    pid: string;
+    title: string;
+    path: string;
+    version: string;
+    locked: boolean;
+    status: string;
+    revisions: PbPageRevision[];
+}
 export const DATA_FIELDS = `
     id
     pid
@@ -83,7 +94,21 @@ export const LIST_PAGES = gql`
         }
     }
 `;
-
+/**
+ * ##############################
+ * Get Page Query Response
+ */
+export interface GetPageQueryResponse {
+    pageBuilder: {
+        getPage: {
+            data: PageResponseData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface GetPageQueryVariables {
+    id: string;
+}
 export const GET_PAGE = gql`
     query PbGetPagePreview($id: ID!) {
         pageBuilder {
@@ -101,7 +126,6 @@ export const GET_PAGE = gql`
         }
     }
 `;
-
 export const PUBLISH_PAGE = gql`
     mutation PbPublishPage($id: ID!) {
         pageBuilder {

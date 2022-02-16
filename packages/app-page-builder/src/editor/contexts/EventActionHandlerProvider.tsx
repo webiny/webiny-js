@@ -12,7 +12,14 @@ import {
     uiAtom,
     elementByIdSelector,
     activeElementAtom,
-    highlightElementAtom
+    highlightElementAtom,
+    SidebarAtomType,
+    RootElementAtom,
+    PageAtomType,
+    PluginsAtomType,
+    UiAtomType,
+    RevisionsAtomType,
+    ElementsAtomType
 } from "../recoil/modules";
 
 import { PbState } from "../recoil/modules/types";
@@ -51,7 +58,37 @@ interface SnapshotHistory {
     isDisabled: boolean;
 }
 
-export const EventActionHandlerContext = createContext<EventActionHandler>(null);
+export const EventActionHandlerContext = createContext<EventActionHandler>({
+    trigger: async () => {
+        return {};
+    },
+    on: () => {
+        return () => {
+            return true;
+        };
+    },
+    redo: () => {
+        return void 0;
+    },
+    enableHistory: () => {
+        return void 0;
+    },
+    undo: () => {
+        return void 0;
+    },
+    startBatch: () => {
+        return void 0;
+    },
+    endBatch: () => {
+        return void 0;
+    },
+    disableHistory: () => {
+        return void 0;
+    },
+    getElementTree: async () => {
+        return null as unknown as PbEditorElement;
+    }
+});
 
 const createConfiguration = (plugins: PbConfigPluginType[]): PbConfigType => {
     return plugins.reduce(
@@ -94,14 +131,14 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     const revisionsAtomValue = useRecoilValue(revisionsAtom);
     const snapshot = useRecoilSnapshot();
 
-    const eventActionHandlerRef = useRef<EventActionHandler>(null);
-    const sidebarAtomValueRef = useRef(null);
-    const rootElementAtomValueRef = useRef(null);
-    const pageAtomValueRef = useRef(null);
-    const pluginsAtomValueRef = useRef(null);
-    const uiAtomValueRef = useRef(null);
-    const revisionsAtomValueRef = useRef(null);
-    const snapshotRef = useRef(null);
+    const eventActionHandlerRef = useRef<EventActionHandler>();
+    const sidebarAtomValueRef = useRef<SidebarAtomType>();
+    const rootElementAtomValueRef = useRef<RootElementAtom>();
+    const pageAtomValueRef = useRef<PageAtomType>();
+    const pluginsAtomValueRef = useRef<PluginsAtomType>();
+    const uiAtomValueRef = useRef<UiAtomType>();
+    const revisionsAtomValueRef = useRef<RevisionsAtomType>();
+    const snapshotRef = useRef<Snapshot>();
     const eventElements = useRef<Record<string, PbEditorElement>>({});
     const snapshotsHistory = useRef<SnapshotHistory>({
         past: [],
@@ -138,7 +175,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
 
     const updateElements = useRecoilCallback(({ set }) => (elements: PbEditorElement[] = []) => {
         elements.forEach(item => {
-            set(elementsAtom(item.id), prevValue => {
+            set(elementsAtom(item.id), (prevValue: ElementsAtomType) => {
                 return {
                     ...prevValue,
                     ...item,
@@ -158,7 +195,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         path: string[] = []
     ): Promise<PbEditorElement> => {
         if (!element) {
-            element = await getElementById(rootElementAtomValue);
+            element = (await getElementById(rootElementAtomValue)) as PbEditorElement;
         }
         if (element.parent) {
             path.push(element.parent);
@@ -169,7 +206,9 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             data: element.data,
             elements: await Promise.all(
                 element.elements.map(async (child: string) => {
-                    return getElementTree(await getElementById(child), [...path]);
+                    return getElementTree((await getElementById(child)) as PbEditorElement, [
+                        ...path
+                    ]);
                 })
             ),
             path
@@ -208,23 +247,25 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         return false;
     };
 
-    const getElementById = async (id: string) => {
+    const getElementById = async (id: string): Promise<PbEditorElement> => {
         if (eventElements.current.hasOwnProperty(id)) {
             return eventElements.current[id];
         }
-        return snapshotRef.current.getPromise(elementByIdSelector(id));
+        return (snapshotRef.current as Snapshot).getPromise(
+            elementByIdSelector(id)
+        ) as Promise<PbEditorElement>;
     };
 
     const getCallableState = (
         state: Partial<EventActionHandlerCallableState>
     ): EventActionHandlerCallableState => {
         return {
-            sidebar: sidebarAtomValueRef.current,
-            rootElement: rootElementAtomValueRef.current,
-            page: pageAtomValueRef.current,
-            plugins: pluginsAtomValueRef.current,
-            ui: uiAtomValueRef.current,
-            revisions: revisionsAtomValueRef.current,
+            sidebar: sidebarAtomValueRef.current as SidebarAtomType,
+            rootElement: rootElementAtomValueRef.current as RootElementAtom,
+            page: pageAtomValueRef.current as PageAtomType,
+            plugins: pluginsAtomValueRef.current as PluginsAtomType,
+            ui: uiAtomValueRef.current as UiAtomType,
+            revisions: revisionsAtomValueRef.current as RevisionsAtomType,
             getElementById,
             getElementTree,
             ...state
@@ -269,11 +310,11 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         }
 
         if (state.hasOwnProperty("activeElement")) {
-            setActiveElementAtomValue(state.activeElement);
+            setActiveElementAtomValue(state.activeElement as string);
         }
 
         if (state.hasOwnProperty("highlightElement")) {
-            setHighlightElementAtomValue(state.highlightElement);
+            setHighlightElementAtomValue(state.highlightElement as string);
         }
 
         if (state.elements) {
@@ -307,9 +348,9 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
                 };
             },
             trigger: async ev => {
-                const results = await triggerEventAction(ev, {} as any, []);
-                saveCallablesResults(results.state);
-                return results.state;
+                const results = await triggerEventAction(ev, {} as unknown as PbState, []);
+                saveCallablesResults(results.state || {});
+                return results.state || {};
             },
             undo: () => {
                 if (snapshotsHistory.current.busy === true) {
@@ -386,7 +427,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             throw new Error(`There is no event action that is registered with name "${name}".`);
         }
         const targetCallables = get(name);
-        const results: EventActionHandlerActionCallableResponse = {
+        const results: Required<EventActionHandlerActionCallableResponse> = {
             state: {},
             actions: []
         };
@@ -399,7 +440,10 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             const r =
                 (await cb(
                     getCallableState({ ...initialState, ...results.state }),
-                    { client: apolloClient, eventActionHandler: eventActionHandlerRef.current },
+                    {
+                        client: apolloClient,
+                        eventActionHandler: eventActionHandlerRef.current as EventActionHandler
+                    },
                     args
                 )) || {};
             results.state = {
@@ -407,7 +451,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
                 ...(r.state || {})
             };
 
-            results.actions.push(...(r.actions || []));
+            results.actions.push(...r.actions);
         }
 
         eventElements.current = { ...eventElements.current, ...results.state.elements };

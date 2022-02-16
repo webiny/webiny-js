@@ -4,11 +4,13 @@ import { PbEditorElement } from "~/types";
 import { breadcrumbs } from "./styles";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useHighlightElement } from "~/editor/hooks/useHighlightElement";
-import { elementByIdSelector, elementsAtom } from "~/editor/recoil/modules";
+import { elementByIdSelector, elementsAtom, ElementsAtomType } from "~/editor/recoil/modules";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
+interface ItemsState extends Pick<ElementsAtomType, "id" | "type"> {}
+
 const Breadcrumbs: React.FunctionComponent = () => {
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState<ItemsState[]>([]);
     const [, setActiveElementId] = useActiveElementId();
     const element = useActiveElement();
     const [highlightedElement, setHighlightElement] = useHighlightElement();
@@ -18,7 +20,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
             async (id: string) => {
                 if (highlightedElement) {
                     // Update the element that is currently highlighted
-                    set(elementsAtom(highlightedElement.id), prevValue => {
+                    set(elementsAtom(highlightedElement.id), (prevValue: ElementsAtomType) => {
                         return {
                             ...prevValue,
                             isHighlighted: false
@@ -30,7 +32,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
                 setHighlightElement(id);
 
                 // Update the element that is about to be highlighted
-                set(elementsAtom(id), prevValue => {
+                set(elementsAtom(id), (prevValue: ElementsAtomType) => {
                     return {
                         ...prevValue,
                         isHighlighted: true
@@ -52,7 +54,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
     }, []);
 
     const createBreadCrumbs = async (activeElement: PbEditorElement) => {
-        const list = [];
+        const list: ItemsState[] = [];
         let element = activeElement;
         while (element.parent) {
             list.push({
@@ -64,7 +66,9 @@ const Breadcrumbs: React.FunctionComponent = () => {
                 break;
             }
 
-            element = await snapshot.getPromise(elementByIdSelector(element.parent));
+            element = (await snapshot.getPromise(
+                elementByIdSelector(element.parent)
+            )) as PbEditorElement;
         }
         setItems(list.reverse());
     };

@@ -4,7 +4,7 @@ import { PagePreviewDimension, UiAtomType } from "../uiAtom";
 export const setPagePreviewDimensionMutation: EventActionHandlerMutationActionCallable<
     UiAtomType,
     PagePreviewDimension
-> = (state, pagePreviewDimension) => {
+> = (state, pagePreviewDimension: PagePreviewDimension) => {
     return {
         ...state,
         pagePreviewDimension

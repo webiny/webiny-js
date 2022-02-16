@@ -160,9 +160,11 @@ const ColorPicker = ({
 
     let themeColor = false;
 
+    const themeColors = theme ? theme.colors : {};
+
     const colorPicker = (
         <ColorPickerStyle onClick={hidePicker}>
-            {Object.values(theme.colors).map((color, index) => {
+            {Object.values(themeColors).map((color, index) => {
                 if (color === value || value === "transparent") {
                     themeColor = true;
                 }
@@ -170,7 +172,7 @@ const ColorPicker = ({
                 return (
                     <ColorBox key={index}>
                         <Color
-                            className={color === value ? styles.selectedColor : null}
+                            className={color === value ? styles.selectedColor : ""}
                             style={{ backgroundColor: color }}
                             onClick={() => {
                                 hidePicker();
@@ -195,7 +197,7 @@ const ColorPicker = ({
 
             <ColorBox>
                 <Color
-                    className={value && !themeColor ? styles.selectedColor : null}
+                    className={value && !themeColor ? styles.selectedColor : ""}
                     style={{ backgroundColor: themeColor ? "#fff" : value }}
                     onClick={togglePicker}
                 >

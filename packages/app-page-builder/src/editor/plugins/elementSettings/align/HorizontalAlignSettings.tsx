@@ -58,7 +58,7 @@ type HorizontalAlignActionPropsType = {
 const HorizontalAlignSettings: React.FunctionComponent<
     HorizontalAlignActionPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ options: { alignments = DEFAULT_ALIGNMENTS }, defaultAccordionValue }) => {
-    const element = useActiveElement();
+    const element = useActiveElement() as PbEditorElement;
     const updateElement = useUpdateElement();
 
     const align = getAlignValue(element, defaultAlignValue);

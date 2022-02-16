@@ -65,9 +65,11 @@ const AddElement: React.FunctionComponent = () => {
     const dropElement = useCallback((args: DropElementActionArgsType) => {
         handler.trigger(new DropElementActionEvent(args));
     }, []);
-    const getGroups = useCallback(() => {
+    const getGroups = useCallback((): PbEditorPageElementGroupPlugin[] => {
         return plugins.byType<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
     }, []);
+
+    const pageElementGroupPlugins = getGroups();
 
     const getGroupElements = useCallback(group => {
         return plugins
@@ -75,7 +77,9 @@ const AddElement: React.FunctionComponent = () => {
             .filter(el => el.toolbar && el.toolbar.group === group);
     }, []);
 
-    const [group, setGroup] = useState<string>(getGroups()[0].name);
+    const [group, setGroup] = useState<string>(
+        pageElementGroupPlugins.length > 0 ? pageElementGroupPlugins[0].name || "" : ""
+    );
 
     const { theme } = usePageBuilder();
 
@@ -176,9 +180,12 @@ const AddElement: React.FunctionComponent = () => {
         return () => removeKeyHandler("escape");
     });
 
-    const emptyViewContent = useMemo(() => {
-        const { group: selectedGroup } = getGroups().find(pl => pl.name === group);
-        return selectedGroup.emptyView;
+    const emptyViewContent = useMemo((): React.ReactElement | null => {
+        const selectedPlugin = pageElementGroupPlugins.find(pl => pl.name === group);
+        if (!selectedPlugin) {
+            return null;
+        }
+        return selectedPlugin.group.emptyView || null;
     }, [group]);
 
     const groupElements = group ? getGroupElements(group) : [];
@@ -186,11 +193,11 @@ const AddElement: React.FunctionComponent = () => {
     return (
         <Styled.Flex>
             <List className={categoriesList}>
-                {getGroups().map(plugin => (
+                {pageElementGroupPlugins.map(plugin => (
                     <ListItem
-                        onClick={() => setGroup(plugin.name)}
+                        onClick={() => setGroup(plugin.name || "")}
                         key={plugin.name}
-                        className={plugin.name === group && "active"}
+                        className={plugin.name === group ? "active" : ""}
                     >
                         {plugin.group.title}
 
@@ -205,20 +212,27 @@ const AddElement: React.FunctionComponent = () => {
             <Styled.Elements>
                 {groupElements.length
                     ? groupElements.map(plugin => {
+                          const pluginToolbarTitle = plugin.toolbar ? plugin.toolbar.title : null;
+                          const pluginToolbarPreview =
+                              plugin.toolbar && plugin.toolbar.preview
+                                  ? plugin.toolbar.preview
+                                  : () => {
+                                        return "";
+                                    };
                           return (params ? renderClickable : renderDraggable)(
                               <div data-role="draggable">
                                   <Styled.ElementBox>
                                       <Styled.ElementTitle>
-                                          {typeof plugin.toolbar.title === "function" ? (
-                                              plugin.toolbar.title({ refresh })
+                                          {typeof pluginToolbarTitle === "function" ? (
+                                              pluginToolbarTitle({ refresh })
                                           ) : (
                                               <Typography use="overline">
-                                                  {plugin.toolbar.title}
+                                                  {pluginToolbarTitle}
                                               </Typography>
                                           )}
                                       </Styled.ElementTitle>
                                       <Styled.ElementPreviewCanvas>
-                                          {plugin.toolbar.preview({ theme })}
+                                          {pluginToolbarPreview({ theme })}
                                       </Styled.ElementPreviewCanvas>
                                   </Styled.ElementBox>
                               </div>,

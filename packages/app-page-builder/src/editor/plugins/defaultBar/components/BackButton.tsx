@@ -10,7 +10,8 @@ const backStyles = css({
 
 const BackButton: React.FC = () => {
     const { match, history } = useRouter();
-    const params: { id: string } = match.params as any;
+
+    const params = match ? (match.params ? (match.params as any).id : "") : { id: "" };
     return (
         <IconButton
             data-testid="pb-editor-back-button"

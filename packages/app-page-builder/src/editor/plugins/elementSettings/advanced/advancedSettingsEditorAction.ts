@@ -2,17 +2,21 @@ import { CreateElementEventActionCallable } from "../../../recoil/actions/create
 import { PbEditorPageElementPlugin } from "../../../../types";
 import { plugins } from "@webiny/plugins";
 
-export const advancedSettingsEditorAction: CreateElementEventActionCallable = (
-    state,
-    _,
-    { element, source }
-) => {
+export const advancedSettingsEditorAction: CreateElementEventActionCallable = (state, _, args) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
+    const { element, source } = args;
     // Check the source of the element (could be `saved` element which behaves differently from other elements)
     const sourcePlugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(pl => pl.elementType === source.type);
     if (!sourcePlugin) {
-        return {};
+        return {
+            actions: []
+        };
     }
     const { onCreate: sourceOnCreate } = sourcePlugin;
     if (!sourceOnCreate || sourceOnCreate !== "skip") {
@@ -21,7 +25,9 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallable = (
             .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
             .find(pl => pl.elementType === element.type);
         if (!plugin) {
-            return {};
+            return {
+                actions: []
+            };
         }
         const { onCreate } = plugin;
         if (onCreate && onCreate === "open-settings") {
@@ -35,9 +41,12 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallable = (
                         // Highlight "Element" settings tab in sidebar.
                         highlightTab: true
                     }
-                }
+                },
+                actions: []
             };
         }
     }
-    return {};
+    return {
+        actions: []
+    };
 };

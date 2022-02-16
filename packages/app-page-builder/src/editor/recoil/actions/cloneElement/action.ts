@@ -3,9 +3,6 @@ import { EventActionCallable, EventActionHandlerCallableState, PbEditorElement }
 import { CloneElementActionArgsType } from "../cloneElement/types";
 import { getNanoid } from "../../../helpers";
 
-/**
- * TODO @ts-refactor verify that element really is PbEditorElement
- */
 export const cloneElement = async (
     state: EventActionHandlerCallableState,
     element: PbEditorElement
@@ -33,12 +30,23 @@ export const cloneElement = async (
 export const cloneElementAction: EventActionCallable<CloneElementActionArgsType> = async (
     state,
     _,
-    { element }
+    args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
+    const { element } = args;
+    if (!element.parent) {
+        return {
+            actions: []
+        };
+    }
     const parent = await state.getElementById(element.parent);
     const position = parent.elements.findIndex(el => el === element.id) + 1;
 
-    const newElement: any = {
+    const newElement: PbEditorElement = {
         ...parent,
         elements: [
             ...parent.elements.slice(0, position),

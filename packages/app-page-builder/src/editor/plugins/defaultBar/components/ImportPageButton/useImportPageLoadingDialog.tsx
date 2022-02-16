@@ -39,7 +39,7 @@ const ImportPageLoadingDialogContent: FunctionComponent<ImportPageLoadingDialogC
 }) => {
     const { showSnackbar } = useSnackbar();
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
 
     const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
         variables: {

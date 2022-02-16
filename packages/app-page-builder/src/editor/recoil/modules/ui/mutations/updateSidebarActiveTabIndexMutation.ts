@@ -4,7 +4,7 @@ import { SidebarAtomType } from "../sidebarAtom";
 export const updateSidebarActiveTabIndexMutation: EventActionHandlerMutationActionCallable<
     SidebarAtomType,
     number
-> = (state, index) => {
+> = (state, index: number) => {
     return {
         ...state,
         activeTabIndex: index

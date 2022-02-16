@@ -34,7 +34,7 @@ const Input: React.FC<InputPropsType> = ({
     containerClassName
 }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+    const element = useRecoilValue(elementByIdSelector(activeElementId as string));
     const keyValue = valueKey ? get(element, valueKey, defaultValue) : value;
     return (
         <Grid className={containerClassName}>

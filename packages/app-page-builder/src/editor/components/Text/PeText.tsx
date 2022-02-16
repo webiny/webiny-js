@@ -12,7 +12,7 @@ const DATA_NAMESPACE = "data.text";
 
 interface TextElementProps {
     elementId: string;
-    mediumEditorOptions: CoreOptions;
+    mediumEditorOptions?: CoreOptions;
     tag?: string | [string, Record<string, any>];
 }
 

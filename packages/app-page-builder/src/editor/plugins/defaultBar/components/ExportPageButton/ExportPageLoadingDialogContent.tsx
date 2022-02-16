@@ -27,7 +27,7 @@ const MESSAGES: Record<string, string> = {
 
 const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({ taskId }) => {
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
     const { showSnackbar } = useSnackbar();
     const { showExportPageContentDialog } = useExportPageDialog();
 
@@ -44,7 +44,8 @@ const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({
     const pollExportPageTaskStatus = useCallback(response => {
         const { error, data } = get(response, "pageBuilder.getPageImportExportTask", {});
         if (error) {
-            return showSnackbar(error.message);
+            showSnackbar(error.message);
+            return;
         }
 
         // Handler failed task

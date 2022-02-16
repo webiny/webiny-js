@@ -110,7 +110,7 @@ export enum AlignmentTypesEnum {
     VERTICAL_CENTER = "verticalCenter",
     VERTICAL_BOTTOM = "verticalBottom"
 }
-export type PbElementDataSettingsType = {
+export interface PbElementDataSettingsType {
     alignment?: AlignmentTypesEnum;
     horizontalAlign?: "left" | "center" | "right" | "justify";
     horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
@@ -135,7 +135,7 @@ export type PbElementDataSettingsType = {
     className?: string;
     form?: PbElementDataSettingsFormType;
     [key: string]: any;
-};
+}
 export type PbElementDataType = {
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
@@ -412,11 +412,11 @@ export type PbEditorPageElementPlugin = Plugin & {
     canDelete?: (params: { element: PbEditorElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
-        state?: EventActionHandlerCallableState;
+        state: EventActionHandlerCallableState;
         meta: EventActionHandlerMeta;
         source: PbEditorElement | DragObjectWithTypeWithTarget;
         target: PbEditorElement;
-        position: number | null;
+        position: number;
     }) => EventActionHandlerActionCallableResponse;
     // Executed when an immediate child element is deleted
     onChildDeleted?: (params: {
@@ -577,7 +577,7 @@ export type PbEditorPageElementStyleSettingsPlugin = Plugin & {
 export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
-    render(params?: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
+    render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
     onSave?: (data: FormData) => FormData;
 };
 
@@ -694,7 +694,7 @@ export interface EventActionHandler {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
-    getElementTree: (element?: PbEditorElement) => Promise<any>;
+    getElementTree: (element?: PbEditorElement) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
@@ -715,10 +715,10 @@ export interface EventActionHandlerConfig {
 
 export interface EventActionHandlerActionCallableResponse {
     state?: Partial<EventActionHandlerCallableState>;
-    actions?: BaseEventAction[];
+    actions: BaseEventAction[];
 }
 
-export interface EventActionHandlerMutationActionCallable<T, A = any> {
+export interface EventActionHandlerMutationActionCallable<T, A = unknown> {
     (state: T, args?: A): T;
 }
 

@@ -149,13 +149,15 @@ export class UsersFormView extends UIView {
         );
 
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
-        groupAccordion.addElement(
-            new GroupAutocompleteElement("group", {
-                name: "group",
-                label: "Group",
-                validators: () => validation.create("required")
-            })
-        );
+        if (groupAccordion) {
+            groupAccordion.addElement(
+                new GroupAutocompleteElement("group", {
+                    name: "group",
+                    label: "Group",
+                    validators: () => validation.create("required")
+                })
+            );
+        }
 
         this.wrapWith(({ children }) => <FormWrapper>{children}</FormWrapper>);
     }

@@ -1,8 +1,8 @@
 import { PbEditorElement } from "~/types";
 import { selectorFamily } from "recoil";
-import { elementsAtom } from "../elementsAtom";
+import { elementsAtom, ElementsAtomType } from "../elementsAtom";
 
-export const elementByIdSelector = selectorFamily<PbEditorElement, string>({
+export const elementByIdSelector = selectorFamily<PbEditorElement | null, string>({
     key: "elementByIdSelector",
     get: id => {
         return ({ get }) => {
@@ -12,7 +12,7 @@ export const elementByIdSelector = selectorFamily<PbEditorElement, string>({
     set:
         id =>
         ({ set }, newValue) => {
-            set(elementsAtom(id), prevState => ({
+            set(elementsAtom(id), (prevState: ElementsAtomType) => ({
                 ...prevState,
                 ...newValue
             }));

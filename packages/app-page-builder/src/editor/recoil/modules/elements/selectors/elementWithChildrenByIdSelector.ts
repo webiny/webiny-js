@@ -19,7 +19,9 @@ export const elementWithChildrenByIdSelector = selectorFamily<
 
             return {
                 ...element,
-                elements: element.elements.map((id: string) => get(elementByIdSelector(id)))
+                elements: element.elements
+                    .map((id: string) => get(elementByIdSelector(id)))
+                    .filter(Boolean) as PbEditorElement[]
             };
         };
     }

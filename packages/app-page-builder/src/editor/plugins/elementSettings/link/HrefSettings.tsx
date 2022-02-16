@@ -68,10 +68,10 @@ const LinkSettingsComponent: React.FunctionComponent<
                                 <DelayedOnChange>
                                     {props => (
                                         <InputField
+                                            {...props}
                                             value={props.value || ""}
                                             onChange={props.onChange}
                                             placeholder={"https://webiny.com/blog"}
-                                            {...props}
                                         />
                                     )}
                                 </DelayedOnChange>

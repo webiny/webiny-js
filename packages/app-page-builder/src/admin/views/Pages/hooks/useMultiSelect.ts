@@ -19,11 +19,15 @@ export type MultiListProps = {
 };
 
 const useMultiSelect = (params: UseMultiSelectParams) => {
-    const [multiSelectedItems, multiSelect] = useState([]);
+    const [multiSelectedItems, multiSelect] = useState<string[]>([]);
     let history = null;
-    let location: History.Location = null;
+    let location: History.Location | null = null;
     const routerHook = useRouter();
-    const { getValue } = params;
+    const {
+        getValue = (): string => {
+            return "";
+        }
+    } = params;
 
     if (params.useRouter !== false) {
         history = routerHook.history;
@@ -57,11 +61,11 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
             multiSelect(returnItems);
         },
         isSelected(item) {
-            const query = new URLSearchParams(location.search);
+            const query = new URLSearchParams(location ? location.search : "");
             return query.get("id") === item.id;
         },
         select(item) {
-            const query = new URLSearchParams(location.search);
+            const query = new URLSearchParams(location ? location.search : "");
             query.set("id", item.id);
             history.push({ search: query.toString() });
         },

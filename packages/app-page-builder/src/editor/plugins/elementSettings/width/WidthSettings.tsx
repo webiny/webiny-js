@@ -126,11 +126,18 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
         );
     };
 
-    const { config: activeDisplayModeConfig } = React.useMemo(() => {
+    const memoizedResponsiveModePlugin = React.useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
+
+    const { config: activeDisplayModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
 
     const settings = React.useMemo(() => {
         const fallbackValue = applyFallbackDisplayMode(displayMode, mode =>

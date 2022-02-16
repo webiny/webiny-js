@@ -42,7 +42,7 @@ interface Props {
 }
 
 interface State {
-    currentMenuItem?: MenuTreeItem;
+    currentMenuItem: MenuTreeItem | null;
 }
 
 class MenuItems extends React.Component<Props, State> {
@@ -58,7 +58,7 @@ class MenuItems extends React.Component<Props, State> {
         this.editItem(newItem);
     };
 
-    editItem = (data: MenuTreeItem) => {
+    editItem = (data: MenuTreeItem | null) => {
         this.setState({ currentMenuItem: data });
     };
 
