@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security-okta",
-  "version": "5.22.1",
+  "version": "5.23.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,12 +10,12 @@
   "author": "Webiny Ltd.",
   "license": "Webiny Enterprise",
   "dependencies": {
-    "@webiny/api-security": "^5.22.1",
-    "@webiny/api-tenancy": "^5.22.1",
-    "@webiny/api-tenant-manager": "^5.22.1",
-    "@webiny/error": "^5.22.1",
-    "@webiny/handler": "^5.22.1",
-    "@webiny/handler-graphql": "^5.22.1",
+    "@webiny/api-security": "^5.23.0",
+    "@webiny/api-tenancy": "^5.23.0",
+    "@webiny/api-tenant-manager": "^5.23.0",
+    "@webiny/error": "^5.23.0",
+    "@webiny/handler": "^5.23.0",
+    "@webiny/handler-graphql": "^5.23.0",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
     "node-fetch": "^2.6.1"
@@ -23,8 +23,8 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
-    "@webiny/cli": "^5.22.1",
-    "@webiny/project-utils": "^5.22.1",
+    "@webiny/cli": "^5.23.0",
+    "@webiny/project-utils": "^5.23.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"
   },
