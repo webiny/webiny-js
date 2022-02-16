@@ -1,11 +1,11 @@
 import React from "react";
 import pick from "lodash/pick";
+import { css } from "emotion";
 import * as UiDialog from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { i18n } from "@webiny/app/i18n";
 import { Box, Columns, Stack } from "~/admin/components/Layout";
 import { Input } from "@webiny/ui/Input";
-import { ReactComponent as MediaIcon } from "~/admin/assets/icons/media-input_figma.svg";
 import styled from "@emotion/styled";
 import { useChangeRequestDialog } from "./useChangeRequestDialog";
 import { Form } from "@webiny/form";
@@ -14,6 +14,8 @@ import { useContentReviewId, useCurrentStepId } from "~/admin/hooks/useContentRe
 import { useChangeRequest } from "~/admin/hooks/useChangeRequest";
 import { validation } from "@webiny/validation";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
+import { FileManager } from "@webiny/app-admin/components";
+import { ApwFile } from "./ApwFile";
 
 const t = i18n.ns("app-apw/content-review/editor/change-request");
 
@@ -58,16 +60,6 @@ const RightBox = styled(Box)`
     align-items: center;
 `;
 
-const Media = styled(Box)`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 187px;
-    height: 184px;
-    border-radius: 10px;
-    border: 1px solid var(--mdc-theme-on-background);
-`;
-
 interface ChangeRequestMessageProps {
     Bind: BindComponent;
 }
@@ -98,9 +90,20 @@ const ChangeRequestMessage: React.FC<ChangeRequestMessageProps> = ({ Bind }) => 
                 </Stack>
             </LeftBox>
             <RightBox>
-                <Media>
-                    <MediaIcon />
-                </Media>
+                <Bind name={"media"}>
+                    {props => (
+                        <FileManager
+                            onUploadCompletion={([file]) => props.onChange(file)}
+                            onChange={props.onChange}
+                            images={true}
+                            tags={["apw"]}
+                        >
+                            {({ showFileManager }) => (
+                                <ApwFile {...props} showFileManager={showFileManager} />
+                            )}
+                        </FileManager>
+                    )}
+                </Bind>
             </RightBox>
         </ChangeRequestColumns>
     );
@@ -114,6 +117,23 @@ const DialogContent = styled(UiDialog.DialogContent)`
     padding: 0 !important;
 `;
 
+const dialogContainerStyles = css`
+    /*
+* By default, a Dialog component has the "z-index" value of 20.
+* As we are rendering the content entry form in a "Dialog", the File Manager view triggered by a "file" field
+* will render below the source form, rendering it useless for the user.
+*
+* To fix that issue, we're setting the "z-index" CSS property for this particular Dialog to less than 18,
+* which is the "z-index" value assigned to File Manager view, so that it will render below the File Manager view as expected.
+*/
+
+    &.mdc-dialog {
+        z-index: 17;
+    }
+`;
+
+const fields = ["title", "body", "media"];
+
 export const ChangeRequestDialog: React.FC = () => {
     const { open, setOpen, changeRequestId } = useChangeRequestDialog();
     const { id: stepId } = useCurrentStepId();
@@ -124,7 +144,7 @@ export const ChangeRequestDialog: React.FC = () => {
 
     return (
         <Form
-            data={pick(changeRequest, ["title", "body"])}
+            data={pick(changeRequest, fields)}
             onSubmit={async formData => {
                 const data = {
                     ...formData,
@@ -135,7 +155,7 @@ export const ChangeRequestDialog: React.FC = () => {
                  */
                 if (changeRequestId) {
                     await update({
-                        variables: { id: changeRequestId, data: pick(data, ["title", "body"]) }
+                        variables: { id: changeRequestId, data: pick(data, fields) }
                     });
                 } else {
                     await create({ variables: { data } });
@@ -148,6 +168,7 @@ export const ChangeRequestDialog: React.FC = () => {
                     open={open}
                     onClose={closeDialog}
                     data-testid="apw-new-change-request-modal"
+                    className={dialogContainerStyles}
                 >
                     <UiDialog.DialogTitle>{t`Change request`}</UiDialog.DialogTitle>
                     <DialogContent>

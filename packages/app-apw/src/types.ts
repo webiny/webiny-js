@@ -131,10 +131,17 @@ export enum ApwChangeRequestStatus {
 export interface ApwChangeRequest extends BaseFields {
     title: string;
     body: RichTextEditorProps["value"];
+    media: any;
     resolved: boolean;
 }
 
 export interface ApwComment extends BaseFields {
     body: RichTextEditorProps["value"];
     changeRequest: string;
+}
+
+export interface ApwMediaFile {
+    name: string;
+    src: string;
+    id: string;
 }
