@@ -3,11 +3,13 @@ import { Switch, Route, useRouteMatch } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { List } from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { Tooltip } from "@webiny/ui/Tooltip";
 import { i18n } from "@webiny/app/i18n";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
 import { useChangeRequestsList } from "~/admin/hooks/useChangeRequestsList";
+import { useCurrentStep } from "~/admin/hooks/useCurrentStep";
 import { ChangeRequestListItem } from "./ChangeRequest/ChangeRequestListItem";
 import { ProvideSignOff } from "./ChangeRequest/ProvideSignOff";
 import { useChangeRequestDialog } from "./ChangeRequest/useChangeRequestDialog";
@@ -31,10 +33,42 @@ const CreateChangeRequestBox = styled(Box)`
     border-bottom: 1px solid var(--mdc-theme-background);
 `;
 
+const disableButtonText = t`Please retract the sign-off before opening a new change request.`;
+
+interface CreateChangeRequestProps {
+    create: () => void;
+    disabled: boolean;
+}
+
+const CreateChangeRequest: React.FC<CreateChangeRequestProps> = ({ create, disabled }) => {
+    if (disabled) {
+        return (
+            <CreateChangeRequestBox paddingX={5} paddingY={5}>
+                <Tooltip content={disableButtonText}>
+                    <ButtonSecondary onClick={create} disabled={true}>
+                        <ButtonIcon icon={<AddIcon />} />
+                        {t`Request Change`}
+                    </ButtonSecondary>
+                </Tooltip>
+            </CreateChangeRequestBox>
+        );
+    }
+
+    return (
+        <CreateChangeRequestBox paddingX={5} paddingY={5}>
+            <ButtonSecondary onClick={create} disabled={disabled}>
+                <ButtonIcon icon={<AddIcon />} />
+                {t`Request Change`}
+            </ButtonSecondary>
+        </CreateChangeRequestBox>
+    );
+};
+
 export const CenterPanel = () => {
     const { setOpen } = useChangeRequestDialog();
     const { changeRequests, loading } = useChangeRequestsList({ sorters: [] });
     const { path } = useRouteMatch();
+    const { currentStep, changeRequestsPending } = useCurrentStep();
 
     if (loading) {
         return <Typography use={"caption"}>Loading Change requests...</Typography>;
@@ -42,18 +76,19 @@ export const CenterPanel = () => {
     return (
         <>
             <PanelBox flex={"1 1 22%"}>
-                <CreateChangeRequestBox paddingX={5} paddingY={5}>
-                    <ButtonSecondary onClick={() => setOpen(true)}>
-                        <ButtonIcon icon={<AddIcon />} />
-                        {t`Request Change`}
-                    </ButtonSecondary>
-                </CreateChangeRequestBox>
+                <CreateChangeRequest
+                    disabled={currentStep.signOffProvidedOn !== null}
+                    create={() => setOpen(true)}
+                />
                 <ChangeRequestList>
                     {changeRequests.map(item => (
                         <ChangeRequestListItem key={item.id} {...item} />
                     ))}
                 </ChangeRequestList>
-                <ProvideSignOff />
+                <ProvideSignOff
+                    currentStep={currentStep}
+                    changeRequestsPending={changeRequestsPending}
+                />
             </PanelBox>
             <Switch>
                 <Route exact path={path}>
