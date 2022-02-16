@@ -3,7 +3,9 @@
  * https://www.webiny.com/docs/key-topics/cloud-infrastructure/website/introduction
  */
 
-export default {
+import { createWebsiteApp } from "@webiny/pulumi-aws";
+
+export default createWebsiteApp({
     id: "website",
     name: "Website",
     description: "Your project's public website.",
@@ -13,4 +15,4 @@ export default {
             deploy: false
         }
     }
-};
+});
