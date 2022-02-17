@@ -37,7 +37,12 @@ export const useComment = (id?: string): UseCommentResult => {
                 showSnackbar(error.message);
                 return;
             }
-        }
+        },
+        /*
+         * We want to wait for "LIST_COMMENTS_QUERY" because we're scrolling the comments list
+         * to latest comment after creating new comment which will only be there once "LIST_COMMENTS_QUERY" is finished.
+         */
+        awaitRefetchQueries: true
     });
 
     const [deleteComment] = useMutation(DELETE_COMMENT_MUTATION, {
