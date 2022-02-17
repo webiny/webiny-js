@@ -20,6 +20,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import invariant from "invariant";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -48,31 +49,42 @@ const getValidators = (
     key: "validators" | "listValidators",
     defaultValidators: string[] = []
 ): Validator[] => {
-    return plugins
-        .byType<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
-        .map(plugin => plugin.validator)
-        .map(validator => {
-            const allowedValidators = fieldPlugin.field[key] || defaultValidators;
-            if (allowedValidators.includes(validator.name)) {
-                return { optional: true, validator };
-            } else if (allowedValidators.includes(`!${validator.name}`)) {
-                return { optional: false, validator };
-            }
+    return (
+        plugins
+            .byType<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
+            .map(plugin => plugin.validator)
+            .map(validator => {
+                const allowedValidators = fieldPlugin.field[key] || defaultValidators;
+                if (allowedValidators.includes(validator.name)) {
+                    return {
+                        optional: true,
+                        validator
+                    };
+                } else if (allowedValidators.includes(`!${validator.name}`)) {
+                    return {
+                        optional: false,
+                        validator
+                    };
+                }
 
-            return null;
-        })
-        .filter(Boolean)
-        .sort((a, b) => {
-            if (!a.optional && b.optional) {
-                return -1;
-            }
+                return null;
+            })
+            .filter(Boolean)
+            /**
+             * We can safely cast because we are filtering in previous step.
+             */
+            .sort((a: Validator, b: Validator) => {
+                if (!a.optional && b.optional) {
+                    return -1;
+                }
 
-            if (a.optional && !b.optional) {
-                return 1;
-            }
+                if (a.optional && !b.optional) {
+                    return 1;
+                }
 
-            return 0;
-        });
+                return 0;
+            }) as Validator[]
+    );
 };
 
 const getListValidators = (fieldPlugin: CmsEditorFieldTypePlugin) => {
@@ -100,7 +112,7 @@ const fieldEditorDialog = css({
 });
 
 const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
-    const [current, setCurrent] = useState<CmsEditorField>(null);
+    const [current, setCurrent] = useState<CmsEditorField | null>(null);
 
     const { getFieldPlugin } = useFieldEditor();
 
@@ -128,18 +140,24 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
     const onClose = useCallback((): void => {
         setCurrent(null);
         props.onClose();
-    }, undefined);
+    }, []);
 
     let render = null;
     let headerTitle = t`Field Settings`;
 
     if (current) {
-        const fieldPlugin = getFieldPlugin(current.type);
-        if (fieldPlugin) {
-            headerTitle = t`Field Settings - {fieldTypeLabel}`({
-                fieldTypeLabel: fieldPlugin.field.label
-            });
-        }
+        /**
+         * Something must be very wrong for field plugin to be missing.
+         */
+        const fieldPlugin = getFieldPlugin(current.type) as CmsEditorFieldTypePlugin;
+        /**
+         * We will throw error because of that.
+         */
+        invariant(fieldPlugin, `Missing field plugin for type "${current.type}".`);
+
+        headerTitle = t`Field Settings - {fieldTypeLabel}`({
+            fieldTypeLabel: fieldPlugin.field.label
+        });
 
         render = (
             <Form data={current} onSubmit={onSubmit}>

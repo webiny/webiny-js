@@ -35,6 +35,9 @@ export const ContentEntryFormPreview: React.FC<Props> = props => {
 
                 return acc;
             }, {} as Record<string, React.ReactElement>);
+            if (!formRenderer) {
+                return <>Missing form renderer for modelId "{contentModel.modelId}".</>;
+            }
             return formRenderer.render({ ...formRenderProps, contentModel, fields });
         },
         [formRenderer, contentModel.fields]
@@ -50,7 +53,7 @@ export const ContentEntryFormPreview: React.FC<Props> = props => {
                         <Fields
                             contentModel={contentModel}
                             fields={contentModel.fields}
-                            layout={contentModel.layout}
+                            layout={contentModel.layout || []}
                             {...formProps}
                         />
                     )}

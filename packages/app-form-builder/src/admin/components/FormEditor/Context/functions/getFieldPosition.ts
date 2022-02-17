@@ -4,7 +4,7 @@ interface Params {
     field: FbFormModelField | FieldIdType;
     data: FbFormModel;
 }
-export default ({ field, data }: Params): FieldLayoutPositionType => {
+export default ({ field, data }: Params): FieldLayoutPositionType | null => {
     const id = typeof field === "string" ? field : field._id;
     for (let i = 0; i < data.layout.length; i++) {
         const row = data.layout[i];

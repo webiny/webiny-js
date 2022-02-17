@@ -42,7 +42,7 @@ const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element, i
                 element={element}
                 className={"webiny-pb-element-form"}
             >
-                {form.revision ? renderContent(form) : renderEmpty()}
+                {form.revision ? renderContent(form) : renderEmpty() || <></>}
             </ElementRoot>
         </>
     );

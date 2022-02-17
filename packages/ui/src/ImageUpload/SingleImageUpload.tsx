@@ -24,7 +24,7 @@ const ImageUploadWrapper = styled("div")({
     }
 });
 
-interface Props extends FormComponentProps {
+interface SingleImageUploadProps extends FormComponentProps {
     // Component label.
     label?: string;
 
@@ -89,8 +89,8 @@ type ErrorType =
     | "multipleNotAllowed"
     | "multipleMaxSizeExceeded";
 
-export class SingleImageUpload extends React.Component<Props, State> {
-    static defaultProps: Partial<Props> = {
+export class SingleImageUpload extends React.Component<SingleImageUploadProps, State> {
+    static defaultProps: Partial<SingleImageUploadProps> = {
         maxSize: "10mb",
         imageEditor: {},
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
@@ -231,8 +231,9 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
                 {this.state.error && (
                     <FormElementMessage error>
-                        {this.props.errorMessages[errorType as keyof Props["errorMessages"]] ||
-                            this.props.errorMessages.default}
+                        {this.props.errorMessages[
+                            errorType as keyof SingleImageUploadProps["errorMessages"]
+                        ] || this.props.errorMessages.default}
                     </FormElementMessage>
                 )}
             </ImageUploadWrapper>

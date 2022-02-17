@@ -143,7 +143,7 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
              * Create or update, depends if group object has id property
              */
             const response = await createOperation(group);
-            if (!response || !response.data) {
+            if (!response.data) {
                 showSnackbar(`Missing response data ain Content Model Group Mutation Response.`);
                 return;
             }

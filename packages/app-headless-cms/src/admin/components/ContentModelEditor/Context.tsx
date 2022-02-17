@@ -19,16 +19,18 @@ import { FetchResult } from "apollo-link";
 
 export interface ContentModelEditorProviderContext {
     apolloClient: ApolloClient<any>;
-    data: CmsEditorContentModel | null;
+    data: CmsEditorContentModel;
     isPristine: boolean;
     getContentModel: (modelId: string) => Promise<FetchResult<GetCmsModelQueryResponse>>;
-    saveContentModel: (data?: Record<string, any>) => Promise<CmsModel | null>;
+    saveContentModel: (
+        data?: Record<string, any>
+    ) => Promise<UpdateCmsModelMutationResponse["updateContentModel"]>;
     setData: (setter: (model: CmsModel) => void, saveContentModel?: boolean) => Promise<any>;
 }
 
 export const contentModelEditorContext = React.createContext<ContentModelEditorProviderContext>({
     apolloClient: null as unknown as ApolloClient<any>,
-    data: null,
+    data: null as unknown as CmsEditorContentModel,
     isPristine: false,
     getContentModel: async () => {
         return {
@@ -36,7 +38,10 @@ export const contentModelEditorContext = React.createContext<ContentModelEditorP
         };
     },
     saveContentModel: async () => {
-        return null;
+        return {
+            data: null,
+            error: null
+        };
     },
     setData: async () => {
         return void 0;
@@ -124,7 +129,9 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
         dispatch({ type: "state", data: { isPristine: flag } });
     };
 
-    const saveContentModel = async (data?: CmsModel) => {
+    const saveContentModel = async (
+        data?: CmsModel
+    ): Promise<UpdateCmsModelMutationResponse["updateContentModel"]> => {
         if (!data) {
             data = state.data;
         }
@@ -146,12 +153,23 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
                 modelId: data.modelId,
                 data: cleanupModelData(modelData)
             },
-            refetchQueries: [{ query: LIST_MENU_CONTENT_GROUPS_MODELS }]
+            refetchQueries: [
+                {
+                    query: LIST_MENU_CONTENT_GROUPS_MODELS
+                }
+            ]
         });
 
         setPristine(true);
 
-        return get(response, "data.updateContentModel");
+        if (!response.data || !response.data.updateContentModel) {
+            return {
+                data: null,
+                error: null
+            };
+        }
+
+        return response.data.updateContentModel;
     };
 
     /**

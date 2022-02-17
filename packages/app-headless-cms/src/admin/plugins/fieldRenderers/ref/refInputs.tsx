@@ -1,14 +1,14 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import React from "react";
 import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
 import ContentEntriesMultiAutocomplete from "./components/ContentEntriesMultiAutoComplete";
 import { NewRefEntryDialogContextProvider } from "./hooks/useNewRefEntryDialog";
 
 import { i18n } from "@webiny/app/i18n";
+import { BindComponentRenderProp } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-const getKey = (field: CmsEditorField, bind: any): string => {
+const getKey = (field: CmsEditorField, bind: BindComponentRenderProp): string => {
     return bind.form.data.id + "." + field.fieldId;
 };
 
@@ -20,13 +20,13 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Reference Inputs`,
         description: t`Renders an auto-complete input, allowing selection of multiple values.`,
         canUse({ field }) {
-            return field.type === "ref" && field.multipleValues;
+            return field.type === "ref" && !!field.multipleValues;
         },
         render(props) {
             const Bind = props.getBind();
             return (
                 <Bind>
-                    {(bind: any) => (
+                    {bind => (
                         <NewRefEntryDialogContextProvider>
                             <ContentEntriesMultiAutocomplete
                                 key={getKey(props.field, bind)}

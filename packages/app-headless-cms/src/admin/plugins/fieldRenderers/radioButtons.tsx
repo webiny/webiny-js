@@ -19,7 +19,9 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render({ field, getBind }) {
             const Bind = getBind();
 
-            const { values: options } = field.predefinedValues;
+            const { values: options = [] } = field.predefinedValues || {
+                options: []
+            };
 
             return (
                 <Bind>

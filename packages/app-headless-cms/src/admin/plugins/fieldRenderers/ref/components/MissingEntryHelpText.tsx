@@ -25,7 +25,10 @@ export const ReferenceMultipleModelsHelpText = () => {
     return <HelpTextTypography use={"caption"}>{referenceMultipleModelsLabel}</HelpTextTypography>;
 };
 
-const MissingEntryHelpText: React.FC<{ refModelId: string }> = ({ refModelId }) => {
+interface MissingEntryHelpTextProps {
+    refModelId: string;
+}
+const MissingEntryHelpText: React.FC<MissingEntryHelpTextProps> = ({ refModelId }) => {
     return (
         <HelpTextTypography use={"caption"}>
             {missingEntryLabel({

@@ -32,6 +32,10 @@ const Editor: React.FC = () => {
         dropTarget
     } = useFieldEditor();
 
+    if (!field) {
+        return null;
+    }
+
     return (
         <Fragment>
             {fields.length === 0 && (

@@ -84,7 +84,7 @@ export const Context = React.createContext<ContentEntryContext>({
     }
 });
 
-export interface ContentEntryContextProviderProps extends UseContentEntryProviderProps {
+export interface ContentEntryContextProviderProps extends Partial<UseContentEntryProviderProps> {
     children: React.ReactNode;
 }
 

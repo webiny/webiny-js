@@ -17,7 +17,7 @@ interface Params {
 
 const moveField = ({ field, position, data }: Params) => {
     const { row, index } = position;
-    const fieldId = typeof field === "string" ? field : field._id;
+    const fieldId = (typeof field === "string" ? field : field._id) as string;
 
     const existingPosition = getFieldPosition({ field: fieldId, data });
     if (existingPosition) {

@@ -51,9 +51,17 @@ const PublishRevision: React.FC<PublishRevisionProps> = ({ revision }) => {
                                             variables: { revision: revision.id }
                                         });
 
+                                        if (!res) {
+                                            showSnackbar(
+                                                "Missing response data on Publish Revision Mutation."
+                                            );
+                                            return;
+                                        }
+
                                         const { error } = res.formBuilder.publishRevision;
                                         if (error) {
-                                            return showSnackbar(error.message);
+                                            showSnackbar(error.message);
+                                            return;
                                         }
 
                                         showSnackbar(
@@ -91,10 +99,17 @@ const PublishRevision: React.FC<PublishRevisionProps> = ({ revision }) => {
                                             mutation: UNPUBLISH_REVISION,
                                             variables: { revision: revision.id }
                                         });
+                                        if (!res) {
+                                            showSnackbar(
+                                                "Missing response data on Unpublish Revision Mutation."
+                                            );
+                                            return;
+                                        }
 
                                         const { error } = res.formBuilder.unpublishRevision;
                                         if (error) {
-                                            return showSnackbar(error.message);
+                                            showSnackbar(error.message);
+                                            return;
                                         }
 
                                         showSnackbar(

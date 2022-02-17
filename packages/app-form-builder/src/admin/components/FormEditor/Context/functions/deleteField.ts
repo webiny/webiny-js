@@ -4,7 +4,7 @@ interface Params {
     field: FbFormModelField;
     data: FbFormModel;
 }
-export default ({ field, data }: Params) => {
+export default ({ field, data }: Params): FbFormModel => {
     // Remove the field from fields list...
     const fieldIndex = data.fields.findIndex(item => item._id === field._id);
     data.fields.splice(fieldIndex, 1);

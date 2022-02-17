@@ -32,7 +32,7 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 export interface CmsEntryGetQueryResponse {
     content: {
         data: CmsEditorContentEntry;
-        error?: CmsErrorResponse;
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntryGetQueryVariables {
@@ -68,7 +68,7 @@ export const createReadQuery = (model: CmsEditorContentModel) => {
 export interface CmsEntriesListRevisionsQueryResponse {
     revisions: {
         data: CmsContentEntryRevision[];
-        error?: CmsErrorResponse;
+        error: CmsErrorResponse | null;
         meta: CmsMetaResponse;
     };
 }
@@ -108,7 +108,7 @@ const getModelTitleFieldId = (model: CmsEditorContentModel): string => {
 export interface CmsEntriesListQueryResponse {
     content: {
         data: CmsEditorContentEntry[];
-        error?: CmsErrorResponse;
+        error: CmsErrorResponse | null;
         meta: CmsMetaResponse;
     };
 }
@@ -157,8 +157,8 @@ export const createListQuery = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntryDeleteMutationResponse {
     content: {
-        data?: CmsEditorContentEntry;
-        error?: CmsErrorResponse;
+        data: CmsEditorContentEntry | null;
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntryDeleteMutationVariables {
@@ -182,8 +182,8 @@ export const createDeleteMutation = (model: CmsEditorContentModel) => {
  */
 export interface CmsEntryCreateMutationResponse {
     content: {
-        data?: CmsEditorContentEntry;
-        error?: CmsErrorResponse;
+        data: CmsEditorContentEntry | null;
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntryCreateMutationVariables {

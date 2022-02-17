@@ -34,8 +34,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <Fields
                             Bind={Bind}
                             contentModel={contentModel}
-                            fields={field.settings.fields}
-                            layout={field.settings.layout}
+                            fields={(field.settings || {}).fields || []}
+                            layout={(field.settings || {}).layout || []}
                         />
                     </Cell>
                 </Grid>

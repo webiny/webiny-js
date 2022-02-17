@@ -15,7 +15,10 @@ import {
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.
  * */
-const sortEntries = (list: CmsEditorContentEntry[], sort: string[]): CmsEditorContentEntry[] => {
+const sortEntries = (
+    list: CmsEditorContentEntry[],
+    sort?: string[] | null
+): CmsEditorContentEntry[] => {
     if (!sort) {
         return list;
     } else if (Array.isArray(sort) === false) {
@@ -37,12 +40,13 @@ export const addEntryToListCache = (
     variables: CmsEntriesListQueryVariables
 ): void => {
     const gqlParams = { query: GQL.createListQuery(model), variables };
-    const { content } = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
+    const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
         gqlParams
     );
-    if (!content || !content.data) {
+    if (!response || !response.content || !response.content.data) {
         return;
     }
+    const { content } = response;
     cache.writeQuery({
         ...gqlParams,
         data: {
@@ -64,12 +68,13 @@ export const updateLatestRevisionInListCache = (
 
     const [uniqueId] = revision.id.split("#");
 
-    const { content } = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
+    const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
         gqlParams
     );
-    if (!content || !content.data) {
+    if (!response || !response.content || !response.content.data) {
         return;
     }
+    const { content } = response;
     const index = content.data.findIndex(item => item.id.startsWith(uniqueId));
     if (index === -1) {
         return;
@@ -91,12 +96,13 @@ export const removeEntryFromListCache = (
 ): void => {
     // Delete the item from list cache
     const gqlParams = { query: GQL.createListQuery(model), variables };
-    const { content } = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
+    const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
         gqlParams
     );
-    if (!content || !content.data) {
+    if (!response || !response.content || !response.content.data) {
         return;
     }
+    const { content } = response;
     const { id: entryId } = parseIdentifier(revision.id);
     const index = content.data.findIndex(item => item.id.startsWith(entryId));
     if (index === -1) {
@@ -121,13 +127,20 @@ export const removeRevisionFromEntryCache = (
         variables: { id: revision.id.split("#")[0] }
     };
 
-    const { revisions: revisionsData } = cache.readQuery<
+    const response = cache.readQuery<
         CmsEntriesListRevisionsQueryResponse,
         CmsEntriesListRevisionsQueryVariables
     >(gqlParams);
-    if (!revisionsData || !revisionsData.data || revisionsData.data.length === 0) {
+    if (
+        !response ||
+        !response.revisions ||
+        !response.revisions.data ||
+        response.revisions.data.length === 0
+    ) {
         return [];
     }
+
+    const { revisions: revisionsData } = response;
 
     const revisions = revisionsData.data.filter(item => {
         return item.id !== revision.id;
@@ -153,11 +166,15 @@ export const addRevisionToRevisionsCache = (
         variables: { id: revision.id.split("#")[0] }
     };
 
-    const { revisions } = cache.readQuery(gqlParams);
+    const response = cache.readQuery<
+        CmsEntriesListRevisionsQueryResponse,
+        CmsEntriesListRevisionsQueryVariables
+    >(gqlParams);
 
-    if (!revisions || !revisions.data) {
+    if (!response || !response.revisions || !response.revisions.data) {
         return;
     }
+    const { revisions } = response;
 
     cache.writeQuery({
         ...gqlParams,
@@ -177,14 +194,15 @@ export const unpublishPreviouslyPublishedRevision = (
         variables: { id: publishedId.split("#")[0] }
     };
 
-    const { revisions } = cache.readQuery<
+    const response = cache.readQuery<
         CmsEntriesListRevisionsQueryResponse,
         CmsEntriesListRevisionsQueryVariables
     >(gqlParams);
 
-    if (!revisions || !revisions.data) {
+    if (!response || !response.revisions || !response.revisions.data) {
         return;
     }
+    const { revisions } = response;
 
     const prevPublished = revisions.data.findIndex(
         item => item.id !== publishedId && item.meta.status === "published"

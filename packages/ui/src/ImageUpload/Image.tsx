@@ -14,9 +14,9 @@ import {
     RemoveImage
 } from "./styled";
 
-interface Props {
-    uploadImage: Function;
-    removeImage?: Function;
+interface ImageProps {
+    uploadImage: () => void;
+    removeImage?: (value: string | null) => void;
     editImage?: Function;
     value?: any;
     disabled?: boolean;
@@ -28,7 +28,7 @@ interface Props {
     containerStyle?: React.CSSProperties;
 }
 
-class Image extends React.Component<Props> {
+class Image extends React.Component<ImageProps> {
     static defaultProps = {
         placeholder: "Select an image",
         containerStyle: { height: "100%" }

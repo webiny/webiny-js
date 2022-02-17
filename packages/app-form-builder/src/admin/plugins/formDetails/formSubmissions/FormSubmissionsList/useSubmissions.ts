@@ -15,7 +15,7 @@ import {
 interface State {
     loading: boolean;
     page: number;
-    cursors: Record<number, string>;
+    cursors: Record<number, string | null>;
     exportInProgress: boolean;
     submissions: FbFormSubmissionData[];
     sort: string[];
@@ -60,7 +60,7 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
             cursors: {
                 ...state.cursors,
                 // Store cursor to load next page
-                [state.page + 1]: meta.hasMoreItems ? meta.cursor : undefined
+                [state.page + 1]: meta.hasMoreItems ? meta.cursor : null
             }
         });
     };
@@ -81,6 +81,11 @@ export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
             }
         });
         setState({ exportInProgress: false });
+
+        if (!data) {
+            showSnackbar("Missing response data on Export Form Submissions.");
+            return;
+        }
 
         const { data: csvFile, error } = data.formBuilder.exportFormSubmissions;
         if (error) {

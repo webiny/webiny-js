@@ -15,7 +15,7 @@ export default (): CmsEditorFieldValidatorPlugin => ({
         description: "Entered date/time must be equal or earlier compared to the provided date.",
         defaultMessage: `Date/time is later than the provided one.`,
         renderSettings({ Bind, field }) {
-            const type = field.settings.type;
+            const type = field.settings ? field.settings.type : undefined;
             const availableValidators = getAvailableValidators(type).join(",");
             return (
                 <Grid>

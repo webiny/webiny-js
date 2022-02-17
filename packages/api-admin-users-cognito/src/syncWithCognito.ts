@@ -15,36 +15,38 @@ export interface AttributeGetter {
     (user: BaseUserAttributes): string;
 }
 
+interface CognitoConfigAutoVerify {
+    email?: boolean;
+}
 export interface CognitoConfig {
     region: string;
     userPoolId: string;
     updateAttributes?: Record<string, string | AttributeGetter>;
     getUsername?<TUser extends BaseUserAttributes = BaseUserAttributes>(user: TUser): string;
-    autoVerify?: {
-        email?: boolean;
-    };
+    autoVerify?: CognitoConfigAutoVerify;
 }
 
-const defaultGetUsername = (user: BaseUserAttributes) => user.email.toLowerCase();
+const defaultGetUsername: CognitoConfig["getUsername"] = (user: BaseUserAttributes) =>
+    user.email.toLowerCase();
+
+const defaultAutoVerify: CognitoConfigAutoVerify = {
+    email: true
+};
 
 export const syncWithCognito = ({
-    getUsername,
+    getUsername: initialGetUsername,
     region,
     userPoolId,
-    autoVerify,
-    updateAttributes
+    autoVerify: initialAutoVerify,
+    updateAttributes: initialUpdateAttributes
 }: CognitoConfig) => {
-    if (!getUsername) {
-        getUsername = defaultGetUsername;
-    }
+    const getUsername = initialGetUsername ? initialGetUsername : defaultGetUsername;
 
-    if (!autoVerify) {
-        autoVerify = { email: true };
-    }
+    const autoVerify = initialAutoVerify ? initialAutoVerify : defaultAutoVerify;
 
-    if (!updateAttributes) {
-        updateAttributes = defaultUpdateAttributes;
-    }
+    const updateAttributes = initialUpdateAttributes
+        ? initialUpdateAttributes
+        : defaultUpdateAttributes;
 
     const cognito = new CognitoIdentityServiceProvider({ region });
 
@@ -102,8 +104,17 @@ export const syncWithCognito = ({
                 ]
             };
 
-            const { User } = await cognito.adminCreateUser(params).promise();
-            user.id = User.Attributes.find(attr => attr.Name === "sub").Value;
+            const response = await cognito.adminCreateUser(params).promise();
+
+            const { User } = response;
+            /**
+             * TODO @ts-refactor @pavel are we doing anything in case there is no User variable?
+             * Same goes for the sub attribute.
+             */
+            // @ts-ignore
+            const subAttr = User.Attributes.find(attr => attr.Name === "sub");
+            // @ts-ignore
+            user.id = subAttr ? subAttr.Value : null;
 
             const verify = {
                 UserPoolId: userPoolId,

@@ -32,7 +32,7 @@ const imagesStyle = css({
 // Do not apply editping for following image types.
 // const noImageEditorTypes = ["image/svg+xml", "image/gif"];
 
-interface Props extends FormComponentProps {
+interface MultiImageUploadProps extends FormComponentProps {
     // Component label.
     label?: string;
 
@@ -78,8 +78,8 @@ interface State {
     };
 }
 
-class MultiImageUpload extends React.Component<Props, State> {
-    static defaultProps: Partial<Props> = {
+class MultiImageUpload extends React.Component<MultiImageUploadProps, State> {
+    static defaultProps: Partial<MultiImageUploadProps> = {
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         maxSize: "5mb",
         imageEditor: {},

@@ -11,6 +11,13 @@ import { Bind } from "./BindNew";
 import ValidationError from "./ValidationError";
 import { useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { BindComponentProps, FormAPI, FormProps, FormData, Validation } from "~/types";
+import { Validator } from "@webiny/validation/types";
+
+/**
+ * Which types can the form data be?
+ * TODO Add more.
+ */
+type ValueType = string | number | boolean | null | undefined | string[] | number[] | boolean[];
 
 interface State {
     data: FormData;
@@ -65,6 +72,16 @@ export const useBind = (props: BindComponentProps) => {
     return form.createField(props);
 };
 
+interface InputRecord {
+    defaultValue: unknown;
+    validators: Validator[];
+    afterChange?: (value: unknown, form: FormAPI) => void;
+}
+// interface ValidationInputFormData {
+//     inputs: Record<string, InputRecord>;
+//     data: FormData;
+// }
+
 export const Form = React.forwardRef(function Form(props: FormProps, ref) {
     const [state, setState] = useState<State>({
         data: props.data || {},
@@ -114,7 +131,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
         }
     }
 
-    const inputs = useRef<Record<string, any>>({});
+    const inputs = useRef<Record<string, InputRecord>>({});
     const afterChange = useRef<Record<string, boolean>>({});
     const lastRender = useRef<string[]>([]);
     const validateFns = useRef<Record<string, OnValidateCallable>>({});
@@ -123,9 +140,9 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
     const getOnChangeFn = ({ name, beforeChange }: GetOnChangeFn) => {
         if (!onChangeFns.current[name]) {
             const linkStateChange = (
-                value: any,
+                value: unknown,
                 inlineCallback: Function = lodashNoop
-            ): Promise<any> => {
+            ): Promise<unknown> => {
                 return new Promise(resolve => {
                     afterChange.current[name] = true;
                     setState(state => {
@@ -165,8 +182,27 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
     /**
      * We need to cast so we can avoid a lot of casting later on.
      */
-    const formRef = useRef<FormAPI>(null as unknown as FormAPI);
-    const stateRef = useRef<State>(null as unknown as State);
+    const formRef = useRef<FormAPI>({
+        data: {},
+        submit: async () => {
+            return void 0;
+        },
+        validate: () => {
+            return void 0;
+        },
+        setValue: () => {
+            return void 0;
+        },
+        validateInput: async () => {
+            return void 0;
+        }
+    });
+    const stateRef = useRef<State>({
+        data: {},
+        originalData: {},
+        validation: [],
+        wasSubmitted: false
+    });
 
     useEffect(() => {
         Object.keys(inputs.current).forEach((name: string) => {
@@ -195,32 +231,34 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
             }
 
             // Execute onAfterChange
-            if (inputs.current[name].afterChange) {
-                inputs.current[name].afterChange(
-                    lodashGet(formRef.current.data, name),
-                    formRef.current
-                );
+            const callable = inputs.current[name] ? inputs.current[name].afterChange : null;
+            if (!callable) {
+                return;
             }
+            callable(lodashGet(formRef.current.data, name), formRef.current);
         });
     });
 
     useImperativeHandle(ref, () => ({
-        submit: () => formRef.current.submit()
+        submit: (ev: React.SyntheticEvent) => formRef.current.submit(ev)
     }));
 
     const executeValidators = async (
-        value: any,
-        validators: Function | Array<Function>,
-        formData: Object = {}
-    ): Promise<any> => {
-        validators = Array.isArray(validators) ? [...validators] : [validators];
-
-        const results: Record<string, any> = {};
+        value: ValueType,
+        validators: Validator[]
+        // formData: ValidationInputFormData
+    ): Promise<Record<string, any>> => {
+        const results: Record<string, string> = {};
         for (let i = 0; i < validators.length; i++) {
             const validator = validators[i];
             try {
-                await Promise.resolve(validator(value, formData))
-                    .then(result => {
+                /**
+                 * TODO @ts-refactor @pavel
+                 * formData variable is something completely different than the validator expects.
+                 */
+                // @ts-ignore
+                await Promise.resolve(validator(value))
+                    .then((result: any) => {
                         if (result instanceof Error) {
                             throw result;
                         }
@@ -316,15 +354,21 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
         ) {
             return Promise.resolve(null);
         }
-        const value = lodashGet(stateRef.current.data, name, inputs.current[name].defaultValue);
+        const value = lodashGet(
+            stateRef.current.data,
+            name,
+            inputs.current[name].defaultValue
+        ) as ValueType;
         const { validators } = inputs.current[name];
         const hasValidators = Object.keys(validators).length > 0;
 
         // Validate input
-        const formData = {
-            inputs: inputs.current,
-            data: { ...stateRef.current.data }
-        };
+        // const formData: ValidationInputFormData = {
+        //     inputs: inputs.current,
+        //     data: {
+        //         ...stateRef.current.data
+        //     }
+        // };
 
         setState(state => ({
             ...state,
@@ -337,7 +381,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
             }
         }));
 
-        return Promise.resolve(executeValidators(value, validators, formData))
+        return Promise.resolve(executeValidators(value, validators))
             .then(validationResults => {
                 const isValid = hasValidators ? (value === null ? null : true) : null;
 
@@ -420,13 +464,30 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
     };
 
     const createField = (props: BindComponentProps) => {
-        const { name, validators = [], defaultValue, beforeChange, afterChange } = props;
+        const { name, defaultValue, beforeChange, afterChange } = props;
 
+        let validators = props.validators || [];
+        /**
+         * If there is no validators defined, lets make it empty array.
+         * If there is validator defined, we expect array further on, so create it.
+         */
+        if (!validators) {
+            validators = [];
+        } else if (Array.isArray(validators) === false) {
+            validators = [validators as Validator];
+        }
         // Track component rendering
         lastRender.current.push(name);
 
         // Store validators and custom messages
-        inputs.current[name] = { defaultValue, validators, afterChange };
+        inputs.current[name] = {
+            defaultValue,
+            /**
+             * We are sure that validators is an array.
+             */
+            validators: validators as Validator[],
+            afterChange
+        };
 
         return {
             form: getFormRef(),

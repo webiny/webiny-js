@@ -43,7 +43,7 @@ export interface AutoCompleteProps extends Omit<AutoCompleteBaseProps, "onChange
     loading?: boolean;
 
     /* A component that renders supporting UI in case of no result found. */
-    noResultFound?: Function;
+    noResultFound?: React.ReactNode;
 }
 
 type State = {

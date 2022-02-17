@@ -75,7 +75,7 @@ const ContentFormOptionsMenu: React.FC = () => {
             await deleteContentMutation({
                 variables: { revision: uniqueId },
                 update(cache, response) {
-                    if (!response || !response.data) {
+                    if (!response.data) {
                         showDialog("Missing response data on Delete Entry Mutation.", {
                             title: t`Could not delete content`
                         });

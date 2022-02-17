@@ -19,6 +19,9 @@ export default [
         name: "forms-form-details-revision-content-submissions",
         type: "forms-form-details-revision-content",
         render({ form, loading, security }) {
+            if (!security.identity || !security.identity.getPermission) {
+                return null;
+            }
             const { submissions } = security.identity.getPermission("fb.form");
 
             if (typeof submissions !== "undefined" && submissions !== true) {

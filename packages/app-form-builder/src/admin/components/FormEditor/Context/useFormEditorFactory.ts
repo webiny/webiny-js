@@ -42,7 +42,9 @@ export interface FormEditor {
     data: FbFormModel;
     state: State;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
-    saveForm: (data?: FbFormModel) => Promise<{ data: FbFormModel; error: FbErrorResponse }>;
+    saveForm: (
+        data?: FbFormModel
+    ) => Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
     getLayoutFields: () => FbFormModelField[][];
@@ -87,7 +89,7 @@ export const useFormEditorFactory = (
                 }
 
                 self.setData(() => {
-                    const form = cloneDeep(data);
+                    const form = cloneDeep(data) as FbFormModel;
                     if (!form.settings.layout.renderer) {
                         form.settings.layout.renderer = state.defaultLayoutRenderer;
                     }
@@ -118,7 +120,12 @@ export const useFormEditorFactory = (
                     }
                 });
 
-                return response?.data?.formBuilder?.updateRevision;
+                return (
+                    response?.data?.formBuilder?.updateRevision || {
+                        data: null,
+                        error: null
+                    }
+                );
             },
             /**
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.

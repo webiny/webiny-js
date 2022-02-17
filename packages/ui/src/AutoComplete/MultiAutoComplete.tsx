@@ -94,7 +94,7 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
     renderListItemLabel?: Function;
 
     /* A component that renders supporting UI in case of no result found. */
-    noResultFound?: Function;
+    noResultFound?: React.ReactNode;
     /**
      * Value is an array of strings. But can be undefined.
      */

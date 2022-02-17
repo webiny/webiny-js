@@ -66,7 +66,7 @@ interface OnChangeParams {
 export const Editor: React.FC = () => {
     const { data, setData, isPristine } = useContentModelEditor();
 
-    const tabsRef = useRef(null);
+    const tabsRef = useRef<Tabs | null>(null);
     const [activeTabIndex, setActiveTabIndex] = useState(0);
 
     const onChange = ({ fields, layout }: OnChangeParams) => {
@@ -91,9 +91,10 @@ export const Editor: React.FC = () => {
                         <LeftBarFieldList>
                             <FieldsSidebar
                                 onFieldDragStart={() => {
-                                    if (tabsRef.current) {
-                                        tabsRef.current.switchTab(0);
+                                    if (!tabsRef.current) {
+                                        return;
                                     }
+                                    tabsRef.current.switchTab(0);
                                 }}
                             />
                         </LeftBarFieldList>
@@ -108,7 +109,7 @@ export const Editor: React.FC = () => {
                                 <EditContainer>
                                     <FieldEditor
                                         fields={data.fields}
-                                        layout={data.layout}
+                                        layout={data.layout || []}
                                         onChange={onChange}
                                     />
                                 </EditContainer>

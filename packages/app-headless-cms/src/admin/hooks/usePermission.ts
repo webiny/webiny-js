@@ -3,6 +3,7 @@ import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CmsCreatedBy, CmsGroup, CmsModel } from "~/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 interface CreatableItem {
     createdBy: Pick<CmsCreatedBy, "id">;
@@ -19,25 +20,39 @@ export const usePermission = () => {
 
     const currentLocale = getCurrentLocale("content");
 
-    const hasFullAccess = useMemo(() => identity.getPermission("cms.*"), []);
-
-    const canRead = useCallback((permissionName: string) => {
-        const permission = identity.getPermission(permissionName);
-        if (!permission) {
-            return false;
+    const hasFullAccess = useMemo((): SecurityPermission | null => {
+        if (!identity || !identity.getPermission) {
+            return null;
         }
+        return identity.getPermission("cms.*");
+    }, [identity]);
 
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
+    const canRead = useCallback(
+        (permissionName: string): boolean => {
+            if (!identity || !identity.getPermission) {
+                return false;
+            }
+            const permission = identity.getPermission(permissionName);
+            if (!permission) {
+                return false;
+            }
 
-        return permission.rwd.includes("r");
-    }, []);
+            if (typeof permission.rwd !== "string") {
+                return true;
+            }
+
+            return permission.rwd.includes("r");
+        },
+        [identity]
+    );
 
     const canReadEntries = useCallback(
-        ({ contentModelGroup, contentModel }: CanReadEntriesCallableParams) => {
+        ({ contentModelGroup, contentModel }: CanReadEntriesCallableParams): boolean => {
             if (hasFullAccess) {
                 return true;
+            }
+            if (!identity || !identity.getPermission) {
+                return false;
             }
 
             const permission = identity.getPermission("cms.contentEntry");
@@ -70,6 +85,9 @@ export const usePermission = () => {
 
     const canEdit = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
+            if (!identity || !identity.getPermission) {
+                return false;
+            }
             const permission = identity.getPermission(permissionName);
 
             if (!permission) {
@@ -98,6 +116,9 @@ export const usePermission = () => {
      * @param {string} permissionName
      * */
     const canCreate = useCallback((permissionName: string): boolean => {
+        if (!identity || !identity.getPermission) {
+            return false;
+        }
         const permission = identity.getPermission(permissionName);
         if (!permission) {
             return false;
@@ -112,6 +133,9 @@ export const usePermission = () => {
 
     const canDelete = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
+            if (!identity || !identity.getPermission) {
+                return false;
+            }
             const permission = identity.getPermission(permissionName);
 
             if (!permission) {
@@ -133,6 +157,9 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
+            if (!identity || !identity.getPermission) {
+                return false;
+            }
             const permission = identity.getPermission(permissionName);
 
             if (!permission) {
@@ -151,6 +178,9 @@ export const usePermission = () => {
         (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
+            }
+            if (!identity || !identity.getPermission) {
+                return false;
             }
             const permission = identity.getPermission(permissionName);
 
@@ -171,6 +201,9 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
+            if (!identity || !identity.getPermission) {
+                return false;
+            }
             const permission = identity.getPermission(permissionName);
 
             if (!permission) {
@@ -189,6 +222,9 @@ export const usePermission = () => {
         (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
+            }
+            if (!identity || !identity.getPermission) {
+                return false;
             }
             const permission = identity.getPermission(permissionName);
 
@@ -209,6 +245,9 @@ export const usePermission = () => {
     const canCreateContentModels = canCreate("cms.contentModel");
     const canCreateContentModelGroups = canCreate("cms.contentModelGroup");
     const canAccessManageEndpoint = useMemo(() => {
+        if (!identity || !identity.getPermission) {
+            return false;
+        }
         return identity.getPermission("cms.endpoint.manage") !== undefined;
     }, [identity]);
 

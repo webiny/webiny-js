@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 interface CreatableItem {
     createdBy?: {
@@ -11,8 +12,18 @@ interface CreatableItem {
 export const usePermission = () => {
     const { identity } = useSecurity();
 
-    const fbFormPermission = useMemo(() => identity.getPermission("fb.form"), []);
-    const hasFullAccess = useMemo(() => identity.getPermission("fb.*"), []);
+    const fbFormPermission = useMemo((): SecurityPermission | null => {
+        if (!identity || !identity.getPermission) {
+            return null;
+        }
+        return identity.getPermission("fb.form");
+    }, []);
+    const hasFullAccess = useMemo((): SecurityPermission | null => {
+        if (!identity || !identity.getPermission) {
+            return null;
+        }
+        return identity.getPermission("fb.*");
+    }, []);
 
     const canEdit = useCallback(
         (item): boolean => {
@@ -21,7 +32,7 @@ export const usePermission = () => {
                 return false;
             }
             if (fbFormPermission.own && creatorId) {
-                return creatorId === identity.login;
+                return creatorId === (identity && identity.login);
             }
             if (typeof fbFormPermission.rwd === "string") {
                 return fbFormPermission.rwd.includes("w");
@@ -37,7 +48,7 @@ export const usePermission = () => {
                 return false;
             }
             if (fbFormPermission.own) {
-                return item.createdBy.id === identity.login;
+                return item.createdBy?.id === (identity && identity.login);
             }
             if (typeof fbFormPermission.rwd === "string") {
                 return fbFormPermission.rwd.includes("d");

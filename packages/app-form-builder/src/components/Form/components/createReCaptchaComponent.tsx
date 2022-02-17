@@ -46,7 +46,7 @@ const createReCaptchaComponent = ({
             <ReCAPTCHA
                 {...props}
                 sitekey={settings.reCaptcha.settings.siteKey}
-                onChange={response => {
+                onChange={(response: string) => {
                     setResponseToken(response);
                     typeof props.onChange === "function" && props.onChange(response);
                 }}

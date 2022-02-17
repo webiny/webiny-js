@@ -5,7 +5,12 @@ export interface NewRefEntryDialogContextValue {
     setOpen: (value: boolean) => void;
 }
 
-export const NewRefEntryDialogContext = createContext<NewRefEntryDialogContextValue>(null);
+export const NewRefEntryDialogContext = createContext<NewRefEntryDialogContextValue>({
+    open: false,
+    setOpen: () => {
+        return void 0;
+    }
+});
 
 export const NewRefEntryDialogContextProvider: React.FC = ({ children }) => {
     const [open, setOpen] = useState<boolean>(false);

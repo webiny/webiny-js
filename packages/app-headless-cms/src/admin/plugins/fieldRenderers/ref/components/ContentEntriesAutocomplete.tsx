@@ -9,6 +9,7 @@ import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
 import { CmsEditorField } from "~/types";
+import { BindComponentRenderProp } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -16,7 +17,7 @@ const unpublishedLabel = t`Selected content entry is not published. Make sure to
 const publishedLabel = t`Selected content entry is published. You can view it {here}.`;
 
 interface ContentEntriesAutocompleteProps {
-    bind: any;
+    bind: BindComponentRenderProp;
     field: CmsEditorField;
 }
 const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({ bind, field }) => {
@@ -25,7 +26,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
         field
     });
 
-    let entryInfo: string = null;
+    let entryInfo: string | null = null;
     if (value && !value.published) {
         const link = createEntryUrl(value);
         entryInfo = unpublishedLabel({ publishItLink: <Link to={link}>{t`publish it`}</Link> });
@@ -41,8 +42,6 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
      * Wrap AutoComplete input in NewRefEntry modal.
      */
     if (renderNewEntryModal) {
-        // TODO @ts-refactor
-        // TODO @ashutosh check out that second entry in onChange and check which type does on change accept as second entry
         return (
             <NewRefEntryFormDialog
                 modelId={refModelId}
@@ -53,7 +52,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
                     renderItem={renderItem}
                     onChange={onChange}
                     loading={loading}
-                    value={value ? value.id : null}
+                    value={value || undefined}
                     options={options}
                     label={field.label}
                     description={
@@ -75,7 +74,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
             renderItem={renderItem}
             onChange={onChange}
             loading={loading}
-            value={value ? value.id : null}
+            value={value || undefined}
             options={options}
             label={field.label}
             description={

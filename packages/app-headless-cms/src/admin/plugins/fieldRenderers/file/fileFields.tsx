@@ -1,4 +1,3 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import React from "react";
 import dotProp from "dot-prop-immutable";
 import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
@@ -35,7 +34,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
 
     return (
         <Bind>
-            {(bind: any) => {
+            {bind => {
                 const { value, onChange } = bind;
                 return (
                     <FileUploadWrapper className={imageWrapperStyles}>
@@ -80,6 +79,10 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
 
                                         <Cell span={3}>
                                             <File
+                                                url={""}
+                                                onRemove={() => {
+                                                    return void 0;
+                                                }}
                                                 {...bind}
                                                 showFileManager={() => selectFiles()}
                                                 placeholder={t`Select a file"`}
@@ -112,7 +115,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`File Inputs`,
         description: t`Enables selecting multiple files via File Manager.`,
         canUse({ field }) {
-            return field.type === "file" && field.multipleValues;
+            return field.type === "file" && !!field.multipleValues;
         },
         render({ field, getBind, Label }) {
             return <FieldRenderer field={field} getBind={getBind} Label={Label} />;

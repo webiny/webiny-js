@@ -77,7 +77,7 @@ const Horizontal: React.FC<HorizontalProps> = ({ last, onDrop, isVisible, ...res
                         zIndex: isDragging ? 1000 : -1
                     }}
                 >
-                    <OuterDiv isOver={isOver} isDragging={isDragging} last={last}>
+                    <OuterDiv isOver={isOver} isDragging={isDragging} last={last ? true : false}>
                         <InnerDiv>
                             <BackgroundColorDiv />
                         </InnerDiv>

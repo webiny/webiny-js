@@ -59,12 +59,20 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
 
                     await create({
                         variables: formData,
-                        update(cache, { data }) {
+                        update(cache, result) {
+                            if (!result.data) {
+                                return;
+                            }
+                            const { data } = result;
                             const { data: revision, error } = data.formBuilder.form;
 
+                            setLoading(false);
                             if (error) {
-                                setLoading(false);
-                                return showSnackbar(error.message);
+                                showSnackbar(error.message);
+                                return;
+                            } else if (!revision) {
+                                showSnackbar(`Missing revision data in Create Form Mutation.`);
+                                return;
                             }
 
                             addFormToListCache(cache, revision);
@@ -84,7 +92,13 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
                             </Bind>
                         </DialogContent>
                         <DialogActions>
-                            <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
+                            <ButtonDefault
+                                onClick={ev => {
+                                    submit(ev);
+                                }}
+                            >
+                                + {t`Create`}
+                            </ButtonDefault>
                         </DialogActions>
                     </>
                 )}

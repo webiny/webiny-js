@@ -3,13 +3,52 @@ import { useQuery } from "@apollo/react-hooks";
 import { QueryResult } from "@apollo/react-common";
 import { useSecurity } from "@webiny/app-security";
 import { LIST_FORMS, ListFormsQueryResponse } from "../../graphql";
+import { NetworkStatus } from "apollo-client";
 
 export interface FormsContextValue {
     canCreate: boolean;
-    listQuery: QueryResult<any, any>;
+    listQuery: QueryResult<ListFormsQueryResponse>;
 }
 
-export const FormsContext = React.createContext<FormsContextValue>(null);
+export const FormsContext = React.createContext<FormsContextValue>({
+    canCreate: false,
+    listQuery: {
+        loading: false,
+        variables: {},
+        called: false,
+        client: null as any,
+        data: {
+            formBuilder: {
+                listForms: {
+                    data: [],
+                    error: null
+                }
+            }
+        },
+        error: undefined,
+        fetchMore: async () => {
+            return {} as any;
+        },
+        networkStatus: NetworkStatus.ready,
+        refetch: async () => {
+            return {} as any;
+        },
+        startPolling: () => {
+            return void 0;
+        },
+        updateQuery: () => {
+            return void 0;
+        },
+        stopPolling: () => {
+            return void 0;
+        },
+        subscribeToMore: () => {
+            return () => {
+                return void 0;
+            };
+        }
+    }
+});
 
 export interface FormContextProvider {
     canCreate: boolean;
@@ -20,6 +59,9 @@ export const FormsProvider: React.FC = ({ children }) => {
     const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS);
 
     const canCreate = useMemo((): boolean => {
+        if (!identity || !identity.getPermission) {
+            return false;
+        }
         const permission = identity.getPermission("fb.form");
         if (!permission) {
             return false;
@@ -30,7 +72,7 @@ export const FormsProvider: React.FC = ({ children }) => {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     const value: FormContextProvider = {
         canCreate,

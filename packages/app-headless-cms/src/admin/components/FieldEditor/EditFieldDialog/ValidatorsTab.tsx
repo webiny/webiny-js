@@ -7,7 +7,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { Form } from "@webiny/form";
+import { Form, FormRenderPropParams } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
@@ -16,6 +16,7 @@ import {
     CmsEditorFieldValidator,
     CmsEditorFieldValidatorPluginValidator
 } from "~/types";
+import { Validator } from "@webiny/validation/types";
 
 interface OnChangeValidationCallable {
     (validators: CmsEditorFieldValidator[]): void;
@@ -62,13 +63,8 @@ const noMargin = css({
 interface ValidatorsTabProps {
     name: string;
     validators: any[];
-    form: any;
+    form: FormRenderPropParams;
     field: CmsEditorField;
-}
-
-interface ValidatorsTabBindParams {
-    value: CmsEditorFieldValidator[];
-    onChange: OnChangeValidationCallable;
 }
 
 const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
@@ -81,84 +77,94 @@ const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
 
     return (
         <Bind name={name} defaultValue={[]}>
-            {(bind: ValidatorsTabBindParams) => {
+            {bind => {
                 const { value: validationValue, onChange: onChangeValidation } = bind;
-                return validators.map(({ optional, validator }) => {
-                    const validatorIndex = (validationValue || []).findIndex(
-                        item => item.name === validator.name
-                    );
-                    const data = (validationValue || [])[validatorIndex];
+                return (
+                    <>
+                        {validators.map(({ optional, validator }) => {
+                            const validatorIndex = (
+                                (validationValue || []) as Validator[]
+                            ).findIndex(item => item.name === validator.name);
+                            const data = (validationValue || [])[validatorIndex];
 
-                    return (
-                        <SimpleForm
-                            key={validator.name}
-                            noElevation
-                            className={noMargin}
-                            data-testid={`cms.editor.field-validator.${validator.name}`}
-                        >
-                            <SimpleFormHeader title={validator.label}>
-                                {optional && (
-                                    <Switch
-                                        label="Enabled"
-                                        value={validatorIndex >= 0}
-                                        onChange={() =>
-                                            onEnabledChange({
-                                                data,
-                                                validationValue,
-                                                onChangeValidation,
-                                                validator
-                                            })
-                                        }
-                                    />
-                                )}
-                            </SimpleFormHeader>
-                            {data && (
-                                <Form
-                                    data={data}
-                                    onChange={data =>
-                                        onFormChange({
-                                            data,
-                                            validationValue,
-                                            onChangeValidation,
-                                            validatorIndex
-                                        })
-                                    }
+                            return (
+                                <SimpleForm
+                                    key={validator.name}
+                                    noElevation
+                                    className={noMargin}
+                                    data-testid={`cms.editor.field-validator.${validator.name}`}
                                 >
-                                    {({ Bind, setValue }) => (
-                                        <SimpleFormContent>
-                                            <Grid>
-                                                <Cell span={12}>
-                                                    <Bind
-                                                        name={"message"}
-                                                        validators={validation.create("required")}
-                                                    >
-                                                        <Input
-                                                            label={"Message"}
-                                                            description={
-                                                                "This message will be displayed to the user"
-                                                            }
-                                                        />
-                                                    </Bind>
-                                                </Cell>
-                                            </Grid>
-
-                                            {typeof validator.renderSettings === "function" &&
-                                                validator.renderSettings({
-                                                    field,
-                                                    setValue,
-                                                    setMessage: (message: string) => {
-                                                        setValue<string>("message", message);
-                                                    },
+                                    <SimpleFormHeader title={validator.label}>
+                                        {optional && (
+                                            <Switch
+                                                label="Enabled"
+                                                value={validatorIndex >= 0}
+                                                onChange={() =>
+                                                    onEnabledChange({
+                                                        data,
+                                                        validationValue,
+                                                        onChangeValidation,
+                                                        validator
+                                                    })
+                                                }
+                                            />
+                                        )}
+                                    </SimpleFormHeader>
+                                    {data && (
+                                        <Form
+                                            data={data}
+                                            onChange={data =>
+                                                onFormChange({
                                                     data,
-                                                    Bind
-                                                })}
-                                        </SimpleFormContent>
+                                                    validationValue,
+                                                    onChangeValidation,
+                                                    validatorIndex
+                                                })
+                                            }
+                                        >
+                                            {({ Bind, setValue }) => (
+                                                <SimpleFormContent>
+                                                    <Grid>
+                                                        <Cell span={12}>
+                                                            <Bind
+                                                                name={"message"}
+                                                                validators={validation.create(
+                                                                    "required"
+                                                                )}
+                                                            >
+                                                                <Input
+                                                                    label={"Message"}
+                                                                    description={
+                                                                        "This message will be displayed to the user"
+                                                                    }
+                                                                />
+                                                            </Bind>
+                                                        </Cell>
+                                                    </Grid>
+
+                                                    {typeof validator.renderSettings ===
+                                                        "function" &&
+                                                        validator.renderSettings({
+                                                            field,
+                                                            setValue,
+                                                            setMessage: (message: string) => {
+                                                                setValue<string>(
+                                                                    "message",
+                                                                    message
+                                                                );
+                                                            },
+                                                            data,
+                                                            Bind
+                                                        })}
+                                                </SimpleFormContent>
+                                            )}
+                                        </Form>
                                     )}
-                                </Form>
-                            )}
-                        </SimpleForm>
-                    );
-                });
+                                </SimpleForm>
+                            );
+                        })}
+                    </>
+                );
             }}
         </Bind>
     );

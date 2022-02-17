@@ -1,4 +1,5 @@
 import React from "react";
+import { Validator } from "@webiny/validation/types";
 
 export interface BindComponentRenderPropValidation {
     isValid: boolean;
@@ -12,7 +13,7 @@ export type BindComponentRenderPropOnChange<T = any> = (value: T) => Promise<voi
 
 export interface FormAPI<T extends Record<string, any> = Record<string, any>> {
     data: T;
-    submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
+    submit: (event: React.SyntheticEvent<any, any>) => Promise<void>;
     setValue: FormSetValue;
     validate: () => void;
     validateInput: (name: string) => Promise<boolean | any>;
@@ -31,7 +32,7 @@ export interface BindComponentProps {
     beforeChange?: (value: any, cb: (value: string | string[]) => void) => void;
     afterChange?: (value: any, form: FormAPI) => void;
     defaultValue?: any;
-    validators?: Function | Array<Function>;
+    validators?: Validator | Validator[];
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
     validate?: Function;
 }

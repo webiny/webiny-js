@@ -15,7 +15,7 @@ import { attachUserValidation } from "./createAdminUsers/users.validation";
 
 interface AdminUsersConfig {
     getIdentity(): SecurityIdentity;
-    getPermission(name: string): Promise<SecurityPermission>;
+    getPermission(name: string): Promise<SecurityPermission | null>;
     getTenant(): string;
     storageOperations: AdminUsersStorageOperations;
 }
@@ -90,7 +90,7 @@ export const createAdminUsers = ({
                 createdOn: new Date().toISOString(),
                 createdBy,
                 tenant,
-                webinyVersion: process.env.WEBINY_VERSION
+                webinyVersion: process.env.WEBINY_VERSION as string
             };
 
             let result;
@@ -227,11 +227,8 @@ export const createAdminUsers = ({
             }
 
             const system = await storageOperations.getSystemData({ tenant: tenantId });
-            if (system) {
-                return system.version;
-            }
 
-            return null;
+            return system ? system.version || null : null;
         },
 
         async setVersion(version) {
@@ -282,7 +279,7 @@ export const createAdminUsers = ({
             }
 
             // Store app version
-            await this.setVersion(process.env.WEBINY_VERSION);
+            await this.setVersion(process.env.WEBINY_VERSION as string);
         }
     };
 

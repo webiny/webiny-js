@@ -33,7 +33,9 @@ class Validation {
      * Contains a list of all set validators.
      * @private
      */
-    __validators: { [key: string]: Validator };
+    __validators: {
+        [key: string]: Validator;
+    };
 
     constructor() {
         this.__validators = {};

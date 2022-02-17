@@ -166,7 +166,7 @@ export interface FbFormModelField {
     _id?: string;
     type: string;
     name: string;
-    fieldId?: FieldIdType;
+    fieldId: FieldIdType;
     label?: string;
     helpText?: string;
     placeholderText?: string;
@@ -194,7 +194,7 @@ export type FbFormTriggerHandlerPlugin = Plugin & {
     type: "form-trigger-handler";
     trigger: {
         id: string;
-        handle: (params: { trigger: any; data: any; form: FbFormModel }) => void;
+        handle: (params: { trigger: any; data: any; form: Partial<FbFormModel> }) => void;
     };
 };
 
@@ -272,13 +272,13 @@ export interface FormComponentPropsType {
 export interface FbFormRenderComponentProps {
     preview?: boolean;
     data?: FbFormModel;
-    client?: ApolloClient<any>;
+    client: ApolloClient<any>;
 }
 
 export interface FormSubmitResponseType {
     data: any;
     preview: boolean;
-    error: FbErrorResponse;
+    error: FbErrorResponse | null;
 }
 
 export type FormLoadComponentPropsType = {

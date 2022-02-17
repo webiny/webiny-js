@@ -81,7 +81,7 @@ export interface AdminInstallationPluginRenderParams {
 }
 export type AdminInstallationPlugin = Plugin & {
     type: "admin-installation";
-    getInstalledVersion(params: { client: ApolloClient<object> }): Promise<string>;
+    getInstalledVersion(params: { client: ApolloClient<object> }): Promise<string | null>;
     title: string;
     dependencies?: string[];
     secure: boolean;

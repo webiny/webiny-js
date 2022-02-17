@@ -107,7 +107,11 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
     resolvers: {
         AdminUserIdentity: {
             async profile(identity, _, context) {
-                const profile = await context.adminUsers.getUser({ where: { id: identity.id } });
+                const profile = await context.adminUsers.getUser({
+                    where: {
+                        id: identity.id
+                    }
+                });
 
                 if (profile) {
                     return profile;
@@ -118,7 +122,16 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                 const tenant = context.tenancy.getCurrentTenant();
 
                 return await context.adminUsers.getUser({
-                    where: { id: identity.id, tenant: tenant.parent }
+                    where: {
+                        id: identity.id,
+                        /**
+                         * TODO @ts-refactor @pavel
+                         * What happens if tenant has no parent?
+                         * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
+                         */
+                        // @ts-ignore
+                        tenant: tenant.parent
+                    }
                 });
             },
             __isTypeOf(obj: SecurityIdentity) {

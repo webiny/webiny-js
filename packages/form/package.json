@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
+    "@webiny/validation": "^5.23.1",
     "invariant": "^2.2.4",
     "lodash": "^4.17.5"
   },

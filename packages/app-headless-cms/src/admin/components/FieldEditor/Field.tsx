@@ -101,9 +101,9 @@ const Field: React.FC<FieldProps> = props => {
         return null;
     }
 
-    const isTitleField = field.fieldId === data.titleFieldId && !parent;
+    const isTitleField = data && field.fieldId === data.titleFieldId && !parent;
 
-    const lockedFields = data.lockedFields || [];
+    const lockedFields = data ? data.lockedFields || [] : [];
     return (
         <Fragment>
             <FieldContainer>

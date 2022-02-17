@@ -45,7 +45,7 @@ const Header = styled("div")({
 });
 
 interface OnSelectedParams {
-    bind: any;
+    bind: BindComponentRenderProp;
     field: CmsEditorField;
     index: number;
     value: boolean;

@@ -80,10 +80,10 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
                     bind={{
                         ...bind,
                         value: date,
-                        onChange: value => {
+                        onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
-                                    return null;
+                                    return;
                                 }
                                 return bind.onChange("");
                             }
@@ -102,10 +102,10 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
                     bind={{
                         ...bind,
                         value: time,
-                        onChange: value => {
+                        onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
-                                    return null;
+                                    return;
                                 }
                                 return bind.onChange("");
                             }

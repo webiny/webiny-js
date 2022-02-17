@@ -1,4 +1,3 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
@@ -28,7 +27,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                     <Cell span={12}>
                         <Label>{field.label}</Label>
                         <Bind>
-                            {(bind: any) => {
+                            {bind => {
                                 const { value, onChange } = bind;
 
                                 return (
