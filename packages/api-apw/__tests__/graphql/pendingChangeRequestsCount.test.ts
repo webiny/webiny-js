@@ -17,6 +17,7 @@ describe(`Pending change requests count test`, () => {
         listContentReviewsQuery,
         updateChangeRequestMutation,
         listChangeRequestsQuery,
+        deleteChangeRequestMutation,
         until
     } = gqlHandler;
 
@@ -357,12 +358,186 @@ describe(`Pending change requests count test`, () => {
         await updateChangeRequestMutation({
             id: changeRequested.id,
             data: {
+                resolved: false
+            }
+        });
+
+        /**
+         * Should have 1 pending change requests for step 1 and 2 pending change requests for step 2.
+         */
+        [getContentReviewResponse] = await getContentReviewQuery({ id: contentReview.id });
+        expect(getContentReviewResponse).toEqual({
+            data: {
+                apw: {
+                    getContentReview: {
+                        data: {
+                            id: expect.any(String),
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
+                            createdBy: {
+                                id: expect.any(String),
+                                displayName: expect.any(String),
+                                type: "admin"
+                            },
+                            status: "underReview",
+                            title: expect.any(String),
+                            content: {
+                                id: expect.any(String),
+                                type: "page",
+                                version: expect.any(Number),
+                                settings: null
+                            },
+                            steps: [
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 1,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                },
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 2,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                },
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 0,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                }
+                            ]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const [changeRequest1, changeRequest2] = changeRequests;
+        /**
+         * Mark both change requests for step 2 as resolved.
+         */
+        await updateChangeRequestMutation({
+            id: changeRequest1.id,
+            data: {
+                resolved: true
+            }
+        });
+
+        await updateChangeRequestMutation({
+            id: changeRequest2.id,
+            data: {
                 resolved: true
             }
         });
 
         /**
          * Should have 1 pending change requests for step 1 and 2 pending change requests for step 2.
+         */
+        [getContentReviewResponse] = await getContentReviewQuery({ id: contentReview.id });
+        expect(getContentReviewResponse).toEqual({
+            data: {
+                apw: {
+                    getContentReview: {
+                        data: {
+                            id: expect.any(String),
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
+                            createdBy: {
+                                id: expect.any(String),
+                                displayName: expect.any(String),
+                                type: "admin"
+                            },
+                            status: "underReview",
+                            title: expect.any(String),
+                            content: {
+                                id: expect.any(String),
+                                type: "page",
+                                version: expect.any(Number),
+                                settings: null
+                            },
+                            steps: [
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 1,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                },
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 0,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                },
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 0,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                }
+                            ]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Let's delete all these change requests.
+         */
+        let [deleteChangeRequestResponse] = await deleteChangeRequestMutation({
+            id: changeRequest1.id
+        });
+        expect(deleteChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    deleteChangeRequest: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        [deleteChangeRequestResponse] = await deleteChangeRequestMutation({
+            id: changeRequest2.id
+        });
+        expect(deleteChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    deleteChangeRequest: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        [deleteChangeRequestResponse] = await deleteChangeRequestMutation({
+            id: changeRequested.id
+        });
+        expect(deleteChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    deleteChangeRequest: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Deleting marked "change requests" should not effect "pendingChangeRequests" count.
+         *
+         * Should have 0 pending change requests for step 1 and 0 pending change requests for step 2.
          */
         [getContentReviewResponse] = await getContentReviewQuery({ id: contentReview.id });
         expect(getContentReviewResponse).toEqual({
@@ -397,7 +572,7 @@ describe(`Pending change requests count test`, () => {
                                 {
                                     id: expect.any(String),
                                     status: expect.any(String),
-                                    pendingChangeRequests: 2,
+                                    pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },

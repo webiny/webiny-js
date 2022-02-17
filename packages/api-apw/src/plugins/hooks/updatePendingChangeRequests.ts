@@ -36,6 +36,13 @@ const updatePendingChangeRequests = async ({
 export const updatePendingChangeRequestsCount = ({ apw }: LifeCycleHookCallbackParams) => {
     apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
         /**
+         * If the deleted changeRequest was marked as resolved. We don't need to do anything here,
+         * because "pendingChangeRequests has been already updated in "onAfterChangeRequestUpdate" hook.
+         */
+        if (changeRequest.resolved === true) {
+            return;
+        }
+        /**
          * After a "changeRequest" is deleted, decrement the "pendingChangeRequests" count
          * in the corresponding step of the content review entry.
          */
