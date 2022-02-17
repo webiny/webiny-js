@@ -14,6 +14,14 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 
+export interface ApwFile {
+    id: string;
+    key: string;
+    size: number;
+    type: string;
+    name: string;
+}
+
 export interface ListWhere {
     /**
      * Fields.
@@ -133,6 +141,7 @@ export interface ApwComment extends BaseFields {
     body: JSON;
     changeRequest: string;
     step: string;
+    media: ApwFile;
 }
 
 export interface ApwChangeRequest extends BaseFields {
@@ -140,7 +149,7 @@ export interface ApwChangeRequest extends BaseFields {
     title: string;
     resolved: boolean;
     step: string;
-    media: File;
+    media: ApwFile;
 }
 
 export interface ApwContentReviewStep {
@@ -233,6 +242,7 @@ interface CreateApwCommentParams {
     body: Record<string, any>;
     changeRequest: string;
     step: string;
+    media: ApwFile;
 }
 
 interface UpdateApwCommentParams {

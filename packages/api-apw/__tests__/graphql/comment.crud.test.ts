@@ -91,7 +91,10 @@ describe("Comment crud test", () => {
         const [createCommentResponse] = await createCommentMutation({
             data: {
                 body: richTextMock,
-                changeRequest: changeRequest.id
+                changeRequest: changeRequest.id,
+                media: {
+                    src: "cloudfront.net/my-file"
+                }
             }
         });
         const comment = createCommentResponse.data.apw.createComment.data;
@@ -110,7 +113,8 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: changeRequest.id
+                            changeRequest: changeRequest.id,
+                            media: expect.any(Object)
                         },
                         error: null
                     }
@@ -144,7 +148,8 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: changeRequest.id
+                            changeRequest: changeRequest.id,
+                            media: expect.any(Object)
                         },
                         error: null
                     }
@@ -194,7 +199,8 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: updatedRichText,
-                            changeRequest: changeRequest.id
+                            changeRequest: changeRequest.id,
+                            media: expect.any(Object)
                         },
                         error: null
                     }
@@ -232,7 +238,8 @@ describe("Comment crud test", () => {
                                     type: "admin"
                                 },
                                 body: updatedRichText,
-                                changeRequest: changeRequest.id
+                                changeRequest: changeRequest.id,
+                                media: expect.any(Object)
                             }
                         ],
                         error: null,

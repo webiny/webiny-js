@@ -15,6 +15,7 @@ const getDataFields = (fields = "") => `{
     }
     body
     changeRequest
+    media
     ${fields}
 }`;
 

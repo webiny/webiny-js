@@ -15,6 +15,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             body: JSON
             changeRequest: ID
             # TODO: Remove ApwRefField
+            media: JSON
         }
 
         type ApwListCommentsResponse {
@@ -32,6 +33,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             # Comment specific fields
             body: JSON
             changeRequest: ID
+            media: JSON
         }
 
         type ApwCommentResponse {
@@ -56,6 +58,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         input ApwCreateCommentInput {
             body: JSON!
             changeRequest: ID!
+            media: JSON
         }
 
         input ApwUpdateCommentInput {

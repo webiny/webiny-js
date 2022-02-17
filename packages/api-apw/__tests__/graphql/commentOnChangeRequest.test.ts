@@ -97,7 +97,8 @@ describe("Comment on a change request test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: changeRequested.id
+                            changeRequest: changeRequested.id,
+                            media: null
                         },
                         error: null
                     }
@@ -138,7 +139,8 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: changeRequested.id
+                                changeRequest: changeRequested.id,
+                                media: null
                             }
                         ],
                         error: null,
@@ -197,7 +199,8 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: changeRequested.id
+                                changeRequest: changeRequested.id,
+                                media: null
                             },
                             {
                                 id: firstComment.id,
@@ -209,7 +212,8 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: changeRequested.id
+                                changeRequest: changeRequested.id,
+                                media: null
                             }
                         ],
                         error: null,
