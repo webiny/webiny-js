@@ -67,7 +67,7 @@ export const ReviewersList: React.FC<ChildrenRenderProp> = ({ onChange, getValue
         <Scrollbar style={{ width: "100%", height: "120px" }}>
             {reviewers.map((reviewer, index) => (
                 <ListItemWithCheckbox
-                    key={index}
+                    key={reviewer.id}
                     label={<ListItemTitle index={index} label={reviewer.displayName} />}
                     value={getValue(reviewer.id)}
                     onChange={onChange(reviewer.id)}

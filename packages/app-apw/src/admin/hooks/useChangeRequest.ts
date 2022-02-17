@@ -31,6 +31,8 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
     const { encodedId: stepId } = useCurrentStepId();
     const { encodedId, id: contentReviewId } = useContentReviewId();
 
+    const step = `${contentReviewId}#${stepId}`;
+
     const getQuery = useQuery(GET_CHANGE_REQUEST_QUERY, {
         variables: { id },
         skip: !id,
@@ -44,7 +46,13 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
     });
 
     const [create] = useMutation(CREATE_CHANGE_REQUEST_MUTATION, {
-        refetchQueries: [{ query: LIST_CHANGE_REQUESTS_QUERY }],
+        refetchQueries: [
+            {
+                query: LIST_CHANGE_REQUESTS_QUERY,
+                variables: { where: { step } }
+            },
+            { query: GET_CONTENT_REVIEW_QUERY, variables: { id: contentReviewId } }
+        ],
         onCompleted: response => {
             const error = get(response, "apw.changeRequest.error");
             if (error) {
@@ -58,7 +66,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
     });
 
     const [update] = useMutation(UPDATE_CHANGE_REQUEST_MUTATION, {
-        refetchQueries: [{ query: LIST_CHANGE_REQUESTS_QUERY }],
+        refetchQueries: [{ query: LIST_CHANGE_REQUESTS_QUERY, variables: { where: { step } } }],
         onCompleted: response => {
             const error = get(response, "apw.changeRequest.error");
             if (error) {
@@ -72,7 +80,13 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
     });
 
     const [deleteChangeRequest] = useMutation(DELETE_CHANGE_REQUEST_MUTATION, {
-        refetchQueries: [{ query: LIST_CHANGE_REQUESTS_QUERY }],
+        refetchQueries: [
+            {
+                query: LIST_CHANGE_REQUESTS_QUERY,
+                variables: { where: { step } }
+            },
+            { query: GET_CONTENT_REVIEW_QUERY, variables: { id: contentReviewId } }
+        ],
         onCompleted: response => {
             const error = get(response, "apw.deleteChangeRequest.error");
             if (error) {
@@ -117,4 +131,11 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         changeRequest: get(getQuery, "data.apw.getChangeRequest.data"),
         markResolved
     };
+};
+
+export const useChangeRequestStep = (): string => {
+    const { encodedId: stepId } = useCurrentStepId();
+    const { id: contentReviewId } = useContentReviewId();
+
+    return `${contentReviewId}#${stepId}`;
 };

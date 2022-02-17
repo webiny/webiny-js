@@ -4,6 +4,7 @@ import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import { LIST_CHANGE_REQUESTS_QUERY } from "../graphql/changeRequest.gql";
 import { ApwChangeRequest } from "~/types";
+import { useChangeRequestStep } from "./useChangeRequest";
 
 const serializeSorters = data => {
     if (!data) {
@@ -35,8 +36,17 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(serializeSorters(defaultSorter));
     const { history } = useRouter();
+    const step = useChangeRequestStep();
 
-    const listQuery = useQuery(LIST_CHANGE_REQUESTS_QUERY);
+    const variables = {
+        where: {
+            step
+        }
+    };
+
+    const listQuery = useQuery(LIST_CHANGE_REQUESTS_QUERY, {
+        variables
+    });
 
     const data = listQuery.loading ? [] : get(listQuery, "data.apw.listChangeRequests.data");
 
