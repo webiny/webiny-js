@@ -52,7 +52,11 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                     createdBy={reviewRequestedBy}
                 />
                 {steps.map((step, index) => (
-                    <ContentReviewStep key={index} step={step} />
+                    <ContentReviewStep
+                        key={index}
+                        step={step}
+                        disabled={step.status === ApwContentReviewStepStatus.INACTIVE}
+                    />
                 ))}
             </ContentReviewStepList>
             <PublishContent status={status} />
