@@ -11,6 +11,7 @@ import { useComment } from "~/admin/hooks/useComment";
 import { useCurrentChangeRequestId } from "~/admin/hooks/useCurrentChangeRequestId";
 import { Box, Columns } from "~/admin/components/Layout";
 import Spinner from "react-spinner-material";
+import { FileManager } from "@webiny/app-admin/components";
 
 const Loader = () => (
     <Spinner size={24} spinnerWidth={2} spinnerColor={"var(--mdc-theme-primary)"} visible={true} />
@@ -19,6 +20,23 @@ const Loader = () => (
 const CommentBoxColumns = styled(Columns)`
     height: 56px;
     border-top: 1px solid var(--mdc-theme-background);
+`;
+
+const AttachmentBox = styled(Box)<{ active: boolean }>`
+    --size: 8px;
+    position: relative;
+
+    &::after {
+        opacity: ${props => (props.active ? 1 : 0)};
+        content: "";
+        position: absolute;
+        top: calc(var(--size) / 2);
+        right: calc(var(--size) / 2);
+        width: var(--size);
+        height: var(--size);
+        border-radius: 50%;
+        background-color: var(--mdc-theme-primary);
+    }
 `;
 
 const IconButton = styled(UiIconButton)<{ rotate?: string; fill?: string }>`
@@ -30,6 +48,18 @@ const IconButton = styled(UiIconButton)<{ rotate?: string; fill?: string }>`
 
 const InputBox = styled(Box)`
     flex: 1 1 100%;
+
+    & > div {
+        //padding: 8px 16px !important;
+    }
+
+    & .ce-toolbar {
+        //display: none !important;
+    }
+
+    & .ce-inline-toolbar {
+        //display: none !important;
+    }
 `;
 
 interface CommentBoxProps {
@@ -61,11 +91,27 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment })
                 scrollToLatestComment();
             }}
         >
-            {({ Bind, submit }) => (
+            {({ Bind, submit, data }) => (
                 <CommentBoxColumns space={2} alignItems={"center"} paddingX={6}>
-                    <Box>
-                        <IconButton icon={<AttachFileIcon />} rotate={"45deg"} />
-                    </Box>
+                    <AttachmentBox active={data.media}>
+                        <Bind name={"media"}>
+                            {props => (
+                                <FileManager
+                                    onUploadCompletion={([file]) => props.onChange(file)}
+                                    onChange={props.onChange}
+                                    tags={["apw"]}
+                                >
+                                    {({ showFileManager }) => (
+                                        <IconButton
+                                            icon={<AttachFileIcon />}
+                                            rotate={"45deg"}
+                                            onClick={showFileManager}
+                                        />
+                                    )}
+                                </FileManager>
+                            )}
+                        </Bind>
+                    </AttachmentBox>
 
                     <InputBox style={{ flex: "1 1 100%" }}>
                         <Bind name={"body"} validators={validation.create("required,minLength:1")}>

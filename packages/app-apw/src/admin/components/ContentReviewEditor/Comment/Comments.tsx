@@ -7,6 +7,8 @@ import { fromNow } from "~/admin/components/utils";
 import { Avatar } from "~/admin/views/publishingWorkflows/components/ReviewersList";
 import { useCommentsList } from "~/admin/hooks/useCommentsList";
 import { TypographyBody, TypographySecondary, AuthorName } from "../Styled";
+import { CommentFile } from "../ChangeRequest/ApwFile";
+import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
 
 const CommentsBox = styled(Stack)`
     background-color: var(--mdc-theme-background);
@@ -28,7 +30,7 @@ interface CommentProps {
 const Comment: React.FC<CommentProps> = props => {
     const { comment, ...restProps } = props;
     return (
-        <Stack space={2} {...restProps}>
+        <Stack marginBottom={6} space={2} {...restProps}>
             <Columns space={2.5} paddingLeft={1}>
                 <Box>
                     <Avatar index={0} />
@@ -41,6 +43,13 @@ const Comment: React.FC<CommentProps> = props => {
                 <TypographyBody use={"caption"}>
                     <RichTextEditor readOnly={true} value={comment.body} />
                 </TypographyBody>
+                {comment.media && (
+                    <Box padding={4}>
+                        <FileWithOverlay media={comment.media} fullWidth={true}>
+                            <CommentFile value={comment.media} />
+                        </FileWithOverlay>
+                    </Box>
+                )}
             </CommentBox>
             <Box paddingLeft={3.5}>
                 <TypographySecondary use={"caption"}>

@@ -1,10 +1,8 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { ButtonDefault, ButtonIcon, IconButton } from "@webiny/ui/Button";
-import { Tooltip } from "@webiny/ui/Tooltip";
+import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { RichTextEditor } from "@webiny/ui/RichTextEditor";
 import { Box, Columns, Stack } from "~/admin/components/Layout";
-import { ReactComponent as OpenInFullIcon } from "~/admin/assets/icons/open_in_full_24dp.svg";
 import { ReactComponent as EditIcon } from "~/admin/assets/icons/edit_24dp.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/assets/icons/delete_24dp.svg";
 import { ReactComponent as MarkTaskIcon } from "~/admin/assets/icons/task_alt_24dp.svg";
@@ -14,48 +12,9 @@ import { i18n } from "@webiny/app/i18n";
 import { DefaultRenderImagePreview } from "./ApwFile";
 import { useChangeRequestDialog } from "./useChangeRequestDialog";
 import { TypographyBody, TypographyTitle } from "../Styled";
+import { FileWithOverlay, Media } from "./ChangeRequestMedia";
 
 const t = i18n.ns("app-apw/content-reviews/editor/steps/changeRequest");
-
-const OpenInFullButton = styled(IconButton)`
-    position: absolute;
-    top: -12px;
-    right: -12px;
-    opacity: 0;
-    z-index: 1;
-`;
-
-const Media = styled.div`
-    width: 150px;
-    height: 104px;
-    border-radius: 4px;
-    margin: 0 auto;
-    position: relative;
-
-    &:hover::after {
-        opacity: 1;
-        z-index: 0;
-    }
-
-    &:hover button {
-        opacity: 1;
-    }
-
-    &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        z-index: -1;
-        width: 100%;
-        height: 100%;
-        transform: scale(1.25);
-        background-color: rgba(0, 0, 0, 0.45);
-        transition: all 150ms ease-in-out;
-        border-radius: 4px;
-    }
-`;
 
 const BlankMedia = styled(Media)`
     background: linear-gradient(135deg, rebeccapurple 0%, mediumpurple 100%);
@@ -179,20 +138,9 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
             </ContentStack>
             <MediaBox paddingX={10} paddingY={9}>
                 {changeRequest.media ? (
-                    <Media>
+                    <FileWithOverlay fullWidth={false} media={changeRequest.media}>
                         <DefaultRenderImagePreview src={changeRequest.media.src} />
-
-                        <OpenInFullButton
-                            icon={
-                                <Tooltip content={t`Open image in new tab`}>
-                                    <OpenInFullIcon />
-                                </Tooltip>
-                            }
-                            onClick={() =>
-                                window.open(changeRequest.media.src, "_blank", "noopener")
-                            }
-                        />
-                    </Media>
+                    </FileWithOverlay>
                 ) : (
                     <BlankMedia />
                 )}

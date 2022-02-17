@@ -63,3 +63,31 @@ export const ApwFile: React.FC<ApwFileProps> = props => {
         />
     );
 };
+
+interface CommentFileProps {
+    value: ApwMediaFile;
+}
+
+const commentFilePreviewProps = {
+    transform: { width: 300 },
+    style: { width: "100%", height: 140, objectFit: "contain" }
+};
+
+export const CommentFile: React.FC<CommentFileProps> = props => {
+    const { value } = props;
+
+    const isImage = React.useCallback(url => {
+        return imagePlugins.some(extension => url.includes(extension));
+    }, []);
+
+    if (value && !isImage(value.src)) {
+        const Component = createRenderImagePreview({
+            value,
+            imagePreviewProps
+        });
+        return <Component />;
+    }
+
+    // @ts-ignore
+    return <Image src={value.src} {...commentFilePreviewProps} />;
+};

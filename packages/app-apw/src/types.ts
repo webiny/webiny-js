@@ -138,6 +138,7 @@ export interface ApwChangeRequest extends BaseFields {
 export interface ApwComment extends BaseFields {
     body: RichTextEditorProps["value"];
     changeRequest: string;
+    media?: ApwMediaFile;
 }
 
 export interface ApwMediaFile {
