@@ -39,7 +39,9 @@ class CheckboxGroup extends React.Component<Props> {
                 {this.props.children({
                     onChange: value => {
                         return () => {
-                            const values = Array.isArray(this.props.value) ? this.props.value : [];
+                            const values = Array.isArray(this.props.value)
+                                ? [...this.props.value]
+                                : [];
                             const index = values.indexOf(value);
                             if (index > -1) {
                                 values.splice(index, 1);
