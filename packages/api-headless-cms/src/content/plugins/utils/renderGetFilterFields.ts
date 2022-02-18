@@ -11,7 +11,7 @@ interface RenderGetFilterFields {
 const getCreateFilters = (
     plugins: CmsFieldTypePlugins,
     fieldType: string
-): CmsModelFieldToGraphQLPlugin["read"]["createGetFilters"] => {
+): CmsModelFieldToGraphQLPlugin["read"]["createGetFilters"] | null => {
     if (!plugins[fieldType] || !plugins[fieldType].read.createGetFilters) {
         return null;
     }
@@ -37,6 +37,9 @@ export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypeP
 
     for (const id of fieldIds) {
         const field = model.fields.find(item => item.fieldId === id);
+        if (!field) {
+            continue;
+        }
         const createGetFilters = getCreateFilters(fieldTypePlugins, field.type);
         if (typeof createGetFilters !== "function") {
             continue;

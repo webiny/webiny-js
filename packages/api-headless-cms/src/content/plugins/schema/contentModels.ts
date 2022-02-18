@@ -51,12 +51,10 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             }
         },
         CmsContentModel: {
-            plugin: async (model, _, context) => {
-                const modelPlugin: CmsModelPlugin = context.plugins
+            plugin: async (model, _, context): Promise<boolean> => {
+                return context.plugins
                     .byType<CmsModelPlugin>(CmsModelPlugin.type)
-                    .find((item: CmsModelPlugin) => item.contentModel.modelId === model.modelId);
-
-                return Boolean(modelPlugin);
+                    .some(item => item.contentModel.modelId === model.modelId);
             }
         }
     };

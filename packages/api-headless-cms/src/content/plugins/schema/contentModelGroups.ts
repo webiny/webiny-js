@@ -80,12 +80,10 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     context.security.enableAuthorization();
                     return models.filter(m => m.group === group.id).length;
                 },
-                plugin: async (group, _, context: CmsContext) => {
-                    const groupPlugin: CmsGroupPlugin = context.plugins
+                plugin: async (group, _, context: CmsContext): Promise<boolean> => {
+                    return context.plugins
                         .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
-                        .find((item: CmsGroupPlugin) => item.contentModelGroup.id === group.id);
-
-                    return Boolean(groupPlugin);
+                        .some(item => item.contentModelGroup.id === group.id);
                 }
             },
             Query: {

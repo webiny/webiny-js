@@ -48,9 +48,9 @@ export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) =
             }
         }
 
-        const groupPlugin: CmsGroupPlugin = plugins
+        const groupPlugin = plugins
             .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
-            .find((item: CmsGroupPlugin) => item.contentModelGroup.slug === group.slug);
+            .find(item => item.contentModelGroup.slug === group.slug);
 
         if (groupPlugin) {
             throw new Error(

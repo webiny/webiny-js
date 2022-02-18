@@ -48,7 +48,7 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
             tenant: getTenant().id
         });
 
-        return system ? system.version : null;
+        return system ? system.version || null : null;
     };
 
     const setVersion = async (version: string) => {
@@ -159,7 +159,7 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
 
             const installedAppVersion = await this.getSystemVersion();
 
-            let plugin: UpgradePlugin;
+            let plugin: UpgradePlugin | undefined = undefined;
             try {
                 plugin = getApplicablePlugin({
                     deployedVersion: context.WEBINY_VERSION,

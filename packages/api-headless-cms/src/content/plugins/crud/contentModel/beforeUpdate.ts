@@ -72,9 +72,9 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
     onBeforeModelUpdate.subscribe(async params => {
         const { model } = params;
 
-        const modelPlugin: CmsModelPlugin = plugins
+        const modelPlugin = plugins
             .byType<CmsModelPlugin>(CmsModelPlugin.type)
-            .find((item: CmsModelPlugin) => item.contentModel.modelId === model.modelId);
+            .find(item => item.contentModel.modelId === model.modelId);
 
         if (modelPlugin) {
             throw new WebinyError(

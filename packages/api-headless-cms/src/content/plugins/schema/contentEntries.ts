@@ -14,7 +14,10 @@ interface GetContentEntriesArgs {
 
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
-        return null;
+        return new GraphQLSchemaPlugin({
+            typeDefs: "",
+            resolvers: {}
+        });
     }
 
     return new GraphQLSchemaPlugin<CmsContext>({
@@ -113,7 +116,9 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new NotAuthorizedResponse({ data: { modelId } });
                     }
 
-                    const [entry] = await context.cms.getEntriesByIds(model, [id]);
+                    const result = await context.cms.getEntriesByIds(model, [id]);
+
+                    const [entry] = result;
 
                     return new Response({
                         id: entry.id,

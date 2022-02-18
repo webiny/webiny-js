@@ -7,7 +7,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
     validator: {
         name: "lte",
         validate({ value, validator }) {
-            const lteValue = validator.settings.value;
+            const lteValue = validator.settings?.value;
             if (typeof lteValue !== "undefined") {
                 return validation
                     .validate(value, `lte:${lteValue}`)

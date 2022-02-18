@@ -7,13 +7,13 @@ import { CmsContext } from "~/types";
 export class InternalAuthenticationPlugin extends AuthenticationPlugin {
     private readonly _identityType: string;
 
-    constructor(identityType: string) {
+    public constructor(identityType: string) {
         super();
 
         this._identityType = identityType;
     }
 
-    async authenticate(context: CmsContext): Promise<undefined | SecurityIdentity> {
+    public async authenticate(context: CmsContext): Promise<undefined | SecurityIdentity> {
         const { headers } = context.http.request;
         const header = headers["Authorization"] || headers["authorization"];
         const apiKey = header ? header.split(" ").pop() : null;

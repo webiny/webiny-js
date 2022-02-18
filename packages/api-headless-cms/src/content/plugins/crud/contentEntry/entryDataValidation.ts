@@ -19,7 +19,7 @@ interface ValidateArgs {
     model: CmsModel;
     data: InputData;
     context: CmsContext;
-    entry: CmsEntry;
+    entry?: CmsEntry;
 }
 
 const validateValue = async (
@@ -125,7 +125,7 @@ export interface Params {
     context: CmsContext;
     model: CmsModel;
     data: InputData;
-    entry: CmsEntry;
+    entry?: CmsEntry;
 }
 export const validateModelEntryData = async (params: Params) => {
     const { context, model, entry, data } = params;

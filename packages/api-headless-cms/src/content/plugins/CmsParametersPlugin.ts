@@ -7,7 +7,7 @@ export interface CmsParametersPluginResponse {
 }
 
 export interface CmsParametersPluginCallable {
-    (context: CmsContext): Promise<CmsParametersPluginResponse>;
+    (context: CmsContext): Promise<CmsParametersPluginResponse | null>;
 }
 
 export class CmsParametersPlugin extends Plugin {

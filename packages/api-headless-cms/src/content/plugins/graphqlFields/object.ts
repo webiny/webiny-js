@@ -29,7 +29,7 @@ const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | nul
     const mTypeName = createManageTypeName(typeName);
 
     // `field` is an "object" field
-    const fields = field.settings.fields as CmsModelField[];
+    const fields = (field.settings?.fields || []) as CmsModelField[];
 
     if (!fields || fields.length === 0) {
         return null;
@@ -103,7 +103,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createResolver({ field, createFieldResolvers, graphQLType }) {
-            if (!field.settings.fields || field.settings.fields.length === 0) {
+            if (!field.settings?.fields || field.settings.fields.length === 0) {
                 return false;
             }
 
@@ -161,7 +161,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createResolver({ graphQLType, field, createFieldResolvers }) {
-            if (!field.settings.fields || field.settings.fields.length === 0) {
+            if (!field.settings?.fields || field.settings.fields.length === 0) {
                 return false;
             }
             const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;

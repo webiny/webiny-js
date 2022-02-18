@@ -523,7 +523,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 values: input
             };
 
-            let storageEntry: CmsStorageEntry = null;
+            let storageEntry: CmsStorageEntry | null = null;
             try {
                 await onBeforeEntryCreate.publish({
                     entry,
@@ -619,7 +619,9 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             utils.checkOwnership(context, permission, originalEntry);
 
-            const latestEntry = await entryFromStorageTransform(context, model, latestStorageEntry);
+            const latestEntry = latestStorageEntry
+                ? await entryFromStorageTransform(context, model, latestStorageEntry)
+                : null;
 
             const identity = context.security.getIdentity();
 
@@ -638,12 +640,12 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     type: identity.type
                 },
                 locked: false,
-                publishedOn: null,
+                publishedOn: undefined,
                 status: STATUS_DRAFT,
                 values
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryCreateRevision.publish({
@@ -755,7 +757,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 values
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryUpdate.publish({
@@ -903,7 +905,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 model,
                 {
                     entryId,
-                    version
+                    version: version as number
                 }
             );
 
@@ -934,9 +936,9 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             /**
              * If targeted record is latest entry revision, set the previous one as the new latest
              */
-            let entryToSetAsLatest: CmsEntry = null;
-            let storageEntryToSetAsLatest: CmsStorageEntry = null;
-            if (entryToDelete.id === latestEntryRevisionId) {
+            let entryToSetAsLatest: CmsEntry | null = null;
+            let storageEntryToSetAsLatest: CmsStorageEntry | null = null;
+            if (entryToDelete.id === latestEntryRevisionId && previousStorageEntry) {
                 entryToSetAsLatest = await entryFromStorageTransform(
                     context,
                     model,
@@ -1025,7 +1027,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 publishedOn: currentDate
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryPublish.publish({
@@ -1100,7 +1102,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 status: STATUS_CHANGES_REQUESTED
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryRequestChanges.publish({
@@ -1179,7 +1181,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 status: STATUS_REVIEW_REQUESTED
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryRequestReview.publish({
@@ -1247,7 +1249,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 status: STATUS_UNPUBLISHED
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryUnpublish.publish({

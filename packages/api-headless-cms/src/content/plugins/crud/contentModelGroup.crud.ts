@@ -95,7 +95,7 @@ export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
     };
 
     const groupsGet = async (id: string) => {
-        const groupPlugin: CmsGroup = getGroupsAsPlugins().find(group => group.id === id);
+        const groupPlugin = getGroupsAsPlugins().find(group => group.id === id);
 
         if (groupPlugin) {
             return groupPlugin;
