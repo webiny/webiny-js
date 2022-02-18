@@ -37,7 +37,8 @@ export const ApwOnPageDelete = () => {
                 query: IS_REVIEW_REQUIRED_QUERY,
                 variables: {
                     data: input
-                }
+                },
+                fetchPolicy: "network-only"
             });
             const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
             if (contentReviewId) {
