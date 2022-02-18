@@ -53,7 +53,7 @@ const PredefinedValues: React.FC<PredefinedValuesProps> = ({ field, fieldPlugin,
     }, []);
     if (!fieldPlugin.field.renderPredefinedValues) {
         return (
-            <>Missing "field.renderPredefinedValues" method in field type plugin: "{field.type}".</>
+            <>{`Missing "field.renderPredefinedValues" method in field type plugin: "${field.type}".`}</>
         );
     }
 

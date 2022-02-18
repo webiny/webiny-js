@@ -7,7 +7,7 @@ import { useHighlightElement } from "~/editor/hooks/useHighlightElement";
 import { elementByIdSelector, elementsAtom, ElementsAtomType } from "~/editor/recoil/modules";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
-interface ItemsState extends Pick<ElementsAtomType, "id" | "type"> {}
+type ItemsState = Pick<ElementsAtomType, "id" | "type">;
 
 const Breadcrumbs: React.FunctionComponent = () => {
     const [items, setItems] = useState<ItemsState[]>([]);

@@ -10,7 +10,11 @@ var __extends =
                         d.__proto__ = b;
                     }) ||
                 function (d, b) {
-                    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+                    for (var p in b) {
+                        if (b.hasOwnProperty(p)) {
+                            d[p] = b[p];
+                        }
+                    }
                 };
             return extendStatics(d, b);
         };
@@ -26,20 +30,28 @@ var __read =
     (this && this.__read) ||
     function (o, n) {
         var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
+        if (!m) {
+            return o;
+        }
         var i = m.call(o),
             r,
             ar = [],
             e;
         try {
-            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+            while ((n === void 0 || n-- > 0) && !(r = i.next()).done) {
+                ar.push(r.value);
+            }
         } catch (error) {
             e = { error: error };
         } finally {
             try {
-                if (r && !r.done && (m = i["return"])) m.call(i);
+                if (r && !r.done && (m = i["return"])) {
+                    m.call(i);
+                }
             } finally {
-                if (e) throw e.error;
+                if (e) {
+                    throw e.error;
+                }
             }
         }
         return ar;
@@ -47,7 +59,9 @@ var __read =
 var __spread =
     (this && this.__spread) ||
     function () {
-        for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+        for (var ar = [], i = 0; i < arguments.length; i++) {
+            ar = ar.concat(__read(arguments[i]));
+        }
         return ar;
     };
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -62,7 +76,9 @@ var EventEmitter = /** @class */ (function () {
     };
     EventEmitter.prototype.off = function (event, cb) {
         this.events_ = this.events_ || {};
-        if (event in this.events_ === false) return;
+        if (event in this.events_ === false) {
+            return;
+        }
         this.events_[event].splice(this.events_[event].indexOf(cb), 1);
     };
     EventEmitter.prototype.trigger = function (event) {
@@ -71,7 +87,9 @@ var EventEmitter = /** @class */ (function () {
             args[_i - 1] = arguments[_i];
         }
         this.events_ = this.events_ || {};
-        if (event in this.events_ === false) return;
+        if (event in this.events_ === false) {
+            return;
+        }
         for (var i = 0; i < this.events_[event].length; i++) {
             this.events_[event][i].apply(this, Array.prototype.slice.call(arguments, 1));
         }

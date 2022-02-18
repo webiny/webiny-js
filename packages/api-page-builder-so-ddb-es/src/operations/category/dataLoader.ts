@@ -9,7 +9,7 @@ interface Params {
     entity: Entity<any>;
 }
 
-interface DataLoaderGetItem extends Pick<Category, "slug" | "tenant" | "locale"> {}
+type DataLoaderGetItem = Pick<Category, "slug" | "tenant" | "locale">;
 
 export class CategoryDataLoader {
     private _getDataLoader: DataLoader<any, any> | undefined = undefined;

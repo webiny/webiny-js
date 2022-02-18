@@ -6,3 +6,4 @@
 idea.js
 scripts
 packages/ui/src/RichTextEditor/editorjs/**
+packages/ui/rmwc/**

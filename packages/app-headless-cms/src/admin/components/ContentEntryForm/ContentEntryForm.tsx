@@ -49,7 +49,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                 return acc;
             }, {} as Record<string, React.ReactElement>);
             if (!formRenderer) {
-                return <>Missing form renderer for modelId "{contentModel.modelId}".</>;
+                return <>{`Missing form renderer for modelId "${contentModel.modelId}".`}</>;
             }
             return formRenderer.render({ ...formRenderProps, contentModel, fields });
         },

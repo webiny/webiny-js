@@ -262,7 +262,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             const title = "Untitled";
 
-            let pagePath: string = "";
+            let pagePath = "";
             if (category.slug === "static") {
                 pagePath = normalizePath("untitled-" + uniqid.time()) as string;
             } else {
