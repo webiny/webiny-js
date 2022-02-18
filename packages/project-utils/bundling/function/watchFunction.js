@@ -1,5 +1,6 @@
 const fs = require("fs-extra");
-const { getProject, injectHandlerTelemetry } = require("@webiny/cli/utils");
+const { getProject } = require("@webiny/cli/utils");
+const { injectHandlerTelemetry } = require("./utils");
 
 module.exports = async options => {
     const webpack = require("webpack");
