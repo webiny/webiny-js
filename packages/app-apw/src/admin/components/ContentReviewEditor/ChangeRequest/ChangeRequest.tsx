@@ -94,7 +94,7 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     </Box>
                     <Box>
                         <TypographyBody use={"caption"}>
-                            <RichTextEditor readOnly={true} value={changeRequest.body} />
+                            <RichTextEditor key={id} readOnly={true} value={changeRequest.body} />
                         </TypographyBody>
                     </Box>
                 </Stack>

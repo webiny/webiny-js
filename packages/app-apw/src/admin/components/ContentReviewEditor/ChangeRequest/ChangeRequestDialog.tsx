@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import pick from "lodash/pick";
 import { css } from "emotion";
 import * as UiDialog from "@webiny/ui/Dialog";
@@ -16,6 +16,7 @@ import { validation } from "@webiny/validation";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { FileManager } from "@webiny/app-admin/components";
 import { ApwFile } from "./ApwFile";
+import { getNanoid } from "~/admin/components/utils";
 
 const t = i18n.ns("app-apw/content-review/editor/change-request");
 
@@ -133,36 +134,50 @@ const dialogContainerStyles = css`
 `;
 
 const fields = ["title", "body", "media"];
+const isValidId = (id: string) => {
+    return id.split("#").length === 2;
+};
 
 export const ChangeRequestDialog: React.FC = () => {
-    const { open, setOpen, changeRequestId } = useChangeRequestDialog();
+    const { open, setOpen, changeRequestId, setChangeRequestId } = useChangeRequestDialog();
     const { id: stepId } = useCurrentStepId();
     const { id: contentReviewId } = useContentReviewId();
     const { create, changeRequest, update } = useChangeRequest({ id: changeRequestId });
 
+    const resetFormAndCloseDialog = () => {
+        setChangeRequestId(getNanoid());
+        closeDialog();
+    };
+
     const closeDialog = () => setOpen(false);
 
+    const formData = useMemo(() => {
+        if (open) {
+            return pick(changeRequest, fields);
+        }
+        return null;
+    }, [open, changeRequest]);
+
+    const onSubmit = async formData => {
+        const data = {
+            ...formData,
+            step: `${contentReviewId}#${stepId}`
+        };
+        /**
+         * If "changeRequestId" exists it means we're editing the change request.
+         */
+        if (isValidId(changeRequestId)) {
+            await update({
+                variables: { id: changeRequestId, data: pick(data, fields) }
+            });
+        } else {
+            await create({ variables: { data } });
+        }
+        resetFormAndCloseDialog();
+    };
+
     return (
-        <Form
-            data={pick(changeRequest, fields)}
-            onSubmit={async formData => {
-                const data = {
-                    ...formData,
-                    step: `${contentReviewId}#${stepId}`
-                };
-                /**
-                 * If "changeRequestId" exists it means we're editing the change request.
-                 */
-                if (changeRequestId) {
-                    await update({
-                        variables: { id: changeRequestId, data: pick(data, fields) }
-                    });
-                } else {
-                    await create({ variables: { data } });
-                }
-                closeDialog();
-            }}
-        >
+        <Form data={formData} onSubmit={onSubmit}>
             {props => (
                 <UiDialog.Dialog
                     open={open}
@@ -175,7 +190,7 @@ export const ChangeRequestDialog: React.FC = () => {
                         <ChangeRequestMessage Bind={props.Bind} key={changeRequestId} />
                     </DialogContent>
                     <DialogActions>
-                        <ButtonDefault onClick={closeDialog}>{t`Cancel`}</ButtonDefault>
+                        <ButtonDefault onClick={resetFormAndCloseDialog}>{t`Cancel`}</ButtonDefault>
                         <ButtonDefault onClick={props.submit}>{t`Submit`}</ButtonDefault>
                     </DialogActions>
                 </UiDialog.Dialog>
