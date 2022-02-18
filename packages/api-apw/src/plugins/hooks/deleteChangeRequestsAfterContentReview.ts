@@ -1,6 +1,8 @@
 import { ApwChangeRequest, LifeCycleHookCallbackParams, ListMeta } from "~/types";
 
-export const deleteChangeRequestsWithContentReview = ({ apw }: LifeCycleHookCallbackParams) => {
+export const deleteChangeRequestsWithContentReview = ({
+    apw
+}: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.contentReview.onAfterContentReviewDelete.subscribe(async ({ contentReview }) => {
         /**
          * Also delete all associated "changeRequest" when a "contentReview" is deleted.

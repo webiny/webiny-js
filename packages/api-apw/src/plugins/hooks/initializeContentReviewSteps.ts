@@ -11,7 +11,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 export const getWorkflowIdFromContent = async (
     apw: AdvancedPublishingWorkflow,
     params: { type: ApwContentTypes; id: string; settings: Record<string, any> }
-): Promise<string> => {
+): Promise<string | null> => {
     switch (params.type) {
         case ApwContentTypes.PAGE:
             const getWorkflowFromPage = apw.getWorkflowGetter(ApwContentTypes.PAGE);
@@ -24,7 +24,7 @@ export const getWorkflowIdFromContent = async (
     return null;
 };
 
-export const initializeContentReviewSteps = ({ apw }: LifeCycleHookCallbackParams) => {
+export const initializeContentReviewSteps = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {
         /**
          * Let's initialize the "ContentReview" steps.

@@ -345,7 +345,7 @@ export interface CmsModel {
     /**
      * Description for the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * Date created
      */
@@ -1451,7 +1451,7 @@ export interface CmsEntryListParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 /**
@@ -1951,7 +1951,7 @@ export interface CmsEntryStorageOperationsListParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 export interface CmsEntryStorageOperationsCreateParams<

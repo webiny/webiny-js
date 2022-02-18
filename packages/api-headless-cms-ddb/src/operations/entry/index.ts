@@ -560,7 +560,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             fields: modelFields
         });
 
-        const start = decodeCursor(after) || 0;
+        const start = decodeCursor(after || "0") || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const slicedItems = sortedItems.slice(start, end);

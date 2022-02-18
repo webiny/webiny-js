@@ -23,7 +23,7 @@ export default () => [
     new PagePlugin<DynamicPage>({
         // - Attempt to load dynamic page using patterns
         async notFound({ args, context }) {
-            return await loadDynamicPage(args, context);
+            return (await loadDynamicPage(args, context)) || null;
         }
     }),
     // - Store "dynamic" flag into ES if page URL is a pattern

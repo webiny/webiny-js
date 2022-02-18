@@ -1,6 +1,8 @@
 import { ApwComment, LifeCycleHookCallbackParams, ListMeta } from "~/types";
 
-export const deleteCommentsAfterChangeRequest = ({ apw }: LifeCycleHookCallbackParams) => {
+export const deleteCommentsAfterChangeRequest = ({
+    apw
+}: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
         /**
          * Also delete all associated comments with "changeRequest".
@@ -24,7 +26,7 @@ export const deleteCommentsAfterChangeRequest = ({ apw }: LifeCycleHookCallbackP
                             id: changeRequest.id
                         }
                     },
-                    after: meta.cursor
+                    after: meta.cursor || null
                 });
             } catch (e) {
                 meta.hasMoreItems = false;

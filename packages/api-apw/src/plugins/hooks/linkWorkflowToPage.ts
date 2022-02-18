@@ -63,18 +63,14 @@ const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow): bo
     return false;
 };
 
-interface PageMethods extends LifeCycleHookCallbackParams {
+interface PageMethods extends Omit<LifeCycleHookCallbackParams, "security"> {
     getPage: PageBuilderContextObject["getPage"];
     updatePage: PageBuilderContextObject["updatePage"];
     onBeforePageCreate: PageBuilderContextObject["onBeforePageCreate"];
 }
 
-export const linkWorkflowToPage = ({
-    apw,
-    getPage,
-    updatePage,
-    onBeforePageCreate
-}: PageMethods) => {
+export const linkWorkflowToPage = (params: PageMethods) => {
+    const { apw, getPage, updatePage, onBeforePageCreate } = params;
     onBeforePageCreate.subscribe<CustomEventParams>(async ({ page }) => {
         try {
             /*

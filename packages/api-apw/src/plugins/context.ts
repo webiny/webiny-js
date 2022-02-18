@@ -27,7 +27,9 @@ export default () => [
             return tenancy.getCurrentTenant();
         };
 
-        const getPermission = (name: string) => security.getPermission(name);
+        const getPermission = async (name: string) => {
+            return security.getPermission(name);
+        };
         const getIdentity = () => security.getIdentity();
 
         context.apw = createApw({
@@ -56,9 +58,18 @@ export default () => [
         });
 
         context.apw.addWorkflowGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+            if (!settings.modelId) {
+                return null;
+            }
             const model = await context.cms.getModel(settings.modelId);
+            if (!model) {
+                return null;
+            }
             const entry = await context.cms.getEntry(model, { where: { id: id } });
-            return entry.values.workflow;
+            if (!entry) {
+                return null;
+            }
+            return entry.values.workflow || null;
         });
     }),
     apwHooks()

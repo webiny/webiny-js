@@ -12,7 +12,7 @@ export interface NotFoundParams<T = any> {
 }
 
 interface Config<TPage extends Page = Page> {
-    notFound?: (params: NotFoundParams) => Promise<TPage | undefined>;
+    notFound?: (params: NotFoundParams) => Promise<TPage | null>;
 }
 
 export class PagePlugin<TPage extends Page = Page> extends Plugin {
@@ -24,17 +24,14 @@ export class PagePlugin<TPage extends Page = Page> extends Plugin {
         this._config = config || {};
     }
 
-    public async notFound<T = Args>(params: NotFoundParams<T>): Promise<TPage | undefined> {
+    public async notFound<T = Args>(params: NotFoundParams<T>): Promise<TPage | null> {
         return this._execute("notFound", params);
     }
 
-    private async _execute(
-        callback: keyof Config,
-        params: NotFoundParams
-    ): Promise<TPage | undefined> {
+    private async _execute(callback: keyof Config, params: NotFoundParams): Promise<TPage | null> {
         const cb = this._config[callback];
         if (typeof cb !== "function") {
-            return undefined;
+            return null;
         }
         return cb(params);
     }
