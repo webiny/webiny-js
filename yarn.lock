@@ -9088,6 +9088,7 @@ __metadata:
     "@babel/core": ^7.16.0
     "@webiny/api-file-manager": ^5.22.1
     "@webiny/cli": ^5.22.1
+    "@webiny/error": ^5.22.1
     "@webiny/handler-graphql": ^5.22.1
     "@webiny/project-utils": ^5.22.1
     "@webiny/validation": ^5.22.1
@@ -10189,6 +10190,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
+    "@apollo/react-common": ^3.1.4
     "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.16.0
@@ -10482,6 +10484,7 @@ __metadata:
     execa: ^5.0.0
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
+    invariant: ^2.2.4
     lodash: ^4.17.10
     pluralize: ^8.0.0
     prop-types: ^15.7.2
@@ -11979,6 +11982,7 @@ __metadata:
     downshift: ^2.1.5
     emotion: 10.0.17
     execa: ^5.0.0
+    focus-trap: ^5.0.0
     hyperform: ^0.9.9
     jest-dom: ^3.0.0
     keycode: ^2.2.0

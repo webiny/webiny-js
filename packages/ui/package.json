@@ -54,6 +54,7 @@
     "dot-prop-immutable": "^2.1.0",
     "downshift": "^2.1.5",
     "emotion": "10.0.17",
+    "focus-trap": "^5.0.0",
     "hyperform": "^0.9.9",
     "keycode": "^2.2.0",
     "load-script": "^1.0.0",
