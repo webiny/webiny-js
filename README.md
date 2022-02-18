@@ -170,7 +170,6 @@ Top 5 reasons to do so:
 <a href="https://github.com/webiny/webiny-js/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=webiny/webiny-js" />
 </a>
-<!--  https://contrib.rocks -->
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
