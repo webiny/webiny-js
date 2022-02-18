@@ -60,7 +60,12 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         variables: {
             where: where,
             sort: [sort]
-        }
+        },
+        /**
+         * We're using "network-only" fetchPolicy here because, we need to update the cache result for this query after creating a content review,
+         * for which we need to sync the variables, which is a lot of efforts at this stage.
+         */
+        fetchPolicy: "network-only"
     });
 
     const data = listQuery.loading ? [] : get(listQuery, "data.apw.listContentReviews.data");
