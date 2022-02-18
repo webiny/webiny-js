@@ -39,10 +39,10 @@ export interface PageImportExportTask {
     locale: string;
 }
 
-export type File = {
+export interface File {
     id: string;
     src: string;
-};
+}
 
 export interface MetaResponse {
     cursor: string | null;

@@ -580,7 +580,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                         const result = {
                             key,
-                            src: settings.srcPrefix + key
+                            src: (settings?.srcPrefix || "") + key
                         };
 
                         return new Response(result);

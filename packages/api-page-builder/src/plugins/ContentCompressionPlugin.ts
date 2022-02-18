@@ -3,7 +3,7 @@ import WebinyError from "@webiny/error";
 
 export interface CompressedValue {
     compression: string;
-    content: string;
+    content: string | null;
 }
 
 /**

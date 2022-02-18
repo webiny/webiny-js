@@ -219,9 +219,12 @@ export const uploadPageAssets = async ({
  * @param ext File extension.
  * @return filename of first file in the Directory that matches the provided extension.
  */
-export const getFileNameByExtension = (workingDir: string, ext: string): string => {
+/**
+ * TODO @ts-refactor @ashutosh check if this is still required? cant find any usages
+ */
+export const getFileNameByExtension = (workingDir: string, ext: string): string | null => {
     const dirContents = fs.readdirSync(workingDir);
-    return dirContents.find(a => a.endsWith(ext));
+    return dirContents.find(a => a.endsWith(ext)) || null;
 };
 
 function removeKeyPrefixFromName(name: string) {

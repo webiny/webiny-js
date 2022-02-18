@@ -13,10 +13,20 @@ import loadJson from "load-json-file";
 import { FileInput } from "@webiny/api-file-manager/types";
 import WebinyError from "@webiny/error";
 import { deleteFile } from "@webiny/api-page-builder/graphql/crud/install/utils/downloadInstallFiles";
-import { PageImportExportTaskStatus } from "~/types";
+import { File, PageImportExportTaskStatus } from "~/types";
 import { PbPageImportExportContext } from "~/graphql/types";
 import { s3Stream } from "~/exportPages/s3Stream";
 import { ExportedPageData } from "~/exportPages/utils";
+import { PageSettings } from "@webiny/api-page-builder/types";
+
+interface FileItem extends File {
+    key: string;
+    type: string;
+    name: string;
+    size: number;
+    meta: Record<string, any>;
+    tags: string[];
+}
 
 const streamPipeline = promisify(pipeline);
 
@@ -34,14 +44,13 @@ interface UpdateFilesInPageDataParams {
 interface UpdateImageInPageSettingsParams {
     fileIdToKeyMap: Map<string, string>;
     srcPrefix: string;
-    settings: ExportedPageData["page"]["settings"];
+    settings: PageSettings;
 }
 
-function updateImageInPageSettings({
-    settings,
-    fileIdToKeyMap,
-    srcPrefix
-}: UpdateImageInPageSettingsParams): UpdateImageInPageSettingsParams["settings"] {
+function updateImageInPageSettings(
+    params: UpdateImageInPageSettingsParams
+): UpdateImageInPageSettingsParams["settings"] {
+    const { settings, fileIdToKeyMap, srcPrefix } = params;
     let newSettings = settings;
 
     const srcPrefixWithoutTrailingSlash = srcPrefix.endsWith("/")
@@ -52,14 +61,18 @@ function updateImageInPageSettings({
         newSettings = dotProp.set(
             newSettings,
             "general.image.src",
-            `${srcPrefixWithoutTrailingSlash}/${fileIdToKeyMap.get(settings.general.image.id)}`
+            `${srcPrefixWithoutTrailingSlash}/${fileIdToKeyMap.get(
+                settings.general?.image?.id || ""
+            )}`
         );
     }
     if (dotProp.get(newSettings, "social.image.src")) {
         newSettings = dotProp.set(
             newSettings,
             "social.image.src",
-            `${srcPrefixWithoutTrailingSlash}/${fileIdToKeyMap.get(settings.social.image.id)}`
+            `${srcPrefixWithoutTrailingSlash}/${fileIdToKeyMap.get(
+                settings.social?.image?.id || ""
+            )}`
         );
     }
 
@@ -98,33 +111,34 @@ function updateFilesInPageData({ data, fileIdToKeyMap, srcPrefix }: UpdateFilesI
 
 interface UploadPageAssetsParams {
     context: PbPageImportExportContext;
-    filesData: Record<string, any>[];
+    filesData: FileItem[];
     fileUploadsData: FileUploadsData;
 }
 
 interface UploadPageAssetsReturnType {
-    fileIdToKeyMap?: Map<string, string>;
+    fileIdToKeyMap: Map<string, string>;
 }
 
-export const uploadPageAssets = async ({
-    context,
-    filesData,
-    fileUploadsData
-}: UploadPageAssetsParams): Promise<UploadPageAssetsReturnType> => {
+export const uploadPageAssets = async (
+    params: UploadPageAssetsParams
+): Promise<UploadPageAssetsReturnType> => {
+    const { context, filesData, fileUploadsData } = params;
+    // Save uploaded file key against static id for later use.
+    const fileIdToKeyMap = new Map<string, string>();
     /**
      * This function contains logic of file download from S3.
      * Current we're not mocking zip file download from S3 in tests at the moment.
      * So, we're manually mocking it in case of test just by returning an empty object.
      */
     if (process.env.NODE_ENV === "test") {
-        return {};
+        return {
+            fileIdToKeyMap
+        };
     }
     console.log("INSIDE uploadPageAssets");
 
-    // Save uploaded file key against static id for later use.
-    const fileIdToKeyMap = new Map<string, string>();
     // Save files meta data against old key for later use.
-    const fileKeyToFileMap = new Map<string, Record<string, any>>();
+    const fileKeyToFileMap = new Map<string, FileItem>();
     // Initialize maps.
     for (let i = 0; i < filesData.length; i++) {
         const file = filesData[i];
@@ -140,22 +154,27 @@ export const uploadPageAssets = async ({
     });
 
     // Create files in File Manager
-    const createFilesInput = fileUploadResults.map(uploadResult => {
-        const newKey = uploadResult.Key;
-        const file = fileKeyToFileMap.get(getOldFileKey(newKey));
+    const createFilesInput = fileUploadResults
+        .map((uploadResult): FileInput | null => {
+            const newKey = uploadResult.Key;
+            const file = fileKeyToFileMap.get(getOldFileKey(newKey));
+            if (!file) {
+                return null;
+            }
 
-        // Update the file map with newly uploaded file.
-        fileIdToKeyMap.set(file.id, newKey);
+            // Update the file map with newly uploaded file.
+            fileIdToKeyMap.set(file.id, newKey);
 
-        return {
-            key: newKey,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            meta: file.meta,
-            tags: file.tags
-        } as FileInput;
-    });
+            return {
+                key: newKey,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                meta: file.meta,
+                tags: file.tags
+            };
+        })
+        .filter(Boolean) as FileInput[];
 
     const createFilesPromises = [];
     // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
@@ -220,19 +239,29 @@ export async function importPage({
     const { page, files } = await loadJson<ExportedPageData>(PAGE_DATA_FILE_PATH);
 
     // Only update page data if there are files.
-    if (Array.isArray(files) && files.length) {
+    if (files && Array.isArray(files) && files.length > 0) {
         // Upload page assets.
         const { fileIdToKeyMap } = await uploadPageAssets({
             context,
+            /**
+             * TODO @ts-refactor @ashutosh figure out correct types.
+             */
+            // @ts-ignore
             filesData: files,
             fileUploadsData
         });
 
-        const { srcPrefix } = await context.fileManager.settings.getSettings();
-        updateFilesInPageData({ data: page.content, fileIdToKeyMap, srcPrefix });
+        const settings = await context.fileManager.settings.getSettings();
+
+        const { srcPrefix = "" } = settings || {};
+        updateFilesInPageData({
+            data: page.content || {},
+            fileIdToKeyMap,
+            srcPrefix
+        });
 
         page.settings = updateImageInPageSettings({
-            settings: page.settings,
+            settings: page.settings || {},
             fileIdToKeyMap,
             srcPrefix
         });
@@ -409,7 +438,7 @@ async function deleteS3Folder(key: string): Promise<void> {
     }
 
     const response = await s3Stream.listObject(key);
-    const keys = response.Contents.map(c => c.Key);
+    const keys = (response.Contents || []).map(c => c.Key).filter(Boolean) as string[];
     console.log(`Found ${keys.length} files.`);
 
     const deleteFilePromises = keys.map(key => s3Stream.deleteObject(key));
@@ -442,6 +471,12 @@ function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
             if (err) {
                 console.warn("ERROR: Failed to extract zip: ", exportFileZipPath, err);
                 reject(err);
+                return;
+            }
+            if (!zipFile) {
+                console.log("ERROR: Missing zip file resource for path: " + exportFileZipPath);
+                reject("Missing Zip File Resource.");
+                return;
             }
 
             console.info(`The ZIP file contains ${zipFile.entryCount} entries.`);
@@ -473,6 +508,14 @@ function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
                                 err
                             );
                             reject(err);
+                            return;
+                        }
+                        if (!readStream) {
+                            console.log(
+                                "ERROR: Missing Read Stream Resource when extracting to disk."
+                            );
+                            reject("Missing Read Stream Resource.");
+                            return;
                         }
 
                         const filePath = path.join(EXPORT_FILE_EXTRACTION_PATH, entry.fileName);
@@ -509,6 +552,12 @@ function extractZipAndUploadToS3(
             if (err) {
                 console.warn("ERROR: Failed to extract zip: ", pageDataZipFilePath, err);
                 reject(err);
+                return;
+            }
+            if (!zipFile) {
+                console.log("ERROR: Probably failed to extract zip: " + pageDataZipFilePath);
+                reject("Missing Zip File Resource.");
+                return;
             }
             console.info(`The ZIP file contains ${zipFile.entryCount} entries.`);
             zipFile.on("end", function (err) {
@@ -544,6 +593,12 @@ function extractZipAndUploadToS3(
                                 err
                             );
                             reject(err);
+                            return;
+                        }
+                        if (!readStream) {
+                            console.log("ERROR: Missing Read Stream while importing pages.");
+                            reject("Missing Read Strea Resource.");
+                            return;
                         }
                         readStream.on("end", function () {
                             filePaths.push(entry.fileName);

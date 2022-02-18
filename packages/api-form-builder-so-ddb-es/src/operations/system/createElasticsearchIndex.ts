@@ -1,12 +1,12 @@
 import { Client } from "@elastic/elasticsearch";
 import configurations from "~/configurations";
 
-interface Params {
+interface CreateElasticsearchIndexParams {
     elasticsearch: Client;
     tenant: string;
 }
 
-export const createElasticsearchIndex = async (params: Params) => {
+export const createElasticsearchIndex = async (params: CreateElasticsearchIndexParams) => {
     const { tenant, elasticsearch } = params;
 
     const esIndex = configurations.es({

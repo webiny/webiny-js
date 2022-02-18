@@ -127,7 +127,7 @@ export const createMenuStorageOperations = ({ entity, plugins }: Params): MenuSt
     };
 
     const list = async (params: MenuStorageOperationsListParams) => {
-        const { where, sort, limit } = params;
+        const { where, sort, limit = 10 } = params;
 
         const { tenant, locale, ...restWhere } = where;
         const queryAllParams: QueryAllParams = {
@@ -166,7 +166,7 @@ export const createMenuStorageOperations = ({ entity, plugins }: Params): MenuSt
             fields
         }).map(item => {
             return cleanupItem<Menu>(entity, item);
-        });
+        }) as Menu[];
 
         const sortedItems = sortItems<Menu>({
             items: filteredItems,

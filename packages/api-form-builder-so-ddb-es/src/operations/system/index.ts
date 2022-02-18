@@ -60,7 +60,7 @@ export const createSystemStorageOperations = (
 
     const getSystem = async (
         params: FormBuilderStorageOperationsGetSystemParams
-    ): Promise<System> => {
+    ): Promise<System | null> => {
         const keys = createKeys(params);
 
         try {

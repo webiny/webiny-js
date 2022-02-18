@@ -50,6 +50,9 @@ const processToIndex: ProcessToIndex = ({
 }) => {
     const reducer = (values: ReducerValue, field: CmsModelField) => {
         const plugin = getFieldIndexPlugin(field.type);
+        if (!plugin || !plugin.toIndex) {
+            return values;
+        }
         const { value, rawValue } = plugin.toIndex({
             model,
             field,
@@ -84,6 +87,9 @@ const processFromIndex: ProcessFromIndex = ({
 }) => {
     const reducer = (values: Record<string, string>, field: CmsModelField) => {
         const plugin = getFieldIndexPlugin(field.type);
+        if (!plugin || !plugin.fromIndex) {
+            return values;
+        }
         const value = plugin.fromIndex({
             plugins,
             model,
@@ -126,7 +132,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             return { value: null };
         }
 
-        const fields = field.settings.fields as CmsModelField[];
+        const fields = (field.settings?.fields || []) as CmsModelField[];
 
         /**
          * In "object" field, value is either an object or an array of objects.
@@ -176,7 +182,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             return null;
         }
 
-        const fields = field.settings.fields as CmsModelField[];
+        const fields = (field.settings?.fields || []) as CmsModelField[];
 
         /**
          * In "object" field, value is either an object or an array of objects.

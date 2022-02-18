@@ -57,7 +57,7 @@ export interface FileInput {
     size: number;
     type: string;
     meta: Record<string, any>;
-    tags: [string];
+    tags: string[];
 }
 
 export interface FileListWhereParams {

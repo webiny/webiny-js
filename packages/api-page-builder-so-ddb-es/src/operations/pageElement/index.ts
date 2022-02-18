@@ -146,7 +146,7 @@ export const createPageElementStorageOperations = ({
     };
 
     const list = async (params: PageElementStorageOperationsListParams) => {
-        const { where, sort, limit } = params;
+        const { where, sort, limit = 10 } = params;
 
         const { tenant, locale, ...restWhere } = where;
         const queryAllParams: QueryAllParams = {
@@ -187,7 +187,7 @@ export const createPageElementStorageOperations = ({
             fields
         }).map(item => {
             return cleanupItem<PageElement>(entity, item);
-        });
+        }) as PageElement[];
 
         const sortedItems = sortItems<PageElement>({
             items: filteredItems,

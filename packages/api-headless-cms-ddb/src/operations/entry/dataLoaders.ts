@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsStorageEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import { Entity } from "dynamodb-toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
@@ -16,8 +16,8 @@ import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 const getAllEntryRevisions = (params: LoaderParams) => {
     const { entity, model } = params;
     const { tenant, locale } = model;
-    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
-        const results: Record<string, CmsEntry[]> = {};
+    return new DataLoader<string, CmsStorageEntry[]>(async (ids: readonly string[]) => {
+        const results: Record<string, CmsStorageEntry[]> = {};
         for (const id of ids) {
             const queryAllParams: QueryAllParams = {
                 entity,
@@ -30,7 +30,7 @@ const getAllEntryRevisions = (params: LoaderParams) => {
                     beginsWith: "REV#"
                 }
             };
-            const items = await queryAll<CmsEntry>(queryAllParams);
+            const items = await queryAll<CmsStorageEntry>(queryAllParams);
             results[id] = cleanupItems(entity, items);
         }
 
@@ -44,7 +44,7 @@ const getRevisionById = (params: LoaderParams) => {
     const { entity, model } = params;
     const { locale, tenant } = model;
 
-    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
+    return new DataLoader<string, CmsStorageEntry[]>(async (ids: readonly string[]) => {
         const queries = ids.reduce((collection, id) => {
             const partitionKey = createPartitionKey({
                 tenant,
@@ -52,6 +52,9 @@ const getRevisionById = (params: LoaderParams) => {
                 id
             });
             const { version } = parseIdentifier(id);
+            if (version === null) {
+                return collection;
+            }
             const sortKey = createRevisionSortKey({
                 version
             });
@@ -71,7 +74,7 @@ const getRevisionById = (params: LoaderParams) => {
              */
         }, {} as Record<string, any>);
 
-        const records = await batchReadAll<CmsEntry>({
+        const records = await batchReadAll<CmsStorageEntry>({
             table: entity.table,
             items: Object.values(queries)
         });
@@ -91,7 +94,7 @@ const getPublishedRevisionByEntryId = (params: LoaderParams) => {
 
     const publishedKey = createPublishedSortKey();
 
-    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
+    return new DataLoader<string, CmsStorageEntry[]>(async (ids: readonly string[]) => {
         const queries = ids.reduce((collection, id) => {
             const partitionKey = createPartitionKey({
                 tenant,
@@ -111,7 +114,7 @@ const getPublishedRevisionByEntryId = (params: LoaderParams) => {
              */
         }, {} as Record<string, any>);
 
-        const records = await batchReadAll<CmsEntry>({
+        const records = await batchReadAll<CmsStorageEntry>({
             table: entity.table,
             items: Object.values(queries)
         });
@@ -132,7 +135,7 @@ const getLatestRevisionByEntryId = (params: LoaderParams) => {
 
     const latestKey = createLatestSortKey();
 
-    return new DataLoader<string, CmsEntry[]>(async (ids: readonly string[]) => {
+    return new DataLoader<string, CmsStorageEntry[]>(async (ids: readonly string[]) => {
         const queries = ids.reduce((collection, id) => {
             const partitionKey = createPartitionKey({
                 tenant,
@@ -152,7 +155,7 @@ const getLatestRevisionByEntryId = (params: LoaderParams) => {
              */
         }, {} as Record<string, any>);
 
-        const records = await batchReadAll<CmsEntry>({
+        const records = await batchReadAll<CmsStorageEntry>({
             table: entity.table,
             items: Object.values(queries)
         });
@@ -205,7 +208,7 @@ interface GetLoaderParams {
 
 interface ClearLoaderParams {
     model: CmsModel;
-    entry?: CmsEntry;
+    entry?: CmsStorageEntry;
 }
 
 type Loaders =
@@ -227,23 +230,25 @@ export class DataLoadersHandler {
         this.entity = params.entity;
     }
 
-    public async getAllEntryRevisions(params: GetAllEntryRevisionsParams): Promise<CmsEntry[]> {
+    public async getAllEntryRevisions(
+        params: GetAllEntryRevisionsParams
+    ): Promise<CmsStorageEntry[]> {
         return await this.loadMany("getAllEntryRevisions", params, params.ids);
     }
 
-    public async getRevisionById(params: GetRevisionByIdParams): Promise<CmsEntry[]> {
+    public async getRevisionById(params: GetRevisionByIdParams): Promise<CmsStorageEntry[]> {
         return await this.loadMany("getRevisionById", params, params.ids);
     }
 
     public async getPublishedRevisionByEntryId(
         params: GetPublishedRevisionByEntryIdParams
-    ): Promise<CmsEntry[]> {
+    ): Promise<CmsStorageEntry[]> {
         return await this.loadMany("getPublishedRevisionByEntryId", params, params.ids);
     }
 
     public async getLatestRevisionByEntryId(
         params: GetLatestRevisionByEntryIdParams
-    ): Promise<CmsEntry[]> {
+    ): Promise<CmsStorageEntry[]> {
         return await this.loadMany("getLatestRevisionByEntryId", params, params.ids);
     }
 
@@ -265,14 +270,14 @@ export class DataLoadersHandler {
                 })
             );
         }
-        return this.loaders.get(loaderKey);
+        return this.loaders.get(loaderKey) as DataLoader<any, any>;
     }
 
     private async loadMany(
         loader: Loaders,
         params: GetLoaderParams,
         ids: readonly string[]
-    ): Promise<CmsEntry[]> {
+    ): Promise<CmsStorageEntry[]> {
         let results;
         try {
             results = await this.getLoader(loader, params).loadMany(ids);

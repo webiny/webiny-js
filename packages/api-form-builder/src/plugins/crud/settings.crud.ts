@@ -23,7 +23,7 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
                 await utils.checkBaseSettingsPermissions(context);
             }
 
-            let settings: Settings = null;
+            let settings: Settings | null = null;
             try {
                 settings = await this.storageOperations.getSettings({
                     tenant: getTenant().id,
@@ -128,7 +128,9 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
         async deleteSettings(this: FormBuilder) {
             await utils.checkBaseSettingsPermissions(context);
             const settings = await this.getSettings();
-
+            if (!settings) {
+                return;
+            }
             try {
                 await this.storageOperations.deleteSettings({ settings });
             } catch (ex) {

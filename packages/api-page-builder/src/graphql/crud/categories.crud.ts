@@ -111,7 +111,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 throw new NotAuthorizedError();
             }
 
-            let category: Category;
+            let category: Category | null = null;
             try {
                 category = await storageOperations.categories.get(params);
             } catch (ex) {
@@ -123,6 +123,9 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                         params
                     }
                 );
+            }
+            if (!category) {
+                throw new NotFoundError();
             }
 
             const identity = context.security.getIdentity();

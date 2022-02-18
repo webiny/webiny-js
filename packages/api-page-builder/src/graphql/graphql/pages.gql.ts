@@ -380,7 +380,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         if (args.id) {
                             return resolve(() =>
                                 context.pageBuilder.getPublishedPageById({
-                                    id: args.id,
+                                    id: args.id as string,
                                     preview: args.preview
                                 })
                             );
@@ -388,7 +388,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                         return resolve(() =>
                             context.pageBuilder.getPublishedPageByPath({
-                                path: args.path
+                                path: args.path as string
                             })
                         );
                     },
@@ -428,7 +428,10 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             if (from) {
                                 return context.pageBuilder.createPageFrom(from);
                             }
-                            return context.pageBuilder.createPage(category);
+                            /**
+                             * We can safely cast because we check for category existence in the beginning of the fn
+                             */
+                            return context.pageBuilder.createPage(category as string);
                         });
                     },
                     deletePage: async (_, args: { id: string }, context: PbContext) => {

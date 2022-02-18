@@ -97,7 +97,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 }
             };
 
-            let pageElement: PageElement | undefined;
+            let pageElement: PageElement | null = null;
             try {
                 pageElement = await storageOperations.pageElements.get(params);
                 if (!pageElement) {

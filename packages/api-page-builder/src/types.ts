@@ -66,6 +66,25 @@ export type PageStatus =
     | "draft";
 export type PageSpecialType = "home" | "notFound";
 
+export interface PageSettings {
+    social?: {
+        title: string;
+        description: string;
+        image: File;
+        meta: Array<{ property: string; content: string }>;
+    };
+    seo?: {
+        title: string;
+        description: string;
+        meta: Array<{ name: string; content: string }>;
+    };
+    general?: {
+        tags: string[];
+        snippet: string;
+        layout: string;
+        image: File;
+    };
+}
 export interface Page {
     id: string;
     pid: string;
@@ -73,31 +92,13 @@ export interface Page {
     tenant: string;
     title: string;
     editor: string;
-    createdFrom: string;
+    createdFrom: string | null;
     path: string;
     category: string;
-    content: Record<string, any>;
-    publishedOn: string;
+    content: Record<string, any> | null;
+    publishedOn: string | null;
     version: number;
-    settings?: {
-        social?: {
-            title: string;
-            description: string;
-            image: File;
-            meta: Array<{ property: string; content: string }>;
-        };
-        seo?: {
-            title: string;
-            description: string;
-            meta: Array<{ name: string; content: string }>;
-        };
-        general?: {
-            tags: string[];
-            snippet: string;
-            layout: string;
-            image: File;
-        };
-    };
+    settings?: PageSettings;
     locked: boolean;
     status: PageStatus;
     visibility: {
@@ -572,7 +573,7 @@ export interface PageStorageOperationsListParams {
     where: PageStorageOperationsListWhere;
     sort: string[];
     limit: number;
-    after?: string;
+    after: string | null;
 }
 /**
  * @category StorageOperations

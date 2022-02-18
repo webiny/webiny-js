@@ -44,7 +44,7 @@ export class CmsEntryElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
         return this.config.transform(params);
     }
 
-    public createPath(params: CreatePathCallableParams): string {
+    public createPath(params: CreatePathCallableParams): string | null {
         if (typeof this.config.path === "function") {
             return this.config.path(params);
         } else if (typeof this.config.path === "string") {

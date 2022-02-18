@@ -81,7 +81,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     }
                 };
 
-                let pageImportExportTask: PageImportExportTask | undefined;
+                let pageImportExportTask: PageImportExportTask | null = null;
 
                 try {
                     pageImportExportTask = await storageOperations.getTask(params);
@@ -389,7 +389,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     }
                 };
 
-                let pageImportExportSubTask: PageImportExportTask | undefined;
+                let pageImportExportSubTask: PageImportExportTask | null = null;
 
                 try {
                     pageImportExportSubTask = await storageOperations.getSubTask(params);

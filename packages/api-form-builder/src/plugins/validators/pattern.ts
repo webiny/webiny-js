@@ -21,7 +21,8 @@ const plugin: ContextPlugin = {
 
                     const { settings } = validator;
 
-                    let pattern: FbFormFieldPatternValidatorPlugin["pattern"];
+                    let pattern: FbFormFieldPatternValidatorPlugin["pattern"] | undefined =
+                        undefined;
                     if (settings.preset === "custom") {
                         pattern = settings as FbFormFieldPatternValidatorPlugin["pattern"];
                     } else {

@@ -6,6 +6,7 @@ import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import {
+    Category,
     OnAfterInstallTopicParams,
     OnBeforeInstallTopicParams,
     PageBuilderContextObject,
@@ -172,7 +173,8 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 ];
 
                 const initialPages = await Promise.all(
-                    initialPagesData.map(() => this.createPage(staticCategory.slug))
+                    // We can safely cast.
+                    initialPagesData.map(() => this.createPage((staticCategory as Category).slug))
                 );
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {

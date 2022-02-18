@@ -23,7 +23,7 @@ export interface Params {
     entity: Entity<any>;
 }
 export const createSystemStorageOperations = ({ entity }: Params): SystemStorageOperations => {
-    const get = async (params: SystemStorageOperationsGetParams): Promise<System> => {
+    const get = async (params: SystemStorageOperationsGetParams): Promise<System | null> => {
         const { tenant } = params;
         const keys = {
             PK: createPartitionKey({ tenant }),

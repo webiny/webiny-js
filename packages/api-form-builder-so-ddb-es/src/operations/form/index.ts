@@ -81,8 +81,9 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         return `T#${tenant}#L#${locale}#FB#F#${id}`;
     };
 
-    const createRevisionSortKey = (value: string | number): string => {
-        const version = typeof value === "number" ? Number(value) : parseIdentifier(value).version;
+    const createRevisionSortKey = (value: string | number | undefined): string => {
+        const version =
+            typeof value === "number" ? Number(value) : (parseIdentifier(value).version as number);
         return `REV#${zeroPad(version)}`;
     };
 
@@ -338,7 +339,9 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         return form;
     };
 
-    const getForm = async (params: FormBuilderStorageOperationsGetFormParams): Promise<FbForm> => {
+    const getForm = async (
+        params: FormBuilderStorageOperationsGetFormParams
+    ): Promise<FbForm | null> => {
         const { where } = params;
         const { id, formId, latest, published, version, tenant, locale } = where;
         if (latest && published) {
@@ -368,7 +371,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             PK: createFormPartitionKey({
                 tenant,
                 locale,
-                id: formId || id
+                id: (formId || id) as string
             }),
             SK: sortKey
         };
@@ -444,7 +447,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         const meta = {
             hasMoreItems,
             totalCount: total.value,
-            cursor: items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null
+            cursor: items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null
         };
 
         return {
@@ -463,7 +466,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             partitionKey: createFormPartitionKey({
                 tenant,
                 locale,
-                id: id || formId
+                id: (id || formId) as string
             }),
             options: {
                 beginsWith: "REV#"
@@ -494,7 +497,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             where,
             fields: formDynamoDbFields
         });
-        if (Array.isArray(sort) === false || sort.length === 0) {
+        if (!sort || sort.length === 0) {
             return filteredItems;
         }
         return sortItems({
@@ -606,7 +609,8 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                     .filter(f => !!f.publishedOn && f.version !== form.version)
                     .sort((a, b) => {
                         return (
-                            new Date(b.publishedOn).getTime() - new Date(a.publishedOn).getTime()
+                            new Date(b.publishedOn as string).getTime() -
+                            new Date(a.publishedOn as string).getTime()
                         );
                     })
                     .shift();
@@ -622,7 +626,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 } else {
                     items.push(
                         entity.deleteBatch({
-                            PK: createFormPartitionKey(previouslyPublishedForm),
+                            PK: createFormPartitionKey(form),
                             SK: createLatestPublishedSortKey()
                         })
                     );
@@ -631,7 +635,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             /**
              * Sort out the latest record.
              */
-            if (isLatest) {
+            if (isLatest && previous) {
                 items.push(
                     entity.putBatch({
                         ...previous,

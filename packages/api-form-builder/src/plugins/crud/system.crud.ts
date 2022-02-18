@@ -44,7 +44,7 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
         },
         async getSystemVersion(this: FormBuilder) {
             const system = await this.getSystem();
-            return system ? system.version : null;
+            return system ? system.version || null : null;
         },
         async setSystemVersion(this: FormBuilder, version: string) {
             const original = await this.getSystem();

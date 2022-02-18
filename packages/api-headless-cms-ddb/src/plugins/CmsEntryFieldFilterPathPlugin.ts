@@ -35,10 +35,11 @@ export class CmsEntryFieldFilterPathPlugin extends Plugin {
         if (field.type !== this.config.fieldType) {
             return false;
         }
-        if (Array.isArray(this.config.fieldId) === false || this.config.fieldId.length === 0) {
+        const fieldId = this.config.fieldId;
+        if (!fieldId || Array.isArray(fieldId) === false || fieldId.length === 0) {
             return true;
         }
-        return this.config.fieldId.includes(field.fieldId);
+        return fieldId.includes(field.fieldId);
     }
 
     public createPath(params: CreatePathCallableParams): string {

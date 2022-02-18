@@ -67,7 +67,7 @@ export const createSettingsStorageOperations = (
 
     const getSettings = async (
         params: FormBuilderStorageOperationsGetSettingsParams
-    ): Promise<Settings> => {
+    ): Promise<Settings | null> => {
         const keys = createKeys(params);
 
         try {

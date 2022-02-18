@@ -70,7 +70,7 @@ export interface Params {
 export const createSettingsCrud = (params: Params): SettingsCrud => {
     const { context, storageOperations } = params;
 
-    const settingsDataLoader = new DataLoader<SettingsParams, Settings, string>(
+    const settingsDataLoader = new DataLoader<SettingsParams, Settings | null, string>(
         async keys => {
             const promises = keys.map(key => {
                 const params: SettingsStorageOperationsGetParams = {

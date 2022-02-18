@@ -32,9 +32,10 @@ export class PagePlugin<TPage extends Page = Page> extends Plugin {
         callback: keyof Config,
         params: NotFoundParams
     ): Promise<TPage | undefined> {
-        if (typeof this._config[callback] !== "function") {
+        const cb = this._config[callback];
+        if (typeof cb !== "function") {
             return undefined;
         }
-        return this._config[callback](params);
+        return cb(params);
     }
 }

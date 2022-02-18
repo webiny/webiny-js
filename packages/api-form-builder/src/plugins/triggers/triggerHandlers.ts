@@ -7,33 +7,34 @@ const plugin: FbFormTriggerHandlerPlugin = {
     trigger: "webhook",
     async handle({ trigger, data, addLog }) {
         const urls = trigger && trigger.urls;
-        if (Array.isArray(urls)) {
-            for (const url of urls) {
-                /**
-                 * Could be executed without awaiting the end result of the trigger? Not sure how it would
-                 * work in Lambda, so for now, let's await the result of the request, and update form submission
-                 * logs accordingly.
-                 */
-                try {
-                    const response = await got(url, {
-                        method: "post",
-                        json: true,
-                        body: data
-                    });
+        if (Array.isArray(urls) === false) {
+            return;
+        }
+        for (const url of urls) {
+            /**
+             * Could be executed without awaiting the end result of the trigger? Not sure how it would
+             * work in Lambda, so for now, let's await the result of the request, and update form submission
+             * logs accordingly.
+             */
+            try {
+                const response = await got(url, {
+                    method: "post",
+                    json: true,
+                    body: data
+                });
 
-                    addLog({
-                        type: "success",
-                        message: `Successfully sent a POST request to ${url}`,
-                        data: {
-                            response: response.body
-                        }
-                    });
-                } catch (e) {
-                    addLog({
-                        type: "warning",
-                        message: `POST request to ${url} failed: ${e.message}`
-                    });
-                }
+                addLog({
+                    type: "success",
+                    message: `Successfully sent a POST request to ${url}`,
+                    data: {
+                        response: response.body
+                    }
+                });
+            } catch (e) {
+                addLog({
+                    type: "warning",
+                    message: `POST request to ${url} failed: ${e.message}`
+                });
             }
         }
     }

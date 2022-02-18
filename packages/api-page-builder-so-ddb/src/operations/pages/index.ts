@@ -279,7 +279,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
         if (publishedPage && publishedPage.id === page.id) {
             items.push(entity.deleteBatch(publishedKeys));
         }
-        let previousLatestPage: Page = null;
+        let previousLatestPage: Page | null = null;
         if (latestPage && latestPage.id === page.id) {
             const partitionKey = createRevisionPartitionKey(page);
             const previousLatestRecord = await queryOne<Page>({
@@ -670,14 +670,14 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
             keys = {
                 PK: createPublishedPartitionKey(where),
                 SK: createPublishedSortKey({
-                    id: id || pid
+                    id: id || (pid as string)
                 })
             };
         } else if (version) {
             keys = {
                 PK: createRevisionPartitionKey({
                     ...where,
-                    id: id || pid
+                    id: id || (pid as string)
                 }),
                 SK: createRevisionSortKey({
                     version
@@ -687,7 +687,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
             keys = {
                 PK: createLatestPartitionKey(where),
                 SK: createLatestSortKey({
-                    id: id || pid
+                    id: id || (pid as string)
                 })
             };
         }
@@ -842,7 +842,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
             fields
         }).map(item => {
             return cleanupItem<Page>(entity, item);
-        });
+        }) as Page[];
 
         const sortedPages = sortItems<Page>({
             items: filteredPages,
@@ -852,7 +852,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
 
         const totalCount = sortedPages.length;
 
-        const start = parseInt(decodeCursor(previousCursor)) || 0;
+        const start = parseInt(decodeCursor(previousCursor) || "0") || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const pages = sortedPages.slice(start, end);
@@ -948,7 +948,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
                 collection[t] = undefined;
             }
             return collection;
-        }, {} as Record<string, string>);
+        }, {} as Record<string, string | undefined>);
 
         return Object.keys(tags);
     };
