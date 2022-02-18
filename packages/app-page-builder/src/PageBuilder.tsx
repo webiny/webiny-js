@@ -6,6 +6,7 @@ import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
 import { AdminPageBuilderContextProvider } from "~/admin/contexts/AdminPageBuilder";
 import { DefaultOnPagePublish } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPagePublish";
+import { DefaultOnPageDelete } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPageDelete";
 
 const PageBuilderProviderHOC = Component => {
     return function PageBuilderProvider({ children }) {
@@ -75,6 +76,7 @@ export const PageBuilder = () => {
                 <PageBuilderMenu />
                 <WebsiteSettings />
                 <DefaultOnPagePublish />
+                <DefaultOnPageDelete />
             </Plugins>
         </Fragment>
     );
