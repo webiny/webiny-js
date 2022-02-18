@@ -134,7 +134,11 @@ const dialogContainerStyles = css`
 `;
 
 const fields = ["title", "body", "media"];
+
 const isValidId = (id: string) => {
+    if (typeof id !== "string") {
+        return false;
+    }
     return id.split("#").length === 2;
 };
 
