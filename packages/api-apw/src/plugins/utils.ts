@@ -107,6 +107,24 @@ export const extractContentReviewIdAndStep = (
     };
 };
 
+type SafelyGetContentReviewParams = Pick<UpdateContentReviewParams, "id" | "contentReviewMethods">;
+
+export const safelyGetContentReview = async ({
+    id,
+    contentReviewMethods
+}: SafelyGetContentReviewParams): Promise<ApwContentReview | null> => {
+    let contentReviewEntry: ApwContentReview;
+    try {
+        contentReviewEntry = await contentReviewMethods.get(id);
+    } catch (e) {
+        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
+            throw e;
+        }
+    }
+
+    return contentReviewEntry;
+};
+
 export interface UpdateContentReviewParams {
     id: string;
     contentReviewMethods: ApwContentReviewCrud;
@@ -118,14 +136,7 @@ export const updateContentReview = async ({
     id,
     getNewContentReviewData
 }: UpdateContentReviewParams): Promise<void> => {
-    let contentReviewEntry: ApwContentReview;
-    try {
-        contentReviewEntry = await contentReviewMethods.get(id);
-    } catch (e) {
-        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
-            throw e;
-        }
-    }
+    const contentReviewEntry = await safelyGetContentReview({ id, contentReviewMethods });
     if (contentReviewEntry) {
         const newContentReviewData = getNewContentReviewData(contentReviewEntry);
         /**

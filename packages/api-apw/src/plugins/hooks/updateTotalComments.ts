@@ -1,6 +1,7 @@
 import { LifeCycleHookCallbackParams } from "~/types";
 import {
     extractContentReviewIdAndStep,
+    safelyGetContentReview,
     updateContentReview,
     updateContentReviewStep
 } from "../utils";
@@ -100,7 +101,10 @@ export const updateLatestCommentId = ({ apw }: LifeCycleHookCallbackParams) => {
          */
         const { id } = extractContentReviewIdAndStep(comment.step);
 
-        const contentReview = await apw.contentReview.get(id);
+        const contentReview = await safelyGetContentReview({
+            id,
+            contentReviewMethods: apw.contentReview
+        });
 
         if (contentReview && contentReview.latestCommentId === comment.id) {
             const [[latestComment]] = await apw.comment.list({
