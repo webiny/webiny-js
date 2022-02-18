@@ -54,7 +54,11 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         if (!data.id) {
             return;
         }
-        onFormMounted({ ...props, client });
+        onFormMounted({
+            preview: props.preview || false,
+            data: props.data || null,
+            client
+        });
     }, [data.id]);
 
     const reCaptchaResponseToken = useRef("");

@@ -2,11 +2,12 @@ import React from "react";
 import { FormRenderPropParams, FormAPI } from "@webiny/form";
 import { UIElement, UIElementConfig } from "~/ui/UIElement";
 import { FormElementRenderProps } from "~/ui/elements/form/FormElement";
+import { Validator } from "@webiny/validation/types";
 
 export interface FormFieldElementConfig<TRenderProps = FormRenderPropParams>
     extends UIElementConfig<TRenderProps> {
     name: string;
-    validators?: GetterWithProps<Function | Function[]>;
+    validators?: GetterWithProps<Validator | Validator[]>;
     beforeChange?: BeforeChange;
     afterChange?: AfterChange;
     defaultValue?: any | GetterWithProps<any>;
@@ -60,7 +61,7 @@ export class FormFieldElement<
         return this.config.name;
     }
 
-    public getValidators(props?: FormFieldElementRenderProps): Function | Function[] {
+    public getValidators(props?: FormFieldElementRenderProps): Validator | Validator[] {
         if (!this.config.validators || typeof this.config.validators !== "function") {
             return () => true;
         }
@@ -129,7 +130,7 @@ export class FormFieldElement<
         this.config.isDisabled = isDisabled;
     }
 
-    public setValidators(validators: GetterWithProps<Function>): void {
+    public setValidators(validators: GetterWithProps<Validator>): void {
         this.config.validators = validators;
     }
 

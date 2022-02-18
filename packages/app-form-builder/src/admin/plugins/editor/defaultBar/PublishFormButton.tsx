@@ -43,18 +43,26 @@ const PublishFormButton: React.FC = () => {
             {({ showConfirmation }) => (
                 <ButtonPrimary
                     data-testid={"fb.editor.default-bar.publish"}
-                    onClick={async () => {
+                    onClick={() => {
                         showConfirmation(async () => {
                             await publish({
                                 variables: {
                                     revision: data.id
                                 },
-                                update(_, { data }) {
+                                update(_, response) {
+                                    if (!response.data) {
+                                        showSnackbar(
+                                            "Missing response data on Publish Revision Mutation."
+                                        );
+                                        return;
+                                        return;
+                                    }
                                     const { data: revision, error } =
-                                        data.formBuilder.publishRevision || {};
+                                        response.data.formBuilder.publishRevision || {};
 
                                     if (error) {
-                                        return showSnackbar(error.message);
+                                        showSnackbar(error.message);
+                                        return;
                                     }
 
                                     history.push(

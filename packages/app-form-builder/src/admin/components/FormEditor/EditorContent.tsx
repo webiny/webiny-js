@@ -44,7 +44,7 @@ const formTabs = css({
     }
 });
 const EditorContent: React.FC = () => {
-    const tabsRef = useRef();
+    const tabsRef = useRef<Tabs | null>(null);
     return (
         <ContentContainer>
             <SplitView>

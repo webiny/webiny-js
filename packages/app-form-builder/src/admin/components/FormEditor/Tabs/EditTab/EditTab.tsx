@@ -23,47 +23,54 @@ export const EditTab: React.FC = () => {
         moveRow,
         getFieldPlugin
     } = useFormEditor();
-    const [editingField, setEditingField] = useState<FbFormModelField>(null);
-    const [dropTarget, setDropTarget] = useState<FieldLayoutPositionType>(null);
+    const [editingField, setEditingField] = useState<FbFormModelField | null>(null);
+    const [dropTarget, setDropTarget] = useState<FieldLayoutPositionType>({
+        row: 0,
+        index: null
+    });
 
-    const editField = useCallback((field: FbFormModelField) => {
+    const editField = useCallback((field: FbFormModelField | null) => {
+        if (!field) {
+            setEditingField(null);
+            return;
+        }
         setEditingField(cloneDeep(field));
-    }, undefined);
+    }, []);
 
-    const handleDropField = useCallback(
-        (source, dropTarget: FieldLayoutPositionType): undefined => {
-            const { pos, name, ui } = source;
+    const handleDropField = useCallback((source, dropTarget: FieldLayoutPositionType): void => {
+        const { pos, name, ui } = source;
 
-            if (name === "custom") {
-                /**
-                 * We can cast because field is empty in the start
-                 */
-                editField({} as FbFormModelField);
-                setDropTarget(dropTarget);
-                return undefined;
-            }
+        if (name === "custom") {
+            /**
+             * We can cast because field is empty in the start
+             */
+            editField({} as FbFormModelField);
+            setDropTarget(dropTarget);
+            return;
+        }
 
-            if (ui === "row") {
-                // Reorder rows.
-                // Reorder logic is different depending on the source and target position.
-                moveRow(pos.row, dropTarget.row);
-                return undefined;
-            }
+        if (ui === "row") {
+            // Reorder rows.
+            // Reorder logic is different depending on the source and target position.
+            moveRow(pos.row, dropTarget.row);
+            return;
+        }
 
-            // If source pos is set, we are moving an existing field.
-            if (pos) {
-                const fieldId = data.layout[pos.row][pos.index];
-                moveField({ field: fieldId, position: dropTarget });
-                return undefined;
-            }
+        // If source pos is set, we are moving an existing field.
+        if (pos) {
+            const fieldId = data.layout[pos.row][pos.index];
+            moveField({ field: fieldId, position: dropTarget });
+            return;
+        }
 
-            // Find field plugin which handles the dropped field type "name".
-            const plugin = getFieldPlugin({ name });
-            insertField(plugin.field.createField(), dropTarget);
-            return undefined;
-        },
-        undefined
-    );
+        // Find field plugin which handles the dropped field type "name".
+        const plugin = getFieldPlugin({ name });
+        if (!plugin) {
+            return;
+        }
+        insertField(plugin.field.createField(), dropTarget);
+        return;
+    }, []);
 
     const fields = getLayoutFields();
 
@@ -72,7 +79,8 @@ export const EditTab: React.FC = () => {
             {fields.length === 0 && (
                 <Center
                     onDrop={item => {
-                        return handleDropField(item, { row: 0, index: 0 });
+                        handleDropField(item, { row: 0, index: 0 });
+                        return undefined;
                     }}
                 >
                     {t`Drop your first field here`}
@@ -93,7 +101,11 @@ export const EditTab: React.FC = () => {
                             </div>
                             <Horizontal
                                 onDrop={item => {
-                                    return handleDropField(item, { row: index, index: null });
+                                    handleDropField(item, {
+                                        row: index,
+                                        index: null
+                                    });
+                                    return undefined;
                                 }}
                             />
                             {/* Row start - includes field drop zones and fields */}
@@ -114,10 +126,11 @@ export const EditTab: React.FC = () => {
                                             <div className={fieldContainer} ref={drag}>
                                                 <Vertical
                                                     onDrop={item => {
-                                                        return handleDropField(item, {
+                                                        handleDropField(item, {
                                                             row: index,
                                                             index: fieldIndex
                                                         });
+                                                        return undefined;
                                                     }}
                                                     isVisible={item =>
                                                         item.ui === "field" &&
@@ -143,10 +156,11 @@ export const EditTab: React.FC = () => {
                                                                 item?.pos?.row === index)
                                                         }
                                                         onDrop={item => {
-                                                            return handleDropField(item, {
+                                                            handleDropField(item, {
                                                                 row: index,
                                                                 index: fieldIndex + 1
                                                             });
+                                                            return undefined;
                                                         }}
                                                     />
                                                 )}
@@ -160,10 +174,11 @@ export const EditTab: React.FC = () => {
                                 <Horizontal
                                     last
                                     onDrop={item => {
-                                        return handleDropField(item, {
+                                        handleDropField(item, {
                                             row: index + 1,
                                             index: null
                                         });
+                                        return undefined;
                                     }}
                                 />
                             )}

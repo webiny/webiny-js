@@ -48,7 +48,7 @@ export interface AvatarProps {
     /**
      * Avatar image source.
      */
-    src: string;
+    src?: string | null;
 
     /**
      * "alt" text.
@@ -85,10 +85,15 @@ export const Avatar: React.FC<AvatarProps> = props => {
 
     let renderedImage;
     const imageProps = { src, alt };
-    if (typeof renderImage === "function") {
-        renderedImage = renderImage(imageProps);
-    } else {
-        renderedImage = <img {...imageProps} alt={alt} />;
+    if (src) {
+        if (typeof renderImage === "function") {
+            renderedImage = renderImage({
+                ...imageProps,
+                src
+            });
+        } else {
+            renderedImage = <img {...imageProps} alt={alt} src={src} />;
+        }
     }
 
     return (

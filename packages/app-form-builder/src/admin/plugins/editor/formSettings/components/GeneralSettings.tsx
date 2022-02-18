@@ -9,6 +9,7 @@ import { PbTheme, PbThemePlugin } from "@webiny/app-page-builder/types";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { BindComponent } from "@webiny/form";
 
+type LayoutListItem = FbFormLayoutPlugin["layout"];
 interface GeneralSettingsProps {
     Bind: BindComponent;
 }
@@ -19,8 +20,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
         []
     );
 
-    const layouts = useMemo((): FbFormLayoutPlugin["layout"][] => {
-        const layoutsList: FbFormLayoutPlugin["layout"][] = [
+    const layouts = useMemo((): LayoutListItem[] => {
+        const layoutsList: LayoutListItem[] = [
             ...(get(theme, "formBuilder.layouts") || []),
             ...plugins.byType<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
         ];
@@ -30,7 +31,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
                 acc.push(item);
             }
             return acc;
-        }, []);
+        }, [] as LayoutListItem[]);
     }, []);
 
     const rteProps = useMemo(() => {

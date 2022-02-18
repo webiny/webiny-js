@@ -15,6 +15,7 @@ const plugin: FbBuilderFieldPlugin = {
         icon: <HiddenIcon />,
         createField() {
             return {
+                fieldId: "",
                 type: this.type,
                 name: this.name,
                 validation: [],

@@ -14,7 +14,10 @@ export const SEARCH_LOCALE_CODES = gql`
 `;
 
 interface LocaleCodesAutoCompleteProps {
-    value?: string;
+    value?: {
+        id: string;
+        name: string;
+    };
     label: string;
     disabled?: boolean;
     description?: string;

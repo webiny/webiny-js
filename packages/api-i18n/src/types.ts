@@ -179,14 +179,14 @@ export interface I18NLocalesStorageOperationsListParams {
         createdOn_gt?: string;
         createdOn_gte?: string;
     };
-    limit?: number;
+    limit: number;
     after?: string;
     sort?: string[];
 }
 interface I18NLocalesStorageOperationsListResponseMeta {
     hasMoreItems: boolean;
     totalCount: number;
-    cursor: string;
+    cursor: string | null;
 }
 export type I18NLocalesStorageOperationsListResponse = [
     I18NLocale[],
@@ -215,7 +215,7 @@ export interface I18NLocalesStorageOperationsDeleteParams {
 }
 
 export interface I18NLocalesStorageOperations {
-    getDefault: () => Promise<I18NLocale>;
+    getDefault: () => Promise<I18NLocale | null>;
     get: (code: string) => Promise<I18NLocale | null>;
     list: (
         params?: I18NLocalesStorageOperationsListParams

@@ -4,7 +4,7 @@ import { SecurityIdentity, SecurityPermission } from "~/types";
 
 export interface SecurityContext {
     identity: SecurityIdentity | null;
-    setIdentity: Dispatch<SetStateAction<SecurityIdentity>>;
+    setIdentity: Dispatch<SetStateAction<SecurityIdentity | null>>;
     getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T | null;
 }
 

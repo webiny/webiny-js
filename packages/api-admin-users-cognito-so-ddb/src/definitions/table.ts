@@ -2,13 +2,13 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
 
 export interface Params {
-    table: string;
+    table?: string;
     documentClient: DocumentClient;
 }
 
 export const createTable = ({ table, documentClient }: Params) => {
     return new Table({
-        name: table || process.env.DB_TABLE_ADMIN_USERS || process.env.DB_TABLE,
+        name: table || process.env.DB_TABLE_ADMIN_USERS || (process.env.DB_TABLE as string),
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: documentClient,

@@ -33,7 +33,15 @@ const Draggable: React.FC<DraggableProps> = props => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: { type: "element", target },
+        item: {
+            type: "element",
+            /**
+             * TODO @ts-refactor
+             * There is no target on item in types.
+             */
+            // @ts-ignore
+            target
+        },
         collect: monitor => ({
             isDragging: monitor.isDragging()
         }),
@@ -43,7 +51,7 @@ const Draggable: React.FC<DraggableProps> = props => {
             }
             return beginDrag(props, monitor);
         },
-        end(item, monitor) {
+        end(item: DragObjectWithType, monitor) {
             if (typeof endDrag !== "function") {
                 return endDrag as undefined;
             }

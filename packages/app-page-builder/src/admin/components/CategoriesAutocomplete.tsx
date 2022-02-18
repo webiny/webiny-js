@@ -30,9 +30,7 @@ const LIST_CATEGORIES = gql`
     }
 `;
 
-interface CategoriesAutocompleteProps extends Partial<AutoCompleteProps> {
-    value?: string;
-}
+interface CategoriesAutocompleteProps extends Partial<AutoCompleteProps> {}
 export const CategoriesAutocomplete: React.FC<CategoriesAutocompleteProps> = props => {
     const listCategoriesQuery = useQuery(LIST_CATEGORIES);
     const getCategoryQuery = useQuery(GET_CATEGORY, {

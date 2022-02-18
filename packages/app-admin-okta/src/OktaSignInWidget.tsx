@@ -26,11 +26,11 @@ export const LoginContent = styled("div")({
 
 const OktaSignInWidget: React.FC<OktaSignInWidgetProps> = ({ oktaSignIn }) => {
     const { oktaAuth } = useOktaAuth();
-    const widgetRef = useRef();
+    const widgetRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!widgetRef.current) {
-            return null;
+            return undefined;
         }
 
         const query = new URLSearchParams(location.search);
@@ -41,7 +41,13 @@ const OktaSignInWidget: React.FC<OktaSignInWidgetProps> = ({ oktaSignIn }) => {
             });
         } else {
             oktaSignIn.renderEl(
-                { el: widgetRef.current },
+                {
+                    /**
+                     * TODO @ts-refactor figure out correct widgetRef type @pavel
+                     */
+                    // @ts-ignore
+                    el: widgetRef.current
+                },
                 res => {
                     oktaAuth.handleLoginRedirect(res.tokens);
                 },

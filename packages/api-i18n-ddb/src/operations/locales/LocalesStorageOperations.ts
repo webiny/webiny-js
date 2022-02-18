@@ -43,7 +43,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         });
     }
 
-    public async getDefault(): Promise<I18NLocale> {
+    public async getDefault(): Promise<I18NLocale | null> {
         try {
             const locale = await this.entity.get({
                 PK: this.createDefaultPartitionKey(),
@@ -61,7 +61,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         }
     }
 
-    public async get(code: string): Promise<I18NLocale> {
+    public async get(code: string): Promise<I18NLocale | null> {
         try {
             const locale = await this.entity.get({
                 PK: this.createPartitionKey(),
@@ -274,8 +274,9 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         params: I18NLocalesStorageOperationsListParams
     ): QueryAllParams {
         const { where } = params;
+
         let partitionKey = this.createPartitionKey();
-        if (where.default === true) {
+        if (where && where.default === true) {
             partitionKey = this.createDefaultPartitionKey();
             delete where.default;
         }

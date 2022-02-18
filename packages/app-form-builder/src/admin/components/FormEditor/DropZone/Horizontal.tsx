@@ -74,7 +74,7 @@ export const Horizontal: React.FC<HorizontalProps> = ({ last, onDrop, isVisible 
                     }}
                     data-testid={last ? "fb.editor.dropzone.horizontal-last" : ""}
                 >
-                    <OuterDiv isOver={isOver} isDragging={isDragging} last={last}>
+                    <OuterDiv isOver={isOver} isDragging={isDragging} last={!!last}>
                         <InnerDiv>
                             <BackgroundColorDiv />
                         </InnerDiv>

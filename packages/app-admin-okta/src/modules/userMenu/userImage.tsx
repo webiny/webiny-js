@@ -15,7 +15,6 @@ export const UserImage = makeComposable("UserImage", () => {
     return (
         <Avatar
             data-testid="logged-in-user-menu-avatar"
-            src={null}
             alt={displayName}
             fallbackText={displayName}
         />

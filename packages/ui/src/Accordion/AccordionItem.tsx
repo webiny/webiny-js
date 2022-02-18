@@ -87,7 +87,7 @@ export interface AccordionItemProps {
     /**
      * Left side icon
      */
-    icon: React.ReactElement;
+    icon?: React.ReactElement | null;
 
     /**
      * Accordion title

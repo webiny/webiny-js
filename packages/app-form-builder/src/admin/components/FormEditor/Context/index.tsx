@@ -41,9 +41,10 @@ const formEditorReducer: FormEditorReducer = (state, action) => {
 
 export type FormEditorProviderContextState = FormEditorReducerState;
 const FormEditorContext = React.createContext<FormEditorProviderContext>({
-    state: null,
-    // eslint-disable-next-line
-    dispatch: () => {}
+    state: {} as FormEditorReducerState,
+    dispatch: () => {
+        return void 0;
+    }
 });
 
 export interface FormEditorProviderContext {

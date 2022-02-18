@@ -9,13 +9,13 @@ const cleanupEmptyRows = (data: FbFormModel): void => {
     data.layout = data.layout.filter(row => row.length > 0);
 };
 
-interface Params {
+interface MoveFieldParams {
     field: FieldIdType | FbFormModelField;
     position: FieldLayoutPositionType;
     data: FbFormModel;
 }
 
-const moveField = ({ field, position, data }: Params) => {
+const moveField = ({ field, position, data }: MoveFieldParams) => {
     const { row, index } = position;
     const fieldId = (typeof field === "string" ? field : field._id) as string;
 
@@ -40,7 +40,7 @@ const moveField = ({ field, position, data }: Params) => {
     data.layout[row].splice(index, 0, fieldId);
 };
 
-export default (params: Params) => {
+export default (params: MoveFieldParams) => {
     moveField(params);
     cleanupEmptyRows(params.data);
 };

@@ -4,7 +4,7 @@ import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
 
 let subscribedToOffsetChange = false;
 
-let dragPreviewRef: HTMLDivElement = null;
+let dragPreviewRef: HTMLDivElement | null = null;
 
 const onOffsetChange = (monitor: DragSourceMonitor) => () => {
     if (!dragPreviewRef) {

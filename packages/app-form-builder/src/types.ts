@@ -81,7 +81,7 @@ export type FbFormModelFieldsLayout = FieldIdType[][];
 
 export interface FieldLayoutPositionType {
     row: number;
-    index: number;
+    index: number | null;
 }
 
 export type FbBuilderFieldPlugin = Plugin & {
@@ -271,8 +271,8 @@ export interface FormComponentPropsType {
 
 export interface FbFormRenderComponentProps {
     preview?: boolean;
-    data?: FbFormModel;
-    client: ApolloClient<any>;
+    data?: FbFormModel | null;
+    client?: ApolloClient<any>;
 }
 
 export interface FormSubmitResponseType {

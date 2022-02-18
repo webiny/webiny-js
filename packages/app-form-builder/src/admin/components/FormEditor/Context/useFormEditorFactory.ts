@@ -48,16 +48,16 @@ export interface FormEditor {
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
     getLayoutFields: () => FbFormModelField[][];
-    getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField;
+    getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField | null;
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
-    ) => FbBuilderFieldPlugin;
+    ) => FbBuilderFieldPlugin | null;
     insertField: (field: FbFormModelField, position: FieldLayoutPositionType) => void;
     moveField: (params: MoveFieldParams) => void;
     moveRow: (source: number, destination: number) => void;
     updateField: (field: FbFormModelField) => void;
     deleteField: (field: FbFormModelField) => void;
-    getFieldPosition: (field: FieldIdType | FbFormModelField) => FieldLayoutPositionType;
+    getFieldPosition: (field: FieldIdType | FbFormModelField) => FieldLayoutPositionType | null;
 }
 
 export const useFormEditorFactory = (
@@ -152,11 +152,13 @@ export const useFormEditorFactory = (
             getLayoutFields: () => {
                 // Replace every field ID with actual field object.
                 return state.data.layout.map(row => {
-                    return row.map(id => {
-                        return self.getField({
-                            _id: id
-                        });
-                    });
+                    return row
+                        .map(id => {
+                            return self.getField({
+                                _id: id
+                            });
+                        })
+                        .filter(Boolean) as FbFormModelField[];
                 });
             },
 
@@ -164,15 +166,41 @@ export const useFormEditorFactory = (
              * Return field plugin.
              */
             getFieldPlugin(query) {
-                return plugins
-                    .byType<FbBuilderFieldPlugin>("form-editor-field-type")
-                    .find(({ field }) => {
+                return (
+                    plugins
+                        .byType<FbBuilderFieldPlugin>("form-editor-field-type")
+                        .find(({ field }) => {
+                            for (const key in query) {
+                                if (!(key in field)) {
+                                    return false;
+                                }
+                                const fieldKeyValue =
+                                    field[key as keyof FbBuilderFieldPlugin["field"]];
+                                const queryKeyValue =
+                                    query[key as keyof FbBuilderFieldPlugin["field"]];
+
+                                if (fieldKeyValue !== queryKeyValue) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        }) || null
+                );
+            },
+
+            /**
+             * Checks if field of given type already exists in the list of fields.
+             */
+            getField(query) {
+                return (
+                    state.data.fields.find(field => {
                         for (const key in query) {
                             if (!(key in field)) {
                                 return false;
                             }
-                            const fieldKeyValue = field[key as keyof FbBuilderFieldPlugin["field"]];
-                            const queryKeyValue = query[key as keyof FbBuilderFieldPlugin["field"]];
+                            const fieldKeyValue = field[key as keyof FbFormModelField];
+                            const queryKeyValue = query[key as keyof FbFormModelField];
 
                             if (fieldKeyValue !== queryKeyValue) {
                                 return false;
@@ -180,28 +208,8 @@ export const useFormEditorFactory = (
                         }
 
                         return true;
-                    });
-            },
-
-            /**
-             * Checks if field of given type already exists in the list of fields.
-             */
-            getField(query) {
-                return state.data.fields.find(field => {
-                    for (const key in query) {
-                        if (!(key in field)) {
-                            return false;
-                        }
-                        const fieldKeyValue = field[key as keyof FbFormModelField];
-                        const queryKeyValue = query[key as keyof FbFormModelField];
-
-                        if (fieldKeyValue !== queryKeyValue) {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                });
+                    }) || null
+                );
             },
 
             /**
