@@ -41,6 +41,10 @@ export default (): FilePhysicalStoragePlugin => {
             const { key } = params;
             const s3 = new S3();
 
+            if (!key || !S3_BUCKET) {
+                return;
+            }
+
             await s3
                 .deleteObject({
                     Bucket: S3_BUCKET,

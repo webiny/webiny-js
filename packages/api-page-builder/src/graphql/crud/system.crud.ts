@@ -147,7 +147,7 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 const fmSettings = await fileManager.settings.getSettings();
 
                 const welcomeToWebinyPageContent = preparePageData({
-                    srcPrefix: fmSettings && fmSettings.srcPrefix,
+                    srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
                     fileIdToFileMap: fileIdToFileMap
                 });
 

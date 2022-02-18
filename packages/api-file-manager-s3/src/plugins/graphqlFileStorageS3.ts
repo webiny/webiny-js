@@ -4,6 +4,7 @@ import checkBasePermissions from "@webiny/api-file-manager/plugins/crud/utils/ch
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import getPresignedPostPayload from "../utils/getPresignedPostPayload";
 import { PresignedPostPayloadData } from "~/types";
+import WebinyError from "@webiny/error";
 
 const BATCH_UPLOAD_MAX_FILES = 20;
 
@@ -66,6 +67,15 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
                         const { data } = args;
                         const settings = await context.fileManager.settings.getSettings();
+                        if (!settings) {
+                            throw new WebinyError(
+                                "Missing File Manager Settings.",
+                                "FILE_MANAGER_SETTINGS_ERROR",
+                                {
+                                    file: data
+                                }
+                            );
+                        }
                         const response = await getPresignedPostPayload(data, settings);
 
                         return new Response(response);
@@ -108,6 +118,15 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
                     try {
                         const settings = await context.fileManager.settings.getSettings();
+                        if (!settings) {
+                            throw new WebinyError(
+                                "Missing File Manager Settings.",
+                                "FILE_MANAGER_SETTINGS_ERROR",
+                                {
+                                    files
+                                }
+                            );
+                        }
 
                         const promises = [];
                         for (const item of files) {

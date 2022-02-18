@@ -61,7 +61,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     private readonly esTable: Table;
     private readonly entity: Entity<any>;
     private readonly esEntity: Entity<any>;
-    private _esIndex: string;
+    private _esIndex?: string;
 
     private get esIndex(): string {
         if (!this._esIndex) {
@@ -349,7 +349,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const meta = {
             hasMoreItems,
             totalCount: total.value,
-            cursor: files.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null
+            cursor: files.length > 0 ? encodeCursor(hits[files.length - 1].sort) || null : null
         };
 
         return [files, meta];
@@ -392,7 +392,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             search_after: decodeCursor(null)
         };
 
-        let response: ElasticsearchSearchResponse<string> = undefined;
+        let response: ElasticsearchSearchResponse<string> | undefined = undefined;
 
         try {
             response = await this.esClient.search({

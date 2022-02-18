@@ -16,7 +16,7 @@ export interface DownloadHandlerEventArgs extends HandlerEventArgs {
         path: string;
     };
     queryStringParameters?: {
-        width: string;
+        width?: string;
     };
 }
 
@@ -30,5 +30,5 @@ export interface TransformHandlerEventArgs extends HandlerEventArgs {
 }
 
 export interface HandlerHeaders {
-    [key: string]: string | boolean;
+    [key: string]: string | boolean | undefined;
 }

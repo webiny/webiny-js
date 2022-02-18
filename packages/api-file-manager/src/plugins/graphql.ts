@@ -179,7 +179,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             File: {
                 async src(file, _, context: FileManagerContext) {
                     const settings = await context.fileManager.settings.getSettings();
-                    return settings.srcPrefix + file.key;
+                    return (settings?.srcPrefix || "") + file.key;
                 }
             },
             Query: {

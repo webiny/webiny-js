@@ -479,8 +479,8 @@ export interface OnAfterInstallTopicParams {
  * @category System
  */
 export interface SystemCrud {
-    getSystem: () => Promise<System>;
-    getSystemVersion(): Promise<string>;
+    getSystem: () => Promise<System | null>;
+    getSystemVersion(): Promise<string | null>;
     setSystemVersion(version: string): Promise<void>;
     installSystem(args: { name: string; insertDemoData: boolean }): Promise<void>;
     upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;

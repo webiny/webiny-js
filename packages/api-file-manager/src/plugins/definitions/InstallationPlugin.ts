@@ -32,9 +32,10 @@ export abstract class InstallationPlugin extends Plugin {
         callback: keyof InstallationPluginConfig,
         params: InstallationPluginParams
     ): Promise<void> {
-        if (typeof this._config[callback] !== "function") {
+        const cb = this._config[callback];
+        if (!cb) {
             return;
         }
-        return this._config[callback](params);
+        return cb(params);
     }
 }
