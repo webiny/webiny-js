@@ -23,7 +23,8 @@ export const ApwOnPublish = () => {
         message: (
             <p>
                 {t`This content requires peer review approval before it can be published.
-                 Do you wish to request a review?`}
+                {separator}
+                 Do you wish to request a review?`({ separator: <br /> })}
             </p>
         )
     });
