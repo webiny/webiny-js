@@ -76,6 +76,9 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
         onAfterCategoryUpdate,
         onBeforeCategoryDelete,
         onAfterCategoryDelete,
+        /**
+         * This method should return category or null. No error throwing on not found.
+         */
         async getCategory(slug, options = { auth: true }) {
             const { auth } = options;
 
@@ -125,7 +128,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 );
             }
             if (!category) {
-                throw new NotFoundError();
+                return null;
             }
 
             const identity = context.security.getIdentity();
