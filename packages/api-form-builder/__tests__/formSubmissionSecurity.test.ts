@@ -2,8 +2,11 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import useGqlHandler from "./useGqlHandler";
 import * as mocks from "./mocks/form.mocks";
 
-function Mock(prefix) {
-    this.name = `${prefix}name`;
+class Mock {
+    public name: string;
+    constructor(prefix = "") {
+        this.name = `${prefix}name`;
+    }
 }
 
 function MockSubmission(prefix) {
@@ -17,7 +20,7 @@ function MockSubmission(prefix) {
     };
 }
 
-const NOT_AUTHORIZED_RESPONSE = operation => ({
+const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
     data: {
         formBuilder: {
             [operation]: {
@@ -54,6 +57,7 @@ describe("Forms Submission Security Test", () => {
         try {
             await handlerA.install();
         } catch (ex) {
+            console.log("formSubmissionSecurity.test.ts");
             console.log(ex.message);
         }
     });

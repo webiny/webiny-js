@@ -75,6 +75,7 @@ async function handle(context: Context) {
         return result;
     } catch (error) {
         // Log error to cloud, as these can be extremely annoying to debug!
+        console.log("@webiny/handler");
         console.log(error);
         const handlers = context.plugins.byType<HandlerErrorPlugin>(HandlerErrorPlugin.type);
         const handler = middleware(

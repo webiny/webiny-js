@@ -68,7 +68,6 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
         return "Missing predefined values to validate against.";
     }
     for (const predefinedValue of predefinedValues) {
-        // console.log(field.fieldId, predefinedValue.value, value, predefinedValue.value == value);
         if (predefinedValue.value == value) {
             return null;
         }

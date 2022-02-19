@@ -15,10 +15,10 @@ const convertToBuffer = (value: string | Buffer): Buffer => {
 
 export interface StorageValue {
     compression: string;
-    value?: string | null;
+    value: string;
 }
 
-const plugin = new StorageTransformPlugin<string | null, StorageValue>({
+const plugin = new StorageTransformPlugin<string, StorageValue>({
     fieldType: "long-text",
     fromStorage: async ({ field, value: storageValue }) => {
         const typeOf = typeof storageValue;
@@ -53,22 +53,20 @@ const plugin = new StorageTransformPlugin<string | null, StorageValue>({
             );
         }
         try {
-            if (!value) {
-                return null;
-            }
             const buf = await ungzip(convertToBuffer(value));
             return buf.toString(FROM_STORAGE_ENCODING);
         } catch (ex) {
+            console.log("Error while transforming long-text.");
             console.log(ex.message);
-            return null;
+            return "";
         }
     },
     toStorage: async ({ value }) => {
-        const compressedValue = value ? await gzip(value) : null;
+        const compressedValue = await gzip(value);
 
         return {
             compression: GZIP,
-            value: compressedValue ? compressedValue.toString(TO_STORAGE_ENCODING) : null
+            value: compressedValue.toString(TO_STORAGE_ENCODING)
         };
     }
 });
