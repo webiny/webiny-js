@@ -560,7 +560,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             fields: modelFields
         });
 
-        const start = decodeCursor(after || "0") || 0;
+        const start = parseInt(decodeCursor(after) || "0") || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const slicedItems = sortedItems.slice(start, end);
@@ -568,7 +568,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
          * Although we do not need a cursor here, we will use it as such to keep it standardized.
          * Number is simply encoded.
          */
-        const cursor = totalCount > start + limit ? encodeCursor(start + limit) : null;
+        const cursor = totalCount > start + limit ? encodeCursor(`${start + limit}`) : null;
         return {
             hasMoreItems,
             totalCount,

@@ -12,7 +12,7 @@ export const encodeCursor = (cursor?: string | null): string | null => {
     }
 };
 
-export const decodeCursor = (cursor?: string): string | null => {
+export const decodeCursor = (cursor?: string | null): string | null => {
     if (!cursor) {
         return null;
     }

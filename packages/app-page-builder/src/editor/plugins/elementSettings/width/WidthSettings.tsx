@@ -26,6 +26,7 @@ import Wrapper from "../components/Wrapper";
 import SpacingPicker from "../components/SpacingPicker";
 import { classes } from "../components/StyledComponents";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
+import { Validator } from "@webiny/validation/types";
 
 const rightCellStyle = css({
     justifySelf: "end"
@@ -69,9 +70,9 @@ enum WidthUnits {
     auto = "auto"
 }
 
-const validateWidth = (value: string | undefined) => {
+const validateWidth: Validator = (value: string | undefined) => {
     if (!value) {
-        return null;
+        return true;
     }
     const parsedValue = parseInt(value);
 
