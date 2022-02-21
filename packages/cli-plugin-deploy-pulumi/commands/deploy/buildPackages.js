@@ -17,11 +17,22 @@ module.exports = async ({ projectApplication, inputs, context }) => {
     const start = new Date();
 
     const { env, debug } = inputs;
-    const multipleBuilds = projectApplication.packages.length > 1;
-    if (multipleBuilds) {
-        context.info(`Building ${context.info.hl(projectApplication.packages.length)} packages...`);
-    } else {
-        context.info(`Building ${context.info.hl(projectApplication.packages[0].name)} package...`);
+    let multipleBuilds = false;
+    switch (projectApplication.packages.length) {
+        case 0:
+            context.info(`No packages to build...`);
+            return;
+        case 1:
+            context.info(
+                `Building ${context.info.hl(projectApplication.packages[0].name)} package...`
+            );
+            break;
+        default:
+            multipleBuilds = true;
+            context.info(
+                `Building ${context.info.hl(projectApplication.packages.length)} packages...`
+            );
+            break;
     }
 
     const log = (packageName, message) => {

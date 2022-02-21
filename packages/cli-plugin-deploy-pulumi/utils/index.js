@@ -7,7 +7,6 @@ const login = require("./login");
 const mapStackOutput = require("./mapStackOutput");
 const loadEnvVariables = require("./loadEnvVariables");
 const getRandomColorForString = require("./getRandomColorForString");
-const { tagResources } = require("./tagResources");
 
 module.exports = {
     getPulumi,
@@ -15,7 +14,6 @@ module.exports = {
     crawlDirectory,
     loadEnvVariables,
     mapStackOutput,
-    tagResources,
     processHooks,
     notify,
     login,

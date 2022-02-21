@@ -3,7 +3,7 @@ const { green } = require("chalk");
 const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 const buildPackages = require("./deploy/buildPackages");
-const { ApplicationGeneric, ApplicationLegacy } = require("@webiny/pulumi-sdk");
+const { ApplicationBuilderGeneric, ApplicationBuilderLegacy } = require("@webiny/pulumi-sdk");
 
 module.exports = async (inputs, context) => {
     const { env, folder, build, deploy } = inputs;
@@ -38,9 +38,9 @@ module.exports = async (inputs, context) => {
     const hookArgs = { context, env, inputs, projectApplication };
 
     const application =
-        projectApplication.config instanceof ApplicationGeneric
+        projectApplication.config instanceof ApplicationBuilderGeneric
             ? projectApplication.config
-            : new ApplicationLegacy(projectApplication.config);
+            : new ApplicationBuilderLegacy(projectApplication.config);
 
     if (build) {
         await runHook({
@@ -100,14 +100,11 @@ module.exports = async (inputs, context) => {
         await stack.refresh({ onOutput: console.info });
     }
 
-    let result;
     if (inputs.preview) {
-        result = await stack.preview({ onOutput: console.info });
+        await stack.preview({ onOutput: console.info });
     } else {
-        result = await stack.up({ onOutput: console.info });
+        await stack.up({ onOutput: console.info });
     }
-
-    console.log(result);
 
     const duration = getDuration();
     if (inputs.preview) {

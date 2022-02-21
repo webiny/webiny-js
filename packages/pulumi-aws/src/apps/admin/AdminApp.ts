@@ -1,30 +1,23 @@
 import * as aws from "@pulumi/aws";
 
-import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import {
     defineApp,
     createGenericApplication,
     mergeAppHooks,
-    ApplicationConfig
+    ApplicationContext,
+    ApplicationHooks
 } from "@webiny/pulumi-sdk";
 
 import { createAppBucket } from "../createAppBucket";
 import { adminUpload } from "./AdminHookUpload";
 
-export interface AdminAppConfig extends ApplicationConfig {
-    config?(app: InstanceType<typeof AdminApp>): void;
+export interface AdminAppConfig extends ApplicationHooks {
+    config?(app: AdminApp, ctx: ApplicationContext): void;
 }
 
 export const AdminApp = defineApp({
     name: "Admin",
     config(app) {
-        app.addHandler(() => {
-            tagResources({
-                WbyProjectName: String(process.env.WEBINY_PROJECT_NAME),
-                WbyEnvironment: String(process.env.WEBINY_ENV)
-            });
-        });
-
         const bucket = createAppBucket(app, "admin-app");
 
         const cloudfront = app.addResource(aws.cloudfront.Distribution, {
@@ -79,16 +72,21 @@ export const AdminApp = defineApp({
 export type AdminApp = InstanceType<typeof AdminApp>;
 
 export function createAdminApp(config: AdminAppConfig) {
-    const app = new AdminApp();
-
-    config.config?.(app);
-
     return createGenericApplication({
-        id: config.id,
-        name: config.name,
-        description: config.description,
-        cli: config.cli,
-        app: app,
+        id: "admin",
+        name: "admin",
+        description: "Your project's admin area.",
+        cli: {
+            // Default args for the "yarn webiny watch ..." command (we don't need deploy option while developing).
+            watch: {
+                deploy: false
+            }
+        },
+        app(ctx) {
+            const app = new AdminApp(ctx);
+            config.config?.(app, ctx);
+            return app;
+        },
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,

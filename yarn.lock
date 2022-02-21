@@ -10990,7 +10990,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi"
   dependencies:
-    "@pulumi/pulumi": < 3.18.0
     "@webiny/cli": ^5.23.0
     "@webiny/pulumi-sdk": ^5.23.0
     ansi-to-html: 0.6.15
