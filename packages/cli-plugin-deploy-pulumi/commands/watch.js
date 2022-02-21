@@ -74,9 +74,7 @@ module.exports = async (inputs, context) => {
         await login(projectApplication);
 
         const pulumi = await getPulumi({
-            execa: {
-                cwd: projectApplication.root
-            }
+            folder: inputs.folder
         });
 
         let stackExists = true;
@@ -205,9 +203,7 @@ module.exports = async (inputs, context) => {
             }
 
             const pulumi = await getPulumi({
-                execa: {
-                    cwd: projectApplication.root
-                }
+                folder: inputs.folder
             });
 
             // We only watch "code/**/build" and "pulumi" folders.

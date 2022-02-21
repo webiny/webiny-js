@@ -72,10 +72,9 @@ module.exports = async (inputs, context) => {
     await login(projectApplication);
 
     const pulumi = await getPulumi({
-        execa: {
-            cwd: projectApplication.root
-        }
+        folder: inputs.folder
     });
+
     const stack = await application.createOrSelectStack({
         appDir: projectApplication.root,
         projectDir: projectApplication.project.root,
