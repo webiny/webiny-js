@@ -1,22 +1,26 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin } from "../../../../types";
+import { PbEditorPageElementPlugin, PbEditorPageElementStyleSettingsPlugin } from "~/types";
 import { useKeyHandler } from "../../../hooks/useKeyHandler";
 import { userElementStyleSettingsPlugins } from "../../../helpers";
 import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 
-const getElementActions = plugin => {
+interface ElementAction {
+    plugin: PbEditorPageElementStyleSettingsPlugin;
+    options: Record<string, any>;
+}
+const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] => {
     if (!plugin || !plugin.settings) {
         return [];
     }
 
     const pluginSettings = [
         ...userElementStyleSettingsPlugins(plugin.elementType),
-        ...plugin.settings
+        ...(plugin.settings as string[])
     ];
 
-    const elementActions = pluginSettings.map(pl => {
+    const elementActions: ElementAction[] = pluginSettings.map(pl => {
         if (typeof pl === "string") {
             return { plugin: plugins.byName(pl), options: {} };
         }
@@ -48,7 +52,7 @@ const getElementActions = plugin => {
     );
 };
 
-const useElementStyleSettings = () => {
+const useElementStyleSettings = (): ElementAction[] => {
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElement));
     const elementType = element?.type;

@@ -4,7 +4,7 @@ import { Element } from "~/components/Element";
 import { ElementRenderer } from "~/types";
 
 declare global {
-    //eslint-disable-next-line
+    // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "pb-grid": any;
@@ -22,7 +22,10 @@ const Grid: ElementRenderer = ({ element }) => {
         getElementClassNames(element)
     );
 
-    const cellsWidths = useMemo(() => element.data.settings.grid.cellsType.split("-"), []);
+    const cellsWidths: number[] = useMemo(
+        () => element.data.settings.grid.cellsType.split("-"),
+        []
+    );
 
     return (
         <pb-grid class={classNames}>

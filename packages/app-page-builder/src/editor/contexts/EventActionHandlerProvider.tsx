@@ -71,7 +71,7 @@ const getEventActionClassName = (target: EventActionHandlerTarget): string => {
     return name;
 };
 
-const trackedAtoms = ["elements"];
+const trackedAtoms: (keyof PbState)[] = ["elements"];
 const isTrackedAtomChanged = (state: Partial<PbState>): boolean => {
     for (const atom of trackedAtoms) {
         if (!state[atom]) {
@@ -102,7 +102,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     const uiAtomValueRef = useRef(null);
     const revisionsAtomValueRef = useRef(null);
     const snapshotRef = useRef(null);
-    const eventElements = useRef({});
+    const eventElements = useRef<Record<string, PbEditorElement>>({});
     const snapshotsHistory = useRef<SnapshotHistory>({
         past: [],
         future: [],
@@ -153,7 +153,10 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         return snapshot;
     });
 
-    const getElementTree = async (element, path = []) => {
+    const getElementTree = async (
+        element: PbEditorElement,
+        path: string[] = []
+    ): Promise<PbEditorElement> => {
         if (!element) {
             element = await getElementById(rootElementAtomValue);
         }
@@ -165,7 +168,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             type: element.type,
             data: element.data,
             elements: await Promise.all(
-                element.elements.map(async child => {
+                element.elements.map(async (child: string) => {
                     return getElementTree(await getElementById(child), [...path]);
                 })
             ),

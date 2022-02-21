@@ -12,7 +12,7 @@ export interface PageSettingsTabElementConfig extends UIElementConfig {
 }
 
 export class PageSettingsTabElement extends UIElement<PageSettingsTabElementConfig> {
-    constructor(id: string, config: PageSettingsTabElementConfig) {
+    public constructor(id: string, config: PageSettingsTabElementConfig) {
         super(id, config);
         this.useGrid(false);
 
@@ -21,19 +21,19 @@ export class PageSettingsTabElement extends UIElement<PageSettingsTabElementConf
         this.applyPlugins(PageSettingsTabElement);
     }
 
-    setTitle(title: string) {
+    public setTitle(title: string): void {
         this.config.title = title;
     }
 
-    setDescription(description: string) {
+    public setDescription(description: string): void {
         this.config.description = description;
     }
 
-    setIcon(icon: React.ReactElement) {
+    public setIcon(icon: React.ReactElement): void {
         this.config.icon = icon;
     }
 
-    setView(view: UIView) {
+    public setView(view: UIView): void {
         this.config.view = view;
     }
 }

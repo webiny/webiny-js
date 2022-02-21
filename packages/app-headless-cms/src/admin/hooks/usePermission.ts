@@ -2,11 +2,18 @@ import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { CmsCreatedBy, CmsGroup, CmsModel } from "~/types";
 
-export type ContentModelGroup = { id: string; [key: string]: any };
-export type ContentModel = { modelId: string; [key: string]: any };
+interface CreatableItem {
+    createdBy: Pick<CmsCreatedBy, "id">;
+}
 
-const usePermission = () => {
+interface CanReadEntriesCallableParams {
+    contentModelGroup: CmsGroup;
+    contentModel: CmsModel;
+}
+
+export const usePermission = () => {
     const { identity } = useSecurity();
     const { getCurrentLocale } = useI18N();
 
@@ -28,13 +35,7 @@ const usePermission = () => {
     }, []);
 
     const canReadEntries = useCallback(
-        ({
-            contentModelGroup,
-            contentModel
-        }: {
-            contentModelGroup: ContentModelGroup;
-            contentModel: ContentModel;
-        }) => {
+        ({ contentModelGroup, contentModel }: CanReadEntriesCallableParams) => {
             if (hasFullAccess) {
                 return true;
             }
@@ -68,7 +69,7 @@ const usePermission = () => {
     );
 
     const canEdit = useCallback(
-        (item, permissionName) => {
+        (item: CreatableItem, permissionName: string): boolean => {
             const permission = identity.getPermission(permissionName);
 
             if (!permission) {
@@ -96,7 +97,7 @@ const usePermission = () => {
      * without talking the "own" property in account.
      * @param {string} permissionName
      * */
-    const canCreate = useCallback(permissionName => {
+    const canCreate = useCallback((permissionName: string): boolean => {
         const permission = identity.getPermission(permissionName);
         if (!permission) {
             return false;
@@ -110,7 +111,7 @@ const usePermission = () => {
     }, []);
 
     const canDelete = useCallback(
-        (item, permissionName) => {
+        (item: CreatableItem, permissionName: string): boolean => {
             const permission = identity.getPermission(permissionName);
 
             if (!permission) {
@@ -128,7 +129,7 @@ const usePermission = () => {
     );
 
     const canPublish = useCallback(
-        permissionName => {
+        (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
@@ -147,7 +148,7 @@ const usePermission = () => {
     );
 
     const canUnpublish = useCallback(
-        permissionName => {
+        (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
@@ -166,7 +167,7 @@ const usePermission = () => {
     );
 
     const canRequestReview = useCallback(
-        permissionName => {
+        (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
@@ -185,7 +186,7 @@ const usePermission = () => {
     );
 
     const canRequestChange = useCallback(
-        permissionName => {
+        (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
@@ -227,5 +228,8 @@ const usePermission = () => {
         canAccessManageEndpoint
     };
 };
-
+/**
+ * Default export is deprecated, use the named one.
+ * @deprecated
+ */
 export default usePermission;

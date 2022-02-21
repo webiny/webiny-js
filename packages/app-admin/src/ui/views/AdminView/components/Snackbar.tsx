@@ -3,7 +3,7 @@ import { Snackbar } from "@webiny/ui/Snackbar";
 import { get } from "lodash";
 import { useUi } from "@webiny/app/hooks/useUi";
 
-const SnackbarMain = () => {
+const SnackbarMain: React.FC = () => {
     const ui = useUi();
     const message = get(ui, "snackbar.message");
     const options = get(ui, "snackbar.options", {});

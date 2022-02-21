@@ -1,14 +1,14 @@
 import React from "react";
-import { UIElement } from "../UIElement";
+import { UIElement } from "~/UIElement";
 
 interface Renderer<TRenderProps> {
     (props: TRenderProps): React.ReactNode;
 }
 
 export class GenericElement<TRenderProps = any> extends UIElement {
-    private _render: Renderer<TRenderProps>;
+    private readonly _render: Renderer<TRenderProps>;
 
-    constructor(id, render?: Renderer<TRenderProps>) {
+    constructor(id: string, render?: Renderer<TRenderProps>) {
         super(id);
         this.useGrid(false);
 

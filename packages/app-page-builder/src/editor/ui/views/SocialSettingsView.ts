@@ -11,7 +11,7 @@ import { DynamicFieldsetElement } from "@webiny/app-admin/ui/elements/form/Dynam
 import { ButtonGroupElement } from "@webiny/app-admin/ui/elements/ButtonGroupElement";
 
 export class SocialSettingsView extends PageSettingsFormView {
-    constructor() {
+    public constructor() {
         super("SocialSettingsView");
 
         this.setTitle("Social Media");

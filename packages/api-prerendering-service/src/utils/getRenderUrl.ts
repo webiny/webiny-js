@@ -1,6 +1,7 @@
 import path from "path";
+import { Args, Configuration } from "~/types";
 
-export default (args, configuration) => {
+export default (args: Args, configuration: Configuration) => {
     if (args.url) {
         return args.url;
     }

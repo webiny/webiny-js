@@ -85,7 +85,7 @@ const classes = {
     })
 };
 
-const EditorResponsiveBar = () => {
+const EditorResponsiveBar: React.FC = () => {
     const [{ displayMode, pagePreviewDimension }, setUiAtomValue] = useRecoilState(uiAtom);
     const {
         responsiveDisplayMode: { setDisplayMode }

@@ -7,7 +7,7 @@ import { Input as InputCmp } from "@webiny/ui/Input";
 import { useRecoilValue } from "recoil";
 import { InputContainer } from "./StyledComponents";
 
-type InputPropsType = {
+interface InputPropsType {
     label: string;
     placeholder?: string;
     value?: string | number;
@@ -20,9 +20,9 @@ type InputPropsType = {
     // TODO check - not used anywhere
     className?: string;
     containerClassName?: string;
-};
+}
 
-const Input: React.FunctionComponent<InputPropsType> = ({
+const Input: React.FC<InputPropsType> = ({
     label,
     value,
     valueKey,

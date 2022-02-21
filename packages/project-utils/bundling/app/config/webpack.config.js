@@ -227,7 +227,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                 ...(modules.webpackAliases || {})
             },
             fallback: {
-                path: require.resolve("path-browserify")
+                path: require.resolve("path-browserify"),
+                buffer: require.resolve("buffer/")
             }
         },
 
@@ -239,6 +240,14 @@ module.exports = function (webpackEnv, { paths, options }) {
                     // match the requirements. When no loader matches it will fall
                     // back to the "file" loader at the end of the loader list.
                     oneOf: [
+                        {
+                            test: /\.m?js$/,
+                            include: /node_modules/,
+                            type: "javascript/auto",
+                            resolve: {
+                                fullySpecified: false
+                            }
+                        },
                         {
                             test: /\.svg$/i,
                             issuer: /\.[jt]sx?$/,
@@ -393,6 +402,9 @@ module.exports = function (webpackEnv, { paths, options }) {
             ]
         },
         plugins: [
+            new webpack.ProvidePlugin({
+                Buffer: ["buffer", "Buffer"]
+            }),
             // Generates an `index.html` file with the <script> injected.
             new HtmlWebpackPlugin(
                 Object.assign(
@@ -531,12 +543,15 @@ module.exports = function (webpackEnv, { paths, options }) {
             {
                 loader: require.resolve("css-loader"),
                 options: {
+                    esModule: false,
                     sourceMap: isEnvProduction && shouldUseSourceMap,
-                    // for some wacky reason css-loader tries to resolve inline images
-                    // like url("data:image/svg+xml;base64,PHN2ZyB4d3dy53My5...")
                     url: {
                         filter(url) {
-                            if (url.startsWith("data:")) {
+                            // Don't resolve inline assets and assets starting with `/`.
+                            // Use of absolute path is most likely intentional, and we don't want want to resolve
+                            // to actual file system root. Previous versions of css-loader would just ignore these paths,
+                            // but the new one is complaining, so we need to make this an explicit rule.
+                            if (url.startsWith("data:") || url.startsWith("/")) {
                                 return false;
                             }
 

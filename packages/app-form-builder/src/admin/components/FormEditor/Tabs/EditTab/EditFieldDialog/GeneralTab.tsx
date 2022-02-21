@@ -7,23 +7,23 @@ import { validation } from "@webiny/validation";
 import { FbFormModelField } from "~/types";
 import { FormRenderPropParams } from "@webiny/form/types";
 
-type GeneralTabProps = {
+interface GeneralTabProps {
     field: FbFormModelField;
     form: FormRenderPropParams;
-};
+}
 
-const GeneralTab = ({ field, form }: GeneralTabProps) => {
+const GeneralTab: React.FC<GeneralTabProps> = ({ field, form }) => {
     const { Bind, setValue } = form;
     const { getField, getFieldPlugin } = useFormEditor();
 
-    const afterChangeLabel = useCallback(value => {
+    const afterChangeLabel = useCallback((value: string): void => {
         setValue("fieldId", camelCase(value));
     }, []);
 
-    const uniqueFieldIdValidator = useCallback(fieldId => {
+    const uniqueFieldIdValidator = useCallback((fieldId: string): boolean => {
         const existingField = getField({ fieldId });
         if (!existingField) {
-            return;
+            return true;
         }
 
         if (existingField._id === field._id) {
@@ -34,7 +34,7 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
-    let additionalSettings = null;
+    let additionalSettings: React.ReactNode = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
             form,

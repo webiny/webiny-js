@@ -3,7 +3,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { PbEditorPageElementPlugin, PbEditorElement } from "../../types";
+import { PbEditorPageElementPlugin, PbEditorElement } from "~/types";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "../../utils/tryRenderingPlugin";
 import {
@@ -19,13 +19,21 @@ import {
     transitionStyles,
     typeStyle
 } from "./Element/ElementStyled";
+import { DragElementWrapper, DragSourceOptions } from "react-dnd";
 
-export type ElementPropsType = {
+interface RenderDraggableCallableParams {
+    drag: DragElementWrapper<DragSourceOptions>;
+}
+interface RenderDraggableCallable {
+    (params: RenderDraggableCallableParams): JSX.Element;
+}
+
+export interface ElementPropsType {
     id: string;
     className?: string;
-    isHighlighted: boolean;
-    isActive: boolean;
-};
+    isHighlighted?: boolean;
+    isActive?: boolean;
+}
 
 const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin => {
     if (!element) {
@@ -87,7 +95,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         setElementAtomValue({ isHighlighted: false } as any);
     }, [elementId]);
 
-    const renderDraggable = ({ drag }): JSX.Element => {
+    const renderDraggable: RenderDraggableCallable = ({ drag }) => {
         return (
             <div ref={drag} className={"type " + typeStyle}>
                 <div className="background" onClick={onClick} />
@@ -142,8 +150,8 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     );
 };
 
-const withHighlightElement = (Component: React.FunctionComponent) => {
-    return function withHighlightElementComponent(props) {
+const withHighlightElement = (Component: React.FC<ElementPropsType>) => {
+    return function withHighlightElementComponent(props: ElementPropsType) {
         const activeElementAtomValue = useRecoilValue(activeElementAtom);
 
         return <Component {...props} isActive={activeElementAtomValue === props.id} />;

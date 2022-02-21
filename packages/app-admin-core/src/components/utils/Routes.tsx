@@ -7,7 +7,7 @@ interface RoutesProps {
     routes: JSX.Element[];
 }
 
-export const Routes = (props: RoutesProps) => {
+export const Routes: React.FC<RoutesProps> = props => {
     const routes = [
         ...props.routes,
         // For backwards compatibility, we need to support the RoutePlugin routes as well.

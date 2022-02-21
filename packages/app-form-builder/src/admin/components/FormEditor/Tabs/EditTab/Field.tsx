@@ -5,6 +5,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as EditIcon } from "../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
 import { useFormEditor } from "../../Context";
+import { FbFormModelField } from "~/types";
 
 const FieldContainer = styled("div")({
     display: "flex",
@@ -31,7 +32,12 @@ const Actions = styled("div")({
     }
 });
 
-const Field = props => {
+interface FieldProps {
+    field: FbFormModelField;
+    onEdit: (field: FbFormModelField) => void;
+    onDelete: (field: FbFormModelField) => void;
+}
+const Field: React.FC<FieldProps> = props => {
     const { field, onEdit, onDelete } = props;
     const { getFieldPlugin } = useFormEditor();
 

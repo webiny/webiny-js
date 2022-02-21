@@ -7,8 +7,12 @@ import { renderInputFields } from "~/content/plugins/utils/renderInputFields";
 import { renderFields } from "~/content/plugins/utils/renderFields";
 import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
 
+interface CreateManageSDLParams {
+    model: CmsModel;
+    fieldTypePlugins: CmsFieldTypePlugins;
+}
 interface CreateManageSDL {
-    (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
+    (params: CreateManageSDLParams): string;
 }
 
 export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {

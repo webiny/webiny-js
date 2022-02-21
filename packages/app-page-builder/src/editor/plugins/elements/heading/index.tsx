@@ -1,6 +1,11 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
+import {
+    DisplayMode,
+    PbEditorElement,
+    PbEditorPageElementPlugin,
+    PbEditorTextElementPluginsArgs
+} from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { createInitialTextValue } from "../utils/textUtils";
 import Heading from "./Heading";
@@ -43,7 +48,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         create({ content = {}, ...options }) {
             const previewText = content.text || defaultText;
 
-            const defaultValue = {
+            const defaultValue: Partial<PbEditorElement> = {
                 type: this.elementType,
                 elements: [],
                 data: {
@@ -68,10 +73,14 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
                             { all: "0px" },
                             DisplayMode.DESKTOP
                         ),
+                        /**
+                         * Figure out better way for types.
+                         * TODO @ts-refactor
+                         */
                         horizontalAlign: createInitialPerDeviceSettingValue(
                             "center",
                             DisplayMode.DESKTOP
-                        )
+                        ) as unknown as "left" | "center" | "right" | "justify"
                     }
                 },
                 ...options

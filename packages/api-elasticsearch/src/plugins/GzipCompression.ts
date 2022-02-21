@@ -5,7 +5,7 @@ const GZIP = "gzip";
 const TO_STORAGE_ENCODING = "base64";
 const FROM_STORAGE_ENCODING = "utf8";
 
-const convertToBuffer = value => {
+const convertToBuffer = (value: string | Buffer) => {
     if (typeof value === "string") {
         return Buffer.from(value, TO_STORAGE_ENCODING);
     }
@@ -34,7 +34,7 @@ class GzipCompression extends CompressionPlugin {
         }
         return true;
     }
-    public async compress(data) {
+    public async compress(data: any) {
         const value = await gzip(JSON.stringify(data));
 
         return {

@@ -11,13 +11,20 @@ import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import * as GQL from "~/admin/graphql/contentEntries";
 import { useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
 import { CmsContentEntryRevision, CmsEditorContentEntry } from "~/types";
 import { Tabs } from "@webiny/ui/Tabs";
 import { parseIdentifier } from "@webiny/utils";
+import {
+    CmsEntriesListRevisionsQueryResponse,
+    CmsEntriesListRevisionsQueryVariables,
+    CmsEntryGetQueryResponse,
+    CmsEntryGetQueryVariables,
+    createReadQuery,
+    createRevisionsQuery
+} from "~/admin/graphql/contentEntries";
 
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
@@ -35,19 +42,56 @@ export interface ContentEntryContext extends ContentEntriesContext {
 
 export const Context = React.createContext<ContentEntryContext>(null);
 
-export const Provider = ({ children }) => {
+export interface ContentEntryContextProviderProps extends UseContentEntryProviderProps {
+    children: React.ReactNode;
+}
+
+interface UseContentEntryProviderProps {
+    getContentId?: () => string | null;
+    isNewEntry?: () => boolean;
+}
+
+export const useContentEntryProviderProps = (): UseContentEntryProviderProps => {
+    const { location } = useRouter();
+    const query = new URLSearchParams(location.search);
+
+    const isNewEntry = () => {
+        return query.get("new") === "true";
+    };
+
+    const getContentId = () => {
+        return query.get("id");
+    };
+
+    return {
+        getContentId,
+        isNewEntry
+    };
+};
+
+export const Provider: React.FC<ContentEntryContextProviderProps> = ({
+    children,
+    isNewEntry,
+    getContentId
+}) => {
     const { contentModel, canCreate, listQueryVariables, setListQueryVariables, sorters } =
         useContentEntries();
 
     const formRef = useRef(null);
     const tabsRef = useRef(null);
-    const { history, location } = useRouter();
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [isLoading, setLoading] = useState(false);
 
-    const newEntry = new URLSearchParams(location.search).get("new") === "true";
-    const query = new URLSearchParams(location.search);
-    const contentId = query.get("id");
+    const contentEntryProviderProps = useContentEntryProviderProps();
+
+    const newEntry =
+        typeof isNewEntry === "function" ? isNewEntry() : contentEntryProviderProps.isNewEntry();
+    const contentId =
+        typeof getContentId === "function"
+            ? getContentId()
+            : contentEntryProviderProps.getContentId();
+
     const revisionId = contentId ? decodeURIComponent(contentId) : null;
     let entryId = null;
     if (revisionId) {
@@ -57,13 +101,13 @@ export const Provider = ({ children }) => {
 
     const { READ_CONTENT } = useMemo(() => {
         return {
-            READ_CONTENT: GQL.createReadQuery(contentModel)
+            READ_CONTENT: createReadQuery(contentModel)
         };
     }, [contentModel.modelId]);
 
     const { GET_REVISIONS } = useMemo(() => {
         return {
-            GET_REVISIONS: GQL.createRevisionsQuery(contentModel)
+            GET_REVISIONS: createRevisionsQuery(contentModel)
         };
     }, [contentModel.modelId]);
 
@@ -81,11 +125,11 @@ export const Provider = ({ children }) => {
         [tabsRef]
     );
 
-    const createEntry = useCallback(() => {
+    const createEntry = useCallback((): void => {
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
     }, [contentModel.modelId]);
 
-    const getEntry = useQuery(READ_CONTENT, {
+    const getEntry = useQuery<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>(READ_CONTENT, {
         variables: { revision: decodeURIComponent(contentId) },
         skip: !contentId,
         onCompleted: data => {
@@ -94,20 +138,24 @@ export const Provider = ({ children }) => {
             }
 
             const { error } = data.content;
-            if (error) {
-                history.push(`/cms/content-entries/${contentModel.modelId}`);
-                showSnackbar(error.message);
+            if (!error) {
+                return;
             }
+            history.push(`/cms/content-entries/${contentModel.modelId}`);
+            showSnackbar(error.message);
         }
     });
 
-    const getRevisions = useQuery(GET_REVISIONS, {
+    const getRevisions = useQuery<
+        CmsEntriesListRevisionsQueryResponse,
+        CmsEntriesListRevisionsQueryVariables
+    >(GET_REVISIONS, {
         variables: { id: entryId },
         skip: !entryId
     });
 
     const loading = isLoading || getEntry.loading || getRevisions.loading;
-    const entry = get(getEntry, "data.content.data") || {};
+    const entry: CmsEditorContentEntry = get(getEntry, "data.content.data") || {};
 
     const value = {
         canCreate,

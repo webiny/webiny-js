@@ -39,7 +39,7 @@ export default () => [
             }
         },
         oembed: {
-            global: "instgrm",
+            global: "instgrm" as keyof Window,
             sdk: "https://www.instagram.com/embed.js",
             init({ node }) {
                 // @ts-ignore

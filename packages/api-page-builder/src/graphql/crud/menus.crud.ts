@@ -17,7 +17,15 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { validation } from "@webiny/validation";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import prepareMenuItems from "./menus/prepareMenuItems";
 import WebinyError from "@webiny/error";

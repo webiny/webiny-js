@@ -1,7 +1,13 @@
-import React from "react";
+import React, { ErrorInfo } from "react";
 
-class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
-    constructor(props) {
+interface State {
+    hasError: boolean;
+}
+interface Props {
+    [key: string]: any;
+}
+class ErrorBoundary extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = { hasError: false };
     }
@@ -11,7 +17,7 @@ class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
         return { hasError: true };
     }
 
-    componentDidCatch(error, errorInfo) {
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.log("An error occurred while rendering a page element:");
         console.log(error, errorInfo);
     }

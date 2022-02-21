@@ -1,10 +1,10 @@
 import uniqid from "uniqid";
 
 const sort = {
-    NEWEST_TO_OLDEST: "createdOn:desc",
-    OLDEST_TO_NEWEST: "createdOn:asc",
-    NAME_A_TO_Z: "name:asc",
-    NAME_Z_TO_A: "name:desc"
+    NEWEST_TO_OLDEST: "createdOn_DESC",
+    OLDEST_TO_NEWEST: "createdOn_ASC",
+    NAME_A_TO_Z: "name_ASC",
+    NAME_Z_TO_A: "name_DESC"
 };
 
 context("Search and Sort Security Groups", () => {

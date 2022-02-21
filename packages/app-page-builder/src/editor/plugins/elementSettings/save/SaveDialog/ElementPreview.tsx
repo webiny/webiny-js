@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { plugins } from "@webiny/plugins";
 import domToImage from "./domToImage";
-import { PbEditorPageElementPlugin } from "../../../../../types";
+import { PbEditorPageElementPlugin, PbElement } from "~/types";
 
-const replaceContent = (element: any, doc: Document): Document => {
+const replaceContent = (element: PbElement, doc: Document): Document => {
     const pl = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(pl => pl.elementType === element.type);
@@ -62,7 +62,7 @@ const generateImage = async (element: any, onChange: (value: string) => void): P
     editor.classList.add("pb-editor-no-highlight");
 
     const dataUrl = await domToImage.toPng(node, {
-        onDocument: doc => replaceContent(element, doc),
+        onDocument: (doc: Document) => replaceContent(element, doc),
         width: 1000
     });
 

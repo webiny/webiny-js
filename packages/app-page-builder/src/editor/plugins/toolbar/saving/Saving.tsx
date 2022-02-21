@@ -6,7 +6,7 @@ import { ReactComponent as SaveIcon } from "../../../assets/icons/baseline-cloud
 import { ReactComponent as SavedIcon } from "../../../assets/icons/baseline-cloud_done-24px.svg";
 import { useRecoilValue } from "recoil";
 
-const Saving = () => {
+const Saving: React.FC = () => {
     const { isSaving } = useRecoilValue(uiAtom);
     if (!isSaving) {
         return (

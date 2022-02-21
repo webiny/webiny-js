@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React from "react";
-import { Processor } from "@webiny/i18n/types";
+import { Modifier, Processor } from "@webiny/i18n/types";
 
 declare global {
     // eslint-disable-next-line
@@ -18,14 +18,14 @@ declare global {
     }
 }
 
-const processTextPart = (part: string, values: any, modifiers): any => {
+const processTextPart = (part: string, values: any, modifiers: Record<string, Modifier>): any => {
     if (!_.startsWith(part, "{")) {
         return part;
     }
 
     part = _.trim(part, "{}");
 
-    const parts = part.split("|");
+    const parts: string[] = part.split("|");
 
     const [variable, modifier] = parts;
 

@@ -5,12 +5,20 @@ import { useAuthenticator } from "./useAuthenticator";
 export interface SetNewPassword {
     shouldRender: boolean;
     setPassword(params: { code: string; password: string }): Promise<void>;
-    error: Error;
+    error: string;
     loading: boolean;
 }
 
+interface State {
+    error: string | null;
+    loading: boolean;
+}
+interface Reducer {
+    (prev: State, next: Partial<State>): State;
+}
+
 export function useSetNewPassword(): SetNewPassword {
-    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
+    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         error: null,
         loading: false
     });

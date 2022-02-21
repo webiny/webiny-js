@@ -50,7 +50,7 @@ class Graphql {
 
         this.functions = {
             api: new aws.lambda.Function("graphql", {
-                runtime: "nodejs12.x",
+                runtime: "nodejs14.x",
                 handler: "handler.handler",
                 role: this.role.arn,
                 timeout: 30,
@@ -61,7 +61,8 @@ class Graphql {
                 environment: {
                     variables: {
                         ...env,
-                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+                        WCP_ENVIRONMENT_API_KEY: String(process.env.WCP_ENVIRONMENT_API_KEY)
                     }
                 }
             })

@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
+import { ErrorOptions } from "@webiny/error";
 
 jest.setTimeout(100000);
 
@@ -182,12 +183,12 @@ describe("Categories CRUD Test", () => {
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3, {
+        await until(listPages, ([res]: any) => res.data.pageBuilder.listPages.data.length === 3, {
             tries: 10,
             name: "list pages before delete"
         });
 
-        const error = {
+        const error: ErrorOptions = {
             code: "CANNOT_DELETE_CATEGORY_PAGE_EXISTING",
             data: null,
             message: "Cannot delete category because some pages are linked to it."
@@ -261,7 +262,7 @@ describe("Categories CRUD Test", () => {
 
         await until(
             listPages,
-            ([res]) => {
+            ([res]: any) => {
                 return res.data.pageBuilder.listPages.data.length === 0;
             },
             {

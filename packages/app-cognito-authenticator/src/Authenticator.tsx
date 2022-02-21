@@ -45,8 +45,18 @@ export interface AuthenticatorProps extends AuthOptions {
 
 export const AuthenticatorContext = React.createContext<AuthContextValue>({} as any);
 
+interface State {
+    authState: AuthState;
+    authData: AuthData;
+    message: AuthMessage | null;
+    checkingUser: boolean;
+}
+interface Reducer {
+    (prev: State, next: Partial<State>): State;
+}
+
 export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
-    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
+    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
         authData: null,
         message: null,
@@ -87,15 +97,19 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
         }
     };
 
-    const onChangeState = async (state, data = null, message: AuthMessage = null) => {
+    const onChangeState = async (
+        authState: State["authState"],
+        data: AuthData = null,
+        message: AuthMessage = null
+    ) => {
         setState({ message });
 
-        if (state === state.authState) {
+        if (authState === state.authState) {
             return;
         }
 
         // Cognito states call this state with user data.
-        if (state === "signedIn") {
+        if (authState === "signedIn") {
             const user = await Auth.currentSession();
             const idToken = user.getIdToken();
 
@@ -109,7 +123,7 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
             });
         }
 
-        setState({ authState: state, authData: data });
+        setState({ authState, authData: data });
     };
 
     const value = useMemo(() => {

@@ -7,10 +7,13 @@ const noScroll = css({
     height: "100vh"
 });
 
-export type UseOverlayView = ReturnType<typeof useOverlayView>;
+export interface UseOverlayView {
+    isVisible: boolean;
+    setIsVisible: (value: boolean) => void;
+}
 
-export function useOverlayView() {
-    const [isVisible, setIsVisible] = useState(false);
+export const useOverlayView = (): UseOverlayView => {
+    const [isVisible, setIsVisible] = useState<boolean>(false);
 
     useEffect(() => {
         if (isVisible) {
@@ -33,4 +36,4 @@ export function useOverlayView() {
     }, []);
 
     return { isVisible, setIsVisible };
-}
+};

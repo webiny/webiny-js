@@ -1,3 +1,7 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import { HandlerPlugin, QueueAddHookPlugin } from "./types";
 import { PrerenderingServiceStorageOperations, QueueJob } from "~/types";

@@ -64,9 +64,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
         return undefined;
     }
 
-    const sortPlugins: Record<string, CmsEntryElasticsearchFieldPlugin> = Object.values(
-        modelFields
-    ).reduce((plugins, modelField) => {
+    const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
         const searchPlugin = searchPlugins[modelField.type];
 
         plugins[modelField.field.fieldId] = new CmsEntryElasticsearchFieldPlugin({
@@ -83,7 +81,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
             })
         });
         return plugins;
-    }, {});
+    }, {} as Record<string, CmsEntryElasticsearchFieldPlugin>);
 
     return createSort({
         fieldPlugins: sortPlugins,
@@ -164,7 +162,7 @@ const createFieldPath = ({
     parentPath,
     key
 }: CreateFieldPathParams): string => {
-    let path;
+    let path: string;
     if (searchPlugin && typeof searchPlugin.createPath === "function") {
         path = searchPlugin.createPath({
             field: modelField.field,
@@ -175,7 +173,10 @@ const createFieldPath = ({
         path = modelField.path(modelField.field.fieldId);
     }
     if (!path) {
-        path = modelField.path || modelField.field.fieldId || modelField.field.id;
+        /**
+         * We know that modelFieldPath is a string or undefined at this point.
+         */
+        path = (modelField.path as string) || modelField.field.fieldId || modelField.field.id;
     }
     return modelField.isSystemField || !parentPath || path.match(parentPath)
         ? path

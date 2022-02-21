@@ -1,6 +1,25 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../api-file-manager" },
+    { "path": "../api-page-builder" },
+    { "path": "../api-security" },
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-args" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-graphql" },
+    { "path": "../validation" },
+    { "path": "../api-dynamodb-to-elasticsearch" },
+    { "path": "../api-file-manager-ddb-es" },
+    { "path": "../api-i18n-ddb" },
+    { "path": "../api-security-so-ddb" },
+    { "path": "../api-tenancy" },
+    { "path": "../api-tenancy-so-ddb" },
+    { "path": "../db" },
+    { "path": "../utils" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -38,7 +57,9 @@
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"]
+      "@webiny/db": ["../db/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

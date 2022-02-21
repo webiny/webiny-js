@@ -1,12 +1,15 @@
-import React, { useMemo } from "react";
+import React, { CSSProperties, useMemo } from "react";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
 import { ElementRoot } from "../../../components/ElementRoot";
-import { PbElement } from "../../../../types";
+import { PbElement } from "~/types";
 import { Link } from "@webiny/react-router";
 import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
 
-const Button = ({ element }: { element: PbElement }) => {
+interface ButtonProps {
+    element: PbElement;
+}
+const Button: React.FC<ButtonProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
@@ -29,7 +32,7 @@ const Button = ({ element }: { element: PbElement }) => {
         newTab = action?.newTab;
     }
 
-    const clickHandler = plugin
+    const clickHandler: () => void = plugin
         ? () => plugin.handler({ variables: action.variables })
         : () => null;
 
@@ -50,12 +53,19 @@ const Button = ({ element }: { element: PbElement }) => {
     return (
         <ElementRoot className={"webiny-pb-base-page-element-style"} element={element}>
             {({ getAllClasses, elementStyle, elementAttributes }) => {
+                // TODO @ts-refactor div style
                 // Use per-device style
-                const justifyContent = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
+                const justifyContent =
+                    elementStyle[
+                        `--${kebabCase(displayMode)}-justify-content` as keyof CSSProperties
+                    ];
                 return (
                     <>
                         {action.actionType === "onClickHandler" ? (
-                            <div style={{ display: "flex", justifyContent }} onClick={clickHandler}>
+                            <div
+                                style={{ display: "flex", justifyContent } as any}
+                                onClick={clickHandler}
+                            >
                                 <div
                                     style={elementStyle}
                                     {...elementAttributes}
@@ -65,7 +75,7 @@ const Button = ({ element }: { element: PbElement }) => {
                                 </div>
                             </div>
                         ) : (
-                            <div style={{ display: "flex", justifyContent }}>
+                            <div style={{ display: "flex", justifyContent } as any}>
                                 <Link
                                     to={href || "/"}
                                     target={newTab ? "_blank" : "_self"}

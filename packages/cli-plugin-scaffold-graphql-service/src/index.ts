@@ -50,7 +50,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             `api/code/graphql/src/plugins`
                         );
                     },
-                    validate: pluginsFolderPath => {
+                    validate: (pluginsFolderPath: string) => {
                         if (pluginsFolderPath.length < 2) {
                             return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
                         }
@@ -62,7 +62,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "dataModelName",
                     message: "Enter initial entity name:",
                     default: "Todo",
-                    validate: (dataModelName, answers) => {
+                    validate: (dataModelName: string, answers: Input) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
                             return "A valid name must consist of letters only.";
                         }

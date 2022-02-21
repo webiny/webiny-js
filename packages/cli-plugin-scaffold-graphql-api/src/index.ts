@@ -26,10 +26,22 @@ interface Input {
     path: string;
 }
 
-export const deployGraphQLAPI = (stack, env, inputs) =>
-    execa("yarn", ["webiny", "deploy", stack, "--env", env, "--debug", Boolean(inputs.debug)], {
-        stdio: "inherit"
-    });
+export const deployGraphQLAPI = (stack: string, env: string, inputs: Record<string, any>) =>
+    execa(
+        "yarn",
+        [
+            "webiny",
+            "deploy",
+            stack,
+            "--env",
+            env,
+            "--debug",
+            Boolean(inputs.debug) ? "true" : "false"
+        ],
+        {
+            stdio: "inherit"
+        }
+    );
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -60,7 +72,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "description",
                     message: "Enter description:",
-                    default: input => {
+                    default: (input: Record<string, string>) => {
                         return `This is the ${input.name} GraphQL API.`;
                     },
                     validate: description => {
@@ -74,7 +86,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "path",
                     message: "Enter GraphQL API path:",
-                    default: input => {
+                    default: (input: Record<string, string>) => {
                         return `${Case.kebab(input.name)}`;
                     },
                     validate: appPath => {

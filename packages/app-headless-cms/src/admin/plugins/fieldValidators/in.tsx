@@ -4,7 +4,7 @@ import { Tags } from "@webiny/ui/Tags";
 import { validation } from "@webiny/validation";
 import { CmsEditorFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: CmsEditorFieldValidatorPlugin = {
     type: "cms-editor-field-validator",
     name: "cms-editor-field-validator-in",
     validator: {
@@ -28,4 +28,5 @@ export default {
             );
         }
     }
-} as CmsEditorFieldValidatorPlugin;
+};
+export default plugin;

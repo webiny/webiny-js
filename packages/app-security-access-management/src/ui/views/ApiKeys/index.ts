@@ -1,1 +1,1 @@
-export { default as ApiKeys } from "./ApiKeys";
+export * from "./ApiKeys";

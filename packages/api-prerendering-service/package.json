@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-prerendering-service",
-  "version": "5.21.0",
+  "version": "5.23.1",
   "main": "index.js",
   "keywords": [
     "package:base",
@@ -16,11 +16,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/error": "^5.21.0",
-    "@webiny/handler": "^5.21.0",
-    "@webiny/handler-args": "^5.21.0",
-    "@webiny/handler-client": "^5.21.0",
-    "@webiny/plugins": "^5.21.0",
+    "@webiny/error": "^5.23.1",
+    "@webiny/handler": "^5.23.1",
+    "@webiny/handler-args": "^5.23.1",
+    "@webiny/handler-client": "^5.23.1",
+    "@webiny/plugins": "^5.23.1",
     "chrome-aws-lambda": "^5.5.0",
     "dot-prop": "^6.0.1",
     "lodash": "^4.17.20",
@@ -30,6 +30,7 @@
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",
     "posthtml-plugin-link-preload": "^1.0.0",
+    "puppeteer": "^5.5.0",
     "shortid": "^2.2.16"
   },
   "devDependencies": {
@@ -38,9 +39,10 @@
     "@babel/plugin-proposal-export-default-from": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
-    "@webiny/cli": "^5.21.0",
-    "@webiny/handler-aws": "^5.21.0",
-    "@webiny/project-utils": "^5.21.0",
+    "@types/object-hash": "^2.2.1",
+    "@webiny/cli": "^5.23.1",
+    "@webiny/handler-aws": "^5.23.1",
+    "@webiny/project-utils": "^5.23.1",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",

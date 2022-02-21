@@ -1,19 +1,20 @@
 import React, { useMemo } from "react";
 
 import { plugins } from "@webiny/plugins";
-import { PbElement, PbRenderElementPlugin, PbThemePlugin } from "~/types";
+import { PbElement, PbRenderElementPlugin, PbTheme, PbThemePlugin } from "~/types";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { Element as PeElement } from "@webiny/app-page-builder-elements/components/Element";
 import tryRenderingPlugin from "~/utils/tryRenderingPlugin";
 
-export type ElementProps = {
+export interface ElementProps {
     element: PbElement;
-};
+}
 
-const Element = (props: ElementProps) => {
+const Element: React.FC<ElementProps> = props => {
     const { element } = props;
 
-    const theme = useMemo(
+    // TODO @ts-refactor verify that PbTheme is correct
+    const theme: PbTheme = useMemo(
         () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
         []
     );

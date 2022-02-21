@@ -4,34 +4,69 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import {
     CREATE_REVISION_FROM,
+    CreateRevisionFromMutationResponse,
+    CreateRevisionFromMutationVariables,
     DELETE_REVISION,
     PUBLISH_REVISION,
     UNPUBLISH_REVISION
-} from "../../../graphql";
+} from "~/admin/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FbFormModel } from "../../../../types";
+import { FbRevisionModel } from "~/types";
 import {
     removeRevisionFromFormCache,
     updateLatestRevisionInListCache,
     addRevisionToRevisionsCache
-} from "../../../views/cache";
+} from "~/admin/views/cache";
 
-export type UseRevisionProps = {
-    revision: FbFormModel;
-    form: FbFormModel;
-};
+interface CreateRevisionCallable {
+    (id?: string): Promise<void>;
+}
 
-export const useRevision = ({ revision, form }: UseRevisionProps) => {
+interface EditRevisionCallable {
+    (id?: string): void;
+}
+
+interface DeleteRevisionCallable {
+    (id?: string): Promise<void>;
+}
+
+interface PublishRevisionCallable {
+    (id?: string): Promise<void>;
+}
+
+interface UnpublishRevisionCallable {
+    (id?: string): Promise<void>;
+}
+
+interface UseRevisionProps {
+    revision: FbRevisionModel;
+    form: FbRevisionModel;
+}
+
+interface UseRevisionResult {
+    createRevision: CreateRevisionCallable;
+    editRevision: EditRevisionCallable;
+    deleteRevision: DeleteRevisionCallable;
+    publishRevision: PublishRevisionCallable;
+    unpublishRevision: UnpublishRevisionCallable;
+}
+
+export const useRevision = ({ revision, form }: UseRevisionProps): UseRevisionResult => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
 
     const { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision } =
         useHandlers(null, {
-            createRevision: () => async () => {
-                const { data: res } = await client.mutate({
+            createRevision: (): CreateRevisionCallable => async (id?: string) => {
+                const { data: res } = await client.mutate<
+                    CreateRevisionFromMutationResponse,
+                    CreateRevisionFromMutationVariables
+                >({
                     mutation: CREATE_REVISION_FROM,
-                    variables: { revision: revision.id },
+                    variables: {
+                        revision: id || revision.id
+                    },
                     update(cache, { data }) {
                         const newRevision = data.formBuilder.revision.data;
                         updateLatestRevisionInListCache(cache, newRevision);
@@ -42,18 +77,22 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                 const { data, error } = res.formBuilder.revision;
 
                 if (error) {
-                    return showSnackbar(error.message);
+                    showSnackbar(error.message);
+                    return;
                 }
 
                 history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
             },
-            editRevision: () => () => {
-                history.push(`/form-builder/forms/${encodeURIComponent(revision.id)}`);
+            editRevision: (): EditRevisionCallable => (id?: string) => {
+                const target = encodeURIComponent(id || revision.id);
+                history.push(`/form-builder/forms/${target}`);
             },
-            deleteRevision: () => async () => {
+            deleteRevision: (): DeleteRevisionCallable => async (id?: string) => {
                 await client.mutate({
                     mutation: DELETE_REVISION,
-                    variables: { revision: revision.id },
+                    variables: {
+                        revision: id || revision.id
+                    },
                     update: (cache, updated) => {
                         const { error } = updated.data.formBuilder.deleteForm; // `deleteForm` because we assigned an alias
                         if (error) {
@@ -73,10 +112,12 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                     }
                 });
             },
-            publishRevision: () => async () => {
+            publishRevision: (): PublishRevisionCallable => async (id?: string) => {
                 const { data: res } = await client.mutate({
                     mutation: PUBLISH_REVISION,
-                    variables: { revision: revision.id }
+                    variables: {
+                        revision: id || revision.id
+                    }
                 });
 
                 const { error } = res.formBuilder.publishRevision;
@@ -90,10 +131,12 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                     </span>
                 );
             },
-            unpublishRevision: () => async () => {
+            unpublishRevision: (): UnpublishRevisionCallable => async (id?: string) => {
                 await client.mutate({
                     mutation: UNPUBLISH_REVISION,
-                    variables: { revision: revision.id }
+                    variables: {
+                        revision: id || revision.id
+                    }
                 });
             }
         });

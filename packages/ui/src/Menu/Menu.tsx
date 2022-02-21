@@ -54,7 +54,7 @@ type State = {
  * Use Menu component to display a list of choices, once the handler is triggered.
  */
 class Menu extends React.Component<MenuProps, State> {
-    static defaultProps = {
+    static defaultProps: Partial<MenuProps> = {
         handle: null,
         anchor: "topStart"
     };

@@ -5,10 +5,10 @@ import FormDetails from "./FormDetails";
 import NewFormDialog from "./NewFormDialog";
 import { FormsProvider } from "./FormsContext";
 
-function Forms() {
-    const [newFormDialogOpened, openNewFormDialog] = React.useState(false);
-    const onCreateForm = useCallback(() => openNewFormDialog(true), []);
-    const onClose = useCallback(() => openNewFormDialog(false), []);
+const Forms: React.FC = () => {
+    const [newFormDialogOpened, openNewFormDialog] = React.useState<boolean>(false);
+    const onCreateForm = useCallback((): void => openNewFormDialog(true), []);
+    const onClose = useCallback((): void => openNewFormDialog(false), []);
 
     return (
         <FormsProvider>
@@ -23,6 +23,6 @@ function Forms() {
             </SplitView>
         </FormsProvider>
     );
-}
+};
 
 export default Forms;

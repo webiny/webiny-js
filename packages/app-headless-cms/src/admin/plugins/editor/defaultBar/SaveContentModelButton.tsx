@@ -6,7 +6,7 @@ import { useContentModelEditor } from "~/admin/components/ContentModelEditor/use
 
 const t = i18n.namespace("app-headless-cms/admin/editor/top-bar/save-button");
 
-const SaveContentModelButton = () => {
+const SaveContentModelButton: React.FC = () => {
     const { saveContentModel } = useContentModelEditor();
     const [loading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();

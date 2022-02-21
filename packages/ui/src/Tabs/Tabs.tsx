@@ -3,15 +3,19 @@ import classNames from "classnames";
 import { TabBar } from "@rmwc/tabs";
 import { Tab, TabProps } from "./Tab";
 
-export type TabsRenderProps = {
+export interface TabsRenderProps {
     switchTab(tabIndex: number): void;
-};
+}
 
-export type TabsProps = {
+export interface TabsPropsChildrenCallable {
+    (props: TabsRenderProps): ReactNode;
+}
+type TabsPropsChildren = TabsPropsChildrenCallable | ReactNode;
+export interface TabsProps {
     /**
      * A collection of tabs that needs to be rendered.
      */
-    children: ((props: TabsRenderProps) => ReactNode) | ReactNode;
+    children: TabsPropsChildren;
 
     /**
      * Append a class name.
@@ -32,11 +36,15 @@ export type TabsProps = {
      * Function to change active tab.
      */
     updateValue?: (index: number) => void;
-};
+    /**
+     * Tab ID for the testing.
+     */
+    "data-testid"?: string;
+}
 
-type State = {
+interface State {
     activeTabIndex: number;
-};
+}
 
 const disabledStyles = {
     opacity: 0.5,
@@ -47,11 +55,11 @@ const disabledStyles = {
  * Use Tabs component to display a list of choices, once the handler is triggered.
  */
 export class Tabs extends React.Component<TabsProps, State> {
-    state = {
+    state: State = {
         activeTabIndex: 0
     };
 
-    switchTab(activeTabIndex) {
+    switchTab(activeTabIndex: number): void {
         if (typeof this.props.updateValue === "function") {
             this.props.updateValue(activeTabIndex);
         } else {
@@ -59,7 +67,7 @@ export class Tabs extends React.Component<TabsProps, State> {
         }
     }
 
-    renderChildren(children, activeIndex) {
+    renderChildren(children: React.ReactNode, activeIndex: number) {
         const tabs = React.Children.toArray(children)
             .filter(c => c !== null)
             .map((child: React.ReactElement<TabProps>) => {
@@ -134,8 +142,8 @@ export class Tabs extends React.Component<TabsProps, State> {
 
         let children = this.props.children;
         if (typeof this.props.children === "function") {
-            // @ts-ignore
-            children = this.props.children({ switchTab: this.switchTab.bind(this) });
+            const childrenCallable = this.props.children as TabsPropsChildrenCallable;
+            children = childrenCallable({ switchTab: this.switchTab.bind(this) });
         }
 
         return this.renderChildren(children, activeIndex);

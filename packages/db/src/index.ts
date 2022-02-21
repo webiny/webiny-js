@@ -1,7 +1,20 @@
-export type Key = { primary?: boolean; unique?: boolean; name: string; fields: { name: string }[] };
+interface KeyField {
+    name: string;
+}
 
-export type Args = {
-    __batch?: { instance: Batch; operation: Operation };
+export interface Key {
+    primary?: boolean;
+    unique?: boolean;
+    name: string;
+    fields: KeyField[];
+}
+
+export interface ArgsBatch {
+    instance: Batch;
+    operation: Operation;
+}
+export interface Args {
+    __batch?: ArgsBatch;
     table?: string;
     meta?: boolean;
     limit?: number;
@@ -9,7 +22,7 @@ export type Args = {
     data?: Record<string, any>;
     query?: Record<string, any>;
     keys?: Key[];
-};
+}
 
 export type Result<T = any> = [T, Record<string, any>];
 
@@ -46,19 +59,34 @@ const shortId = () => {
     return `${time}.${uniqueId}`;
 };
 
+interface LogDataBatch {
+    id: string;
+    type: string;
+}
+interface LogData
+    extends Pick<Args, "table" | "meta" | "limit" | "sort" | "data" | "query" | "keys"> {
+    batch: LogDataBatch | null;
+}
+
 // Picks necessary data from received args, ready to be stored in the log table.
-const getCreateLogData = (args: Args) => {
+const getCreateLogData = (args: Args): LogData => {
     const { table, meta, limit, sort, data, query, keys } = args;
 
-    const logData = { table, meta, limit, sort, data, query, keys, batch: null };
-    if (args.__batch) {
-        logData.batch = {
-            id: args.__batch.instance.id,
-            type: args.__batch.instance.type
-        };
-    }
-
-    return logData;
+    return {
+        table,
+        meta,
+        limit,
+        sort,
+        data,
+        query,
+        keys,
+        batch: args.__batch
+            ? {
+                  id: args.__batch.instance.id,
+                  type: args.__batch.instance.type
+              }
+            : null
+    };
 };
 
 class Db {
@@ -96,9 +124,9 @@ class Db {
     }
 
     // Logging functions.
-    async createLog(operation, args: Args): Promise<Result<true>> {
+    async createLog(operation: string, args: Args): Promise<Result<true>> {
         if (!this.logTable) {
-            return;
+            return null;
         }
 
         const data = getCreateLogData(args);
@@ -107,7 +135,7 @@ class Db {
 
     async readLogs<T = Record<string, any>>(): Promise<Result<T[]>> {
         if (!this.logTable) {
-            return;
+            return null;
         }
 
         return this.driver.readLogs({
@@ -148,7 +176,8 @@ class Batch<
     id: string;
     meta: Record<string, any>;
     operations: Operation[];
-    constructor(db) {
+
+    constructor(db: Db) {
         this.db = db;
         this.type = "batch";
         this.id = shortId();
@@ -194,7 +223,10 @@ class Batch<
     }
 
     async execute(): Promise<[T0?, T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?]> {
-        const promises = [];
+        /**
+         * TODO: figure out which exact type to use instead of any.
+         */
+        const promises: Promise<any>[] = [];
         for (let i = 0; i < this.operations.length; i++) {
             const [operation, args] = this.operations[i];
             promises.push(

@@ -4,12 +4,12 @@ import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
-export interface Params {
+interface AssignBeforeModelDeleteParams {
     onBeforeModelDelete: Topic<BeforeModelDeleteTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
-export const assignBeforeModelDelete = (params: Params) => {
+export const assignBeforeModelDelete = (params: AssignBeforeModelDeleteParams) => {
     const { onBeforeModelDelete, storageOperations, plugins } = params;
 
     onBeforeModelDelete.subscribe(async params => {

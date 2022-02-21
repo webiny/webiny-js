@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin } from "~/types";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
-export interface MarkLockedFieldsParams {
+interface MarkLockedFieldsParams {
     model: CmsModel;
     entry: CmsEntry;
     context: CmsContext;

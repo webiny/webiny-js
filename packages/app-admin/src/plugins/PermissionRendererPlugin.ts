@@ -20,16 +20,16 @@ export class PermissionRendererPlugin extends Plugin {
     public static readonly type = "admin-app-permissions-renderer";
     private _config: Partial<Config>;
 
-    constructor(config?: Config) {
+    public constructor(config?: Config) {
         super();
         this._config = config || {};
     }
 
-    get system() {
+    get system(): boolean {
         return Boolean(this._config.system);
     }
 
-    render(props: RenderParams): React.ReactElement {
+    public render(props: RenderParams): React.ReactElement {
         return this._config.render(props);
     }
 }

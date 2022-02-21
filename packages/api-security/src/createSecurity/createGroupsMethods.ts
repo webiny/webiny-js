@@ -1,6 +1,22 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
+/**
+ * Package deep-equal does not have types.
+ */
+// @ts-ignore
 import deepEqual from "deep-equal";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
@@ -26,7 +42,7 @@ const UpdateDataModel = withFields({
     permissions: object({ list: true })
 })();
 
-async function checkPermission(security: Security) {
+async function checkPermission(security: Security): Promise<void> {
     const permission = await security.getPermission("security.group");
 
     if (!permission) {
@@ -34,7 +50,7 @@ async function checkPermission(security: Security) {
     }
 }
 
-async function updateTenantLinks(security: Security, tenant: string, group: Group) {
+async function updateTenantLinks(security: Security, tenant: string, group: Group): Promise<void> {
     const links = await security.listTenantLinksByType<GroupTenantLink>({ tenant, type: "group" });
 
     if (!links.length) {
@@ -91,7 +107,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async createGroup(this: Security, input: GroupInput) {
+        async createGroup(this: Security, input: GroupInput): Promise<Group> {
             await checkPermission(this);
 
             const identity = this.getIdentity();
@@ -116,8 +132,8 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             const group: Group = {
                 id: mdbid(),
                 tenant: currentTenant,
-                system: false,
                 ...input,
+                system: input.system === true,
                 webinyVersion: process.env.WEBINY_VERSION,
                 createdOn: new Date().toISOString(),
                 createdBy: identity
@@ -142,7 +158,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async updateGroup(this: Security, id: string, input: Record<string, any>) {
+        async updateGroup(this: Security, id: string, input: Record<string, any>): Promise<Group> {
             await checkPermission(this);
 
             const model = await new UpdateDataModel().populate(input);
@@ -180,7 +196,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async deleteGroup(this: Security, id: string) {
+        async deleteGroup(this: Security, id: string): Promise<void> {
             await checkPermission(this);
 
             const group = await storageOperations.getGroup({ where: { tenant: getTenant(), id } });

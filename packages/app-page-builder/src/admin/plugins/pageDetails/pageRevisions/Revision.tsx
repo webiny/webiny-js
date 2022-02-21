@@ -1,5 +1,9 @@
 import React from "react";
 import { css } from "emotion";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import {
     ListItem,
@@ -65,11 +69,11 @@ const getIcon = (rev: PbPageRevision) => {
     }
 };
 
-const Div = ({ children }) => {
+const Div: React.FC = ({ children }) => {
     return <div>{children}</div>;
 };
 
-const Revision = ({ revision, page }: RevisionProps) => {
+const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
     const { icon, text: tooltipText } = getIcon(revision);
     const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());

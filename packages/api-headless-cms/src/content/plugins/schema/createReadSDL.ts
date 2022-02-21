@@ -6,11 +6,15 @@ import { renderFields } from "~/content/plugins/utils/renderFields";
 import { renderGetFilterFields } from "~/content/plugins/utils/renderGetFilterFields";
 import { pluralizedTypeName } from "~/content/plugins/utils/pluralizedTypeName";
 
-interface CreateManageSDL {
-    (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
+interface CreateReadSDLParams {
+    model: CmsModel;
+    fieldTypePlugins: CmsFieldTypePlugins;
+}
+interface CreateReadSDL {
+    (params: CreateReadSDLParams): string;
 }
 
-export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
+export const createReadSDL: CreateReadSDL = ({ model, fieldTypePlugins }): string => {
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 

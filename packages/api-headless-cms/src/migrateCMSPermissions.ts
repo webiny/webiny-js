@@ -1,3 +1,7 @@
+/**
+ * Not used anymore so ignore.
+ */
+// @ts-nocheck
 import mergeWith from "lodash/mergeWith";
 import isEmpty from "lodash/isEmpty";
 import { CmsModel } from "./types";
@@ -8,14 +12,14 @@ type Group = {
 type Model = {
     [code: string]: string[];
 };
-type CMSPermission = {
+interface CMSPermission {
     name: string;
     rwd?: string;
     pw?: string;
     own?: boolean;
     groups?: Group;
     models?: Model;
-};
+}
 
 enum AccessTypes {
     FULL = "cms.*",
@@ -150,9 +154,10 @@ export const migrateCMSPermissions = async (
 };
 
 const mergeCustomizer = (objValue, srcValue) => {
-    if (Array.isArray(objValue)) {
-        return objValue.concat(srcValue).filter(removeDuplicate);
+    if (Array.isArray(objValue) === false) {
+        return [];
     }
+    return objValue.concat(srcValue).filter(removeDuplicate);
 };
 
 const removeDuplicate = (item, index, arr) => arr.findIndex(el => el === item) === index;

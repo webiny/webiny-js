@@ -530,8 +530,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         const revisions = await formBuilder.getFormRevisions(form);
                         const publishedRevisions = revisions.filter(r => r.published);
 
-                        const rows = [];
-                        const fields = {};
+                        const rows: Record<string, string>[] = [];
+                        const fields: Record<string, string> = {};
 
                         /**
                          * First extract all distinct fields across all form submissions.
@@ -551,7 +551,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                          */
                         for (let i = 0; i < submissions.length; i++) {
                             const submissionData = submissions[i].data;
-                            const row = {};
+                            const row: Record<string, string> = {};
                             Object.keys(fields).map(fieldId => {
                                 if (fieldId in submissionData) {
                                     row[fields[fieldId]] = submissionData[fieldId];

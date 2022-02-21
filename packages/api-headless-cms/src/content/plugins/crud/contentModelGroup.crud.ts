@@ -1,5 +1,13 @@
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import {
     CmsGroupContext,

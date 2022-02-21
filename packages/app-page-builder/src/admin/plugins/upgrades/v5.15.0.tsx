@@ -30,8 +30,10 @@ const UPGRADE = gql`
         }
     }
 `;
-
-const Upgrade = ({ onInstalled }) => {
+interface UpgradeProps {
+    onInstalled: () => void;
+}
+const Upgrade: React.FC<UpgradeProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);

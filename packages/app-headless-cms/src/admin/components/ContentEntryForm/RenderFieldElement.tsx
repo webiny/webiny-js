@@ -9,11 +9,12 @@ import { useRenderPlugins } from "./useRenderPlugins";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-form");
 
-const RenderFieldElement = (props: {
+interface RenderFieldElementProps {
     field: CmsEditorField;
     Bind: BindComponent;
     contentModel: CmsEditorContentModel;
-}) => {
+}
+const RenderFieldElement: React.FC<RenderFieldElementProps> = props => {
     const renderPlugins = useRenderPlugins();
     const { field, Bind, contentModel } = props;
     const getBind = useBind({ Bind, field });

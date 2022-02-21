@@ -6,7 +6,23 @@ import { Link } from "@webiny/react-router";
 import Menu, { GET_PUBLIC_MENU, hasMenuItems } from "./Menu";
 import Navigation from "./Navigation";
 
-const MobileHeader = ({ menuName, logo, name, active, toggleMenu }) => {
+interface MobileHeaderPropsLogo {
+    src: string;
+}
+interface MobileHeaderProps {
+    menuName: string;
+    logo: MobileHeaderPropsLogo;
+    name: string;
+    active: boolean;
+    toggleMenu: () => void;
+}
+const MobileHeader: React.FC<MobileHeaderProps> = ({
+    menuName,
+    logo,
+    name,
+    active,
+    toggleMenu
+}) => {
     const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug: menuName } });
     return (
         <div

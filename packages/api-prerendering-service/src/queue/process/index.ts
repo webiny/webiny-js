@@ -7,7 +7,7 @@ import { HandlerResponse } from "~/types";
 import { get as dotPropGet } from "dot-prop";
 
 const IS_TEST = process.env.NODE_ENV === "test";
-const log = (...args) => {
+const log = (...args: string[]) => {
     if (IS_TEST) {
         return;
     }

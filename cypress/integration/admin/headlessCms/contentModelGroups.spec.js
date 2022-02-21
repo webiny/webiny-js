@@ -133,7 +133,7 @@ context("Headless CMS - Content Model Groups", () => {
         // Sort groups by "Name A->Z"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").select("name:asc");
+            cy.get("select").select("name_ASC");
         });
         cy.findByTestId("default-data-list.filter").click();
 
@@ -148,7 +148,7 @@ context("Headless CMS - Content Model Groups", () => {
         // Sort groups by "Name Z->A"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").select("name:desc");
+            cy.get("select").select("name_DESC");
         });
         cy.findByTestId("default-data-list.filter").click();
 
@@ -164,7 +164,7 @@ context("Headless CMS - Content Model Groups", () => {
         // Sort groups by "Newest to Oldest"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
-            cy.get("select").select("createdOn:desc");
+            cy.get("select").select("createdOn_DESC");
         });
         cy.findByTestId("default-data-list.filter").click();
 

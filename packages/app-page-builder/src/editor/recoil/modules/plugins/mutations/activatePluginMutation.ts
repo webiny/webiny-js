@@ -1,6 +1,6 @@
 import { PluginsAtomType } from "../..";
 import { plugins } from "@webiny/plugins";
-import { EventActionHandlerMutationActionCallable } from "../../../../../types";
+import { EventActionHandlerMutationActionCallable } from "~/types";
 
 export const activatePluginByNameMutation: EventActionHandlerMutationActionCallable<
     PluginsAtomType,

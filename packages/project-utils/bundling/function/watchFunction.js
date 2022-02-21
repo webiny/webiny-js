@@ -1,4 +1,14 @@
-module.exports = options => {
+const fs = require("fs-extra");
+const { getProject } = require("@webiny/cli/utils");
+const { injectHandlerTelemetry } = require("./utils");
+
+module.exports = async options => {
+    if (!options) {
+        options = {};
+    }
+    if (!options.cwd) {
+        options.cwd = process.cwd();
+    }
     const webpack = require("webpack");
 
     const { overrides } = options;
@@ -14,7 +24,7 @@ module.exports = options => {
         webpackConfig = overrides.webpack(webpackConfig);
     }
 
-    return new Promise(async (resolve, reject) => {
+    const result = new Promise(async (resolve, reject) => {
         options.logs && console.log("Compiling...");
         return webpack(webpackConfig).watch({}, async (err, stats) => {
             if (err) {
@@ -28,4 +38,24 @@ module.exports = options => {
             }
         });
     });
+
+    const project = getProject({
+        cwd: options.cwd
+    });
+
+    if (!project.config.id) {
+        return result;
+    }
+
+    const handlerFile = await fs.readFile(path.join(options.cwd, "/build/handler.js"), {
+        encoding: "utf8",
+        flag: "r"
+    });
+    const includesGraphQl = handlerFile.includes("wcp-telemetry-tracker");
+
+    if (includesGraphQl) {
+        await injectHandlerTelemetry(options.cwd);
+    }
+
+    return result;
 };

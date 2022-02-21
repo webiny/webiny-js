@@ -1,21 +1,25 @@
+/**
+ * When using Caman, we added @ts-ignore because it does not exist in packages, but it is loaded in packages/ui/src/ImageEditor/ImageEditor.tsx:38.
+ * TODO: use some other library to edit images
+ */
 import React from "react";
 import { ReactComponent as FilterIcon } from "./icons/filter.svg";
-import { Slider } from "../../Slider";
+import { Slider } from "~/Slider";
 import { ImageEditorTool } from "./types";
-import { IconButton, ButtonDefault } from "../../Button";
-import { Tooltip } from "../../Tooltip";
+import { IconButton, ButtonDefault } from "~/Button";
+import { Tooltip } from "~/Tooltip";
 import { debounce } from "lodash";
 import styled from "@emotion/styled";
 
-type State = {
-    values: Object;
+interface State {
+    values: Record<string, any>;
     processing: boolean;
-};
+}
 
-type Props = {
+interface Props {
     canvas: any;
-    renderApplyCancel: Function;
-};
+    renderApplyCancel?: Function;
+}
 
 const Wrapper = styled("div")({
     ul: {
@@ -89,7 +93,7 @@ const sliders = [
 ];
 
 class RenderForm extends React.Component<Props, State> {
-    state = {
+    state: State = {
         processing: false,
         values: {}
     };
@@ -106,10 +110,13 @@ class RenderForm extends React.Component<Props, State> {
 
         // @ts-ignore
         Caman(canvas.current, function () {
+            // @ts-ignore
             this.revert(false);
             Object.keys(values).forEach(
+                // @ts-ignore
                 key => values[key] !== 0 && this[key] && this[key](values[key])
             );
+            // @ts-ignore
             this.render();
             component.setState({ processing: false });
         });
@@ -137,7 +144,7 @@ class RenderForm extends React.Component<Props, State> {
                                 min={0}
                                 max={100}
                                 disabled={this.state.processing}
-                                onInput={value => {
+                                onInput={(value: string) => {
                                     this.setState(state => {
                                         const values = { ...state.values };
                                         values[props.key] = value;
@@ -174,7 +181,7 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Filter"}>
-                <IconButton icon={<FilterIcon />} onClick={activateTool} />
+                <IconButton icon={<FilterIcon />} onClick={() => activateTool("filter")} />
             </Tooltip>
         );
     },
@@ -184,7 +191,9 @@ const tool: ImageEditorTool = {
     cancel: ({ canvas }) => {
         // @ts-ignore
         Caman(canvas.current, function () {
+            // @ts-ignore
             this.revert(false);
+            // @ts-ignore
             this.render();
         });
     }

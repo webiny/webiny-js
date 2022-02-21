@@ -1,31 +1,40 @@
 import { FileManagerContext } from "~/types";
 import WebinyError from "@webiny/error";
-
-export type Args = {
-    name: string;
-    type: string;
-    size: number;
-    buffer: Buffer;
-    keyPrefix?: string;
-    hideInFileManager?: boolean;
-    tags?: string[];
-};
+import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
 
 export type Result = Record<string, any>;
 
-export interface FileStoragePlugin {
-    upload: (args: Args) => Promise<Result>;
-    delete: (args: { key: string }) => Promise<void>;
-}
-
 const storagePluginType = "api-file-manager-storage";
 
-export class FileStorage {
-    storagePlugin: FileStoragePlugin;
-    context: FileManagerContext;
+export interface FileStorageUploadParams {
+    buffer: Buffer;
+    hideInFileManager: boolean | string;
+    tags?: string[];
+    size: number;
+    name: string;
+    keyPrefix: string;
+    type: string;
+}
+export interface FileStorageDeleteParams {
+    id: string;
+    key: string;
+}
 
-    constructor({ context }) {
-        this.storagePlugin = context.plugins.byType(storagePluginType).pop();
+export interface FileStorageUploadMultipleParams {
+    files: FileStorageUploadParams[];
+}
+
+export interface FileStorageParams {
+    context: FileManagerContext;
+}
+export class FileStorage {
+    private readonly storagePlugin: FilePhysicalStoragePlugin;
+    private readonly context: FileManagerContext;
+
+    constructor({ context }: FileStorageParams) {
+        this.storagePlugin = context.plugins
+            .byType<FilePhysicalStoragePlugin>(storagePluginType)
+            .pop();
         if (!this.storagePlugin) {
             throw new WebinyError(
                 `Missing plugin of type "${storagePluginType}".`,
@@ -35,11 +44,11 @@ export class FileStorage {
         this.context = context;
     }
 
-    async upload(args): Promise<Result> {
+    async upload(params: FileStorageUploadParams): Promise<Result> {
         const settings = await this.context.fileManager.settings.getSettings();
         // Add file to cloud storage.
         const { file: fileData } = await this.storagePlugin.upload({
-            ...args,
+            ...params,
             settings
         });
 
@@ -48,17 +57,16 @@ export class FileStorage {
         // Save file in DB.
         return await fileManager.files.createFile({
             ...fileData,
-            meta: { private: Boolean(args.hideInFileManager) },
-            tags: Array.isArray(args.tags) ? args.tags : []
+            meta: { private: Boolean(params.hideInFileManager) },
+            tags: Array.isArray(params.tags) ? params.tags : []
         });
     }
 
-    async uploadFiles(args) {
+    async uploadFiles(params: FileStorageUploadMultipleParams) {
         const settings = await this.context.fileManager.settings.getSettings();
         // Upload files to cloud storage.
         const promises = [];
-        for (let i = 0; i < args.files.length; i++) {
-            const item = args.files[i];
+        for (const item of params.files) {
             promises.push(
                 this.storagePlugin.upload({
                     ...item,
@@ -76,8 +84,8 @@ export class FileStorage {
         return fileManager.files.createFilesInBatch(filesData);
     }
 
-    async delete(args: { id: string; key: string }) {
-        const { id, key } = args;
+    async delete(params: FileStorageDeleteParams) {
+        const { id, key } = params;
         const { fileManager } = this.context;
         // Delete file from cloud storage.
         await this.storagePlugin.delete({

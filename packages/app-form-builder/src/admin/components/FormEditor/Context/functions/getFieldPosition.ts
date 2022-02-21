@@ -1,6 +1,10 @@
-import { FieldLayoutPositionType } from "../../../../../types";
+import { FbFormModel, FbFormModelField, FieldIdType, FieldLayoutPositionType } from "~/types";
 
-export default ({ field, data }): FieldLayoutPositionType => {
+interface Params {
+    field: FbFormModelField | FieldIdType;
+    data: FbFormModel;
+}
+export default ({ field, data }: Params): FieldLayoutPositionType => {
     const id = typeof field === "string" ? field : field._id;
     for (let i = 0; i < data.layout.length; i++) {
         const row = data.layout[i];

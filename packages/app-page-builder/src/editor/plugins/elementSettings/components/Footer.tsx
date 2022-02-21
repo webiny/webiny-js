@@ -11,7 +11,11 @@ const switchStyle = css({
     }
 });
 
-const Footer = ({ advanced, toggleAdvanced }) => (
+interface FooterProps {
+    advanced: boolean;
+    toggleAdvanced: (value: any) => void;
+}
+const Footer: React.FC<FooterProps> = ({ advanced, toggleAdvanced }) => (
     <FooterStyled>
         <Grid className={"no-bottom-padding"}>
             <Cell span={8}>

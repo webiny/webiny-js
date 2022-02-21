@@ -12,7 +12,7 @@ import NotAuthorizedResponse from "@webiny/api-security/NotAuthorizedResponse";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 
-const resolve = async (fn: () => any) => {
+const resolve = async (fn: () => any): Promise<Response | ErrorResponse> => {
     try {
         return new Response(await fn());
     } catch (ex) {

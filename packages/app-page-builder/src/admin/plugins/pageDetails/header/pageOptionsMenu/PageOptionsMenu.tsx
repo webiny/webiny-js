@@ -6,15 +6,15 @@ import { ReactComponent as PreviewIcon } from "../../../../assets/visibility.svg
 import { ReactComponent as HomeIcon } from "../../../../assets/round-home-24px.svg";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
-import { usePageBuilderSettings } from "../../../../hooks/usePageBuilderSettings";
-import { useSiteStatus } from "../../../../hooks/useSiteStatus";
+import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
 import { css } from "emotion";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { useConfigureWebsiteUrlDialog } from "../../../../hooks/useConfigureWebsiteUrl";
+import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { plugins } from "@webiny/plugins";
-import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "../../../../../types";
+import { PbPageData, PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "~/types";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 import { SecureView } from "@webiny/app-security";
@@ -48,7 +48,10 @@ const menuStyles = css({
     }
 });
 
-const PageOptionsMenu = props => {
+interface PageOptionsMenuProps {
+    page: PbPageData;
+}
+const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
     const { page } = props;
     const { settings, isSpecialPage, getPageUrl, getWebsiteUrl, updateSettingsMutation } =
         usePageBuilderSettings();

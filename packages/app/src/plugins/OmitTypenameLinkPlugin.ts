@@ -1,7 +1,7 @@
 import { ApolloLink } from "apollo-link";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin";
 
-function omitTypename(key, value) {
+function omitTypename(key: string, value: string) {
     return key === "__typename" ? undefined : value;
 }
 

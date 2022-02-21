@@ -7,10 +7,53 @@ import * as GQL from "~/admin/graphql/contentEntries";
 import * as GQLCache from "./cache";
 import { useApolloClient } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
+import {
+    CmsEntryDeleteMutationResponse,
+    CmsEntryDeleteMutationVariables,
+    CmsEntryPublishMutationResponse,
+    CmsEntryPublishMutationVariables,
+    CmsEntryRequestChangesMutationResponse,
+    CmsEntryRequestChangesMutationVariables,
+    CmsEntryRequestReviewMutationResponse,
+    CmsEntryRequestReviewMutationVariables,
+    CmsEntryUnpublishMutationResponse,
+    CmsEntryUnpublishMutationVariables
+} from "~/admin/graphql/contentEntries";
 
-export type UseRevisionProps = {
+interface CreateRevisionHandler {
+    (id?: string): Promise<void>;
+}
+interface EditRevisionHandler {
+    (id?: string): void;
+}
+interface DeleteRevisionHandler {
+    (id?: string): Promise<void>;
+}
+interface PublishRevisionHandler {
+    (id?: string): Promise<void>;
+}
+interface UnpublishRevisionHandler {
+    (id?: string): Promise<void>;
+}
+interface RequestReviewHandler {
+    (id?: string): Promise<void>;
+}
+interface RequestChangesHandler {
+    (id?: string): Promise<void>;
+}
+interface UseRevisionHandlers {
+    createRevision: CreateRevisionHandler;
+    editRevision: EditRevisionHandler;
+    deleteRevision: DeleteRevisionHandler;
+    publishRevision: PublishRevisionHandler;
+    unpublishRevision: UnpublishRevisionHandler;
+    requestReview: RequestReviewHandler;
+    requestChanges: RequestChangesHandler;
+}
+
+export interface UseRevisionProps {
     revision: CmsEditorContentEntry;
-};
+}
 
 export const useRevision = ({ revision }: UseRevisionProps) => {
     const { contentModel, entry, setLoading, listQueryVariables } = useContentEntry();
@@ -46,53 +89,69 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
         unpublishRevision,
         requestReview,
         requestChanges
-    } = useHandlers(
+    } = useHandlers<UseRevisionHandlers>(
         { entry },
         {
-            createRevision: () => async () => {
-                setLoading(true);
-                const { data: res } = await client.mutate({
-                    mutation: CREATE_REVISION,
-                    variables: { revision: revision.id },
-                    update(cache, { data }) {
-                        const newRevision = data.content.data;
-
-                        GQLCache.updateLatestRevisionInListCache(
-                            contentModel,
-                            cache,
-                            newRevision,
-                            listQueryVariables
-                        );
-                        GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
-                    }
-                });
-
-                setLoading(false);
-
-                const { data, error } = res.content;
-
-                if (error) {
-                    return showSnackbar(error.message);
-                }
-
-                history.push(`/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`);
-            },
-            editRevision: () => () => {
-                history.push(
-                    `/cms/content-entries/${modelId}/?id=${encodeURIComponent(revision.id)}`
-                );
-            },
-            deleteRevision:
-                ({ entry }) =>
-                async () => {
+            createRevision:
+                (): CreateRevisionHandler =>
+                async (id): Promise<void> => {
                     setLoading(true);
-                    await client.mutate({
+                    const { data: res } = await client.mutate({
+                        mutation: CREATE_REVISION,
+                        variables: {
+                            revision: id || revision.id
+                        },
+                        update(cache, { data }) {
+                            const newRevision = data.content.data;
+
+                            GQLCache.updateLatestRevisionInListCache(
+                                contentModel,
+                                cache,
+                                newRevision,
+                                listQueryVariables
+                            );
+                            GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
+                        }
+                    });
+
+                    setLoading(false);
+
+                    const { data, error } = res.content;
+
+                    if (error) {
+                        return showSnackbar(error.message);
+                    }
+
+                    history.push(
+                        `/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`
+                    );
+                },
+            editRevision:
+                (): EditRevisionHandler =>
+                (id): void => {
+                    history.push(
+                        `/cms/content-entries/${modelId}/?id=${encodeURIComponent(
+                            id || revision.id
+                        )}`
+                    );
+                },
+            deleteRevision:
+                ({ entry }): DeleteRevisionHandler =>
+                async (id): Promise<void> => {
+                    setLoading(true);
+                    await client.mutate<
+                        CmsEntryDeleteMutationResponse,
+                        CmsEntryDeleteMutationVariables
+                    >({
                         mutation: DELETE_REVISION,
-                        variables: { revision: revision.id },
+                        variables: {
+                            revision: id || revision.id
+                        },
                         update: (cache, { data }) => {
                             const { error } = data.content;
                             if (error) {
-                                return showSnackbar(error.message);
+                                showSnackbar(error.message);
+                                return;
                             }
 
                             // We have other revisions, update entry's cache
@@ -102,29 +161,35 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                                 revision
                             );
 
-                            if (revision.id === entry.id) {
-                                GQLCache.updateLatestRevisionInListCache(
-                                    contentModel,
-                                    cache,
-                                    revisions[0],
-                                    listQueryVariables
-                                );
-                                // Redirect to the first revision in the list of all entry revisions.
-                                return history.push(
-                                    `/cms/content-entries/${modelId}?id=` +
-                                        encodeURIComponent(revisions[0].id)
-                                );
+                            if (revision.id !== entry.id) {
+                                return;
                             }
+                            GQLCache.updateLatestRevisionInListCache(
+                                contentModel,
+                                cache,
+                                revisions[0],
+                                listQueryVariables
+                            );
+                            // Redirect to the first revision in the list of all entry revisions.
+                            history.push(
+                                `/cms/content-entries/${modelId}?id=` +
+                                    encodeURIComponent(revisions[0].id)
+                            );
                         }
                     });
 
                     setLoading(false);
                 },
-            publishRevision: () => async id => {
+            publishRevision: (): PublishRevisionHandler => async id => {
                 setLoading(true);
-                await client.mutate({
+                await client.mutate<
+                    CmsEntryPublishMutationResponse,
+                    CmsEntryPublishMutationVariables
+                >({
                     mutation: PUBLISH_REVISION,
-                    variables: { revision: id || revision.id },
+                    variables: {
+                        revision: id || revision.id
+                    },
                     update(cache, { data }) {
                         const { data: published, error } = data.content;
                         if (error) {
@@ -148,60 +213,83 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
                 setLoading(false);
             },
-            unpublishRevision: () => async () => {
-                setLoading(true);
-                const { data } = await client.mutate({
-                    mutation: UNPUBLISH_REVISION,
-                    variables: { revision: revision.id }
-                });
+            unpublishRevision:
+                (): UnpublishRevisionHandler =>
+                async (id): Promise<void> => {
+                    setLoading(true);
+                    const { data } = await client.mutate<
+                        CmsEntryUnpublishMutationResponse,
+                        CmsEntryUnpublishMutationVariables
+                    >({
+                        mutation: UNPUBLISH_REVISION,
+                        variables: {
+                            revision: id || revision.id
+                        }
+                    });
 
-                setLoading(false);
+                    setLoading(false);
 
-                const { error } = data.content;
-                if (error) {
-                    return showSnackbar(error.message);
+                    const { error } = data.content;
+                    if (error) {
+                        showSnackbar(error.message);
+                        return;
+                    }
+
+                    showSnackbar(
+                        <span>
+                            Successfully unpublished revision{" "}
+                            <strong>#{revision.meta.version}</strong>!
+                        </span>
+                    );
+                },
+            requestReview:
+                (): RequestReviewHandler =>
+                async (id): Promise<void> => {
+                    setLoading(true);
+                    await client.mutate<
+                        CmsEntryRequestReviewMutationResponse,
+                        CmsEntryRequestReviewMutationVariables
+                    >({
+                        mutation: REQUEST_REVIEW,
+                        variables: {
+                            revision: id || revision.id
+                        },
+                        update(_, { data }) {
+                            const { error } = data.content;
+                            if (error) {
+                                return showSnackbar(error.message);
+                            }
+
+                            showSnackbar(<span>Review requested successfully!</span>);
+                        }
+                    });
+
+                    setLoading(false);
+                },
+            requestChanges:
+                (): RequestChangesHandler =>
+                async (id): Promise<void> => {
+                    setLoading(true);
+                    await client.mutate<
+                        CmsEntryRequestChangesMutationResponse,
+                        CmsEntryRequestChangesMutationVariables
+                    >({
+                        mutation: REQUEST_CHANGES,
+                        variables: {
+                            revision: id || revision.id
+                        },
+                        update(_, { data }) {
+                            const { error } = data.content;
+                            if (error) {
+                                return showSnackbar(error.message);
+                            }
+
+                            showSnackbar(<span>Changes requested successfully!</span>);
+                        }
+                    });
+
+                    setLoading(false);
                 }
-
-                showSnackbar(
-                    <span>
-                        Successfully unpublished revision <strong>#{revision.meta.version}</strong>!
-                    </span>
-                );
-            },
-            requestReview: () => async id => {
-                setLoading(true);
-                await client.mutate({
-                    mutation: REQUEST_REVIEW,
-                    variables: { revision: id || revision.id },
-                    update(_, { data }) {
-                        const { error } = data.content;
-                        if (error) {
-                            return showSnackbar(error.message);
-                        }
-
-                        showSnackbar(<span>Review requested successfully!</span>);
-                    }
-                });
-
-                setLoading(false);
-            },
-            requestChanges: () => async id => {
-                setLoading(true);
-                await client.mutate({
-                    mutation: REQUEST_CHANGES,
-                    variables: { revision: id || revision.id },
-                    update(_, { data }) {
-                        const { error } = data.content;
-                        if (error) {
-                            return showSnackbar(error.message);
-                        }
-
-                        showSnackbar(<span>Changes requested successfully!</span>);
-                    }
-                });
-
-                setLoading(false);
-            }
         }
     );
 

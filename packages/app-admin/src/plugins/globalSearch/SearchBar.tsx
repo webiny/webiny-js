@@ -5,6 +5,10 @@ import Downshift from "downshift";
 import { plugins } from "@webiny/plugins";
 import { AdminGlobalSearchPlugin, AdminGlobalSearchPreventHotkeyPlugin } from "~/types";
 import classnames from "classnames";
+/**
+ * Package react-hotkeyz does not have types.
+ */
+// @ts-ignore
 import { Hotkeys } from "react-hotkeyz";
 
 // UI components
@@ -28,7 +32,7 @@ import { makeComposable } from "~/index";
 
 type SearchBarProps = UseRouter;
 
-type SearchBarState = {
+export interface SearchBarState {
     active: boolean;
     searchTerm: { previous: string; current: string };
     plugins: {
@@ -36,10 +40,10 @@ type SearchBarState = {
         hotKeys: ReadonlyArray<AdminGlobalSearchPreventHotkeyPlugin>;
         current?: AdminGlobalSearchPlugin;
     };
-};
+}
 
 class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
-    state = {
+    state: SearchBarState = {
         active: false,
         searchTerm: {
             previous: "",
@@ -73,7 +77,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
      * If so, then check current route query for search term and set it as default value of search input.
      * @param props
      */
-    constructor(props) {
+    constructor(props: SearchBarProps) {
         super(props);
         this.state.plugins.current = this.state.plugins.list.find(
             p => p.route === props.location.pathname
@@ -93,7 +97,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         }
     }
 
-    handleOpenHotkey = e => {
+    handleOpenHotkey = (e: React.KeyboardEvent) => {
         for (let i = 0; i < this.state.plugins.hotKeys.length; i++) {
             const hotKey = this.state.plugins.hotKeys[i];
             if (hotKey.preventOpen(e)) {
@@ -110,7 +114,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
      * It also manages previous and current search terms and automatically highlighted item in dropdown.
      * @param plugin
      */
-    submitSearchTerm = plugin => {
+    submitSearchTerm = (plugin: AdminGlobalSearchPlugin) => {
         this.setState(
             state => {
                 const newState = set(state, "searchTerm.previous", state.searchTerm.current);

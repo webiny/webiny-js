@@ -1,5 +1,9 @@
 import * as React from "react";
 import styled from "@emotion/styled";
+/**
+ * Package react-loading-skeleton does not have types.
+ */
+// @ts-ignore
 import Skeleton from "react-loading-skeleton";
 
 const LoaderUl = styled("ul")({

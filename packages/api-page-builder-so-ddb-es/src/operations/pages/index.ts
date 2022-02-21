@@ -20,7 +20,10 @@ import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { Client } from "@elastic/elasticsearch";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import {
+    ElasticsearchBoolQueryConfig,
+    ElasticsearchSearchResponse
+} from "@webiny/api-elasticsearch/types";
 import configurations from "~/operations/configurations";
 import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
@@ -949,7 +952,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
             });
         }
 
-        let response;
+        let response: ElasticsearchSearchResponse<Page>;
         const esConfig = configurations.es(params.where);
         try {
             response = await elasticsearch.search({
@@ -1024,7 +1027,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
         const esConfig = configurations.es(where);
 
         try {
-            const response = await elasticsearch.search({
+            const response: ElasticsearchSearchResponse<string> = await elasticsearch.search({
                 ...esConfig,
                 body: {
                     ...body,

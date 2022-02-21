@@ -3,6 +3,7 @@ import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { BindComponentRenderPropValidation, Form } from "@webiny/form";
+import { FormData } from "@webiny/form/Form";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
 
@@ -49,8 +50,8 @@ const defaultSelectStyle = css({
     }
 });
 
-type SpacingPickerProps = {
-    value: any;
+interface SpacingPickerProps {
+    value: string;
     onChange: (value: string | number) => void;
     options: any[];
     disabled?: boolean;
@@ -59,8 +60,8 @@ type SpacingPickerProps = {
     className?: string;
     inputClassName?: string;
     selectClassName?: string;
-};
-const SpacingPicker = ({
+}
+const SpacingPicker: React.FC<SpacingPickerProps> = ({
     value,
     onChange,
     disabled,
@@ -70,7 +71,7 @@ const SpacingPicker = ({
     inputClassName,
     selectClassName,
     useDefaultStyle = true
-}: SpacingPickerProps) => {
+}) => {
     const formData = useMemo(() => {
         const parsedValue = parseInt(value);
         const regx = new RegExp(`${parsedValue}`, "g");
@@ -88,7 +89,7 @@ const SpacingPicker = ({
         };
     }, [value]);
 
-    const onFormChange = useCallback(formData => {
+    const onFormChange = useCallback((formData: FormData) => {
         if (formData.unit === "auto") {
             onChange(formData.unit);
         } else {

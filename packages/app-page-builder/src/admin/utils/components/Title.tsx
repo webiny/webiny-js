@@ -24,7 +24,13 @@ const DeleteIconWrapper = styled("div")({
     right: 16
 });
 
-const Title = props => {
+interface TitleProps {
+    id: string;
+    title: string;
+    plugin: string;
+    refresh: () => void;
+}
+const Title: React.FC<TitleProps> = props => {
     const { plugin: pluginName, title } = props;
 
     const client = useApolloClient();

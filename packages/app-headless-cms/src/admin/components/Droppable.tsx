@@ -2,23 +2,37 @@ import * as React from "react";
 import { ConnectDropTarget, useDrop } from "react-dnd";
 import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 
-export type DroppableChildrenFunction = (params: {
+export interface DroppableChildrenFunctionParams {
     isDragging: boolean;
     isOver: boolean;
     item: any;
     drop: ConnectDropTarget;
-}) => React.ReactElement;
+}
+export interface DroppableChildrenFunction {
+    (params: DroppableChildrenFunctionParams): React.ReactElement;
+}
 
-export type DroppableProps = {
+interface IsVisibleParams {
+    type: "row" | "field" | "newField";
+    item: any;
+    isDragging: boolean;
+}
+export interface IsVisibleCallable {
+    (params: IsVisibleParams): boolean;
+}
+export interface OnDropCallable {
+    (item: DragSource): void;
+}
+export interface DroppableProps {
     type?: string;
     children: DroppableChildrenFunction;
     isDragging?: boolean;
     isDroppable?: (item: any) => boolean;
-    isVisible?: (params: { type: string; item: any; isDragging: boolean }) => boolean;
-    onDrop?: (item: DragSource) => void;
-};
+    isVisible?: IsVisibleCallable;
+    onDrop?: OnDropCallable;
+}
 
-function Droppable(props: DroppableProps) {
+const DroppableComponent: React.FC<DroppableProps> = props => {
     const { children, onDrop, isVisible = () => true } = props;
 
     const [{ item, isOver }, drop] = useDrop({
@@ -39,6 +53,6 @@ function Droppable(props: DroppableProps) {
     }
 
     return children({ isDragging: Boolean(item), isOver, item, drop });
-}
+};
 
-export default React.memo(Droppable);
+export const Droppable: React.FC<DroppableProps> = React.memo(DroppableComponent);

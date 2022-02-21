@@ -26,7 +26,7 @@ const createEntity = (entityName: string, table: Table, attributes: Attributes):
     });
 };
 
-export const createUserEntity = (table, attributes = {}) => {
+export const createUserEntity = (table: Table, attributes: Attributes = {}) => {
     return createEntity(ENTITIES.USERS, table, {
         id: {
             type: "string"
@@ -62,7 +62,7 @@ export const createUserEntity = (table, attributes = {}) => {
     });
 };
 
-export const createSystemEntity = (table, attributes = {}) => {
+export const createSystemEntity = (table: Table, attributes: Attributes = {}) => {
     return createEntity(ENTITIES.SYSTEM, table, {
         tenant: {
             type: "string"

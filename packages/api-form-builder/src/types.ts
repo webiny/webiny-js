@@ -377,19 +377,25 @@ export interface FormBuilderStorageOperationsListFormsParams {
     limit: number;
     sort: string[];
 }
+
+/**
+ * @category StorageOperations
+ * @category StorageOperationsParams
+ */
+export interface FormBuilderStorageOperationsListFormRevisionsParamsWhere {
+    id?: string;
+    formId?: string;
+    version_not?: number;
+    publishedOn_not?: string | null;
+    tenant: string;
+    locale: string;
+}
 /**
  * @category StorageOperations
  * @category StorageOperationsParams
  */
 export interface FormBuilderStorageOperationsListFormRevisionsParams {
-    where: {
-        id?: string;
-        formId?: string;
-        version_not?: number;
-        publishedOn_not?: string | null;
-        tenant: string;
-        locale: string;
-    };
+    where: FormBuilderStorageOperationsListFormRevisionsParamsWhere;
     sort?: string[];
 }
 

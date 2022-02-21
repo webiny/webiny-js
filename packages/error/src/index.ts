@@ -1,3 +1,4 @@
-import Error from "./Error";
+import Error, { ErrorOptions } from "./Error";
 
 export default Error;
+export { ErrorOptions };

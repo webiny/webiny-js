@@ -7,7 +7,7 @@ type SecureRouteErrorPlugin = Plugin & { render: () => React.ReactNode };
 const plugin: SecureRouteErrorPlugin = {
     type: "secure-route-error",
     name: "secure-route-error",
-    render() {
+    render(): React.ReactElement {
         return <NotAuthorizedError />;
     }
 };

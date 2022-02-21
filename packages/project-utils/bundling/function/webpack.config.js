@@ -21,6 +21,7 @@ module.exports = options => {
     const sourceMaps = options.sourceMaps !== false;
 
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
+    const tsCheksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
 
     return {
         entry: [
@@ -54,13 +55,14 @@ module.exports = options => {
                 ),
                 ...definitions
             }),
-            new ForkTsCheckerWebpackPlugin({
-                typescript: {
-                    configFile: path.resolve(cwd, "./tsconfig.json"),
-                    typescriptPath: require.resolve("typescript")
-                },
-                async: !production
-            }),
+            tsCheksEnabled &&
+                new ForkTsCheckerWebpackPlugin({
+                    typescript: {
+                        configFile: path.resolve(cwd, "./tsconfig.json"),
+                        typescriptPath: require.resolve("typescript")
+                    },
+                    async: !production
+                }),
             options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
@@ -75,7 +77,10 @@ module.exports = options => {
                 {
                     test: /\.mjs$/,
                     include: /node_modules/,
-                    type: "javascript/auto"
+                    type: "javascript/auto",
+                    resolve: {
+                        fullySpecified: false
+                    }
                 },
                 {
                     test: /\.(js|ts)$/,
@@ -87,7 +92,7 @@ module.exports = options => {
         },
         resolve: {
             modules: [path.resolve(path.join(cwd, "node_modules")), "node_modules"],
-            extensions: [".mjs", ".ts", ".tsx", ".js", ".jsx", ".json"]
+            extensions: [".ts", ".mjs", ".js", ".json"]
         }
     };
 };

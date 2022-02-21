@@ -24,24 +24,32 @@ export const LoginContent = styled("div")({
     margin: "0 auto 25px auto"
 });
 
-const OktaSignInWidget = ({ oktaSignIn }: OktaSignInWidgetProps) => {
+const OktaSignInWidget: React.FC<OktaSignInWidgetProps> = ({ oktaSignIn }) => {
     const { oktaAuth } = useOktaAuth();
     const widgetRef = useRef();
 
     useEffect(() => {
         if (!widgetRef.current) {
-            return;
+            return null;
         }
 
-        oktaSignIn.renderEl(
-            { el: widgetRef.current },
-            res => {
-                oktaAuth.handleLoginRedirect(res.tokens);
-            },
-            err => {
-                throw err;
-            }
-        );
+        const query = new URLSearchParams(location.search);
+        const initiateAuthFlow = Boolean(query.get("iss"));
+        if (initiateAuthFlow) {
+            oktaAuth.token.getWithRedirect({
+                responseType: "id_token"
+            });
+        } else {
+            oktaSignIn.renderEl(
+                { el: widgetRef.current },
+                res => {
+                    oktaAuth.handleLoginRedirect(res.tokens);
+                },
+                err => {
+                    throw err;
+                }
+            );
+        }
 
         return () => oktaSignIn.remove();
     }, [oktaAuth]);

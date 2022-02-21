@@ -1,16 +1,9 @@
-export const serializeSorters = data => {
-    if (!data) {
-        return data;
-    }
-    const [[key, value]] = Object.entries(data);
-    return `${key}:${value}`;
-};
-
-export const deserializeSorters = (data: string): Record<string, "asc" | "desc" | boolean> => {
+type SortTypes = "asc" | "desc";
+export const deserializeSorters = (data: string): [string, SortTypes] => {
     if (typeof data !== "string") {
         return data;
     }
-
-    const [key, value] = data.split(":") as [string, "asc" | "desc" | boolean];
-    return { [key]: value };
+    const [field, orderBy] = data.split("_") as [string, SortTypes];
+    const order = String(orderBy).toLowerCase() === "asc" ? "asc" : "desc";
+    return [field, order];
 };

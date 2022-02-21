@@ -1,8 +1,8 @@
-export type SaveRevisionActionArgsType = {
+export interface SaveRevisionActionArgsType {
     debounce?: boolean;
     onFinish?: () => void;
-};
+}
 
-export type ToggleSaveRevisionStateActionArgsType = {
+export interface ToggleSaveRevisionStateActionArgsType {
     saving: boolean;
-};
+}

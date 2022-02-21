@@ -78,7 +78,7 @@ export async function exportPage(
     return zipper.process();
 }
 
-export interface ImageFile extends File {
+export interface ImageFile extends Omit<File, "src"> {
     key: string;
 }
 

@@ -66,7 +66,10 @@ const getRevisionById = (params: LoaderParams) => {
             });
 
             return collection;
-        }, {});
+            /**
+             * We cast as any because there is no return type defined.
+             */
+        }, {} as Record<string, any>);
 
         const records = await batchReadAll<CmsEntry>({
             table: entity.table,
@@ -103,7 +106,10 @@ const getPublishedRevisionByEntryId = (params: LoaderParams) => {
                 SK: publishedKey
             });
             return collection;
-        }, {});
+            /**
+             * We cast as any because there is no return type defined.
+             */
+        }, {} as Record<string, any>);
 
         const records = await batchReadAll<CmsEntry>({
             table: entity.table,
@@ -141,7 +147,10 @@ const getLatestRevisionByEntryId = (params: LoaderParams) => {
                 SK: latestKey
             });
             return collection;
-        }, {});
+            /**
+             * We cast as any because there is no return type defined.
+             */
+        }, {} as Record<string, any>);
 
         const records = await batchReadAll<CmsEntry>({
             table: entity.table,
@@ -207,14 +216,14 @@ type Loaders =
 
 const loaderNames = Object.keys(dataLoaders) as Loaders[];
 
-export interface Params {
+interface DataLoadersHandlerParams {
     entity: Entity<any>;
 }
 export class DataLoadersHandler {
     private readonly loaders: Map<string, DataLoader<any, any>> = new Map();
     private readonly entity: Entity<any>;
 
-    public constructor(params) {
+    public constructor(params: DataLoadersHandlerParams) {
         this.entity = params.entity;
     }
 
@@ -238,7 +247,7 @@ export class DataLoadersHandler {
         return await this.loadMany("getLatestRevisionByEntryId", params, params.ids);
     }
 
-    private getLoader(name: string, params: GetLoaderParams): DataLoader<any, any> {
+    private getLoader(name: Loaders, params: GetLoaderParams): DataLoader<any, any> {
         if (!dataLoaders[name]) {
             throw new WebinyError("Unknown data loader.", "UNKNOWN_DATA_LOADER", {
                 name
@@ -260,7 +269,7 @@ export class DataLoadersHandler {
     }
 
     private async loadMany(
-        loader: string,
+        loader: Loaders,
         params: GetLoaderParams,
         ids: readonly string[]
     ): Promise<CmsEntry[]> {

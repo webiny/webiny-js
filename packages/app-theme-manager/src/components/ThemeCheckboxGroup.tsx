@@ -12,7 +12,7 @@ const WideOptions = styled.div(`
   }  
 `);
 
-export const ThemeCheckboxGroup = () => {
+export const ThemeCheckboxGroup: React.FC = () => {
     const { themes } = useThemeManager();
 
     return (

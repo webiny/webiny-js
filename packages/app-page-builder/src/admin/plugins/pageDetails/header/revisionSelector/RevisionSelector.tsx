@@ -8,6 +8,7 @@ import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
 import statusesLabels from "../../../../constants/pageStatusesLabels";
+import { PbPageData } from "~/types";
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -25,7 +26,10 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = props => {
+interface RevisionSelectorProps {
+    page: PbPageData;
+}
+const RevisionSelector: React.FC<RevisionSelectorProps> = props => {
     const { page } = props;
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);

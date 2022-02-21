@@ -1,5 +1,5 @@
 import _ from "lodash";
-import ValidationError from "./../validationError";
+import ValidationError from "~/validationError";
 
 /**
  * @function number

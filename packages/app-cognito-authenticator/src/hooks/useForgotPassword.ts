@@ -7,12 +7,21 @@ export interface ForgotPassword {
     requestCode(params: { username: string }): Promise<void>;
     setPassword(params: { username: string }): Promise<void>;
     codeSent: boolean;
-    error: Error;
+    error: string;
     loading: boolean;
 }
 
+interface State {
+    codeSent: boolean | null;
+    error: string | null;
+    loading: boolean;
+}
+interface Reducer {
+    (prev: State, next: Partial<State>): State;
+}
+
 export function useForgotPassword(): ForgotPassword {
-    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
+    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         codeSent: null,
         error: null,
         loading: false

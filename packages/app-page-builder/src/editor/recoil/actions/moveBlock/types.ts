@@ -1,4 +1,4 @@
-export type MoveBlockActionArgsType = {
+export interface MoveBlockActionArgsType {
     source: {
         id: string;
         type: string;
@@ -10,4 +10,4 @@ export type MoveBlockActionArgsType = {
         position: number;
     };
     rootElementId: string;
-};
+}

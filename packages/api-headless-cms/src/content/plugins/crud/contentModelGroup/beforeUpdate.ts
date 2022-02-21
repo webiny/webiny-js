@@ -3,11 +3,11 @@ import { BeforeGroupUpdateTopicParams } from "~/types";
 import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 
-export interface Params {
+interface AssignBeforeGroupUpdateParams {
     onBeforeUpdate: Topic<BeforeGroupUpdateTopicParams>;
     plugins: PluginsContainer;
 }
-export const assignBeforeGroupUpdate = (params: Params) => {
+export const assignBeforeGroupUpdate = (params: AssignBeforeGroupUpdateParams) => {
     const { onBeforeUpdate, plugins } = params;
 
     onBeforeUpdate.subscribe(({ group }) => {

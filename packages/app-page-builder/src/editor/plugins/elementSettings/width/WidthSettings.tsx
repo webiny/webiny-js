@@ -5,15 +5,16 @@ import merge from "lodash/merge";
 import set from "lodash/set";
 import get from "lodash/get";
 import { Form } from "@webiny/form";
+import { Form as FormDef } from "@webiny/form/Form";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import {
     activeElementAtom,
     elementWithChildrenByIdSelector,
@@ -105,10 +106,10 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
 
     const handler = useEventActionHandler();
-    const updateSettings = async (data, form) => {
+    const updateSettings = async (data: Record<string, any>, form: FormDef) => {
         const valid = await form.validate();
         if (!valid) {
-            return;
+            return null;
         }
 
         const newElement: PbEditorElement = merge(

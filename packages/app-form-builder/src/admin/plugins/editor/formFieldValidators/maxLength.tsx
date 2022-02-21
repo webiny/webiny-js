@@ -2,9 +2,9 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { FbBuilderFormFieldValidatorPlugin } from "../../../../types";
+import { FbBuilderFormFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: FbBuilderFormFieldValidatorPlugin = {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-max-length",
     validator: {
@@ -31,4 +31,5 @@ export default {
             );
         }
     }
-} as FbBuilderFormFieldValidatorPlugin;
+};
+export default plugin;

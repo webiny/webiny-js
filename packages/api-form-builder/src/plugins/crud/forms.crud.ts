@@ -1,3 +1,7 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import slugify from "slugify";
 import { NotFoundError } from "@webiny/handler-graphql";

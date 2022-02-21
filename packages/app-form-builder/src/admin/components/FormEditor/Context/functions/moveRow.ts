@@ -1,14 +1,11 @@
-import { FbFormModel } from "../../../../../types";
+import { FbFormModel } from "~/types";
 
-export default ({
-    data,
-    source,
-    destination
-}: {
+interface Params {
     source: number;
     destination: number;
     data: FbFormModel;
-}) => {
+}
+export default ({ data, source, destination }: Params) => {
     data.layout =
         source < destination
             ? [

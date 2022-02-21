@@ -1,5 +1,10 @@
 import bytes from "bytes";
-export default errors => {
+
+/**
+ * Figure out correct types for the errors.
+ */
+// TODO @ts-refactor
+export default (errors: Record<string, any>[]): string | null => {
     if (errors.length > 1) {
         let error = errors.find(error => error.type === "multipleMaxCountExceeded");
         if (error) {
@@ -26,4 +31,5 @@ export default errors => {
         case "multipleNotAllowed":
             return "Only one file allowed.";
     }
+    return null;
 };

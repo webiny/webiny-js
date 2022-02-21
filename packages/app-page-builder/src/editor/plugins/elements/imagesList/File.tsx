@@ -2,6 +2,7 @@ import React, { SyntheticEvent } from "react";
 import { css } from "emotion";
 import { Image } from "@webiny/app/components";
 import { ReactComponent as RemoveIcon } from "../../../../admin/assets/round-close-24px.svg";
+import { FileItem } from "@webiny/app-admin/components/FileManager/types";
 
 const COMPONENT_WIDTH = 176;
 const COMPONENT_HEIGHT = 176;
@@ -68,17 +69,17 @@ const imageStyles = css({
     transform: "translateX(-50%) translateY(-50%)"
 });
 
-type Props = {
-    file: any; // TODO: @adrian define type for this
+interface FileProps {
+    file: FileItem;
     selected?: boolean;
     uploadFile?: Function;
     onSelect?: (e: SyntheticEvent) => void;
     onClick?: (e: SyntheticEvent) => void;
     onRemove?: (e: SyntheticEvent) => void;
     options?: Array<{ label: string; onClick: (file: any) => void }>;
-};
+}
 
-export default function File(props: Props) {
+const File: React.FC<FileProps> = props => {
     const { file, onSelect, onRemove } = props;
 
     return (
@@ -100,4 +101,6 @@ export default function File(props: Props) {
             <div className={"label"}>{file.name}</div>
         </div>
     );
-}
+};
+
+export default File;

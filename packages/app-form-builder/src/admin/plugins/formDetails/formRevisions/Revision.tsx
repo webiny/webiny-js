@@ -1,5 +1,9 @@
 import React from "react";
 import { css } from "emotion";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import {
     ListItem,
@@ -24,8 +28,8 @@ import { ReactComponent as MoreVerticalIcon } from "../../../icons/more_vert.svg
 import { ReactComponent as PublishIcon } from "../../../icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "../../../icons/unpublish.svg";
 import { useRevision } from "./useRevision";
-import { FbFormModel } from "../../../../types";
-import usePermission from "../../../../hooks/usePermission";
+import { FbFormModel, FbRevisionModel } from "~/types";
+import { usePermission } from "~/hooks/usePermission";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
@@ -35,8 +39,8 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = rev => {
-    switch (rev.status) {
+const getIcon = (revision: Pick<FbFormModel, "status">) => {
+    switch (revision.status) {
         case "locked":
             return {
                 icon: <Icon icon={<LockIcon />} />,
@@ -55,17 +59,17 @@ const getIcon = rev => {
     }
 };
 
-type RevisionProps = {
+interface RevisionProps {
     form: FbFormModel;
-    revision: FbFormModel;
-};
+    revision: FbRevisionModel;
+}
 
-const Revision = (props: RevisionProps) => {
-    const { revision: rev, form } = props;
-    const { icon, text: tooltipText } = getIcon(rev);
+const Revision: React.FC<RevisionProps> = props => {
+    const { revision, form } = props;
+    const { icon, text: tooltipText } = getIcon(revision);
     const { publishRevision, createRevision, deleteRevision, editRevision, unpublishRevision } =
         useRevision({
-            revision: rev,
+            revision,
             form
         });
     const { canPublish, canUnpublish, canDelete, canEdit } = usePermission();
@@ -80,10 +84,10 @@ const Revision = (props: RevisionProps) => {
                 </Tooltip>
             </ListItemGraphic>
             <ListItemText>
-                <ListItemTextPrimary>{rev.name}</ListItemTextPrimary>
+                <ListItemTextPrimary>{revision.name}</ListItemTextPrimary>
                 <ListItemTextSecondary>
-                    Last modified <TimeAgo datetime={rev.savedOn} /> (#
-                    {rev.version})
+                    Last modified <TimeAgo datetime={revision.savedOn} /> (#
+                    {revision.version})
                 </ListItemTextSecondary>
             </ListItemText>
             {showMenu && (
@@ -95,7 +99,7 @@ const Revision = (props: RevisionProps) => {
                     >
                         {canEdit(form) && (
                             <MenuItem
-                                onClick={createRevision}
+                                onClick={() => createRevision()}
                                 data-testid={"fb.form-revisions.action-menu.create-revision"}
                             >
                                 <ListItemGraphic>
@@ -104,9 +108,9 @@ const Revision = (props: RevisionProps) => {
                                 New from current
                             </MenuItem>
                         )}
-                        {rev.status === "draft" && canEdit(form) && (
+                        {revision.status === "draft" && canEdit(form) && (
                             <MenuItem
-                                onClick={editRevision}
+                                onClick={() => editRevision(revision.id)}
                                 data-testid={"fb.form-revisions.action-menu.edit"}
                             >
                                 <ListItemGraphic>
@@ -116,9 +120,9 @@ const Revision = (props: RevisionProps) => {
                             </MenuItem>
                         )}
 
-                        {rev.status !== "published" && canPublish() && (
+                        {revision.status !== "published" && canPublish() && (
                             <MenuItem
-                                onClick={() => publishRevision(rev)}
+                                onClick={() => publishRevision(revision.id)}
                                 data-testid={"fb.form-revisions.action-menu.publish"}
                             >
                                 <ListItemGraphic>
@@ -128,7 +132,7 @@ const Revision = (props: RevisionProps) => {
                             </MenuItem>
                         )}
 
-                        {rev.status === "published" && canUnpublish() && (
+                        {revision.status === "published" && canUnpublish() && (
                             <ConfirmationDialog
                                 title="Confirmation required!"
                                 message={
@@ -138,7 +142,7 @@ const Revision = (props: RevisionProps) => {
                                 {({ showConfirmation }) => (
                                     <MenuItem
                                         onClick={() =>
-                                            showConfirmation(() => unpublishRevision(rev))
+                                            showConfirmation(() => unpublishRevision(revision.id))
                                         }
                                         data-testid={"fb.form-revisions.action-menu.unpublish"}
                                     >
@@ -162,7 +166,9 @@ const Revision = (props: RevisionProps) => {
                             >
                                 {({ showConfirmation }) => (
                                     <MenuItem
-                                        onClick={() => showConfirmation(deleteRevision)}
+                                        onClick={() =>
+                                            showConfirmation(() => deleteRevision(revision.id))
+                                        }
                                         data-testid={"fb.form-revisions.action-menu.delete"}
                                     >
                                         <ListItemGraphic>

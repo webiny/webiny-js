@@ -1,11 +1,14 @@
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { plugins } from "@webiny/plugins";
-import { PbEditorElement } from "../../../../../types";
+import { PbEditorElement } from "~/types";
 
-export default (element: PbEditorElement) => {
+interface Callable {
+    (): React.ReactElement;
+}
+export default (element: PbEditorElement): Callable => {
     return useCallback(() => {
         if (!element) {
-            return () => null;
+            return (): React.ReactElement => null;
         }
 
         const [pageElementPlugin] = plugins

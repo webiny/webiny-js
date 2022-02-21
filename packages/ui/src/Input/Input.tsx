@@ -1,8 +1,8 @@
 import * as React from "react";
 import { TextField, TextFieldProps } from "@rmwc/textfield";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 import pick from "lodash/pick";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import { ReactElement } from "react";
 
 export type InputProps = FormComponentProps &
@@ -45,7 +45,7 @@ export type InputProps = FormComponentProps &
  */
 
 export class Input extends React.Component<InputProps> {
-    static defaultProps = {
+    static defaultProps: InputProps = {
         rawOnChange: false,
         validation: { isValid: null, message: null }
     };

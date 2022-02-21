@@ -1,3 +1,8 @@
+/**
+ * Figure out correct types.
+ */
+// TODO @ts-refactor
+// @ts-nocheck
 import cloneDeep from "lodash/cloneDeep";
 import { PbContext } from "../../types";
 import { Menu } from "~/types";

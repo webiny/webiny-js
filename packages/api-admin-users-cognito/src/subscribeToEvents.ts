@@ -5,7 +5,7 @@ import { migration } from "~/migration";
 
 type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
-export const subscribeToEvents = (context: Context) => {
+export const subscribeToEvents = (context: Context): void => {
     const { security, tenancy, adminUsers } = context;
 
     const getTenant = () => {

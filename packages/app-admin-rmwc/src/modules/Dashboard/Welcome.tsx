@@ -102,7 +102,7 @@ const WelcomeScreenWidgetsWrapper = styled("div")({
     }
 });
 
-const Welcome = () => {
+const Welcome: React.FC = () => {
     const { identity } = useSecurity();
 
     if (!identity) {

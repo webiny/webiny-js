@@ -1,10 +1,10 @@
-type ErrorResponseParams = {
+interface ErrorResponseParams {
     code?: string;
     message?: string;
     data?: any;
-};
+}
 
-const defaultParams = {
+const defaultParams: ErrorResponseParams = {
     code: "",
     message: "",
     data: null

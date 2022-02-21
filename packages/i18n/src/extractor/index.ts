@@ -18,7 +18,7 @@ class Extractor {
     }
 
     execute() {
-        const results = {};
+        const results: Record<string, string> = {};
 
         if (this.glob) {
             const paths = glob.sync(this.glob);

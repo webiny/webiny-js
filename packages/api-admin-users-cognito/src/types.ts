@@ -1,6 +1,8 @@
 import { Topic } from "@webiny/pubsub/types";
+import { SecurityContext } from "@webiny/api-security/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
-export interface AdminUsersContext {
+export interface AdminUsersContext extends SecurityContext, TenancyContext {
     adminUsers: AdminUsers;
 }
 
@@ -157,7 +159,7 @@ export interface AdminUsers {
 }
 
 /* Storage Operations */
-interface StorageOperationsListUsersParams extends ListUsersParams {
+export interface StorageOperationsListUsersParams extends ListUsersParams {
     where: ListUsersParams["where"] & {
         tenant: string;
     };

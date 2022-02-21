@@ -3,7 +3,7 @@ import React from "react";
 import { ComponentType } from "react";
 import { AppInstaller as Installer } from "./AppInstaller";
 
-const AppInstallerHOC = (Component: ComponentType<unknown>) => {
+const AppInstallerHOC = (Component: ComponentType<unknown>): React.FC => {
     return function AppInstallerProvider({ children }) {
         return (
             <Installer>

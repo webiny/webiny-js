@@ -3,9 +3,12 @@ import { Page, PbContext } from "~/types";
 
 export type CallbackFunction<TParams> = (params: TParams) => void | Promise<void>;
 
-export interface NotFoundParams {
+interface Args {
+    [key: string]: any;
+}
+export interface NotFoundParams<T = any> {
     context: PbContext;
-    args: Record<string, any>;
+    args: Args & T;
 }
 
 interface Config<TPage extends Page = Page> {
@@ -21,13 +24,17 @@ export class PagePlugin<TPage extends Page = Page> extends Plugin {
         this._config = config || {};
     }
 
-    notFound(params: NotFoundParams): Promise<Page | undefined> {
+    public async notFound<T = Args>(params: NotFoundParams<T>): Promise<TPage | undefined> {
         return this._execute("notFound", params);
     }
 
-    private _execute(callback, params) {
-        if (typeof this._config[callback] === "function") {
-            return this._config[callback](params);
+    private async _execute(
+        callback: keyof Config,
+        params: NotFoundParams
+    ): Promise<TPage | undefined> {
+        if (typeof this._config[callback] !== "function") {
+            return undefined;
         }
+        return this._config[callback](params);
     }
 }

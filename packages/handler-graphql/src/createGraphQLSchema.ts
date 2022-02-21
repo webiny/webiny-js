@@ -12,6 +12,7 @@ import {
     TimeScalar,
     LongScalar
 } from "./builtInTypes";
+import { GraphQLScalarType } from "graphql/type/definition";
 
 export const createGraphQLSchema = (context: HttpContext) => {
     const scalars = context.plugins
@@ -39,7 +40,7 @@ export const createGraphQLSchema = (context: HttpContext) => {
             ...scalars.reduce((acc, s) => {
                 acc[s.name] = s;
                 return acc;
-            }, {}),
+            }, {} as Record<string, GraphQLScalarType>),
             JSON: JsonScalar,
             Long: LongScalar,
             RefInput,

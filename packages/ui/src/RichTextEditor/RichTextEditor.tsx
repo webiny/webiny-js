@@ -8,7 +8,7 @@ import {
     SanitizerConfig,
     ToolSettings
 } from "@editorjs/editorjs/types";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
 
@@ -26,14 +26,17 @@ const classes = {
     })
 };
 
-type EditorJSType = {
+interface EditorJSType {
     destroy?: () => void;
     save: () => Promise<any>;
-};
+}
 
-export type OnReadyParams = { editor: any; initialData: OutputData };
+export interface OnReadyParams {
+    editor: any;
+    initialData: OutputData;
+}
 
-export type RichTextEditorProps = {
+export interface RichTextEditorProps {
     autofocus?: boolean;
     context?: { [key: string]: any };
     logLevel?: string;
@@ -43,14 +46,16 @@ export type RichTextEditorProps = {
     placeholder?: string;
     readOnly?: boolean;
     sanitizer?: SanitizerConfig;
-    tools?: { [toolName: string]: ToolSettings };
+    tools?: {
+        [toolName: string]: ToolSettings;
+    };
     value?: OutputBlockData[];
     label?: string;
     description?: string;
     disabled?: boolean;
-};
+}
 
-export const RichTextEditor = (props: RichTextEditorProps) => {
+export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     const elementId = useRef("rte-" + shortid.generate());
     const editorRef = useRef<EditorJSType>();
 
@@ -84,7 +89,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                     tool.config = { ...tool.config, context };
                 }
                 return tools;
-            }, {})
+            }, {} as Record<string, ToolSettings>)
         });
 
         return () => {

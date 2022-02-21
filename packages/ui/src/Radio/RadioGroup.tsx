@@ -1,7 +1,7 @@
 import * as React from "react";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import { webinyRadioTitle } from "./Radio.styles";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 
 interface RadioGroupRenderParams {
     onChange: (id: string | number) => () => void;
@@ -20,8 +20,8 @@ type Props = FormComponentProps & {
 };
 
 class RadioGroup extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<Props> = {
+        validation: { isValid: null, message: null }
     };
 
     render() {

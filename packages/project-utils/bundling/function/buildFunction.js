@@ -1,8 +1,11 @@
 const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const { getDuration } = require("../../utils");
 const chalk = require("chalk");
+const fs = require("fs-extra");
+const { getProject } = require("@webiny/cli/utils");
+const { injectHandlerTelemetry } = require("./utils");
 
-module.exports = options => {
+module.exports = async options => {
     const duration = getDuration();
     const path = require("path");
 
@@ -21,7 +24,7 @@ module.exports = options => {
     }
 
     const webpack = require("webpack");
-    return new Promise(async (resolve, reject) => {
+    const result = await new Promise(async (resolve, reject) => {
         return webpack(webpackConfig).run(async (err, stats) => {
             let messages = {};
 
@@ -60,4 +63,23 @@ module.exports = options => {
             resolve();
         });
     });
+
+    const project = getProject({ cwd });
+
+    if (!project.config.id) {
+        return result;
+    }
+
+    const handlerFile = await fs.readFile(path.join(options.cwd, "/build/handler.js"), {
+        encoding: "utf8",
+        flag: "r"
+    });
+
+    // TODO this wont include the headless CMS functions
+    const includesGraphQl = handlerFile.includes("handler-graphql");
+    if (includesGraphQl) {
+        await injectHandlerTelemetry(cwd);
+    }
+
+    return result;
 };

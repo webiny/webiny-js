@@ -2,7 +2,11 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
 
-export default (params: { context: FileManagerContext; table: Table }): Entity<any> => {
+export interface SettingsEntityElasticsearch {
+    context: FileManagerContext;
+    table: Table;
+}
+export default (params: SettingsEntityElasticsearch): Entity<any> => {
     const { context, table } = params;
     const entityName = "Settings";
     const attributes = getExtraAttributes(context, entityName);

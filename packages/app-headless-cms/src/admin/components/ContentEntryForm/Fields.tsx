@@ -4,7 +4,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import RenderFieldElement from "./RenderFieldElement";
 import { CmsEditorContentModel, CmsEditorField, CmsEditorFieldsLayout } from "~/types";
 
-interface Props {
+interface FieldsProps {
     Bind: BindComponent;
     contentModel: CmsEditorContentModel;
     fields: CmsEditorField[];
@@ -12,9 +12,16 @@ interface Props {
     gridClassName?: string;
 }
 
-const getFieldById = (fields, id): CmsEditorField => fields.find(field => field.id === id);
+const getFieldById = (fields: CmsEditorField[], id: string): CmsEditorField =>
+    fields.find(field => field.id === id);
 
-export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Props) => {
+export const Fields: React.FC<FieldsProps> = ({
+    Bind,
+    fields,
+    layout,
+    contentModel,
+    gridClassName
+}) => {
     return (
         <Grid className={gridClassName}>
             {layout.map((row, rowIndex) => (

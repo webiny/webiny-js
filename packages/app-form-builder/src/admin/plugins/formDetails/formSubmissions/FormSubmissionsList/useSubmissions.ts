@@ -1,11 +1,31 @@
 import { useApolloClient, useMutation } from "@apollo/react-hooks";
 import { useCallback, useEffect, useReducer } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import * as GQL from "../../../../graphql";
 import { FetchPolicy } from "apollo-client";
+import { FbFormModel, FbFormSubmissionData } from "~/types";
+import {
+    ExportFormSubmissionsMutationResponse,
+    ExportFormSubmissionsMutationVariables,
+    EXPORT_FORM_SUBMISSIONS,
+    ListFormSubmissionsQueryResponse,
+    ListFormSubmissionsQueryVariables,
+    LIST_FORM_SUBMISSIONS
+} from "~/admin/graphql";
 
-export default form => {
-    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
+interface State {
+    loading: boolean;
+    page: number;
+    cursors: Record<number, string>;
+    exportInProgress: boolean;
+    submissions: FbFormSubmissionData[];
+    sort: string[];
+}
+interface Reducer {
+    (prev: State, next: Partial<State>): State;
+}
+
+export const useSubmissions = (form: Pick<FbFormModel, "id">) => {
+    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         loading: false,
         page: 0,
         cursors: {
@@ -23,8 +43,11 @@ export default form => {
     const loadSubmissions = async (fetchPolicy: FetchPolicy = "cache-first") => {
         setState({ loading: true });
 
-        const { data: res } = await client.query({
-            query: GQL.LIST_FORM_SUBMISSIONS,
+        const { data: res } = await client.query<
+            ListFormSubmissionsQueryResponse,
+            ListFormSubmissionsQueryVariables
+        >({
+            query: LIST_FORM_SUBMISSIONS,
             variables: { form: form.id, sort: state.sort, after: state.cursors[state.page] },
             fetchPolicy
         });
@@ -42,12 +65,15 @@ export default form => {
         });
     };
 
-    useEffect(() => {
+    useEffect((): void => {
         loadSubmissions();
     }, [form.id, state.page, state.sort]);
 
-    const [exportFormSubmission] = useMutation(GQL.EXPORT_FORM_SUBMISSIONS);
-    const exportSubmissions = useCallback(async () => {
+    const [exportFormSubmission] = useMutation<
+        ExportFormSubmissionsMutationResponse,
+        ExportFormSubmissionsMutationVariables
+    >(EXPORT_FORM_SUBMISSIONS);
+    const exportSubmissions = useCallback(async (): Promise<void> => {
         setState({ exportInProgress: true });
         const { data } = await exportFormSubmission({
             variables: {
@@ -72,7 +98,7 @@ export default form => {
         loading: state.loading,
         refresh: () => loadSubmissions("network-only"),
         submissions: state.submissions,
-        setSorter: (sort: any) => {
+        setSorter: (sort: string[]) => {
             setState({ sort });
         },
         hasPreviousPage,

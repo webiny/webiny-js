@@ -20,14 +20,24 @@ export default (params: Params = {}) => {
         graphqlHandler(),
         {
             type: "context",
-            apply: context => {
+            apply: (context: PbContext) => {
                 if (context.i18nContent) {
                     return;
                 }
                 context.i18nContent = {
+                    ...(context.i18nContent || ({} as any)),
                     getCurrentLocale: () => {
                         return {
-                            code: "en-US"
+                            code: "en-US",
+                            default: true,
+                            createdBy: {
+                                id: "admin",
+                                type: "admin",
+                                displayName: "admin"
+                            },
+                            createdOn: new Date().toISOString(),
+                            tenant: "root",
+                            webinyVersion: process.env.WEBINY_VERSION
                         };
                     },
                     checkI18NContentPermission: () => {

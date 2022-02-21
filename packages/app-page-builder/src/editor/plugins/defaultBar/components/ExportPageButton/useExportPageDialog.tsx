@@ -123,11 +123,17 @@ const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = 
     );
 };
 
-const useExportPageDialog = () => {
+interface UseExportPageDialog {
+    showExportPageContentDialog: (props: ExportPageDialogProps) => void;
+    showExportPageLoadingDialog: (taskId: string) => void;
+    showExportPageInitializeDialog: (props: ExportPagesDialogProps) => void;
+    hideDialog: () => void;
+}
+const useExportPageDialog = (): UseExportPageDialog => {
     const { showDialog, hideDialog } = useDialog();
 
     return {
-        showExportPageContentDialog: (props: ExportPageDialogProps) => {
+        showExportPageContentDialog: props => {
             showDialog(<ExportPageDialogMessage {...props} />, {
                 title: t`Your export is now ready!`,
                 actions: {

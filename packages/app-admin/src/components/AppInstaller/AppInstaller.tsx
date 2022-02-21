@@ -20,7 +20,7 @@ import {
 } from "./styled";
 import { config as appConfig } from "@webiny/app/config";
 
-export const AppInstaller = ({ children }) => {
+export const AppInstaller: React.FC = ({ children }) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
 
     const lsKey = `webiny_installation_${tenantId}`;
@@ -56,7 +56,7 @@ export const AppInstaller = ({ children }) => {
         return <LoginScreen>{children}</LoginScreen>;
     }
 
-    const renderLayout = (content, secure = false) => {
+    const renderLayout = (content: React.ReactNode, secure = false): React.ReactElement => {
         return (
             <SplitView className={installerSplitView}>
                 <LeftPanel span={2}>
@@ -74,7 +74,7 @@ export const AppInstaller = ({ children }) => {
         );
     };
 
-    const renderBody = content => {
+    const renderBody = (content: React.ReactNode): React.ReactElement => {
         return (
             <Wrapper>
                 <InstallContent>

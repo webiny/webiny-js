@@ -14,7 +14,7 @@ const style = {
 
 export default new FileManagerFileTypePlugin({
     types: ["*/*"],
-    render() {
+    render(): React.ReactNode {
         return (
             <div className={style.centering}>
                 <FileIcon />

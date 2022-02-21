@@ -14,7 +14,7 @@ const linkStyles = css({
     }
 });
 
-export const AccountDetails = () => {
+export const AccountDetails: React.FC = () => {
     const security = useSecurity();
     const tenancy = useTenancy();
 

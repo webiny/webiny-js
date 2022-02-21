@@ -1,5 +1,9 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
-import cloneDeep from "lodash.clonedeep";
+import cloneDeep from "lodash/cloneDeep";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
@@ -59,6 +63,10 @@ export const createAdminUsers = ({
                 });
             }
         },
+        /**
+         * TODO @ts-refactor figure out better way to type this
+         */
+        // @ts-ignore
         async createUser(this: AdminUsers, data) {
             await checkPermission();
             const tenant = getTenant();
@@ -90,7 +98,7 @@ export const createAdminUsers = ({
             /**
              * Always delete `password` from the user data!
              */
-            delete user["password"];
+            delete (user as any)["password"];
             try {
                 result = await storageOperations.createUser({ user });
             } catch (err) {
@@ -171,6 +179,10 @@ export const createAdminUsers = ({
                 });
             }
         },
+        /**
+         * TODO @ts-refactor figure out better way to type this
+         */
+        // @ts-ignore
         async updateUser(this: AdminUsers, id, data) {
             await checkPermission();
 

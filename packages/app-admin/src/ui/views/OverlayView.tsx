@@ -1,7 +1,7 @@
 import React from "react";
 import { Transition } from "react-transition-group";
 import styled from "@emotion/styled";
-import { UIView } from "~/ui/UIView";
+import { UIView, UIViewProps } from "~/ui/UIView";
 import { UseOverlayView, useOverlayView } from "./OverlayView/useOverlayView";
 import { HeaderElement } from "./OverlayView/HeaderElement";
 import { ContentElement } from "./OverlayView/ContentElement";
@@ -23,7 +23,7 @@ const OverlayLayoutWrapper = styled("div")({
     left: 0
 });
 
-const defaultStyle = {
+const defaultStyle: Record<string, string | number> = {
     transform: "translateY(75vh)",
     opacity: 0,
     transitionProperty: "transform, opacity",
@@ -32,9 +32,15 @@ const defaultStyle = {
     willChange: "opacity, transform"
 };
 
-const transitionStyles = {
-    entering: { transform: "translateY(75vh)", opacity: 0 },
-    entered: { transform: "translateY(0px)", opacity: 1 }
+const transitionStyles: Record<string, any> = {
+    entering: {
+        transform: "translateY(75vh)",
+        opacity: 0
+    },
+    entered: {
+        transform: "translateY(0px)",
+        opacity: 1
+    }
 };
 
 interface OnExited {
@@ -54,7 +60,7 @@ export class OverlayView extends UIView {
     private _onEntered: OnEntered[] = [];
     private _onExited: OnExited[] = [];
 
-    constructor(id = "OverlayView") {
+    public constructor(id = "OverlayView") {
         super(id);
         this.useGrid(false);
 
@@ -71,43 +77,43 @@ export class OverlayView extends UIView {
         this.applyPlugins(OverlayView);
     }
 
-    setTitle(title: () => string) {
+    public setTitle(title: () => string): void {
         this.getHeaderElement().setTitle(title);
     }
 
-    onEntered() {
+    public onEntered(): void {
         [...this._onEntered].reverse().forEach(cb => cb(this));
     }
 
-    onExited() {
+    public onExited(): void {
         [...this._onExited].reverse().forEach(cb => cb(this));
     }
 
-    addOnEntered(cb: OnExited) {
+    public addOnEntered(cb: OnExited): void {
         this._onEntered.push(cb);
     }
 
-    addOnExited(cb: OnExited) {
+    public addOnExited(cb: OnExited): void {
         this._onExited.push(cb);
     }
 
-    getOverlayHook() {
+    public getOverlayHook(): UseOverlayView {
         return this.getHook<UseOverlayView>("overlay");
     }
 
-    setIsVisible(visible: boolean) {
+    public setIsVisible(visible: boolean): void {
         this.getOverlayHook().setIsVisible(visible);
     }
 
-    getHeaderElement(): HeaderElement {
+    public getHeaderElement(): HeaderElement {
         return this.getElement("overlayHeader");
     }
 
-    getContentElement(): ContentElement {
+    public getContentElement(): ContentElement {
         return this.getElement("overlayContent");
     }
 
-    render(props) {
+    public render(props: UIViewProps): React.ReactNode {
         const { isVisible } = this.getOverlayHook();
         return (
             <Transition

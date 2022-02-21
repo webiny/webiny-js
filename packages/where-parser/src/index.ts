@@ -18,7 +18,15 @@ const isSyntaxKey = (key: string): boolean => {
     return SYNTAX_KEYS.includes(key);
 };
 
-const extractValues = (target: any) => {
+interface Value {
+    attr?: string;
+    operation?: string;
+    value?: string | number | boolean;
+    AND?: Value;
+    OR?: Value;
+}
+
+const extractValues = (target: any): Value[] => {
     if (
         typeof target === "object" &&
         target instanceof Date === false &&
@@ -30,7 +38,7 @@ const extractValues = (target: any) => {
                 continue;
             } else if (isSyntaxKey(key)) {
                 values.push({
-                    [key]: extractValues(target[key])
+                    [key as Syntax]: extractValues(target[key])
                 });
                 continue;
             }
@@ -164,10 +172,10 @@ export const parseWhere = <T = WhereParserResult>(args: WhereParserArgs): T => {
             keys: rKeys
         });
     }
-    return result.reduce((acc, value) => {
+    return result.reduce((acc: Record<string, string>, value: Record<string, string>) => {
         const rKeys = Object.keys(value);
         const key = rKeys.shift();
         acc[key] = value[key];
         return acc;
-    }, {});
+    }, {} as Record<string, string>);
 };

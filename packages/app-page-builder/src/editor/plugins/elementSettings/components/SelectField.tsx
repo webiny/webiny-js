@@ -39,16 +39,16 @@ const selectStyle = css({
     "& option": { fontWeight: "normal" }
 });
 
-type SelectProps = {
+interface SelectProps {
     value?: string;
     onChange?: (value: any) => void;
     // One or more <option> or <optgroup> elements.
     children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
     className?: string;
     [key: string]: any;
-};
+}
 
-const SelectField = ({
+const SelectField: React.FC<SelectProps> = ({
     value,
     onChange,
     children,
@@ -57,7 +57,7 @@ const SelectField = ({
     description,
     placeholder = "",
     ...props
-}: SelectProps) => {
+}) => {
     return (
         <React.Fragment>
             <select

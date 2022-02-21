@@ -5,7 +5,7 @@ import { Provider } from "@webiny/app-admin-core";
 import React from "react";
 import { SecurityProvider as ContextProvider } from "./contexts/Security";
 
-const SecurityProviderHOC = Component => {
+const SecurityProviderHOC = (Component: React.FC): React.FC => {
     return function SecurityProvider({ children }) {
         return (
             <ContextProvider>

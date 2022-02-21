@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import {
     useDrag,
     DragPreviewImage,
@@ -9,24 +9,27 @@ import {
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
-export type DraggableChildrenFunction = (params: {
+interface DraggableChildrenFunctionParams {
     isDragging: boolean;
     drag: ConnectDragSource;
-}) => ReactElement;
+}
+export interface DraggableChildrenFunction {
+    (params: DraggableChildrenFunctionParams): React.ReactElement;
+}
 
-export type DraggableProps = {
+export interface DraggableProps {
     children: DraggableChildrenFunction;
     beginDrag(props: DraggableProps, monitor: DragSourceMonitor): any;
     endDrag(item: any, monitor: DragSourceMonitor): void;
     target: string[];
     enabled: boolean;
-};
+}
 
-export type DraggableItem = DragObjectWithType & {
+export interface DraggableItem extends DragObjectWithType {
     target: string[];
-};
+}
 
-const Draggable = React.memo(function Draggable(props: DraggableProps) {
+const Draggable: React.FC<DraggableProps> = props => {
     const { children, beginDrag, endDrag, target, enabled = true } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
@@ -57,6 +60,6 @@ const Draggable = React.memo(function Draggable(props: DraggableProps) {
             {children({ isDragging, drag })}
         </>
     );
-});
+};
 
-export default Draggable;
+export default React.memo(Draggable);

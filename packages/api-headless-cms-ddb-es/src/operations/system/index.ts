@@ -10,7 +10,7 @@ import WebinyError from "@webiny/error";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
-export interface Params {
+export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
 }
 
@@ -35,7 +35,9 @@ const createKeys = (params: PartitionKeyParams): Keys => {
     };
 };
 
-export const createSystemStorageOperations = (params: Params): CmsSystemStorageOperations => {
+export const createSystemStorageOperations = (
+    params: CreateSystemStorageOperationsParams
+): CmsSystemStorageOperations => {
     const { entity } = params;
 
     const create = async ({ system }: CmsSystemStorageOperationsCreateParams) => {

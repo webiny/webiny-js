@@ -11,6 +11,10 @@ export type TabProps = RmwcTabProps & {
      * Style object
      */
     style?: React.CSSProperties;
+    /**
+     * Tab ID for the testing.
+     */
+    "data-testid"?: string;
 };
 
 export const Tab = (props: TabProps) => {

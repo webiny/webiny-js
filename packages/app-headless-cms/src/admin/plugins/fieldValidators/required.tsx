@@ -1,6 +1,6 @@
 import { CmsEditorFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: CmsEditorFieldValidatorPlugin = {
     type: "cms-editor-field-validator",
     name: "cms-editor-field-validator-required",
     validator: {
@@ -9,4 +9,5 @@ export default {
         description: "You won't be able to submit the form if this field is empty",
         defaultMessage: "Value is required."
     }
-} as CmsEditorFieldValidatorPlugin;
+};
+export default plugin;

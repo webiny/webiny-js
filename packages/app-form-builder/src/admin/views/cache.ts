@@ -1,13 +1,24 @@
 import dotProp from "dot-prop-immutable";
-import { GET_FORM_REVISIONS, LIST_FORMS } from "../graphql";
+import {
+    GET_FORM_REVISIONS,
+    GetFormRevisionsQueryResponse,
+    GetFormRevisionsQueryVariables,
+    LIST_FORMS,
+    ListFormsQueryResponse
+} from "../graphql";
+import { DataProxy } from "apollo-cache";
+import { FbRevisionModel } from "~/types";
 
 // Replace existing "latest" revision with the new revision
-export const updateLatestRevisionInListCache = (cache, revision) => {
+export const updateLatestRevisionInListCache = (
+    cache: DataProxy,
+    revision: FbRevisionModel
+): void => {
     const gqlParams = { query: LIST_FORMS };
 
     const [uniqueId] = revision.id.split("#");
 
-    const { formBuilder } = cache.readQuery(gqlParams);
+    const { formBuilder } = cache.readQuery<ListFormsQueryResponse>(gqlParams);
     const index = formBuilder.listForms.data.findIndex(item => item.id.startsWith(uniqueId));
 
     cache.writeQuery({
@@ -18,10 +29,10 @@ export const updateLatestRevisionInListCache = (cache, revision) => {
     });
 };
 
-export const addFormToListCache = (cache, revision) => {
+export const addFormToListCache = (cache: DataProxy, revision: FbRevisionModel): void => {
     const gqlParams = { query: LIST_FORMS };
 
-    const { formBuilder } = cache.readQuery(gqlParams);
+    const { formBuilder } = cache.readQuery<ListFormsQueryResponse>(gqlParams);
 
     cache.writeQuery({
         ...gqlParams,
@@ -34,13 +45,19 @@ export const addFormToListCache = (cache, revision) => {
     });
 };
 
-export const addRevisionToRevisionsCache = (cache, newRevision) => {
+export const addRevisionToRevisionsCache = (
+    cache: DataProxy,
+    newRevision: FbRevisionModel
+): void => {
     const gqlParams = {
         query: GET_FORM_REVISIONS,
         variables: { id: newRevision.id.split("#")[0] }
     };
 
-    const { formBuilder } = cache.readQuery(gqlParams);
+    const { formBuilder } = cache.readQuery<
+        GetFormRevisionsQueryResponse,
+        GetFormRevisionsQueryVariables
+    >(gqlParams);
 
     cache.writeQuery({
         ...gqlParams,
@@ -53,10 +70,10 @@ export const addRevisionToRevisionsCache = (cache, newRevision) => {
     });
 };
 
-export const removeFormFromListCache = (cache, form) => {
+export const removeFormFromListCache = (cache: DataProxy, form: FbRevisionModel): void => {
     // Delete the form from list cache
     const gqlParams = { query: LIST_FORMS };
-    const { formBuilder } = cache.readQuery(gqlParams);
+    const { formBuilder } = cache.readQuery<ListFormsQueryResponse>(gqlParams);
     const index = formBuilder.listForms.data.findIndex(item => item.id === form.id);
 
     cache.writeQuery({
@@ -67,16 +84,26 @@ export const removeFormFromListCache = (cache, form) => {
     });
 };
 
-export const removeRevisionFromFormCache = (cache, form, revision) => {
+export const removeRevisionFromFormCache = (
+    cache: DataProxy,
+    form: FbRevisionModel,
+    revision: FbRevisionModel
+): FbRevisionModel[] => {
     const gqlParams = {
         query: GET_FORM_REVISIONS,
         variables: { id: form.id.split("#")[0] }
     };
 
-    let { formBuilder } = cache.readQuery(gqlParams);
+    let { formBuilder } = cache.readQuery<
+        GetFormRevisionsQueryResponse,
+        GetFormRevisionsQueryVariables
+    >(gqlParams);
     const index = formBuilder.revisions.data.findIndex(item => item.id === revision.id);
 
-    formBuilder = dotProp.delete(formBuilder, `revisions.data.${index}`);
+    formBuilder = dotProp.delete(
+        formBuilder,
+        `revisions.data.${index}`
+    ) as GetFormRevisionsQueryResponse["formBuilder"];
 
     cache.writeQuery({
         ...gqlParams,

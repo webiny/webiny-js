@@ -1,6 +1,17 @@
-/* eslint-disable */
+interface ProviderEndpoint {
+    schemes?: string[];
+    url: string;
+    formats?: string[];
+    discovery?: boolean;
+}
 
-export default [
+interface ProviderItem {
+    provider_name: string;
+    provider_url: string;
+    endpoints: ProviderEndpoint[];
+}
+
+export const providerList: ProviderItem[] = [
     {
         provider_name: "23HQ",
         provider_url: "http://www.23hq.com",

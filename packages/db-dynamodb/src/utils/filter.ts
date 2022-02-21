@@ -17,10 +17,10 @@ export interface Params<T = any> {
     fields: FieldPlugin[];
 }
 
-interface MappedPluginParams {
+interface MappedPluginParams<T extends Plugin = Plugin> {
     plugins: PluginsContainer;
     type: string;
-    property: string;
+    property: keyof T;
 }
 
 interface Filter {
@@ -31,12 +31,15 @@ interface Filter {
     negate: boolean;
 }
 
-const getMappedPlugins = <T extends Plugin>(params: MappedPluginParams): Record<string, T> => {
+const getMappedPlugins = <T extends Plugin>(params: MappedPluginParams<T>): Record<string, T> => {
     return params.plugins.byType<T>(params.type).reduce((plugins, plugin) => {
-        const op = plugin[params.property];
+        /**
+         * We expect op to be a string, that is why we cast.
+         */
+        const op = plugin[params.property] as unknown as string;
         plugins[op] = plugin;
         return plugins;
-    }, {});
+    }, {} as Record<string, T>);
 };
 
 const extractWhereArgs = (key: string) => {

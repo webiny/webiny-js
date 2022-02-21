@@ -1,11 +1,11 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { FbEditorTrigger } from "../../../../types";
+import { FbEditorTrigger } from "~/types";
 import { ReactComponent as LinkIcon } from "./icons/round-link-24px.svg";
 import WebhooksRequestsDynamicFieldset from "./components/WebhooksRequestsDynamicFieldset";
 
-export default {
+const plugin: FbEditorTrigger = {
     type: "form-editor-trigger",
     name: "form-editor-trigger-webhook",
     trigger: {
@@ -33,4 +33,5 @@ export default {
             );
         }
     }
-} as FbEditorTrigger;
+};
+export default plugin;

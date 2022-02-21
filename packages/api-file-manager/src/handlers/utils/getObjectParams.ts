@@ -1,11 +1,13 @@
 import getEnvironment from "./getEnvironment";
 
+export interface ObjectParamsResponse {
+    Bucket: string;
+    Key: string;
+}
 /**
  * Returns website's Bucket and file's Key values.
- * @param filename
- * @returns {{Bucket: string, Key: string}}
  */
-export default filename => {
+export default (filename: string): ObjectParamsResponse => {
     const { bucket: Bucket } = getEnvironment();
 
     return {

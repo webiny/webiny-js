@@ -5,13 +5,13 @@ import {
     PageImportExportTaskStatus,
     PbPageImportExportContext
 } from "~/types";
-import { zeroPad } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { exportPage } from "~/exportPages/utils";
 import { HandlerArgs as ExtractHandlerArgs } from "../combine";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { zeroPad } from "@webiny/utils";
 
 export type HandlerArgs = {
     taskId: string;
@@ -60,7 +60,7 @@ export default (
              */
             subTask = await pageBuilder.pageImportExportTask.getSubTask(
                 taskId,
-                zeroPad(subTaskIndex)
+                zeroPad(subTaskIndex, 5)
             );
             /**
              * Base condition!!
@@ -68,7 +68,10 @@ export default (
              */
             if (!subTask || subTask.status !== PageImportExportTaskStatus.PENDING) {
                 noPendingTask = true;
-                return;
+                return {
+                    data: "",
+                    error: null
+                };
             } else {
                 noPendingTask = false;
             }
@@ -203,5 +206,9 @@ export default (
                 });
             }
         }
+        return {
+            data: "",
+            error: null
+        };
     }
 });

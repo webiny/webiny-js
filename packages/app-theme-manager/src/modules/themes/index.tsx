@@ -11,21 +11,26 @@ import { ThemeManagerProviderHOC } from "~/components/ThemeManagerProvider";
 import { useThemeManager } from "~/hooks/useThemeManager";
 import { useTenantThemes } from "~/hooks/useTenantThemes";
 import { AddTheme } from "~/components/AddTheme";
-import { ThemeLoader, ThemeSource } from "~/components/ThemeLoader";
+import { ThemeLoader } from "~/components/ThemeLoader";
 import { useCurrentTheme } from "~/hooks/useCurrentTheme";
+import { ThemeSource } from "~/types";
 
 const { Group, Element } = AddPbWebsiteSettings;
 
-const TenantFormFields = memo(function TenantFormFields() {
-    const selection = gql`
-        {
-            settings {
-                themes
-            }
+const tenantFormFieldsSelection = gql`
+    {
+        settings {
+            themes
         }
-    `;
-
-    return <AddTenantFormField querySelection={selection} element={<ThemeCheckboxGroup />} />;
+    }
+`;
+const TenantFormFields = memo(function TenantFormFields() {
+    return (
+        <AddTenantFormField
+            querySelection={tenantFormFieldsSelection}
+            element={<ThemeCheckboxGroup />}
+        />
+    );
 });
 
 const AllThemes = () => {
@@ -40,7 +45,10 @@ const TenantThemes = () => {
     return <ThemeSelect themes={themes} />;
 };
 
-const ThemeSelect = ({ themes }) => {
+interface ThemeSelectProps {
+    themes: ThemeSource[];
+}
+const ThemeSelect: React.FC<ThemeSelectProps> = ({ themes }) => {
     const bind = useBind({
         name: "theme",
         defaultValue: "",
@@ -63,16 +71,15 @@ const ThemeSelect = ({ themes }) => {
     );
 };
 
-const WebsiteSettings = () => {
-    const selection = gql`
-        {
-            theme
-        }
-    `;
-
+const WebsiteSettingsSelection = gql`
+    {
+        theme
+    }
+`;
+const WebsiteSettings: React.FC = () => {
     return (
         <Fragment>
-            <Group name={"theme"} label={"Theme"} querySelection={selection}>
+            <Group name={"theme"} label={"Theme"} querySelection={WebsiteSettingsSelection}>
                 <Element>
                     <IsNotRootTenant>
                         <TenantThemes />
@@ -86,7 +93,7 @@ const WebsiteSettings = () => {
     );
 };
 
-const AppReloader = () => {
+const AppReloader: React.FC = () => {
     const theme = useCurrentTheme();
     const themeRef = useRef(null);
 
@@ -119,7 +126,7 @@ interface ThemesModuleProps {
     themes?: ThemeSource[];
 }
 
-export const ThemesModule = ({ themes = [] }: ThemesModuleProps) => {
+export const ThemesModule: React.FC<ThemesModuleProps> = ({ themes = [] }) => {
     return (
         <Fragment>
             <Provider hoc={ThemeManagerProviderHOC} />

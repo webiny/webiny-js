@@ -1,4 +1,6 @@
-export default {
+import { CmsModelFieldValidatorPatternPlugin } from "~/types";
+
+const plugin: CmsModelFieldValidatorPatternPlugin = {
     type: "cms-model-field-validator-pattern",
     name: "cms-model-field-validator-pattern-upper-case-space",
     pattern: {
@@ -7,3 +9,5 @@ export default {
         flags: ""
     }
 };
+
+export default plugin;

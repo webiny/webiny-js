@@ -9,7 +9,10 @@ import { PbContext } from "~/graphql/types";
 
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
-export default async ({ context }): Promise<Record<string, File>> => {
+interface Params {
+    context: PbContext;
+}
+export default async ({ context }: Params): Promise<Record<string, File>> => {
     /**
      * This function contains logic of file download from S3.
      * Current we're not mocking zip file download from S3 in tests at the moment.
@@ -26,10 +29,16 @@ export default async ({ context }): Promise<Record<string, File>> => {
     );
 
     try {
-        // Save uploaded file key against static id for later use.
-        const fileIdToFileMap = {};
+        //
+        /**
+         * Save uploaded file key against static id for later use.
+         *
+         * NOTE the variable is used for storing two different types. Validate that this is correct to return
+         */
+        // TODO @ts-refactor figure out the type.
+        const fileIdToFileMap: Record<string, any> = {};
         // Contains all parallel file saving chunks.
-        const chunksProcesses = [];
+        const chunksProcesses: Promise<any>[] = [];
 
         // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
         const filesChunks = chunk(pagesFilesData, FILES_COUNT_IN_EACH_BATCH);
@@ -37,7 +46,7 @@ export default async ({ context }): Promise<Record<string, File>> => {
         for (let i = 0; i < filesChunks.length; i++) {
             chunksProcesses.push(
                 // eslint-disable-next-line
-                new Promise(async (promise, reject) => {
+                new Promise(async (resolve, reject) => {
                     try {
                         const filesChunk = filesChunks[i];
 
@@ -83,8 +92,7 @@ export default async ({ context }): Promise<Record<string, File>> => {
                             fileIdToFileMap[filesChunk[index].id] = item;
                         });
 
-                        // @ts-ignore
-                        promise(fileUploadResults);
+                        resolve(fileUploadResults);
                     } catch (e) {
                         reject(e);
                     }
@@ -99,6 +107,7 @@ export default async ({ context }): Promise<Record<string, File>> => {
     } catch (e) {
         console.log(`[savePageAssets]: error occurred: ${e.stack}`);
     }
+    return {};
 };
 
 interface UploadPageAssetsParams {
@@ -130,7 +139,7 @@ export const uploadPageAssets = async ({
     }
     try {
         // Save uploaded file key against static id for later use.
-        const fileIdToKeyMap = {};
+        const fileIdToKeyMap: Record<string, string> = {};
         // Contains all parallel file saving chunks.
         const chunksProcesses = [];
 
@@ -201,6 +210,7 @@ export const uploadPageAssets = async ({
     } catch (e) {
         console.log(`[savePageAssets]: error occurred: ${e.stack}`);
     }
+    return {};
 };
 
 /**

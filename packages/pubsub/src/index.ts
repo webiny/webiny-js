@@ -4,7 +4,7 @@ export const createTopic = <TEvent = any>(topicName?: string): Topic<TEvent> => 
     const subscribers: Subscriber<TEvent>[] = [];
 
     const withUnsubscribe = (cb: Subscriber<TEvent>) => {
-        const once = async event => {
+        const once = async (event: TEvent) => {
             await cb(event);
             const index = subscribers.findIndex(fn => fn === once);
             if (index > -1) {

@@ -7,10 +7,10 @@ import { PluginCollection } from "@webiny/plugins/types";
 import handlerClient from "./plugins/handlerClient";
 import handlerHttp from "./plugins/handlerHttp";
 
-type CreateAwsHandlerOptions = {
+interface CreateAwsHandlerOptions {
     plugins: PluginCollection;
     http?: HandlerHttpOptions;
-};
+}
 
 interface CreateAwsHandler {
     (...plugins: PluginCollection): Function;
@@ -24,10 +24,11 @@ interface CreateAwsHandler {
  *
  * @param {Array | CreateAwsHandlerOptions} args - The list of plugins or object of type `CreateHandlerOptions`.
  */
-export const createHandler: CreateAwsHandler = (...args) => {
+export const createHandler: CreateAwsHandler = (...args: any) => {
     let plugins = args;
 
-    const createHandlerOptions: CreateAwsHandlerOptions = args[0];
+    const createHandlerOptions: CreateAwsHandlerOptions =
+        args[0] as unknown as CreateAwsHandlerOptions;
     if (createHandlerOptions && Array.isArray(createHandlerOptions.plugins)) {
         plugins = createHandlerOptions.plugins;
     }

@@ -30,7 +30,7 @@ const styles = {
     })
 };
 
-export const NotAuthorizedError = () => {
+export const NotAuthorizedError: React.FC = () => {
     return (
         <ContentWrapper>
             <Helmet title={"Not authorized"} />

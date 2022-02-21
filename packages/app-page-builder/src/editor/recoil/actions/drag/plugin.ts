@@ -1,8 +1,8 @@
 import { DragStartActionEvent, DragEndActionEvent } from "./event";
 import { dragStartAction, dragEndAction } from "./action";
-import { PbEditorEventActionPlugin } from "../../../../types";
+import { PbEditorEventActionPlugin } from "~/types";
 
-export default () => {
+export default (): PbEditorEventActionPlugin[] => {
     return [
         {
             type: "pb-editor-event-action-plugin",
@@ -10,13 +10,13 @@ export default () => {
             onEditorMount: handler => {
                 return handler.on(DragStartActionEvent, dragStartAction);
             }
-        } as PbEditorEventActionPlugin,
+        },
         {
             type: "pb-editor-event-action-plugin",
             name: "pb-editor-event-action-drag-end",
             onEditorMount: handler => {
                 return handler.on(DragEndActionEvent, dragEndAction);
             }
-        } as PbEditorEventActionPlugin
+        }
     ];
 };

@@ -1,15 +1,17 @@
 import S3 from "aws-sdk/clients/s3";
-import getStorageName from "~/utils/getStorageName";
-import getStorageFolder from "~/utils/getStorageFolder";
-import getDbNamespace from "~/utils/getDbNamespace";
-import getRenderUrl from "~/utils/getRenderUrl";
-import { HandlerPlugin, Configuration, FlushHookPlugin } from "./types";
-import { HandlerResponse, PrerenderingServiceStorageOperations } from "~/types";
 import path from "path";
+import WebinyError from "@webiny/error";
+import { getDbNamespace, getStorageFolder, getStorageName, getRenderUrl } from "~/utils";
+import { HandlerPlugin, FlushHookPlugin } from "./types";
+import { Configuration, HandlerResponse, PrerenderingServiceStorageOperations } from "~/types";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-const deleteFile = ({ key, storageName }) => {
+interface DeleteFileParams {
+    key: string;
+    storageName: string;
+}
+const deleteFile = ({ key, storageName }: DeleteFileParams) => {
     return s3
         .deleteObject({
             Bucket: storageName,
@@ -114,13 +116,26 @@ export default (configuration: Params): HandlerPlugin => {
                                 }
                             }
 
-                            await storageOperations.deleteRender({
-                                render: currentRender
-                            });
+                            try {
+                                await storageOperations.deleteRender({
+                                    render: currentRender
+                                });
+                            } catch (ex) {
+                                throw new WebinyError(
+                                    "Error while deleting render.",
+                                    "DELETE_RENDER_ERROR",
+                                    {
+                                        render: currentRender
+                                    }
+                                );
+                            }
 
                             for (let j = 0; j < handlerHookPlugins.length; j++) {
                                 const plugin = handlerHookPlugins[j];
-                                if (typeof plugin.afterFlush === "function") {
+                                if (typeof plugin.afterFlush !== "function") {
+                                    continue;
+                                }
+                                try {
                                     await plugin.afterFlush({
                                         log,
                                         context,
@@ -128,6 +143,16 @@ export default (configuration: Params): HandlerPlugin => {
                                         args,
                                         render: currentRender
                                     });
+                                } catch (ex) {
+                                    throw new WebinyError(
+                                        "Error while running after flush.",
+                                        "AFTER_FLUSH_ERROR",
+                                        {
+                                            args,
+                                            render: currentRender,
+                                            configuration
+                                        }
+                                    );
                                 }
                             }
 

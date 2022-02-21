@@ -4,7 +4,7 @@ import { ReactComponent as MenuIcon } from "./icons/hamburger.svg";
 import { useNavigation } from "./index";
 import { useTags } from "@webiny/app-admin";
 
-const Hamburger = () => {
+const Hamburger: React.FC = () => {
     const { location } = useTags();
     const { visible, setVisible } = useNavigation();
 

@@ -1,3 +1,4 @@
+// TODO @ts-refactor figure out correct bind types and remove any
 import React from "react";
 import get from "lodash/get";
 import { CmsEditorFieldRendererPlugin } from "~/types";
@@ -28,7 +29,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    {bind => {
+                    {(bind: any) => {
                         if (field.settings.type === "dateTimeWithoutTimezone") {
                             return <DateTimeWithoutTimezone field={field} bind={bind} />;
                         } else if (field.settings.type === "dateTimeWithTimezone") {

@@ -2,8 +2,8 @@ import React from "react";
 import BlockContainer from "./BlockContainer";
 import ElementAnimation from "../../../../render/components/ElementAnimation";
 import styled from "@emotion/styled";
-import { PbEditorElement } from "../../../../types";
-import { ElementRoot } from "../../../../render/components/ElementRoot";
+import { PbEditorElement } from "~/types";
+import { ElementRoot } from "~/render/components/ElementRoot";
 
 const BlockStyle = styled("div")({
     position: "relative",
@@ -11,10 +11,10 @@ const BlockStyle = styled("div")({
     padding: 5,
     boxSizing: "border-box"
 });
-type BlockType = {
+interface BlockType {
     element: PbEditorElement;
-};
-const Block: React.FunctionComponent<BlockType> = ({ element }) => {
+}
+const Block: React.FC<BlockType> = ({ element }) => {
     const { id } = element;
 
     return (

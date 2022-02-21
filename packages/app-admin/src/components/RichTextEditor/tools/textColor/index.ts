@@ -2,20 +2,27 @@ import { API } from "@editorjs/editorjs";
 
 const COLOR_TOOL_CLASS = "cdx-text-color";
 
-class TextColorTool {
-    _state: boolean;
-    color: string;
-    api: API;
-    tag: string;
-    class: string;
-    colorPicker: HTMLDivElement;
-    button: HTMLButtonElement;
-    config: {
-        themeColors: string[];
-    };
-    _CSS: any;
+interface Config {
+    themeColors: string[];
+}
 
-    constructor({ api, config }) {
+interface TextColorToolParams {
+    api: API;
+    config: Config;
+}
+
+class TextColorTool {
+    private _state: boolean;
+    private color: string;
+    private readonly api: API;
+    private readonly tag: string;
+    private readonly class: string;
+    private colorPicker: HTMLDivElement;
+    private button: HTMLButtonElement;
+    private readonly config: Config;
+    private readonly _CSS: any;
+
+    constructor({ api, config }: TextColorToolParams) {
         this.api = api;
         this.button = null;
         this._state = false;
@@ -30,7 +37,7 @@ class TextColorTool {
         };
     }
 
-    static get isInline() {
+    static get isInline(): boolean {
         return true;
     }
 
@@ -39,12 +46,15 @@ class TextColorTool {
      * @returns {object} sanitizer configuration.
      * https://editorjs.io/sanitizer
      */
-    static get sanitize() {
+    static get sanitize(): Record<string, any> {
         // Block Tools are not connected with Inline ones,
         // so markup added by Inline Tool will be removed on pasting or on saving.
         // We need this config so that `class` & `style` attributes will remain intact for "span".
         return {
-            span: el => {
+            /**
+             * TODO: figure out the element type
+             */
+            span: (el: Record<string, any>) => {
                 // Respect `class` and `style` attributes if this condition is meet.
                 if (el.classList.contains(COLOR_TOOL_CLASS)) {
                     return {
@@ -52,11 +62,12 @@ class TextColorTool {
                         style: el.style
                     };
                 }
+                return {};
             }
         };
     }
 
-    get state() {
+    get state(): boolean {
         return this._state;
     }
 
@@ -68,7 +79,7 @@ class TextColorTool {
     /**
      * Render method must return HTML element of the button for Inline Toolbar.
      */
-    render() {
+    render(): HTMLButtonElement {
         this.button = document.createElement("button");
         this.button.type = "button";
         this.button.innerHTML =
@@ -123,9 +134,8 @@ class TextColorTool {
     /**
      * Finally, when button is pressed Editor calls
      * surround method of the tool with Range object as an argument.
-     * @param range
      */
-    surround(range) {
+    surround(range: Range): void {
         if (this.state) {
             this.unwrap(range);
             return;
@@ -134,7 +144,7 @@ class TextColorTool {
         this.wrap(range);
     }
 
-    wrap(range) {
+    wrap(range: Range): void {
         const selectedText = range.extractContents();
         const mark = document.createElement(this.tag);
 
@@ -146,7 +156,7 @@ class TextColorTool {
         this.api.selection.expandToTag(mark);
     }
 
-    unwrap(range) {
+    unwrap(range: Range): void {
         const mark = this.api.selection.findParentTag(this.tag, this.class);
         const text = range.extractContents();
 
@@ -155,14 +165,14 @@ class TextColorTool {
         range.insertNode(text);
     }
 
-    showActions(mark) {
+    showActions(mark: HTMLElement): void {
         this.colorPicker.onclick = () => {
             mark.style.color = this.color;
         };
         this.colorPicker.hidden = false;
     }
 
-    hideActions() {
+    hideActions(): void {
         this.colorPicker.onchange = null;
         this.colorPicker.hidden = true;
     }
@@ -171,7 +181,7 @@ class TextColorTool {
      * CheckState method of each Inline Tool is called by Editor with current `Selection`
      * when user selects some text
      */
-    checkState() {
+    checkState(): void {
         const mark = this.api.selection.findParentTag(this.tag);
 
         this.state = !!mark;
@@ -183,7 +193,7 @@ class TextColorTool {
         }
     }
 
-    convertToHex(color) {
+    convertToHex(color: string): string {
         const rgb = color.match(/(\d+)/g);
 
         let hexR = parseInt(rgb[0]).toString(16);
@@ -197,7 +207,7 @@ class TextColorTool {
         return "#" + hexR + hexG + hexB;
     }
 
-    clear() {
+    clear(): void {
         this.hideActions();
     }
 }

@@ -5,6 +5,10 @@ export interface Paths {
     relative: string;
 }
 
+type CacheControlMap = {
+    [key: string]: CacheControl
+}
+
 export default function uploadFolderToS3(params: {
     // Path to the folder that needs to be uploaded.
     path: string;
@@ -20,5 +24,5 @@ export default function uploadFolderToS3(params: {
 
     bucket: BucketName;
     acl: ObjectCannedACL;
-    cacheControl: CacheControl;
+    cacheControl: CacheControl | CacheControlMap;
 }): Promise<void>;

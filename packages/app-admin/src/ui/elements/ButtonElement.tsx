@@ -27,39 +27,39 @@ const BUTTONS = {
 export class ButtonElement<TRenderProps = any> extends UIElement<
     ButtonElementConfig<TRenderProps>
 > {
-    setLabel<TProps extends TRenderProps = TRenderProps>(
+    public setLabel<TProps extends TRenderProps = TRenderProps>(
         label: string | GetterWithProps<TProps, string>
-    ) {
+    ): void {
         this.config.label = label;
     }
 
-    getLabel(props?: any) {
+    public getLabel(props?: TRenderProps): string {
         if (typeof this.config.label === "function") {
             return this.config.label(props);
         }
         return this.config.label;
     }
 
-    setType(type: ButtonElementType) {
+    public setType(type: ButtonElementType): void {
         this.config.type = type;
     }
 
-    getType(props?: any) {
+    public getType(props?: TRenderProps): ButtonElementType {
         if (typeof this.config.type === "function") {
             return this.config.type(props);
         }
         return this.config.type;
     }
 
-    setOnClick(onClick: ButtonOnClick<TRenderProps>) {
+    public setOnClick(onClick: ButtonOnClick<TRenderProps>): void {
         this.config.onClick = onClick;
     }
 
-    getOnClick() {
+    public getOnClick() {
         return this.config.onClick;
     }
 
-    render(props): React.ReactElement {
+    public render(props: TRenderProps): React.ReactElement {
         const Component = BUTTONS[this.getType(props)];
         const onClick = this.getOnClick();
 

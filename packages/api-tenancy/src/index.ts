@@ -2,7 +2,8 @@ import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
 import { TenancyContext, TenancyStorageOperations } from "./types";
 import { createTenancy } from "./createTenancy";
-import graphql from "./graphql";
+import graphql from "./graphql/full.gql";
+import baseGraphQLTypes from "./graphql/types.gql";
 
 interface TenancyPluginsParams {
     storageOperations: TenancyStorageOperations;
@@ -32,6 +33,15 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
             multiTenancy,
             storageOperations
         });
+
+        // Even though we don't have a full GraphQL schema when using the `context` plugins,
+        // we still need to register the base tenancy types, so other plugins can extend and use them
+        // in other GraphQLSchema plugins.
+        context.plugins.register(baseGraphQLTypes);
+
+        // Add WCP telemetry identifier
+        // This tenancy package is used by GraphQL, Headless CMS, and PB import/export functions
+        context.plugins.register({ type: "wcp-telemetry-tracker" });
     });
 };
 

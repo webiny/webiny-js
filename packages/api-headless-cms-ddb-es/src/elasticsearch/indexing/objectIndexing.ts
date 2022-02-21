@@ -30,6 +30,15 @@ interface ProcessFromIndex {
     }): Record<string, any>;
 }
 
+interface ReducerValue {
+    value: {
+        [key: string]: string;
+    };
+    rawValue: {
+        [key: string]: string;
+    };
+}
+
 const processToIndex: ProcessToIndex = ({
     fields,
     value: sourceValue,
@@ -39,7 +48,7 @@ const processToIndex: ProcessToIndex = ({
     plugins,
     model
 }) => {
-    const reducer = (values, field) => {
+    const reducer = (values: ReducerValue, field: CmsModelField) => {
         const plugin = getFieldIndexPlugin(field.type);
         const { value, rawValue } = plugin.toIndex({
             model,
@@ -73,7 +82,7 @@ const processFromIndex: ProcessFromIndex = ({
     plugins,
     model
 }) => {
-    const reducer = (values, field) => {
+    const reducer = (values: Record<string, string>, field: CmsModelField) => {
         const plugin = getFieldIndexPlugin(field.type);
         const value = plugin.fromIndex({
             plugins,
@@ -94,6 +103,11 @@ const processFromIndex: ProcessFromIndex = ({
 
     return fields.reduce(reducer, {});
 };
+
+interface ToIndexMultipleFieldValue {
+    value: Record<string, string>[];
+    rawValue: Record<string, string>[];
+}
 
 export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
@@ -118,7 +132,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
          * In "object" field, value is either an object or an array of objects.
          */
         if (field.multipleValues) {
-            const result = {
+            const result: ToIndexMultipleFieldValue = {
                 value: [],
                 rawValue: []
             };
@@ -175,7 +189,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
              */
             const source = value || rawValue || [];
 
-            return source.map((_, index) =>
+            return source.map((_: any, index: number) =>
                 processFromIndex({
                     value: value ? value[index] || {} : {},
                     rawValue: rawValue ? rawValue[index] || {} : {},

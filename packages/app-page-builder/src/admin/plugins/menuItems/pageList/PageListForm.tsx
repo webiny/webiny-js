@@ -5,17 +5,24 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Select } from "@webiny/ui/Select";
-import { TagsMultiAutocomplete } from "../../../components/TagsMultiAutocomplete";
-import { CategoriesAutocomplete } from "../../../components/CategoriesAutocomplete";
+import { TagsMultiAutocomplete } from "~/admin/components/TagsMultiAutocomplete";
+import { CategoriesAutocomplete } from "~/admin/components/CategoriesAutocomplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
+import { FormOnCancel, FormOnSubmit } from "@webiny/form/Form";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
 
 const menuPageFormStyle = {
     color: "var(--mdc-theme-on-surface)",
     backgroundColor: "var(--mdc-theme-background) !important"
 };
 
-const LinkForm = ({ data, onSubmit, onCancel }) => {
+interface LinkFormProps {
+    data: MenuTreeItem;
+    onSubmit: FormOnSubmit;
+    onCancel: FormOnCancel;
+}
+const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
     return (
         <Elevation z={4} css={menuPageFormStyle}>
             <Form data={data} onSubmit={onSubmit}>

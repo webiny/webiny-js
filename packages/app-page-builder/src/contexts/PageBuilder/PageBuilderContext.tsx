@@ -4,17 +4,17 @@ import { PbThemePlugin, PbTheme, DisplayMode } from "~/types";
 
 export const PageBuilderContext = React.createContext(null);
 
-export type ResponsiveDisplayMode = {
+export interface ResponsiveDisplayMode {
     displayMode: string;
     setDisplayMode: Function;
-};
+}
 
-export type ExportPageData = {
+export interface ExportPageData {
     revisionType: string;
     setRevisionType: Function;
-};
+}
 
-export type PageBuilderContextValue = {
+export interface PageBuilderContextValue {
     theme: PbTheme;
     defaults?: {
         pages?: {
@@ -23,13 +23,13 @@ export type PageBuilderContextValue = {
     };
     responsiveDisplayMode?: ResponsiveDisplayMode;
     exportPageData?: ExportPageData;
-};
+}
 
-export type PageBuilderProviderProps = {
+export interface PageBuilderProviderProps {
     children?: React.ReactChild | React.ReactChild[];
-};
+}
 
-export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
+export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
     const [revisionType, setRevisionType] = React.useState("published");
 
@@ -55,8 +55,8 @@ export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
     );
 };
 
-export const PageBuilderConsumer = ({ children }) => (
+export const PageBuilderConsumer: React.FC = ({ children }) => (
     <PageBuilderContext.Consumer>
-        {props => React.cloneElement(children, { pageBuilder: props })}
+        {props => React.cloneElement(children as React.ReactElement, { pageBuilder: props })}
     </PageBuilderContext.Consumer>
 );

@@ -49,20 +49,26 @@ const labelStyle = css({
     }
 });
 
-const getValue = ({ value, defaultValue, type }) => {
+interface GetValueParams {
+    value: string | number;
+    defaultValue: string | number;
+    type: "number" | "string";
+}
+const getValue = (params: GetValueParams): string => {
+    const { value, defaultValue, type } = params;
     if (type === "number") {
-        return isNaN(value) ? defaultValue : value;
+        return (isNaN(value as number) ? defaultValue : value) as string;
     }
-    return value || defaultValue;
+    return (value || defaultValue) as string;
 };
 
-type InputBoxProps = {
+interface InputBoxProps {
     value?: string | number;
     onChange?: (value: any) => void;
     defaultValue?: string | number;
     [key: string]: any;
-};
-const InputField = ({
+}
+const InputField: React.FC<InputBoxProps> = ({
     className,
     value,
     onChange,
@@ -71,7 +77,7 @@ const InputField = ({
     validation = { isValid: true },
     defaultValue = "",
     ...props
-}: InputBoxProps) => {
+}) => {
     return (
         <React.Fragment>
             {label && (

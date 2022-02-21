@@ -1,13 +1,16 @@
 import { ElasticsearchQuerySearchValuePlugins } from "./searchPluginsList";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 
-interface Params {
+interface TransformValueForSearchParams {
     plugins: ElasticsearchQuerySearchValuePlugins;
     field: CmsModelField;
     value: any;
 }
 
-export const transformValueForSearch = (args: Params) => {
+/**
+ * Transformed can be anything.
+ */
+export const transformValueForSearch = (args: TransformValueForSearchParams): any => {
     const { field, plugins, value } = args;
     const plugin = plugins[field.type];
     if (!plugin) {

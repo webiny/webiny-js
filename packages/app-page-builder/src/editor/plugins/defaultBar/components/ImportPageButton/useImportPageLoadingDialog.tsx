@@ -25,13 +25,18 @@ const processingMessage = t`Importing pages`;
 
 const INTERVAL = 0.5 * 1000;
 
-const MESSAGES = {
+const MESSAGES: Record<string, string> = {
     [PageImportExportTaskStatus.COMPLETED]: completionMessage,
     [PageImportExportTaskStatus.PROCESSING]: processingMessage,
     [PageImportExportTaskStatus.PENDING]: pendingMessage
 };
 
-const ImportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({ taskId }) => {
+interface ImportPageLoadingDialogContentProps {
+    taskId: string;
+}
+const ImportPageLoadingDialogContent: FunctionComponent<ImportPageLoadingDialogContentProps> = ({
+    taskId
+}) => {
     const { showSnackbar } = useSnackbar();
     const [completed, setCompleted] = useState<boolean>(false);
     const [error, setError] = useState(null);
@@ -141,14 +146,17 @@ const ImportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({
                 </LoadingDialog.StatsContainer>
                 <ImportPagesDetails
                     loading={getSubTasksQuery.loading}
-                    data={getSubTasksQuery.data}
+                    result={getSubTasksQuery.data}
                 />
             </LoadingDialog.WrapperRight>
         </LoadingDialog.Wrapper>
     );
 };
 
-const useImportPageLoadingDialog = () => {
+interface UseImportPageLoadingDialogCallableResponse {
+    showImportPageLoadingDialog: (props: ImportPageLoadingDialogContentProps) => void;
+}
+const useImportPageLoadingDialog = (): UseImportPageLoadingDialogCallableResponse => {
     const { showDialog } = useDialog();
 
     return {

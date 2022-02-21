@@ -1,3 +1,4 @@
+import React from "react";
 export interface UIRenderParams<TElement, TProps = any> {
     element: TElement;
     props: TProps;
@@ -14,8 +15,8 @@ export interface RenderChildren {
 }
 
 export abstract class UIRenderer<TElement, TProps = any> {
-    // eslint-disable-next-line
-    canRender(_: TElement, __: TProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public canRender(_: TElement, __: TProps) {
         return true;
     }
 

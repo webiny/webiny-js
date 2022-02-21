@@ -21,7 +21,7 @@ export const ExportPagesButton: React.FC<ExportPagesButtonProps> = ({
     const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
     const { showExportPageInitializeDialog } = useExportPageDialog();
 
-    const renderExportPagesTooltip = selected => {
+    const renderExportPagesTooltip = (selected: string[]) => {
         const count = selected.length;
         if (count > 0) {
             return t`Export {count|count:1:page:default:pages}.`({

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { css } from "emotion";
 import { get } from "lodash";
 import { useHandler } from "@webiny/app/hooks/useHandler";
+import { PbElement } from "~/types";
 
 declare global {
     interface Window {
@@ -9,7 +10,11 @@ declare global {
     }
 }
 
-function appendSDK(props) {
+interface PinterestEmbedProps {
+    element: Pick<PbElement, "id" | "data">;
+}
+
+function appendSDK(props: PinterestEmbedProps): Promise<void> {
     const { element } = props;
     const { url } = get(element, "data.source") || {};
 
@@ -23,12 +28,14 @@ function appendSDK(props) {
         script.src = encodeURI("https://assets.pinterest.com/js/pinit.js");
         script.setAttribute("async", "");
         script.setAttribute("charset", "utf-8");
-        script.onload = resolve;
+        script.onload = () => {
+            return resolve();
+        };
         document.body.appendChild(script);
     });
 }
 
-function initEmbed(props) {
+function initEmbed(props: PinterestEmbedProps): void {
     const { element } = props;
     const node = document.getElementById(element.id);
     // @ts-ignore
@@ -42,7 +49,7 @@ const centerAlign = css({
     textAlign: "center"
 });
 
-export default props => {
+const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
     const { url } = get(props.element, "data.source") || {};
 
     useEffect(() => {
@@ -66,3 +73,4 @@ export default props => {
 
     return url ? renderEmbed() : null;
 };
+export default PinterestEmbed;

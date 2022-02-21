@@ -1,15 +1,15 @@
 import * as React from "react";
-import { Select as UiSelect, SelectProps } from "@webiny/ui/Select";
+import { Select as UiSelect, SelectProps as BaseSelectProps } from "@webiny/ui/Select";
 
 export interface Option {
     value: string;
     label: string;
 }
 
-export interface Props extends SelectProps {
+export interface SelectProps extends BaseSelectProps {
     options: Option[];
 }
-export const Select: React.FC<Props> = props => {
+export const Select: React.FC<SelectProps> = props => {
     return (
         <UiSelect {...props}>
             {props.options.map(t => {

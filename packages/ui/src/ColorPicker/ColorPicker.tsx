@@ -1,8 +1,8 @@
 import * as React from "react";
-import { SketchPicker } from "react-color";
+import { SketchPicker, ColorResult } from "react-color";
 import { css } from "emotion";
-import { FormComponentProps } from "./../types";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormComponentProps } from "~/types";
+import { FormElementMessage } from "~/FormElementMessage";
 import classNames from "classnames";
 
 const classes = {
@@ -59,8 +59,11 @@ class ColorPicker extends React.Component<Props> {
         showColorPicker: false
     };
 
-    static defaultProps = {
-        validation: { isValid: null }
+    static defaultProps: Partial<Props> = {
+        validation: {
+            isValid: null,
+            message: null
+        }
     };
 
     handleClick = () => {
@@ -71,7 +74,7 @@ class ColorPicker extends React.Component<Props> {
         this.setState({ showColorPicker: false });
     };
 
-    handleChange = color => {
+    handleChange = (color: ColorResult) => {
         const { onChange } = this.props;
         onChange && onChange(color.hex);
     };

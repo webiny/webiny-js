@@ -1,7 +1,7 @@
 import * as React from "react";
 import { css } from "emotion";
 import { get } from "dot-prop-immutable";
-import { OEmbedProps } from "../../../../components/OEmbed";
+import { OEmbedProps } from "~/editor/components/OEmbed";
 
 const outerWrapper = css({
     boxSizing: "border-box"
@@ -35,7 +35,7 @@ const scaleableVideo = css({
     }
 });
 
-const VimeoEmbed = (props: OEmbedProps) => {
+const VimeoEmbed: React.FC<OEmbedProps> = props => {
     const { element, data } = props;
 
     if (data && data.loading) {

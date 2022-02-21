@@ -1,11 +1,65 @@
 import React from "react";
-import useFormEditorFactory from "./useFormEditorFactory";
-import { init, formEditorReducer } from "./formEditorReducer";
+import { useFormEditorFactory } from "./useFormEditorFactory";
+import { FbFormModel } from "~/types";
+import { ApolloClient } from "apollo-client";
 
-const FormEditorContext = React.createContext({});
+export interface FormEditorProviderProps {
+    id: string;
+    defaultLayoutRenderer: string;
+    apollo: ApolloClient<any>;
+}
+export interface FormEditorReducerState extends FormEditorProviderProps {
+    data: FbFormModel;
+}
 
-export function FormEditorProvider(props) {
-    const [state, dispatch] = React.useReducer(formEditorReducer, props, init);
+const reducerInit = (props: FormEditorReducerState) => {
+    return {
+        ...props
+    };
+};
+
+export interface FormEditorReducerAction {
+    data: FbFormModel;
+    type: string;
+}
+
+export interface FormEditorReducer {
+    (prev: FormEditorReducerState, action: FormEditorReducerAction): FormEditorReducerState;
+}
+
+const formEditorReducer: FormEditorReducer = (state, action) => {
+    const next = { ...state };
+    switch (action.type) {
+        case "data": {
+            next.data = action.data;
+            break;
+        }
+    }
+
+    return next;
+};
+
+export type FormEditorProviderContextState = FormEditorReducerState;
+const FormEditorContext = React.createContext<FormEditorProviderContext>({
+    state: null,
+    // eslint-disable-next-line
+    dispatch: () => {}
+});
+
+export interface FormEditorProviderContext {
+    state: FormEditorReducerState;
+    dispatch: (action: FormEditorReducerAction) => void;
+}
+
+export const FormEditorProvider: React.FC<FormEditorProviderProps> = props => {
+    const [state, dispatch] = React.useReducer<FormEditorReducer, any>(
+        formEditorReducer,
+        {
+            ...props,
+            data: null
+        },
+        reducerInit
+    );
 
     const value = React.useMemo(() => {
         return {
@@ -15,6 +69,6 @@ export function FormEditorProvider(props) {
     }, [state]);
 
     return <FormEditorContext.Provider value={value} {...props} />;
-}
+};
 
 export const useFormEditor = useFormEditorFactory(FormEditorContext);

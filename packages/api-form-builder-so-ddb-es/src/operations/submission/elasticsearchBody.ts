@@ -44,14 +44,14 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin> = plugins
+    const operatorPlugins = plugins
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )
         .reduce((acc, plugin) => {
             acc[plugin.getOperator()] = plugin;
             return acc;
-        }, {});
+        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
 
     const where: FormBuilderStorageOperationsListSubmissionsParams["where"] = {
         ...initialWhere
@@ -117,12 +117,12 @@ interface CreateElasticsearchBodyParams {
 export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): esSearchBody => {
     const { plugins, where, limit: initialLimit, sort: initialSort, after } = params;
 
-    const fieldPlugins: Record<string, SubmissionElasticsearchFieldPlugin> = plugins
+    const fieldPlugins = plugins
         .byType<SubmissionElasticsearchFieldPlugin>(SubmissionElasticsearchFieldPlugin.type)
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
             return acc;
-        }, {});
+        }, {} as Record<string, SubmissionElasticsearchFieldPlugin>);
 
     const limit = createLimit(initialLimit, 100);
 

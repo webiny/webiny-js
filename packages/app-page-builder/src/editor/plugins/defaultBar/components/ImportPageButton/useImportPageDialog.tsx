@@ -34,7 +34,15 @@ const separator = css`
 
 export const importPageDialogTitle = t`Import page`;
 
-export const ImportPageDialogContent = ({ onUploadFile, onPasteFileLink }) => {
+interface ImportPageDialogContentProps {
+    onUploadFile: (file: string) => void;
+    onPasteFileLink: (url: string) => void;
+}
+
+export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = ({
+    onUploadFile,
+    onPasteFileLink
+}) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 
@@ -115,7 +123,10 @@ const useImportPageDialog = () => {
     const { showDialog } = useDialog();
 
     return {
-        showImportPageDialog: (onUploadFile = null, onPasteFileLink = null) => {
+        showImportPageDialog: (
+            onUploadFile?: (file: string) => void,
+            onPasteFileLink?: (url: string) => void
+        ) => {
             showDialog(
                 <ImportPageDialogContent
                     onUploadFile={onUploadFile}

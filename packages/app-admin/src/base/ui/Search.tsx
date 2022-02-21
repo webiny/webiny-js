@@ -22,7 +22,7 @@ export function useSearch() {
     return React.useContext(SearchContext);
 }
 
-export const SearchProvider = Component => {
+export const SearchProvider = (Component: React.FC): React.FC => {
     return function SearchProvider({ children, ...props }) {
         const [options, setOptions] = useState([]);
 
@@ -52,7 +52,7 @@ export const SearchRenderer = makeComposable("SearchRenderer");
 
 export type SearchOptionProps = SearchOptionData;
 
-export const SearchOption = (props: SearchOptionProps) => {
+export const SearchOption = (props: SearchOptionProps): React.FC => {
     const { addOption } = useSearch();
 
     useEffect(() => {

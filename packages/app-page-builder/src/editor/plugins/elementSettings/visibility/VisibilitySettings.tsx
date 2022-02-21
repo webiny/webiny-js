@@ -6,6 +6,7 @@ import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Switch } from "@webiny/ui/Switch";
 import {
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "~/types";
@@ -38,7 +39,11 @@ const classes = {
 
 const DATA_NAMESPACE = "data.settings.visibility";
 
-export const useVisibilitySetting = elementId => {
+interface UseVisibilitySettingResult {
+    element: PbEditorElement;
+    updateVisibility: (value: boolean) => void;
+}
+export const useVisibilitySetting = (elementId: string): UseVisibilitySettingResult => {
     const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const { getUpdateValue } = useUpdateHandlers({

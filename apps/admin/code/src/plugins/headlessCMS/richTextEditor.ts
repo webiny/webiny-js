@@ -1,6 +1,13 @@
+/**
+ * Package @editorjs/* is missing types.
+ */
+// @ts-ignore
 import Delimiter from "@editorjs/delimiter";
+// @ts-ignore
 import Quote from "@editorjs/quote";
+// @ts-ignore
 import List from "@editorjs/list";
+// @ts-ignore
 import Underline from "@editorjs/underline";
 import Image from "@webiny/app-admin/components/RichTextEditor/tools/image";
 import TextColor from "@webiny/app-admin/components/RichTextEditor/tools/textColor";

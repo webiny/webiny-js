@@ -6,6 +6,7 @@ import classSet from "classnames";
 import webinyLogo from "../../assets/images/webiny-orange-logo.svg";
 import signInDivider from "./assets/sign-in-divider.svg";
 import { config as appConfig } from "@webiny/app/config";
+import { Installer } from "./useInstaller";
 
 const SidebarWrapper = styled("div")({});
 
@@ -67,8 +68,14 @@ const List = styled("ul")({
 const Note = styled("div")({
     padding: 15
 });
-
-const Installations = ({ title, allInstallers, installer, showLogin }) => {
+interface InstallationsProps {
+    title: React.ReactNode;
+    allInstallers: Installer[];
+    installer: Installer;
+    showLogin: boolean;
+}
+const Installations: React.FC<InstallationsProps> = props => {
+    const { title, allInstallers, installer, showLogin } = props;
     const renderList = () => {
         const loginItem = (
             <li key={"login"} className={"sign-in"}>
@@ -116,7 +123,12 @@ const Installations = ({ title, allInstallers, installer, showLogin }) => {
     );
 };
 
-const Sidebar = ({ allInstallers, installer, showLogin }) => {
+interface SidebarProps {
+    allInstallers: Installer[];
+    installer: Installer;
+    showLogin: boolean;
+}
+const Sidebar: React.FC<SidebarProps> = ({ allInstallers, installer, showLogin }) => {
     const upgrades = allInstallers.filter(installer => installer.type === "upgrade");
     const installations = allInstallers.filter(installer => installer.type === "install");
 

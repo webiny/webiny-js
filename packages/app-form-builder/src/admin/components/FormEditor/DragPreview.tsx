@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDragLayer } from "react-dnd";
+import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
 
 let subscribedToOffsetChange = false;
 
-let dragPreviewRef = null;
+let dragPreviewRef: HTMLDivElement = null;
 
-const onOffsetChange = monitor => () => {
+const onOffsetChange = (monitor: DragSourceMonitor) => () => {
     if (!dragPreviewRef) {
         return;
     }
@@ -17,10 +18,14 @@ const onOffsetChange = monitor => () => {
 
     const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
     dragPreviewRef.style["transform"] = transform;
+    /**
+     * TS is complaining about webkit keyword
+     */
+    // @ts-ignore
     dragPreviewRef.style["-webkit-transform"] = transform;
 };
 
-export default function DragPreview() {
+const DragPreview: React.FC = () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
     const { isDragging } = useDragLayer(monitor => {
         if (!subscribedToOffsetChange) {
@@ -93,4 +98,6 @@ export default function DragPreview() {
             </div>
         </div>
     );
-}
+};
+
+export default DragPreview;

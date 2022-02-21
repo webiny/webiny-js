@@ -1,7 +1,7 @@
 import { Table } from "dynamodb-toolbox";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-export interface Params {
+interface Params {
     documentClient: DocumentClient;
     tableName?: string;
 }

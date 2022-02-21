@@ -2,13 +2,18 @@ import { Octokit } from "octokit";
 
 // TODO: try to add octokit types properly based on
 // https://www.npmjs.com/package/@octokit/types
-type GithubRepository = {
+interface GithubRepository {
     full_name: string;
     name: string;
-    owner: { login: string };
-};
+    owner: {
+        login: string;
+    };
+}
 
-export default async (args: { octokit: Octokit }): Promise<GithubRepository[]> => {
+interface Params {
+    octokit: Octokit;
+}
+export default async (args: Params): Promise<GithubRepository[]> => {
     const octokit = args.octokit;
 
     let page = 0;

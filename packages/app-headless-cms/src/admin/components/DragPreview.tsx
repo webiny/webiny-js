@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDragLayer } from "react-dnd";
+import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
+import { DragSourceMonitorImpl } from "react-dnd/lib/common/DragSourceMonitorImpl";
 
 let subscribedToOffsetChange = false;
 
-let dragPreviewRef = null;
+let dragPreviewRef: HTMLDivElement = null;
 
-const onOffsetChange = monitor => () => {
+const onOffsetChange = (monitor: DragSourceMonitor) => () => {
     if (!dragPreviewRef) {
         return;
     }
@@ -17,14 +19,14 @@ const onOffsetChange = monitor => () => {
 
     const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
     dragPreviewRef.style["transform"] = transform;
-    dragPreviewRef.style["-webkit-transform"] = transform;
+    // TODO @ts-refactor figure out better type
+    dragPreviewRef.style["-webkit-transform" as any] = transform;
 };
 
-export default function DragPreview() {
+const DragPreview: React.FC = () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
-    const { isDragging } = useDragLayer(monitor => {
+    const { isDragging } = useDragLayer((monitor: DragSourceMonitorImpl) => {
         if (!subscribedToOffsetChange) {
-            // @ts-ignore
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
             subscribedToOffsetChange = true;
         }
@@ -93,4 +95,5 @@ export default function DragPreview() {
             </div>
         </div>
     );
-}
+};
+export default DragPreview;

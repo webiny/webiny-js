@@ -25,7 +25,7 @@ const createEntity = (entityName: string, table: Table, attributes: any = {}): E
     });
 };
 
-export const createUserEntity = table => {
+export const createUserEntity = (table: Table): Entity<any> => {
     return createEntity("SecurityUser", table, {
         id: {
             type: "string"
@@ -51,7 +51,7 @@ export const createUserEntity = table => {
     });
 };
 
-export const createLinkEntity = table => {
+export const createLinkEntity = (table: Table): Entity<any> => {
     return createEntity("SecurityUser2Tenant", table, {
         id: {
             type: "string"
@@ -65,7 +65,7 @@ export const createLinkEntity = table => {
     });
 };
 
-export const createGroupEntity = table => {
+export const createGroupEntity = (table: Table): Entity<any> => {
     return createEntity("SecurityGroup", table, {
         id: {
             type: "string"
@@ -97,7 +97,7 @@ export const createGroupEntity = table => {
     });
 };
 
-export const createApiKeyEntity = table => {
+export const createApiKeyEntity = (table: Table): Entity<any> => {
     return createEntity("SecurityApiKey", table, {
         id: {
             type: "string"

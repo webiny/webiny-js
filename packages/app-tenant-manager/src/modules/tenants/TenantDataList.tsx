@@ -21,21 +21,26 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { ReactComponent as LoginIcon } from "~/assets/login_black_24dp.svg";
 import { useTenantsList } from "./hooks/useTenantsList";
 import { useTenancy } from "@webiny/app-tenancy";
+import { TenantItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/data-list");
 
-const SORTERS = [
+interface Sorter {
+    label: string;
+    sorter: string;
+}
+const SORTERS: Sorter[] = [
     {
         label: t`Name A-Z` as string,
-        sorters: { name: "asc" }
+        sorter: "name_ASC"
     },
     {
         label: t`Name Z-A` as string,
-        sorters: { name: "desc" }
+        sorter: "name_DESC"
     }
 ];
 
-const TenantDataList = () => {
+const TenantDataList: React.FC = () => {
     const {
         tenants,
         loading,
@@ -45,7 +50,6 @@ const TenantDataList = () => {
         setFilter,
         sort,
         setSort,
-        serializeSorters,
         editTenant
     } = useTenantsList({ sorters: SORTERS });
 
@@ -57,9 +61,9 @@ const TenantDataList = () => {
                 <Grid>
                     <Cell span={12}>
                         <Select value={sort} onChange={setSort} label={t`Sort by`}>
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sorter }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorter}>
                                         {label}
                                     </option>
                                 );
@@ -93,7 +97,7 @@ const TenantDataList = () => {
             modalOverlay={tenantsDataListModalOverlay}
             modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
-            {({ data }) => (
+            {({ data }: { data: TenantItem[] }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === currentTenantId}>

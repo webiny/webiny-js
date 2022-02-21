@@ -11,7 +11,7 @@ interface Callable<T> {
 
 export class ApolloCacheObjectIdPlugin<T extends Object = Object> extends Plugin {
     public static readonly type = "cache-get-object-id";
-    private _getObjectId: Callable<T>;
+    private readonly _getObjectId: Callable<T>;
 
     constructor(getObjectId?: Callable<T>) {
         super();

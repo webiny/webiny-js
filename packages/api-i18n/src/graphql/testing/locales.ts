@@ -1,6 +1,6 @@
-import { ContextI18NGetLocales } from "~/types";
+import { ContextI18NGetLocales, I18NLocale } from "~/types";
 
-export const locales = {
+export const locales: Record<string, Pick<I18NLocale, "code" | "default">> = {
     en: {
         code: "en-US",
         default: true

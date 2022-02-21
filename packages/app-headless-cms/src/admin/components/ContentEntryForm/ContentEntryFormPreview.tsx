@@ -15,7 +15,7 @@ interface Props {
     contentModel: CmsEditorContentModel;
 }
 
-export const ContentEntryFormPreview = (props: Props) => {
+export const ContentEntryFormPreview: React.FC<Props> = props => {
     const { contentModel } = props;
 
     const formRenderer = plugins
@@ -34,7 +34,7 @@ export const ContentEntryFormPreview = (props: Props) => {
                 );
 
                 return acc;
-            }, {});
+            }, {} as Record<string, React.ReactElement>);
             return formRenderer.render({ ...formRenderProps, contentModel, fields });
         },
         [formRenderer, contentModel.fields]

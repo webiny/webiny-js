@@ -3,19 +3,22 @@ import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
-export type DraggableChildrenFunction = (params: {
+interface DraggableChildrenFunctionParams {
     isDragging: boolean;
     drag: ConnectDragSource;
-}) => ReactElement;
+}
+export interface DraggableChildrenFunction {
+    (params: DraggableChildrenFunctionParams): ReactElement;
+}
 
-export type DraggableProps = {
+export interface DraggableProps {
     children: DraggableChildrenFunction;
     beginDrag?: any;
     endDrag?: any;
     target?: string[];
-};
+}
 
-function Draggable(props: DraggableProps) {
+const Draggable: React.FC<DraggableProps> = props => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
@@ -43,6 +46,7 @@ function Draggable(props: DraggableProps) {
             {children({ isDragging, drag })}
         </>
     );
-}
+};
 
-export default React.memo(Draggable);
+const MemoizedDraggable: React.FC<DraggableProps> = React.memo(Draggable);
+export default MemoizedDraggable;

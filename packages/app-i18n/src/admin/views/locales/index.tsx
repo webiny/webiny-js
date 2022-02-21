@@ -3,7 +3,7 @@ import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/S
 import LocalesDataList from "./LocalesDataList";
 import LocaleForm from "./LocaleForm";
 
-export const LocalesView = () => {
+export const LocalesView: React.FC = () => {
     return (
         <SplitView>
             <LeftPanel>

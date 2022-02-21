@@ -9,26 +9,26 @@ import {
 } from "~/types";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 
-type CombineClassNamesType = (...styles) => string;
+type CombineClassNamesType = (...styles: string[]) => string;
 const combineClassNames: CombineClassNamesType = (...styles) => {
     return styles.filter(s => s !== "" && s !== "css-0").join(" ");
 };
 
-type ElementRootChildrenFunctionParamsType = {
+interface ElementRootChildrenFunctionParamsType {
     getAllClasses: (...classes: string[]) => string;
     combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     customClasses: string[];
-};
+}
 type ElementRootChildrenFunction = (params: ElementRootChildrenFunctionParamsType) => ReactElement;
 
-type ElementRootProps = {
+interface ElementRootProps {
     element: PbElement | PbEditorElement;
     style?: CSSProperties;
     className?: string;
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;
-};
+}
 
 const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     element,
@@ -84,7 +84,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
 
     const classNames = element.data.settings?.className || "";
 
-    const getAllClasses = (...extraClasses) => {
+    const getAllClasses = (...extraClasses: string[]): string => {
         return [className, ...extraClasses, ...classNames.split(" ")]
             .filter(v => v && v !== "css-0")
             .join(" ");

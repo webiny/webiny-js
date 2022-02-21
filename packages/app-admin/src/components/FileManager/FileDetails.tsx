@@ -14,6 +14,10 @@ import Name from "./FileDetails/Name";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
+/**
+ * Package react-hotkeyz has no types.
+ */
+// @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import { ReactComponent as CopyContentIcon } from "./icons/content_copy-black-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
@@ -29,6 +33,7 @@ import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 import mime from "mime";
+import { FileItem } from "./types";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
 
@@ -140,16 +145,13 @@ const style: any = {
         }
     })
 };
-type FileDetailsProps = {
+interface FileDetailsProps {
     canEdit: (item: any) => boolean;
-    file: {
-        name: string;
-        [key: string]: any;
-    };
+    file: FileItem;
     [key: string]: any;
-};
+}
 
-const isImage = file => {
+const isImage = (file: FileItem) => {
     const fileType = mime.getType(file && file.name);
 
     if (fileType && typeof fileType === "string") {
@@ -159,11 +161,12 @@ const isImage = file => {
     return false;
 };
 
-export default function FileDetails(props: FileDetailsProps) {
+const FileDetails: React.FC<FileDetailsProps> = props => {
     const { file, uploadFile, validateFiles } = props;
 
     const filePlugin = getFileTypePlugin(file);
-    const actions = get(filePlugin, "fileDetails.actions") || get(filePlugin, "actions") || [];
+    const actions: React.FC[] =
+        get(filePlugin, "fileDetails.actions") || get(filePlugin, "actions") || [];
 
     const { hideFileDetails, queryParams } = useFileManager();
     const [darkImageBackground, setDarkImageBackground] = useState(false);
@@ -206,9 +209,11 @@ export default function FileDetails(props: FileDetailsProps) {
                 })
             );
             const filteredList = data.fileManager.listFiles.data.filter(
-                item => item.id !== file.id
+                (item: FileItem) => item.id !== file.id
             );
-            const selectedFile = data.fileManager.listFiles.data.find(item => item.id === file.id);
+            const selectedFile = data.fileManager.listFiles.data.find(
+                (item: FileItem) => item.id === file.id
+            );
 
             cache.writeQuery({
                 query: LIST_FILES,
@@ -217,9 +222,9 @@ export default function FileDetails(props: FileDetailsProps) {
             });
             // 2. Update "ListTags" cache
             if (Array.isArray(selectedFile.tags)) {
-                const tagCountMap = {};
+                const tagCountMap: Record<string, number> = {};
                 // Prepare "tag" count map
-                data.fileManager.listFiles.data.forEach(file => {
+                data.fileManager.listFiles.data.forEach((file: FileItem) => {
                     if (!Array.isArray(file.tags)) {
                         return;
                     }
@@ -239,7 +244,7 @@ export default function FileDetails(props: FileDetailsProps) {
                     })
                 );
                 // Remove selected file tags from list.
-                const filteredTags = listTagsData.fileManager.listTags.filter(tag => {
+                const filteredTags = listTagsData.fileManager.listTags.filter((tag: string) => {
                     if (!selectedFile.tags.includes(tag)) {
                         return true;
                     }
@@ -335,7 +340,16 @@ export default function FileDetails(props: FileDetailsProps) {
                             dark: darkImageBackground
                         })}
                     >
-                        {filePlugin.render({ file, uploadFile, validateFiles })}
+                        {filePlugin.render({
+                            /**
+                             * TODO: @ts-refactor
+                             * Figure out which type is the file
+                             */
+                            // @ts-ignore
+                            file,
+                            uploadFile,
+                            validateFiles
+                        })}
                     </div>
                     <div className={style.download}>
                         <>
@@ -349,7 +363,7 @@ export default function FileDetails(props: FileDetailsProps) {
                                 />
                             </Tooltip>
 
-                            {actions.map((Component, index) => (
+                            {actions.map((Component: React.FC, index: number) => (
                                 <Component key={index} {...props} />
                             ))}
                             {renderDeleteImageAction(file)}
@@ -399,4 +413,6 @@ export default function FileDetails(props: FileDetailsProps) {
             )}
         </Drawer>
     );
-}
+};
+
+export default FileDetails;

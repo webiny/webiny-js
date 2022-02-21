@@ -1,7 +1,7 @@
 import { Entity, Table } from "dynamodb-toolbox";
 import { Attributes } from "~/types";
 
-export interface Params {
+interface Params {
     table: Table;
     entityName: string;
     attributes: Attributes;

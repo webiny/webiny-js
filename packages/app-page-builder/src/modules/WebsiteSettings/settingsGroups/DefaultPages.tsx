@@ -17,7 +17,7 @@ const style = {
     })
 };
 
-const Homepage = () => {
+const Homepage: React.FC = () => {
     const { settings, editPage } = usePbWebsiteSettings();
 
     return (
@@ -37,7 +37,7 @@ const Homepage = () => {
     );
 };
 
-const NotFoundPage = () => {
+const NotFoundPage: React.FC = () => {
     const { settings, editPage } = usePbWebsiteSettings();
 
     return (
@@ -57,7 +57,7 @@ const NotFoundPage = () => {
     );
 };
 
-export const DefaultPages = () => {
+export const DefaultPages: React.FC = () => {
     return (
         <Group name={"defaultPages"} label={"Default Pages"}>
             <Element>

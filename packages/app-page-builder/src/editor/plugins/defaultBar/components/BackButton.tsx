@@ -8,7 +8,7 @@ const backStyles = css({
     marginLeft: -10
 });
 
-const BackButton = () => {
+const BackButton: React.FC = () => {
     const { match, history } = useRouter();
     const params: { id: string } = match.params as any;
     return (

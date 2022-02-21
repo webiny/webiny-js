@@ -8,6 +8,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import usePermission from "../../../../../hooks/usePermission";
+import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-page-builder/page-details/header/request-review");
 
@@ -29,8 +30,10 @@ const REQUEST_REVIEW = gql`
         }
     }
 `;
-
-const RequestReview = props => {
+interface RequestReviewProps {
+    page: PbPageData;
+}
+const RequestReview: React.FC<RequestReviewProps> = props => {
     const { page } = props;
 
     const { canRequestReview } = usePermission();

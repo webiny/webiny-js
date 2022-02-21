@@ -10,17 +10,13 @@ import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementS
 
 const DATA_NAMESPACE = "data.text";
 
-type TextElementProps = {
+interface TextElementProps {
     elementId: string;
     mediumEditorOptions: CoreOptions;
     tag?: string | [string, Record<string, any>];
-};
+}
 
-const PeText: React.FunctionComponent<TextElementProps> = ({
-    elementId,
-    mediumEditorOptions,
-    tag: customTag
-}) => {
+const PeText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, tag: customTag }) => {
     const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const [{ displayMode }] = useRecoilState(uiAtom);
     const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);

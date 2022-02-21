@@ -2,15 +2,21 @@ import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
 
-const usePermission = () => {
+interface CreatableItem {
+    createdBy?: {
+        id?: string;
+    };
+}
+
+export const usePermission = () => {
     const { identity } = useSecurity();
 
     const fbFormPermission = useMemo(() => identity.getPermission("fb.form"), []);
     const hasFullAccess = useMemo(() => identity.getPermission("fb.*"), []);
 
     const canEdit = useCallback(
-        item => {
-            const creatorId = get(item, "createdBy.id");
+        (item): boolean => {
+            const creatorId: string = get(item, "createdBy.id");
             if (!fbFormPermission) {
                 return false;
             }
@@ -26,7 +32,7 @@ const usePermission = () => {
     );
 
     const canDelete = useCallback(
-        item => {
+        (item: CreatableItem): boolean => {
             if (!fbFormPermission) {
                 return false;
             }
@@ -41,7 +47,7 @@ const usePermission = () => {
         [fbFormPermission]
     );
 
-    const canPublish = useCallback(() => {
+    const canPublish = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -54,7 +60,7 @@ const usePermission = () => {
         return fbFormPermission.pw;
     }, [fbFormPermission, hasFullAccess]);
 
-    const canUnpublish = useCallback(() => {
+    const canUnpublish = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -74,5 +80,3 @@ const usePermission = () => {
         canUnpublish
     };
 };
-
-export default usePermission;

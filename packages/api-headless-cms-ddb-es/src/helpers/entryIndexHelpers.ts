@@ -36,8 +36,8 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
     }
 
     // These objects will contain values processed by field index plugins
-    const values = {};
-    const rawValues = {};
+    const values: Record<string, string> = {};
+    const rawValues: Record<string, string> = {};
 
     // We're only interested in current model fields.
     for (const field of model.fields) {
@@ -126,7 +126,7 @@ export const extractEntriesFromIndex = ({
 
     for (const entry of entries) {
         // This object will contain values processed by field index plugins
-        const indexValues = {};
+        const indexValues: Record<string, string> = {};
 
         // We only consider fields that are present in the model
         for (const field of model.fields) {

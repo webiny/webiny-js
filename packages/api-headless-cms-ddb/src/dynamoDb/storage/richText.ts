@@ -14,7 +14,8 @@ export interface StorageValue {
  * https://github.com/rgcl/jsonpack/pull/25/files
  * NOTE 2021-07-28: it seems PR is not going to be merged so keep this.
  */
-const transformArray = (value: Record<string, any> | any[]) => {
+// TODO @ts-refactor figure better type
+const transformArray = (value: any) => {
     if (!value) {
         return value;
     }

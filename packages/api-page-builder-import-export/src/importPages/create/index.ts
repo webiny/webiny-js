@@ -5,11 +5,12 @@ import {
     PageImportExportTaskStatus,
     PbPageImportExportContext
 } from "~/types";
-import { initialStats, readExtractAndUploadZipFileContents, zeroPad } from "~/importPages/utils";
+import { initialStats, readExtractAndUploadZipFileContents } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
 import { HandlerArgs as ProcessHandlerArgs } from "../process";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockSecurity } from "~/mockSecurity";
+import { zeroPad } from "@webiny/utils";
 
 export type HandlerArgs = {
     category: string;
@@ -59,7 +60,7 @@ export default (
                 // Create sub task
                 const subtask = await pageBuilder.pageImportExportTask.createSubTask(
                     task.id,
-                    zeroPad(i + 1),
+                    zeroPad(i + 1, 5),
                     {
                         status: PageImportExportTaskStatus.PENDING,
                         data: {
@@ -117,5 +118,10 @@ export default (
                 }
             };
         }
+
+        return {
+            data: "",
+            error: null
+        };
     }
 });

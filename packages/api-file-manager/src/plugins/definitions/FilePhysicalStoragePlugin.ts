@@ -2,31 +2,36 @@ import { Plugin } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 import { FileManagerSettings } from "~/types";
 
-export interface Params {
-    upload: (args: UploadParams) => Promise<any>;
-    delete: (args: DeleteParams) => Promise<void>;
+export interface FilePhysicalStoragePluginParams<
+    U extends FilePhysicalStoragePluginUploadParams,
+    D extends FilePhysicalStoragePluginDeleteParams
+> {
+    upload: (args: U) => Promise<any>;
+    delete: (args: D) => Promise<void>;
 }
 
-export interface UploadParams {
+export interface FilePhysicalStoragePluginUploadParams {
     settings: FileManagerSettings;
     buffer: Buffer;
-    [key: string]: any;
 }
 
-export interface DeleteParams {
+export interface FilePhysicalStoragePluginDeleteParams {
     key: string;
 }
 
-export class FilePhysicalStoragePlugin extends Plugin {
+export class FilePhysicalStoragePlugin<
+    U extends FilePhysicalStoragePluginUploadParams = FilePhysicalStoragePluginUploadParams,
+    D extends FilePhysicalStoragePluginDeleteParams = FilePhysicalStoragePluginDeleteParams
+> extends Plugin {
     public static readonly type = "api-file-manager-storage";
-    private readonly _params: Params;
+    private readonly _params: FilePhysicalStoragePluginParams<U, D>;
 
-    public constructor(params: Params) {
+    public constructor(params: FilePhysicalStoragePluginParams<U, D>) {
         super();
         this._params = params;
     }
 
-    public async upload(params: UploadParams): Promise<any> {
+    public async upload(params: U): Promise<any> {
         if (!this._params.upload) {
             throw new WebinyError(
                 `You must define the "upload" method of this plugin.`,
@@ -36,7 +41,7 @@ export class FilePhysicalStoragePlugin extends Plugin {
         return this._params.upload(params);
     }
 
-    public async delete(params: DeleteParams): Promise<any> {
+    public async delete(params: D): Promise<any> {
         if (!this._params.delete) {
             throw new WebinyError(
                 `You must define the "delete" method of this plugin.`,

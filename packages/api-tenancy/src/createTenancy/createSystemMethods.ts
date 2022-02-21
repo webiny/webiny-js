@@ -60,12 +60,13 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
             try {
                 /**
                  * `install` will only ever be executed for the initial "root" tenant.
-                 * Other tenants are created manually, using Tenant Manager application.
+                 * Other tenants are created using the Tenant Manager application or programmatically.
                  */
                 await this.createTenant({
                     id: "root",
                     name: "Root",
-                    description: "The top-level Webiny tenant."
+                    description: "The top-level Webiny tenant.",
+                    parent: ""
                 });
                 await this.setVersion(process.env.WEBINY_VERSION);
             } catch (err) {

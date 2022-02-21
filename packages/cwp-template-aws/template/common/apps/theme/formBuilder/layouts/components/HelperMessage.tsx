@@ -1,15 +1,15 @@
 import * as React from "react";
 
-type Props = {
+interface HelperMessageProps {
     helperMessage?: React.ReactNode;
     errorMessage: React.ReactNode;
     isValid: boolean;
-};
+}
 
 /**
  * A component that is used to show helper (description) and validation error messages.
  */
-const HelperMessage = (props: Props) => {
+const HelperMessage: React.FC<HelperMessageProps> = props => {
     return (
         <div
             className={

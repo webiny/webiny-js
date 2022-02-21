@@ -6,7 +6,10 @@ import { plugins } from "@webiny/plugins";
 import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";
 
-export const createApolloClient = ({ uri }) => {
+interface CreateApolloClientParams {
+    uri: string;
+}
+export const createApolloClient = ({ uri }: CreateApolloClientParams) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**

@@ -8,10 +8,11 @@ const styles = css({
     width: "100%"
 });
 
-export default function DropFilesHere() {
+const DropFilesHere: React.FC = () => {
     return (
         <div className={styles}>
             <div>No results found.</div>
         </div>
     );
-}
+};
+export default DropFilesHere;

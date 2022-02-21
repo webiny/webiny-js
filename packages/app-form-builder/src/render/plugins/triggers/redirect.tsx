@@ -1,6 +1,6 @@
-import { FbFormTriggerHandlerPlugin } from "../../../types";
+import { FbFormTriggerHandlerPlugin } from "~/types";
 
-export default {
+const plugin: FbFormTriggerHandlerPlugin = {
     type: "form-trigger-handler",
     name: "form-trigger-handler-redirect",
     trigger: {
@@ -11,4 +11,5 @@ export default {
             }
         }
     }
-} as FbFormTriggerHandlerPlugin;
+};
+export default plugin;
