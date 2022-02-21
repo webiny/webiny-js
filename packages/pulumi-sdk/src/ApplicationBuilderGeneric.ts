@@ -40,7 +40,7 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
                         env: args.env
                     });
 
-                    await app.run();
+                    return await app.run();
                 }
             },
             {
