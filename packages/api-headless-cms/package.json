@@ -42,6 +42,7 @@
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
     "dot-prop": "^6.0.1",
+    "graphql-tag": "^2.12.6",
     "lodash": "^4.5.0",
     "p-map": "^4.0.0",
     "p-reduce": "^2.1.0",
