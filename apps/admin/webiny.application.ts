@@ -6,15 +6,6 @@
 import { createAdminApp } from "@webiny/pulumi-aws";
 
 export default createAdminApp({
-    id: "admin",
-    name: "Admin Area",
-    description: "Your project's admin area.",
-    cli: {
-        // Default args for the "yarn webiny watch ..." command (we don't need deploy option while developing).
-        watch: {
-            deploy: false
-        }
-    },
     config(app) {
         app.bucket.config.versioning = {
             enabled: false
