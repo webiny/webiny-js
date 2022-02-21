@@ -1,4 +1,5 @@
 import { Topic } from "@webiny/pubsub/types";
+import gql from "graphql-tag";
 import {
     BeforeModelUpdateTopicParams,
     CmsModelField,
@@ -9,6 +10,7 @@ import {
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
+import { createManageSDL } from "~/content/plugins/schema/createManageSDL";
 
 const defaultTitleFieldId = "id";
 
@@ -104,6 +106,28 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
                     `Cannot update content model because of the unknown "${field.type}" field.`
                 );
             }
+        }
+
+        // Make sure that this model can be safely converted to a GraphQL SDL
+        const schema = createManageSDL({
+            model,
+            fieldTypePlugins: fieldTypePlugins.reduce(
+                (acc, pl) => ({ ...acc, [pl.fieldType]: pl }),
+                {}
+            )
+        });
+
+        try {
+            gql(schema);
+        } catch (err) {
+            throw new WebinyError({
+                data: { modelId: model.modelId },
+                code: "INVALID_MODEL_FIELDS",
+                message: [
+                    `Model "${model.modelId}" is not safe for storage!`,
+                    `Please review your field definitions and try again.`
+                ].join("\n")
+            });
         }
 
         model.titleFieldId = getContentModelTitleFieldId(fields, titleFieldId);
