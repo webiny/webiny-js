@@ -29,7 +29,7 @@ export const oktaFactory: OktaFactory = ({ clientId }) => {
         redirectUri,
         scopes,
         pkce: true,
-        restoreOriginalUri: null,
+        restoreOriginalUri: undefined,
         devMode: false
     });
 

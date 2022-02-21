@@ -46,7 +46,7 @@ const Checkbox: React.FC<CheckboxProps> = props => {
                 {props.field.label}
             </label>
             <div className="webiny-fb-form-field__checkbox-group">
-                {props.field.options.map(option => (
+                {(props.field.options || []).map(option => (
                     <div className="webiny-fb-form-field__checkbox" key={option.value}>
                         <input
                             name={fieldId}

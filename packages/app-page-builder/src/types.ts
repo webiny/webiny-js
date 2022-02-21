@@ -214,6 +214,32 @@ export interface PbErrorResponse {
     data: Record<string, any>;
     code: string;
 }
+
+export interface PbPageDataSettingsGeneral {
+    layout?: string;
+}
+export interface PbPageDataSettingsSeo {
+    title: string;
+    description: string;
+    meta: {
+        name: string;
+        content: string;
+    }[];
+}
+export interface PbPageDataSettingsSocial {
+    title: string;
+    description: string;
+    meta: {
+        property: string;
+        content: string;
+    }[];
+    image?: { src: string } | null;
+}
+export interface PbPageDataSettings {
+    general?: PbPageDataSettingsGeneral;
+    seo?: PbPageDataSettingsSeo;
+    social?: PbPageDataSettingsSocial;
+}
 export interface PbPageData {
     id: string;
     pid: string;
@@ -226,24 +252,7 @@ export interface PbPageData {
     version?: number;
     category: PbCategory;
     status: string | "draft" | "published" | "unpublished";
-    settings?: {
-        general?: {
-            layout?: string;
-        };
-        seo?: {
-            title: string;
-            description: string;
-            meta: { name: string; content: string }[];
-        };
-        social?: {
-            title: string;
-            description: string;
-            meta: { property: string; content: string }[];
-            image: {
-                src: string;
-            };
-        };
-    };
+    settings?: PbPageDataSettings;
     createdOn: string;
     savedOn: string;
     publishedOn: string;

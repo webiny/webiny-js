@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BindComponentRenderProp, Form, BindComponent, FormOnSubmit } from "@webiny/form";
+import { BindComponentRenderProp, Form, BindComponent } from "@webiny/form";
 import {
     FbFormModelField,
     FormLayoutComponent,
@@ -14,6 +14,7 @@ import Radio from "./fields/Radio";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
 import HelperMessage from "./components/HelperMessage";
+import { FormRenderPropParamsSubmit } from "@webiny/form";
 
 /**
  * This is the default form layout component, in which we render all the form fields. We also render terms of service
@@ -236,7 +237,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
     /**
      * Renders the form submit button. We disable the button if the form is in the loading state.
      */
-    const renderSubmitButton = (submit: FormOnSubmit, loading: boolean, buttonLabel: string) => {
+    const renderSubmitButton = (
+        submit: FormRenderPropParamsSubmit,
+        loading: boolean,
+        buttonLabel: string
+    ) => {
         return (
             <div className="webiny-fb-form-submit-button">
                 <button

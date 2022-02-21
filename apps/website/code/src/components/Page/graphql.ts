@@ -20,8 +20,8 @@ export interface PublishedPageQueryResponse {
     };
 }
 export interface PublishedPageQueryVariables {
-    id: string;
-    path: string;
+    id: string | null;
+    path: string | null;
     returnNotFoundPage: boolean;
     returnErrorPage: boolean;
     preview: boolean;
