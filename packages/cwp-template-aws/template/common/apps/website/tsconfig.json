@@ -11,5 +11,6 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "files": ["pulumi/index.ts"]
 }
