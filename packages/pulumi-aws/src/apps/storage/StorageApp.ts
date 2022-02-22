@@ -5,9 +5,9 @@ import {
     ApplicationHooks
 } from "@webiny/pulumi-sdk";
 
-import { createCognitoResources } from "./StorageAppCognito";
-import { createDynamoTable } from "./StorageAppDynamo";
-import { createFileManagerBucket } from "./StorageAppFileManager";
+import { createCognitoResources } from "./StorageCognito";
+import { createDynamoTable } from "./StorageDynamo";
+import { createFileManagerBucket } from "./StorageFileManager";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
     config?(app: StorageApp, ctx: ApplicationContext): void;

@@ -25,6 +25,8 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@babel/runtime": "^7.16.3",
+    "@webiny/api-page-builder": "^5.23.1",
+    "@webiny/aws-layers": "^5.23.1",
     "@webiny/cli": "^5.23.1",
     "@webiny/project-utils": "^5.23.1",
     "rimraf": "^3.0.2",

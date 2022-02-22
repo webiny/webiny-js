@@ -20,6 +20,8 @@ export interface ApplicationStack {
 
 export interface ApplicationContext {
     env: string;
+    appDir: string;
+    projectDir: string;
 }
 
 export abstract class ApplicationBuilder<TConfig extends ApplicationConfig = ApplicationConfig>

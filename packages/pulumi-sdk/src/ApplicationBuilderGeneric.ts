@@ -37,7 +37,9 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
                 stackName: args.env,
                 program: async () => {
                     const app = this.config.app({
-                        env: args.env
+                        env: args.env,
+                        appDir: args.appDir,
+                        projectDir: args.projectDir
                     });
 
                     return await app.run();
