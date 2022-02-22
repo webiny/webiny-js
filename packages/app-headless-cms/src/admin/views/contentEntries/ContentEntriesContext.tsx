@@ -58,17 +58,14 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
     children,
     insideDialog
 }) => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const [listQueryVariables, setListQueryVariables] = useState<ListQueryVariables>({
         sort: [SORTERS[0].value]
     });
 
     const canCreate = useMemo((): boolean => {
-        if (!identity || !identity.getPermission) {
-            return false;
-        }
-        const permission = identity.getPermission("cms.contentEntry");
+        const permission = getPermission("cms.contentEntry");
         if (!permission) {
             return false;
         }

@@ -14,15 +14,15 @@ export default ({ children, permission }: SecureRouteProps): React.ReactElement 
         return null;
     }
 
-    const { identity } = security;
+    const { identity, getPermission } = security;
 
     if (!identity) {
         return null;
     }
 
     let hasPermission = false;
-    if (identity && identity.getPermission) {
-        hasPermission = permission ? Boolean(identity.getPermission(permission)) : true;
+    if (identity) {
+        hasPermission = permission ? Boolean(getPermission(permission)) : true;
     }
 
     if (hasPermission) {

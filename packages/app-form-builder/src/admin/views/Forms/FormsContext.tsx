@@ -55,14 +55,11 @@ export interface FormContextProvider {
     listQuery: QueryResult<ListFormsQueryResponse>;
 }
 export const FormsProvider: React.FC = ({ children }) => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
     const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS);
 
     const canCreate = useMemo((): boolean => {
-        if (!identity || !identity.getPermission) {
-            return false;
-        }
-        const permission = identity.getPermission("fb.form");
+        const permission = getPermission("fb.form");
         if (!permission) {
             return false;
         }

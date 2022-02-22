@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect } from "react";
 import { useNavigation } from "~/index";
 
 export interface MenuUpdater {
-    (menuItem: MenuData | undefined): MenuData | undefined;
+    (menuItem: MenuData | undefined | null): MenuData | undefined;
 }
 
 export interface MenuContext {
@@ -11,15 +11,7 @@ export interface MenuContext {
     removeMenu(id: string): void;
 }
 
-const MenuContext = createContext<MenuContext>({
-    menuItem: null,
-    setMenu: () => {
-        return void 0;
-    },
-    removeMenu: () => {
-        return void 0;
-    }
-});
+const MenuContext = createContext<MenuContext | undefined>(undefined);
 MenuContext.displayName = "MenuContext";
 
 const useMenu = () => {
@@ -157,7 +149,7 @@ export const AddMenu: React.FC<MenuProps> = ({ children, ...props }) => {
                 if (childIndex === -1) {
                     return {
                         ...existing,
-                        children: [...subItems, updater(undefined)].filter(Boolean) as MenuData[]
+                        children: [...subItems, updater(null)].filter(Boolean) as MenuData[]
                     };
                 }
 

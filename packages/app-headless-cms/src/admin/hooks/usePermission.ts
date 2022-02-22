@@ -15,24 +15,18 @@ interface CanReadEntriesCallableParams {
 }
 
 export const usePermission = () => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
     const { getCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale("content");
 
     const hasFullAccess = useMemo((): SecurityPermission | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        return identity.getPermission("cms.*");
+        return getPermission("cms.*");
     }, [identity]);
 
     const canRead = useCallback(
         (permissionName: string): boolean => {
-            if (!identity || !identity.getPermission) {
-                return false;
-            }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission(permissionName);
             if (!permission) {
                 return false;
             }
@@ -51,13 +45,10 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            if (!identity || !identity.getPermission) {
-                return false;
-            }
 
-            const permission = identity.getPermission("cms.contentEntry");
-            const contentModelPermission = identity.getPermission("cms.contentModel");
-            const contentModelGroupPermission = identity.getPermission("cms.contentModelGroup");
+            const permission = getPermission("cms.contentEntry");
+            const contentModelPermission = getPermission("cms.contentModel");
+            const contentModelGroupPermission = getPermission("cms.contentModelGroup");
 
             if (!permission) {
                 return false;
@@ -85,12 +76,9 @@ export const usePermission = () => {
 
     const canEdit = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
-            if (!identity || !identity.getPermission) {
-                return false;
-            }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission(permissionName);
 
-            if (!permission) {
+            if (!permission || !identity) {
                 return false;
             }
             if (permission.own) {
@@ -115,34 +103,31 @@ export const usePermission = () => {
      * without talking the "own" property in account.
      * @param {string} permissionName
      * */
-    const canCreate = useCallback((permissionName: string): boolean => {
-        if (!identity || !identity.getPermission) {
-            return false;
-        }
-        const permission = identity.getPermission(permissionName);
-        if (!permission) {
-            return false;
-        }
+    const canCreate = useCallback(
+        (permissionName: string): boolean => {
+            const permission = getPermission(permissionName);
+            if (!permission) {
+                return false;
+            }
 
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
+            if (typeof permission.rwd !== "string") {
+                return true;
+            }
 
-        return permission.rwd.includes("w");
-    }, []);
+            return permission.rwd.includes("w");
+        },
+        [identity]
+    );
 
     const canDelete = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
-            if (!identity || !identity.getPermission) {
-                return false;
-            }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission(permissionName);
 
             if (!permission) {
                 return false;
             }
             if (permission.own) {
-                return get(item, "createdBy.id") === identity.login;
+                return get(item, "createdBy.id") === (identity ? identity.login : null);
             }
             if (typeof permission.rwd === "string") {
                 return permission.rwd.includes("d");
@@ -157,10 +142,7 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            if (!identity || !identity.getPermission) {
-                return false;
-            }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission(permissionName);
 
             if (!permission) {
                 return false;
@@ -179,10 +161,7 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            if (!identity || !identity.getPermission) {
-                return false;
-            }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission(permissionName);
 
             if (!permission) {
                 return false;
@@ -201,10 +180,7 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            if (!identity || !identity.getPermission) {
-                return false;
-            }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission(permissionName);
 
             if (!permission) {
                 return false;
@@ -223,10 +199,7 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            if (!identity || !identity.getPermission) {
-                return false;
-            }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission(permissionName);
 
             if (!permission) {
                 return false;
@@ -245,10 +218,7 @@ export const usePermission = () => {
     const canCreateContentModels = canCreate("cms.contentModel");
     const canCreateContentModelGroups = canCreate("cms.contentModelGroup");
     const canAccessManageEndpoint = useMemo(() => {
-        if (!identity || !identity.getPermission) {
-            return false;
-        }
-        return identity.getPermission("cms.endpoint.manage") !== undefined;
+        return getPermission("cms.endpoint.manage") !== undefined;
     }, [identity]);
 
     return {

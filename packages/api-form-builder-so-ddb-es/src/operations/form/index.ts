@@ -68,7 +68,9 @@ const getESDataForLatestRevision = (form: FbForm): FbFormElastic => ({
     formId: form.formId
 });
 
-export const createFormStorageOperations = (params: CreateFormStorageOperationsParams): FormBuilderFormStorageOperations => {
+export const createFormStorageOperations = (
+    params: CreateFormStorageOperationsParams
+): FormBuilderFormStorageOperations => {
     const { entity, esEntity, table, plugins, elasticsearch } = params;
 
     const formDynamoDbFields = fields();

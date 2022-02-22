@@ -58,7 +58,9 @@ export interface CreateFormStorageOperationsParams {
     plugins: PluginsContainer;
 }
 
-export const createFormStorageOperations = (params: CreateFormStorageOperationsParams): FormBuilderFormStorageOperations => {
+export const createFormStorageOperations = (
+    params: CreateFormStorageOperationsParams
+): FormBuilderFormStorageOperations => {
     const { entity, table, plugins } = params;
 
     const formDynamoDbFields = plugins.byType<FormDynamoDbFieldPlugin>(

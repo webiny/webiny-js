@@ -11,7 +11,11 @@ export interface CreateCmsApolloClientParams {
     apiUrl: string;
     endpoint: "manage" | "read";
 }
-export const createCmsApolloClient = ({ locale, apiUrl, endpoint }: CreateCmsApolloClientParams) => {
+export const createCmsApolloClient = ({
+    locale,
+    apiUrl,
+    endpoint
+}: CreateCmsApolloClientParams) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**

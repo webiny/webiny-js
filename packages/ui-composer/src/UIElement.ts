@@ -172,7 +172,6 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
     }
 
     public addTag(tag: string): void {
-        console.log(this);
         this._tags.add(tag);
     }
 

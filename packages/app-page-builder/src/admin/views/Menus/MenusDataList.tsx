@@ -117,18 +117,15 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
         [slug]
     );
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission => {
-        if (!identity || !identity.getPermission) {
-            return {
-                name: "unknown",
-                own: null
-            };
-        }
-        return identity.getPermission("pb.menu");
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.menu");
     }, [identity]);
 
     const canDelete = useCallback(item => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         if (pbMenuPermission.own) {
             const identityId = identity ? identity.id || identity.login : null;
             return item.createdBy.id === identityId;

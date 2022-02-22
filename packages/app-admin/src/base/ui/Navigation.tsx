@@ -46,9 +46,9 @@ const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
     );
 };
 
-const LegacyMenuPlugins = () => {
+const LegacyMenuPlugins: React.FC = () => {
     // IMPORTANT! The following piece of code is for BACKWARDS COMPATIBILITY purposes only!
-    const [menus, setMenus] = useState<JSX.Element>(null as any);
+    const [menus, setMenus] = useState<JSX.Element | null>(null);
 
     useEffect(() => {
         const menuPlugins = plugins.byType<AdminMenuPlugin>("admin-menu");
@@ -57,13 +57,13 @@ const LegacyMenuPlugins = () => {
         }
 
         const menuElements = menuPlugins.map(plugin => {
-            // TODO @ts-refactor figure out correct types or write a comment to leave any
+            // TODO @ts-refactor figure out correct types or write a comment to leave as React.FC
             return (
                 <Plugins key={plugin.name}>
                     {plugin.render({
-                        Menu: LegacyMenu as any,
-                        Item: LegacyMenu as any,
-                        Section: LegacyMenu as any
+                        Menu: LegacyMenu as React.FC,
+                        Item: LegacyMenu as React.FC,
+                        Section: LegacyMenu as React.FC
                     })}
                 </Plugins>
             );
@@ -129,7 +129,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>): Rea
     };
 };
 
-export const Navigation = () => {
+export const Navigation: React.FC = () => {
     return (
         <Tags tags={{ location: "navigation" }}>
             <NavigationRenderer />
@@ -140,12 +140,12 @@ export const Navigation = () => {
 export const NavigationRenderer = makeComposable("NavigationRenderer");
 
 interface MenuItemContext {
-    menuItem: MenuData;
+    menuItem?: MenuData;
     depth: number;
 }
 
 const MenuItemContext = React.createContext<MenuItemContext>({
-    menuItem: null as any,
+    menuItem: undefined,
     depth: -1
 });
 MenuItemContext.displayName = "MenuItemContext";
@@ -177,7 +177,7 @@ export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItem
     );
 });
 
-export const MenuItem = () => {
+export const MenuItem: React.FC = () => {
     return <MenuItemRenderer />;
 };
 

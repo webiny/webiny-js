@@ -98,7 +98,7 @@ const ContentFormOptionsMenu: React.FC = () => {
 
             setLoading(false);
         });
-    }, []);
+    }, [entry]);
 
     if (!canDelete(entry, "cms.contentEntry")) {
         return null;

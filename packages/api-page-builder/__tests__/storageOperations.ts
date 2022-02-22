@@ -8,7 +8,9 @@ interface GetStorageOperationsResponse {
     storageOperations: PageBuilderStorageOperations;
     plugins: Plugin[] | Plugin[][] | PluginCollection;
 }
-export const getStorageOperations = (params: GetStorageOperationsParams): GetStorageOperationsResponse => {
+export const getStorageOperations = (
+    params: GetStorageOperationsParams
+): GetStorageOperationsResponse => {
     // @ts-ignore
     if (typeof __getCreateStorageOperations !== "function") {
         throw new Error(`There is no global "__getCreateStorageOperations" function.`);

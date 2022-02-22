@@ -103,7 +103,7 @@ const WelcomeScreenWidgetsWrapper = styled("div")({
 });
 
 const Welcome: React.FC = () => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     if (!identity) {
         return null;
@@ -111,10 +111,7 @@ const Welcome: React.FC = () => {
 
     const widgets = plugins.byType("admin-welcome-screen-widget").filter(pl => {
         if (pl.permission) {
-            if (!identity.getPermission) {
-                return false;
-            }
-            return identity.getPermission(pl.permission);
+            return getPermission(pl.permission);
         }
         return true;
     });

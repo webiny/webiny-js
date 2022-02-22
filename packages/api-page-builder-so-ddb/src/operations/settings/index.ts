@@ -80,7 +80,9 @@ export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
 }
 
-export const createSettingsStorageOperations = ({ entity }: CreateSettingsStorageOperationsParams): SettingsStorageOperations => {
+export const createSettingsStorageOperations = ({
+    entity
+}: CreateSettingsStorageOperationsParams): SettingsStorageOperations => {
     const get = async (params: SettingsStorageOperationsGetParams) => {
         const { where } = params;
         const keys = {

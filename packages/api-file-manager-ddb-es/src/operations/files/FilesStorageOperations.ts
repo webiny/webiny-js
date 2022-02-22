@@ -30,7 +30,7 @@ import { compress } from "@webiny/api-elasticsearch/compression";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchSearchResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
 interface FileItem extends File {
     PK: string;
@@ -56,7 +56,7 @@ interface CreatePartitionKeyParams {
 }
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly context: FileManagerContext;
+    private readonly context: FileManagerContext & Partial<ElasticsearchContext>;
     private readonly table: Table;
     private readonly esTable: Table;
     private readonly entity: Entity<any>;
@@ -74,7 +74,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private get esClient() {
-        const ctx = this.context as any;
+        const ctx = this.context;
         if (!ctx.elasticsearch) {
             throw new WebinyError(
                 "Missing Elasticsearch client on the context.",

@@ -152,7 +152,7 @@ const renderFile: React.FC<RenderFileProps> = props => {
 interface RenderEmptyProps {
     hasPreviouslyUploadedFiles: boolean;
     browseFiles: FilesRenderChildren["browseFiles"];
-    fmFilePermission?: SecurityPermission;
+    fmFilePermission: SecurityPermission | null;
 }
 const renderEmpty: React.FC<RenderEmptyProps> = ({
     hasPreviouslyUploadedFiles,
@@ -213,13 +213,10 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     } = useFileManager();
     const { showSnackbar } = useSnackbar();
 
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
     const fmFilePermission = useMemo(() => {
-        if (!identity || !identity.getPermission) {
-            return undefined;
-        }
-        return identity.getPermission("fm.file");
-    }, []);
+        return getPermission("fm.file");
+    }, [identity]);
     const canCreate = useMemo(() => {
         // Bail out early if no access
         if (!fmFilePermission) {

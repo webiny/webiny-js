@@ -160,18 +160,15 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
         return getQuery.data?.pageBuilder?.getCategory.data || ({} as PbCategory);
     }, [loadedCategory.slug]);
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission => {
-        if (!identity || !identity.getPermission) {
-            return {
-                name: "unknown",
-                own: null
-            };
-        }
-        return identity.getPermission("pb.category");
-    }, []);
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.category");
+    }, [identity]);
 
     const canSave = useMemo((): boolean => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         // User should be able to save the form
         // if it's a new entry and user has the "own" permission set.
         if (!loadedCategory.slug && pbMenuPermission.own) {

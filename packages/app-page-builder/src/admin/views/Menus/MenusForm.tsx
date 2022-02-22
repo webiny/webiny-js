@@ -120,18 +120,15 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
         return data;
     }, [loadedMenu.slug]);
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission => {
-        if (!identity || !identity.getPermission) {
-            return {
-                name: "unknown",
-                own: null
-            };
-        }
-        return identity.getPermission("pb.menu");
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.menu");
     }, [identity]);
 
     const canSave = useMemo((): boolean => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         // User should be able to save the form
         // if it's a new entry and user has the "own" permission set.
         if (!loadedMenu.slug && pbMenuPermission.own) {

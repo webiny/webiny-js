@@ -61,7 +61,9 @@ export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createEntriesStorageOperations = (params: CreateEntriesStorageOperationsParams): CmsEntryStorageOperations => {
+export const createEntriesStorageOperations = (
+    params: CreateEntriesStorageOperationsParams
+): CmsEntryStorageOperations => {
     const { entity, plugins } = params;
 
     const dataLoaders = new DataLoadersHandler({

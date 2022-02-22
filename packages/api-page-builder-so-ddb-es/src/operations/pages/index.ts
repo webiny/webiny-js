@@ -56,7 +56,9 @@ export interface CreatePageStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
-export const createPageStorageOperations = (params: CreatePageStorageOperationsParams): PageStorageOperations => {
+export const createPageStorageOperations = (
+    params: CreatePageStorageOperationsParams
+): PageStorageOperations => {
     const { entity, esEntity, elasticsearch, plugins } = params;
 
     const create = async (params: PageStorageOperationsCreateParams): Promise<Page> => {

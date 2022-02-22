@@ -17,7 +17,7 @@ interface PublishRevisionProps {
     page: PbPageData;
 }
 const PublishRevision: React.FC<PublishRevisionProps> = props => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
     const { canPublish, canUnpublish } = usePermission();
     const { page } = props;
 
@@ -48,11 +48,8 @@ const PublishRevision: React.FC<PublishRevisionProps> = props => {
     });
 
     const pbPagePermission = useMemo((): SecurityPermission | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        return identity.getPermission("pb.page");
-    }, []);
+        return getPermission("pb.page");
+    }, [identity]);
     if (!pbPagePermission) {
         return null;
     }

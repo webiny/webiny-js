@@ -40,7 +40,7 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
 
     const currentLocale = getCurrentLocale("content");
     /**
-     * TODO @ts-refactor @pavel did you thing about this?
+     * TODO @ts-refactor @pavel did you think about this?
      */
     // TODO: not sure why this was necessary :thinking:
     // const hasPermission = identity.getPermission("cms.endpoint.manage");

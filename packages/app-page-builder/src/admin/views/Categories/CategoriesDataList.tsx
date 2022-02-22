@@ -123,19 +123,15 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
         [slug]
     );
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission => {
-        if (!identity || !identity.getPermission) {
-            return {
-                name: "unknown",
-                rwd: null,
-                own: null
-            };
-        }
-        return identity.getPermission("pb.category");
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.category");
     }, [identity]);
 
     const canDelete = useCallback((item: CreatableItem): boolean => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         if (pbMenuPermission.own) {
             const identityId = identity ? identity.id || identity.login : null;
             return item.createdBy?.id === identityId;

@@ -39,20 +39,19 @@ export const SecurityProvider: React.FC = props => {
         [identity]
     );
 
-    const value = useMemo(
-        () => ({
+    const value = useMemo(() => {
+        return {
             identity: identity
                 ? {
                       ...identity,
                       // For backwards compatibility, expose the `getPermission` method on the `identity` object.
-                      getPermission: getPermission as any
+                      getPermission
                   }
                 : null,
             setIdentity,
             getPermission
-        }),
-        [identity]
-    );
+        };
+    }, [identity]);
 
     return <SecurityContext.Provider value={value}>{props.children}</SecurityContext.Provider>;
 };

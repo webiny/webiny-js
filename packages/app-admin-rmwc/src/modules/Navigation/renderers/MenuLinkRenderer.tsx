@@ -19,9 +19,16 @@ export const MenuLinkRenderer = (PrevMenuItem: React.FC): React.FC => {
         const { menuItem, depth } = useMenuItem();
 
         const hideMenu = useCallback(() => setVisible(false), []);
-        const shouldRender = depth === 0 && (menuItem.tags || []).includes("footer");
+        const shouldRender =
+            depth === 0 && (menuItem ? menuItem.tags || [] : []).includes("footer");
 
         if (!shouldRender) {
+            return <PrevMenuItem />;
+        } else if (!menuItem) {
+            // TODO @ts-refactor check if to return component or null @pavel
+            console.log(
+                "MenuLinkRenderer returning PrevMenuItem because missing menuItem variable."
+            );
             return <PrevMenuItem />;
         }
 

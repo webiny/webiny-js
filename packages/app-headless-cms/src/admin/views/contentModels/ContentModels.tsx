@@ -41,13 +41,10 @@ const ContentModels: React.FC = () => {
 
     const [cloneContentModel, setCloneContentModel] = React.useState<CmsModel | null>(null);
 
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo((): boolean => {
-        if (!identity || !identity.getPermission) {
-            return false;
-        }
-        const permission = identity.getPermission("cms.contentModel");
+        const permission = getPermission("cms.contentModel");
         if (!permission) {
             return false;
         }
@@ -57,7 +54,7 @@ const ContentModels: React.FC = () => {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     const closeModal = useCallback(() => {
         setCloneContentModel(null);

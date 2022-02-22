@@ -19,20 +19,14 @@ interface UsePermission {
 }
 
 const usePermission = (): UsePermission => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const pbPagePermission = useMemo((): SecurityPermission | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        return identity.getPermission("pb.page");
-    }, []);
+        return getPermission("pb.page");
+    }, [identity]);
     const hasFullAccess = useMemo((): SecurityPermission | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        return identity.getPermission("pb.*");
-    }, []);
+        return getPermission("pb.*");
+    }, [identity]);
 
     const canEdit = useCallback(
         (item: CreatableItem): boolean => {

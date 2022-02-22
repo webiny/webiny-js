@@ -16,12 +16,12 @@ function SecureView<T extends SecurityPermission>({
     children,
     permission
 }: Props<T>): React.ReactElement | null {
-    const { identity } = useSecurity();
+    const { getPermission } = useSecurity();
 
     let hasPermission = false;
     let matchedPermission: T | null = null;
-    if (identity && identity.getPermission && permission) {
-        matchedPermission = identity.getPermission<T>(permission);
+    if (permission) {
+        matchedPermission = getPermission<T>(permission);
         hasPermission = Boolean(matchedPermission);
     }
 

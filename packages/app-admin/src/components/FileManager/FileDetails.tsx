@@ -42,6 +42,7 @@ import {
 import { i18n } from "@webiny/app/i18n";
 import mime from "mime";
 import { FileItem } from "./types";
+import { FilesRenderChildren } from "react-butterfiles";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
 
@@ -156,6 +157,8 @@ const style: any = {
 interface FileDetailsProps {
     canEdit: (item: any) => boolean;
     file: FileItem;
+    uploadFile: (files: FileItem[] | FileItem) => Promise<number | null>;
+    validateFiles: FilesRenderChildren["validateFiles"];
     [key: string]: any;
 }
 
@@ -179,13 +182,10 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
     const { hideFileDetails, queryParams } = useFileManager();
     const [darkImageBackground, setDarkImageBackground] = useState(false);
 
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
     const fmFilePermission = useMemo(() => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        return identity.getPermission("fm.file");
-    }, []);
+        return getPermission("fm.file");
+    }, [identity]);
     const canDelete = useCallback(
         item => {
             // Bail out early if no access

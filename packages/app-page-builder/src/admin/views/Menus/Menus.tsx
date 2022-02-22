@@ -5,12 +5,9 @@ import MenusForm from "./MenusForm";
 import { useSecurity } from "@webiny/app-security";
 
 const Menus: React.FC = () => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
     const pbMenuPermissionRwd = useMemo((): string | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        const permission = identity.getPermission("pb.menu");
+        const permission = getPermission("pb.menu");
         if (!permission) {
             return null;
         }

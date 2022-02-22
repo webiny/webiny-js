@@ -20,13 +20,10 @@ const buttonStyles = css({
 
 export const LocaleSelector: React.FC = () => {
     const { setCurrentLocale, getCurrentLocale, getLocales } = useI18N();
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const contentI18NPermission = useMemo((): SecurityPermission | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        return identity.getPermission("content.i18n");
+        return getPermission("content.i18n");
     }, [identity]);
 
     const locales = getLocales();

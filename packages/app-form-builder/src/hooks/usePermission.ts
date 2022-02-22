@@ -10,20 +10,14 @@ interface CreatableItem {
 }
 
 export const usePermission = () => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const fbFormPermission = useMemo((): SecurityPermission | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        return identity.getPermission("fb.form");
-    }, []);
+        return getPermission("fb.form");
+    }, [identity]);
     const hasFullAccess = useMemo((): SecurityPermission | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        return identity.getPermission("fb.*");
-    }, []);
+        return getPermission("fb.*");
+    }, [identity]);
 
     const canEdit = useCallback(
         (item): boolean => {

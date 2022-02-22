@@ -5,13 +5,10 @@ import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
 import ContentModelGroupsForm from "./ContentModelGroupsForm";
 
 const ContentModelGroups: React.FC = () => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo((): boolean => {
-        if (!identity || !identity.getPermission) {
-            return false;
-        }
-        const permission = identity.getPermission("cms.contentModelGroup");
+        const permission = getPermission("cms.contentModelGroup");
         if (!permission) {
             return false;
         }

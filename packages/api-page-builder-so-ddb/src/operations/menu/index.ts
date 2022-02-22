@@ -42,7 +42,10 @@ export interface CreateMenuStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createMenuStorageOperations = ({ entity, plugins }: CreateMenuStorageOperationsParams): MenuStorageOperations => {
+export const createMenuStorageOperations = ({
+    entity,
+    plugins
+}: CreateMenuStorageOperationsParams): MenuStorageOperations => {
     const get = async (params: MenuStorageOperationsGetParams) => {
         const { where } = params;
         const keys = {

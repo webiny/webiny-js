@@ -22,7 +22,9 @@ const createSortKey = (): string => {
 export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
 }
-export const createSystemStorageOperations = ({ entity }: CreateSystemStorageOperationsParams): SystemStorageOperations => {
+export const createSystemStorageOperations = ({
+    entity
+}: CreateSystemStorageOperationsParams): SystemStorageOperations => {
     const get = async (params: SystemStorageOperationsGetParams): Promise<System | null> => {
         const { tenant } = params;
         const keys = {

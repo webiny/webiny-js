@@ -5,12 +5,9 @@ import CategoriesDataList from "./CategoriesDataList";
 import CategoriesForm from "./CategoriesForm";
 
 const Categories: React.FC = () => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
     const pbMenuPermissionRwd = useMemo((): string | null => {
-        if (!identity || !identity.getPermission) {
-            return null;
-        }
-        const permission = identity.getPermission("pb.category");
+        const permission = getPermission("pb.category");
         if (!permission) {
             return null;
         }
