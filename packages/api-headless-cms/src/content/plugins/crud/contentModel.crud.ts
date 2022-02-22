@@ -41,14 +41,14 @@ import { assignAfterModelCreate } from "./contentModel/afterCreate";
 import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
 import { assignAfterModelDelete } from "./contentModel/afterDelete";
 
-export interface Params {
+export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createModelsCrud = (params: Params): CmsModelContext => {
+export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
     const loaders = {

@@ -120,13 +120,13 @@ const execValidation = async (args: ValidateArgs): Promise<string | null> => {
     return await runFieldValueValidations(args);
 };
 
-export interface Params {
+export interface ValidateModelEntryDataParams {
     context: CmsContext;
     model: CmsModel;
     data: InputData;
     entry?: CmsEntry;
 }
-export const validateModelEntryData = async (params: Params) => {
+export const validateModelEntryData = async (params: ValidateModelEntryDataParams) => {
     const { context, model, entry, data } = params;
     /**
      * To later simplify searching for the validations we map them to a name.

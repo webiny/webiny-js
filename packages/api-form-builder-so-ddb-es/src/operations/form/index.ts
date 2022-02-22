@@ -36,7 +36,7 @@ export type DbRecord<T = any> = T & {
     TYPE: string;
 };
 
-export interface Params {
+export interface CreateFormStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
     table: Table;
@@ -68,7 +68,7 @@ const getESDataForLatestRevision = (form: FbForm): FbFormElastic => ({
     formId: form.formId
 });
 
-export const createFormStorageOperations = (params: Params): FormBuilderFormStorageOperations => {
+export const createFormStorageOperations = (params: CreateFormStorageOperationsParams): FormBuilderFormStorageOperations => {
     const { entity, esEntity, table, plugins, elasticsearch } = params;
 
     const formDynamoDbFields = fields();

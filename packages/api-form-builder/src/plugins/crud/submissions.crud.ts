@@ -19,11 +19,11 @@ import {
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 
-export interface Params {
+interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
 }
 
-export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
+export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): SubmissionsCRUD => {
     const { context } = params;
 
     return {

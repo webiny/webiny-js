@@ -57,11 +57,11 @@ const createPublishedType = (): string => {
     return `${createType()}.p`;
 };
 
-export interface Params {
+export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createEntriesStorageOperations = (params: Params): CmsEntryStorageOperations => {
+export const createEntriesStorageOperations = (params: CreateEntriesStorageOperationsParams): CmsEntryStorageOperations => {
     const { entity, plugins } = params;
 
     const dataLoaders = new DataLoadersHandler({

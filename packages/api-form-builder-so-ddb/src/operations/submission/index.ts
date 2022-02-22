@@ -23,14 +23,14 @@ import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { FormSubmissionDynamoDbFieldPlugin } from "~/plugins/FormSubmissionDynamoDbFieldPlugin";
 import { get } from "@webiny/db-dynamodb/utils/get";
 
-export interface Params {
+export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
     table: Table;
     plugins: PluginsContainer;
 }
 
 export const createSubmissionStorageOperations = (
-    params: Params
+    params: CreateSubmissionStorageOperationsParams
 ): FormBuilderSubmissionStorageOperations => {
     const { entity, plugins } = params;
 

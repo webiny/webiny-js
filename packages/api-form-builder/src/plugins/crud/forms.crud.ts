@@ -22,13 +22,13 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { createIdentifier } from "@webiny/utils";
 
-export interface Params {
+export interface CreateFormsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     context: FormBuilderContext;
 }
 
-export const createFormsCrud = (params: Params): FormsCRUD => {
+export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
     const { context, getTenant, getLocale } = params;
 
     return {

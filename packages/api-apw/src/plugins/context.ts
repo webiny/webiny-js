@@ -1,7 +1,8 @@
+import apwHooks from "./hooks";
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 import { createApw } from "~/createApw";
-import apwHooks from "./hooks";
 import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
 import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
@@ -19,6 +20,12 @@ export default () => [
         context.plugins.register([createManageCMSPlugin(), ...contentHeadlessCmsContextPlugins]);
 
         const getLocale = () => {
+            if (!i18nContent.locale) {
+                throw new WebinyError(
+                    "Missing context.i18nContent.locale in api-apw/plugins/context.ts",
+                    "LOCALE_ERROR"
+                );
+            }
             // TODO: Check which locale do we need here?
             return i18nContent.locale;
         };

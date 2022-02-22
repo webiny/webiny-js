@@ -128,12 +128,14 @@ const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
     ];
 };
 
-export interface Params {
+export interface CreatePageCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
 }
-export const createPageCrud = (params: Params): PagesCrud => {
-    const { context, storageOperations } = params;
+export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
+    const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
     /**
      * Used in a couple of key events - (un)publishing and pages deletion.
@@ -143,14 +145,6 @@ export const createPageCrud = (params: Params): PagesCrud => {
     const { compressContent, decompressContent } = createCompression({
         plugins: context.plugins
     });
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
-    const getLocaleCode = (): string => {
-        return context.i18nContent.getCurrentLocale().code;
-    };
 
     /**
      * We need a data loader to fetch a page by id because it is being called a lot throughout the code.
@@ -297,8 +291,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const page: Page = {
                 id,
                 pid: pageId,
-                locale: context.i18nContent.getCurrentLocale().code,
-                tenant: context.tenancy.getCurrentTenant().id,
+                locale: getLocaleCode(),
+                tenant: getTenantId(),
                 editor: DEFAULT_EDITOR,
                 category: category.slug,
                 title,
@@ -1388,8 +1382,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             const listTagsParams: PageStorageOperationsListTagsParams = {
                 where: {
-                    tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getCurrentLocale().code,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     search
                 }
             };

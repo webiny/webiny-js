@@ -185,13 +185,13 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
     };
 };
 
-export interface Params {
+export interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 
-export const createContentEntryCrud = (params: Params): CmsEntryContext => {
+export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { storageOperations, context, getIdentity } = params;
 
     const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();

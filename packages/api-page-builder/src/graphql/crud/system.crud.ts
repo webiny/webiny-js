@@ -17,17 +17,13 @@ import {
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
 
-export interface Params {
+export interface CreateSystemCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
 }
-export const createSystemCrud = (params: Params): SystemCrud => {
-    const { context, storageOperations } = params;
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
+export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => {
+    const { context, storageOperations, getTenantId } = params;
     const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>();
     const onAfterInstall = createTopic<OnAfterInstallTopicParams>();
 

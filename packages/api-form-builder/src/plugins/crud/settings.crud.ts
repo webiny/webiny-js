@@ -6,13 +6,13 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 
-export interface Params {
+export interface CreateSettingsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     context: FormBuilderContext;
 }
 
-export const createSettingsCrud = (params: Params): SettingsCRUD => {
+export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCRUD => {
     const { getTenant, getLocale, context } = params;
 
     return {

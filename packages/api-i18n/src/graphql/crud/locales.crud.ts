@@ -1,6 +1,6 @@
 import {
     I18NContext,
-    I18NLocale,
+    I18NLocaleData,
     I18NLocalesStorageOperations,
     LocalesCRUD,
     OnAfterCreateLocaleTopicParams,
@@ -15,11 +15,11 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 
-export interface Params {
+export interface CreateLocalesCrudParams {
     context: I18NContext;
     storageOperations: I18NLocalesStorageOperations;
 }
-export const createLocalesCrud = (params: Params): LocalesCRUD => {
+export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD => {
     const { storageOperations, context } = params;
 
     const onBeforeCreate = createTopic<OnBeforeCreateLocaleTopicParams>();
@@ -37,7 +37,7 @@ export const createLocalesCrud = (params: Params): LocalesCRUD => {
         onBeforeDelete,
         onAfterDelete,
         async getDefaultLocale() {
-            let locale: I18NLocale | null = null;
+            let locale: I18NLocaleData | null = null;
             try {
                 locale = await storageOperations.getDefault();
             } catch (ex) {
@@ -55,7 +55,7 @@ export const createLocalesCrud = (params: Params): LocalesCRUD => {
             };
         },
         async getLocale(code) {
-            let locale: I18NLocale | null = null;
+            let locale: I18NLocaleData | null = null;
             try {
                 locale = await storageOperations.get(code);
             } catch (ex) {
@@ -112,7 +112,7 @@ export const createLocalesCrud = (params: Params): LocalesCRUD => {
 
             const defaultLocale = await storageOperations.getDefault();
 
-            const locale: I18NLocale = {
+            const locale: I18NLocaleData = {
                 ...input,
                 default: input.default === true,
                 createdOn: new Date().toISOString(),
@@ -185,7 +185,7 @@ export const createLocalesCrud = (params: Params): LocalesCRUD => {
                 throw new NotFoundError(`Missing default locale.`);
             }
 
-            const locale: I18NLocale = {
+            const locale: I18NLocaleData = {
                 ...original,
                 ...input,
                 createdOn: original.createdOn ? original.createdOn : new Date().toISOString(),

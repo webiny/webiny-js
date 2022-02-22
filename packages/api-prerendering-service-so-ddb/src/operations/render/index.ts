@@ -20,7 +20,7 @@ import { Tag } from "@webiny/api-prerendering-service/queue/add/types";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 
-export interface Params {
+export interface CreateRenderStorageOperationsParams {
     entity: Entity<any>;
     tagUrlLinkEntity: Entity<any>;
 }
@@ -36,7 +36,7 @@ export interface CreateTagUrlLinkSortKeyParams {
 }
 
 export const createRenderStorageOperations = (
-    params: Params
+    params: CreateRenderStorageOperationsParams
 ): PrerenderingServiceRenderStorageOperations => {
     const { entity, tagUrlLinkEntity } = params;
 

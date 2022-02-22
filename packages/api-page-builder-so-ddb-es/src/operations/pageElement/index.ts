@@ -38,14 +38,14 @@ const createType = (): string => {
     return "pb.pageElement";
 };
 
-export interface Params {
+export interface CreatePageElementStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
 export const createPageElementStorageOperations = ({
     entity,
     plugins
-}: Params): PageElementStorageOperations => {
+}: CreatePageElementStorageOperationsParams): PageElementStorageOperations => {
     const create = async (params: PageElementStorageOperationsCreateParams) => {
         const { pageElement } = params;
         const keys = {

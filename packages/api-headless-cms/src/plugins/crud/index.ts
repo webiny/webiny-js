@@ -8,11 +8,11 @@ import { createContentEntryCrud } from "~/content/plugins/crud/contentEntry.crud
 
 const debug = process.env.DEBUG === "true";
 
-export interface Params {
+export interface CreateAdminCrudsParams {
     storageOperations: HeadlessCmsStorageOperations;
 }
 
-export const createAdminCruds = (params: Params) => {
+export const createAdminCruds = (params: CreateAdminCrudsParams) => {
     const { storageOperations } = params;
     return new ContextPlugin<CmsContext>(async context => {
         /**

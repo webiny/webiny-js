@@ -49,14 +49,14 @@ const UpdateContentModelGroupModel = withFields({
     icon: string({ validation: validation.create("maxLength:255") })
 })();
 
-export interface Params {
+export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
+export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
     const getGroupsAsPlugins = (): CmsGroup[] => {

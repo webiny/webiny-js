@@ -1,10 +1,10 @@
 import { createGraphQLPlugin } from "~/plugins/graphql";
-import { createAdminCruds, Params as CreateAdminCrudsParams } from "~/plugins/crud";
+import { createAdminCruds, CreateAdminCrudsParams } from "~/plugins/crud";
 import context from "~/plugins/context";
 import upgrades from "~/plugins/upgrades";
 import contextSetup from "~/content/contextSetup";
 import modelManager from "~/content/plugins/modelManager";
-import { createContentCruds, Params as CreateContentCrudsParams } from "~/content/plugins/crud";
+import { createContentCruds, CreateContentCrudsParams } from "~/content/plugins/crud";
 import fieldTypePlugins from "~/content/plugins/graphqlFields";
 import validatorsPlugins from "~/content/plugins/validators";
 import defaultStoragePlugin from "~/content/plugins/storage/default";

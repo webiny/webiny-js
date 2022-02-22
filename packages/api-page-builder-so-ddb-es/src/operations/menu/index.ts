@@ -38,11 +38,11 @@ const createType = (): string => {
     return "pb.menu";
 };
 
-export interface Params {
+export interface CreateMenuStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createMenuStorageOperations = ({ entity, plugins }: Params): MenuStorageOperations => {
+export const createMenuStorageOperations = ({ entity, plugins }: CreateMenuStorageOperationsParams): MenuStorageOperations => {
     const get = async (params: MenuStorageOperationsGetParams) => {
         const { where } = params;
         const keys = {

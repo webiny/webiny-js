@@ -3,12 +3,12 @@ import { Table } from "dynamodb-toolbox";
 import { TableModifier } from "~/types";
 import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 
-export interface Params {
+interface CreateTableParams {
     table?: TableModifier;
     documentClient: DocumentClient;
 }
 
-export const createTable = (params: Params): Table => {
+export const createTable = (params: CreateTableParams): Table => {
     const { table, documentClient } = params;
 
     const tableConfig: TableConstructor = {

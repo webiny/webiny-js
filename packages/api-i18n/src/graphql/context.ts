@@ -4,7 +4,6 @@ import { ContextPlugin } from "@webiny/handler";
 import { I18NLocaleContextPlugin, LocaleKeys } from "~/plugins/I18NLocaleContextPlugin";
 import { createCrudContext } from "~/graphql/crud";
 import { HttpObject } from "@webiny/handler-http/types";
-import WebinyError from "@webiny/error";
 
 interface Locales {
     content: string;
@@ -77,7 +76,7 @@ const getLocaleFromHeaders = (
 
 const createBaseContextPlugin = () => {
     return new ContextPlugin<I18NContext>(async context => {
-        let locales = [];
+        let locales: I18NLocale[] = [];
         if (context.tenancy.getCurrentTenant()) {
             const plugin = context.plugins.byName<ContextI18NGetLocales>(
                 "context-i18n-get-locales"
@@ -96,7 +95,7 @@ const createBaseContextPlugin = () => {
             locale: {}, // Contains one or more locales - for multiple locale contexts.
             locales
         };
-        const getDefaultLocale = (): I18NLocale => {
+        const getDefaultLocale = (): I18NLocale | null => {
             const allLocales = getLocales();
             const locale = allLocales.find(item => item.default === true);
 
@@ -106,24 +105,21 @@ const createBaseContextPlugin = () => {
             const enLocale = allLocales.find(item => {
                 return item.code.match("en") !== null;
             });
-            if (enLocale) {
-                return enLocale;
-            }
-            throw new WebinyError(
-                `Missing locale that matches "en" keyword. No locales found in the system.`,
-                "NO_LOCALES"
-            );
+            return enLocale || null;
         };
         const getCurrentLocales = () => {
             const localeContexts = plugins.byType<I18NLocaleContextPlugin>(
                 I18NLocaleContextPlugin.type
             );
-            return localeContexts.map(plugin => ({
-                context: plugin.context.name,
-                locale: getCurrentLocale(plugin.context.name)?.code
-            }));
+            return localeContexts.map(plugin => {
+                const currentLocale = getCurrentLocale(plugin.context.name);
+                return {
+                    context: plugin.context.name,
+                    locale: currentLocale ? currentLocale.code : null
+                };
+            });
         };
-        const getCurrentLocale = (localeContext: LocaleKeys = "default"): I18NLocale => {
+        const getCurrentLocale = (localeContext: LocaleKeys = "default"): I18NLocale | null => {
             if (__i18n.locale[localeContext]) {
                 return __i18n.locale[localeContext];
             }

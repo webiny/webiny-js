@@ -52,13 +52,13 @@ interface GsiKeys {
     GSI1_SK: string;
 }
 
-export interface Params {
+export interface CreateFormStorageOperationsParams {
     entity: Entity<any>;
     table: Table;
     plugins: PluginsContainer;
 }
 
-export const createFormStorageOperations = (params: Params): FormBuilderFormStorageOperations => {
+export const createFormStorageOperations = (params: CreateFormStorageOperationsParams): FormBuilderFormStorageOperations => {
     const { entity, table, plugins } = params;
 
     const formDynamoDbFields = plugins.byType<FormDynamoDbFieldPlugin>(

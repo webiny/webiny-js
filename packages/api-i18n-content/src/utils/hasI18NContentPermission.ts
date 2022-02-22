@@ -1,9 +1,16 @@
 import { I18NContentContext } from "../types";
 import lodashGet from "lodash.get";
+import { SecurityPermission } from "@webiny/api-security/types";
+
+interface ContentPermission {
+    locales?: string[];
+}
 
 export default async (context: I18NContentContext): Promise<boolean> => {
     // If `content.i18n` permission is not present, immediately throw.
-    const contentPermission = await context.security.getPermission("content.i18n");
+    const contentPermission = await context.security.getPermission<
+        SecurityPermission<ContentPermission>
+    >("content.i18n");
     if (!contentPermission) {
         return false;
     }

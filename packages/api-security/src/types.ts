@@ -129,10 +129,9 @@ export interface SecurityStorageOperations {
     deleteApiKey(params: StorageOperationsDeleteApiKeyParams): Promise<void>;
 }
 
-export interface SecurityPermission {
+export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
-    [key: string]: any;
-}
+};
 
 export interface SecurityContext<TIdentity = SecurityIdentity> extends Context {
     security: Security<TIdentity>;

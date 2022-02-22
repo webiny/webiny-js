@@ -3,12 +3,12 @@ import { Table } from "dynamodb-toolbox";
 import { TableModifier } from "~/types";
 import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 
-export interface Params {
+interface CreateTableParams {
     table?: TableModifier;
     documentClient: DocumentClient;
 }
 
-export const createTable = ({ table, documentClient }: Params) => {
+export const createTable = ({ table, documentClient }: CreateTableParams) => {
     const tableConfig: TableConstructor = {
         name: (process.env.DB_TABLE_TENANCY || process.env.DB_TABLE) as string,
         partitionKey: "PK",

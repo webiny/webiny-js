@@ -19,10 +19,10 @@ const createSortKey = (): string => {
     return "PB";
 };
 
-export interface Params {
+export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
 }
-export const createSystemStorageOperations = ({ entity }: Params): SystemStorageOperations => {
+export const createSystemStorageOperations = ({ entity }: CreateSystemStorageOperationsParams): SystemStorageOperations => {
     const get = async (params: SystemStorageOperationsGetParams): Promise<System | null> => {
         const { tenant } = params;
         const keys = {

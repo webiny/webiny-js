@@ -28,7 +28,7 @@ import { parseIdentifier } from "@webiny/utils";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 
-export interface Params {
+export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
     table: Table;
@@ -37,7 +37,7 @@ export interface Params {
 }
 
 export const createSubmissionStorageOperations = (
-    params: Params
+    params: CreateSubmissionStorageOperationsParams
 ): FormBuilderSubmissionStorageOperations => {
     const { entity, esEntity, table, elasticsearch, plugins } = params;
 

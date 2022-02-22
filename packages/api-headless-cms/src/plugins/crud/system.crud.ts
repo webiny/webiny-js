@@ -23,13 +23,13 @@ const initialContentModelGroup = {
     icon: "fas/star"
 };
 
-export interface Params {
+interface CreateSystemCrudParams {
     getTenant: () => Tenant;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createSystemCrud = (params: Params): CmsSystemContext => {
+export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemContext => {
     const { getTenant, storageOperations, context, getIdentity } = params;
 
     const onBeforeInstall = createTopic<BeforeInstallTopicParams>();

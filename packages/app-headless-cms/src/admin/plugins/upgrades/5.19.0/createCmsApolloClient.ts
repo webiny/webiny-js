@@ -6,12 +6,12 @@ import { plugins } from "@webiny/plugins";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";
 import { BatchHttpLink } from "apollo-link-batch-http";
 
-export interface Params {
+export interface CreateCmsApolloClientParams {
     locale: string;
     apiUrl: string;
     endpoint: "manage" | "read";
 }
-export const createCmsApolloClient = ({ locale, apiUrl, endpoint }: Params) => {
+export const createCmsApolloClient = ({ locale, apiUrl, endpoint }: CreateCmsApolloClientParams) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**

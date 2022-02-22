@@ -2,11 +2,11 @@ import { I18NContext, I18NSystem, I18NSystemStorageOperations, SystemCRUD } from
 import WebinyError from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 
-export interface Params {
+interface CreateSystemCrudParams {
     context: I18NContext;
     storageOperations: I18NSystemStorageOperations;
 }
-export const createSystemCrud = (params: Params): SystemCRUD => {
+export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => {
     const { context, storageOperations } = params;
 
     const getTenantId = (): string => {

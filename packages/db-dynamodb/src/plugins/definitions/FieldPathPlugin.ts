@@ -5,7 +5,7 @@ import { assignFields } from "./assignFields";
 export interface CreatePath {
     (field: string): string;
 }
-export interface Params {
+export interface FieldPathPluginParams {
     /**
      * Which field(s) is this plugin for.
      */
@@ -19,9 +19,9 @@ export interface Params {
 
 export class FieldPathPlugin extends Plugin {
     public static readonly type = "dynamodb.value.path";
-    private readonly _params: Omit<Params, "fields"> & { fields: string[] };
+    private readonly _params: Omit<FieldPathPluginParams, "fields"> & { fields: string[] };
 
-    public constructor(params: Params) {
+    public constructor(params: FieldPathPluginParams) {
         super();
         this._params = {
             ...params,

@@ -74,11 +74,11 @@ const createPublishedType = (): string => {
     return "pb.page.p";
 };
 
-export interface Params {
+export interface CreatePageStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createPageStorageOperations = (params: Params): PageStorageOperations => {
+export const createPageStorageOperations = (params: CreatePageStorageOperationsParams): PageStorageOperations => {
     const { entity, plugins } = params;
 
     const create = async (params: PageStorageOperationsCreateParams): Promise<Page> => {
