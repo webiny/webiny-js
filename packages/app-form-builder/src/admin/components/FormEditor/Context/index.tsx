@@ -28,7 +28,9 @@ export interface FormEditorReducer {
 }
 
 const formEditorReducer: FormEditorReducer = (state, action) => {
-    const next = { ...state };
+    const next: FormEditorReducerState = {
+        ...state
+    };
     switch (action.type) {
         case "data": {
             next.data = action.data;
@@ -41,7 +43,7 @@ const formEditorReducer: FormEditorReducer = (state, action) => {
 
 export type FormEditorProviderContextState = FormEditorReducerState;
 const FormEditorContext = React.createContext<FormEditorProviderContext>({
-    state: {} as FormEditorReducerState,
+    state: null as unknown as FormEditorReducerState,
     dispatch: () => {
         return void 0;
     }
@@ -67,7 +69,7 @@ export const FormEditorProvider: React.FC<FormEditorProviderProps> = props => {
             state,
             dispatch
         };
-    }, [state]);
+    }, [state, state.data]);
 
     return <FormEditorContext.Provider value={value} {...props} />;
 };

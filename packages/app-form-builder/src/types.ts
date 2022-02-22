@@ -13,7 +13,7 @@ import { SecurityContext } from "@webiny/app-security";
 
 export interface FbErrorResponse {
     message: string;
-    code: string;
+    code?: string | null;
     data?: Record<string, any>;
 }
 export interface FbMetaResponse {

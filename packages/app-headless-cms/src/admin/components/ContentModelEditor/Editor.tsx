@@ -67,7 +67,7 @@ export const Editor: React.FC = () => {
     const { data, setData, isPristine } = useContentModelEditor();
 
     const tabsRef = useRef<Tabs | null>(null);
-    const [activeTabIndex, setActiveTabIndex] = useState(0);
+    const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
     const onChange = ({ fields, layout }: OnChangeParams) => {
         setData(data => ({ ...data, fields, layout }));

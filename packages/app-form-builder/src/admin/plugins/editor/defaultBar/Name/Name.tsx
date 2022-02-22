@@ -42,10 +42,12 @@ export const Name: React.FC = () => {
     const saveTitle = useCallback(
         (event: React.SyntheticEvent) => {
             event.preventDefault();
-            setData(data => {
-                data.name = localName;
-                return data;
-            });
+            if (localName) {
+                setData(data => {
+                    data.name = localName;
+                    return data;
+                });
+            }
             setEditing(false);
         },
         [localName]

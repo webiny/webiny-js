@@ -22,7 +22,6 @@ export interface DroppableCollectedProps {
 
 export interface IsVisibleCallableParams {
     type: string;
-    // item: any;
     isDragging: boolean;
     ui: string;
     pos?: Partial<FieldLayoutPositionType>;

@@ -56,10 +56,10 @@ const EditorContent: React.FC = () => {
                     <LeftBarFieldList>
                         <Fields
                             onFieldDragStart={() => {
-                                if (tabsRef.current) {
-                                    // @ts-ignore
-                                    tabsRef.current.switchTab(0);
+                                if (!tabsRef.current) {
+                                    return;
                                 }
+                                tabsRef.current.switchTab(0);
                             }}
                         />
                     </LeftBarFieldList>

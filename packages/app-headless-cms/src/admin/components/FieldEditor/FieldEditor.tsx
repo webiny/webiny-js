@@ -32,15 +32,16 @@ const Editor: React.FC = () => {
         dropTarget
     } = useFieldEditor();
 
-    if (!field) {
-        return null;
-    }
-
     return (
         <Fragment>
             {fields.length === 0 && (
                 <Center
-                    onDrop={item => onFieldDrop(item, { row: 0, index: 0 })}
+                    onDrop={item =>
+                        onFieldDrop(item, {
+                            row: 0,
+                            index: 0
+                        })
+                    }
                     style={{ padding: "5px 0 15px 0" }}
                 >
                     {t`Drop your first field here`}

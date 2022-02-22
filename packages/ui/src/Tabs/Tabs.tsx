@@ -59,15 +59,15 @@ export class Tabs extends React.Component<TabsProps, State> {
         activeTabIndex: 0
     };
 
-    switchTab(activeTabIndex: number): void {
+    public switchTab(activeTabIndex: number): void {
         if (typeof this.props.updateValue === "function") {
             this.props.updateValue(activeTabIndex);
-        } else {
-            this.setState({ activeTabIndex });
+            return;
         }
+        this.setState({ activeTabIndex });
     }
 
-    renderChildren(children: React.ReactNode, activeIndex: number) {
+    public renderChildren(children: React.ReactNode, activeIndex: number) {
         const tabs = React.Children.toArray(children)
             .filter(c => c !== null)
             .map((child: React.ReactElement<TabProps>) => {
@@ -136,7 +136,7 @@ export class Tabs extends React.Component<TabsProps, State> {
         );
     }
 
-    render() {
+    public render() {
         const activeIndex =
             this.props.value !== undefined ? this.props.value : this.state.activeTabIndex;
 

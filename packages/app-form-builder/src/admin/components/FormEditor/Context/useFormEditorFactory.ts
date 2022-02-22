@@ -27,8 +27,8 @@ import {
     FormEditorProviderContextState
 } from "~/admin/components/FormEditor/Context/index";
 
-interface SetDataCallable<T = any> {
-    (value: T): T;
+interface SetDataCallable {
+    (value: FbFormModel): FbFormModel;
 }
 
 interface MoveFieldParams {
@@ -43,7 +43,7 @@ export interface FormEditor {
     state: State;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
     saveForm: (
-        data?: FbFormModel
+        data: FbFormModel | null
     ) => Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
@@ -73,7 +73,7 @@ export const useFormEditorFactory = (
 
         const self: FormEditor = {
             apollo: state.apollo,
-            data: state.data,
+            data: state.data || ({} as FbFormModel),
             state,
             async getForm(id) {
                 const response = await self.apollo.query<
@@ -100,6 +100,14 @@ export const useFormEditorFactory = (
             },
             saveForm: async data => {
                 data = data || state.data;
+                if (!data) {
+                    return {
+                        data: null,
+                        error: {
+                            message: "Missing form data to be saved."
+                        }
+                    };
+                }
                 const response = await self.apollo.mutate<
                     UpdateFormRevisionMutationResponse,
                     UpdateFormRevisionMutationVariables
@@ -121,7 +129,7 @@ export const useFormEditorFactory = (
                 });
 
                 return (
-                    response?.data?.formBuilder?.updateRevision || {
+                    response.data?.formBuilder?.updateRevision || {
                         data: null,
                         error: null
                     }
@@ -133,7 +141,10 @@ export const useFormEditorFactory = (
              */
             setData: async (setter, saveForm = true) => {
                 const data = setter(cloneDeep(self.data));
-                dispatch({ type: "data", data });
+                dispatch({
+                    type: "data",
+                    data
+                });
                 if (saveForm !== true) {
                     return;
                 }
@@ -144,6 +155,9 @@ export const useFormEditorFactory = (
              * Returns fields list.
              */
             getFields() {
+                if (!state.data) {
+                    return [];
+                }
                 return state.data.fields;
             },
             /**
@@ -238,7 +252,11 @@ export const useFormEditorFactory = (
                     }
                     data.fields.push(field);
 
-                    moveField({ field, position, data });
+                    moveField({
+                        field,
+                        position,
+                        data
+                    });
 
                     // We are dropping a new field at the specified index.
                     return data;
@@ -250,7 +268,11 @@ export const useFormEditorFactory = (
              */
             moveField: ({ field, position }) => {
                 self.setData(data => {
-                    moveField({ field, position, data });
+                    moveField({
+                        field,
+                        position,
+                        data
+                    });
                     return data;
                 });
             },

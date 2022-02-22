@@ -32,7 +32,7 @@ const dialogBody = css({
 });
 
 interface EditFieldDialogProps {
-    field: CmsEditorField;
+    field: CmsEditorField | null;
     onClose: () => void;
     onSubmit: (data: CmsEditorField) => void;
 }
@@ -210,7 +210,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                                 <Cell span={12}>
                                                     <Elevation z={2}>
                                                         <ValidatorsTab
-                                                            field={field}
+                                                            field={current}
                                                             name={"listValidation"}
                                                             validators={getListValidators(
                                                                 fieldPlugin

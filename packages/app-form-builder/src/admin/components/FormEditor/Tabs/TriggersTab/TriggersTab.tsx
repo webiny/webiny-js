@@ -36,10 +36,10 @@ export const TriggersTab: React.FC = () => {
                         description={trigger.description}
                     >
                         <Form
-                            data={formData?.triggers?.[trigger.id] || {}}
+                            data={formData.triggers?.[trigger.id] || {}}
                             onSubmit={submitData => {
                                 // TODO @ts-refactor figure out how to type the data param
-                                setData((data: Record<string, string>) => {
+                                setData(data => {
                                     return set(data, `triggers.${trigger.id}`, submitData);
                                 });
                                 showSnackbar(t`Form settings updated successfully.`);

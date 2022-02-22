@@ -26,7 +26,7 @@ const onOffsetChange = (monitor: DragSourceMonitor) => () => {
 };
 
 const DragPreview: React.FC = () => {
-    const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
+    const [dragHelperOpacity, setDragHelperOpacity] = useState<number>(0);
     const { isDragging } = useDragLayer(monitor => {
         if (!subscribedToOffsetChange) {
             // @ts-ignore

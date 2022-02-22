@@ -75,9 +75,16 @@ export const removeModelFromGroupCache = (cache: DataProxy, model: CmsEditorCont
     const { listContentModelGroups: groupsList } = response;
 
     const groupIndex = groupsList.data.findIndex(g => g.id === model.group.id);
+    if (groupIndex < 0) {
+        return;
+    }
     const modelIndex = groupsList.data[groupIndex].contentModels.findIndex(
         m => m.modelId === model.modelId
     );
+
+    if (modelIndex < 0) {
+        return;
+    }
 
     cache.writeQuery({
         query: LIST_MENU_CONTENT_GROUPS_MODELS,
