@@ -21,7 +21,7 @@ module.exports = options => {
     const sourceMaps = options.sourceMaps !== false;
 
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
-    const tsCheksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
+    const tsChecksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
 
     return {
         entry: [
@@ -55,7 +55,7 @@ module.exports = options => {
                 ),
                 ...definitions
             }),
-            tsCheksEnabled &&
+            tsChecksEnabled &&
                 new ForkTsCheckerWebpackPlugin({
                     typescript: {
                         configFile: path.resolve(cwd, "./tsconfig.json"),

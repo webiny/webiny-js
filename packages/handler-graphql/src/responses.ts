@@ -16,6 +16,7 @@ export class ErrorResponse {
         code: string;
         message: string;
         data?: any;
+        stack?: string;
     };
     constructor(params: ErrorResponseParams | Error | (Error & ErrorResponseParams)) {
         this.data = null;
@@ -26,23 +27,11 @@ export class ErrorResponse {
             const debug = process.env.DEBUG === "true";
 
             this.error = {
-                code: defaultParams.code,
+                code: ("code" in params && params.code) || defaultParams.code,
                 message: params.message || defaultParams.message,
-                data: debug ? { stacktrace: params.stack } : defaultParams.data
+                data: ("data" in params && params.data) || defaultParams.data,
+                stack: debug ? params.stack : undefined
             };
-
-            if ("code" in params && params.code) {
-                this.error.code = params.code;
-            }
-
-            if ("data" in params && params.data) {
-                if (Array.isArray(params.data)) {
-                    // Some errors put arrays into data field, for example field validation.
-                    this.error.data = params.data;
-                } else {
-                    this.error.data = Object.assign(this.error.data || {}, params.data);
-                }
-            }
         } else {
             this.error = {
                 code: params.code || defaultParams.code,
