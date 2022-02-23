@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 
 interface ChildrenRenderPropRowCallableParams {
     index: number;
-    data: Record<string, any>;
+    data: any;
 }
 interface ChildrenRenderPropRowCallable {
     (params: ChildrenRenderPropRowCallableParams): React.ReactNode;
@@ -28,7 +28,7 @@ interface ChildrenRenderProp {
 }
 
 interface FieldsetProps {
-    value?: Record<string, string>[];
+    value?: any[];
     description?: string;
     validation?: { isValid: null | boolean; message?: string };
     onChange: Function;

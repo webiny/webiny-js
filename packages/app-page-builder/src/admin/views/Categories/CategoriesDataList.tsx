@@ -155,7 +155,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort categories by"}
                         >
                             {SORTERS.map(({ label, sort: value }) => {
                                 return (

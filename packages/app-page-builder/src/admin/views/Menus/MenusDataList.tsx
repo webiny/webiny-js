@@ -147,7 +147,7 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort menus by"}
                         >
                             {SORTERS.map(({ label, sort: value }) => {
                                 return (

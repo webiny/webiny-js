@@ -110,11 +110,13 @@ const Content = () => {
 
     const { theme } = usePageBuilder();
     const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
+
     const layouts = React.useMemo((): PbPageLayout[] => {
         const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
         return (layoutPlugins || []).map(pl => pl.layout);
     }, []);
     const themeLayout = layouts.find(l => l.name === layout);
+
     if (renderLayout && !themeLayout) {
         return <div>Layout &quot;{layout}&quot; was not found in your theme!</div>;
     }

@@ -53,7 +53,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
         setActiveElementId(id);
     }, []);
 
-    const createBreadCrumbs = async (activeElement: PbEditorElement) => {
+    const createBreadCrumbs = useCallback(async (activeElement: PbEditorElement) => {
         const list: ItemsState[] = [];
         let element = activeElement;
         while (element.parent) {
@@ -71,12 +71,13 @@ const Breadcrumbs: React.FunctionComponent = () => {
             )) as PbEditorElement;
         }
         setItems(list.reverse());
-    };
+    }, []);
 
     useEffect(() => {
-        if (element) {
-            createBreadCrumbs(element);
+        if (!element) {
+            return;
         }
+        createBreadCrumbs(element);
     }, [element]);
 
     if (!element) {
