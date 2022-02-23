@@ -10157,7 +10157,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-admin@^5.21.0, @webiny/app-admin@^5.23.1, @webiny/app-admin@workspace:packages/app-admin":
+"@webiny/app-admin@^5.23.1, @webiny/app-admin@workspace:packages/app-admin":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
@@ -10504,7 +10504,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-i18n@^5.21.0, @webiny/app-i18n@^5.23.1, @webiny/app-i18n@workspace:packages/app-i18n":
+"@webiny/app-i18n@^5.23.1, @webiny/app-i18n@workspace:packages/app-i18n":
   version: 0.0.0-use.local
   resolution: "@webiny/app-i18n@workspace:packages/app-i18n"
   dependencies:
@@ -10573,7 +10573,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-page-builder@^5.21.0, @webiny/app-page-builder@^5.23.1, @webiny/app-page-builder@workspace:packages/app-page-builder":
+"@webiny/app-page-builder@^5.23.1, @webiny/app-page-builder@workspace:packages/app-page-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/app-page-builder@workspace:packages/app-page-builder"
   dependencies:
@@ -10722,7 +10722,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-security@^5.21.0, @webiny/app-security@^5.23.1, @webiny/app-security@workspace:packages/app-security":
+"@webiny/app-security@^5.23.1, @webiny/app-security@workspace:packages/app-security":
   version: 0.0.0-use.local
   resolution: "@webiny/app-security@workspace:packages/app-security"
   dependencies:
@@ -10791,7 +10791,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-tenancy@^5.21.0, @webiny/app-tenancy@^5.23.1, @webiny/app-tenancy@workspace:packages/app-tenancy":
+"@webiny/app-tenancy@^5.23.1, @webiny/app-tenancy@workspace:packages/app-tenancy":
   version: 0.0.0-use.local
   resolution: "@webiny/app-tenancy@workspace:packages/app-tenancy"
   dependencies:
@@ -10935,7 +10935,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app@^5.21.0, @webiny/app@^5.23.1, @webiny/app@workspace:packages/app":
+"@webiny/app@^5.23.1, @webiny/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@webiny/app@workspace:packages/app"
   dependencies:
@@ -11264,7 +11264,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.21.0, @webiny/cli@^5.23.1, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.23.1, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -11386,7 +11386,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/form@^5.21.0, @webiny/form@^5.23.1, @webiny/form@workspace:packages/form":
+"@webiny/form@^5.23.1, @webiny/form@workspace:packages/form":
   version: 0.0.0-use.local
   resolution: "@webiny/form@workspace:packages/form"
   dependencies:
@@ -11631,92 +11631,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pb-editor@workspace:packages-v6/pb-editor":
-  version: 0.0.0-use.local
-  resolution: "@webiny/pb-editor@workspace:packages-v6/pb-editor"
-  dependencies:
-    "@apollo/react-components": ^3.1.5
-    "@apollo/react-hooks": ^3.1.5
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/plugin-proposal-class-properties": ^7.16.0
-    "@babel/preset-env": ^7.16.4
-    "@babel/preset-react": ^7.16.0
-    "@babel/preset-typescript": ^7.16.0
-    "@babel/runtime": ^7.16.3
-    "@emotion/core": ^10.0.17
-    "@emotion/styled": ^10.0.17
-    "@fortawesome/fontawesome-svg-core": ^1.2.8
-    "@fortawesome/free-brands-svg-icons": ^5.5.0
-    "@fortawesome/free-regular-svg-icons": ^5.6.0
-    "@fortawesome/free-solid-svg-icons": ^5.5.0
-    "@fortawesome/react-fontawesome": ^0.1.3
-    "@rmwc/menu": ^5.6.0
-    "@svgr/webpack": ^6.1.1
-    "@types/medium-editor": ^5.0.3
-    "@types/react": ^16.14.0
-    "@types/resize-observer-browser": ^0.1.4
-    "@webiny/app": ^5.21.0
-    "@webiny/app-admin": ^5.21.0
-    "@webiny/app-i18n": ^5.21.0
-    "@webiny/app-page-builder": ^5.21.0
-    "@webiny/app-security": ^5.21.0
-    "@webiny/app-tenancy": ^5.21.0
-    "@webiny/cli": ^5.21.0
-    "@webiny/form": ^5.21.0
-    "@webiny/plugins": ^5.21.0
-    "@webiny/project-utils": ^5.21.0
-    "@webiny/pubsub": ^5.21.0
-    "@webiny/react-router": ^5.21.0
-    "@webiny/ui": ^5.21.0
-    "@webiny/validation": ^5.21.0
-    aos: ^2.3.4
-    apollo-cache: ^1.3.5
-    apollo-client: ^2.6.10
-    apollo-link: ^1.2.14
-    apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
-    babel-plugin-lodash: ^3.3.4
-    classnames: ^2.2.6
-    dataurl-to-blob: ^0.0.1
-    dot-prop-immutable: ^2.1.0
-    emotion: ^10.0.17
-    execa: ^5.0.0
-    graphql: ^15.7.2
-    graphql-tag: ^2.12.6
-    invariant: ^2.2.4
-    is-hotkey: ^0.1.3
-    lodash: ^4.17.10
-    lodash.pick: ^4.4.0
-    medium-editor: ^5.23.3
-    nanoid: ^3.1.20
-    object.pick: ^1.3.0
-    platform: ^1.3.5
-    prop-types: ^15.7.2
-    react: 16.14.0
-    react-color: ^2.14.1
-    react-dnd: ^11.1.3
-    react-dnd-html5-backend: ^11.1.3
-    react-dom: 16.14.0
-    react-helmet: ^6.1.0
-    react-images: ^0.5.19
-    react-sortable: ^2.0.0
-    react-sortable-tree: ^2.6.0
-    react-transition-group: ^4.3.0
-    react-virtualized: ^9.21.0
-    recoil: ^0.1.2
-    rimraf: ^3.0.2
-    slugify: ^1.2.9
-    store: ^2.0.12
-    timeago-react: ^2.0.0
-    ttypescript: ^1.5.12
-    typescript: ^4.1.3
-    uniqid: ^5.0.3
-    warning: ^4.0.2
-  languageName: unknown
-  linkType: soft
-
-"@webiny/plugins@^5.17.0-beta.1, @webiny/plugins@^5.21.0, @webiny/plugins@^5.23.1, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.17.0-beta.1, @webiny/plugins@^5.23.1, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -11732,7 +11647,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.21.0, @webiny/project-utils@^5.23.1, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.23.1, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -11799,7 +11714,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pubsub@^5.21.0, @webiny/pubsub@^5.23.1, @webiny/pubsub@workspace:packages/pubsub":
+"@webiny/pubsub@^5.23.1, @webiny/pubsub@workspace:packages/pubsub":
   version: 0.0.0-use.local
   resolution: "@webiny/pubsub@workspace:packages/pubsub"
   dependencies:
@@ -11880,7 +11795,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/react-router@^5.21.0, @webiny/react-router@^5.23.1, @webiny/react-router@workspace:packages/react-router":
+"@webiny/react-router@^5.23.1, @webiny/react-router@workspace:packages/react-router":
   version: 0.0.0-use.local
   resolution: "@webiny/react-router@workspace:packages/react-router"
   dependencies:
@@ -11966,7 +11881,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ui@^5.21.0, @webiny/ui@^5.23.1, @webiny/ui@workspace:packages/ui":
+"@webiny/ui@^5.23.1, @webiny/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@webiny/ui@workspace:packages/ui"
   dependencies:
@@ -12085,7 +12000,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/validation@^5.21.0, @webiny/validation@^5.23.1, @webiny/validation@workspace:packages/validation":
+"@webiny/validation@^5.23.1, @webiny/validation@workspace:packages/validation":
   version: 0.0.0-use.local
   resolution: "@webiny/validation@workspace:packages/validation"
   dependencies:
@@ -26503,13 +26418,6 @@ __metadata:
   version: 4.2.1
   resolution: "lodash.partialright@npm:4.2.1"
   checksum: cfae6034743d50280483eb62a76d263ec70ed5d9da3e4a8236ddb2c964280119cf54768bd6550e50e68169340c0aa7ce2e60bd9a0c9d065f8602e92c4b85ae74
-  languageName: node
-  linkType: hard
-
-"lodash.pick@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "lodash.pick@npm:4.4.0"
-  checksum: 2c36cab7da6b999a20bd3373b40e31a3ef81fa264f34a6979c852c5bc8ac039379686b27380f0cb8e3781610844fafec6949c6fbbebc059c98f8fa8570e3675f
   languageName: node
   linkType: hard
 
