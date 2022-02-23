@@ -155,7 +155,7 @@ const ContentModelGroupsDataList: React.FC<ContentModelGroupsDataListProps> = ({
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort groups by"}
                         >
                             {SORTERS.map(({ label, sorters }) => {
                                 return (

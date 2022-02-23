@@ -28,26 +28,24 @@ declare global {
 export const Name: React.FC = () => {
     const { state, setData } = useFormEditor();
     const [localName, setLocalName] = useState<string | null>(null);
-    const [editingEnabled, setEditing] = useState(false);
+    const [editingEnabled, setEditing] = useState<boolean>(false);
 
-    function cancelChanges() {
+    const cancelChanges = useCallback(() => {
         setEditing(false);
-    }
+    }, []);
 
-    function startEditing() {
+    const startEditing = useCallback(() => {
         setLocalName(state.data.name);
         setEditing(true);
-    }
+    }, [state.data]);
 
     const saveTitle = useCallback(
         (event: React.SyntheticEvent) => {
             event.preventDefault();
-            if (localName) {
-                setData(data => {
-                    data.name = localName;
-                    return data;
-                });
-            }
+            setData(data => {
+                data.name = localName || "";
+                return data;
+            });
             setEditing(false);
         },
         [localName]
@@ -76,17 +74,21 @@ export const Name: React.FC = () => {
     // on the page title when doing Cypress testing. Not sure if this is RMWC or Cypress related issue.
     const autoFocus = !window.Cypress;
 
-    return editingEnabled ? (
-        <NameInputWrapper>
-            <Input
-                autoFocus={autoFocus}
-                fullwidth
-                value={localName}
-                onChange={setLocalName}
-                onBlur={saveTitle}
-            />
-        </NameInputWrapper>
-    ) : (
+    if (editingEnabled) {
+        return (
+            <NameInputWrapper>
+                <Input
+                    autoFocus={autoFocus}
+                    fullwidth
+                    value={localName}
+                    onChange={setLocalName}
+                    onBlur={saveTitle}
+                />
+            </NameInputWrapper>
+        );
+    }
+
+    return (
         <NameWrapper>
             <FormMeta>
                 <Typography use={"overline"}>{`status: ${
@@ -99,7 +101,12 @@ export const Name: React.FC = () => {
                     placement={"bottom"}
                     content={<span>{t`rename`}</span>}
                 >
-                    <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
+                    <FormName
+                        data-testid="fb-editor-form-title"
+                        onClick={() => {
+                            startEditing();
+                        }}
+                    >
                         {state.data.name}
                     </FormName>
                 </Tooltip>

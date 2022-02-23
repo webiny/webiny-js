@@ -145,7 +145,7 @@ export const useFormEditorFactory = (
                     type: "data",
                     data
                 });
-                if (saveForm !== true) {
+                if (!saveForm) {
                     return;
                 }
                 self.saveForm(data);

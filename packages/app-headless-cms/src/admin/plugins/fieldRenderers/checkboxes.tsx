@@ -14,7 +14,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Checkboxes`,
         description: t`Renders checkboxes, allowing selection of multiple values.`,
         canUse({ field }) {
-            return field.multipleValues && get(field, "predefinedValues.enabled");
+            return !!field.multipleValues && !!get(field, "predefinedValues.enabled");
         },
         render({ field, getBind }) {
             const Bind = getBind();

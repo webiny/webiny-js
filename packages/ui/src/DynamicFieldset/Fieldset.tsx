@@ -28,7 +28,7 @@ interface ChildrenRenderProp {
 }
 
 interface FieldsetProps {
-    value?: Array<Object>;
+    value?: Record<string, string>[];
     description?: string;
     validation?: { isValid: null | boolean; message?: string };
     onChange: Function;
@@ -103,7 +103,7 @@ class Fieldset extends React.Component<FieldsetProps> {
         return null;
     };
 
-    public renderComponent() {
+    public renderComponent(): React.ReactNode {
         const { value } = this.props;
         const { children } = this.props;
 
@@ -114,7 +114,7 @@ class Fieldset extends React.Component<FieldsetProps> {
             empty: this.renderEmpty
         });
 
-        if (!value) {
+        if (!value || value.length === 0) {
             return this.empty;
         }
 

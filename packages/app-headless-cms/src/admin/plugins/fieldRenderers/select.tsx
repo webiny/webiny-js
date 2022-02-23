@@ -14,7 +14,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Select Box`,
         description: t`Renders a select box, allowing selection of a single value.`,
         canUse({ field }) {
-            return !field.multipleValues && get(field, "predefinedValues.enabled");
+            return !field.multipleValues && !!get(field, "predefinedValues.enabled");
         },
         render({ field, getBind }) {
             const Bind = getBind();

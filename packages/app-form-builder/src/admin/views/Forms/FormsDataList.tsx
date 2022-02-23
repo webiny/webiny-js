@@ -195,7 +195,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort forms by"}
                         >
                             {SORTERS.map(({ label, sorter }) => {
                                 return (
