@@ -23,7 +23,7 @@ const RootElement = styled("div")({
 });
 
 interface StyleSettingsTabContentProps {
-    element: PbEditorElement;
+    element: PbEditorElement | null;
 }
 
 const StyleSettingsTabContent: React.FC<StyleSettingsTabContentProps> = ({ element }) => {

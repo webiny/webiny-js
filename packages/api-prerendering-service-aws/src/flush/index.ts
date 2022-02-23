@@ -18,6 +18,7 @@ export default () => {
         type: "ps-flush-hook",
         afterFlush: async ({ log, render }: AfterFlushParams) => {
             if (!render) {
+                log("Skipping afterFlush because no render was provided.");
                 return;
             }
 
@@ -36,10 +37,13 @@ export default () => {
             }
 
             log("Trying to get the path that needs to be invalidated...");
-            let path = args.path;
+            let path: string | undefined = args.path;
             if (!path) {
                 log(`Path wasn't passed via "args.path", trying to extract it from "args.url"...`);
-                path = url.parse(args.url as string).pathname as string;
+                const parsed = url.parse(args.url as string);
+                if (parsed && parsed.pathname) {
+                    path = parsed.pathname;
+                }
             }
 
             if (!path) {

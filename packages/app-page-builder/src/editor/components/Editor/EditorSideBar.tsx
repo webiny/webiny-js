@@ -62,10 +62,6 @@ const EditorSideBar: React.FC = () => {
         }
     }, [sidebarAtomValue.highlightTab]);
 
-    if (!element) {
-        return null;
-    }
-
     return (
         <Elevation z={1} className={rightSideBar}>
             <Tabs value={sidebarAtomValue.activeTabIndex} updateValue={setActiveTabIndex}>

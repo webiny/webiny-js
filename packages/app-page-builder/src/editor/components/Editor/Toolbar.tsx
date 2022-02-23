@@ -106,7 +106,7 @@ const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPl
     return React.cloneElement(plugin.renderAction(), { key: plugin.name });
 };
 
-const Toolbar = () => {
+const Toolbar: React.FC = () => {
     const activePluginsTop = useRecoilValue(
         activePluginsByTypeNamesSelector("pb-editor-toolbar-top")
     );

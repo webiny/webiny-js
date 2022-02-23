@@ -14,6 +14,7 @@ import { Input } from "@webiny/ui/Input";
 import {
     CmsEditorField,
     CmsEditorFieldValidator,
+    CmsEditorFieldValidatorPlugin,
     CmsEditorFieldValidatorPluginValidator
 } from "~/types";
 import { Validator } from "@webiny/validation/types";
@@ -60,9 +61,13 @@ const noMargin = css({
     margin: "0 !important"
 });
 
+interface ValidatorsTabPropsValidator {
+    optional: boolean;
+    validator: CmsEditorFieldValidatorPlugin["validator"];
+}
 interface ValidatorsTabProps {
     name: string;
-    validators: any[];
+    validators: ValidatorsTabPropsValidator[];
     form: FormRenderPropParams;
     field: CmsEditorField;
 }
@@ -132,12 +137,17 @@ const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
                                                                     "required"
                                                                 )}
                                                             >
-                                                                <Input
-                                                                    label={"Message"}
-                                                                    description={
-                                                                        "This message will be displayed to the user"
-                                                                    }
-                                                                />
+                                                                {bind => {
+                                                                    return (
+                                                                        <Input
+                                                                            {...bind}
+                                                                            label={"Message"}
+                                                                            description={
+                                                                                "This message will be displayed to the user"
+                                                                            }
+                                                                        />
+                                                                    );
+                                                                }}
                                                             </Bind>
                                                         </Cell>
                                                     </Grid>
