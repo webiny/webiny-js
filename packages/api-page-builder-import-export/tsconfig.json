@@ -10,6 +10,7 @@
     { "path": "../handler-args" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
+    { "path": "../utils" },
     { "path": "../validation" },
     { "path": "../api-dynamodb-to-elasticsearch" },
     { "path": "../api-file-manager-ddb-es" },
@@ -17,8 +18,7 @@
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy" },
     { "path": "../api-tenancy-so-ddb" },
-    { "path": "../db" },
-    { "path": "../utils" }
+    { "path": "../db" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -42,6 +42,8 @@
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
@@ -57,9 +59,7 @@
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/db": ["../db/src"]
     },
     "baseUrl": "."
   }
