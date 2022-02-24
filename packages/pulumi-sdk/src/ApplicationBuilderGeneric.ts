@@ -62,9 +62,10 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
             }
         );
 
-        type SharedOptions = Pick<UpOptions, "onOutput">;
+        type SharedOptions = Pick<UpOptions, "onOutput" | "color">;
         const options: SharedOptions = {
-            onOutput: line => console.log(trimNewlines(line))
+            onOutput: line => console.log(trimNewlines(line)),
+            color: "always"
         };
 
         return {
