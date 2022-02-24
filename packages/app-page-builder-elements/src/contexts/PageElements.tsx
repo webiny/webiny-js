@@ -25,37 +25,7 @@ import {
     defaultStylesCallback
 } from "~/utils";
 
-export const PageElementsContext = createContext<PageElementsContextValue>(
-    /**
-     * Defaults are empty objects, functions...
-     */
-    {
-        theme: {},
-        renderers: undefined,
-        modifiers: {
-            styles: {}
-        },
-        getElementClassNames: () => [],
-        combineClassNames: () => "",
-        getElementStyles: () => [],
-        getStyles: () => [],
-        getClassNames: () => [],
-        getThemeStyles: () => [],
-        getThemeClassNames: () => [],
-        setAssignStylesCallback: () => {
-            return void 0;
-        },
-        setElementStylesCallback: () => {
-            return void 0;
-        },
-        setThemeStylesCallback: () => {
-            return void 0;
-        },
-        setStylesCallback: () => {
-            return void 0;
-        }
-    }
-);
+export const PageElementsContext = createContext<PageElementsContextValue>(null as unknown as any);
 
 export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     children,

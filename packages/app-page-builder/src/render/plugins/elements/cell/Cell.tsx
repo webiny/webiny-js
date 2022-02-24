@@ -6,11 +6,8 @@ import React from "react";
 import dotProp from "dot-prop-immutable";
 
 const getSize = (element: Pick<PbElement, "data">): number | null => {
-    const size = dotProp.get(element, "data.settings.grid", null);
-    if (!size) {
-        return null;
-    }
-    return Number(size);
+    const size = dotProp.get(element, "data.settings.grid.size", null);
+    return size === null || size === undefined ? null : Number(size);
 };
 
 interface GridPropsType {
@@ -18,7 +15,7 @@ interface GridPropsType {
 }
 const Cell: React.FunctionComponent<GridPropsType> = ({ element }) => {
     const size = getSize(element);
-    if (!size) {
+    if (size === null) {
         throw new Error(`Cell with id "${element.id}" does not have size defined.`);
     }
     return (

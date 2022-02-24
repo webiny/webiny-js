@@ -13,9 +13,8 @@ export interface ElementProps {
 const Element: React.FC<ElementProps> = props => {
     const { element } = props;
 
-    // TODO @ts-refactor verify that PbTheme is correct
     const theme: PbTheme = useMemo(
-        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
         []
     );
 
@@ -37,7 +36,6 @@ const Element: React.FC<ElementProps> = props => {
     }
 
     const renderedPlugin = tryRenderingPlugin(() => plugin.render({ theme, element }));
-
     return <>{renderedPlugin}</>;
 };
 
