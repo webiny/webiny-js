@@ -7,7 +7,7 @@ import { Element as PeElement } from "@webiny/app-page-builder-elements/componen
 import tryRenderingPlugin from "~/utils/tryRenderingPlugin";
 
 export interface ElementProps {
-    element: PbElement;
+    element: PbElement | null;
 }
 
 const Element: React.FC<ElementProps> = props => {
@@ -35,7 +35,12 @@ const Element: React.FC<ElementProps> = props => {
         return null;
     }
 
-    const renderedPlugin = tryRenderingPlugin(() => plugin.render({ theme, element }));
+    const renderedPlugin = tryRenderingPlugin(() =>
+        plugin.render({
+            theme,
+            element: element
+        })
+    );
     return <>{renderedPlugin}</>;
 };
 

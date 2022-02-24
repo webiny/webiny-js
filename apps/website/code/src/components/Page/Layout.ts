@@ -14,7 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ page, settings, children }) => {
         return layoutPlugins.map(pl => pl.layout);
     }, []);
 
-    const layout = lodashGet(page, "page.settings.general.layout", null);
+    const layout = lodashGet(page, "settings.general.layout", null);
     if (!layout) {
         return children as React.ReactElement;
     }
