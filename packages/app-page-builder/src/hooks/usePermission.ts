@@ -57,7 +57,8 @@ const usePermission = (): UsePermission => {
                 return false;
             }
             if (pbPagePermission.own) {
-                return !!identity && get(item, "createdBy.id") === identity.login;
+                const login = identity ? identity.login : null;
+                return get(item, "createdBy.id", undefined) === login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("d");

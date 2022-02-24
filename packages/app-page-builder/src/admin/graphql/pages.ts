@@ -151,7 +151,28 @@ export const UNPUBLISH_PAGE = gql`
         }
     }
 `;
-
+/**
+ * ##########################
+ * Delete Page Mutation
+ */
+interface DeletePageMutationResponseData {
+    latestPage: {
+        id: string;
+        status: string;
+        version: number;
+    };
+}
+export interface DeletePageMutationResponse {
+    pageBuilder: {
+        deletePage: {
+            data: DeletePageMutationResponseData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface DeletePageMutationVariables {
+    id: string;
+}
 export const DELETE_PAGE = gql`
     mutation PbDeletePage($id: ID!) {
         pageBuilder {
