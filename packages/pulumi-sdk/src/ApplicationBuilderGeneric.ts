@@ -1,7 +1,8 @@
 import os from "os";
 import path from "path";
 import fs from "fs";
-import { LocalWorkspace } from "@pulumi/pulumi/automation";
+import trimNewlines from "trim-newlines";
+import { LocalWorkspace, UpOptions } from "@pulumi/pulumi/automation";
 
 import { PulumiApp } from "./PulumiApp";
 import { ApplicationConfig } from "./ApplicationConfig";
@@ -61,15 +62,20 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
             }
         );
 
+        type SharedOptions = Pick<UpOptions, "onOutput">;
+        const options: SharedOptions = {
+            onOutput: line => console.log(trimNewlines(line))
+        };
+
         return {
             async refresh() {
-                await stack.refresh({ onOutput: console.info });
+                await stack.refresh(options);
             },
             async preview() {
-                await stack.preview({ onOutput: console.info });
+                await stack.preview(options);
             },
             async up() {
-                await stack.up({ onOutput: console.info });
+                await stack.up(options);
             }
         };
     }

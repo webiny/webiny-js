@@ -21,7 +21,8 @@
     "execa": "^4.0.3",
     "lodash": "^4.17.4",
     "semver": "^7.3.5",
-    "tar": "^6.0.5"
+    "tar": "^6.0.5",
+    "trim-newlines": "^4.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

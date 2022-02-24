@@ -11,6 +11,7 @@ export interface CreateResourceParams<TCtor extends ResourceConstructor> {
 }
 
 export interface PulumiAppResource<T extends ResourceConstructor> {
+    name: string;
     readonly config: ResourceArgs<T>;
     readonly opts: pulumi.CustomResourceOptions;
     readonly output: pulumi.Output<pulumi.Unwrap<ResourceType<T>>>;
@@ -21,9 +22,14 @@ export interface PulumiAppParams {
     ctx: ApplicationContext;
 }
 
+export interface ResourceHandler {
+    (resource: PulumiAppResource<ResourceConstructor>): void;
+}
+
 export class PulumiApp {
     public readonly name: string;
     public readonly ctx: ApplicationContext;
+    private readonly resourceHandlers: ResourceHandler[] = [];
     private readonly handlers: (() => void | Promise<void>)[] = [];
     private readonly outputs: Record<string, any> = {};
     private readonly modules = new Map<symbol, unknown>();
@@ -33,18 +39,24 @@ export class PulumiApp {
         this.ctx = params.ctx;
     }
 
+    public onResource(handler: ResourceHandler): void {
+        this.resourceHandlers.push(handler);
+    }
+
     public addResource<T extends ResourceConstructor>(ctor: T, params: CreateResourceParams<T>) {
         const config = params.config ?? ({} as ResourceArgs<T>);
         const opts = params.opts ?? {};
 
         const promise = new Promise<ResourceType<T>>(resolve => {
             this.handlers.push(() => {
-                const resource = new ctor(params.name, params.config, params.opts);
-                resolve(resource);
+                this.resourceHandlers.forEach(handler => handler(resourceInstance));
+                const resourceInstance = new ctor(resource.name, config, opts);
+                resolve(resourceInstance);
             });
         });
 
         const resource: PulumiAppResource<T> = {
+            name: params.name,
             config,
             opts,
             output: pulumi.output(promise)
