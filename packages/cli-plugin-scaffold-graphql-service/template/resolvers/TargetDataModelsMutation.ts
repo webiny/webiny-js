@@ -1,4 +1,8 @@
 import { TargetDataModelEntity } from "../types";
+/**
+ * Package mdbid is missing types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import { TargetDataModel } from "../entities";
 import TargetDataModelsResolver from "./TargetDataModelsResolver";
