@@ -12,7 +12,7 @@ export interface CreateResourceParams<TCtor extends ResourceConstructor> {
 
 export interface PulumiAppResource<T extends ResourceConstructor> {
     name: string;
-    readonly config: ResourceArgs<T>;
+    readonly config: ResourceConfigProxy<ResourceArgs<T>>;
     readonly opts: pulumi.CustomResourceOptions;
     readonly output: pulumi.Output<pulumi.Unwrap<ResourceType<T>>>;
 }
@@ -24,6 +24,19 @@ export interface PulumiAppParams {
 
 export interface ResourceHandler {
     (resource: PulumiAppResource<ResourceConstructor>): void;
+}
+
+export type ResourceConfigProxy<T extends object> = {
+    readonly [K in keyof T]-?: ResourceConfigSetter<T[K]>;
+};
+
+export interface ResourceConfigSetter<T> {
+    (value: T): void;
+    (fcn: ResourceConfigModifier<T>): void;
+}
+
+export interface ResourceConfigModifier<T> {
+    (value: pulumi.Unwrap<T>): T | void;
 }
 
 export class PulumiApp {
@@ -57,7 +70,7 @@ export class PulumiApp {
 
         const resource: PulumiAppResource<T> = {
             name: params.name,
-            config,
+            config: createConfigProxy(config),
             opts,
             output: pulumi.output(promise)
         };
@@ -175,4 +188,25 @@ export function defineApp<TOutput extends Record<string, unknown>, TConfig = voi
     };
 
     return appDef as new (ctx: ApplicationContext, config: TConfig) => PulumiApp & TOutput;
+}
+
+function createConfigProxy<T extends object>(obj: T) {
+    return new Proxy(obj, {
+        get(target, p: keyof T) {
+            type V = T[keyof T];
+            const setter: ResourceConfigSetter<V> = (value: V | ResourceConfigModifier<V>) => {
+                if (typeof value === "function") {
+                    const modifier = value as ResourceConfigModifier<V>;
+                    target[p] = pulumi.output(target[p]).apply(v => {
+                        const newValue = modifier(v);
+                        return pulumi.output(newValue);
+                    });
+                } else {
+                    target[p] = value;
+                }
+            };
+
+            return setter;
+        }
+    }) as ResourceConfigProxy<T>;
 }

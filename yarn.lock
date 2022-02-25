@@ -11837,7 +11837,7 @@ __metadata:
     rimraf: ^3.0.2
     semver: ^7.3.5
     tar: ^6.0.5
-    trim-newlines: ^4.0.2
+    trim-newlines: ^3.0.1
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -36543,17 +36543,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"trim-newlines@npm:^3.0.0":
+"trim-newlines@npm:^3.0.0, trim-newlines@npm:^3.0.1":
   version: 3.0.1
   resolution: "trim-newlines@npm:3.0.1"
   checksum: b530f3fadf78e570cf3c761fb74fef655beff6b0f84b29209bac6c9622db75ad1417f4a7b5d54c96605dcd72734ad44526fef9f396807b90839449eb543c6206
-  languageName: node
-  linkType: hard
-
-"trim-newlines@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "trim-newlines@npm:4.0.2"
-  checksum: 1eef206eb77361856dff0b827e5811baf64574bb21e81b7ad643fe321c5c19b0a452dd83e9afc31206993fcff9bb90a379925d7b5915f887de1ca7da5b57933a
   languageName: node
   linkType: hard
 

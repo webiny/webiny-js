@@ -32,6 +32,11 @@ const { blue, red } = require("chalk");
 const context = require("./context");
 const { createCommands } = require("./commands");
 
+process.on("unhandledRejection", (reason, p) => {
+    console.error("Unhandled Rejection at:", p, "reason:", reason);
+    process.exit(1);
+});
+
 yargs
     .usage("Usage: $0 <command> [options]")
     .demandCommand(1)

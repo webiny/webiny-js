@@ -22,7 +22,7 @@
     "lodash": "^4.17.4",
     "semver": "^7.3.5",
     "tar": "^6.0.5",
-    "trim-newlines": "^4.0.2"
+    "trim-newlines": "^3.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
