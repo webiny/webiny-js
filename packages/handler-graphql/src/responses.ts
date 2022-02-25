@@ -1,7 +1,8 @@
-interface ErrorResponseParams {
+export interface ErrorResponseParams {
+    message: string;
     code?: string;
-    message?: string;
     data?: any;
+    stack?: string;
 }
 
 const defaultParams: ErrorResponseParams = {
@@ -11,34 +12,25 @@ const defaultParams: ErrorResponseParams = {
 };
 
 export class ErrorResponse {
-    data: any;
-    error: {
+    public readonly data: null;
+    public readonly error: {
         code: string;
         message: string;
-        data?: any;
-        stack?: string;
+        data: any;
+        stack: string;
     };
-    constructor(params: ErrorResponseParams | Error | (Error & ErrorResponseParams)) {
+
+    constructor(params: ErrorResponseParams) {
         this.data = null;
 
-        if (params instanceof Error) {
-            // usually we don't use env variables directly inside code
-            // but otherwise it would make it very tedious to pass this through multiple layers of code
-            const debug = process.env.DEBUG === "true";
+        const debug = process.env.DEBUG === "true";
 
-            this.error = {
-                code: ("code" in params && params.code) || defaultParams.code,
-                message: params.message || defaultParams.message,
-                data: ("data" in params && params.data) || defaultParams.data,
-                stack: debug ? params.stack : undefined
-            };
-        } else {
-            this.error = {
-                code: params.code || defaultParams.code,
-                message: params.message || defaultParams.message,
-                data: params.data || defaultParams.data
-            };
-        }
+        this.error = {
+            code: params.code || defaultParams.code,
+            message: params.message || defaultParams.message,
+            data: params.data || defaultParams.data,
+            stack: debug ? params.stack : defaultParams.stack
+        };
     }
 }
 
@@ -52,27 +44,34 @@ export class NotFoundResponse extends ErrorResponse {
 }
 
 export class ListErrorResponse {
-    data: null;
-    meta: null;
-    error: {
+    public readonly data: null;
+    public readonly meta: null;
+    public readonly error: {
         code: string;
         message: string;
         data?: any;
+        stack: string;
     };
+
     constructor(params: ErrorResponseParams) {
-        this.data = null;
         this.meta = null;
+        this.data = null;
+
+        const debug = process.env.DEBUG === "true";
+
         this.error = {
             code: params.code || defaultParams.code,
             message: params.message || defaultParams.message,
-            data: params.data || defaultParams.data
+            data: params.data || defaultParams.data,
+            stack: debug ? params.stack : defaultParams.stack
         };
     }
 }
 
 export class Response<T = any> {
-    data: T;
-    error: null;
+    public readonly data: T;
+    public readonly error: null;
+
     constructor(data: T) {
         this.data = data;
         this.error = null;
@@ -80,9 +79,10 @@ export class Response<T = any> {
 }
 
 export class ListResponse<T, M> {
-    data: Array<T>;
-    meta: M;
-    error: null;
+    public readonly data: Array<T>;
+    public readonly meta: M;
+    public readonly error: null;
+
     constructor(data: Array<T>, meta?: M) {
         this.data = Array.isArray(data) ? data : [];
         this.meta = meta || ({} as M);
