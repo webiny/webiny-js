@@ -1,0 +1,18 @@
+{
+  "name": "@webiny/cli2",
+  "version": "6.0.0",
+  "sideEffects": false,
+  "bin": {
+    "wby": "./src/bin.js"
+  },
+  "dependencies": {
+    "@webiny/core": "6.0.0",
+    "dotenv": "^16.0.0",
+    "tsconfig-paths": "^3.12.0",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.8",
+    "ts-node": "^10.5.0"
+  }
+}

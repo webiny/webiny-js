@@ -1,0 +1,17 @@
+{
+  "name": "@webiny/preset-aws",
+  "version": "6.0.0",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@webiny/core": "6.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.0"
+  },
+  "scripts": {
+    "build:esm": "cross-env BABEL_ENV=esmUnbundled babel src --extensions '.ts,.tsx' --out-dir 'dist/esm' --source-maps",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'dist/cjs' --source-maps",
+    "build": "yarn build:cjs && yarn build:esm && yarn declarations",
+    "declarations": "tsc -p tsconfig.build.json"
+  }
+}

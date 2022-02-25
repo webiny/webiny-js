@@ -38,7 +38,11 @@
     "./packages/create-webiny-project",
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",
-    "./packages/tracking",
-    "./packages-v6/pb-editor"
-  ]
+    "./packages/tracking"
+  ],
+  "ts-node": {
+    "files": true,
+    "typeCheck": false,
+    "transpileOnly": true
+  }
 }

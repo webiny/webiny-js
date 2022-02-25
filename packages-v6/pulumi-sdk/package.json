@@ -1,0 +1,38 @@
+{
+  "name": "@webiny/pulumi-sdk-v6",
+  "version": "6.0.0",
+  "main": "./src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A simple Node.js Pulumi SDK.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "dependencies": {
+    "@pulumi/aws": "^4.10.0",
+    "@pulumi/pulumi": "^3.24.1",
+    "@types/decompress": "^4.2.4",
+    "@types/download": "^8.0.1",
+    "@types/semver": "^7.3.9",
+    "@types/tar": "^6.1.1",
+    "decompress": "^4.2.1",
+    "download": "^8.0.0",
+    "execa": "^4.0.3",
+    "lodash": "^4.17.4",
+    "semver": "^7.3.5",
+    "tar": "^6.0.5"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@pulumi/pulumi",
+        "@pulumi/aws"
+      ]
+    }
+  }
+}
