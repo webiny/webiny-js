@@ -8,7 +8,7 @@ import {
     ApplicationHooks
 } from "@webiny/pulumi-sdk";
 
-import { createAppBucket } from "../createAppBucket";
+import { createPublicAppBucket } from "../createAppBucket";
 import { websiteUpload } from "./WebsiteHookUpload";
 import { websiteRender } from "./WebsiteHookRender";
 import { websiteUpdatePbSettings } from "./WebsiteHookUpdatePbSettings";
@@ -20,7 +20,7 @@ export interface WebsiteAppConfig extends Partial<ApplicationHooks> {
 export const WebsiteApp = defineApp({
     name: "Website",
     config(app) {
-        const appBucket = createAppBucket(app, "app");
+        const appBucket = createPublicAppBucket(app, "app");
 
         const appCloudfront = app.addResource(aws.cloudfront.Distribution, {
             name: "app",
@@ -59,7 +59,7 @@ export const WebsiteApp = defineApp({
             }
         });
 
-        const deliveryBucket = createAppBucket(app, "delivery");
+        const deliveryBucket = createPublicAppBucket(app, "delivery");
 
         const deliveryCloudfront = app.addResource(aws.cloudfront.Distribution, {
             name: "delivery",
@@ -67,27 +67,6 @@ export const WebsiteApp = defineApp({
                 enabled: true,
                 waitForDeployment: true,
                 origins: [deliveryBucket.origin, appBucket.origin],
-                orderedCacheBehaviors: [
-                    {
-                        compress: true,
-                        allowedMethods: ["GET", "HEAD", "OPTIONS"],
-                        cachedMethods: ["GET", "HEAD", "OPTIONS"],
-                        forwardedValues: {
-                            cookies: {
-                                forward: "none"
-                            },
-                            headers: [],
-                            queryString: false
-                        },
-                        pathPattern: "/static/*",
-                        viewerProtocolPolicy: "allow-all",
-                        targetOriginId: deliveryBucket.origin.originId,
-                        // MinTTL <= DefaultTTL <= MaxTTL
-                        minTtl: 0,
-                        defaultTtl: 2592000, // 30 days
-                        maxTtl: 2592000
-                    }
-                ],
                 defaultRootObject: "index.html",
                 defaultCacheBehavior: {
                     compress: true,
@@ -105,6 +84,27 @@ export const WebsiteApp = defineApp({
                     defaultTtl: 30,
                     maxTtl: 30
                 },
+                orderedCacheBehaviors: [
+                    {
+                        compress: true,
+                        allowedMethods: ["GET", "HEAD", "OPTIONS"],
+                        cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                        forwardedValues: {
+                            cookies: {
+                                forward: "none"
+                            },
+                            headers: [],
+                            queryString: false
+                        },
+                        pathPattern: "/static/*",
+                        viewerProtocolPolicy: "allow-all",
+                        targetOriginId: appBucket.origin.originId,
+                        // MinTTL <= DefaultTTL <= MaxTTL
+                        minTtl: 0,
+                        defaultTtl: 2592000, // 30 days
+                        maxTtl: 2592000
+                    }
+                ],
                 customErrorResponses: [
                     {
                         errorCode: 404,

@@ -5816,9 +5816,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:3.19.0":
-  version: 3.19.0
-  resolution: "@pulumi/pulumi@npm:3.19.0"
+"@pulumi/pulumi@npm:3.25.0":
+  version: 3.25.0
+  resolution: "@pulumi/pulumi@npm:3.25.0"
   dependencies:
     "@grpc/grpc-js": ~1.3.8
     "@logdna/tail-file": ^2.0.6
@@ -5835,7 +5835,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.7.3
     upath: ^1.1.0
-  checksum: 7f3e8f0f2dc0542d36fd19f126efc3aae5ee19d9b2ee63ad54f25f8262f512107e4e6f642f99161a5683657d871d7fa790f7f909950eb7b171ebb40727cc5a92
+  checksum: 5f7af45f2c2cfad5f6202ad50112b9ccc0261ce8aeec47700396a1cd33728997dc7e483a35b43724db18433097ff78fa34325a180b549957e9257dd2520b8153
   languageName: node
   linkType: hard
 
@@ -11748,7 +11748,7 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@pulumi/aws": ^4.10.0
-    "@pulumi/pulumi": < 3.18.0
+    "@pulumi/pulumi": ^3.25.0
     "@webiny/api-page-builder": ^5.23.1
     "@webiny/aws-layers": ^5.23.1
     "@webiny/cli": ^5.23.1
@@ -11768,7 +11768,7 @@ __metadata:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
     "@pulumi/aws": ^4.10.0
-    "@pulumi/pulumi": < 3.18.0
+    "@pulumi/pulumi": ^3.25.0
     "@types/lodash": ^4.14.178
     "@types/node": ^10.0.0
     "@webiny/cli": ^5.23.1
@@ -11780,6 +11780,7 @@ __metadata:
     rimraf: ^3.0.2
     semver: ^7.3.5
     tar: ^6.0.5
+    trim-newlines: ^3.0.1
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -36413,7 +36414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"trim-newlines@npm:^3.0.0":
+"trim-newlines@npm:^3.0.0, trim-newlines@npm:^3.0.1":
   version: 3.0.1
   resolution: "trim-newlines@npm:3.0.1"
   checksum: b530f3fadf78e570cf3c761fb74fef655beff6b0f84b29209bac6c9622db75ad1417f4a7b5d54c96605dcd72734ad44526fef9f396807b90839449eb543c6206

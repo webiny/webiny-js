@@ -6,7 +6,39 @@ type OriginConfig = PulumiInputValue<
     PulumiInputValue<aws.cloudfront.DistributionArgs["origins"]>[number]
 >;
 
-export function createAppBucket(app: PulumiApp, name: string) {
+export function createPublicAppBucket(app: PulumiApp, name: string) {
+    const bucket = app.addResource(aws.s3.Bucket, {
+        name: name,
+        config: {
+            acl: aws.s3.CannedAcl.PublicRead,
+            forceDestroy: true,
+            website: {
+                indexDocument: "index.html",
+                errorDocument: "index.html"
+            }
+        }
+    });
+
+    const origin: OriginConfig = {
+        originId: bucket.output.arn,
+        domainName: bucket.output.websiteEndpoint,
+        customOriginConfig: {
+            originProtocolPolicy: "http-only",
+            httpPort: 80,
+            httpsPort: 443,
+            originSslProtocols: ["TLSv1.2"]
+        }
+    };
+
+    return {
+        bucket,
+        origin
+    };
+}
+
+// TODO Currently not used, because of issues with uploading prerendered pages.
+// Allows to have private S3 buckets available only through cloudfront distribution.
+export function createPrivateAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
         name: name,
         config: {

@@ -28,7 +28,7 @@ export const adminUpload = defineAppHook(async (params, context) => {
     await uploadFolderToS3({
         path: buildFolderPath,
         bucket: adminOutput.appStorage,
-        acl: "private",
+        acl: "public-read",
         onFileUploadSuccess(args: any) {
             context.success(args.paths.relative);
         },

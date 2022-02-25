@@ -8,7 +8,7 @@ import {
     ApplicationHooks
 } from "@webiny/pulumi-sdk";
 
-import { createAppBucket } from "../createAppBucket";
+import { createPublicAppBucket } from "../createAppBucket";
 import { adminUpload } from "./AdminHookUpload";
 
 export interface AdminAppConfig extends ApplicationHooks {
@@ -18,7 +18,7 @@ export interface AdminAppConfig extends ApplicationHooks {
 export const AdminApp = defineApp({
     name: "Admin",
     config(app) {
-        const bucket = createAppBucket(app, "admin-app");
+        const bucket = createPublicAppBucket(app, "admin-app");
 
         const cloudfront = app.addResource(aws.cloudfront.Distribution, {
             name: "admin-app-cdn",

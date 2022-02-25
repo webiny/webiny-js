@@ -7,9 +7,9 @@ import { createAdminApp } from "@webiny/pulumi-aws";
 
 export default createAdminApp({
     config(app) {
-        app.bucket.config.versioning = {
+        app.bucket.config.versioning({
             enabled: false
-        };
+        });
     },
     beforeBuild() {
         console.log("BEFORE BUILD");
