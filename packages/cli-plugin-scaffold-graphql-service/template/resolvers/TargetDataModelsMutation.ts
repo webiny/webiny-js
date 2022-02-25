@@ -39,7 +39,7 @@ interface TargetDataModelsMutation {
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetDataModelsMutation
+export default class TargetDataModelsMutationImplementation
     extends TargetDataModelsResolver
     implements TargetDataModelsMutation
 {
