@@ -2,13 +2,14 @@ export interface ErrorResponseParams {
     message: string;
     code?: string;
     data?: any;
-    stack?: string;
+    stack?: string | null;
 }
 
 const defaultParams: ErrorResponseParams = {
     code: "",
     message: "",
-    data: null
+    data: null,
+    stack: null
 };
 
 export class ErrorResponse {
@@ -17,7 +18,7 @@ export class ErrorResponse {
         code: string;
         message: string;
         data: any;
-        stack: string;
+        stack: string | null;
     };
 
     constructor(params: ErrorResponseParams) {
@@ -25,11 +26,17 @@ export class ErrorResponse {
 
         const debug = process.env.DEBUG === "true";
 
+        // Ensure `stack` is either `string` or `null`.
+        let stack = defaultParams.stack;
+        if (debug && params.stack) {
+            stack = params.stack;
+        }
+
         this.error = {
             code: params.code || defaultParams.code,
             message: params.message || defaultParams.message,
             data: params.data || defaultParams.data,
-            stack: debug ? params.stack : defaultParams.stack
+            stack: stack
         };
     }
 }
@@ -49,8 +56,8 @@ export class ListErrorResponse {
     public readonly error: {
         code: string;
         message: string;
-        data?: any;
-        stack: string;
+        data: any;
+        stack: string | null;
     };
 
     constructor(params: ErrorResponseParams) {
@@ -59,11 +66,17 @@ export class ListErrorResponse {
 
         const debug = process.env.DEBUG === "true";
 
+        // Ensure `stack` is either `string` or `null`.
+        let stack = defaultParams.stack;
+        if (debug && params.stack) {
+            stack = params.stack;
+        }
+
         this.error = {
             code: params.code || defaultParams.code,
             message: params.message || defaultParams.message,
             data: params.data || defaultParams.data,
-            stack: debug ? params.stack : defaultParams.stack
+            stack: stack
         };
     }
 }
