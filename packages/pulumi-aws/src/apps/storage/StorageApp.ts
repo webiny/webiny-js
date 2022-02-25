@@ -17,7 +17,7 @@ export interface StorageAppConfig extends Partial<ApplicationHooks> {
 export const StorageApp = defineApp({
     name: "Storage",
     config(app, config: StorageAppConfig) {
-        const protect = config.protect?.(app.ctx) ?? app.ctx.env === "dev";
+        const protect = config.protect?.(app.ctx) ?? app.ctx.env !== "dev";
 
         // Setup DynamoDB table
         const table = createDynamoTable(app, { protect });
