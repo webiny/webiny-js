@@ -46,7 +46,10 @@ module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
         https,
         host,
         client: {
-            overlay: true,
+            overlay: {
+                errors: true,
+                warnings: false
+            },
             // Silence WebpackDevServer's own logs since they're generally not useful.
             // It will still show compile warnings and errors with this setting.
             logging: "warn",

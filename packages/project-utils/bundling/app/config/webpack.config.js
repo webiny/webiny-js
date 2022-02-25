@@ -500,7 +500,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                 cwd: paths.appPath,
                 resolvePluginsRelativeTo: __dirname,
                 baseConfig: {
-                    extends: [require.resolve("eslint-config-react-app/base")]
+                    extends: [require.resolve("eslint-config-react-app/base")],
+                    plugins: options.watch ? ["only-warn"] : []
                 }
             }),
 
