@@ -22,7 +22,7 @@ interface ListTargetDataModelsParams {
 
 interface ListTargetDataModelsResponse {
     data: TargetDataModelEntity[];
-    meta: { limit: number; after: string; before: string };
+    meta: { limit: number; after: string | null; before: string | null };
 }
 
 interface TargetDataModelsQuery {
