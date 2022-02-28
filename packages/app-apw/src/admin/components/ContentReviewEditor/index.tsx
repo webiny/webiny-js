@@ -44,7 +44,9 @@ export const ContentReviewEditor: React.FC = () => {
                     <Switch>
                         <Route exact path={path}>
                             <PanelBox flex={"1 1 74%"}>
-                                <PlaceholderBox />
+                                <PlaceholderBox
+                                    text={`Click on the left side list to display step details`}
+                                />
                             </PanelBox>
                         </Route>
                         <Route path={`${path}/:stepId`}>

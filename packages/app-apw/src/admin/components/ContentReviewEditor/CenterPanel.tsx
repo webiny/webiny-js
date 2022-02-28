@@ -93,7 +93,9 @@ export const CenterPanel = () => {
             <Switch>
                 <Route exact path={path}>
                     <PanelBox flex={"1 1 52%"}>
-                        <PlaceholderBox />
+                        <PlaceholderBox
+                            text={`Click on the left side list to display change request details or create one.`}
+                        />
                     </PanelBox>
                 </Route>
                 <Route path={`${path}/:changeRequestId`}>
