@@ -510,6 +510,12 @@ module.exports = function (webpackEnv, { paths, options }) {
                 new ForkTsCheckerWebpackPlugin({
                     typescript: {
                         configFile: paths.appTsConfig,
+                        configOverwrite: {
+                            compilerOptions: {
+                                noUnusedParameters: !options.watch,
+                                noUnusedLocals: !options.watch
+                            }
+                        },
                         typescriptPath: require.resolve("typescript")
                     },
                     async: isEnvDevelopment
