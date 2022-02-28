@@ -24,15 +24,10 @@ describe("Page publishing workflow", () => {
     /**
      * Let's do the setup.
      */
-    const setup = async () => {
-        const { page } = await createSetupForContentReview(gqlHandler);
-        return {
-            page
-        };
-    };
+    const setup = async () => createSetupForContentReview(gqlHandler);
 
     test(`Should able to "publish" page for content review process`, async () => {
-        const { page } = await setup();
+        const { page, workflow } = await setup();
 
         /**
          *  Initial a review.
@@ -63,6 +58,13 @@ describe("Page publishing workflow", () => {
             }
         });
         const updatedPage = updatePageResponse.data.pageBuilder.updatePage.data;
+        /**
+         * Page should have "apw" properties after update.
+         */
+        expect(updatedPage.settings.apw).toEqual({
+            workflowId: workflow.id,
+            contentReviewId: createdContentReview.id
+        });
         /**
          * Fetch the content review and check if the updates were successful.
          */
