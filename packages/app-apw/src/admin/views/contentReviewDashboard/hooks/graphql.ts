@@ -70,6 +70,7 @@ export const LIST_CONTENT_REVIEWS_QUERY = /* GraphQL */ gql`
                 data ${getDataFields(`
                 activeStep {
                     title
+                    id
                 }
                 totalComments
                 latestCommentId

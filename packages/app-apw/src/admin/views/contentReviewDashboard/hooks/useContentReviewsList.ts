@@ -4,7 +4,7 @@ import debounce from "lodash/debounce";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import { LIST_CONTENT_REVIEWS_QUERY } from "./graphql";
-import { ApwContentReview, ApwContentReviewStatus } from "~/types";
+import { ApwContentReview, ApwContentReviewListItem, ApwContentReviewStatus } from "~/types";
 
 const serializeSorters = data => {
     if (!data) {
@@ -27,7 +27,7 @@ interface UseContentReviewsListHook {
         sort: string;
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
-        editContentReview: (id: string) => void;
+        editContentReview: (item: ApwContentReviewListItem) => void;
         status: ApwContentReviewStatus | "all";
         setStatus: (status: ApwContentReviewStatus | "all") => void;
     };
@@ -74,8 +74,11 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
 
     const baseUrl = "/apw/content-reviews";
 
-    const editContentReview = useCallback((id: string) => {
-        history.push(`${baseUrl}/${encodeURIComponent(id)}`);
+    const editContentReview = useCallback((item: ApwContentReviewListItem) => {
+        const url = item.activeStep
+            ? `${baseUrl}/${encodeURIComponent(item.id)}/${item.activeStep.id}`
+            : `${baseUrl}/${encodeURIComponent(item.id)}`;
+        history.push(url);
     }, []);
 
     return {

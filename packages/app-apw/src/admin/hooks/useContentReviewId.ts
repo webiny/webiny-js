@@ -30,3 +30,13 @@ export const useCurrentStepId = (): UseCurrentStepIdResult => {
         encodedId: stepId
     };
 };
+
+export const useActiveStepId = (): string => {
+    const { location } = useRouter();
+    /**
+     * Get active "stepId" from pathname.
+     * Where pathname will be "/apw/content-reviews/:contentReviewId/:stepId/:changeRequestId"
+     */
+    const tokens = location.pathname.split("/").filter(token => token.length !== 0);
+    return tokens[3];
+};

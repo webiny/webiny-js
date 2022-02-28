@@ -11,6 +11,7 @@ import {
     TypographyTitle
 } from "../Styled";
 import { useRouteMatch, useRouter } from "@webiny/react-router";
+import { useActiveStepId } from "~/admin/hooks/useContentReviewId";
 
 const t = i18n.ns("app-apw/admin/content-reviews/editor");
 
@@ -64,6 +65,7 @@ export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
     const { step, createdOn, createdBy, disabled } = props;
     const { history } = useRouter();
     const { url } = useRouteMatch();
+    const activeStepId = useActiveStepId();
 
     const onClick = useMemo(() => {
         if (disabled) {
@@ -73,11 +75,7 @@ export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
     }, [disabled]);
 
     return (
-        <PanelListItem
-            selected={step.status === ApwContentReviewStepStatus.ACTIVE}
-            disabled={disabled}
-            onClick={onClick}
-        >
+        <PanelListItem selected={step.id === activeStepId} disabled={disabled} onClick={onClick}>
             <Columns space={3}>
                 <Box paddingTop={1}>
                     <StepStatusIcon status={step.status} />
