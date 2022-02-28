@@ -12,7 +12,8 @@
     "@webiny/handler-client": "^WEBINY_VERSION",
     "@webiny/handler-graphql": "^WEBINY_VERSION",
     "@webiny/handler-http": "^WEBINY_VERSION",
-    "@webiny/handler-logs": "^WEBINY_VERSION"
+    "@webiny/handler-logs": "^WEBINY_VERSION",
+    "mdbid": "^1.0.0"
   },
   "devDependencies": {
     "@webiny/cli": "^WEBINY_VERSION",

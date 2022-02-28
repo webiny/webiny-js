@@ -17,7 +17,7 @@ import {
  * Omits irrelevant values from the submitted form data (`id`, `createdOn`, `savedOn`, `createdBy`).
  * @param formData
  */
-const getMutationData = formData => {
+const getMutationData = (formData: Record<string, any>) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, createdOn, savedOn, createdBy, ...data } = formData;
     return data;
