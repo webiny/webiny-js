@@ -39,10 +39,5 @@
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",
     "./packages/tracking"
-  ],
-  "ts-node": {
-    "files": true,
-    "typeCheck": false,
-    "transpileOnly": true
-  }
+  ]
 }

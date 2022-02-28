@@ -33,7 +33,7 @@ export interface Logger {
 
 export const createLogger = (debugMode: boolean): Logger => {
     const webinyLog = (type: string, ...args: unknown[]) => {
-        const prefix = `${getLogType(type)}: `;
+        const prefix = type !== "log" ? `${getLogType(type)}: ` : "";
 
         const [first, ...rest] = args;
         if (typeof first === "string") {

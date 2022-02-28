@@ -1,5 +1,5 @@
-import { ProjectConfig } from "./context";
+import { ProjectConfig } from "./webiny";
 
 export function defineProject(config: ProjectConfig) {
-  return config;
+    return config;
 }

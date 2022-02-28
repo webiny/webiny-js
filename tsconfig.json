@@ -1,10 +1,18 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "target": "es2016",
     "noEmit": true,
     "emitDeclarationOnly": false,
-    "composite": false,
-    "module": "commonjs"
+    "composite": false
+  },
+  "ts-node": {
+    "files": true,
+    "typeCheck": false,
+    "transpileOnly": true,
+    "compilerOptions": {
+      "skipLibCheck": true,
+      "target": "es2016",
+      "module": "commonjs"
+    }
   }
 }

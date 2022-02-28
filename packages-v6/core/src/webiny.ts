@@ -1,5 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
+// @ts-ignore TODO: convert `telemetry` package to TS
+import { isEnabled } from "@webiny/telemetry/cli";
 import { FunctionName, Plugin, Preset } from "./index";
 import { createLogger, Logger } from "./utils/logger";
 import { getRoot } from "./utils/getRoot";
@@ -11,9 +13,10 @@ export interface ProjectDeployConfig {
 
 export interface ProjectConfig {
     artifacts?: string;
+    deploy?: (env: string) => ProjectDeployConfig;
     presets?: (Preset | Promise<Preset>)[];
     plugins?: Plugin[];
-    deploy?: (env: string) => ProjectDeployConfig;
+    telemetry?: boolean;
 }
 
 interface BuildAdmin {
@@ -45,6 +48,7 @@ export interface Webiny {
     getPlugins(): Plugin[];
     setLogger(logger: Logger): void;
     logger: Logger;
+    telemetry: boolean;
 }
 
 export interface ProjectConfigFactory {
@@ -106,6 +110,8 @@ export async function initializeWebiny(options: WebinyOptions) {
     // Project plugins
     let plugins: Plugin[] = [];
 
+    let telemetry = true;
+
     webiny = {
         resolve(...paths: string[]) {
             return path.resolve(root, ...paths);
@@ -158,6 +164,9 @@ export async function initializeWebiny(options: WebinyOptions) {
         },
         setLogger(newLogger: Logger) {
             logger = newLogger;
+        },
+        get telemetry() {
+            return telemetry;
         }
     };
 
@@ -209,6 +218,14 @@ export async function initializeWebiny(options: WebinyOptions) {
 
     output = config.artifacts || webiny.resolve(".artifacts");
     logger.debug(`Build artifacts will be stored in ${logger.debug.hl(output)}.`);
+
+    if (config.telemetry === false) {
+        telemetry = false;
+    } else {
+        telemetry = isEnabled();
+    }
+
+    logger.debug(`Telemetry is ${logger.debug.hl(telemetry ? "ENABLED" : "DISABLED")}.`);
 
     // Load ENV variables
     if (options.env) {

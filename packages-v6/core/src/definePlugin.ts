@@ -9,6 +9,7 @@ export interface PluginAdminConfig {
     config?: string;
     define?: Record<string, string>;
     webpack?(config: Configuration): Configuration;
+    babel?(config: unknown): unknown;
 }
 
 export enum FunctionHandlerTemplate {

@@ -1,31 +1,33 @@
-"use strict";
-const path = require("path");
-const fs = require("fs-extra");
-const webpack = require("webpack");
-const chalk = require("react-dev-utils/chalk");
-const checkRequiredFiles = require("react-dev-utils/checkRequiredFiles");
-const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
-const FileSizeReporter = require("react-dev-utils/FileSizeReporter");
-const printBuildError = require("react-dev-utils/printBuildError");
-const { checkBrowsers } = require("react-dev-utils/browsersHelper");
-const { applyDefaults } = require("./utils");
+import fs from "fs-extra";
+import webpack from "webpack";
+// @ts-ignore
+import chalk from "react-dev-utils/chalk";
+import checkRequiredFiles from "react-dev-utils/checkRequiredFiles";
+import formatWebpackMessages from "react-dev-utils/formatWebpackMessages";
+import FileSizeReporter from "react-dev-utils/FileSizeReporter";
+import printBuildError from "react-dev-utils/printBuildError";
+// @ts-ignore
+import { checkBrowsers } from "react-dev-utils/browsersHelper";
+import { applyDefaults } from "./utils";
+import getPaths, { Paths } from "./config/paths";
+import { Plugin } from "../../index";
+import { useWebiny } from "../../webiny";
+import { Logger } from "../../utils/logger";
 
-module.exports = async options => {
+export interface BuildOptions {
+    cwd: string;
+    entry: string;
+    html: string;
+    output: string;
+    plugins: Plugin[];
+}
+
+export const buildApp = async (options: BuildOptions) => {
     applyDefaults();
+    const { logger } = useWebiny();
 
     process.env.NODE_ENV = "production";
-
-    const { cwd, overrides } = options;
-
-    const log = options.logs ? console.log : () => undefined;
-
-    const appIndexJs = overrides.entry || path.resolve(cwd, "src", "index.tsx");
-
-    const paths = require("./config/paths")({ appIndexJs, cwd });
-
-    if (overrides.output) {
-        paths.appBuild = path.resolve(overrides.output);
-    }
+    const paths = getPaths({ appIndexJs: options.entry, cwd: options.cwd });
 
     // Makes the script crash on unhandled rejections instead of silently
     // ignoring them. In the future, promise rejections that are not handled will
@@ -35,7 +37,7 @@ module.exports = async options => {
     });
 
     // Ensure environment variables are read.
-    const configFactory = require("./config/webpack.config");
+    const { createWebpackConfig } = await import("./config/webpack.config");
 
     const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
     const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
@@ -54,12 +56,26 @@ module.exports = async options => {
     // We require that you explicitly set browsers and do not fall back to browsers list defaults.
     await checkBrowsers(paths.appPath, isInteractive);
 
-    // Generate configuration
-    let config = configFactory("production", { paths, options });
+    const babelCustomizer = (config: unknown) => {
+        options.plugins
+            .filter(pl => "babel" in pl.admin)
+            .forEach(pl => {
+                config = pl.admin.babel(config);
+            });
 
-    if (typeof overrides.webpack === "function") {
-        config = overrides.webpack(config);
-    }
+        return config;
+    };
+
+    // Generate configuration
+    paths.appBuild = options.output;
+    let config = createWebpackConfig(process.env.NODE_ENV, { paths, babelCustomizer });
+
+    // Apply webpack modifiers
+    options.plugins
+        .filter(pl => "webpack" in pl.admin)
+        .forEach(pl => {
+            config = pl.admin.webpack(config);
+        });
 
     // First, read the current file sizes in build directory.
     // This lets us display how much they changed later.
@@ -77,48 +93,44 @@ module.exports = async options => {
         const { stats, previousFileSizes, warnings } = await build({
             config,
             previousFileSizes: existingFileSizes,
-            options,
-            log
+            logger
         });
         if (warnings.length) {
-            log(chalk.yellow("Compiled with warnings.\n"));
-            log(warnings.join("\n\n"));
-            log(
+            logger.warning("Compiled with warnings.\n");
+            logger.log(warnings.join("\n\n"));
+            logger.log(
                 "\nSearch for the " +
                     chalk.underline(chalk.yellow("keywords")) +
                     " to learn more about each warning."
             );
-            log(
+            logger.log(
                 "To ignore, add " +
                     chalk.cyan("// eslint-disable-next-line") +
                     " to the line before.\n"
             );
         } else {
-            log(chalk.green("Compiled successfully.\n"));
+            logger.success("Compiled successfully.\n");
         }
 
-        log("File sizes after gzip:\n");
-        options.logs &&
-            printFileSizesAfterBuild(
-                stats,
-                previousFileSizes,
-                paths.appBuild,
-                WARN_AFTER_BUNDLE_GZIP_SIZE,
-                WARN_AFTER_CHUNK_GZIP_SIZE
-            );
-        log();
+        logger.log("File sizes after gzip:\n");
+        printFileSizesAfterBuild(
+            stats,
+            previousFileSizes,
+            paths.appBuild,
+            WARN_AFTER_BUNDLE_GZIP_SIZE,
+            WARN_AFTER_CHUNK_GZIP_SIZE
+        );
+        logger.log("\n");
     } catch (err) {
         const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === "true";
         if (tscCompileOnError) {
-            log(
-                chalk.yellow(
-                    "Compiled with the following type errors (you may want to check these before deploying your app):\n"
-                )
+            logger.warning(
+                "Compiled with the following type errors (you may want to check these before deploying your app):\n"
             );
             printBuildError(err);
         } else {
-            log(err);
-            log(chalk.red("Failed to compile.\n"));
+            logger.error(err);
+            logger.error("Failed to compile.\n");
             printBuildError(err);
             process.exit(1);
         }
@@ -126,7 +138,19 @@ module.exports = async options => {
 };
 
 // Create the production build and print the deployment instructions.
-function build({ config, previousFileSizes, log }) {
+interface BuildParams {
+    config: webpack.Configuration;
+    previousFileSizes: FileSizeReporter.OpaqueFileSizes;
+    logger: Logger;
+}
+
+interface BuildOutput {
+    stats: webpack.Stats;
+    previousFileSizes: FileSizeReporter.OpaqueFileSizes;
+    warnings: string[];
+}
+
+function build({ config, previousFileSizes, logger }: BuildParams): Promise<BuildOutput> {
     const compiler = webpack(config);
 
     return new Promise((resolve, reject) => {
@@ -140,9 +164,10 @@ function build({ config, previousFileSizes, log }) {
                 let errMessage = err.message;
 
                 // Add additional information for postcss errors
-                if (Object.prototype.hasOwnProperty.call(err, "postcssNode")) {
-                    errMessage +=
-                        "\nCompileError: Begins at CSS selector " + err["postcssNode"].selector;
+                if (err.hasOwnProperty("postcssNode")) {
+                    // @ts-ignore
+                    const selector = err["postcssNode"].selector;
+                    errMessage += "\nCompileError: Begins at CSS selector " + selector;
                 }
 
                 messages = formatWebpackMessages({
@@ -171,11 +196,9 @@ function build({ config, previousFileSizes, log }) {
                 (typeof process.env.CI !== "string" || process.env.CI.toLowerCase() !== "false") &&
                 messages.warnings.length
             ) {
-                log(
-                    chalk.yellow(
-                        "\nTreating warnings as errors because process.env.CI = true.\n" +
-                            "Most CI servers set it automatically.\n"
-                    )
+                logger.warning(
+                    "\nTreating warnings as errors because process.env.CI = true.\n" +
+                        "Most CI servers set it automatically.\n"
                 );
                 return reject(new Error(messages.warnings.join("\n\n")));
             }
@@ -189,7 +212,7 @@ function build({ config, previousFileSizes, log }) {
     });
 }
 
-function copyPublicFolder(paths) {
+function copyPublicFolder(paths: Paths) {
     fs.copySync(paths.appPublic, paths.appBuild, {
         dereference: true,
         filter: file => file !== paths.appHtml

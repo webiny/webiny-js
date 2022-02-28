@@ -35,6 +35,12 @@ export async function bundle({ entry, watch, output, plugins, html }: Params) {
         module: {
             rules: [
                 {
+                    test: /\.m?js/,
+                    resolve: {
+                        fullySpecified: false // disable the behaviour
+                    }
+                },
+                {
                     test: /\.(js|mjs|jsx|ts|tsx)$/,
                     exclude: /node_modules/,
                     use: {
@@ -63,16 +69,14 @@ export async function bundle({ entry, watch, output, plugins, html }: Params) {
             ]
         },
         resolve: {
-            extensions: [".mjs", ".ts", ".tsx", ".json", ".jsx", ".js"],
-            fallback: {
-                path: require.resolve("path-browserify")
-            }
+            extensions: [".mjs", ".ts", ".tsx", ".json", ".jsx", ".js"]
         },
+        externalsPresets: { node: true },
         stats: {
             errorDetails: true
         },
         plugins: [
-            // new BundleAnalyzerPlugin(),
+            new BundleAnalyzerPlugin(),
             new webpack.DefinePlugin(
                 plugins.reduce<Record<string, string>>((acc, plugin) => {
                     if (plugin.admin!.define) {

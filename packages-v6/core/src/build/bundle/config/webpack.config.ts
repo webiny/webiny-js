@@ -1,4 +1,3 @@
-import fs from "fs";
 import path from "path";
 import webpack from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
@@ -19,6 +18,7 @@ import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import WebpackBar from "webpackbar";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import { Paths } from "./paths";
+import getModules from "./modules";
 
 const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 const sassIncludePaths = [
@@ -58,13 +58,7 @@ interface BabelConfig {
 
 interface CreateWebpackConfigParams {
     paths: Paths;
-    options: {
-        logs: boolean;
-        overrides: {
-            babel?(config: BabelConfig): BabelConfig;
-            webpack?(config: webpack.Configuration): webpack.Configuration;
-        };
-    };
+    babelCustomizer?(config: BabelConfig): BabelConfig;
 }
 
 interface CreateWebpackConfig {
@@ -73,21 +67,16 @@ interface CreateWebpackConfig {
 
 export const createWebpackConfig: CreateWebpackConfig = (
     webpackEnv,
-    { paths, options }
+    { paths, babelCustomizer }
 ): webpack.Configuration => {
     const isEnvDevelopment = webpackEnv === "development";
     const isEnvProduction = webpackEnv === "production";
 
-    const modules = require("./modules")({ paths });
+    const modules = getModules({ paths });
 
-    const { logs, overrides } = options;
-    let babelCustomizer = overrides.babel;
     if (!babelCustomizer) {
         babelCustomizer = v => v;
     }
-
-    // Check if TypeScript is setup
-    const useTypeScript = fs.existsSync(paths.appTsConfig);
 
     // Variable used for enabling profiling in Production
     // passed into alias object. Uses a flag if passed into the build command
@@ -112,6 +101,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
     const env = getClientEnvironment(publicUrl);
 
     return {
+        target: "web",
         mode: isEnvProduction ? "production" : "development",
         // Stop compilation early in production
         bail: isEnvProduction,
@@ -126,6 +116,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
             // changing JS code would still trigger a refresh.
         ].filter(Boolean),
         output: {
+            clean: true,
             // The build folder.
             path: isEnvProduction ? paths.appBuild : undefined,
             // Add /* filename */ comments to generated require()s in the output.
@@ -236,14 +227,11 @@ export const createWebpackConfig: CreateWebpackConfig = (
             // https://github.com/facebook/create-react-app/issues/290
             // `web` extension prefixes have been added for better support
             // for React Native Web.
-            extensions: paths.moduleFileExtensions
-                .map(ext => `.${ext}`)
-                .filter(ext => useTypeScript || !ext.includes("ts")),
+            extensions: [".mjs", ".cjs", ".ts", ".tsx", ".json", ".jsx", ".js"],
             alias: {
                 // Support React Native Web
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
                 "react-native": require.resolve("react-native-web"),
-                "react/jsx-runtime": require.resolve("react/jsx-runtime.js"),
                 react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools
                 ...(isEnvProductionProfile && {
@@ -253,11 +241,9 @@ export const createWebpackConfig: CreateWebpackConfig = (
                 ...(modules.webpackAliases || {})
             },
             fallback: {
-                path: require.resolve("path-browserify"),
-                buffer: require.resolve("buffer/")
+                path: false
             }
         },
-
         module: {
             strictExportPresence: true,
             rules: [
@@ -441,19 +427,19 @@ export const createWebpackConfig: CreateWebpackConfig = (
                     },
                     isEnvProduction
                         ? {
-                            minify: {
-                                removeComments: true,
-                                collapseWhitespace: true,
-                                removeRedundantAttributes: true,
-                                useShortDoctype: true,
-                                removeEmptyAttributes: true,
-                                removeStyleLinkTypeAttributes: true,
-                                keepClosingSlash: true,
-                                minifyJS: true,
-                                minifyCSS: true,
-                                minifyURLs: true
-                            }
-                        }
+                              minify: {
+                                  removeComments: true,
+                                  collapseWhitespace: true,
+                                  removeRedundantAttributes: true,
+                                  useShortDoctype: true,
+                                  removeEmptyAttributes: true,
+                                  removeStyleLinkTypeAttributes: true,
+                                  keepClosingSlash: true,
+                                  minifyJS: true,
+                                  minifyCSS: true,
+                                  minifyURLs: true
+                              }
+                          }
                         : undefined
                 )
             ),
@@ -461,8 +447,8 @@ export const createWebpackConfig: CreateWebpackConfig = (
             // a network request.
             // https://github.com/facebook/create-react-app/issues/5358
             isEnvProduction &&
-            shouldInlineRuntimeChunk &&
-            new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
+                shouldInlineRuntimeChunk &&
+                new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
             // Makes some environment variables available in index.html.
             // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
             // <link rel="icon" href="%PUBLIC_URL%/favicon.ico">
@@ -486,12 +472,12 @@ export const createWebpackConfig: CreateWebpackConfig = (
             // See https://github.com/facebook/create-react-app/issues/240
             isEnvDevelopment && new CaseSensitivePathsPlugin(),
             isEnvProduction &&
-            new MiniCssExtractPlugin({
-                // Options similar to the same options in webpackOptions.output
-                // both options are optional
-                filename: `${STATIC_FOLDER}/css/[name].[contenthash:8].css`,
-                chunkFilename: `${STATIC_FOLDER}/css/[name].[contenthash:8].chunk.css`
-            }),
+                new MiniCssExtractPlugin({
+                    // Options similar to the same options in webpackOptions.output
+                    // both options are optional
+                    filename: `${STATIC_FOLDER}/css/[name].[contenthash:8].css`,
+                    chunkFilename: `${STATIC_FOLDER}/css/[name].[contenthash:8].chunk.css`
+                }),
             // Generate an asset manifest file with the following content:
             // - "files" key: Mapping of all asset filenames to their corresponding
             //   output file so that tools can pick it up without having to parse
@@ -518,30 +504,35 @@ export const createWebpackConfig: CreateWebpackConfig = (
                 }
             }),
 
-            new ESLintPlugin({
-                extensions: ["js", "mjs", "jsx", "ts", "tsx"],
-                formatter: require.resolve("react-dev-utils/eslintFormatter"),
-                eslintPath: require.resolve("eslint"),
-                context: paths.appSrc,
-                // ESLint class options
-                cwd: paths.appPath,
-                resolvePluginsRelativeTo: __dirname,
-                baseConfig: {
-                    extends: [require.resolve("eslint-config-react-app/base")]
-                }
+            new webpack.IgnorePlugin({
+                checkResource(resource) {
+                    return resource === "./webiny";
+                },
             }),
+
+            // new ESLintPlugin({
+            //     extensions: ["js", "mjs", "jsx", "ts", "tsx"],
+            //     formatter: require.resolve("react-dev-utils/eslintFormatter"),
+            //     eslintPath: require.resolve("eslint"),
+            //     context: paths.appSrc,
+            //     // ESLint class options
+            //     cwd: paths.appPath,
+            //     resolvePluginsRelativeTo: __dirname,
+            //     baseConfig: {
+            //         extends: [require.resolve("eslint-config-react-app/base")]
+            //     }
+            // }),
 
             // TypeScript type checking
-            useTypeScript &&
-            new ForkTsCheckerWebpackPlugin({
-                typescript: {
-                    configFile: paths.appTsConfig,
-                    typescriptPath: require.resolve("typescript")
-                },
-                async: isEnvDevelopment
-            }),
+            // new ForkTsCheckerWebpackPlugin({
+            //     typescript: {
+            //         configFile: paths.appTsConfig,
+            //         typescriptPath: require.resolve("typescript")
+            //     },
+            //     async: isEnvDevelopment
+            // }),
 
-            logs && new WebpackBar({ name: path.basename(paths.appPath) })
+            new WebpackBar({ name: path.basename(paths.appPath) })
         ].filter(Boolean),
 
         // Turn off performance processing because we utilize

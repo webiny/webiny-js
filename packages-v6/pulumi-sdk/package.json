@@ -9,10 +9,6 @@
   "description": "A simple Node.js Pulumi SDK.",
   "author": "Webiny Ltd",
   "license": "MIT",
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
   "dependencies": {
     "@pulumi/aws": "^4.10.0",
     "@pulumi/pulumi": "^3.24.1",

@@ -3,10 +3,12 @@ process.env.NODE_PATH = process.cwd();
 const Module = require("module");
 const timeStart = process.hrtime();
 
-require("ts-node").register();
+require("ts-node").register({
+    dir: process.cwd()
+});
+
 const { runCli } = require("./cli.ts");
 (async () => {
-    console.log("Run CLI...");
     runCli().then(() => {
         const timeEnd = process.hrtime(timeStart);
         const cache = Object.keys(Module._cache);
