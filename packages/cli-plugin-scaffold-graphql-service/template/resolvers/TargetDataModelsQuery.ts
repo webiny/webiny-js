@@ -22,7 +22,7 @@ interface ListTargetDataModelsParams {
 
 interface ListTargetDataModelsResponse {
     data: TargetDataModelEntity[];
-    meta: { limit: number; after: string; before: string };
+    meta: { limit: number; after: string | null; before: string | null };
 }
 
 interface TargetDataModelsQuery {
@@ -30,11 +30,24 @@ interface TargetDataModelsQuery {
     listTargetDataModels(params: ListTargetDataModelsParams): Promise<ListTargetDataModelsResponse>;
 }
 
+interface TargetDataModelsQueryParams {
+    limit?: number;
+    reverse?: boolean;
+    gt?: string | number;
+    lt?: string | number;
+}
+
+interface TargetDataModelsMetaParams {
+    limit: number;
+    after: string | null;
+    before: string | null;
+}
+
 /**
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetDataModelsQuery
+export default class TargetDataModelsQueryImplementation
     extends TargetDataModelsResolver
     implements TargetDataModelsQuery
 {
@@ -62,8 +75,13 @@ export default class TargetDataModelsQuery
      */
     async listTargetDataModels({ limit = 10, sort, after, before }: ListTargetDataModelsParams) {
         const PK = this.getPK();
-        const query = { limit, reverse: sort !== "createdOn_ASC", gt: undefined, lt: undefined };
-        const meta = { limit, after: null, before: null };
+        const query: TargetDataModelsQueryParams = {
+            limit,
+            reverse: sort !== "createdOn_ASC",
+            gt: undefined,
+            lt: undefined
+        };
+        const meta: TargetDataModelsMetaParams = { limit, after: null, before: null };
 
         // The query is constructed differently, depending on the "before" or "after" values.
         if (before) {

@@ -13,15 +13,18 @@ module.exports.rootPackageJson = rootPackageJson;
 
 let packagesCache;
 
+const isFolder = p => fs.statSync(p).isDirectory();
+
 module.exports.getPackages = (args = {}) => {
     if (packagesCache) {
         return packagesCache;
     }
 
     packagesCache = getPackages()
+        .filter(isFolder)
         .map(path => {
             if (args.includes) {
-                if (!path.includes(args.includes)) {
+                if (!args.includes.some(p => path.includes(p))) {
                     return null;
                 }
             }
