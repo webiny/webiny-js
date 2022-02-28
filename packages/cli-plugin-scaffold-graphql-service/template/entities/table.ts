@@ -11,7 +11,7 @@ import { Table } from "dynamodb-toolbox";
  * https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api#essential-files
  */
 export default new Table({
-    name: process.env.DB_TABLE,
+    name: process.env.DB_TABLE as string,
     partitionKey: "PK",
     sortKey: "SK",
     entityField: "TYPE",

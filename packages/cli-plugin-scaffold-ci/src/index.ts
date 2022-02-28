@@ -11,7 +11,10 @@ interface Input {
     [key: string]: any;
 }
 
-const runHookCallback = async (hookName: string, args: CliCommandScaffoldCallableArgs<Input>[]) => {
+const runHookCallback = async (
+    hookName: string,
+    args: CliCommandScaffoldCallableArgs<Input>[]
+): Promise<void> => {
     const [{ input, context }] = args;
     const plugin = context.plugins
         .byType<CliPluginsScaffoldCi<Input>>("cli-plugin-scaffold-ci")

@@ -11,7 +11,7 @@ import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObject
 // new `ApolloLinkPlugin` plugins, that can modify different properties within each HTTP request
 // Check out the `plugins/apolloLinks.ts` file to see what `ApolloLinkPlugin` we're registering.
 
-export const createApolloClient = ({ uri }) => {
+export const createApolloClient = ({ uri }: { uri: string }) => {
     return new ApolloClient({
         link: ApolloLink.from([
             // This will process `ApolloLinkPlugin` plugins on each HTTP request.
