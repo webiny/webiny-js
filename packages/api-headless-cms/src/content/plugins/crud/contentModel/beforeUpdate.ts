@@ -118,11 +118,12 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
         });
 
         try {
+            console.log(schema);
             gql(schema);
         } catch (err) {
             throw new WebinyError({
-                data: { modelId: model.modelId },
-                code: "INVALID_MODEL_FIELDS",
+                data: { modelId: model.modelId, sdl: err.source.body },
+                code: "INVALID_MODEL_SDL",
                 message: [
                     `Model "${model.modelId}" is not safe for storage!`,
                     `Please review your field definitions and try again.`
