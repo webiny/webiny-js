@@ -39,7 +39,6 @@
     "@webiny/utils": "^5.23.1",
     "@webiny/validation": "^5.23.1",
     "boolean": "^3.0.2",
-    "code-frame": "^5.0.0",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
     "dot-prop": "^6.0.1",

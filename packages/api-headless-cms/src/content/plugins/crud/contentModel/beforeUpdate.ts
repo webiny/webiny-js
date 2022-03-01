@@ -13,8 +13,6 @@ import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 import { createManageSDL } from "~/content/plugins/schema/createManageSDL";
 import { GraphQLError } from "graphql";
-// @ts-ignore
-import codeFrame from "code-frame";
 
 const defaultTitleFieldId = "id";
 
@@ -76,10 +74,6 @@ interface AssignBeforeModelUpdateParams {
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source.body;
 
-    // Extract invalid part of the schema in form of a babel code frame
-    const [location] = err.locations;
-    const sdlSection = codeFrame(err.source.body, location.line, location.column, { frameSize: 5 });
-
     // Find the invalid type
     const { line: lineNumber } = err.locations[0];
     const sdlLines = sdl.split("\n");
@@ -106,7 +100,7 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     }
 
     return {
-        data: { modelId: model.modelId, sdl: sdlSection, invalidField },
+        data: { modelId: model.modelId, sdl, invalidField },
         code: "INVALID_MODEL_DEFINITION",
         message: [`Model "${model.modelId}" was not saved!`, message].join("\n")
     };
