@@ -165,10 +165,8 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
             throw new Error(error);
         }
 
-        await setData(() => {
-            setPristine(true);
-            return data;
-        }, false);
+        await setData(() => data, false);
+        setPristine(true);
         return response;
     };
 
