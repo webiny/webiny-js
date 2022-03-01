@@ -17,7 +17,7 @@ export const getIdentity: GetIdentity = ({ identityType, token }) => {
     // If first name and last name is not present, we end up with an empty string.
     const { given_name = null, family_name = null, sub: id = null, email = null } = token;
 
-    const displayName = [given_name, family_name].filter(Boolean).join(" ").trim() || null;
+    const displayName = [given_name, family_name].filter(Boolean).join(" ").trim() || "";
 
     return {
         id,

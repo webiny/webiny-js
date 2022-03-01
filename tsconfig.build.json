@@ -29,7 +29,8 @@
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
-    "strictFunctionTypes": true
+    "strictFunctionTypes": true,
+    "strict": true
   },
   "exclude": [
     "node_modules",
