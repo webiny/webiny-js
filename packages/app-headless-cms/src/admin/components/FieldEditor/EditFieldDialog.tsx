@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { cloneDeep } from "lodash";
 import { css } from "emotion";
-import { Dialog, DialogContent, DialogTitle, DialogActions, DialogButton } from "@webiny/ui/Dialog";
+import { Dialog, DialogContent, DialogTitle, DialogActions } from "@webiny/ui/Dialog";
 import { Form } from "@webiny/form";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { i18n } from "@webiny/app/i18n";
@@ -20,6 +20,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -256,15 +257,9 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                     </Tab>
                                 </Tabs>
                             </DialogContent>
-                            <DialogActions
-                                style={{
-                                    justifyContent: "flex-end"
-                                }}
-                            >
-                                <div>
-                                    <DialogButton onClick={onClose}>{t`Cancel`}</DialogButton>
-                                    <DialogButton onClick={form.submit}>{t`Save`}</DialogButton>
-                                </div>
+                            <DialogActions>
+                                <ButtonDefault onClick={onClose}>{t`Cancel`}</ButtonDefault>
+                                <ButtonPrimary onClick={form.submit}>{t`Save Field`}</ButtonPrimary>
                             </DialogActions>
                         </>
                     );
