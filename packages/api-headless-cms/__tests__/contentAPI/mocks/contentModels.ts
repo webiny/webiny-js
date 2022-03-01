@@ -653,7 +653,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "No fields object",
-                fieldId: "noFieldsObject",
+                fieldId: "fieldsObject",
                 type: "object",
                 settings: {
                     layout: [[ids.field31]],
