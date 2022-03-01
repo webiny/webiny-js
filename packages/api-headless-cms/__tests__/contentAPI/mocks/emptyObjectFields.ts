@@ -1,29 +1,8 @@
 import { CmsModel } from "~/types";
 
 export const emptyObjectFields: Partial<CmsModel> = {
-    layout: [["nonestedfieldsobject"], ["T87zmyqoF"]],
+    layout: [["T87zmyqoF"]],
     fields: [
-        {
-            id: "nonestedfieldsobject",
-            multipleValues: false,
-            helpText: "",
-            label: "No fields object",
-            fieldId: "noFieldsObject",
-            type: "object",
-            settings: {
-                fields: []
-            },
-            validation: [],
-            listValidation: [],
-            placeholderText: "",
-            predefinedValues: {
-                enabled: false,
-                values: []
-            },
-            renderer: {
-                name: "renderer"
-            }
-        },
         {
             multipleValues: true,
             listValidation: [],

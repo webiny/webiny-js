@@ -5,9 +5,12 @@ import contentModels from "./mocks/contentModels";
 import categorySDL from "./snapshots/category.read";
 import productSDL from "./snapshots/product.read";
 import reviewSDL from "./snapshots/review.read";
+import { CmsModelFieldToGraphQLPlugin } from "~/types";
 
 describe("READ - ContentModel to SDL", () => {
-    const fieldTypePlugins = graphqlFieldPlugins().reduce((acc, pl) => {
+    const fieldTypePlugins = graphqlFieldPlugins().reduce<
+        Record<string, CmsModelFieldToGraphQLPlugin>
+    >((acc, pl) => {
         acc[pl.fieldType] = pl;
         return acc;
     }, {});

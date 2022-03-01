@@ -56,8 +56,12 @@ describe("Model - nested field", () => {
                 updateContentModel: {
                     data: null,
                     error: {
-                        code: "INVALID_MODEL_FIELDS",
-                        data: { modelId: "testModel" },
+                        code: "INVALID_MODEL_DEFINITION",
+                        data: {
+                            modelId: "testModel",
+                            sdl: expect.any(String),
+                            invalidField: "repeat"
+                        },
                         message: expect.any(String)
                     }
                 }
