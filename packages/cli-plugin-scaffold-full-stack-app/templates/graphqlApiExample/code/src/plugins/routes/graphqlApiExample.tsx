@@ -23,7 +23,7 @@ function GraphQLApiExample() {
     });
 
     const listQuery = useQuery(LIST_TARGET_DATA_MODELS);
-    const list = listQuery.data?.targetDataModels.listTargetDataModels.data;
+    const list: any[] = listQuery.data?.targetDataModels.listTargetDataModels.data;
 
     return (
         <Layout className={"graphql-api-example"}>

@@ -38,6 +38,7 @@
     "./packages/create-webiny-project",
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",
-    "./packages/tracking"
+    "./packages/tracking",
+    "./packages-v6/pb-editor"
   ]
 }

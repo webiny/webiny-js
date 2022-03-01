@@ -6,3 +6,4 @@
 idea.js
 scripts
 packages/ui/src/RichTextEditor/editorjs/**
+packages-v6/pb-editor/**
