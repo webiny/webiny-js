@@ -37,7 +37,7 @@ export class TypographyElement extends UIElement<TypographyElementConfig> {
         this.config.typography = typography;
     }
 
-    public render(props: any): React.ReactNode {
+    public override render(props: any): React.ReactNode {
         return <Typography use={this.getTypography()}>{super.render(props)}</Typography>;
     }
 }

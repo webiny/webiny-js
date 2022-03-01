@@ -46,13 +46,13 @@ export interface AutoCompleteProps extends Omit<AutoCompleteBaseProps, "onChange
     noResultFound?: React.ReactNode;
 }
 
-type State = {
+interface State {
     inputValue: string;
-};
-
-function Spinner() {
-    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
+
+const Spinner: React.FC = () => {
+    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
+};
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
@@ -101,7 +101,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         }
     };
 
-    state: State = {
+    public override state: State = {
         inputValue: ""
     };
 
@@ -110,7 +110,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
      */
     downshift: any = React.createRef();
 
-    componentDidUpdate(previousProps: any) {
+    public override componentDidUpdate(previousProps: AutoCompleteProps) {
         const { value, options } = this.props;
         const { value: previousValue } = previousProps;
 
@@ -224,7 +224,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         );
     }
 
-    public render() {
+    public override render() {
         const {
             className,
             options,

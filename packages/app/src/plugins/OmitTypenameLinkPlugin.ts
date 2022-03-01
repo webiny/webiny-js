@@ -9,7 +9,7 @@ function omitTypename(key: string, value: string): string | undefined {
  * This link removes `__typename` from the variables being sent to the API.
  */
 export class OmitTypenameLinkPlugin extends ApolloLinkPlugin {
-    public createLink(): ApolloLink {
+    public override createLink(): ApolloLink {
         return new ApolloLink((operation, forward) => {
             if (operation.variables) {
                 operation.variables = JSON.parse(JSON.stringify(operation.variables), omitTypename);

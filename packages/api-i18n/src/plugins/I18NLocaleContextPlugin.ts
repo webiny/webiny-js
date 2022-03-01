@@ -7,7 +7,7 @@ export interface I18NLocaleContextPluginParams {
     };
 }
 export class I18NLocaleContextPlugin extends Plugin {
-    public static readonly type: string = "i18n-locale-context";
+    public static override readonly type: string = "i18n-locale-context";
 
     private readonly params: I18NLocaleContextPluginParams;
 

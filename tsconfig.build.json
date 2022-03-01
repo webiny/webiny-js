@@ -30,7 +30,15 @@
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "strict": true
+    "noImplicitOverride": true,
+    "strict": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "suppressExcessPropertyErrors": false,
+    "keyofStringsOnly": false,
+    "experimentalDecorators": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false
   },
   "exclude": [
     "node_modules",

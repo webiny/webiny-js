@@ -12,7 +12,7 @@ interface InstallationPluginConfig {
 }
 
 export abstract class InstallationPlugin extends Plugin {
-    public static readonly type = "fm.install";
+    public static override readonly type: string = "fm.install";
     private readonly _config: Partial<InstallationPluginConfig>;
 
     constructor(config?: Partial<InstallationPluginConfig>) {

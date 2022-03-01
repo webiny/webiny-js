@@ -104,7 +104,7 @@ export class SingleImageUpload extends React.Component<SingleImageUploadProps, S
         }
     };
 
-    public state: State = {
+    public override state: State = {
         loading: false,
         error: null,
         imageEditor: {
@@ -136,7 +136,7 @@ export class SingleImageUpload extends React.Component<SingleImageUploadProps, S
         this.setState({ error });
     };
 
-    public render() {
+    public override render() {
         const {
             className,
             value,

@@ -17,7 +17,7 @@ interface Config {
 }
 
 export class PermissionRendererPlugin extends Plugin {
-    public static readonly type = "admin-app-permissions-renderer";
+    public static override readonly type: string = "admin-app-permissions-renderer";
     private readonly _config: Partial<Config>;
 
     public constructor(config?: Config) {

@@ -110,7 +110,7 @@ class Image extends React.Component<ImageProps> {
         );
     }
 
-    render() {
+    public override render() {
         const { value, disabled, containerStyle } = this.props;
         return (
             <div className={classNames({ disabled })} style={containerStyle}>

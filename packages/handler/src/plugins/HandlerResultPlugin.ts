@@ -6,7 +6,7 @@ export interface HandlerResultCallable<T extends Context = Context> {
 }
 
 export class HandlerResultPlugin<T extends Context = Context> extends Plugin {
-    public static readonly type: string = "handler-result";
+    public static override readonly type: string = "handler-result";
 
     private readonly _callable: HandlerResultCallable<T>;
 

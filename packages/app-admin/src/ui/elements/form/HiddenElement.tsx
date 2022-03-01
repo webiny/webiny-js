@@ -12,7 +12,7 @@ export class HiddenElement extends FormFieldElement {
         this.applyPlugins(HiddenElement);
     }
 
-    public render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`HiddenElement must be placed inside of a FormElement.`);
         }

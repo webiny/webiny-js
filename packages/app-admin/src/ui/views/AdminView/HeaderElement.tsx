@@ -15,7 +15,7 @@ enum ElementID {
 }
 
 class HeaderElementRenderer extends UIRenderer<HeaderElement> {
-    public render({ next }: UIRenderParams<HeaderElement>): React.ReactNode {
+    public override render({ next }: UIRenderParams<HeaderElement>): React.ReactNode {
         return <TopAppBarPrimary fixed>{next()}</TopAppBarPrimary>;
     }
 }

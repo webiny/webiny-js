@@ -66,7 +66,7 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
         return this.config.onClick;
     }
 
-    public render(props: TRenderProps): React.ReactElement {
+    public override render(props: TRenderProps): React.ReactElement {
         const Component = BUTTONS[this.getType(props)];
         const onClick = this.getOnClick();
 

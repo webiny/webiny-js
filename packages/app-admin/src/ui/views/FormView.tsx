@@ -48,7 +48,9 @@ export class FormView extends UIView<FormViewConfig> {
         this.applyPlugins(FormView);
     }
 
-    public addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
+    public override addElement<TElement extends UIElement = UIElement>(
+        element: TElement
+    ): TElement {
         if (element.id === "form" || element.id === "formContainer") {
             return super.addElement(element);
         }

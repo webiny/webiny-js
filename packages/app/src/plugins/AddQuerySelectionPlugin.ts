@@ -17,7 +17,7 @@ export class AddQuerySelectionPlugin extends ApolloLinkPlugin {
         this.config = config;
     }
 
-    public createLink(): ApolloLink {
+    public override createLink(): ApolloLink {
         return new ApolloLink((operation, forward) => {
             if (operation.operationName !== this.config.operationName) {
                 return forward(operation);

@@ -217,7 +217,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         }
     };
 
-    public state: State = {
+    public override state: State = {
         inputValue: "",
         multipleSelectionPage: 0,
         multipleSelectionSearch: "",
@@ -577,7 +577,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         );
     }
 
-    public render() {
+    public override render() {
         const {
             props,
             props: {

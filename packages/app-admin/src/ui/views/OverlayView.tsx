@@ -113,7 +113,7 @@ export class OverlayView extends UIView {
         return this.getElement("overlayContent") as HeaderElement;
     }
 
-    public render(props: UIViewProps): React.ReactNode {
+    public override render(props: UIViewProps): React.ReactNode {
         const { isVisible } = this.getOverlayHook();
         return (
             <Transition

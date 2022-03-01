@@ -6,7 +6,7 @@ interface Config {
 }
 
 export class RoutePlugin extends Plugin {
-    public static readonly type = "route";
+    public static override readonly type: string = "route";
     private _config: Partial<Config>;
 
     constructor(config?: Config) {

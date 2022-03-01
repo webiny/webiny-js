@@ -15,7 +15,7 @@ export interface CmsEntryFieldFilterPathPluginParams {
     path: string | CreatePathCallable;
 }
 export class CmsEntryFieldFilterPathPlugin extends Plugin {
-    public static readonly type: string = "cms-field-filter-path";
+    public static override readonly type: string = "cms-field-filter-path";
 
     private readonly config: CmsEntryFieldFilterPathPluginParams;
 

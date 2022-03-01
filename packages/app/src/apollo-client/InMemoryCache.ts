@@ -5,7 +5,7 @@ import { AddQuerySelectionPlugin } from "../plugins/AddQuerySelectionPlugin";
 import { ApolloLinkPlugin } from "../plugins/ApolloLinkPlugin";
 
 export class InMemoryCache extends BaseInMemoryCache {
-    private transformPlugins: AddQuerySelectionPlugin[];
+    private readonly transformPlugins: AddQuerySelectionPlugin[];
 
     constructor(config?: InMemoryCacheConfig) {
         super(config);
@@ -15,7 +15,7 @@ export class InMemoryCache extends BaseInMemoryCache {
             .filter(pl => pl instanceof AddQuerySelectionPlugin);
     }
 
-    public transformDocument(document: DocumentNode): DocumentNode {
+    public override transformDocument(document: DocumentNode): DocumentNode {
         // @ts-ignore
         const operationName = document.definitions[0].name.value;
 

@@ -6,7 +6,7 @@ export interface ContextPluginCallable<T extends Context = Context> {
 }
 
 export class ContextPlugin<T extends Context = Context> extends Plugin {
-    public static readonly type: string = "context";
+    public static override readonly type: string = "context";
     private readonly _callable: ContextPluginCallable<T>;
 
     constructor(callable: ContextPluginCallable<T>) {

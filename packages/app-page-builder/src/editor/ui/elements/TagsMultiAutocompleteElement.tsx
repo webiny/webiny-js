@@ -13,7 +13,7 @@ export class TagsMultiAutocompleteElement extends FormFieldElement {
         this.applyPlugins(TagsMultiAutocompleteElement);
     }
 
-    public render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`TagsMultiAutocompleteElement must be placed inside of a FormElement.`);
         }

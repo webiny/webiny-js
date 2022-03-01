@@ -42,7 +42,7 @@ export interface TabsProps {
     "data-testid"?: string;
 }
 
-interface State {
+interface TabsState {
     activeTabIndex: number;
 }
 
@@ -75,8 +75,8 @@ const getTabsChildren = (children: React.ReactNode): TabProps[] => {
 /**
  * Use Tabs component to display a list of choices, once the handler is triggered.
  */
-export class Tabs extends React.Component<TabsProps, State> {
-    state: State = {
+export class Tabs extends React.Component<TabsProps, TabsState> {
+    public override state: TabsState = {
         activeTabIndex: 0
     };
 
@@ -146,7 +146,7 @@ export class Tabs extends React.Component<TabsProps, State> {
         );
     }
 
-    public render() {
+    public override render() {
         const activeIndex =
             this.props.value !== undefined ? this.props.value : this.state.activeTabIndex;
 

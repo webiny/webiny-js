@@ -49,7 +49,7 @@ export class Dialog extends React.Component<DialogProps> {
         }
     }
 
-    render() {
+    public override render() {
         const { children, ...props } = this.props;
         const container = this.container;
 

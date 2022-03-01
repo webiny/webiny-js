@@ -20,7 +20,7 @@ type Props = FormComponentProps & {
 };
 
 class CheckboxGroup extends React.Component<Props> {
-    render() {
+    public override render() {
         const { description, label, validation = { isValid: null, message: null } } = this.props;
 
         return (

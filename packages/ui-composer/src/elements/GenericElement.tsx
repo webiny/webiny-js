@@ -14,7 +14,7 @@ export class GenericElement<TRenderProps = any> extends UIElement {
 
         this._render = render;
     }
-    render(props: TRenderProps) {
+    public override render(props: TRenderProps): React.ReactNode {
         return typeof this._render === "function" ? this._render(props) : super.render(props);
     }
 }

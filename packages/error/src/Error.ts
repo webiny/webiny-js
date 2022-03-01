@@ -5,8 +5,8 @@ export interface ErrorOptions<TData = any> {
 }
 
 export default class WError<TData = any> extends Error {
-    public message = "";
-    public code: string | null = null;
+    public override readonly message: string = "";
+    public readonly code: string | null = null;
     public data: TData | null = null;
 
     public constructor(message: string | ErrorOptions<TData>, code?: string, data?: TData) {

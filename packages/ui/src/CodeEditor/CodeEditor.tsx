@@ -37,7 +37,7 @@ class CodeEditor extends React.Component<Props> {
         this.props.onChange && this.props.onChange(value);
     };
 
-    public render() {
+    public override render() {
         const { value, description, validation, theme = "github", ...rest } = this.props;
 
         const { isValid: validationIsValid, message: validationMessage } = validation || {};

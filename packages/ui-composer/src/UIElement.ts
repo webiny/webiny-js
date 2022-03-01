@@ -411,7 +411,7 @@ export interface ApplyFunction<TElement> {
 }
 
 export class UIElementPlugin<TElement extends UIElement> extends Plugin {
-    public static readonly type: string = "UIElementPlugin";
+    public static override readonly type: string = "UIElementPlugin";
     private readonly _apply: ApplyFunction<TElement>;
     private readonly _elementClass: Class<TElement>;
 
@@ -422,7 +422,7 @@ export class UIElementPlugin<TElement extends UIElement> extends Plugin {
         this._apply = apply;
     }
 
-    get type(): string {
+    override get type(): string {
         return `UIElementPlugin.${this._elementClass.prototype.constructor.name}`;
     }
 

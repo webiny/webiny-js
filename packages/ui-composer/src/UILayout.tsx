@@ -165,7 +165,7 @@ interface ApplyFunction<TElement> {
 }
 
 export class UILayoutPlugin<TLayout extends UILayout = UILayout> extends Plugin {
-    public static readonly type: string = "UILayoutPlugin";
+    public static override readonly type: string = "UILayoutPlugin";
     private readonly _apply: ApplyFunction<TLayout>;
 
     constructor(apply: ApplyFunction<TLayout>) {
@@ -174,7 +174,7 @@ export class UILayoutPlugin<TLayout extends UILayout = UILayout> extends Plugin 
         this._apply = apply;
     }
 
-    apply(element: TLayout) {
+    public apply(element: TLayout) {
         this._apply(element);
     }
 }

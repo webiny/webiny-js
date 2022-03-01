@@ -72,8 +72,9 @@ export const contentModelEditorReducer: Reducer = (prev: State, action: Action):
 
         case "data":
             return { ...prev, data: data as CmsModel };
+        default:
+            return prev;
     }
-    return prev;
 };
 
 /**

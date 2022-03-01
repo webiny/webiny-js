@@ -43,15 +43,15 @@ interface Props {
     style?: React.CSSProperties;
 }
 
-type State = {
+interface ConfirmationDialogState {
     show: boolean;
     loading: boolean;
-};
+}
 
 /**
  * Use ConfirmationDialog component to display a list of choices, once the handler is triggered.
  */
-class ConfirmationDialog extends React.Component<Props, State> {
+class ConfirmationDialog extends React.Component<Props, ConfirmationDialogState> {
     static defaultProps = {
         title: "Confirmation",
         message: "Are you sure you want to continue?",
@@ -69,20 +69,20 @@ class ConfirmationDialog extends React.Component<Props, State> {
         }
     };
 
-    state = {
+    public override state = {
         show: false,
         loading: false
     };
 
-    componentDidMount() {
+    public override componentDidMount() {
         this.__isMounted = true;
     }
 
-    componentWillUnmount() {
+    public override componentWillUnmount() {
         this.__isMounted = false;
     }
 
-    showConfirmation = (onAccept?: () => void, onCancel?: () => void) => {
+    private readonly showConfirmation = (onAccept?: () => void, onCancel?: () => void) => {
         this.callbacks = {
             onAccept,
             onCancel
@@ -90,11 +90,11 @@ class ConfirmationDialog extends React.Component<Props, State> {
         this.setState({ show: true });
     };
 
-    hideConfirmation = () => {
+    private readonly hideConfirmation = () => {
         this.setState({ show: false });
     };
 
-    onAccept = async () => {
+    private readonly onAccept = async () => {
         const { onAccept } = this.callbacks;
         if (typeof onAccept === "function") {
             this.setState({ loading: true });
@@ -105,14 +105,14 @@ class ConfirmationDialog extends React.Component<Props, State> {
         }
     };
 
-    onCancel = async () => {
+    private readonly onCancel = async () => {
         const { onCancel } = this.callbacks;
         if (typeof onCancel === "function") {
             await onCancel();
         }
     };
 
-    render() {
+    public override render() {
         return (
             <React.Fragment>
                 <Dialog

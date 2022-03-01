@@ -122,7 +122,7 @@ export interface FilePluginParams {
 }
 
 export class FilePlugin extends Plugin {
-    public static readonly type = "fm.file";
+    public static override readonly type: string = "fm.file";
     private readonly _params: FilePluginParams;
 
     public constructor(params?: FilePluginParams) {

@@ -22,7 +22,7 @@ class Snackbar extends React.Component<Props> {
         }
     }
 
-    public render(): React.ReactElement {
+    public override render(): React.ReactElement {
         return <RmwcSnackbar {...this.props} />;
     }
 }

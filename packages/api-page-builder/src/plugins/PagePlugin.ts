@@ -16,7 +16,7 @@ interface Config<TPage extends Page = Page> {
 }
 
 export class PagePlugin<TPage extends Page = Page> extends Plugin {
-    public static readonly type = "pb.page";
+    public static override readonly type: string = "pb.page";
     private readonly _config: Config<TPage>;
 
     constructor(config?: Config<TPage>) {

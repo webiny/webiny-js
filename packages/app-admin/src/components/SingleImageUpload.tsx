@@ -63,7 +63,7 @@ export interface SingleImageUploadProps extends FormComponentProps {
 }
 
 export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
-    render() {
+    public override render() {
         const {
             className,
             onChange,

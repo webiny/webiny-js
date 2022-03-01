@@ -40,7 +40,11 @@ const classes = {
     })
 };
 
-interface Props extends FormComponentProps {
+interface ColorPickerState {
+    showColorPicker: boolean;
+}
+
+interface ColorPickerProps extends FormComponentProps {
     // Component label.
     label?: string;
 
@@ -54,8 +58,8 @@ interface Props extends FormComponentProps {
 /**
  * Use ColorPicker component to display a list of choices, once the handler is triggered.
  */
-class ColorPicker extends React.Component<Props> {
-    state = {
+class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
+    public override state = {
         showColorPicker: false
     };
 
@@ -72,7 +76,7 @@ class ColorPicker extends React.Component<Props> {
         onChange && onChange(color.hex);
     };
 
-    render() {
+    public override render() {
         const { value, label, disable, description, validation } = this.props;
 
         let backgroundColorStyle = {};

@@ -16,7 +16,7 @@ function createLink(plugin: ApolloLinkPlugin) {
 export class ApolloDynamicLink extends ApolloLink {
     private cache = new Map();
 
-    request(operation: Operation, forward: NextLink) {
+    public override request(operation: Operation, forward: NextLink) {
         const linkPlugins = plugins.byType<ApolloLinkPlugin>("apollo-link");
 
         if (!linkPlugins.length) {

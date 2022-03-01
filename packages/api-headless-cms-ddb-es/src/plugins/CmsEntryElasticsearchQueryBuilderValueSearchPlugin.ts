@@ -25,7 +25,7 @@ export interface CmsEntryElasticsearchQueryBuilderValueSearchPluginParams {
     transform: TransformCallable;
 }
 export class CmsEntryElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
-    public static readonly type: string = "cms-elastic-search-query-builder-value-search";
+    public static override readonly type: string = "cms-elastic-search-query-builder-value-search";
 
     private readonly config: CmsEntryElasticsearchQueryBuilderValueSearchPluginParams;
 

@@ -20,7 +20,7 @@ type Props = FormComponentProps & {
 };
 
 class RadioGroup extends React.Component<Props> {
-    render() {
+    public override render() {
         const { description, label, validation } = this.props;
 
         const { isValid: validationIsValid, message: validationMessage } = validation || {};

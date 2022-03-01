@@ -18,7 +18,7 @@ export interface CmsEntryElasticsearchQueryModifierPluginConfig {
 }
 
 export class CmsEntryElasticsearchQueryModifierPlugin extends ElasticsearchQueryModifierPlugin<ModifyQueryParams> {
-    public static readonly type: string = "cms.elasticsearch.modifier.query.entry";
+    public static override readonly type: string = "cms.elasticsearch.modifier.query.entry";
 
     public readonly modelId?: string;
 

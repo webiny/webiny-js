@@ -83,7 +83,7 @@ export class SplitView extends UIView {
         return this.getElement("rightPanel") as SplitViewPanelElement;
     }
 
-    public render(props?: any): React.ReactNode {
+    public override render(props?: any): React.ReactNode {
         return (
             <Grid className={classNames(Array.from(this._classNames.values()))}>
                 {super.render(props)}

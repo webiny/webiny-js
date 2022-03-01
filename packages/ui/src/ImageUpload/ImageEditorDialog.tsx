@@ -11,7 +11,7 @@ import {
     DialogOnClose
 } from "../Dialog";
 
-interface Props {
+interface ImageEditorDialogProps {
     dialogZIndex?: number;
     onClose?: DialogOnClose;
     open?: boolean;
@@ -25,6 +25,10 @@ interface Props {
 
     // For testing purposes.
     "data-testid"?: string;
+}
+
+interface ImageEditorDialogState {
+    imageProcessing: boolean;
 }
 
 const imageEditorDialog = css({
@@ -43,10 +47,10 @@ const imageEditorDialog = css({
     }
 });
 
-class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolean }> {
+class ImageEditorDialog extends React.Component<ImageEditorDialogProps, ImageEditorDialogState> {
     public imageEditor = React.createRef<ImageEditor>();
 
-    public render() {
+    public override render() {
         const { src, options, onAccept, open, dialogZIndex, ...dialogProps } = this.props;
 
         return (

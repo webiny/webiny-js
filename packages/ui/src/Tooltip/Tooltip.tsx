@@ -34,7 +34,9 @@ interface State {
  * Use Tooltip component to display a list of choices, once the handler is triggered.
  */
 class Tooltip extends React.Component<TooltipProps, State> {
-    state: State = { tooltipIsOpen: false };
+    public override state = {
+        tooltipIsOpen: false
+    };
 
     onVisibleChange = (visible?: boolean) => {
         this.setState({
@@ -42,7 +44,7 @@ class Tooltip extends React.Component<TooltipProps, State> {
         });
     };
 
-    render() {
+    public override render() {
         return (
             <RcTooltip
                 /**

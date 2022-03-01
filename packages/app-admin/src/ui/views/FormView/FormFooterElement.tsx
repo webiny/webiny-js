@@ -21,7 +21,7 @@ export class FormFooterElement extends UIElement {
         this.useGrid(false);
     }
 
-    public render(props: UiElementRenderProps) {
+    public override render(props: UiElementRenderProps) {
         return <ButtonWrapper>{super.render(props)}</ButtonWrapper>;
     }
 }

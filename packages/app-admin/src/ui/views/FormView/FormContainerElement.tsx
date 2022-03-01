@@ -21,7 +21,7 @@ export class FormContainerElement extends UIElement<FormContainerConfig> {
         this.useGrid(false);
     }
 
-    public render(props: UiElementRenderProps) {
+    public override render(props: UiElementRenderProps) {
         const children = super.render(props);
 
         return (

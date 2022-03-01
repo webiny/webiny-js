@@ -5,7 +5,7 @@ import { GroupAutocomplete } from "~/components/GroupAutocomplete";
 import { FormFieldElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormFieldElement";
 
 export class GroupAutocompleteElement extends InputElement {
-    render(props: FormFieldElementRenderProps): React.ReactElement {
+    public override render(props: FormFieldElementRenderProps): React.ReactElement {
         const { formProps } = props;
         const { Bind } = formProps as FormRenderPropParams;
         const validators = this.config.validators;

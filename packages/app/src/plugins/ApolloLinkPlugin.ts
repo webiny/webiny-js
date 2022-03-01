@@ -7,7 +7,7 @@ interface ApolloLinkFactory {
 }
 
 export class ApolloLinkPlugin extends Plugin {
-    public static readonly type = "apollo-link";
+    public static override readonly type: string = "apollo-link";
     public readonly cacheKey;
     private readonly factory?: ApolloLinkFactory;
     private cache?: ApolloLink;
@@ -18,7 +18,7 @@ export class ApolloLinkPlugin extends Plugin {
         this.cacheKey = nanoid();
     }
 
-    createLink(): ApolloLink {
+    public createLink(): ApolloLink {
         if (this.cache) {
             return this.cache;
         }

@@ -47,7 +47,7 @@ export class FormHeaderElement extends UIElement<FormHeaderConfig> {
         this.addElement(element);
     }
 
-    public render(props: FormElementRenderProps): React.ReactNode {
+    public override render(props: FormElementRenderProps): React.ReactNode {
         const { icon, getTitle } = this.config;
 
         return (

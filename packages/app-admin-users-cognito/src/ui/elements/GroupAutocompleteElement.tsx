@@ -7,7 +7,7 @@ import {
 import { GroupAutocomplete } from "@webiny/app-security-access-management/components/GroupAutocomplete";
 
 export class GroupAutocompleteElement extends InputElement {
-    render(
+    public override render(
         this: GroupAutocompleteElement,
         { formProps }: InputElementRenderProps
     ): React.ReactElement {

@@ -11,7 +11,7 @@ export interface CmsEntryElasticsearchFieldPluginParams
     modelId?: string;
 }
 export class CmsEntryElasticsearchFieldPlugin extends ElasticsearchFieldPlugin {
-    public static readonly type: string = "elasticsearch.fieldDefinition.cms.entry";
+    public static override readonly type: string = "elasticsearch.fieldDefinition.cms.entry";
 
     public readonly modelId?: string;
 

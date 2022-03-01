@@ -64,7 +64,7 @@ class NodeRendererDefault extends React.Component<NodeRendererDefaultProps> {
         canSave: false
     };
 
-    render() {
+    public override render() {
         const {
             scaffoldBlockPxWidth,
             toggleChildrenVisibility,

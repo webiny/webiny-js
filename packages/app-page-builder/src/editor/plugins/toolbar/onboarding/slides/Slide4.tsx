@@ -43,14 +43,14 @@ const hoverStyleSlide4 = css({
     animationDuration: "2s"
 });
 
-type Props = {
+interface Slide4Props {
     currentSlide: number;
-};
+}
 
-class Slide4 extends React.Component<Props> {
-    slideNumber = 4;
+class Slide4 extends React.Component<Slide4Props> {
+    public readonly slideNumber = 4;
 
-    editorContent = () => {
+    private readonly editorContent = (): React.ReactElement => {
         return (
             <React.Fragment>
                 <BlockMock className={blockMockStyleSlide4} />
@@ -63,7 +63,7 @@ class Slide4 extends React.Component<Props> {
         );
     };
 
-    render() {
+    public override render() {
         return (
             <SlideOutline
                 title={"Columns"}

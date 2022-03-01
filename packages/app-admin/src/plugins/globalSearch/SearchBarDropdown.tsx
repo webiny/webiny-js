@@ -26,7 +26,7 @@ interface SearchBarDropdownProps {
     context: SearchBarDropdownPropsContext;
 }
 export default class SearchBarDropdown extends React.Component<SearchBarDropdownProps> {
-    componentDidMount() {
+    public override componentDidMount() {
         const {
             context: {
                 downshift: { current: downshift },
@@ -41,7 +41,7 @@ export default class SearchBarDropdown extends React.Component<SearchBarDropdown
         downshift.openMenu();
     }
 
-    render() {
+    public override render() {
         const {
             context: {
                 downshift: { current: downshift },

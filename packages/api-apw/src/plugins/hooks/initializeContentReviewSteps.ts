@@ -20,8 +20,9 @@ export const getWorkflowIdFromContent = async (
         case ApwContentTypes.CMS_ENTRY:
             const getWorkflowFromCmsEntry = apw.getWorkflowGetter(ApwContentTypes.CMS_ENTRY);
             return getWorkflowFromCmsEntry(params.id, params.settings);
+        default:
+            return null;
     }
-    return null;
 };
 
 export const initializeContentReviewSteps = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {

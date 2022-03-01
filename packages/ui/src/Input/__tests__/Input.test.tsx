@@ -26,13 +26,13 @@ function setup(props: SetupProps = {}) {
           };
 
     class Test extends React.Component {
-        state = { value: "init-value" };
+        public override state = { value: "init-value" };
 
         onChange = (value: string) => {
             this.setState({ value });
         };
 
-        render() {
+        public override render() {
             return (
                 <Input
                     {...props}

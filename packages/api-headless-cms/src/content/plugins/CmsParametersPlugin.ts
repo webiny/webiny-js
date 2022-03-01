@@ -11,7 +11,7 @@ export interface CmsParametersPluginCallable {
 }
 
 export class CmsParametersPlugin extends Plugin {
-    public static readonly type: string = "cms-parameters-plugin";
+    public static override readonly type: string = "cms-parameters-plugin";
 
     private readonly callable: CmsParametersPluginCallable;
 

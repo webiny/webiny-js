@@ -47,7 +47,7 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
         }
     }
 
-    render() {
+    public override render() {
         const {
             onChange = () => {
                 return void 0;

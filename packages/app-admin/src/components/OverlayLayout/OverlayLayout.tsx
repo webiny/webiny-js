@@ -59,11 +59,11 @@ interface OverlayLayoutProps {
     style?: React.CSSProperties;
 }
 
-interface State {
+interface OverlayLayoutState {
     isVisible: boolean;
 }
 
-export class OverlayLayout extends React.Component<OverlayLayoutProps, State> {
+export class OverlayLayout extends React.Component<OverlayLayoutProps, OverlayLayoutState> {
     constructor(props: OverlayLayoutProps) {
         super(props);
         document.body.classList.add(noScroll);
@@ -73,7 +73,7 @@ export class OverlayLayout extends React.Component<OverlayLayoutProps, State> {
         onExited: noop
     };
 
-    state: State = {
+    public override state: OverlayLayoutState = {
         isVisible: true
     };
 
@@ -84,13 +84,13 @@ export class OverlayLayout extends React.Component<OverlayLayoutProps, State> {
         }
     }
 
-    public componentWillUnmount(): void {
+    public override componentWillUnmount(): void {
         if (OverlayView.openedViews === 0) {
             document.body.classList.remove(noScroll);
         }
     }
 
-    public render() {
+    public override render() {
         const { onExited, barLeft, barMiddle, barRight, children, style, ...rest } = this.props;
 
         return (

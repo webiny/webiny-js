@@ -40,7 +40,7 @@ class Carousel extends React.Component<Props> {
         "transitionMode"
     ];
 
-    render() {
+    public override render() {
         return (
             <NukaCarousel
                 {...pick(this.props, Carousel.nukaProps)}

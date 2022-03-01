@@ -18,7 +18,7 @@ export interface ValueTransformPluginParams {
 }
 
 export class ValueTransformPlugin extends Plugin {
-    public static readonly type = "dynamodb.value.transform";
+    public static override readonly type: string = "dynamodb.value.transform";
 
     private readonly _params: ValueTransformPluginParams;
 

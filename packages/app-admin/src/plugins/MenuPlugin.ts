@@ -34,7 +34,7 @@ interface Config {
 }
 
 export class MenuPlugin extends Plugin {
-    public static readonly type = "admin-menu";
+    public static override readonly type: string = "admin-menu";
     private readonly _config: Partial<Config>;
 
     public constructor(config?: Config) {

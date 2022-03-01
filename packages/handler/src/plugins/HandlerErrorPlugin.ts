@@ -6,7 +6,7 @@ export interface HandlerErrorCallable<T extends Context = Context> {
 }
 
 export class HandlerErrorPlugin<T extends Context = Context> extends Plugin {
-    public static readonly type: string = "handler-error";
+    public static override readonly type: string = "handler-error";
 
     private readonly _callable: HandlerErrorCallable<T>;
 

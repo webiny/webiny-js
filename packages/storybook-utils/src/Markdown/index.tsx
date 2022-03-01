@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default class Markdown extends React.Component<Props> {
-    render() {
+    public override render(): React.ReactNode {
         const options = {
             html: true,
             linkTarget: "_parent",

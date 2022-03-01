@@ -14,7 +14,7 @@ export class HeaderSectionRightElement extends UIElement {
         this.useGrid(false);
     }
 
-    public render(props: UiElementRenderProps): React.ReactNode {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         return (
             <TopAppBarSection className={edgeBars} alignEnd>
                 {super.render(props)}

@@ -55,7 +55,6 @@ const PublishFormButton: React.FC = () => {
                                             "Missing response data on Publish Revision Mutation."
                                         );
                                         return;
-                                        return;
                                     }
                                     const { data: revision, error } =
                                         response.data.formBuilder.publishRevision || {};

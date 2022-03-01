@@ -47,7 +47,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         this._hookDefinitions[key] = hook;
     }
 
-    public applyPlugins(viewClass: Class<UIView>): void {
+    public override applyPlugins(viewClass: Class<UIView>): void {
         const type = `UIViewPlugin.${viewClass.prototype.constructor.name}`;
         const elPlugins = plugins.byType<UIViewPlugin<any>>(type);
         elPlugins
@@ -97,11 +97,11 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         this._events.set(event, callbacks);
     }
 
-    async isRendered() {
+    public override async isRendered() {
         return pWaitFor(() => this._isRendered, { interval: 50 });
     }
 
-    public render(props?: UIViewProps): React.ReactNode {
+    public override render(props?: UIViewProps): React.ReactNode {
         // We want to keep track of props that triggered the render cycle.
         this._props = props;
 
@@ -126,7 +126,7 @@ export interface ApplyFunction<TView> {
 type Class<T> = new (...args: any[]) => T;
 
 export class UIViewPlugin<TView extends UIView> extends Plugin {
-    public static readonly type: string = "UIViewPlugin";
+    public static override readonly type: string = "UIViewPlugin";
     private readonly _apply: ApplyFunction<TView>;
     private readonly _viewClass: Class<TView>;
 
@@ -137,7 +137,7 @@ export class UIViewPlugin<TView extends UIView> extends Plugin {
         this._viewClass = viewClass;
     }
 
-    get type(): string {
+    override get type(): string {
         return `UIViewPlugin.${this._viewClass.prototype.constructor.name}`;
     }
 

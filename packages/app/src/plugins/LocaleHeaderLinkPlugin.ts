@@ -25,7 +25,7 @@ export class LocaleHeaderLinkPlugin extends ApolloLinkPlugin {
         this.locale = locale;
     }
 
-    public createLink(): ApolloLink {
+    public override createLink(): ApolloLink {
         return setContext((_, { headers }) => {
             if (this.locale) {
                 return {

@@ -8,7 +8,7 @@ interface HeaderTitleElementConfig extends UIElementConfig {
 }
 
 export class HeaderTitleElementRenderer extends UIRenderer<HeaderTitleElement> {
-    public render({ element }: UIRenderParams<HeaderTitleElement>): React.ReactNode {
+    public override render({ element }: UIRenderParams<HeaderTitleElement>): React.ReactNode {
         return (
             <Typography
                 style={{ margin: "0 auto", color: "var(--mdc-theme-on-surface)" }}

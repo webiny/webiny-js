@@ -16,7 +16,7 @@ export interface AttributePluginParams {
 }
 
 export abstract class AttributePlugin extends Plugin {
-    public static readonly type = "db.dynamodb.attribute";
+    public static override readonly type: string = "db.dynamodb.attribute";
     private readonly _entity: string;
     private readonly _attribute: string;
     private readonly _params: DefinitionParams;

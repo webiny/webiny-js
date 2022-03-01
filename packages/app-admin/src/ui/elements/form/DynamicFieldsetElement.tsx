@@ -77,7 +77,7 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
         this.config.createEmpty = cb;
     }
 
-    public render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`DynamicFieldsetElement must be placed inside of a FormElement.`);
         }

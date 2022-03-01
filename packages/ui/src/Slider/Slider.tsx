@@ -53,7 +53,7 @@ class Slider extends React.Component<Props> {
         this.props.onInput && this.props.onInput(e.detail.value);
     };
 
-    render() {
+    public override render() {
         const { value, label, description, validation } = this.props;
 
         let sliderValue = value;

@@ -60,7 +60,7 @@ export declare class FoundationComponent<
         [key: string]: FoundationElement<any, any>;
     };
     constructor(props: any);
-    componentDidMount(): void;
+    public override componentDidMount(): void;
     componentDidUpdate(prevProps: FoundationPropsT<P>): void;
     componentWillUnmount(): void;
     createElement<ElementType extends HTMLElement = HTMLElement>(

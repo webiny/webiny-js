@@ -15,7 +15,7 @@ export interface ValueFilterPluginParams {
     matches: ValueFilterPluginParamsMatches;
 }
 export class ValueFilterPlugin extends Plugin {
-    public static readonly type = "dynamodb.value.filter";
+    public static override readonly type: string = "dynamodb.value.filter";
     private readonly _params: ValueFilterPluginParams;
 
     public get operation(): string {

@@ -11,11 +11,11 @@ import "cropperjs/dist/cropper.css";
 let cropper: Cropper;
 
 class RenderForm extends React.Component<any, any> {
-    state = {
+    public override state = {
         rangeInput: 0
     };
 
-    render() {
+    public override render() {
         return (
             <div style={{ width: "500px", margin: "0 auto" }}>
                 <Slider

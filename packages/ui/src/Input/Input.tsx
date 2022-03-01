@@ -91,7 +91,7 @@ export class Input extends React.Component<InputProps> {
         onBlur && onBlur(e);
     };
 
-    render() {
+    public override render() {
         const {
             autoFocus,
             value,

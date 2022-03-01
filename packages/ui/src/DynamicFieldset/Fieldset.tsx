@@ -126,7 +126,7 @@ class Fieldset extends React.Component<FieldsetProps> {
         );
     }
 
-    public render() {
+    public override render() {
         const { description, validation = { isValid: null } } = this.props;
 
         return (

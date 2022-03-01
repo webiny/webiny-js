@@ -50,7 +50,9 @@ export class NavigationMenuElement<
         this.applyPlugins(NavigationMenuElement);
     }
 
-    public addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
+    public override addElement<TElement extends UIElement = UIElement>(
+        element: TElement
+    ): TElement {
         super.addElement(element);
         this.runSorters();
         return element;

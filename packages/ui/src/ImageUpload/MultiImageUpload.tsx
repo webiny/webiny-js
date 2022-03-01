@@ -90,7 +90,7 @@ class MultiImageUpload extends React.Component<MultiImageUploadProps, State> {
         }
     };
 
-    public state: State = {
+    public override state: State = {
         errors: undefined,
         selectedImages: {},
         loading: false,
@@ -157,7 +157,7 @@ class MultiImageUpload extends React.Component<MultiImageUploadProps, State> {
         onChange(images);
     };
 
-    public render() {
+    public override render() {
         const {
             value,
             validation,

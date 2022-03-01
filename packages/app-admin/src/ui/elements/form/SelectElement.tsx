@@ -30,7 +30,7 @@ export class SelectElement extends FormFieldElement<SelectElementConfig> {
         return this.config.options;
     }
 
-    public render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`SelectElement must be placed inside of a FormElement.`);
         }

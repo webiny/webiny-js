@@ -24,7 +24,7 @@ class Switch extends React.Component<Props> {
         this.props.onChange && this.props.onChange((e.target as any).checked);
     };
 
-    render() {
+    public override render() {
         const { value, description, validation } = this.props;
 
         const { isValid: validationIsValid, message: validationMessage } = validation || {};

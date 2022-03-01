@@ -37,9 +37,12 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
     };
 
     private delay: number | null = null;
-    public readonly state: DelayedOnChangeState = { value: "" };
 
-    public componentDidMount() {
+    public override readonly state: DelayedOnChangeState = {
+        value: ""
+    };
+
+    public override componentDidMount() {
         this.setState({ value: this.props.value });
     }
 
@@ -62,7 +65,7 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
         ) as unknown as number;
     };
 
-    render(): React.ReactNode {
+    public override render(): React.ReactNode {
         const { children, ...other } = this.props;
         const newProps: Omit<DelayedOnChangeProps, "children"> = {
             ...other,

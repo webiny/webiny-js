@@ -21,12 +21,12 @@ class ErrorBoundary extends React.Component<Props, State> {
         };
     }
 
-    public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.log("An error occurred while rendering a page element:");
         console.log(error, errorInfo);
     }
 
-    public render() {
+    public override render() {
         if (this.state.hasError) {
             // You can render any custom fallback UI
             return <h1>Something went wrong.</h1>;

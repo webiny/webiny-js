@@ -8,7 +8,7 @@ import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px
 import { FormElementMessage } from "~/FormElementMessage";
 import { SyntheticEvent } from "react";
 
-type Props = FormComponentProps & {
+type TagsProps = FormComponentProps & {
     /**
      * Component label.
      */
@@ -55,7 +55,7 @@ type Props = FormComponentProps & {
     autoFocus?: boolean;
 };
 
-interface State {
+interface TagsState {
     inputValue: string;
 }
 
@@ -81,12 +81,12 @@ const tagsStyle = css({
     }
 });
 
-export class Tags extends React.Component<Props, State> {
-    state: State = {
+export class Tags extends React.Component<TagsProps, TagsState> {
+    public override state = {
         inputValue: ""
     };
 
-    render() {
+    public override render() {
         const { validation, value, disabled, onChange, description, ...otherInputProps } =
             this.props;
 

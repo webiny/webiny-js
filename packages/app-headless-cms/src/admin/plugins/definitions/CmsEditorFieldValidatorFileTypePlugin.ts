@@ -9,7 +9,7 @@ export interface Settings {
     fileType: "all" | "image" | "document" | string;
 }
 export class CmsEditorFieldValidatorFileTypePlugin extends Plugin {
-    public static readonly type: string = "cms-editor-field-validator-fileType";
+    public static override readonly type: string = "cms-editor-field-validator-fileType";
 
     private readonly config: Config;
     private _settings: Settings | undefined;

@@ -31,7 +31,7 @@ class Checkbox extends React.Component<Props> {
         this.props.onChange && this.props.onChange((e.target as any).checked);
     };
 
-    public render() {
+    public override render() {
         const { value, label, disabled, indeterminate, description, validation, onClick } =
             this.props;
 

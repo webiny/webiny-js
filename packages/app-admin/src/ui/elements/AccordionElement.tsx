@@ -27,7 +27,7 @@ export class AccordionItemElement extends UIElement<Item> {
         this.config.description = description;
     }
 
-    public render(props: UiElementRenderProps): React.ReactNode {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         const { open, ...rest } = this.config;
         const isOpened = typeof open === "function" ? open(props) : open;
         return (
@@ -57,7 +57,7 @@ export class AccordionElement extends UIElement<Config> {
         return this.getElement(id) as AccordionItemElement;
     }
 
-    public render(props: UiElementRenderProps): React.ReactNode {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         /**
          * Figure out correct way to have props.children typed.
          * TODO @ts-refactor

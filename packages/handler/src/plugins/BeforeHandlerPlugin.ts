@@ -6,7 +6,7 @@ export interface BeforeHandlerCallable<T extends Context = Context> {
 }
 
 export class BeforeHandlerPlugin<T extends Context = Context> extends Plugin {
-    public static readonly type: string = "before-handler";
+    public static override readonly type: string = "before-handler";
     private readonly _callable: BeforeHandlerCallable<T>;
 
     constructor(callable: BeforeHandlerCallable<T>) {
