@@ -113,6 +113,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 tag_and_in: [String!]
                 id_in: [ID!]
                 id: ID
+                createdBy: ID
             }
 
             type FmQuery {
