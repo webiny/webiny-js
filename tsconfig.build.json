@@ -38,7 +38,8 @@
     "keyofStringsOnly": false,
     "experimentalDecorators": true,
     "allowUnusedLabels": false,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    "useUnknownInCatchVariables": false
   },
   "exclude": [
     "node_modules",

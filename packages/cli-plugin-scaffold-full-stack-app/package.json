@@ -37,7 +37,7 @@
     "@webiny/plugins": "^5.23.1",
     "@webiny/project-utils": "^5.23.1",
     "rimraf": "^3.0.2",
-    "typescript": "4.3.2"
+    "typescript": "4.4.4"
   },
   "scripts": {
     "build": "yarn webiny run build",
