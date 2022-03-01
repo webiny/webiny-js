@@ -656,7 +656,32 @@ const models: CmsModel[] = [
                 fieldId: "noFieldsObject",
                 type: "object",
                 settings: {
-                    fields: []
+                    layout: [[ids.field31]],
+                    fields: [
+                        {
+                            id: ids.field31,
+                            multipleValues: false,
+                            helpText: "",
+                            label: "Text",
+                            type: "text",
+                            fieldId: "text",
+                            validation: [
+                                {
+                                    name: "required",
+                                    message: "This field is required"
+                                }
+                            ],
+                            listValidation: [],
+                            placeholderText: "placeholder text",
+                            predefinedValues: {
+                                enabled: false,
+                                values: []
+                            },
+                            renderer: {
+                                name: "renderer"
+                            }
+                        }
+                    ]
                 },
                 validation: [],
                 listValidation: [],

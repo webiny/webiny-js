@@ -50,14 +50,15 @@ const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name
             layout: model.layout
         }
     });
+
     if (updateResponse.errors) {
         console.error(`[setupContentModel] ${updateResponse.errors[0].message}`);
-        process.exit(1);
+        process.exit();
     } else if (updateResponse.data.updateContentModel.error) {
         console.error(
             `[setupContentModel] ${updateResponse.data.updateContentModel.error.message}`
         );
-        process.exit(1);
+        process.exit();
     }
     return updateResponse.data.updateContentModel.data;
 };
@@ -66,10 +67,7 @@ export const setupContentModels = async (
     contentModelGroup: CmsGroup,
     modelsList: string[]
 ): Promise<Record<string, any>> => {
-    const items = modelsList.reduce((acc, m) => {
-        acc[m] = null;
-        return acc;
-    }, {});
+    const items = modelsList.reduce<Record<string, any>>((acc, m) => ({ ...acc, [m]: null }), {});
     for (const name in items) {
         if (items.hasOwnProperty(name) === false) {
             continue;
