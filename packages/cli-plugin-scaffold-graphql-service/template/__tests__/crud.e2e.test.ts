@@ -19,7 +19,7 @@ const query = async ({ query = "", variables = {} } = {}) => {
     return request(process.env.API_URL + "/graphql", query, variables);
 };
 
-let testTargetDataModels = [];
+let testTargetDataModels: any[] = [];
 
 describe("TargetDataModels CRUD tests (end-to-end)", () => {
     beforeEach(async () => {
@@ -33,7 +33,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
                             description: `TargetDataModel ${i}'s description.`
                         }
                     }
-                }).then(response => response.targetDataModels.createTargetDataModel)
+                }).then((response: any) => response.targetDataModels.createTargetDataModel)
             );
         }
     });
@@ -62,7 +62,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
         await query({
             query: LIST_TARGET_DATA_MODELS,
             variables: { limit: 3 }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.targetDataModels.listTargetDataModels).toMatchObject({
                 data: [targetDataModel2, targetDataModel1, targetDataModel0],
                 meta: {
@@ -84,7 +84,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
             variables: {
                 limit: 2
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.targetDataModels.listTargetDataModels).toMatchObject({
                 data: [targetDataModel2, targetDataModel0],
                 meta: {
@@ -103,7 +103,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
                     description: `TargetDataModel 0's description - UPDATED.`
                 }
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.targetDataModels.updateTargetDataModel).toEqual({
                 id: targetDataModel0.id,
                 title: "TargetDataModel 0 - UPDATED",
@@ -117,7 +117,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
             variables: {
                 id: targetDataModel0.id
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.targetDataModels.getTargetDataModel).toEqual({
                 id: targetDataModel0.id,
                 title: "TargetDataModel 0 - UPDATED",

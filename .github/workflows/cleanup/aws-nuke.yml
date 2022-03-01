@@ -18,6 +18,7 @@ accounts:
 resource-types:
   # These resource types will be destroyed.
   targets:
+    - APIGatewayV2API
     - S3Object
     - S3Bucket
     - CloudWatchLogsLogGroup

@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.23.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.0...v5.23.1-beta.0) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.23.0](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.1...v5.23.0) (2022-02-15)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.23.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.0...v5.23.0-beta.1) (2022-02-14)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add addEntryToListCache prop in UseContentEntryFormParams ([1cadcd9](https://github.com/webiny/webiny-js/commit/1cadcd9b7d6c95ae8df16881b98c3ec3dc6668d4))
+* **app-headless-cms:** add meta info for AutoComplete ([91f3b4a](https://github.com/webiny/webiny-js/commit/91f3b4a4e00c51bd6c62c96313126e64be2390e0))
+* **app-headless-cms:** typo in referenceMultipleModelsLabel ([001339c](https://github.com/webiny/webiny-js/commit/001339c7143a32f44e8fd17d1a7f52af9fbe2ac9))
+* **app-headless-cms:** update fetchPolicy for latest entries query ([d0a6b0f](https://github.com/webiny/webiny-js/commit/d0a6b0f6d1e4892a6baa84852711f20b21f5927a))
+* **app-headless-cms:** use newRevision id ([f4c4347](https://github.com/webiny/webiny-js/commit/f4c43477d4d8e3cd685f34d66cb7e962e7c408fa))
+* project tsconfig reference paths ([#2195](https://github.com/webiny/webiny-js/issues/2195)) ([1dc7f24](https://github.com/webiny/webiny-js/commit/1dc7f24fc1e23dec6b00ba6c526a00df59acfedd))
+
+
+### Features
+
+* **app-headless-cms:** add ability to create ref field value within the form ([b5fa10c](https://github.com/webiny/webiny-js/commit/b5fa10c7d1e2c3d4d64be889de935bc2a9495d21))
+* upgrade to tsconfig compilerOptions ([#2209](https://github.com/webiny/webiny-js/issues/2209)) ([31fd79d](https://github.com/webiny/webiny-js/commit/31fd79dd51eb35e65b47d1096caae2cec8e50789))
+
+
+
+
+
 ## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

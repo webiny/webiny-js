@@ -30,7 +30,7 @@ const sorters = [
     }
 ];
 
-const TargetDataModelsDataList = () => {
+const TargetDataModelsDataList: React.FC = () => {
     const {
         targetDataModels,
         loading,
@@ -59,7 +59,7 @@ const TargetDataModelsDataList = () => {
                 </ButtonSecondary>
             }
         >
-            {({ data }) => (
+            {({ data }: { data: any[] }) => (
                 <ScrollList>
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === currentTargetDataModelId}>

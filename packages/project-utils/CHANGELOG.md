@@ -3,6 +3,67 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+## [5.23.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.0...v5.23.1-beta.0) (2022-02-16)
+
+
+### Bug Fixes
+
+* **project-utils:** watch telemetry cwd path ([#2239](https://github.com/webiny/webiny-js/issues/2239)) ([84ecc22](https://github.com/webiny/webiny-js/commit/84ecc22da136c1f80bfb6667a6940d4ea3c5515c))
+
+
+
+
+
+# [5.23.0](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.1...v5.23.0) (2022-02-15)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.23.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.0...v5.23.0-beta.1) (2022-02-14)
+
+
+### Bug Fixes
+
+* **project-utils:** fix telemetry injection import [skip ci] ([f236a2e](https://github.com/webiny/webiny-js/commit/f236a2e8df402a69127e3a4374c0021288e61fed))
+
+
+
+
+
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* Add https to adiorc ([527bf1b](https://github.com/webiny/webiny-js/commit/527bf1b7d8e9c86f8d0ac97a19537ac338c940d7))
+* aws function name ([72e7a4a](https://github.com/webiny/webiny-js/commit/72e7a4ab665cadeb235810fdc6d4a72c67e3cced))
+* correct if statement ([a72f30f](https://github.com/webiny/webiny-js/commit/a72f30f41ce289b17ff418042c33538fc41a6b46))
+* remove duplicated function ([607ad8e](https://github.com/webiny/webiny-js/commit/607ad8ee675a519a9a0cc3785019dd237814ac8f))
+* rename handler and remove error catch ([db89663](https://github.com/webiny/webiny-js/commit/db8966339ae8f1d849206c89ef41175d24b05ba5))
+* telemetryFunction not firing ([af7ae1b](https://github.com/webiny/webiny-js/commit/af7ae1b924e0094f62e7e53486f071b8864b6bed))
+* **css-loader:** don't resolve inline assets and absolute paths ([a11a7d0](https://github.com/webiny/webiny-js/commit/a11a7d03e71bb002088db9d2a278800a31d72a98))
+
+
+### Features
+
+* add check on watch command ([a262b66](https://github.com/webiny/webiny-js/commit/a262b668ac85bb5997aac53f0fdc1f45f2f50744))
+* telemetry push feature ([8b6bac0](https://github.com/webiny/webiny-js/commit/8b6bac02bef9c1ec25310cacd0187199c7536b3a))
+
+
+
+
+
 ## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
 
 **Note:** Version bump only for package @webiny/project-utils
