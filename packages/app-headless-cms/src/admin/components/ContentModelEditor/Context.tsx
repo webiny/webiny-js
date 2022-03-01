@@ -23,7 +23,7 @@ export interface ContentModelEditorProviderContext {
     isPristine: boolean;
     getContentModel: (modelId: string) => Promise<FetchResult<GetCmsModelQueryResponse>>;
     saveContentModel: (
-        data?: Record<string, any>
+        data?: CmsModel
     ) => Promise<UpdateCmsModelMutationResponse["updateContentModel"]>;
     setData: (setter: (model: CmsModel) => void, saveContentModel?: boolean) => Promise<any>;
 }

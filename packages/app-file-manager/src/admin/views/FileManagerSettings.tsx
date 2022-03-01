@@ -21,6 +21,7 @@ import { MutationFunction, MutationResult } from "@apollo/react-common";
 
 const FileManagerSettings: React.FC = () => {
     const { showSnackbar } = useSnackbar();
+
     return (
         <Query query={graphql.GET_SETTINGS}>
             {({ data, loading: queryInProgress }: MutationResult<QueryGetSettingsResult>) => (
@@ -28,24 +29,26 @@ const FileManagerSettings: React.FC = () => {
                     {(update: MutationFunction, result: MutationResult) => {
                         const settings: Settings = get(data, "fileManager.getSettings.data") || {};
                         const { loading: mutationInProgress } = result;
+                        const onSubmit = async (data: Settings) => {
+                            await update({
+                                variables: {
+                                    data: {
+                                        uploadMinFileSize: parseFloat(data.uploadMinFileSize),
+                                        uploadMaxFileSize: parseFloat(data.uploadMaxFileSize)
+                                    }
+                                }
+                            });
+                            showSnackbar("Settings updated successfully.");
+                        };
                         return (
                             <CenteredView>
                                 <Form
                                     data={settings}
-                                    onSubmit={async (data: Settings) => {
-                                        await update({
-                                            variables: {
-                                                data: {
-                                                    uploadMinFileSize: parseFloat(
-                                                        data.uploadMinFileSize
-                                                    ),
-                                                    uploadMaxFileSize: parseFloat(
-                                                        data.uploadMaxFileSize
-                                                    )
-                                                }
-                                            }
-                                        });
-                                        showSnackbar("Settings updated successfully.");
+                                    onSubmit={data => {
+                                        /**
+                                         * We are positive that data is Settings
+                                         */
+                                        onSubmit(data as unknown as Settings);
                                     }}
                                 >
                                     {({ Bind, form }) => (

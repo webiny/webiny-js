@@ -79,7 +79,7 @@ interface ExportPageDialogProps {
     exportUrl: string;
 }
 
-const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = ({ exportUrl }) => {
+const ExportPageDialogMessage: React.FC<ExportPageDialogProps> = ({ exportUrl }) => {
     const { showSnackbar } = useSnackbar();
 
     return (

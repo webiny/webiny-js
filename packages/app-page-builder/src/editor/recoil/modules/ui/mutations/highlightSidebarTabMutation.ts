@@ -4,7 +4,7 @@ import { EventActionHandlerMutationActionCallable } from "~/types";
 export const highlightSidebarTabMutation: EventActionHandlerMutationActionCallable<
     SidebarAtomType,
     boolean
-> = (state, highlight: boolean) => {
+> = (state, highlight) => {
     return {
         ...state,
         highlightTab: highlight

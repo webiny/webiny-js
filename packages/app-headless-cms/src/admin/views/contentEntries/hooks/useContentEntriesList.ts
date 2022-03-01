@@ -101,10 +101,7 @@ export function useContentEntriesList() {
                 variables: {
                     after: meta.cursor
                 },
-                updateQuery: (
-                    prev: CmsEntriesListQueryResponse,
-                    result: { fetchMoreResult: CmsEntriesListQueryResponse }
-                ) => {
+                updateQuery: (prev: CmsEntriesListQueryResponse, result) => {
                     if (!result || !result.fetchMoreResult) {
                         return prev;
                     }

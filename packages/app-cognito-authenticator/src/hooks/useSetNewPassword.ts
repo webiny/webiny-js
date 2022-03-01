@@ -2,9 +2,13 @@ import { useCallback, useReducer } from "react";
 import Auth from "@aws-amplify/auth";
 import { useAuthenticator } from "./useAuthenticator";
 
-export interface SetNewPassword {
+export interface UseSetNewPasswordCallableParams {
+    code: string;
+    password: string;
+}
+export interface UseSetNewPassword {
     shouldRender: boolean;
-    setPassword(params: { code: string; password: string }): Promise<void>;
+    setPassword(params: UseSetNewPasswordCallableParams): Promise<void>;
     error: string | null;
     loading: boolean;
 }
@@ -22,7 +26,7 @@ interface SetPasswordParams {
     password: string;
 }
 
-export function useSetNewPassword(): SetNewPassword {
+export function useSetNewPassword(): UseSetNewPassword {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         error: null,
         loading: false

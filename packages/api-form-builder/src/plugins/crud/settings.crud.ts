@@ -94,12 +94,12 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             /**
              * Assign specific properties, just to be sure nothing else gets in the record.
              */
-            const settings: Settings = Object.keys(newSettings).reduce(
-                (collection, key: keyof Settings) => {
+            const settings = Object.keys(newSettings).reduce(
+                (collection, key) => {
                     if (newSettings[key] === undefined) {
                         return collection;
                     }
-                    collection[key] = newSettings[key];
+                    collection[key as keyof Settings] = newSettings[key];
                     return collection;
                 },
                 {

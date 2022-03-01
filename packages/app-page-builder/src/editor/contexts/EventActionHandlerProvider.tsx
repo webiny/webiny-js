@@ -18,8 +18,7 @@ import {
     PageAtomType,
     PluginsAtomType,
     UiAtomType,
-    RevisionsAtomType,
-    ElementsAtomType
+    RevisionsAtomType
 } from "../recoil/modules";
 
 import { PbState } from "../recoil/modules/types";
@@ -119,7 +118,7 @@ const isTrackedAtomChanged = (state: Partial<PbState>): boolean => {
     return false;
 };
 
-export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ children }) => {
+export const EventActionHandlerProvider: React.FC<any> = ({ children }) => {
     const apolloClient = useApolloClient();
     const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
     const setHighlightElementAtomValue = useSetRecoilState(highlightElementAtom);
@@ -175,7 +174,12 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
 
     const updateElements = useRecoilCallback(({ set }) => (elements: PbEditorElement[] = []) => {
         elements.forEach(item => {
-            set(elementsAtom(item.id), (prevValue: ElementsAtomType) => {
+            set(elementsAtom(item.id), prevValue => {
+                if (!prevValue) {
+                    return {
+                        ...item
+                    };
+                }
                 return {
                     ...prevValue,
                     ...item,
@@ -191,7 +195,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     });
 
     const getElementTree = async (
-        element: PbEditorElement,
+        element?: PbEditorElement,
         path: string[] = []
     ): Promise<PbEditorElement> => {
         if (!element) {
@@ -205,7 +209,10 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             type: element.type,
             data: element.data,
             elements: await Promise.all(
-                element.elements.map(async (child: string) => {
+                /**
+                 * We are positive that element.elements is array of strings.
+                 */
+                (element.elements as string[]).map(async child => {
                     return getElementTree((await getElementById(child)) as PbEditorElement, [
                         ...path
                     ]);

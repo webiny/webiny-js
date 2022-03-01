@@ -5,6 +5,7 @@ import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 import { SecurityContext } from "@webiny/api-security/types";
 
+export type LocaleKeys = "default" | "content";
 export interface I18NLocale {
     code: string;
     default: boolean;
@@ -29,7 +30,7 @@ export interface I18NContextObject {
     };
     defaultLocale?: string | null;
     acceptLanguage?: string | null;
-    getCurrentLocale: (localeContext?: string) => I18NLocale | null;
+    getCurrentLocale: (localeContext: LocaleKeys) => I18NLocale | null;
     getCurrentLocales: () => { context: string; locale: string | null }[];
     getDefaultLocale: () => I18NLocale | null;
     getLocales: () => I18NLocale[];
@@ -220,7 +221,7 @@ export interface I18NLocalesStorageOperations {
     getDefault: () => Promise<I18NLocaleData | null>;
     get: (code: string) => Promise<I18NLocaleData | null>;
     list: (
-        params?: I18NLocalesStorageOperationsListParams
+        params: I18NLocalesStorageOperationsListParams
     ) => Promise<I18NLocalesStorageOperationsListResponse>;
     create: (params: I18NLocalesStorageOperationsCreateParams) => Promise<I18NLocaleData>;
     update: (params: I18NLocalesStorageOperationsUpdateParams) => Promise<I18NLocaleData>;

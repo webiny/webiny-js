@@ -22,7 +22,7 @@ import {
 } from "./PublishPageButton/graphql";
 import usePermission from "../../../../hooks/usePermission";
 
-const PublishPageButton: React.FunctionComponent = () => {
+const PublishPageButton: React.FC = () => {
     const page = useRecoilValue(pageAtom);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();

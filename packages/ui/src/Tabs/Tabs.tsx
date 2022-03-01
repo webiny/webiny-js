@@ -46,9 +46,30 @@ interface State {
     activeTabIndex: number;
 }
 
-const disabledStyles = {
+const disabledStyles: Record<string, string | number> = {
     opacity: 0.5,
     pointerEvents: "none"
+};
+
+const getTabsChildren = (children: React.ReactNode): TabProps[] => {
+    const filteredTabs = React.Children.toArray(children).filter(
+        c => c !== null
+        /**
+         * TODO @ts-refactor
+         * Need to cast because TS is complaining due to differences between types that can be in ReactNode
+         */
+    ) as React.ReactElement<TabProps>[];
+
+    return filteredTabs.map(child => {
+        return {
+            label: child.props.label,
+            children: child.props.children,
+            icon: child.props.icon,
+            disabled: child.props.disabled,
+            style: child.props.style,
+            "data-testid": child.props["data-testid"]
+        };
+    });
 };
 
 /**
@@ -68,18 +89,7 @@ export class Tabs extends React.Component<TabsProps, State> {
     }
 
     public renderChildren(children: React.ReactNode, activeIndex: number) {
-        const tabs = React.Children.toArray(children)
-            .filter(c => c !== null)
-            .map((child: React.ReactElement<TabProps>) => {
-                return {
-                    label: child.props.label,
-                    children: child.props.children,
-                    icon: child.props.icon,
-                    disabled: child.props.disabled,
-                    style: child.props.style,
-                    "data-testid": child.props["data-testid"]
-                };
-            });
+        const tabs = getTabsChildren(children);
 
         const tabBar = (
             <TabBar

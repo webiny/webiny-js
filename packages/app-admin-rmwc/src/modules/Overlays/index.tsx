@@ -23,5 +23,9 @@ const OverlaysHOC = (Component: React.FC): React.FC => {
 };
 
 export const Overlays: React.FC = () => {
+    /**
+     * TODO @ts-refactor @pavel
+     */
+    // @ts-ignore
     return <Provider hoc={OverlaysHOC} />;
 };

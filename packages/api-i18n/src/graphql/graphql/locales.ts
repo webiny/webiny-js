@@ -5,7 +5,7 @@ import {
     ListResponse
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { I18NContext, LocalesCRUDCreate, LocalesCRUDUpdate } from "~/types";
+import { I18NContext } from "~/types";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
 import NotAuthorizedResponse from "@webiny/api-security/NotAuthorizedResponse";
@@ -135,7 +135,7 @@ export const createLocalesGraphQL = (): GraphQLSchemaPlugin<I18NContext> => {
             `,
             resolvers: {
                 I18NQuery: {
-                    getI18NLocale: async (_, args: { code: string }, context) => {
+                    getI18NLocale: async (_, args, context) => {
                         return resolve(() => context.i18n.locales.getLocale(args.code));
                     },
                     listI18NLocales: async (_, args, context) => {
@@ -150,19 +150,15 @@ export const createLocalesGraphQL = (): GraphQLSchemaPlugin<I18NContext> => {
                     getI18NInformation
                 },
                 I18NMutation: {
-                    createI18NLocale: async (_, args: { data: LocalesCRUDCreate }, context) => {
+                    createI18NLocale: async (_, args, context) => {
                         return resolve(() => context.i18n.locales.createLocale(args.data));
                     },
-                    updateI18NLocale: async (
-                        _,
-                        args: { code: string; data: LocalesCRUDUpdate },
-                        context
-                    ) => {
+                    updateI18NLocale: async (_, args, context) => {
                         return resolve(() =>
                             context.i18n.locales.updateLocale(args.code, args.data)
                         );
                     },
-                    deleteI18NLocale: async (_, args: { code: string }, context) => {
+                    deleteI18NLocale: async (_, args, context) => {
                         return resolve(() => context.i18n.locales.deleteLocale(args.code));
                     }
                 }

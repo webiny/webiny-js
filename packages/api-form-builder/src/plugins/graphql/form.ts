@@ -354,11 +354,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                getPublishedForm: async (
-                    _,
-                    args: { revision: string; parent: string },
-                    { formBuilder }
-                ) => {
+                getPublishedForm: async (_, args, { formBuilder }) => {
                     if (!args.revision && !args.parent) {
                         return new NotFoundResponse("Revision ID or Form ID missing.");
                     }
@@ -383,16 +379,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                     return new Response(form);
                 },
-                listFormSubmissions: async (
-                    _,
-                    args: {
-                        form: string;
-                        sort?: string[];
-                        limit?: number;
-                        after?: string;
-                    },
-                    { formBuilder }
-                ) => {
+                listFormSubmissions: async (_, args, { formBuilder }) => {
                     try {
                         const { form, ...options } = args;
                         const [submissions, meta] = await formBuilder.listFormSubmissions(

@@ -17,7 +17,7 @@ export type TabProps = RmwcTabProps & {
     "data-testid"?: string;
 };
 
-export const Tab = (props: TabProps) => {
+export const Tab: React.FC<TabProps> = props => {
     const { children, ...rest } = props;
     return <RmwcTab {...rest}>{children}</RmwcTab>;
 };

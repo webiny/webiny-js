@@ -44,12 +44,12 @@ const parseDateTime = (value?: string): State => {
     };
 };
 
-export interface Props {
+export interface DateTimeWithoutTimezoneProps {
     bind: BindComponentRenderProp;
     trailingIcon?: any;
     field: CmsEditorField;
 }
-export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
+export const DateTimeWithoutTimezone: React.FC<DateTimeWithoutTimezoneProps> = ({
     field,
     bind,
     trailingIcon

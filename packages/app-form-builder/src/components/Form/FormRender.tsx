@@ -43,7 +43,7 @@ interface FieldValidator {
 
 const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     const theme = useMemo(
-        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
         []
     );
 
@@ -209,7 +209,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         setTermsOfServiceAccepted: value => (termsOfServiceAccepted.current = value)
     });
 
-    const layoutProps: FormRenderPropsType = {
+    const layoutProps: FormRenderPropsType<FbFormSubmissionData> = {
         getFieldById,
         getFieldByFieldId,
         getDefaultValues,

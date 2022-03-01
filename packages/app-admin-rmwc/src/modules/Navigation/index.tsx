@@ -130,13 +130,16 @@ const SortedMenuItems: HigherOrderComponent<MenuItemsProps> = MenuItems => {
         return <MenuItems menuItems={[...menuItems].sort(menuSorter)} />;
     };
 };
-
+/**
+ * TODO @ts-refactor @pavel
+ * Remove all any and see what happens.
+ */
 export const Navigation: React.FC = () => {
     return (
         <Fragment>
             <Provider hoc={NavigationProvider} />
             <Compose component={NavigationSpec} with={NavigationImpl} />
-            <Compose component={MenuItems} with={SortedMenuItems} />
+            <Compose component={MenuItems as any} with={SortedMenuItems as any} />
             <Compose component={BrandSpec} with={BrandImpl} />
             <Compose
                 component={MenuItemRenderer}

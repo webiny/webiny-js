@@ -30,7 +30,7 @@ const useResponsiveClassName = (): UseResponsiveClassName => {
         });
     }, []);
 
-    const pageElementRef = React.useCallback((node: HTMLElement): void => {
+    const pageElementRef = React.useCallback((node: HTMLElement | null): void => {
         if (ref.current) {
             // Make sure to cleanup any events/references added to the last instance
             resizeObserver.disconnect();

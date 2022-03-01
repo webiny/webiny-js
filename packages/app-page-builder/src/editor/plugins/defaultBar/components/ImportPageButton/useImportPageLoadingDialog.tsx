@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import get from "lodash/get";
 import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -34,7 +34,7 @@ const MESSAGES: Record<string, string> = {
 interface ImportPageLoadingDialogContentProps {
     taskId: string;
 }
-const ImportPageLoadingDialogContent: FunctionComponent<ImportPageLoadingDialogContentProps> = ({
+const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentProps> = ({
     taskId
 }) => {
     const { showSnackbar } = useSnackbar();

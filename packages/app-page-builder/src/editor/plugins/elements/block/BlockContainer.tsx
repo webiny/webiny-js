@@ -109,7 +109,7 @@ const BlockContainer: React.FC<BlockContainerPropsType> = ({
                         />
                     </DropZone.Center>
                 )}
-                {elements.map((childId: string, index) => (
+                {(elements as string[]).map((childId, index) => (
                     <BlockContainerInnerWrapper
                         key={childId}
                         elementId={childId}

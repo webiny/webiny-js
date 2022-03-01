@@ -11,9 +11,9 @@ export type MultiListProps = {
     isSelected: (item: any) => boolean;
     select: (item: any) => void;
     isMultiSelected: (item: any) => boolean;
-    isNoneMultiSelected: (data: any[]) => boolean;
-    isAllMultiSelected: (data: any[]) => boolean;
-    multiSelectAll: (value: boolean, data: any[]) => void;
+    isNoneMultiSelected: (data: any[] | null) => boolean;
+    isAllMultiSelected: (data: any[] | null) => boolean;
+    multiSelectAll: (value: boolean, data: any[] | null) => void;
     getMultiSelected: () => any[];
     multiSelect: (items: Record<string, any> | Record<string, any>[], value?: boolean) => void;
 };
@@ -35,10 +35,10 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
     }
 
     const multiListProps: MultiListProps = {
-        multiSelect(items: Record<string, any>[], value): void {
-            if (!Array.isArray(items)) {
-                items = [items];
-            }
+        multiSelect(initialItems, value): void {
+            const items = Array.isArray(initialItems)
+                ? (initialItems as Record<string, any>[])
+                : [initialItems as Record<string, any>];
 
             const returnItems = [...multiSelectedItems];
 

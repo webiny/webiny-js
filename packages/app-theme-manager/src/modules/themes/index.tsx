@@ -126,6 +126,10 @@ interface ThemesModuleProps {
     themes?: ThemeSource[];
 }
 
+/**
+ * TODO @ts-refactor @pavel
+ * Provider.hoc
+ */
 export const ThemesModule: React.FC<ThemesModuleProps> = ({ themes = [] }) => {
     return (
         <Fragment>

@@ -32,7 +32,7 @@ interface ActionPropsType {
      * */
     closeOtherInGroup?: boolean;
 }
-const Action: React.FunctionComponent<ActionPropsType> = ({
+const Action: React.FC<ActionPropsType> = ({
     id,
     icon,
     onClick,

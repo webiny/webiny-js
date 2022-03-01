@@ -51,11 +51,11 @@ const Draggable: React.FC<DraggableProps> = props => {
             }
             return beginDrag(props, monitor);
         },
-        end(item: DragObjectWithType, monitor) {
+        end(item, monitor) {
             if (typeof endDrag !== "function") {
                 return endDrag as undefined;
             }
-            return endDrag(item, monitor);
+            return endDrag(item as unknown as DragObjectWithType, monitor);
         }
     });
 

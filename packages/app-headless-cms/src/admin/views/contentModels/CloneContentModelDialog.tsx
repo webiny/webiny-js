@@ -174,12 +174,15 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                         locale,
                         name: contentModel.name
                     }}
-                    onSubmit={async (data: CmsModel) => {
+                    onSubmit={data => {
                         setLoading(true);
-                        await createContentModelFrom({
+                        createContentModelFrom({
                             variables: {
                                 modelId: contentModel.modelId,
-                                data
+                                /**
+                                 * We know that data is CmsModel
+                                 */
+                                data: data as unknown as CmsModel
                             }
                         });
                     }}

@@ -248,14 +248,14 @@ export type FormRenderFbFormModelField = FbFormModelField & {
     validators: ((value: string) => Promise<boolean>)[];
 };
 
-export type FormRenderPropsType = {
+export type FormRenderPropsType<T = Record<string, any>> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
     getFields: () => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponent;
     TermsOfService: TermsOfServiceComponent;
-    submit: (data: Record<string, any>) => Promise<FormSubmitResponseType>;
+    submit: (data: T) => Promise<FormSubmitResponseType>;
     formData: FbFormModel;
 };
 

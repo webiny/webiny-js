@@ -86,7 +86,13 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
 
             return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
-        createResolver({ field }) {
+        /**
+         * TS is complaining about mixed types for createResolver.
+         * TODO @ts-refactor @pavel Maybe we should have a single createResolver method?
+         */
+        // @ts-ignore
+        createResolver(params) {
+            const { field } = params;
             // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
             const models = field.settings?.models || [];
             for (const item of models) {
@@ -169,7 +175,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 if (!revisions || revisions.length === 0) {
                     return null;
                 }
-                return { ...revisions[0], __typename: modelIdToTypeName.get(value.modelId) };
+                return {
+                    ...revisions[0],
+                    __typename: modelIdToTypeName.get(value.modelId)
+                };
             };
         },
         createSchema({ models }) {

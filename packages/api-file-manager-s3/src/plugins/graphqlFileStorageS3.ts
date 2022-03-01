@@ -3,18 +3,9 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import checkBasePermissions from "@webiny/api-file-manager/plugins/crud/utils/checkBasePermissions";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import getPresignedPostPayload from "../utils/getPresignedPostPayload";
-import { PresignedPostPayloadData } from "~/types";
 import WebinyError from "@webiny/error";
 
 const BATCH_UPLOAD_MAX_FILES = 20;
-
-interface GetPreSignedPostPayloadArgs {
-    data: PresignedPostPayloadData;
-}
-
-interface GetPreSignedPostPayloadsArgs {
-    data: PresignedPostPayloadData[];
-}
 
 const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
     type: "graphql-schema",
@@ -61,7 +52,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
         `,
         resolvers: {
             FmQuery: {
-                getPreSignedPostPayload: async (_, args: GetPreSignedPostPayloadArgs, context) => {
+                getPreSignedPostPayload: async (_, args, context) => {
                     try {
                         await checkBasePermissions(context, { rwd: "w" });
 
@@ -87,11 +78,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         });
                     }
                 },
-                getPreSignedPostPayloads: async (
-                    _,
-                    args: GetPreSignedPostPayloadsArgs,
-                    context
-                ) => {
+                getPreSignedPostPayloads: async (_, args, context) => {
                     await checkBasePermissions(context, { rwd: "w" });
 
                     const { data: files } = args;

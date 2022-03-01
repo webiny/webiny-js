@@ -14,6 +14,10 @@ export interface Config {
 
 const jwksCache = new Map<string, Record<string, any>[]>();
 
+interface VerifyResult {
+    token_use: string;
+}
+
 export interface Authenticator {
     (token: string): Record<string, any> | null;
 }
@@ -59,7 +63,12 @@ export const createAuthenticator =
         if (!jwk) {
             return null;
         }
-        const token = await verify(idToken, jwkToPem(jwk));
+        /**
+         * TODO @ts-refactor @pavel
+         * Figure out correct types for the verify method. Maybe write your own, without using utils.promisify?
+         */
+        // @ts-ignore
+        const token: VerifyResult = await verify(idToken, jwkToPem(jwk));
         if (token.token_use !== "id") {
             const error: any = new Error("idToken is invalid!");
             error.code = "SECURITY_COGNITO_INVALID_TOKEN";

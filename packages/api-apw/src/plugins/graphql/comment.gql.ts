@@ -129,9 +129,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             getComment: async (_, args, context) => {
                 return resolve(() => context.apw.comment.get(args.id));
             },
-            listComments: async (_, args: CmsEntryListParams, context) => {
+            listComments: async (_, args, context) => {
                 try {
-                    const [entries, meta] = await context.apw.comment.list(args);
+                    /**
+                     * We know that args is CmsEntryListParams.
+                     */
+                    const [entries, meta] = await context.apw.comment.list(
+                        args as unknown as CmsEntryListParams
+                    );
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);

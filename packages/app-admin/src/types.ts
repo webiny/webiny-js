@@ -72,7 +72,7 @@ export type AdminFileManagerFileTypePlugin = Plugin & {
     types?: string[];
     render(params: AdminFileManagerFileTypePluginRenderParams): React.ReactNode;
     fileDetails?: {
-        actions: Array<React.FunctionComponent | React.Component>;
+        actions: Array<React.FC | React.Component>;
     };
 };
 

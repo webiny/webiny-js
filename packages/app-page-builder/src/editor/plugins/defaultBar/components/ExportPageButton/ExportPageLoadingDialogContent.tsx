@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
@@ -25,7 +25,11 @@ const MESSAGES: Record<string, string> = {
     [PageImportExportTaskStatus.PENDING]: pendingMessage
 };
 
-const ExportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({ taskId }) => {
+interface ExportPageLoadingDialogContent {
+    taskId: string;
+}
+
+const ExportPageLoadingDialogContent: React.FC<ExportPageLoadingDialogContent> = ({ taskId }) => {
     const [completed, setCompleted] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
     const { showSnackbar } = useSnackbar();

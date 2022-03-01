@@ -58,7 +58,7 @@ export const createCategoryGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
             `,
             resolvers: {
                 PbQuery: {
-                    getCategory: async (_, args: { slug: string }, context) => {
+                    getCategory: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.getCategory(args.slug);
                         });
@@ -68,21 +68,17 @@ export const createCategoryGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    createCategory: async (_, args: { data: Record<string, any> }, context) => {
+                    createCategory: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.createCategory(args.data);
                         });
                     },
-                    updateCategory: async (
-                        _,
-                        args: { slug: string; data: Record<string, any> },
-                        context
-                    ) => {
+                    updateCategory: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.updateCategory(args.slug, args.data);
                         });
                     },
-                    deleteCategory: async (_, args: { slug: string }, context) => {
+                    deleteCategory: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.deleteCategory(args.slug);
                         });

@@ -362,7 +362,7 @@ export interface CmsEditorFieldValidatorPlugin extends Plugin {
     validator: CmsEditorFieldValidatorPluginValidator;
 }
 
-export type CmsEditorContentTab = React.FunctionComponent<{ activeTab: boolean }>;
+export type CmsEditorContentTab = React.FC<{ activeTab: boolean }>;
 
 // ------------------------------------------------------------------------------------------------------------
 export interface CmsEditorFieldOptionPlugin extends Plugin {

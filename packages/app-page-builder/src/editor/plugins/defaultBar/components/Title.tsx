@@ -40,7 +40,7 @@ const extractPageInfo = (page: PageAtomType): PageInfo => {
     };
 };
 
-const Title: React.FunctionComponent = () => {
+const Title: React.FC = () => {
     const handler = useEventActionHandler();
     const page = useRecoilValue(pageAtom);
     const { showSnackbar } = useSnackbar();

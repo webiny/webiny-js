@@ -1,10 +1,10 @@
 import { CmsFieldValueTransformer } from "~/types";
 import WebinyError from "@webiny/error";
 
-interface TransformerCallable {
-    (value?: string | number | Date): string | null;
+interface TransformerCallable<T> {
+    (value?: T): string | null;
 }
-const dateOnly: TransformerCallable = value => {
+const dateOnly: TransformerCallable<string> = value => {
     if (!value) {
         return null;
     }
@@ -58,7 +58,7 @@ const extractTime = (value?: string, def: string | null = null): string | null =
     return def;
 };
 
-const dateTimeWithTimezone: TransformerCallable = (value?: string) => {
+const dateTimeWithTimezone: TransformerCallable<string> = value => {
     if (!value) {
         return null;
     } else if (value.includes("T") === false) {
@@ -90,7 +90,7 @@ const dateTimeWithTimezone: TransformerCallable = (value?: string) => {
     return value.replace(initialDate, date).replace(initialTime, time);
 };
 
-const dateTimeWithoutTimezone: TransformerCallable = (value?: string): string | null => {
+const dateTimeWithoutTimezone: TransformerCallable<string> = (value): string | null => {
     if (!value) {
         return null;
     } else if (value.includes(" ") === false) {
@@ -107,14 +107,14 @@ const dateTimeWithoutTimezone: TransformerCallable = (value?: string): string | 
     }
 };
 
-const time: TransformerCallable = (value?: string) => {
+const time: TransformerCallable<string> = value => {
     if (!value) {
         return null;
     }
     return extractTime(value);
 };
 
-const transformers: Record<string, TransformerCallable> = {
+const transformers: Record<string, TransformerCallable<string>> = {
     time,
     date: dateOnly,
     dateTimeWithoutTimezone,
@@ -125,7 +125,7 @@ export default (): CmsFieldValueTransformer => ({
     type: "cms-field-value-transformer",
     name: "cms-field-value-transformer-date",
     fieldType: "datetime",
-    transform: (value, field) => {
+    transform: (value: any, field) => {
         // check types in packages/app-headless-cms/src/admin/plugins/fieldRenderers/dateTime/dateTimeField.tsx
         const type = field.settings && field.settings.type ? String(field.settings.type) : null;
         if (!type) {

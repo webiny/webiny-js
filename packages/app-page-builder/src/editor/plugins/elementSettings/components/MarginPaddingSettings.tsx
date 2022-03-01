@@ -144,7 +144,7 @@ const options = {
 const SIDES = ["top", "right", "bottom", "left"];
 const DEFAULT_VALUE = "0px";
 
-const MarginPaddingSettings: React.FunctionComponent<
+const MarginPaddingSettings: React.FC<
     PMSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ styleAttribute, defaultAccordionValue }) => {
     const valueKey = `data.settings.${styleAttribute}`;

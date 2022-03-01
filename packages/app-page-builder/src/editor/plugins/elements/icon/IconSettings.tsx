@@ -27,7 +27,7 @@ const classes = {
     })
 };
 
-const IconSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+const IconSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const activeElementId = useRecoilValue(activeElementAtom);

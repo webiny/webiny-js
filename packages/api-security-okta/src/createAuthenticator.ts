@@ -7,6 +7,10 @@ import Error from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
+interface VerifyResponse {
+    jti?: string;
+}
+
 // All JWTs are split into 3 parts by two periods
 const isJwt = (token: string) => token.split(".").length === 3;
 
@@ -53,8 +57,8 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                  * TODO @ts-refactor
                  */
                 // @ts-ignore
-                const token = await verify(idToken, jwkToPem(jwk));
-                if (!token.jti.startsWith("ID.")) {
+                const token = (await verify(idToken, jwkToPem(jwk))) as VerifyResponse;
+                if (!token.jti || !token.jti.startsWith("ID.")) {
                     throw new Error("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");
                 }
 

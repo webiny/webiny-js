@@ -29,7 +29,7 @@ const classes = {
 type LinkSettingsPropsType = {
     element: PbEditorElement;
 };
-const LinkSettingsComponent: React.FunctionComponent<
+const LinkSettingsComponent: React.FC<
     LinkSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ element, defaultAccordionValue }) => {
     const handler = useEventActionHandler();

@@ -72,7 +72,7 @@ interface ValidatorsTabProps {
     field: CmsEditorField;
 }
 
-const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
+const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
     const {
         field,
         name,
@@ -158,13 +158,14 @@ const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
                                                             field,
                                                             setValue,
                                                             setMessage: (message: string) => {
-                                                                setValue<string>(
-                                                                    "message",
-                                                                    message
-                                                                );
+                                                                setValue("message", message);
                                                             },
                                                             data,
-                                                            Bind
+                                                            /**
+                                                             * TODO @ts-refactor
+                                                             * Figure out type for Bind.
+                                                             */
+                                                            Bind: Bind as any
                                                         })}
                                                 </SimpleFormContent>
                                             )}

@@ -19,8 +19,11 @@ export const elementWithChildrenByIdSelector = selectorFamily<
 
             return {
                 ...element,
-                elements: element.elements
-                    .map((id: string) => get(elementByIdSelector(id)))
+                /**
+                 * We are positive that we can cast element.elements as string[] here
+                 */
+                elements: (element.elements as string[])
+                    .map(id => get(elementByIdSelector(id)))
                     .filter(Boolean) as PbEditorElement[]
             };
         };

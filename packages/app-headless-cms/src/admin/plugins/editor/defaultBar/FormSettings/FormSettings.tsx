@@ -64,11 +64,27 @@ const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
                             <SF.SimpleForm>
                                 <SF.SimpleFormHeader title={activePlugin.title}>
                                     {typeof activePlugin.renderHeaderActions === "function" &&
-                                        activePlugin.renderHeaderActions({ Bind, form, formData })}
+                                        activePlugin.renderHeaderActions({
+                                            /**
+                                             * TODO @ts-refactor
+                                             * Figure out type for Bind
+                                             */
+                                            Bind: Bind as any,
+                                            form,
+                                            formData
+                                        })}
                                 </SF.SimpleFormHeader>
                                 <SF.SimpleFormContent>
                                     {activePlugin
-                                        ? activePlugin.render({ Bind, form, formData })
+                                        ? activePlugin.render({
+                                              /**
+                                               * TODO @ts-refactor
+                                               * Figure out type for Bind
+                                               */
+                                              Bind: Bind as any,
+                                              form,
+                                              formData
+                                          })
                                         : null}
                                 </SF.SimpleFormContent>
                                 <SF.SimpleFormFooter>

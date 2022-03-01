@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import lodashGet from "lodash/get";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashIsPlainObject from "lodash/isPlainObject";
@@ -39,21 +39,7 @@ interface OnValidateCallable {
     (): void;
 }
 
-export const FormContext = React.createContext<FormAPI>({
-    data: {},
-    submit: async () => {
-        return void 0;
-    },
-    setValue: () => {
-        return void 0;
-    },
-    validate: () => {
-        return void 0;
-    },
-    validateInput: async () => {
-        return void 0;
-    }
-});
+export const FormContext = React.createContext<FormAPI>(undefined as unknown as FormAPI);
 
 export const useForm = () => {
     return useContext(FormContext);
@@ -182,21 +168,7 @@ export const Form = React.forwardRef(function Form(props: FormProps, ref) {
     /**
      * We need to cast so we can avoid a lot of casting later on.
      */
-    const formRef = useRef<FormAPI>({
-        data: {},
-        submit: async () => {
-            return void 0;
-        },
-        validate: () => {
-            return void 0;
-        },
-        setValue: () => {
-            return void 0;
-        },
-        validateInput: async () => {
-            return void 0;
-        }
-    });
+    const formRef = useRef<FormAPI>(undefined as unknown as FormAPI);
     const stateRef = useRef<State>({
         data: {},
         originalData: {},

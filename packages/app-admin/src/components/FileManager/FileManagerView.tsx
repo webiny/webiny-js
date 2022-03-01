@@ -346,8 +346,9 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                         variables: { after: cursor },
                         updateQuery: (
                             prev: ListFilesQueryResponse,
-                            { fetchMoreResult }: { fetchMoreResult: ListFilesQueryResponse }
+                            result: { fetchMoreResult?: ListFilesQueryResponse }
                         ) => {
+                            const { fetchMoreResult } = result;
                             if (!fetchMoreResult) {
                                 return prev;
                             }

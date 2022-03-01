@@ -45,9 +45,9 @@ const DATA_NAMESPACE = "data.settings.animation";
 type SettingsPropsType = {
     animation: any;
 };
-const Settings: React.FunctionComponent<
-    SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = ({ defaultAccordionValue }) => {
+const Settings: React.FC<SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const element = useActiveElement() as PbEditorElement;
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
@@ -179,7 +179,7 @@ type AnimationSettingsPropsType = {
     title?: string;
     styleAttribute?: string;
 };
-const AnimationSettings: React.FunctionComponent<
+const AnimationSettings: React.FC<
     AnimationSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = props => {
     return (

@@ -1,5 +1,5 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { FileInput, FileManagerContext, FilesListOpts, FileManagerSettings } from "~/types";
+import { FileManagerContext, FilesListOpts } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
@@ -189,7 +189,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 fileManager: emptyResolver
             },
             FmQuery: {
-                getFile(_, args: { id: string }, context) {
+                getFile(_, args, context) {
                     return resolve(() => context.fileManager.files.getFile(args.id));
                 },
                 async listFiles(_, args: FilesListOpts, context) {
@@ -220,7 +220,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 }
             },
             FmMutation: {
-                async createFile(_, args: { data: FileInput }, context) {
+                async createFile(_, args, context) {
                     return resolve(() => context.fileManager.files.createFile(args.data));
                 },
                 async updateFile(_, args, context) {
@@ -246,7 +246,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async upgrade(_, args, context) {
                     return resolve(() => context.fileManager.system.upgrade(args.version));
                 },
-                async updateSettings(_, args: { data: Partial<FileManagerSettings> }, context) {
+                async updateSettings(_, args, context) {
                     return resolve(() => context.fileManager.settings.updateSettings(args.data));
                 }
             }

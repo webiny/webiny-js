@@ -43,7 +43,7 @@ const categoriesList = css({
     }
 });
 
-const AddElement: React.FunctionComponent = () => {
+const AddElement: React.FC = () => {
     const handler = useEventActionHandler();
     const plugin = useRecoilValue(activePluginParamsByNameSelector(ADD_ELEMENT));
     const { params } = plugin || {};

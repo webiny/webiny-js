@@ -467,7 +467,7 @@ function extractZipToDisk(exportFileZipPath: string): Promise<string[]> {
         // Make sure DIR exists
         ensureDirSync(EXPORT_FILE_EXTRACTION_PATH);
 
-        yauzl.open(exportFileZipPath, { lazyEntries: true }, function (err: Error, zipFile) {
+        yauzl.open(exportFileZipPath, { lazyEntries: true }, function (err, zipFile) {
             if (err) {
                 console.warn("ERROR: Failed to extract zip: ", exportFileZipPath, err);
                 reject(err);

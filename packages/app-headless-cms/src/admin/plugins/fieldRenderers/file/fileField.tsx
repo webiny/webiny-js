@@ -4,7 +4,6 @@ import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { FileManager } from "@webiny/app-admin/components";
 import File from "./File";
-import { FileItem } from "@webiny/app-admin/components/FileManager/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -34,11 +33,18 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     <FileManager multiple={false} images={imagesOnly}>
                                         {({ showFileManager }) => {
                                             const selectFile = () => {
-                                                showFileManager((newFile: FileItem) => {
-                                                    if (newFile === null) {
+                                                showFileManager(initialFile => {
+                                                    if (
+                                                        !initialFile ||
+                                                        (Array.isArray(initialFile) === true &&
+                                                            initialFile.length === 0)
+                                                    ) {
                                                         return;
                                                     }
-                                                    onChange(newFile.src);
+                                                    const file = Array.isArray(initialFile)
+                                                        ? initialFile[0]
+                                                        : initialFile;
+                                                    onChange(file.src);
                                                 });
                                             };
                                             return (

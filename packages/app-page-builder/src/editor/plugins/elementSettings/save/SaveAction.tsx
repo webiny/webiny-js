@@ -68,7 +68,7 @@ const pluginOnSave = (element: PbEditorElement): PbEditorElement => {
     return plugin.onSave(element);
 };
 
-const SaveAction: React.FunctionComponent = ({ children }) => {
+const SaveAction: React.FC = ({ children }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementByIdSelector(activeElementId as string)

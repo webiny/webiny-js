@@ -4,7 +4,7 @@ export interface Subscriber<TEvent> {
 
 export type Event = Record<string, any>;
 
-export interface Topic<TEvent = Event> {
+export interface Topic<TEvent extends Event = Event> {
     getTopicName(): string;
 
     subscribe<TCEvent extends TEvent = TEvent>(cb: Subscriber<TCEvent>): void;

@@ -49,27 +49,29 @@ const getValidators = (
     key: "validators" | "listValidators",
     defaultValidators: string[] = []
 ): Validator[] => {
-    return (
-        plugins
-            .byType<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
-            .map(plugin => plugin.validator)
-            .map(validator => {
-                const allowedValidators = fieldPlugin.field[key] || defaultValidators;
-                if (allowedValidators.includes(validator.name)) {
-                    return {
-                        optional: true,
-                        validator
-                    };
-                } else if (allowedValidators.includes(`!${validator.name}`)) {
-                    return {
-                        optional: false,
-                        validator
-                    };
-                }
+    const mappedValidators = plugins
+        .byType<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
+        .map(({ validator }) => {
+            const allowedValidators = fieldPlugin.field[key] || defaultValidators;
+            if (allowedValidators.includes(validator.name)) {
+                return {
+                    optional: true,
+                    validator
+                };
+            } else if (allowedValidators.includes(`!${validator.name}`)) {
+                return {
+                    optional: false,
+                    validator
+                };
+            }
 
-                return null;
-            })
-            .filter(Boolean)
+            return null;
+        });
+
+    const filteredValidators = mappedValidators.filter(Boolean) as Validator[];
+
+    return (
+        filteredValidators
             /**
              * We can safely cast because we are filtering in previous step.
              */
@@ -160,7 +162,15 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
         });
 
         render = (
-            <Form data={current} onSubmit={onSubmit}>
+            <Form
+                data={current}
+                onSubmit={data => {
+                    /**
+                     * We know that data is CmsEditorField.
+                     */
+                    return onSubmit(data as unknown as CmsEditorField);
+                }}
+            >
                 {form => {
                     const predefinedValuesTabEnabled =
                         fieldPlugin.field.allowPredefinedValues &&

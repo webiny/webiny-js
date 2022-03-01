@@ -164,7 +164,7 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
 
 interface AssignBeforeModelCreateParams {
     onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
-    onBeforeModelCreateFrom: Topic<BeforeModelCreateTopicParams>;
+    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }

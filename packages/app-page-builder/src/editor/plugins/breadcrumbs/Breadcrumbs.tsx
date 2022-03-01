@@ -9,7 +9,7 @@ import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
 type ItemsState = Pick<ElementsAtomType, "id" | "type">;
 
-const Breadcrumbs: React.FunctionComponent = () => {
+const Breadcrumbs: React.FC = () => {
     const [items, setItems] = useState<ItemsState[]>([]);
     const [, setActiveElementId] = useActiveElementId();
     const element = useActiveElement();
@@ -19,8 +19,14 @@ const Breadcrumbs: React.FunctionComponent = () => {
         ({ set }) =>
             async (id: string) => {
                 if (highlightedElement) {
-                    // Update the element that is currently highlighted
-                    set(elementsAtom(highlightedElement.id), (prevValue: ElementsAtomType) => {
+                    /**
+                     * Update the element that is currently highlighted.
+                     * We are positive that this value is not null.
+                     */
+                    set(elementsAtom(highlightedElement.id), prevValue => {
+                        if (!prevValue) {
+                            return null;
+                        }
                         return {
                             ...prevValue,
                             isHighlighted: false
@@ -31,8 +37,14 @@ const Breadcrumbs: React.FunctionComponent = () => {
                 // Set the new highlighted element
                 setHighlightElement(id);
 
-                // Update the element that is about to be highlighted
-                set(elementsAtom(id), (prevValue: ElementsAtomType) => {
+                /**
+                 * Update the element that is about to be highlighted
+                 * We are positive that this value is not null.
+                 */
+                set(elementsAtom(id), prevValue => {
+                    if (!prevValue) {
+                        return null;
+                    }
                     return {
                         ...prevValue,
                         isHighlighted: true

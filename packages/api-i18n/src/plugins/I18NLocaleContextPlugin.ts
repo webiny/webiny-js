@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/Plugin";
+import { LocaleKeys } from "~/types";
 
-export type LocaleKeys = "default" | "content";
 export interface I18NLocaleContextPluginParams {
     context: {
         name: LocaleKeys;

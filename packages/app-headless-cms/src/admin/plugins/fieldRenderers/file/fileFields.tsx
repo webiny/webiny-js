@@ -41,10 +41,13 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
                         <FileManager multiple={true} images={imagesOnly}>
                             {({ showFileManager }) => {
                                 const selectFiles = (index = -1) => {
-                                    showFileManager((files: FileItem[]) => {
-                                        if (!files) {
+                                    showFileManager(initialFiles => {
+                                        if (!initialFiles || initialFiles.length === 0) {
                                             return;
                                         }
+                                        const files = Array.isArray(initialFiles)
+                                            ? initialFiles
+                                            : [initialFiles];
 
                                         const urls = files.map(f => f.src);
                                         if (index === -1) {

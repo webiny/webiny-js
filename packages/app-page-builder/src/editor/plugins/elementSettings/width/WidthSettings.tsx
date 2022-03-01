@@ -5,7 +5,7 @@ import merge from "lodash/merge";
 import set from "lodash/set";
 import get from "lodash/get";
 import { Form } from "@webiny/form";
-import { Form as FormDef } from "@webiny/form/Form";
+import { FormAPI } from "@webiny/form/types";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import {
@@ -99,7 +99,7 @@ const validateWidth: Validator = (value: string | undefined) => {
 
 const DATA_NAMESPACE = "data.settings.width";
 
-const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
@@ -107,7 +107,7 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
 
     const handler = useEventActionHandler();
-    const updateSettings = async (data: Record<string, any>, form: FormDef) => {
+    const updateSettings = async (data: Record<string, any>, form: FormAPI) => {
         const valid = await form.validate();
         if (!valid) {
             return null;
@@ -158,7 +158,15 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
                 </Tooltip>
             }
         >
-            <Form data={settings} onChange={updateSettings}>
+            <Form
+                data={settings}
+                onChange={(data, form) => {
+                    if (!form) {
+                        return;
+                    }
+                    return updateSettings(data, form);
+                }}
+            >
                 {({ Bind }) => (
                     <Wrapper
                         label={"Width"}

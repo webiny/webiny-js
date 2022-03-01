@@ -73,7 +73,7 @@ interface EditorPropsType {
     page: PageAtomType;
     revisions: RevisionsAtomType;
 }
-export const Editor: React.FunctionComponent<EditorPropsType> = ({ revisions }) => {
+export const Editor: React.FC<EditorPropsType> = ({ revisions }) => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { isDragging, isResizing } = useRecoilValue(uiAtom);

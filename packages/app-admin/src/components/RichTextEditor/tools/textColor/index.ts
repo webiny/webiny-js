@@ -118,7 +118,11 @@ class TextColorTool {
                 }
 
                 if (this.colorPicker) {
-                    this.colorPicker.childNodes.forEach((node: HTMLElement) => {
+                    /**
+                     * TODO @ts-refactor
+                     * TS Complains there is no classList on child node.
+                     */
+                    this.colorPicker.childNodes.forEach((node: any) => {
                         if (node.classList.contains(this._CSS.colorBoxActive)) {
                             // remove active class
                             node.classList.remove(this._CSS.colorBoxActive);

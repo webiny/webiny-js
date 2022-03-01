@@ -7,8 +7,8 @@ interface Params {
     search?: string;
 }
 
-export default (location: Location) => {
-    const params: Params = {};
+export default (location: Location): Params => {
+    const params: Record<string, string | number> = {};
 
     if (location) {
         const query = new URLSearchParams(location.search);
@@ -29,19 +29,18 @@ export default (location: Location) => {
             params.limit = parseInt(limit);
         }
 
-        ["sort", "where", "search"].forEach((key: keyof Params) => {
-            if (typeof query.get(key) === "string") {
-                try {
-                    params[key] = JSON.parse(query.get(key) as string);
-                } catch (e) {
-                    /**
-                     * TODO @ts-refactor figure out what to set instead of any
-                     */
-                    params[key] = query.get(key) as any;
-                }
+        ["sort", "where", "search"].forEach(key => {
+            const value = query.get(key);
+            if (typeof value !== "string") {
+                return;
+            }
+            try {
+                params[key] = JSON.parse(value);
+            } catch (e) {
+                params[key] = value;
             }
         });
     }
 
-    return params;
+    return params as Params;
 };

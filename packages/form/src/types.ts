@@ -9,13 +9,15 @@ export interface BindComponentRenderPropValidation {
     };
 }
 
-export type BindComponentRenderPropOnChange<T = any> = (value: T) => Promise<void>;
+export interface BindComponentRenderPropOnChange<T = any> {
+    (value: T): Promise<void>;
+}
 
 export interface FormAPI<T extends Record<string, any> = Record<string, any>> {
     data: T;
     submit: (event: React.SyntheticEvent<any, any>) => Promise<void>;
     setValue: FormSetValue;
-    validate: () => void;
+    validate: () => Promise<boolean>;
     validateInput: (name: string) => Promise<boolean | any>;
 }
 
@@ -37,13 +39,23 @@ export interface BindComponentProps {
     validate?: Function;
 }
 
-export type BindComponent = (props: BindComponentProps) => React.ReactElement | null;
+export interface BindComponent {
+    (props: BindComponentProps): React.ReactElement | null;
+}
 
-export type FormRenderPropParamsSubmit = (event?: React.SyntheticEvent<any, any>) => Promise<void>;
+export interface FormRenderPropParamsSubmit {
+    (event?: React.SyntheticEvent<any, any>): Promise<void>;
+}
 
-export type FormSetValue = <T = any>(name: string, value: T) => void;
+export interface FormSetValue<T = any> {
+    (name: string, value: T): void;
+}
 
-export interface FormRenderPropParams<T = Record<string, any>> {
+/**
+ * TODO @ts-refactor
+ * Remove any so it is required to send the generic value.
+ */
+export interface FormRenderPropParams<T = any> {
     form: FormAPI;
     Bind: BindComponent;
     data: T;
@@ -51,13 +63,21 @@ export interface FormRenderPropParams<T = Record<string, any>> {
     setValue: FormSetValue;
 }
 
-export type FormRenderProp = (params: FormRenderPropParams) => React.ReactElement;
+export interface FormRenderProp {
+    (params: FormRenderPropParams): React.ReactElement;
+}
 
-export type FormData = { [key: string]: any };
+export interface FormData {
+    [key: string]: any;
+}
 
-export type Validation = { [key: string]: any };
+export interface Validation {
+    [key: string]: any;
+}
 
-export type FormOnSubmit<T = FormData> = (data: T, form?: FormAPI) => void;
+export interface FormOnSubmit<T = FormData> {
+    (data: T, form?: FormAPI): void;
+}
 
 export interface FormProps<T extends Record<string, any> = Record<string, any>> {
     invalidFields?: { [key: string]: any };

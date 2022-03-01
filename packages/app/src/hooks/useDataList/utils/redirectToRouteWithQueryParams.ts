@@ -10,11 +10,11 @@ interface Options {
     history: Location[];
     location: Location;
 }
-export default (params: Params, options: Options) => {
+export default (params: Params, options: Options): void => {
     const { history, location } = options;
-    const paramsClone: Record<keyof Params, any> = Object.assign({}, params);
+    const paramsClone: Record<string, any> = Object.assign({}, params);
 
-    ["sort", "search", "where"].forEach((key: keyof Params) => {
+    ["sort", "search", "where"].forEach(key => {
         if (typeof paramsClone[key] === "object") {
             paramsClone[key] = JSON.stringify(paramsClone[key]);
         }
@@ -23,7 +23,7 @@ export default (params: Params, options: Options) => {
     const keys: string[] = ["limit", "after", "before", "where", "search", "sort"];
 
     const query = new URLSearchParams(location.search);
-    keys.forEach((key: keyof Params) => {
+    keys.forEach(key => {
         if (typeof paramsClone[key] !== "undefined") {
             query.set(key, paramsClone[key]);
         } else {

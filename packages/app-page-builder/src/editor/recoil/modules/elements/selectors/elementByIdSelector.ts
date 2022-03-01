@@ -1,6 +1,6 @@
 import { PbEditorElement } from "~/types";
 import { selectorFamily } from "recoil";
-import { elementsAtom, ElementsAtomType } from "../elementsAtom";
+import { elementsAtom } from "../elementsAtom";
 
 export const elementByIdSelector = selectorFamily<PbEditorElement | null, string | null>({
     key: "elementByIdSelector",
@@ -18,9 +18,17 @@ export const elementByIdSelector = selectorFamily<PbEditorElement | null, string
             if (!id) {
                 return;
             }
-            set(elementsAtom(id), (prevState: ElementsAtomType) => ({
-                ...prevState,
-                ...newValue
-            }));
+            /**
+             * We are positive that element exists so we can set it
+             */
+            set(elementsAtom(id), prevState => {
+                if (!prevState) {
+                    return newValue;
+                }
+                return {
+                    ...prevState,
+                    ...newValue
+                };
+            });
         }
 });

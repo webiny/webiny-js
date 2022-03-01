@@ -34,11 +34,8 @@ export interface Validation {
     [key: string]: any;
 }
 
-export interface FormOnSubmit {
+interface FormOnSubmit {
     (data: FormData, form?: Form): void;
-}
-export interface FormOnCancel {
-    (): void;
 }
 
 export interface FormProps {

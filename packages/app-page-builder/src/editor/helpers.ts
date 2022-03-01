@@ -137,7 +137,7 @@ const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorElement => {
     // element.id = getNanoid();
 
     if (Array.isArray(element.elements)) {
-        element.elements = element.elements.map((el: PbEditorElement) => {
+        element.elements = (element.elements as PbEditorElement[]).map(el => {
             return addElementId(el);
         });
     }

@@ -168,6 +168,10 @@ export class FormFieldElement<
     public addAfterChange<T = any, D extends Record<string, any> = Record<string, any>>(
         cb: AfterChange<T, D>
     ): void {
+        /**
+         * TODO @ts-refactor possibly different subtype. Or so TS complains.
+         */
+        // @ts-ignore
         this._afterChange.push(cb);
     }
 

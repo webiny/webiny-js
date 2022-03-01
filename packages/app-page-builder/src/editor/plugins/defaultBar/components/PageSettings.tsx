@@ -24,7 +24,7 @@ import { usePageSettings } from "~/editor/hooks/usePageSettings";
 interface PageSettingsPropsType {
     [key: string]: any;
 }
-const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}) => {
+const PageSettings: React.FC<PageSettingsPropsType> = (props = {}) => {
     const pluginsByType = plugins.byType<PbEditorPageSettingsPlugin>("pb-editor-page-settings");
     const [active, setActive] = useState(pluginsByType[0].name);
     const activePlugin = pluginsByType.find(pl => pl.name === active);
@@ -47,7 +47,7 @@ interface PageSettingsContentPropsType {
     setActive: (name: string) => void;
     activePlugin: PbEditorPageSettingsPlugin;
 }
-const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType> = ({
+const PageSettingsContent: React.FC<PageSettingsContentPropsType> = ({
     pluginsByType,
     setActive,
     activePlugin

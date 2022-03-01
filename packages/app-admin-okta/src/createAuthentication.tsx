@@ -19,8 +19,9 @@ import {
     LOGIN_ST
 } from "./createGetIdentityData";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {};
+const noop = () => {
+    return void 0;
+};
 
 export interface Config {
     getIdentityData?: GetIdentityDataCallable;
@@ -30,13 +31,14 @@ export interface Config {
     clientId: string;
 }
 
-export interface Props {
+export interface AuthenticationProps {
     getIdentityData(params: { client: ApolloClient<any> }): Promise<{ [key: string]: any }>;
     children: React.ReactNode;
 }
 
 interface WithGetIdentityDataProps {
     getIdentityData: GetIdentityDataCallable;
+    children: React.ReactNode;
 }
 
 interface AuthState {
@@ -57,7 +59,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
         };
     };
 
-    const Authentication: React.FC<Props> = ({ getIdentityData, children }) => {
+    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
         const timerRef = useRef<number | undefined>(undefined);
         const apolloClient = useApolloClient();
         const { identity, setIdentity } = useSecurity();

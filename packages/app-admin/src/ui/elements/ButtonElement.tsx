@@ -30,6 +30,11 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
     public setLabel<TProps extends TRenderProps = TRenderProps>(
         label: string | GetterWithProps<TProps, string>
     ): void {
+        /**
+         * TODO @ts-refactor
+         * 'TProps' could be instantiated with an arbitrary type which could be unrelated to 'TRenderProps'
+         */
+        // @ts-ignore
         this.config.label = label;
     }
 

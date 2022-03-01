@@ -67,7 +67,7 @@ export interface ImageProps {
 export type ImageComponentPlugin = Plugin & {
     type: "image-component";
     render: (props: ImageProps) => React.ReactElement;
-    getImageSrc: (props?: Object) => string;
+    getImageSrc: (props?: Record<string, any>) => string;
     presets: { [key: string]: any };
 };
 

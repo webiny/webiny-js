@@ -75,10 +75,7 @@ type ElementPreviewPropsType = {
     element: any;
     onChange: (value: string) => void;
 };
-const ElementPreview: React.FunctionComponent<ElementPreviewPropsType> = ({
-    element,
-    onChange
-}) => {
+const ElementPreview: React.FC<ElementPreviewPropsType> = ({ element, onChange }) => {
     useEffect(() => {
         generateImage(element, onChange);
     });

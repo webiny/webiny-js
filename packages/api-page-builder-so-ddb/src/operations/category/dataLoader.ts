@@ -38,7 +38,7 @@ export class CategoryDataLoader {
                 return `T#${key.tenant}#L#${key.locale}#${key.slug}`;
             };
             this._getDataLoader = new DataLoader(
-                async (items: DataLoaderGetItem[]) => {
+                async items => {
                     const batched = items.map(item => {
                         return this.entity.getBatch({
                             PK: createPartitionKey(item),

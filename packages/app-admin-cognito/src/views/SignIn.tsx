@@ -9,7 +9,10 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Alert } from "@webiny/ui/Alert";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
-import { useSignIn } from "@webiny/app-cognito-authenticator/hooks/useSignIn";
+import {
+    useSignIn,
+    UseSignInCallableParams
+} from "@webiny/app-cognito-authenticator/hooks/useSignIn";
 import StateContainer from "./StateContainer";
 import { alignRight, alignCenter, InnerContent, Title, errorMessage } from "./StyledComponents";
 
@@ -23,7 +26,15 @@ const SignIn: React.FC = () => {
 
     return (
         <StateContainer>
-            <Form onSubmit={signIn} submitOnEnter>
+            <Form
+                onSubmit={data => {
+                    /**
+                     * We are positive that data is UseSignInCallableParams
+                     */
+                    return signIn(data as unknown as UseSignInCallableParams);
+                }}
+                submitOnEnter
+            >
                 {({ Bind, submit }) => (
                     <Elevation z={2}>
                         <InnerContent>

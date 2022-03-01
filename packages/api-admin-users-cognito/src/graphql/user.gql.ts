@@ -10,7 +10,7 @@ import {
     ListResponse,
     ListErrorResponse
 } from "@webiny/handler-graphql/responses";
-import { AdminUser, AdminUsersContext, CreateUserInput, UpdateUserInput } from "~/types";
+import { AdminUser, AdminUsersContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -185,7 +185,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             }
         },
         AdminUsersMutation: {
-            updateCurrentUser: async (_, args: { data: UpdateUserInput }, context) => {
+            updateCurrentUser: async (_, args, context) => {
                 const { security, adminUsers } = context;
                 const identity = security.getIdentity();
                 if (!identity) {
@@ -207,7 +207,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     return new ErrorResponse(e);
                 }
             },
-            createUser: async (_, { data }: { data: CreateUserInput }, context) => {
+            createUser: async (_, { data }, context) => {
                 try {
                     const user = await context.adminUsers.createUser(data);
 
@@ -216,11 +216,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     return new ErrorResponse(e);
                 }
             },
-            updateUser: async (
-                _,
-                { data, id }: { id: string; data: UpdateUserInput },
-                { adminUsers }
-            ) => {
+            updateUser: async (_, { data, id }, { adminUsers }) => {
                 try {
                     const user = await adminUsers.updateUser(id, data);
 
@@ -229,7 +225,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     return new ErrorResponse(e);
                 }
             },
-            deleteUser: async (_, { id }: { id: string }, context) => {
+            deleteUser: async (_, { id }, context) => {
                 try {
                     await context.adminUsers.deleteUser(id);
 

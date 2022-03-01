@@ -54,11 +54,14 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
             data-testid="fb-new-form-modal"
         >
             <Form
-                onSubmit={async (formData: CreateFormMutationVariables) => {
+                onSubmit={formData => {
                     setLoading(true);
 
-                    await create({
-                        variables: formData,
+                    create({
+                        /**
+                         * We know that formData is CreateFormMutationVariables.
+                         */
+                        variables: formData as unknown as CreateFormMutationVariables,
                         update(cache, result) {
                             if (!result.data) {
                                 return;

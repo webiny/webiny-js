@@ -21,7 +21,7 @@ type GridPropsType = {
     element: PbEditorElement;
     displayMode: DisplayMode;
 };
-const Grid: React.FunctionComponent<GridPropsType> = ({
+const Grid: React.FC<GridPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,
@@ -58,7 +58,7 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
             {...elementAttributes}
             style={gridStyles}
         >
-            {element.elements.map((child: PbEditorElement) => {
+            {(element.elements as PbEditorElement[]).map(child => {
                 return (
                     <div
                         key={`cell-${child.id}`}

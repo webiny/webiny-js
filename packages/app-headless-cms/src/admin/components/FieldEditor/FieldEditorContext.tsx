@@ -156,7 +156,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         onChange({ fields: state.fields, layout: state.layout });
     }, [state.fields, state.layout]);
 
-    const editField = useCallback((field: CmsEditorField) => {
+    const editField = useCallback((field: CmsEditorField | null) => {
         setState(state => ({ ...state, field }));
     }, []);
 
@@ -353,7 +353,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
     };
 
     const noConflict: NoConflictCallable = useCallback(
-        (isVisible: IsVisibleCallable) => item => {
+        (isVisible?: IsVisibleCallable) => item => {
             const sameParent = item.parent === onDropTarget.dropTarget;
             const draggedFields: string[] = [];
             switch (item.type) {

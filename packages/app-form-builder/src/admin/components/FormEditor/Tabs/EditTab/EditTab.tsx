@@ -202,13 +202,13 @@ export const EditTab: React.FC = () => {
             <EditFieldDialog
                 field={editingField}
                 onClose={editField}
-                onSubmit={(data: FbFormModelField) => {
+                onSubmit={data => {
                     if (data._id) {
-                        updateField(data);
+                        updateField(data as unknown as FbFormModelField);
                     } else if (!dropTarget) {
                         console.log("Missing drop target on EditFieldDialog submit.");
                     } else {
-                        insertField(data, dropTarget);
+                        insertField(data as unknown as FbFormModelField, dropTarget);
                     }
                     editField(null);
                 }}

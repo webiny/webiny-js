@@ -97,12 +97,17 @@ export interface OktaFactory {
 export interface OktaProps {
     rootAppClientId: string;
     factory: OktaFactory;
+    children: React.ReactNode;
 }
 
 export const Okta: React.FC<OktaProps> = props => {
+    /**
+     * TODO @ts-refactor
+     * Figure correct type for Compose.component
+     */
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
+            <Compose component={LoginScreenRenderer as any} with={createLoginScreen(props)} />
             <UserMenuModule />
             <AppClientModule />
         </Fragment>

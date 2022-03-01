@@ -62,7 +62,7 @@ export const useVisibilitySetting = (elementId: string): UseVisibilitySettingRes
     };
 };
 
-const VisibilitySettings: React.FunctionComponent<
+const VisibilitySettings: React.FC<
     PbEditorPageElementSettingsRenderComponentProps & {
         options: any;
     }

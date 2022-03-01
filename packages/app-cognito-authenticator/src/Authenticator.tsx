@@ -105,8 +105,8 @@ export const Authenticator: React.FC<AuthenticatorProps> = ({ onToken, children 
 
     const onChangeState = async (
         authState: State["authState"],
-        data?: AuthData,
-        message?: AuthMessage
+        data: AuthData | null = null,
+        message: AuthMessage | null = null
     ) => {
         setState({
             message: message || null

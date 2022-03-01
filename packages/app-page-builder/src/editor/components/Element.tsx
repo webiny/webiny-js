@@ -44,7 +44,7 @@ const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin |
     return pluginsByType.find(pl => pl.elementType === element.type) || null;
 };
 
-const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
+const ElementComponent: React.FC<ElementPropsType> = ({
     id: elementId,
     className = "",
     isActive

@@ -5,7 +5,7 @@ import { EventActionHandlerMutationActionCallable } from "~/types";
 export const activatePluginByNameMutation: EventActionHandlerMutationActionCallable<
     PluginsAtomType,
     string
-> = (state, name: string) => {
+> = (state, name) => {
     const pl = plugins.byName(name);
     if (!pl) {
         return state;

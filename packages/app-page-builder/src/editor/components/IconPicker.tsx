@@ -159,7 +159,7 @@ interface IconPickerPropsType {
     useInSidebar?: boolean;
     removeIcon?: () => void;
 }
-const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
+const IconPicker: React.FC<IconPickerPropsType> = ({
     value,
     onChange,
     removable = true,

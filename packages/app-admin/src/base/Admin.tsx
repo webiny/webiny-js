@@ -17,7 +17,9 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
     const ApolloProvider = createApolloProvider(createApolloClient);
     const TelemetryProvider = createTelemetryProvider();
     const UiStateProvider = createUiStateProvider();
-
+    /**
+     * TODO @ts-refactor
+     */
     return (
         <BaseAdmin>
             <Provider hoc={ApolloProvider} />

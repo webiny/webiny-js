@@ -1,25 +1,9 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
-import { CmsGroupCreateInput, CmsGroupUpdateInput, CmsContext } from "~/types";
+import { CmsContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
-
-interface CreateCmsGroupArgs {
-    data: CmsGroupCreateInput;
-}
-
-interface ReadCmsGroupArgs {
-    id: string;
-}
-
-interface UpdateCmsGroupArgs extends ReadCmsGroupArgs {
-    data: CmsGroupUpdateInput;
-}
-
-interface DeleteCmsGroupArgs {
-    id: string;
-}
 
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     let manageSchema = "";
@@ -87,7 +71,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
             },
             Query: {
-                getContentModelGroup: async (_, args: ReadCmsGroupArgs, context) => {
+                getContentModelGroup: async (_, args, context) => {
                     try {
                         const { id } = args;
                         const model = await context.cms.getGroup(id);
@@ -106,7 +90,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
             },
             Mutation: {
-                createContentModelGroup: async (_, args: CreateCmsGroupArgs, context) => {
+                createContentModelGroup: async (_, args, context) => {
                     try {
                         const model = await context.cms.createGroup(args.data);
                         return new Response(model);
@@ -114,7 +98,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new ErrorResponse(e);
                     }
                 },
-                updateContentModelGroup: async (_, args: UpdateCmsGroupArgs, context) => {
+                updateContentModelGroup: async (_, args, context) => {
                     try {
                         const group = await context.cms.updateGroup(args.id, args.data);
                         return new Response(group);
@@ -122,7 +106,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new ErrorResponse(e);
                     }
                 },
-                deleteContentModelGroup: async (_, args: DeleteCmsGroupArgs, context) => {
+                deleteContentModelGroup: async (_, args, context) => {
                     try {
                         await context.cms.deleteGroup(args.id);
                         return new Response(true);

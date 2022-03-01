@@ -30,7 +30,7 @@ interface ElementRootProps {
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;
 }
 
-const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
+const ElementRootComponent: React.FC<ElementRootProps> = ({
     element,
     style,
     children,
@@ -77,7 +77,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         return null;
     }
     // Handle element visibility.// Use per-device style
-    const visibility = finalStyle[`--${kebabCase(displayMode)}-visibility`];
+    const visibility = finalStyle[`--${kebabCase(displayMode)}-visibility` as keyof CSSProperties];
     if (visibility === "hidden") {
         return null;
     }

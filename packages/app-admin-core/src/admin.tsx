@@ -68,7 +68,7 @@ export const useAdmin = () => {
 };
 
 export interface HigherOrderComponent<TInputProps = unknown, TOutputProps = TInputProps> {
-    (Component: React.ComponentType<TInputProps>): React.ComponentType<TOutputProps>;
+    (Component: React.FC<TInputProps>): React.FC<TOutputProps>;
 }
 
 export interface AdminProps {

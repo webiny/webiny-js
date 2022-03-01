@@ -23,7 +23,7 @@ interface OnBlurCallable {
     (ev: React.SyntheticEvent): void;
 }
 interface OnKeyDownCallable {
-    (ev: React.SyntheticEvent): void;
+    (ev: React.KeyboardEvent<HTMLInputElement>): void;
 }
 interface ChildrenCallableParams {
     value: string;
@@ -40,10 +40,7 @@ export interface DelayedOnChangeProps {
     onKeyDown?: OnKeyDownCallable;
     children: React.ReactNode | ChildrenCallable;
 }
-export const DelayedOnChange: React.FunctionComponent<DelayedOnChangeProps> = ({
-    children,
-    ...other
-}) => {
+export const DelayedOnChange: React.FC<DelayedOnChangeProps> = ({ children, ...other }) => {
     const { onChange, delay = 400, value: initialValue } = other;
     const [value, setValue] = useState<string | undefined>(initialValue);
     // Sync state and props
@@ -112,7 +109,7 @@ export const DelayedOnChange: React.FunctionComponent<DelayedOnChangeProps> = ({
     };
 
     // Need to listen for TAB key to apply new value immediately, without delay. Otherwise validation will be triggered with old value.
-    const onKeyDown: OnKeyDownCallable = (ev: React.KeyboardEvent<HTMLInputElement>) => {
+    const onKeyDown: OnKeyDownCallable = ev => {
         ev.persist();
         if (ev.key === "Tab") {
             applyValue((ev.target as HTMLInputElement).value, () => realOnKeyDown(ev));

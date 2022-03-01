@@ -27,7 +27,7 @@ interface ButtonContainerPropsType {
     elementAttributes: { [key: string]: string };
     elementId: string;
 }
-const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
+const ButtonContainer: React.FC<ButtonContainerPropsType> = ({
     getAllClasses,
     elementStyle,
     elementAttributes,

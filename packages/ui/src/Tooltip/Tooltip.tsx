@@ -36,9 +36,9 @@ interface State {
 class Tooltip extends React.Component<TooltipProps, State> {
     state: State = { tooltipIsOpen: false };
 
-    onVisibleChange = (visible: boolean) => {
+    onVisibleChange = (visible?: boolean) => {
         this.setState({
-            tooltipIsOpen: visible
+            tooltipIsOpen: visible || false
         });
     };
 

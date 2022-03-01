@@ -6,7 +6,7 @@ import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import { Form, FormData, FormOnCancel, FormOnSubmit, FormSetValue } from "@webiny/form/Form";
+import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 
@@ -372,7 +372,7 @@ export type PbMenuItemPlugin = Plugin & {
         renderForm: (params: {
             data: MenuTreeItem;
             onSubmit: FormOnSubmit;
-            onCancel: FormOnCancel;
+            onCancel: () => void;
         }) => ReactElement;
     };
 };
@@ -464,7 +464,7 @@ export type PbEditorPageSettingsPlugin = Plugin & {
     render: (params: {
         data: Record<string, any>;
         setValue: FormSetValue;
-        form: Form;
+        form: FormAPI;
         Bind: BindComponent;
     }) => ReactNode;
 };
@@ -607,7 +607,7 @@ export type PbEditorGridPresetPluginType = Plugin & {
     name: string;
     type: "pb-editor-grid-preset";
     cellsType: string;
-    icon: React.FunctionComponent;
+    icon: React.FC;
 };
 // this will run when saving the element for later use
 export type PbEditorPageElementSaveActionPlugin = Plugin & {
@@ -727,8 +727,8 @@ export interface EventActionHandlerActionCallableResponse {
     actions: BaseEventAction[];
 }
 
-export interface EventActionHandlerMutationActionCallable<T, A = unknown> {
-    (state: T, args?: A): T;
+export interface EventActionHandlerMutationActionCallable<T, A = void> {
+    (state: T, args: A): T;
 }
 
 export interface EventActionHandlerCallableArgs {

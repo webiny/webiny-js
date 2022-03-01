@@ -25,10 +25,14 @@ export const ContentEntryFormPreview: React.FC<Props> = props => {
     const renderCustomLayout = useCallback(
         (formRenderProps: FormRenderPropParams) => {
             const fields = contentModel.fields.reduce((acc, field) => {
+                /**
+                 * TODO @ts-refactor
+                 * Figure out type for Bind.
+                 */
                 acc[field.fieldId] = (
                     <RenderFieldElement
                         field={field}
-                        Bind={formRenderProps.Bind}
+                        Bind={formRenderProps.Bind as any}
                         contentModel={contentModel}
                     />
                 );
@@ -38,7 +42,16 @@ export const ContentEntryFormPreview: React.FC<Props> = props => {
             if (!formRenderer) {
                 return <>{`Missing form renderer for modelId "${contentModel.modelId}".`}</>;
             }
-            return formRenderer.render({ ...formRenderProps, contentModel, fields });
+            return formRenderer.render({
+                ...formRenderProps,
+                /**
+                 * TODO @ts-refactor
+                 * Figure out type for Bind.
+                 */
+                Bind: formRenderProps.Bind as any,
+                contentModel,
+                fields
+            });
         },
         [formRenderer, contentModel.fields]
     );
@@ -55,6 +68,7 @@ export const ContentEntryFormPreview: React.FC<Props> = props => {
                             fields={contentModel.fields}
                             layout={contentModel.layout || []}
                             {...formProps}
+                            Bind={formProps.Bind as any}
                         />
                     )}
                 </FormWrapper>
