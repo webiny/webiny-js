@@ -29,11 +29,8 @@ const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | nul
     const mTypeName = createManageTypeName(typeName);
 
     // `field` is an "object" field
-    const fields = field.settings.fields as CmsModelField[];
+    const fields: CmsModelField[] = field.settings.fields || [];
 
-    if (!fields || fields.length === 0) {
-        return null;
-    }
     const fieldTypeName = `${mTypeName}_${upperFirst(field.fieldId)}`;
 
     const typeFields = [];
