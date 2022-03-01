@@ -8,6 +8,7 @@ import ltFilter from "./lt";
 import lteFilter from "./lte";
 import containsFilter from "./contains";
 import fuzzyFilter from "./fuzzy";
+import startsWithFilter from "./startsWith";
 
 export default () => [
     eqFilter,
@@ -19,5 +20,6 @@ export default () => [
     lteFilter,
     betweenFilter,
     containsFilter,
-    fuzzyFilter
+    fuzzyFilter,
+    startsWithFilter
 ];
