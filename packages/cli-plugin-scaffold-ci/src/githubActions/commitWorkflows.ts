@@ -10,7 +10,7 @@ interface Params {
     branch: string;
     author: { name: string; email: string };
 }
-export default async (args: Params) => {
+export default async (args: Params): Promise<void> => {
     const { octokit, owner, repo, branch, author } = args;
 
     const cwd = path.join(__dirname, "files", "workflows");
@@ -35,8 +35,6 @@ export default async (args: Params) => {
             author
         });
     }
-
-    return;
 };
 
 function readDirectory(dir: string, files: string[]) {

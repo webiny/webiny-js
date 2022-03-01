@@ -26,11 +26,21 @@ interface useTargetDataModelsDataListHook {
         newTargetDataModel: () => void;
         editTargetDataModel: (id: string) => void;
         deleteTargetDataModel: (id: string) => void;
-        currentTargetDataModelId: string;
+        currentTargetDataModelId: string | null;
     };
 }
 
-const reducer = (prev, next) => ({ ...prev, ...next });
+interface TargetDataModelsState {
+    limit?: any;
+    after?: any;
+    before?: any;
+    sort?: any;
+}
+
+const reducer = (
+    prev: TargetDataModelsState,
+    next: Partial<TargetDataModelsState>
+): TargetDataModelsState => ({ ...prev, ...next });
 
 export const useTargetDataModelsDataList: useTargetDataModelsDataListHook = () => {
     // Base state and UI React hooks.
@@ -45,7 +55,7 @@ export const useTargetDataModelsDataList: useTargetDataModelsDataListHook = () =
     });
 
     const searchParams = new URLSearchParams(location.search);
-    const currentTargetDataModelId = searchParams.get("id");
+    const currentTargetDataModelId = searchParams.get("id") || null;
 
     // Queries and mutations.
     const listQuery = useQuery(LIST_TARGET_DATA_MODELS, {
@@ -97,11 +107,11 @@ export const useTargetDataModelsDataList: useTargetDataModelsDataListHook = () =
     // Pagination metadata and controls.
     const setPreviousPage = useCallback(
         () => setVariables({ after: undefined, before: meta.before }),
-        undefined
+        []
     );
     const setNextPage = useCallback(
         () => setVariables({ after: meta.after, before: undefined }),
-        undefined
+        []
     );
     const setLimit = useCallback(
         value => setVariables({ after: undefined, before: undefined, limit: value }),

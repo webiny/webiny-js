@@ -9,7 +9,7 @@ import link from "terminal-link";
 const runHookCallback = async (
     hookName: string,
     args: CliCommandScaffoldCallableArgs<GithubActionsInput>[]
-) => {
+): Promise<void> => {
     const [{ input, context }] = args;
     const plugin = context.plugins
         .byType<CliPluginsScaffoldCi<GithubActionsInput>>("cli-plugin-scaffold-ci")

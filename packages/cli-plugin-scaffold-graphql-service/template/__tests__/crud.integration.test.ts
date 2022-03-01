@@ -23,10 +23,10 @@ const query = ({ query = "", variables = {} } = {}) => {
             query,
             variables
         })
-    }).then(response => JSON.parse(response.body));
+    }).then((response: any) => JSON.parse(response.body));
 };
 
-let testTargetDataModels = [];
+let testTargetDataModels: any[] = [];
 
 describe("TargetDataModels CRUD tests (integration)", () => {
     beforeEach(async () => {
@@ -40,7 +40,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
                             description: `TargetDataModel ${i}'s description.`
                         }
                     }
-                }).then(response => response.data.targetDataModels.createTargetDataModel)
+                }).then((response: any) => response.data.targetDataModels.createTargetDataModel)
             );
         }
     });
@@ -61,7 +61,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
         // 1. Now that we have targetDataModels created, let's see if they come up in a basic listTargetDataModels query.
         const [targetDataModel0, targetDataModel1, targetDataModel2] = testTargetDataModels;
 
-        await query({ query: LIST_TARGET_DATA_MODELS }).then(response =>
+        await query({ query: LIST_TARGET_DATA_MODELS }).then((response: any) =>
             expect(response.data.targetDataModels.listTargetDataModels).toEqual({
                 data: [targetDataModel2, targetDataModel1, targetDataModel0],
                 meta: {
@@ -82,7 +82,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
 
         await query({
             query: LIST_TARGET_DATA_MODELS
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.listTargetDataModels).toEqual({
                 data: [targetDataModel2, targetDataModel0],
                 meta: {
@@ -103,7 +103,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
                     description: `TargetDataModel 0's description - UPDATED.`
                 }
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.updateTargetDataModel).toEqual({
                 id: targetDataModel0.id,
                 title: "TargetDataModel 0 - UPDATED",
@@ -115,7 +115,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
         await query({
             query: GET_TARGET_DATA_MODEL,
             variables: { id: targetDataModel0.id }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.getTargetDataModel).toEqual({
                 id: targetDataModel0.id,
                 title: "TargetDataModel 0 - UPDATED",
@@ -132,7 +132,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
             variables: {
                 limit: 2
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.listTargetDataModels).toEqual({
                 data: [targetDataModel2, targetDataModel1],
                 meta: {
@@ -149,7 +149,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
                 limit: 2,
                 after: targetDataModel1.id
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.listTargetDataModels).toEqual({
                 data: [targetDataModel0],
                 meta: {
@@ -166,7 +166,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
                 limit: 2,
                 before: targetDataModel0.id
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.listTargetDataModels).toEqual({
                 data: [targetDataModel2, targetDataModel1],
                 meta: {
@@ -187,7 +187,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
                 limit: 2,
                 sort: "createdOn_ASC"
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.listTargetDataModels).toEqual({
                 data: [targetDataModel0, targetDataModel1],
                 meta: {
@@ -205,7 +205,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
                 sort: "createdOn_ASC",
                 after: targetDataModel1.id
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.listTargetDataModels).toEqual({
                 data: [targetDataModel2],
                 meta: {
@@ -223,7 +223,7 @@ describe("TargetDataModels CRUD tests (integration)", () => {
                 sort: "createdOn_ASC",
                 before: targetDataModel2.id
             }
-        }).then(response =>
+        }).then((response: any) =>
             expect(response.data.targetDataModels.listTargetDataModels).toEqual({
                 data: [targetDataModel0, targetDataModel1],
                 meta: {

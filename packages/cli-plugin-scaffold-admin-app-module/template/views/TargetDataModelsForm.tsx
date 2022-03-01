@@ -20,7 +20,7 @@ import { useTargetDataModelsForm } from "./hooks/useTargetDataModelsForm";
  * Includes two basic fields - title (required) and description.
  * The form submission-related functionality is located in the `useTargetDataModelsForm` React hook.
  */
-const TargetDataModelsForm = () => {
+const TargetDataModelsForm: React.FC = () => {
     const {
         loading,
         emptyViewIsShown,
@@ -75,7 +75,13 @@ const TargetDataModelsForm = () => {
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         <ButtonDefault onClick={cancelEditing}>Cancel</ButtonDefault>
-                        <ButtonPrimary onClick={submit}>Save Target Data Model</ButtonPrimary>
+                        <ButtonPrimary
+                            onClick={ev => {
+                                submit(ev);
+                            }}
+                        >
+                            Save Target Data Model
+                        </ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
