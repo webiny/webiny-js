@@ -80,7 +80,7 @@ export interface FbForm {
 
 export interface CreatedBy {
     id: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 

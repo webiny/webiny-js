@@ -11,7 +11,7 @@ import {
     PbPageLayoutPlugin,
     PbEditorElement,
     PbTheme
-} from "../../../types";
+} from "~/types";
 import {
     isPluginActiveSelector,
     layoutSelector,
@@ -21,7 +21,7 @@ import {
     elementsAtom
 } from "../../recoil/modules";
 
-import { usePageBuilder } from "../../../hooks/usePageBuilder";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 import Element from "../Element";
 
 const BREADCRUMB_HEIGHT = 33;
@@ -88,7 +88,7 @@ const Content = () => {
     );
 
     const resizeObserver = useMemo(() => {
-        return new ResizeObserver(entries => {
+        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
                 setPagePreviewDimension({ width, height });

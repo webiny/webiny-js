@@ -93,7 +93,7 @@ export interface CreatedBy {
     /**
      * Full name of the user.
      */
-    displayName: string;
+    displayName: string | null;
     /**
      * Type of the user (admin, user)
      */
@@ -109,7 +109,7 @@ interface BaseFields {
 
 export interface ApwReviewer extends BaseFields {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -213,7 +213,7 @@ export interface ListWorkflowsParams extends ListParams {
 
 interface CreateReviewerParams {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -415,13 +415,13 @@ type StorageOperationsListReviewersParams = ApwReviewerListParams;
 
 interface CreateApwReviewerData {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
 interface UpdateApwReviewerData {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 

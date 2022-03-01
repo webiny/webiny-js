@@ -8,7 +8,7 @@ export interface AdminUsersContext extends SecurityContext, TenancyContext {
 
 export interface CreatedBy {
     id: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 

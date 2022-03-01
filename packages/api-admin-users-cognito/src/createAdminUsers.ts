@@ -9,7 +9,7 @@ import Error from "@webiny/error";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { AdminUser, AdminUsers, AdminUsersStorageOperations, System } from "./types";
+import { AdminUser, AdminUsers, AdminUsersStorageOperations, CreatedBy, System } from "./types";
 import { createUserLoaders } from "./createAdminUsers/users.loaders";
 import { attachUserValidation } from "./createAdminUsers/users.validation";
 
@@ -75,7 +75,7 @@ export const createAdminUsers = ({
 
             const identity = getIdentity();
 
-            let createdBy = null;
+            let createdBy: CreatedBy | null = null;
             if (identity) {
                 createdBy = {
                     id: identity.id,

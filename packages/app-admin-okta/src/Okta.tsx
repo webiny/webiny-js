@@ -97,7 +97,7 @@ export interface OktaFactory {
 export interface OktaProps {
     rootAppClientId: string;
     factory: OktaFactory;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 export const Okta: React.FC<OktaProps> = props => {

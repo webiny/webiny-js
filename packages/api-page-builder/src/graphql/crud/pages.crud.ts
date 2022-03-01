@@ -8,6 +8,7 @@ import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
+    CreatedBy,
     OnBeforePageCreateTopicParams,
     Page,
     PageBuilderContextObject,
@@ -279,7 +280,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 }
             });
 
-            const owner = {
+            const owner: CreatedBy = {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type

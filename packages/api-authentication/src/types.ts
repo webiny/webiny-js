@@ -19,6 +19,6 @@ export interface Authentication<TIdentity = Identity> {
 export interface Identity {
     id: string;
     type: string;
-    displayName: string;
+    displayName: string | null;
     [key: string]: any;
 }

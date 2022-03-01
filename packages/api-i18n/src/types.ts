@@ -10,13 +10,16 @@ export interface I18NLocale {
     code: string;
     default: boolean;
 }
+
+interface I18NLocaleDataCreatedBy {
+    id: string;
+    displayName: string | null;
+    type: string;
+}
+
 export interface I18NLocaleData extends I18NLocale {
     createdOn: string;
-    createdBy: {
-        id: string;
-        displayName: string;
-        type: string;
-    };
+    createdBy: I18NLocaleDataCreatedBy;
     tenant: string;
     webinyVersion: string;
 }

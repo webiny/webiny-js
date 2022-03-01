@@ -7,6 +7,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import {
+    CreatedBy,
     File,
     FileManagerContext,
     FileManagerFilesStorageOperationsListParamsWhere,
@@ -278,7 +279,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             const identity = context.security.getIdentity();
             const tenant = context.tenancy.getCurrentTenant();
-            const createdBy = {
+            const createdBy: CreatedBy = {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type

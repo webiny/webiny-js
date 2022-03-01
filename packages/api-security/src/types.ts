@@ -143,7 +143,7 @@ export interface FullAccessPermission {
 
 export interface CreatedBy {
     id: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 

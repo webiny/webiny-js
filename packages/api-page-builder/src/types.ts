@@ -15,11 +15,7 @@ export interface PageElement {
     content: File;
     preview: File;
     createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
     tenant: string;
     locale: string;
 }
@@ -32,13 +28,14 @@ export interface Menu {
     description: string;
     items: any[];
     createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
     tenant: string;
     locale: string;
+}
+export interface CreatedBy {
+    id: string;
+    type: string;
+    displayName: string | null;
 }
 /**
  * @category RecordModel
@@ -49,11 +46,7 @@ export interface Category {
     url: string;
     layout: string;
     createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
     tenant: string;
     locale: string;
 }
@@ -109,16 +102,8 @@ export interface Page {
     notFound: boolean;
     createdOn: string;
     savedOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-    ownedBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
+    ownedBy: CreatedBy;
     webinyVersion: string;
 }
 

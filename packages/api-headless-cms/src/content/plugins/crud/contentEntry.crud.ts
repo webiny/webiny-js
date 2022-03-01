@@ -35,7 +35,7 @@ import {
     CmsEntryListWhere,
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
-    CmsModelField
+    CmsModelField, CreatedBy
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -498,7 +498,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             const identity = context.security.getIdentity();
             const locale = context.cms.getLocale();
 
-            const owner = {
+            const owner: CreatedBy = {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type

@@ -22,7 +22,7 @@ const useResponsiveClassName = (): UseResponsiveClassName => {
     }, []);
     // Create resize observer
     const resizeObserver = React.useMemo(() => {
-        return new ResizeObserver(entries => {
+        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
                 handlerResize({ width, height });

@@ -677,7 +677,7 @@ export interface CreatedBy {
     /**
      * Full name of the user.
      */
-    displayName: string;
+    displayName: string | null;
     /**
      * Type of the user (admin, user)
      */
