@@ -35,7 +35,8 @@ import {
     CmsEntryListWhere,
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
-    CmsModelField, CreatedBy
+    CmsModelField,
+    CreatedBy
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";

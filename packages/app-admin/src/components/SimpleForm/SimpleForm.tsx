@@ -94,5 +94,5 @@ export const SimpleFormFooter: React.FC<SimpleFormFooterProps> = props => {
 };
 
 export const SimpleFormContent: React.FC = props => {
-    return props.children as React.ReactElement;
+    return props.children as unknown as React.ReactElement;
 };

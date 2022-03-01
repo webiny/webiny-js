@@ -41,7 +41,7 @@ const PredefinedValues: React.FC<PredefinedValuesProps> = ({ field, fieldPlugin,
                             return children(props);
                         }
 
-                        return cloneElement(children as React.ReactElement, props);
+                        return cloneElement(children as unknown as React.ReactElement, props);
                     }}
                 </BaseFormBind>
             );

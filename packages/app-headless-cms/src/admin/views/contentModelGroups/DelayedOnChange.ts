@@ -73,7 +73,7 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
         const renderProp = typeof children === "function" ? children : false;
         const child = renderProp
             ? renderProp(newProps as Required<DelayedOnChangeProps>)
-            : React.cloneElement(children as React.ReactElement, newProps);
+            : React.cloneElement(children as unknown as React.ReactElement, newProps);
 
         const props = { ...child.props };
         const realOnKeyDown = props.onKeyDown || noop;

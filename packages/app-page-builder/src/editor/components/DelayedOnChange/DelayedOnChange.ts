@@ -96,7 +96,7 @@ export const DelayedOnChange: React.FC<DelayedOnChangeProps> = ({ children, ...o
     const renderProp = typeof children === "function" ? (children as ChildrenCallable) : null;
     const child = renderProp
         ? renderProp(newProps)
-        : React.cloneElement(children as React.ReactElement, newProps);
+        : React.cloneElement(children as unknown as React.ReactElement, newProps);
 
     const props = { ...child.props };
     const realOnKeyDown = props.onKeyDown || emptyFunction;

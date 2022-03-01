@@ -84,6 +84,8 @@ export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ childr
 
 export const PageBuilderConsumer: React.FC = ({ children }) => (
     <PageBuilderContext.Consumer>
-        {props => React.cloneElement(children as React.ReactElement, { pageBuilder: props })}
+        {props =>
+            React.cloneElement(children as unknown as React.ReactElement, { pageBuilder: props })
+        }
     </PageBuilderContext.Consumer>
 );

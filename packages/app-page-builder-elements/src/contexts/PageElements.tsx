@@ -156,6 +156,6 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
  */
 export const PageElementsConsumer: React.FC = ({ children }) => (
     <PageElementsContext.Consumer>
-        {(props: any) => React.cloneElement(children as React.ReactElement, props)}
+        {(props: any) => React.cloneElement(children as unknown as React.ReactElement, props)}
     </PageElementsContext.Consumer>
 );

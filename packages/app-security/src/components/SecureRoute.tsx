@@ -26,7 +26,7 @@ export default ({ children, permission }: SecureRouteProps): React.ReactElement 
     }
 
     if (hasPermission) {
-        return children as React.ReactElement;
+        return children as unknown as React.ReactElement;
     }
 
     const plugin = plugins.byName<SecureRouteErrorPlugin>("secure-route-error");

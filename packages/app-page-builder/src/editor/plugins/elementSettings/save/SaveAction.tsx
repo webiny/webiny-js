@@ -173,7 +173,7 @@ const SaveAction: React.FC = ({ children }) => {
                 onSubmit={onSubmit}
                 type={element.type === "block" ? "block" : "element"}
             />
-            {React.cloneElement(children as React.ReactElement, { onClick: showDialog })}
+            {React.cloneElement(children as unknown as React.ReactElement, { onClick: showDialog })}
         </>
     );
 };

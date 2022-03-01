@@ -27,7 +27,7 @@ export const WrapperWithFileUpload: React.FC<WrapperWithFileUploadProps> = ({
             {({ showFileManager }) =>
                 typeof children === "function"
                     ? children({ showFileManager })
-                    : React.cloneElement(children as React.ReactElement, {
+                    : React.cloneElement(children as unknown as React.ReactElement, {
                           onClick: showFileManager
                       })
             }

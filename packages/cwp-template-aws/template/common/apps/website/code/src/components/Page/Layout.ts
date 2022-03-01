@@ -16,12 +16,12 @@ const Layout: React.FC<LayoutProps> = ({ page, settings, children }) => {
 
     const layout = lodashGet(page, "settings.general.layout", null);
     if (!layout) {
-        return children as React.ReactElement;
+        return children as unknown as React.ReactElement;
     }
     const themeLayout = layouts.find(l => l.name === layout);
 
     if (!themeLayout) {
-        return children as React.ReactElement;
+        return children as unknown as React.ReactElement;
     }
 
     return createElement(themeLayout.component, { page, settings }, children);
