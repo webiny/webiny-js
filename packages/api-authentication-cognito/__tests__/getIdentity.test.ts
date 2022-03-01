@@ -5,7 +5,7 @@ describe("getIdentity Test", () => {
         expect(
             getIdentity({
                 token: {
-                    id: "xyz",
+                    sub: "xyz",
                     family_name: "Family",
                     given_name: "Given",
                     email: "family@given.com"
@@ -43,7 +43,7 @@ describe("getIdentity Test", () => {
         expect(
             getIdentity({
                 token: {
-                    id: "xyz",
+                    sub: "xyz",
                     given_name: "Given",
                     email: "family@given.com"
                 },
@@ -62,7 +62,7 @@ describe("getIdentity Test", () => {
         expect(
             getIdentity({
                 token: {
-                    id: "xyz",
+                    sub: "xyz",
                     family_name: "Family",
                     email: "family@given.com"
                 },
