@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* create and export the default `getIdentity` function ([548012b](https://github.com/webiny/webiny-js/commit/548012b0d9c31c1e97ae3e2c8b52dbb1904663cd))
+* ensure `null` values are returned ([761f911](https://github.com/webiny/webiny-js/commit/761f9112a81a62dc7a393ac697b28b1e2cb09f9f))
+* ensure `undefined` doesn't end up in `displayName` ([9ffddec](https://github.com/webiny/webiny-js/commit/9ffddec5f8423ec6e7100200a7479976f9622e11))
+* extract `getIdentity` property's type into `GetIdentity` type ([e963f7c](https://github.com/webiny/webiny-js/commit/e963f7c10f8b0f60535a630c2c8c961654ffccd9))
+* read `id` from `sub` token property ([db15576](https://github.com/webiny/webiny-js/commit/db15576a284814e6d9aca17d2a425cd9da041c75))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/api-authentication-cognito

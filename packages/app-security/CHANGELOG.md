@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Features
+
+* add types to app-security ([5edf41a](https://github.com/webiny/webiny-js/commit/5edf41a7f7b0cff5404256e8190d03846e46d49e))
+* add types to app-security ([e590832](https://github.com/webiny/webiny-js/commit/e5908328198615a11eb498b8d5f3a577823b5251))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/app-security

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* scaffold types ([#2249](https://github.com/webiny/webiny-js/issues/2249)) ([6973abe](https://github.com/webiny/webiny-js/commit/6973abec45c6aa30adcea44fed7981ad4d8ebf6b))
+
+
+### Features
+
+* add types to cli-plugin-scaffold-ci ([561f2e5](https://github.com/webiny/webiny-js/commit/561f2e5278fa581947e32af1830c9db9cab03070))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-ci

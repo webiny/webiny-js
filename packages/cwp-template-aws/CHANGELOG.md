@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* cwp tempalate types wip ([c607733](https://github.com/webiny/webiny-js/commit/c60773367208355f42cfa4405af9c36280f0e1d1))
+* dependencies for user project ([98ba93f](https://github.com/webiny/webiny-js/commit/98ba93f4bb5c56503470f14694f42a60c73c94e9))
+* tsconfig in user project ([3b31bdc](https://github.com/webiny/webiny-js/commit/3b31bdc4dade121f2ddb78966ad40f8a5c5abdfe))
+* types in cwp-template apps ([280260a](https://github.com/webiny/webiny-js/commit/280260a1d17a8c0d2a74dfcb7489aeaa8b32f019))
+
+
+### Features
+
+* strict property initialization ([#2234](https://github.com/webiny/webiny-js/issues/2234)) ([e11a5e4](https://github.com/webiny/webiny-js/commit/e11a5e44746cf4f2ff04c2f8a0c9bde61ea91641))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

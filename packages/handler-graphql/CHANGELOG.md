@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Features
+
+* add types to handler-graphql ([dc3937c](https://github.com/webiny/webiny-js/commit/dc3937c8055562cf0185d6e6005c04b5e055d2d9))
+* any types in api-headless-cms ([ace6efe](https://github.com/webiny/webiny-js/commit/ace6efe9930f365d0d5b436f872cc863dd3dd528))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/handler-graphql

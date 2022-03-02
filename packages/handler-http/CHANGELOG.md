@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* adio run ([7374289](https://github.com/webiny/webiny-js/commit/73742897e1710bb159a2a63fc587c68fc8cf164f))
+* http-handler tsconfig ([a4ebb2f](https://github.com/webiny/webiny-js/commit/a4ebb2fbb93e32ef86fdc5941736a5fb3806e264))
+
+
+### Features
+
+* add types to handler-http ([aba1b42](https://github.com/webiny/webiny-js/commit/aba1b423d8d7bb6333b9cfb3b09b72056a3d4ebe))
+* add types wip ([f223859](https://github.com/webiny/webiny-js/commit/f223859444a87a50c0b413918282acd6e016c35a))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/handler-http

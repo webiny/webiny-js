@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* **app-admin:** call initial data setter in editorjs Paragraph tool ([bbd84dd](https://github.com/webiny/webiny-js/commit/bbd84dd41ccf5715f5aad4f1aa97e0bb693e7ab8))
+* **app-admin:** filter falsy values in menu children ([1910b91](https://github.com/webiny/webiny-js/commit/1910b9158a0fcdf9c2f9cf07293e854bc2556c6c))
+* **app-admin:** refactor menus registration and state management ([d26a3c2](https://github.com/webiny/webiny-js/commit/d26a3c26a74b48439e828a52f70b5d0868ee469e))
+* admin and website ([d1006ed](https://github.com/webiny/webiny-js/commit/d1006ed659d5dff910795d61687bff9528a19129))
+* eslint run ([a1ea3dc](https://github.com/webiny/webiny-js/commit/a1ea3dc4ff61f6cb69cf5ed10f3fef2f9fafc514))
+* filemanager portal ([75171ed](https://github.com/webiny/webiny-js/commit/75171eda26d436da892b7eaa3faa7360a55f7a7a))
+* prettier run ([4703a40](https://github.com/webiny/webiny-js/commit/4703a404f65fdad502b3222209ded71b6f5b85cc))
+
+
+### Features
+
+* add types to app-admin ([93e5688](https://github.com/webiny/webiny-js/commit/93e5688b636a2e76dbd3d892358be0c1cfe83acb))
+* add types to app-admin ([fffd1d5](https://github.com/webiny/webiny-js/commit/fffd1d550350614f247688acb5537a19ee0e4619))
+* add types to app-admin ([42f5647](https://github.com/webiny/webiny-js/commit/42f5647a4f5a764914d477be142defd00fdbc254))
+* add types to app-headless-cms wip ([1eb07a1](https://github.com/webiny/webiny-js/commit/1eb07a14083d76b7195a684920cf6efb81895edf))
+* add types to app-page-builder ([e65ce21](https://github.com/webiny/webiny-js/commit/e65ce216d9019657964ddd89194be63544ef2bad))
+* add types to app-security ([5edf41a](https://github.com/webiny/webiny-js/commit/5edf41a7f7b0cff5404256e8190d03846e46d49e))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/app-admin

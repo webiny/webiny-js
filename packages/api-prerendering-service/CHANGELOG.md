@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* adio run ([7374289](https://github.com/webiny/webiny-js/commit/73742897e1710bb159a2a63fc587c68fc8cf164f))
+* eslint run ([a1ea3dc](https://github.com/webiny/webiny-js/commit/a1ea3dc4ff61f6cb69cf5ed10f3fef2f9fafc514))
+* prettier run ([4703a40](https://github.com/webiny/webiny-js/commit/4703a404f65fdad502b3222209ded71b6f5b85cc))
+* yarn adio ([601de41](https://github.com/webiny/webiny-js/commit/601de41833048b0f7d331c27e96929475cdda297))
+
+
+### Features
+
+* add types to api-prerendering-service ([a9cf24c](https://github.com/webiny/webiny-js/commit/a9cf24c9d5adf18a60d89d47c170cb4b675c63df))
+* prerendering service types ([3ad010b](https://github.com/webiny/webiny-js/commit/3ad010b57719d1d34e0876963a7d9f1eb334be60))
+* render as export default ([3193787](https://github.com/webiny/webiny-js/commit/319378708119d51b92052ca2781cd0fffcdfe1c5))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/api-prerendering-service

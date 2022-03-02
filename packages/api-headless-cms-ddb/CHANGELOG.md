@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* adio run ([7374289](https://github.com/webiny/webiny-js/commit/73742897e1710bb159a2a63fc587c68fc8cf164f))
+* sortby ([f6c4e5a](https://github.com/webiny/webiny-js/commit/f6c4e5a9e59bfc3953867d8dd7a85fc75734ea9a))
+
+
+### Features
+
+* any types in api-headless-cms-ddb ([01ae94b](https://github.com/webiny/webiny-js/commit/01ae94b955768718e6e4052e84e185d3bf986b5c))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/api-headless-cms-ddb

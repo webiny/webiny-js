@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Features
+
+* add types to app ([0af0a25](https://github.com/webiny/webiny-js/commit/0af0a25eb0d05736469a83aae75a8bd4787a5ea8))
+* add types to app ([c136749](https://github.com/webiny/webiny-js/commit/c136749aee4d38c2b8c30ac2d9c1ac204e3550d7))
+* add types to app-headless-cms wip ([1eb07a1](https://github.com/webiny/webiny-js/commit/1eb07a14083d76b7195a684920cf6efb81895edf))
+* add types to app-page-builder ([e65ce21](https://github.com/webiny/webiny-js/commit/e65ce216d9019657964ddd89194be63544ef2bad))
+* add types to app-tenant-manager ([229f344](https://github.com/webiny/webiny-js/commit/229f344f39b39c460dfc43a918a9afde2c6b9979))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/app

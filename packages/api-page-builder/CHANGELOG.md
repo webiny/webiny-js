@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* admin and website ([d1006ed](https://github.com/webiny/webiny-js/commit/d1006ed659d5dff910795d61687bff9528a19129))
+* eslint run ([a1ea3dc](https://github.com/webiny/webiny-js/commit/a1ea3dc4ff61f6cb69cf5ed10f3fef2f9fafc514))
+
+
+### Features
+
+* add types to api-page-builder ([5988646](https://github.com/webiny/webiny-js/commit/59886464e91d71e6811cbdea8e69b6f80f641679))
+* add types to api-page-builder ([78cdc3c](https://github.com/webiny/webiny-js/commit/78cdc3c830fcf5c21d174434d281f50c180435b3))
+* add types to app-page-builder ([e65ce21](https://github.com/webiny/webiny-js/commit/e65ce216d9019657964ddd89194be63544ef2bad))
+* any types for api-page-builder ([f5a8b00](https://github.com/webiny/webiny-js/commit/f5a8b005966961e6f0ed3033f8ad945217b2c70d))
+* any types in api-headless-cms ([ace6efe](https://github.com/webiny/webiny-js/commit/ace6efe9930f365d0d5b436f872cc863dd3dd528))
+* any types in api-page-builder ([78a923a](https://github.com/webiny/webiny-js/commit/78a923a3cbae9d541d050fa04d81fc482f740027))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/api-page-builder

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* after merge ([7d80869](https://github.com/webiny/webiny-js/commit/7d808694bf23548ba75d34a2ae2525a0c9ad188b))
+* eslint run ([a1ea3dc](https://github.com/webiny/webiny-js/commit/a1ea3dc4ff61f6cb69cf5ed10f3fef2f9fafc514))
+* scroll in app-page-builder ([2ecc213](https://github.com/webiny/webiny-js/commit/2ecc213a1ac6265ce26f5a43993ef10600f13df3))
+
+
+### Features
+
+* add types to app-page-builder ([e65ce21](https://github.com/webiny/webiny-js/commit/e65ce216d9019657964ddd89194be63544ef2bad))
+* add types to ui ([91486f2](https://github.com/webiny/webiny-js/commit/91486f24d26710c669596245fc52ad73a7600384))
+* add types to ui and ui-composer ([ebc6af1](https://github.com/webiny/webiny-js/commit/ebc6af1cdf1626886375d75605205e3bdd7b7f85))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/ui-composer

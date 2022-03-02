@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* clonedeep ([aea24f7](https://github.com/webiny/webiny-js/commit/aea24f730c823295a80fc6dfef16ba99d2c6bbc1))
+
+
+### Features
+
+* add types to api-admin-users-cognito ([4fef9f4](https://github.com/webiny/webiny-js/commit/4fef9f4939f90435b15d0c61914a7e0aac801eec))
+* add types to app-tenant-manager ([7fb0e3a](https://github.com/webiny/webiny-js/commit/7fb0e3a7e046e56a62a1f064f9683defce3a1635))
+* any types in app-admin-okta ([867b069](https://github.com/webiny/webiny-js/commit/867b06923c5e8f3cb48a05f277ae3d1e1027e801))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/api-admin-users-cognito

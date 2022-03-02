@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Features
+
+* **file-manager:** expose srcPrefix in settings UI ([9562648](https://github.com/webiny/webiny-js/commit/95626485ea5b16050a1907391b03d54ab60104ec))
+* any types in api-file-manager ([b512177](https://github.com/webiny/webiny-js/commit/b512177f686675936fe548d97b8f56f8cf5c3180))
+* any types in api-file-manager-ddb-es ([b22f509](https://github.com/webiny/webiny-js/commit/b22f509e2ed341060c5d106cacd570275e619d23))
+* any types in api-file-manager-s3 ([f5db9b6](https://github.com/webiny/webiny-js/commit/f5db9b61d28c86f66087bd0cb85b58b5d03f229e))
+* any types in api-headless-cms ([ace6efe](https://github.com/webiny/webiny-js/commit/ace6efe9930f365d0d5b436f872cc863dd3dd528))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/api-file-manager
