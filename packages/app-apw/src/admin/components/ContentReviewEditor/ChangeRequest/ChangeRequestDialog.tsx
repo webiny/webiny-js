@@ -98,6 +98,7 @@ const ChangeRequestMessage: React.FC<ChangeRequestMessageProps> = ({ Bind }) => 
                             onChange={props.onChange}
                             images={true}
                             scope={"scope:apw"}
+                            own={true}
                         >
                             {({ showFileManager }) => (
                                 <ApwFile {...props} showFileManager={showFileManager} />

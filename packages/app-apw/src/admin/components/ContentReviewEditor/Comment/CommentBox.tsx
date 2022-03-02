@@ -100,6 +100,7 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment })
                                     onUploadCompletion={([file]) => props.onChange(file)}
                                     onChange={props.onChange}
                                     scope={"scope:apw"}
+                                    own={true}
                                 >
                                     {({ showFileManager }) => (
                                         <IconButton
