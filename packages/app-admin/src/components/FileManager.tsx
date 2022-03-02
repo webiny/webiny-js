@@ -12,6 +12,7 @@ type FileManagerProps = {
     accept?: Array<string>;
     tags?: Array<string>;
     scope?: string;
+    own?: boolean;
     children: ({ showFileManager: Function }) => React.ReactNode;
     maxSize?: number | string;
     multipleMaxCount?: number;
@@ -56,7 +57,8 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             multipleMaxSize,
             onUploadCompletion,
             tags,
-            scope
+            scope,
+            own
         } = this.props;
 
         const container = this.container;
@@ -82,7 +84,8 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             multipleMaxSize,
             onUploadCompletion,
             tags,
-            scope
+            scope,
+            own
         };
 
         if (images) {
