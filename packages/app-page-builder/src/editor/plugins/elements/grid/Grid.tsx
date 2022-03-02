@@ -32,7 +32,7 @@ const Grid: React.FC<GridPropsType> = ({
     const containerStyle = elementStyle || {};
     // Use per-device style
     const alignItems =
-        elementStyle[`--${kebabCase(displayMode)}-align-items` as keyof CSSProperties];
+        elementStyle[`--${kebabCase(displayMode)}-align-items` as unknown as keyof CSSProperties];
     /**
      * Figure out better types.
      */

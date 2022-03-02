@@ -44,7 +44,9 @@ const ButtonContainer: React.FC<ButtonContainerPropsType> = ({
     // Use per-device style
     const justifyContent =
         elementStyle[
-            `--${kebabCase(uiAtomValue.displayMode)}-justify-content` as keyof CSSProperties
+            `--${kebabCase(
+                uiAtomValue.displayMode
+            )}-justify-content` as unknown as keyof CSSProperties
         ];
 
     const onChange = useCallback(

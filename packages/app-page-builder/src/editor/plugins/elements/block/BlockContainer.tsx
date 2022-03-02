@@ -43,18 +43,24 @@ const BlockContainer: React.FC<BlockContainerPropsType> = ({
     const element = useRecoilValue(elementByIdSelector(elementId)) as PbEditorElement;
     const highlightedElement = useRecoilValue(highlightElementAtom);
     const { id, path, type, elements } = element;
-
-    const containerStyle = elementStyle;
+    /**
+     * We cast because we have TS problems down the line.
+     * TODO @ts-refactor figure out correct types.
+     */
+    const containerStyle = elementStyle as any;
     // Use per-device style
-    const width = elementStyle[`--${kebabCase(displayMode)}-width` as keyof CSSProperties];
+    const width =
+        elementStyle[`--${kebabCase(displayMode)}-width` as unknown as keyof CSSProperties];
     /**
      * We're swapping "justifyContent" & "alignItems" value here because
      * ".webiny-pb-layout-block" has "flex-direction: column"
      */
     const alignItems =
-        elementStyle[`--${kebabCase(displayMode)}-justify-content` as keyof CSSProperties];
+        elementStyle[
+            `--${kebabCase(displayMode)}-justify-content` as unknown as keyof CSSProperties
+        ];
     const justifyContent =
-        elementStyle[`--${kebabCase(displayMode)}-align-items` as keyof CSSProperties];
+        elementStyle[`--${kebabCase(displayMode)}-align-items` as unknown as keyof CSSProperties];
 
     const onAddClick = () => {
         handler.trigger(
@@ -91,7 +97,7 @@ const BlockContainer: React.FC<BlockContainerPropsType> = ({
     return (
         <div
             style={{ width: "100%", display: "flex" }}
-            className={"webiny-pb-layout-block-container " + css(containerStyle as any)}
+            className={"webiny-pb-layout-block-container " + css(containerStyle)}
             {...elementAttributes}
         >
             <div style={style} className={combineClassNames(...customClasses)}>

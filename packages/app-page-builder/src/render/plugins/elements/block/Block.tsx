@@ -23,7 +23,9 @@ const Block: React.FC<BlockProps> = ({ element }) => {
                     // Use per-device style
                     const width =
                         elementStyle[
-                            `--${kebabCase(displayMode)}-align-items` as keyof CSSProperties
+                            `--${kebabCase(
+                                displayMode
+                            )}-align-items` as unknown as keyof CSSProperties
                         ];
                     /**
                      * We're swapping "justifyContent" & "alignItems" value here because
@@ -31,11 +33,15 @@ const Block: React.FC<BlockProps> = ({ element }) => {
                      */
                     const alignItems =
                         elementStyle[
-                            `--${kebabCase(displayMode)}-justify-content` as keyof CSSProperties
+                            `--${kebabCase(
+                                displayMode
+                            )}-justify-content` as unknown as keyof CSSProperties
                         ];
                     const justifyContent =
                         elementStyle[
-                            `--${kebabCase(displayMode)}-align-items` as keyof CSSProperties
+                            `--${kebabCase(
+                                displayMode
+                            )}-align-items` as unknown as keyof CSSProperties
                         ];
 
                     // TODO @ts-refactor style type

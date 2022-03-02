@@ -57,7 +57,9 @@ const Button: React.FC<ButtonProps> = ({ element }) => {
                 // Use per-device style
                 const justifyContent =
                     elementStyle[
-                        `--${kebabCase(displayMode)}-justify-content` as keyof CSSProperties
+                        `--${kebabCase(
+                            displayMode
+                        )}-justify-content` as unknown as keyof CSSProperties
                     ];
                 return (
                     <>

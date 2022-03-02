@@ -77,7 +77,8 @@ const ElementRootComponent: React.FC<ElementRootProps> = ({
         return null;
     }
     // Handle element visibility.// Use per-device style
-    const visibility = finalStyle[`--${kebabCase(displayMode)}-visibility` as keyof CSSProperties];
+    const visibility =
+        finalStyle[`--${kebabCase(displayMode)}-visibility` as unknown as keyof CSSProperties];
     if (visibility === "hidden") {
         return null;
     }
