@@ -45,7 +45,7 @@
     "@webiny/plugins": "^5.17.0-beta.1",
     "@webiny/project-utils": "^5.23.1",
     "rimraf": "^3.0.2",
-    "typescript": "4.5.5"
+    "typescript": "4.6.2"
   },
   "publishConfig": {
     "access": "public",
