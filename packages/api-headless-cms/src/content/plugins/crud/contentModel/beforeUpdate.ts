@@ -1,6 +1,8 @@
 import { Topic } from "@webiny/pubsub/types";
+import gql from "graphql-tag";
 import {
     BeforeModelUpdateTopicParams,
+    CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelLockedFieldPlugin,
@@ -9,6 +11,8 @@ import {
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
+import { createManageSDL } from "~/content/plugins/schema/createManageSDL";
+import { GraphQLError } from "graphql";
 
 const defaultTitleFieldId = "id";
 
@@ -66,6 +70,42 @@ interface AssignBeforeModelUpdateParams {
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }
+
+const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
+    const sdl = err.source.body;
+
+    // Find the invalid type
+    const { line: lineNumber } = err.locations[0];
+    const sdlLines = sdl.split("\n");
+    let sdlLine;
+    let gqlType;
+    for (let i = lineNumber; i > 0; i--) {
+        if (sdlLine && sdlLine.includes("type ")) {
+            gqlType = sdlLine.match(/type\s+(.*?)\s+{/);
+            break;
+        }
+
+        sdlLine = sdlLines[i];
+    }
+
+    let invalidField: string;
+    if (Array.isArray(gqlType)) {
+        const fieldRegex = new RegExp(`([^\\s+].*?):\\s+\\[?${gqlType[1]}!?\\]?`);
+        invalidField = sdl.match(fieldRegex)[1];
+    }
+
+    let message = `See more details in the browser console.`;
+    if (invalidField) {
+        message = `Please review the definition of "${invalidField}" field.`;
+    }
+
+    return {
+        data: { modelId: model.modelId, sdl, invalidField },
+        code: "INVALID_MODEL_DEFINITION",
+        message: [`Model "${model.modelId}" was not saved!`, message].join("\n")
+    };
+};
+
 export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) => {
     const { onBeforeModelUpdate, plugins } = params;
 
@@ -103,6 +143,23 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
                 throw new Error(
                     `Cannot update content model because of the unknown "${field.type}" field.`
                 );
+            }
+        }
+
+        if (fields.length) {
+            // Make sure that this model can be safely converted to a GraphQL SDL
+            const schema = createManageSDL({
+                model,
+                fieldTypePlugins: fieldTypePlugins.reduce(
+                    (acc, pl) => ({ ...acc, [pl.fieldType]: pl }),
+                    {}
+                )
+            });
+
+            try {
+                gql(schema);
+            } catch (err) {
+                throw new WebinyError(extractInvalidField(model, err));
             }
         }
 

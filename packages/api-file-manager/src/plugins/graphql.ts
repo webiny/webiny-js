@@ -100,11 +100,13 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             type FileManagerSettings {
                 uploadMinFileSize: Number
                 uploadMaxFileSize: Number
+                srcPrefix: String
             }
 
             input FileManagerSettingsInput {
                 uploadMinFileSize: Number
                 uploadMaxFileSize: Number
+                srcPrefix: String
             }
 
             type FileManagerSettingsResponse {

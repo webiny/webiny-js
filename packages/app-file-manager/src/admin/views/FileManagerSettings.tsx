@@ -8,6 +8,7 @@ import { Input } from "@webiny/ui/Input";
 import graphql from "../graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import get from "lodash.get";
+import { validation } from "@webiny/validation";
 
 import {
     SimpleForm,
@@ -19,6 +20,12 @@ import { CenteredView } from "@webiny/app-admin";
 import { QueryGetSettingsResult, Settings } from "~/types";
 import { MutationFunction, MutationResult } from "@apollo/react-common";
 
+function prefixValidator(value: string) {
+    if (!value.endsWith("/files/")) {
+        throw Error(`File URL prefix must end with "/files/"`);
+    }
+}
+
 const FileManagerSettings: React.FC = () => {
     const { showSnackbar } = useSnackbar();
 
@@ -29,26 +36,25 @@ const FileManagerSettings: React.FC = () => {
                     {(update: MutationFunction, result: MutationResult) => {
                         const settings: Settings = get(data, "fileManager.getSettings.data") || {};
                         const { loading: mutationInProgress } = result;
-                        const onSubmit = async (data: Settings) => {
-                            await update({
-                                variables: {
-                                    data: {
-                                        uploadMinFileSize: parseFloat(data.uploadMinFileSize),
-                                        uploadMaxFileSize: parseFloat(data.uploadMaxFileSize)
-                                    }
-                                }
-                            });
-                            showSnackbar("Settings updated successfully.");
-                        };
                         return (
                             <CenteredView>
                                 <Form
                                     data={settings}
-                                    onSubmit={data => {
-                                        /**
-                                         * We are positive that data is Settings
-                                         */
-                                        onSubmit(data as unknown as Settings);
+                                    onSubmit={async (data: Settings) => {
+                                        await update({
+                                            variables: {
+                                                data: {
+                                                    uploadMinFileSize: parseFloat(
+                                                        data.uploadMinFileSize
+                                                    ),
+                                                    uploadMaxFileSize: parseFloat(
+                                                        data.uploadMaxFileSize
+                                                    ),
+                                                    srcPrefix: data.srcPrefix
+                                                }
+                                            }
+                                        });
+                                        showSnackbar("Settings updated successfully.");
                                     }}
                                 >
                                     {({ Bind, form }) => (
@@ -66,7 +72,7 @@ const FileManagerSettings: React.FC = () => {
                                                                     <Input
                                                                         type="number"
                                                                         label="Minimum file upload size"
-                                                                        description="In bytes"
+                                                                        description="The smallest file size in bytes."
                                                                     />
                                                                 </Bind>
                                                             </Cell>
@@ -79,7 +85,25 @@ const FileManagerSettings: React.FC = () => {
                                                                     <Input
                                                                         type="number"
                                                                         label="Maximum file upload size"
-                                                                        description="In bytes"
+                                                                        description="The largest file size in bytes."
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
+                                                        </Grid>
+                                                    </Cell>
+                                                    <Cell span={12}>
+                                                        <Grid>
+                                                            <Cell span={12}>
+                                                                <Bind
+                                                                    name={"srcPrefix"}
+                                                                    validators={[
+                                                                        validation.create("url"),
+                                                                        prefixValidator
+                                                                    ]}
+                                                                >
+                                                                    <Input
+                                                                        label="File URL prefix"
+                                                                        description="This prefix will be prepended to the file key to form the full file URL."
                                                                     />
                                                                 </Bind>
                                                             </Cell>
