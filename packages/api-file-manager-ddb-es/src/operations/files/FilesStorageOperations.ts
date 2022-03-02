@@ -24,7 +24,6 @@ import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { compress } from "@webiny/api-elasticsearch/compression";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
@@ -352,50 +351,35 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
         return [files, meta];
     }
+
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
-        const { where, limit: initialLimit } = params;
+        const { where, limit } = params;
 
-        const esDefaults = configurations.es({
-            tenant: this.context.tenancy.getCurrentTenant().id
+        const body = createElasticsearchBody({
+            context: this.context,
+            where,
+            limit,
+            sort: []
         });
-
-        const must: any[] = [];
-        if (where.locale) {
-            must.push({ term: { "locale.keyword": where.locale } });
-        }
-
-        // When ES index is shared between tenants, we need to filter records by tenant ID
-        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-        if (sharedIndex) {
-            const tenant = this.context.tenancy.getCurrentTenant();
-            must.push({ term: { "tenant.keyword": tenant.id } });
-        }
-
-        const limit = createLimit(initialLimit);
-
-        const body = {
-            query: {
-                bool: {
-                    must
-                }
-            },
-            size: limit + 1,
-            aggs: {
-                listTags: {
-                    terms: { field: "tags.keyword" }
-                }
-            },
-            search_after: decodeCursor(null)
-        };
 
         let response = undefined;
 
         try {
             response = await this.esClient.search({
-                ...esDefaults,
-                body
+                ...configurations.es({
+                    tenant: this.context.tenancy.getCurrentTenant().id
+                }),
+                body: {
+                    ...body,
+                    aggs: {
+                        listTags: {
+                            terms: { field: "tags.keyword" }
+                        }
+                    },
+                    search_after: decodeCursor(null)
+                }
             });
         } catch (ex) {
             throw new WebinyError(
