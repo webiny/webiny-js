@@ -1,21 +1,20 @@
 import React from "react";
 import { AddMenu as Menu } from "@webiny/app-admin";
+import { ReactComponent as ApwIcon } from "~/admin/assets/icons/account_tree_24dp.svg";
 
 const Menus = () => {
     return (
-        <Menu name={"settings"}>
-            <Menu name={"apw"} label={"Apw"}>
-                <Menu
-                    name={"apw.contentReviews"}
-                    label={"Content reviews"}
-                    path={"/apw/content-reviews"}
-                />
-                <Menu
-                    name={"apw.publishingWorkflows"}
-                    label={"Publishing workflows"}
-                    path={"/apw/publishing-workflows"}
-                />
-            </Menu>
+        <Menu label={"Publishing Workflows"} name={"apw"} icon={<ApwIcon />}>
+            <Menu
+                name={"apw.contentReviews"}
+                label={"Content reviews"}
+                path={"/apw/content-reviews"}
+            />
+            <Menu
+                name={"apw.publishingWorkflows"}
+                label={"Workflows"}
+                path={"/apw/publishing-workflows"}
+            />
         </Menu>
     );
 };
