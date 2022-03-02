@@ -97,7 +97,7 @@ const ChangeRequestMessage: React.FC<ChangeRequestMessageProps> = ({ Bind }) => 
                             onUploadCompletion={([file]) => props.onChange(file)}
                             onChange={props.onChange}
                             images={true}
-                            tags={["apw"]}
+                            scope={"scope:apw"}
                         >
                             {({ showFileManager }) => (
                                 <ApwFile {...props} showFileManager={showFileManager} />
