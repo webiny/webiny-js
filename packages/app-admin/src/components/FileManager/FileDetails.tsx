@@ -21,7 +21,7 @@ import { ReactComponent as ImageIcon } from "../../assets/icons/insert_photo-24p
 import { ReactComponent as FileIcon } from "../../assets/icons/insert_drive_file-24px.svg";
 import { ReactComponent as CalendarIcon } from "../../assets/icons/today-24px.svg";
 import { ReactComponent as HighlightIcon } from "../../assets/icons/highlight-24px.svg";
-import { useFileManager } from "./FileManagerContext";
+import { getWhere, useFileManager } from "./FileManagerContext";
 import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "~/hooks/useSnackbar";
 import { useSecurity } from "@webiny/app-security";
@@ -235,7 +235,8 @@ export default function FileDetails(props: FileDetailsProps) {
                 // Get tags from cache
                 const listTagsData: any = cloneDeep(
                     cache.readQuery({
-                        query: LIST_TAGS
+                        query: LIST_TAGS,
+                        variables: { where: getWhere(queryParams.scope) }
                     })
                 );
                 // Remove selected file tags from list.
@@ -249,6 +250,7 @@ export default function FileDetails(props: FileDetailsProps) {
                 // Write it to cache
                 cache.writeQuery({
                     query: LIST_TAGS,
+                    variables: { where: getWhere(queryParams.scope) },
                     data: set(data, "fileManager.listTags", filteredTags)
                 });
             }
