@@ -72,10 +72,14 @@ interface AssignBeforeModelUpdateParams {
 }
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
-    const sdl = err.source.body;
+    const sdl = err.source?.body || "";
 
     // Find the invalid type
-    const { line: lineNumber } = err.locations[0];
+    const { line: lineNumber } = err.locations
+        ? err.locations[0]
+        : {
+              line: 0
+          };
     const sdlLines = sdl.split("\n");
     let sdlLine;
     let gqlType;
@@ -88,10 +92,14 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
         sdlLine = sdlLines[i];
     }
 
-    let invalidField: string;
+    let invalidField: string | undefined = undefined;
     if (Array.isArray(gqlType)) {
         const fieldRegex = new RegExp(`([^\\s+].*?):\\s+\\[?${gqlType[1]}!?\\]?`);
-        invalidField = sdl.match(fieldRegex)[1];
+
+        const matched = sdl.match(fieldRegex);
+        if (matched) {
+            invalidField = matched[1];
+        }
     }
 
     let message = `See more details in the browser console.`;
@@ -100,7 +108,11 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     }
 
     return {
-        data: { modelId: model.modelId, sdl, invalidField },
+        data: {
+            modelId: model.modelId,
+            sdl,
+            invalidField
+        },
         code: "INVALID_MODEL_DEFINITION",
         message: [`Model "${model.modelId}" was not saved!`, message].join("\n")
     };

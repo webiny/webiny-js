@@ -34,27 +34,31 @@ const FileManagerSettings: React.FC = () => {
             {({ data, loading: queryInProgress }: MutationResult<QueryGetSettingsResult>) => (
                 <Mutation mutation={graphql.UPDATE_SETTINGS}>
                     {(update: MutationFunction, result: MutationResult) => {
-                        const settings: Settings = get(data, "fileManager.getSettings.data") || {};
+                        const settings = (get(data, "fileManager.getSettings.data") ||
+                            {}) as Settings;
                         const { loading: mutationInProgress } = result;
+
+                        const onSubmit = async (data: Settings): Promise<void> => {
+                            await update({
+                                variables: {
+                                    data: {
+                                        uploadMinFileSize: parseFloat(data.uploadMinFileSize),
+                                        uploadMaxFileSize: parseFloat(data.uploadMaxFileSize),
+                                        srcPrefix: data.srcPrefix
+                                    }
+                                }
+                            });
+                            showSnackbar("Settings updated successfully.");
+                        };
                         return (
                             <CenteredView>
                                 <Form
                                     data={settings}
-                                    onSubmit={async (data: Settings) => {
-                                        await update({
-                                            variables: {
-                                                data: {
-                                                    uploadMinFileSize: parseFloat(
-                                                        data.uploadMinFileSize
-                                                    ),
-                                                    uploadMaxFileSize: parseFloat(
-                                                        data.uploadMaxFileSize
-                                                    ),
-                                                    srcPrefix: data.srcPrefix
-                                                }
-                                            }
-                                        });
-                                        showSnackbar("Settings updated successfully.");
+                                    onSubmit={data => {
+                                        /**
+                                         * We are positive that data is Settings.
+                                         */
+                                        onSubmit(data as unknown as Settings);
                                     }}
                                 >
                                     {({ Bind, form }) => (
@@ -117,7 +121,7 @@ const FileManagerSettings: React.FC = () => {
                                                         form.submit(ev);
                                                     }}
                                                 >
-                                                    Save
+                                                    Save Settings
                                                 </ButtonPrimary>
                                             </SimpleFormFooter>
                                         </SimpleForm>

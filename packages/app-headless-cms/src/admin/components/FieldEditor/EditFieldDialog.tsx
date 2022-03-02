@@ -287,7 +287,11 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                             </DialogContent>
                             <DialogActions>
                                 <ButtonDefault onClick={onClose}>{t`Cancel`}</ButtonDefault>
-                                <ButtonPrimary onClick={form.submit}>{t`Save Field`}</ButtonPrimary>
+                                <ButtonPrimary
+                                    onClick={ev => {
+                                        form.submit(ev);
+                                    }}
+                                >{t`Save Field`}</ButtonPrimary>
                             </DialogActions>
                         </>
                     );

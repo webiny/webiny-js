@@ -169,7 +169,15 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             data-testid="cms-new-content-model-modal"
         >
             {open && (
-                <Form data={{ group }} onSubmit={onSubmit}>
+                <Form
+                    data={{ group }}
+                    onSubmit={data => {
+                        /**
+                         * We are positive that data is CmsModelData.
+                         */
+                        onSubmit(data as unknown as CmsModelData);
+                    }}
+                >
                     {({ Bind, submit }) => (
                         <>
                             {loading && <CircularProgress label={"Creating content model..."} />}
@@ -218,9 +226,13 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                 </Grid>
                             </UID.DialogContent>
                             <UID.DialogActions>
-                                <ButtonPrimary onClick={(ev) => {
-                                    submit(ev)
-                                }}>+ {t`Create Model`}</ButtonPrimary>
+                                <ButtonPrimary
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
+                                >
+                                    + {t`Create Model`}
+                                </ButtonPrimary>
                             </UID.DialogActions>
                         </>
                     )}
