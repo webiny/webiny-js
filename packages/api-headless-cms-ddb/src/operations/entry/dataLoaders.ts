@@ -252,6 +252,10 @@ export class DataLoadersHandler {
         return await this.loadMany("getLatestRevisionByEntryId", params, params.ids);
     }
 
+    /**
+     * TODO @ts-refactor
+     * Maybe pass on the generics to DataLoader definition?
+     */
     private getLoader(name: Loaders, params: GetLoaderParams): DataLoader<any, any> {
         if (!dataLoaders[name]) {
             throw new WebinyError("Unknown data loader.", "UNKNOWN_DATA_LOADER", {

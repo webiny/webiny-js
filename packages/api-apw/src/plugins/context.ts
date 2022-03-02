@@ -6,6 +6,8 @@ import { createApw } from "~/createApw";
 import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
 import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { SecurityPermission } from "@webiny/api-security/types";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 export default () => [
     new ContextPlugin<ApwContext>(async context => {
@@ -30,11 +32,11 @@ export default () => [
             return i18nContent.locale;
         };
 
-        const getTenant = () => {
+        const getTenant = (): Tenant => {
             return tenancy.getCurrentTenant();
         };
 
-        const getPermission = async (name: string) => {
+        const getPermission = async (name: string): Promise<SecurityPermission | null> => {
             return security.getPermission(name);
         };
         const getIdentity = () => security.getIdentity();
