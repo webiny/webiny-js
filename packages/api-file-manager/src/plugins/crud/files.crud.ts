@@ -404,11 +404,12 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 );
             }
         },
-        async listTags({ after, limit }) {
+        async listTags({ where: initialWhere, after, limit }) {
             await checkBasePermissions(context);
             const { i18nContent } = context;
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
+                ...initialWhere,
                 tenant: context.tenancy.getCurrentTenant().id,
                 locale: i18nContent.locale.code
             };
