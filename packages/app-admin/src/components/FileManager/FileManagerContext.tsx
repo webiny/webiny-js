@@ -1,4 +1,5 @@
 import React from "react";
+import { useSecurity } from "@webiny/app-security";
 
 enum ListFilesSort {
     CREATED_ON_ASC,
@@ -20,7 +21,8 @@ export const getWhere = (scope: string | undefined) => {
     };
 };
 
-function init({ accept, tags, scope }) {
+function init({ accept, tags, scope, own, identity }) {
+    const initialWhere = own ? { createdBy: identity.id } : {};
     return {
         showingFileDetails: null,
         selected: [],
@@ -31,7 +33,7 @@ function init({ accept, tags, scope }) {
             types: accept,
             limit: 50,
             sort: ListFilesSort.CREATED_ON_DESC,
-            where: getWhere(scope)
+            where: { ...initialWhere, ...getWhere(scope) }
         }
     };
 }
@@ -83,7 +85,12 @@ function fileManagerReducer(state, action) {
 const FileManagerContext = React.createContext({});
 
 function FileManagerProvider({ children, ...props }) {
-    const [state, dispatch] = React.useReducer(fileManagerReducer, props, init);
+    const { identity } = useSecurity();
+    const initialArgs = {
+        ...props,
+        identity
+    };
+    const [state, dispatch] = React.useReducer(fileManagerReducer, initialArgs, init);
 
     const value = React.useMemo(() => {
         return {
