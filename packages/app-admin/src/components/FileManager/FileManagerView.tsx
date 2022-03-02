@@ -321,7 +321,12 @@ function FileManagerView(props: FileManagerViewProps) {
                      * Add "tags" while creating the new file.
                      */
                     const createFileResponse = await createFile({
-                        variables: { data: { ...response, tags: queryParams.tags } }
+                        variables: {
+                            data: {
+                                ...response,
+                                tags: queryParams.scope ? [queryParams.scope] : []
+                            }
+                        }
                     });
                     // Save create file data for later
                     uploadedFiles.push(get(createFileResponse, "data.fileManager.createFile.data"));

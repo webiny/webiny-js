@@ -7,16 +7,31 @@ enum ListFilesSort {
     SIZE_DESC
 }
 
-function init({ accept, tags }) {
+const DEFAULT_SCOPE = "scope:";
+
+export const getWhere = (scope: string | undefined) => {
+    if (!scope) {
+        return {
+            tag_not_startsWith: DEFAULT_SCOPE
+        };
+    }
+    return {
+        tag_startsWith: scope
+    };
+};
+
+function init({ accept, tags, scope }) {
     return {
         showingFileDetails: null,
         selected: [],
         hasPreviouslyUploadedFiles: null,
         queryParams: {
+            scope,
             tags,
             types: accept,
             limit: 50,
-            sort: ListFilesSort.CREATED_ON_DESC
+            sort: ListFilesSort.CREATED_ON_DESC,
+            where: getWhere(scope)
         }
     };
 }
