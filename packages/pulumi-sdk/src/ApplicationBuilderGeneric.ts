@@ -5,16 +5,16 @@ import trimNewlines from "trim-newlines";
 import { LocalWorkspace, UpOptions } from "@pulumi/pulumi/automation";
 
 import { PulumiApp } from "./PulumiApp";
-import { ApplicationConfig } from "./ApplicationConfig";
 import { getPulumiWorkDir } from "./utils/getPulumiWorkDir";
 import {
     ApplicationBuilder,
-    ApplicationContext,
+    ApplicationBuilderConfig,
     ApplicationStack,
     ApplicationStackArgs
 } from "./ApplicationBuilder";
+import { ApplicationContext } from "./ApplicationConfig";
 
-export interface ApplicationGenericConfig extends ApplicationConfig {
+export interface ApplicationGenericConfig extends ApplicationBuilderConfig {
     app(ctx: ApplicationContext): PulumiApp;
 }
 

@@ -4,22 +4,24 @@ import {
     defineApp,
     ApplicationContext,
     createGenericApplication,
-    mergeAppHooks,
-    ApplicationHooks
+    mergeAppHooks
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
 import { websiteUpload } from "./WebsiteHookUpload";
 import { websiteRender } from "./WebsiteHookRender";
 import { websiteUpdatePbSettings } from "./WebsiteHookUpdatePbSettings";
+import { applyCustomDomain, CustomDomainParams } from "../customDomain";
+import { ApplicationConfig } from "@webiny/pulumi-sdk";
 
-export interface WebsiteAppConfig extends Partial<ApplicationHooks> {
-    config?(app: WebsiteApp, ctx: ApplicationContext): void;
+export interface WebsiteAppConfig {
+    /** Custom domain configuration */
+    domain?(ctx: ApplicationContext): CustomDomainParams;
 }
 
 export const WebsiteApp = defineApp({
     name: "Website",
-    config(app) {
+    config(app, config: WebsiteAppConfig) {
         const appBucket = createPublicAppBucket(app, "app");
 
         const appCloudfront = app.addResource(aws.cloudfront.Distribution, {
@@ -124,6 +126,11 @@ export const WebsiteApp = defineApp({
             }
         });
 
+        const domain = config.domain?.(app.ctx);
+        if (domain) {
+            applyCustomDomain(deliveryCloudfront, domain);
+        }
+
         app.addOutputs({
             // Cloudfront and S3 bucket used to host the single-page application (SPA). The URL of the distribution is mainly
             // utilized by the Page Builder app's prerendering engine. Using this URL, it accesses the SPA and creates HTML snapshots.
@@ -154,7 +161,7 @@ export const WebsiteApp = defineApp({
 
 export type WebsiteApp = InstanceType<typeof WebsiteApp>;
 
-export function createWebsiteApp(config: WebsiteAppConfig) {
+export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<WebsiteApp>) {
     return createGenericApplication({
         id: "website",
         name: "website",
@@ -166,7 +173,7 @@ export function createWebsiteApp(config: WebsiteAppConfig) {
             }
         },
         app(ctx) {
-            const app = new WebsiteApp(ctx);
+            const app = new WebsiteApp(ctx, config);
             config.config?.(app, ctx);
             return app;
         },
