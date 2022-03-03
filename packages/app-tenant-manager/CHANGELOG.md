@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/app-tenant-manager
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* sorters ([2ac422e](https://github.com/webiny/webiny-js/commit/2ac422ec316b2ea286b0f897abd3018b72dd8d6b))
+
+
+### Features
+
+* add types to app-tenant-manager ([229f344](https://github.com/webiny/webiny-js/commit/229f344f39b39c460dfc43a918a9afde2c6b9979))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/app-tenant-manager

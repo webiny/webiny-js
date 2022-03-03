@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* admin and website ([d1006ed](https://github.com/webiny/webiny-js/commit/d1006ed659d5dff910795d61687bff9528a19129))
+* ui and form ([bb12676](https://github.com/webiny/webiny-js/commit/bb1267630e13142af681685ec27e2eaa958b6cc7))
+
+
+### Features
+
+* add types to app-headless-cms wip ([1eb07a1](https://github.com/webiny/webiny-js/commit/1eb07a14083d76b7195a684920cf6efb81895edf))
+* add types to app-page-builder ([e65ce21](https://github.com/webiny/webiny-js/commit/e65ce216d9019657964ddd89194be63544ef2bad))
+* add types to form ([615ec06](https://github.com/webiny/webiny-js/commit/615ec066ecd0b1cdd5c12b6638d93f657d37dfa7))
+* add types wip ([f223859](https://github.com/webiny/webiny-js/commit/f223859444a87a50c0b413918282acd6e016c35a))
+* any types in app-form-builder wip ([c9f8378](https://github.com/webiny/webiny-js/commit/c9f8378cc9249a35d4d24ca9f9d3927eee58d22c))
+* any types in app-form-builder wip 2 ([2034a50](https://github.com/webiny/webiny-js/commit/2034a50c166e7f842eeece0b6ac1acbd06fb45ce))
+* any types in app-headless-cms wip ([79c2c7f](https://github.com/webiny/webiny-js/commit/79c2c7f21d489cddc690556e3f5012fff75176d1))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/form
