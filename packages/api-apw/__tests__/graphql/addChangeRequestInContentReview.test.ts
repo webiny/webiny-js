@@ -1,6 +1,7 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createSetupForContentReview } from "../utils/helpers";
+import { ApwContentReview, PageWithWorkflow } from "~/types";
 
 const richTextMock = [
     {
@@ -45,7 +46,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         until
     } = gqlHandler;
 
-    const createContentReview = async page => {
+    const createContentReview = async (page: PageWithWorkflow) => {
         const [createContentReviewResponse] = await createContentReviewMutation({
             data: {
                 content: {
@@ -64,7 +65,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listContentReviews.data;
                 return list.length === 1;
             },
@@ -84,7 +85,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 1;
             },
@@ -95,11 +96,11 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
-                const [entry] = response.data.apw.listContentReviews.data;
+            (response: any) => {
+                const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
                 return (
                     entry &&
-                    entry.steps.find(step => step.slug === step1.slug).pendingChangeRequests === 1
+                    entry.steps.find(step => step.slug === step1.slug)?.pendingChangeRequests === 1
                 );
             },
             {
@@ -159,11 +160,12 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
 
             await until(
                 () => listContentReviewsQuery({}).then(([data]) => data),
-                response => {
-                    const [entry] = response.data.apw.listContentReviews.data;
+                (response: any) => {
+                    const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
                     return (
                         entry &&
-                        entry.steps.find(step => step.slug === step2.slug).pendingChangeRequests ===
+                        entry.steps.find(step => step.slug === step2.slug)
+                            ?.pendingChangeRequests ===
                             i + 1
                     );
                 },
@@ -182,7 +184,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                         step: `${contentReview.id}#${step2.slug}`
                     }
                 }).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 2;
             },
@@ -376,7 +378,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 4;
             },
@@ -469,7 +471,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 2;
             },

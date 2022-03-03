@@ -1,4 +1,4 @@
-import { ApwWorkflowStepTypes } from "~/types";
+import { ApwReviewer, ApwWorkflowStepTypes } from "~/types";
 
 interface CreateWorkflowParams {
     title?: string;
@@ -25,7 +25,7 @@ export default {
             id: reviewer.id
         }))
     }),
-    createWorkflow: (params: CreateWorkflowParams, reviewers) => ({
+    createWorkflow: (params: CreateWorkflowParams, reviewers: ApwReviewer[]) => ({
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
@@ -45,7 +45,7 @@ export default {
         },
         ...params
     }),
-    createWorkflowWithThreeSteps: (params: CreateWorkflowParams, reviewers) => ({
+    createWorkflowWithThreeSteps: (params: CreateWorkflowParams, reviewers: ApwReviewer[]) => ({
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
