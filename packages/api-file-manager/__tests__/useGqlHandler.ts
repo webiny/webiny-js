@@ -26,11 +26,21 @@ import {
 } from "./graphql/fileManagerSettings";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
+import { PluginCollection } from "@webiny/plugins/types";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
-    plugins?: any;
+    identity?: SecurityIdentity | null;
+    plugins?: PluginCollection;
+}
+
+interface InvokeParams {
+    httpMethod?: "POST";
+    body: {
+        query: string;
+        variables?: Record<string, any>;
+    };
+    headers?: Record<string, string>;
 }
 
 export default (params: UseGqlHandlerParams = {}) => {
@@ -72,7 +82,7 @@ export default (params: UseGqlHandlerParams = {}) => {
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
+    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler({
             httpMethod,
             headers,
@@ -89,19 +99,19 @@ export default (params: UseGqlHandlerParams = {}) => {
         handler,
         invoke,
         // Files
-        async createFile(variables, fields: string[] = []) {
+        async createFile(variables: Record<string, any>, fields: string[] = []) {
             return invoke({ body: { query: CREATE_FILE(fields), variables } });
         },
-        async updateFile(variables, fields: string[] = []) {
+        async updateFile(variables: Record<string, any>, fields: string[] = []) {
             return invoke({ body: { query: UPDATE_FILE(fields), variables } });
         },
-        async createFiles(variables, fields: string[] = []) {
+        async createFiles(variables: Record<string, any>, fields: string[] = []) {
             return invoke({ body: { query: CREATE_FILES(fields), variables } });
         },
-        async deleteFile(variables) {
+        async deleteFile(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_FILE, variables } });
         },
-        async getFile(variables, fields: string[] = []) {
+        async getFile(variables: Record<string, any>, fields: string[] = []) {
             return invoke({ body: { query: GET_FILE(fields), variables } });
         },
         async listFiles(variables = {}, fields: string[] = []) {
@@ -111,7 +121,7 @@ export default (params: UseGqlHandlerParams = {}) => {
             return invoke({ body: { query: LIST_TAGS, variables } });
         },
         // File Manager settings
-        async isInstalled(variables) {
+        async isInstalled(variables: Record<string, any>) {
             return invoke({ body: { query: IS_INSTALLED, variables } });
         },
         async install(variables = {}) {
@@ -120,7 +130,7 @@ export default (params: UseGqlHandlerParams = {}) => {
         async getSettings(variables = {}) {
             return invoke({ body: { query: GET_SETTINGS, variables } });
         },
-        async updateSettings(variables) {
+        async updateSettings(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
         }
     };
