@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import md5 from "md5";
 
-const createGravatar = email => `https://www.gravatar.com/avatar/${md5(email)}`;
+const createGravatar = (email: string) => `https://www.gravatar.com/avatar/${md5(email)}`;
 
 describe(`"Login" test`, () => {
     const { install, adminUsers } = useGqlHandler();
@@ -15,7 +15,6 @@ describe(`"Login" test`, () => {
         if (response?.data?.adminUsers?.install?.error) {
             console.log(response.data.adminUsers.install.error);
             throw new Error(response.data.adminUsers.install.error.message);
-            process.exit(0);
         }
     });
 
