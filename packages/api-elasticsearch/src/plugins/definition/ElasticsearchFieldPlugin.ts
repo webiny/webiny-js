@@ -136,7 +136,7 @@ export abstract class ElasticsearchFieldPlugin extends Plugin {
      *
      * This is the default base path generator. Basically it replaces ALL with given field name.
      */
-    public getBasePath(field: string): string | undefined {
+    public getBasePath(field: string): string {
         if (this._path === (this.constructor as any).ALL) {
             return field;
         }
