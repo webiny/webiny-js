@@ -20,7 +20,7 @@ import { FileElasticsearchFieldPlugin } from "~/plugins/FileElasticsearchFieldPl
 const fieldName = "richText";
 
 export class FileManagerElasticsearchRichTextFieldPlugin extends FileElasticsearchFieldPlugin {
-    getBasePath(field: string): string | undefined {
+    public override getBasePath(field: string): string | undefined {
         if (field === "richTextText") {
             return `${fieldName}.text`;
         } else if (field === "richTextEditor") {

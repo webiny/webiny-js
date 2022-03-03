@@ -85,12 +85,3 @@ export const formSubmissionDataC = {
         ip: "150.129.183.30"
     }
 };
-// eslint-disable-next-line
-export const getFormSubmissionData = ({ submissionData, id, formData }) => ({
-    ...submissionData,
-    meta: {
-        ...submissionData.meta,
-        submittedOn: /^20/
-    },
-    id
-});

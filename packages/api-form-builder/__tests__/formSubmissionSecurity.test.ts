@@ -9,15 +9,28 @@ class Mock {
     }
 }
 
-function MockSubmission(prefix) {
-    this.data = {
-        firstName: `${prefix}first-name`,
-        lastName: `${prefix}last-name`,
-        email: `${prefix}email@gmail.com`
-    };
-    this.meta = {
-        ip: "150.129.183.18"
-    };
+interface MockSubmissionData {
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+interface MockSubmissionMeta {
+    ip: string;
+}
+class MockSubmission {
+    public data: MockSubmissionData;
+    public meta: MockSubmissionMeta;
+
+    public constructor(prefix = "") {
+        this.data = {
+            firstName: `${prefix}first-name`,
+            lastName: `${prefix}last-name`,
+            email: `${prefix}email@gmail.com`
+        };
+        this.meta = {
+            ip: "150.129.183.18"
+        };
+    }
 }
 
 const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
@@ -255,14 +268,14 @@ describe("Forms Submission Security Test", () => {
 
         await handlerA.until(
             () => handlerA.listFormSubmissions({ form: formA.id }).then(([data]) => data),
-            ({ data }) => data.formBuilder.listFormSubmissions.data.length === 3,
+            ({ data }: any) => data.formBuilder.listFormSubmissions.data.length === 3,
             {
                 name: "list form A submissions"
             }
         );
         await handlerA.until(
             () => handlerA.listFormSubmissions({ form: formB.id }).then(([data]) => data),
-            ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2,
+            ({ data }: any) => data.formBuilder.listFormSubmissions.data.length === 2,
             {
                 name: "list form B submissions"
             }
