@@ -211,6 +211,7 @@
     "@rmwc/textfield": "link:./packages/ui/rmwc/textfield",
     "@rmwc/base": "link:./packages/ui/rmwc/base",
     "@types/react": "16.14.2",
+    "@typescript/lib-dom": "npm:@types/web@*",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
