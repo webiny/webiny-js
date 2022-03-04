@@ -16,8 +16,9 @@ interface UseNewRefEntry {
 }
 
 export const useNewRefEntry = ({ field }: UseNewRefEntryParams): UseNewRefEntry => {
-    const [{ modelId: refModelId }] = field.settings.models;
-    const referenceMultipleModels = field.settings.models.length > 1;
+    const models = (field.settings && field.settings.models ? field.settings.models : null) || [];
+    const [{ modelId: refModelId }] = models;
+    const referenceMultipleModels = models.length > 1;
 
     const contentEntriesContextValue = useContext(ContentEntriesContext);
 

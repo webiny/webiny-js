@@ -241,8 +241,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Update root tsconfig.build.json file paths
             ora.start(`Updating base tsconfig compilerOptions.paths to contain the package...`);
+
             if (!baseTsConfigBuildJson.compilerOptions) {
                 baseTsConfigBuildJson.compilerOptions = {};
+            }
+            if (!baseTsConfigBuildJson.compilerOptions.paths) {
+                baseTsConfigBuildJson.compilerOptions.paths = {};
             }
             baseTsConfigBuildJson.compilerOptions.paths[`${packageName}`] = [
                 `./${locationRelative}/src`

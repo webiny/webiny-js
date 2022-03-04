@@ -46,7 +46,9 @@ const EmptyPageDetails: React.FC<EmptyPageDetailsProps> = ({ onCreatePage, canCr
                     <ButtonDefault data-testid="new-record-button" onClick={onCreatePage}>
                         <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
                     </ButtonDefault>
-                ) : null
+                ) : (
+                    <></>
+                )
             }
         />
     );

@@ -8,6 +8,11 @@ export const moveBlockAction: EventActionCallable<MoveBlockActionArgsType> = asy
     meta,
     args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
     const { source, target, rootElementId } = args;
     const targetElement = await state.getElementById(target.id);
     if (!targetElement) {

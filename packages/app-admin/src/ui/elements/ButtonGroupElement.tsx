@@ -21,7 +21,7 @@ export class ButtonGroupElement extends UIElement<any> {
         this.useGrid(false);
     }
 
-    public render(props?: UiElementRenderProps): React.ReactNode {
+    public override render(props?: UiElementRenderProps): React.ReactNode {
         return <ButtonGroup>{super.render(props)}</ButtonGroup>;
     }
 }

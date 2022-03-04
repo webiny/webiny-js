@@ -1,11 +1,11 @@
 import configurations from "~/operations/configurations";
 import { Client } from "@elastic/elasticsearch";
 
-export interface Params {
+export interface ExecOnBeforeInstallParams {
     elasticsearch: Client;
     tenant: string;
 }
-export const execOnBeforeInstall = async (params: Params): Promise<void> => {
+export const execOnBeforeInstall = async (params: ExecOnBeforeInstallParams): Promise<void> => {
     const { elasticsearch } = params;
 
     const { index } = configurations.es(params);

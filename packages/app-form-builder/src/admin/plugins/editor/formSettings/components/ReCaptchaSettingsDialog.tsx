@@ -118,7 +118,9 @@ const ReCaptchaSettingsDialog: React.FC<ReCapchaSettingsDialogProps> = ({
                             </DialogContent>
                             <DialogActions>
                                 <ButtonDefault
-                                    onClick={submit}
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
                                 >{t`Enable Google reCAPTCHA`}</ButtonDefault>
                             </DialogActions>
                         </>

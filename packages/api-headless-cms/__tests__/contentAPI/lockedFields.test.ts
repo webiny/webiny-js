@@ -29,6 +29,9 @@ describe("Content model locked fields", () => {
 
     const setupCategoryModel = async (contentModelGroup: CmsGroup): Promise<CmsModel> => {
         const model = models.find(m => m.modelId === "category");
+        if (!model) {
+            throw new Error(`Could not find model "category".`);
+        }
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -70,6 +73,9 @@ describe("Content model locked fields", () => {
         const category = createCategoryResponse.data.createCategory.data as CmsEntry;
 
         const productModel = models.find(m => m.modelId === "product");
+        if (!productModel) {
+            throw new Error(`Could not find model "product".`);
+        }
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: productModel.name,
@@ -147,6 +153,9 @@ describe("Content model locked fields", () => {
         const model = await setupCategoryModel(group);
 
         const slugField = model.fields.find(field => field.fieldId === "slug");
+        if (!slugField) {
+            throw new Error(`Could not find field "slug".`);
+        }
 
         const createPromises = [];
         for (let i = 0; i < 1; i++) {
@@ -167,7 +176,7 @@ describe("Content model locked fields", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === categories.length,
+            ({ data }: any) => data.listCategories.data.length === categories.length,
             {
                 name: "after create categories"
             }
@@ -217,7 +226,7 @@ describe("Content model locked fields", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 0,
+            ({ data }: any) => data.listCategories.data.length === 0,
             {
                 name: "after delete categories"
             }

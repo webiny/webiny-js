@@ -108,7 +108,9 @@ const PBInstaller: React.FC<PbInstallerProps> = ({ onInstalled }) => {
                     <SimpleFormFooter>
                         <ButtonPrimary
                             data-testid="install-pb-button"
-                            onClick={submit}
+                            onClick={ev => {
+                                submit(ev);
+                            }}
                         >{t`Install Page Builder`}</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>

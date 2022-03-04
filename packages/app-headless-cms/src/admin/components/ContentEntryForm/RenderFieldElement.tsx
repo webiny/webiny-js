@@ -1,9 +1,8 @@
 import React from "react";
-import { CmsEditorField, CmsEditorContentModel } from "~/types";
+import { CmsEditorField, CmsEditorContentModel, BindComponent } from "~/types";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import Label from "./Label";
-import { BindComponent } from "@webiny/form";
 import { useBind } from "./useBind";
 import { useRenderPlugins } from "./useRenderPlugins";
 

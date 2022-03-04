@@ -38,11 +38,11 @@ interface UseTenantsListHook {
             parent: string;
             [key: string]: any;
         }>;
-        currentTenantId: string;
+        currentTenantId: string | null;
         createTenant: () => void;
         filter: string;
         setFilter: (filter: string) => void;
-        sort: string;
+        sort: string | null;
         setSort: (sort: string) => void;
         editTenant: (id: string) => void;
         deleteTenant: (id: string) => void;
@@ -52,7 +52,7 @@ interface UseTenantsListHook {
 export const useTenantsList: UseTenantsListHook = (config: Config) => {
     const defaultSorter = config.sorters.length ? config.sorters[0].sorter : null;
     const [filter, setFilter] = useState<string>("");
-    const [sort, setSort] = useState<string>(defaultSorter);
+    const [sort, setSort] = useState<string | null>(defaultSorter);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_TENANTS);

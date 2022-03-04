@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import FileManagerView from "./FileManager/FileManagerView";
+import FileManagerView, { FileManagerViewProps } from "./FileManager/FileManagerView";
 import pick from "lodash/pick";
 import { FileManagerProvider } from "./FileManager/FileManagerContext";
 import { FileItem } from "./FileManager/types";
@@ -29,7 +29,7 @@ export interface FileManagerProps {
 export type FileManagerPortalProps = Omit<FileManagerProps, "children">;
 
 class FileManagerPortal extends React.Component<FileManagerPortalProps> {
-    container: Element;
+    public container: HTMLElement | null = null;
     constructor(props: FileManagerPortalProps) {
         super(props);
 
@@ -47,10 +47,14 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
         }
     }
 
-    render() {
+    public override render() {
         const {
-            onChange,
-            onClose,
+            onChange = () => {
+                return void 0;
+            },
+            onClose = () => {
+                return void 0;
+            },
             accept,
             onChangePick,
             multiple,
@@ -61,7 +65,7 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             onUploadCompletion
         } = this.props;
 
-        const container = this.container;
+        const container = this.container as HTMLElement;
 
         const handleFileOnChange = (files?: FileItem[] | FileItem) => {
             if (!files || files.length === 0) {
@@ -81,14 +85,19 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             onChange(file as FileItem);
         };
 
-        const props = {
-            onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
+        const props: FileManagerViewProps = {
+            onChange:
+                typeof onChange === "function"
+                    ? handleFileOnChange
+                    : () => {
+                          return void 0;
+                      },
             onClose,
-            accept,
-            multiple,
-            maxSize,
-            multipleMaxCount,
-            multipleMaxSize,
+            accept: accept as string[],
+            multiple: multiple as boolean,
+            maxSize: maxSize as string,
+            multipleMaxCount: multipleMaxCount as number,
+            multipleMaxSize: multipleMaxSize as number,
             onUploadCompletion
         };
 

@@ -15,15 +15,15 @@ const isContentEditable = (value: any) => {
     return ["true", true].includes(value);
 };
 
-type KeyboardTargetEventType = KeyboardEvent & {
-    target: HTMLElement;
-};
 const setupListener = (): void => {
     if (listener || !document.body) {
         return;
     }
-    document.body.addEventListener("keydown", (ev: KeyboardTargetEventType) => {
-        const target = ev.target;
+    document.body.addEventListener("keydown", ev => {
+        if (!ev.target) {
+            return;
+        }
+        const target = ev.target as HTMLElement;
         // We ignore all keyboard events coming from within contentEditable element and inputs.
         if (filter.includes(target.nodeName) || isContentEditable(target.contentEditable)) {
             return;

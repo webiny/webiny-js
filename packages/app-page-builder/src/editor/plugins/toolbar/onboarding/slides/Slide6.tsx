@@ -123,13 +123,13 @@ const dialogStyleSlide6 = css({
     animationDuration: "4s"
 });
 
-type Props = {
+interface Slide6Props {
     currentSlide: number;
-};
+}
 
-class Slide6 extends React.Component<Props> {
-    slideNumber = 6;
-    editorContent = () => {
+class Slide6 extends React.Component<Slide6Props> {
+    public readonly slideNumber = 6;
+    private readonly editorContent = (): React.ReactElement => {
         return (
             <React.Fragment>
                 <HandIcon
@@ -158,7 +158,7 @@ class Slide6 extends React.Component<Props> {
         );
     };
 
-    render() {
+    public override render() {
         return (
             <SlideOutline
                 title={"Style & Positioning"}

@@ -40,6 +40,9 @@ const WebhooksRequestsDynamicFieldset: React.FC<WebhooksRequestsDynamicFieldsetP
     const addUrl = (): void => {
         const newValue = Array.isArray(value) ? [...value] : [];
         newValue.push("");
+        if (!onChange) {
+            return;
+        }
         onChange(newValue);
     };
 

@@ -30,12 +30,18 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
     public setLabel<TProps extends TRenderProps = TRenderProps>(
         label: string | GetterWithProps<TProps, string>
     ): void {
+        /**
+         * TODO @ts-refactor
+         * 'TProps' could be instantiated with an arbitrary type which could be unrelated to 'TRenderProps'
+         */
+        // @ts-ignore
         this.config.label = label;
     }
 
     public getLabel(props?: TRenderProps): string {
         if (typeof this.config.label === "function") {
-            return this.config.label(props);
+            // TODO @ts-refactor find out correct types to pass
+            return this.config.label(props as TRenderProps);
         }
         return this.config.label;
     }
@@ -46,7 +52,8 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
 
     public getType(props?: TRenderProps): ButtonElementType {
         if (typeof this.config.type === "function") {
-            return this.config.type(props);
+            // TODO @ts-refactor find out correct types to pass
+            return this.config.type(props as TRenderProps);
         }
         return this.config.type;
     }
@@ -59,7 +66,7 @@ export class ButtonElement<TRenderProps = any> extends UIElement<
         return this.config.onClick;
     }
 
-    public render(props: TRenderProps): React.ReactElement {
+    public override render(props: TRenderProps): React.ReactElement {
         const Component = BUTTONS[this.getType(props)];
         const onClick = this.getOnClick();
 

@@ -62,6 +62,17 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
             return;
         }
 
+        const getLocale = () => {
+            const locale = context.i18nContent.getCurrentLocale();
+            if (!locale) {
+                throw new WebinyError(
+                    "Missing locale on context.i18nContent.getCurrentLocale() in pageImportExportTasks.crud.ts",
+                    "LOCALE_ERROR"
+                );
+            }
+            return locale;
+        };
+
         // Modify context
         context.pageBuilder.pageImportExportTask = {
             storageOperations,
@@ -71,7 +82,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 });
 
                 const tenant = context.tenancy.getCurrentTenant();
-                const locale = context.i18nContent.getCurrentLocale();
+                const locale = getLocale();
 
                 const params = {
                     where: {
@@ -81,7 +92,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     }
                 };
 
-                let pageImportExportTask: PageImportExportTask | undefined;
+                let pageImportExportTask: PageImportExportTask | null = null;
 
                 try {
                     pageImportExportTask = await storageOperations.getTask(params);
@@ -111,7 +122,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 });
 
                 const tenant = context.tenancy.getCurrentTenant();
-                const locale = context.i18nContent.getCurrentLocale();
+                const locale = getLocale();
 
                 const { sort, limit } = params || {};
 
@@ -158,7 +169,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const pageImportExportTask: PageImportExportTask = {
                     ...data,
                     tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getCurrentLocale().code,
+                    locale: getLocale().code,
                     id,
                     createdOn: new Date().toISOString(),
                     createdBy: {
@@ -299,7 +310,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 const pageImportExportSubTask: PageImportExportTask = {
                     ...data,
                     tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getCurrentLocale().code,
+                    locale: getLocale().code,
                     id: id,
                     parent: parent,
                     createdOn: new Date().toISOString(),
@@ -378,7 +389,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     rwd: "r"
                 });
                 const tenant = context.tenancy.getCurrentTenant();
-                const locale = context.i18nContent.getCurrentLocale();
+                const locale = getLocale();
 
                 const params = {
                     where: {
@@ -389,7 +400,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                     }
                 };
 
-                let pageImportExportSubTask: PageImportExportTask | undefined;
+                let pageImportExportSubTask: PageImportExportTask | null = null;
 
                 try {
                     pageImportExportSubTask = await storageOperations.getSubTask(params);
@@ -419,7 +430,7 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
                 });
 
                 const tenant = context.tenancy.getCurrentTenant();
-                const locale = context.i18nContent.getCurrentLocale();
+                const locale = getLocale();
 
                 const listParams: PageImportExportTaskStorageOperationsListSubTaskParams = {
                     where: {

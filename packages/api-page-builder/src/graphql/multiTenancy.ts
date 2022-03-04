@@ -6,6 +6,12 @@ import { PbContext } from "~/types";
 export interface Context extends TenancyContext, PbContext {}
 
 function updateStorageFolder(item: PsRenderArgs, tenant: Tenant) {
+    if (!item.configuration) {
+        item.configuration = {};
+    }
+    if (!item.configuration.storage) {
+        item.configuration.storage = {};
+    }
     if (item.path === "/") {
         item.configuration.storage.folder = tenant.id;
         return;
@@ -13,9 +19,14 @@ function updateStorageFolder(item: PsRenderArgs, tenant: Tenant) {
 
     const existingFolder = item.configuration.storage.folder;
 
-    const parts = [tenant.id, existingFolder || item.path].map(p =>
-        p.replace(/^\/+/g, "").replace(/\/$/g, "")
-    );
+    const parts = [tenant.id, existingFolder || item.path]
+        .map(p => {
+            if (p === undefined) {
+                return null;
+            }
+            return p.replace(/^\/+/g, "").replace(/\/$/g, "");
+        })
+        .filter(p => p !== null) as string[];
 
     item.configuration.storage.folder = parts.join("/");
 }

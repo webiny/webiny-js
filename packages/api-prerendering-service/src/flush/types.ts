@@ -13,11 +13,11 @@ export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
 export type HookCallbackFunction = (args: {
-    log: any;
+    log: (...args: string[]) => void;
     context: HandlerContext;
     configuration: Configuration;
     args: Args;
-    render: Render;
+    render: Render | null;
 }) => void | Promise<void>;
 
 export interface FlushHookPlugin extends Plugin {

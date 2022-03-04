@@ -33,7 +33,7 @@ const SidebarActionsWrapper = styled("div")({
 });
 
 interface ElementSettingsTabContentProps {
-    element: PbEditorElement;
+    element: PbEditorElement | null;
 }
 const ElementSettingsTabContent: React.FC<ElementSettingsTabContentProps> = ({ element }) => {
     const elementSettings = useElementSettings();

@@ -18,6 +18,9 @@ export const deactivatePluginMutation: EventActionHandlerMutationActionCallable<
     PluginsAtomType,
     Plugin
 > = (state, target) => {
+    if (!target) {
+        return state;
+    }
     const { type, name } = target;
     const allPluginsByType = state[type];
     if (!allPluginsByType || allPluginsByType.length === 0) {

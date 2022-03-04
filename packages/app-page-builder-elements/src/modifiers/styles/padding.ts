@@ -6,7 +6,7 @@ const padding: ElementStylesModifier = ({ element, theme }) => {
         return null;
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!padding[breakpointName]) {
             return returnStyles;
         }

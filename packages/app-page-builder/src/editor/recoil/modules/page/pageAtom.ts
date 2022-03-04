@@ -11,7 +11,7 @@ export interface PageAtomType {
     title?: string;
     pid?: string;
     path?: string;
-    status: string;
+    status?: string;
     settings?: {
         general?: {
             layout?: string;
@@ -25,7 +25,7 @@ export interface PageAtomType {
     snippet: string | null;
     category?: PageCategoryType;
     createdBy: {
-        id: string;
+        id: string | null;
     };
 }
 
@@ -39,6 +39,6 @@ export const pageAtom = atom<PageAtomType>({
         createdBy: {
             id: null
         },
-        status: null
+        status: undefined
     }
 });

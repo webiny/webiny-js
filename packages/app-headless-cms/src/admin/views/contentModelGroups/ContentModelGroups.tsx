@@ -5,10 +5,10 @@ import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
 import ContentModelGroupsForm from "./ContentModelGroupsForm";
 
 const ContentModelGroups: React.FC = () => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo((): boolean => {
-        const permission = identity.getPermission("cms.contentModelGroup");
+        const permission = getPermission("cms.contentModelGroup");
         if (!permission) {
             return false;
         }
@@ -18,7 +18,7 @@ const ContentModelGroups: React.FC = () => {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     return (
         <SplitView>

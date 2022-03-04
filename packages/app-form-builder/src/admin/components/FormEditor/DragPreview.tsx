@@ -4,7 +4,7 @@ import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
 
 let subscribedToOffsetChange = false;
 
-let dragPreviewRef: HTMLDivElement = null;
+let dragPreviewRef: HTMLDivElement | null = null;
 
 const onOffsetChange = (monitor: DragSourceMonitor) => () => {
     if (!dragPreviewRef) {
@@ -26,7 +26,7 @@ const onOffsetChange = (monitor: DragSourceMonitor) => () => {
 };
 
 const DragPreview: React.FC = () => {
-    const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
+    const [dragHelperOpacity, setDragHelperOpacity] = useState<number>(0);
     const { isDragging } = useDragLayer(monitor => {
         if (!subscribedToOffsetChange) {
             // @ts-ignore

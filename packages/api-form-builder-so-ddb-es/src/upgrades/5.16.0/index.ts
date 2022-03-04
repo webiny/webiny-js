@@ -1,3 +1,7 @@
+/**
+ * Not used anymore.
+ */
+// @ts-nocheck
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
 import { FormBuilderStorageOperations } from "~/types";
@@ -35,6 +39,7 @@ const upgradeForms = async (params: Params): Promise<void> => {
         });
         forms = items;
     } catch (ex) {
+        console.log("Upgrade forms 5.16.0");
         console.log(ex.message);
         return;
     }

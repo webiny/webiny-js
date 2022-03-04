@@ -8,7 +8,7 @@ export interface AdminUsersContext extends SecurityContext, TenancyContext {
 
 export interface CreatedBy {
     id: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -33,7 +33,7 @@ export interface AdminUser extends BaseUserAttributes {
     group?: string;
     avatar?: Record<string, any>;
     createdOn: string;
-    createdBy: CreatedBy;
+    createdBy: CreatedBy | null | undefined;
     webinyVersion: string;
 }
 
@@ -153,7 +153,7 @@ export interface AdminUsers {
         data: UpdateUserInput
     ): Promise<TUser>;
     deleteUser(id: string): Promise<void>;
-    getVersion(): Promise<string>;
+    getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<System>;
     install(params: InstallParams): Promise<void>;
 }

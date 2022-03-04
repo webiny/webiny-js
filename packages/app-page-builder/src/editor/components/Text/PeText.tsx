@@ -12,16 +12,16 @@ const DATA_NAMESPACE = "data.text";
 
 interface TextElementProps {
     elementId: string;
-    mediumEditorOptions: CoreOptions;
+    mediumEditorOptions?: CoreOptions;
     tag?: string | [string, Record<string, any>];
 }
 
 const PeText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, tag: customTag }) => {
-    const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const [{ displayMode }] = useRecoilState(uiAtom);
     const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const { getUpdateValue } = useUpdateHandlers({
-        element,
+        element: element as PbEditorElement,
         dataNamespace: DATA_NAMESPACE
     });
 

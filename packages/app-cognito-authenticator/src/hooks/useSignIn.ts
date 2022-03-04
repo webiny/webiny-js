@@ -2,11 +2,15 @@ import { useCallback, useReducer } from "react";
 import Auth from "@aws-amplify/auth";
 import { useAuthenticator } from "./useAuthenticator";
 
-interface SignIn {
+export interface UseSignInCallableParams {
+    username: string;
+    password: string;
+}
+export interface UseSignIn {
     shouldRender: boolean;
-    signIn(params: { username: string; password: string }): void;
+    signIn(params: UseSignInCallableParams): void;
     loading: boolean;
-    error: Error;
+    error: Error | null;
 }
 
 interface State {
@@ -17,7 +21,7 @@ interface Reducer {
     (prev: State, next: Partial<State>): State;
 }
 
-export function useSignIn(): SignIn {
+export function useSignIn(): UseSignIn {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         error: null,
         loading: false

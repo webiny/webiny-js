@@ -1,3 +1,7 @@
+/**
+ * Remove this when no apps are using our internal db drivers anymore
+ */
+// @ts-nocheck
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import BatchProcess from "./BatchProcess";
 import QueryGenerator from "./QueryGenerator";

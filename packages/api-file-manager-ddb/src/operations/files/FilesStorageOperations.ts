@@ -241,7 +241,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             );
         }
 
-        const where: FileManagerFilesStorageOperationsListParamsWhere & {
+        const where: Partial<FileManagerFilesStorageOperationsListParamsWhere> & {
             contains?: { fields: string[]; value: string };
         } = {
             ...initialWhere
@@ -281,7 +281,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             fields
         });
 
-        const start = parseInt(decodeCursor(after)) || 0;
+        const start = parseInt(decodeCursor(after) || "0") || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const files = sortedFiles.slice(start, end);

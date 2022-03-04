@@ -5,7 +5,7 @@ import WebinyError from "@webiny/error";
 
 type Records<T> = Record<string, T>;
 
-export interface Params {
+export interface ApplyWhereParams {
     query: ElasticsearchBoolQueryConfig;
     where: Records<any>;
     fields: Records<ElasticsearchFieldPlugin>;
@@ -39,7 +39,7 @@ export const parseWhereKey = (key: string): ParseWhereKeyResult => {
 
 const ALL = ElasticsearchFieldPlugin.ALL;
 
-export const applyWhere = (params: Params): void => {
+export const applyWhere = (params: ApplyWhereParams): void => {
     const { query, where, fields, operators } = params;
 
     for (const key in where) {

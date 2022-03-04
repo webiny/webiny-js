@@ -11,6 +11,7 @@ import { DropElementActionEvent, TogglePluginActionEvent } from "~/editor/recoil
 import { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
 import { ElementRoot } from "~/render/components/ElementRoot";
 import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
+import { PbEditorElement } from "~/types";
 
 const CellContainerStyle = styled<"div", { active: boolean }>("div")(({ active }) => ({
     position: "relative",
@@ -51,7 +52,7 @@ interface CellPropsType {
 const CellContainer: React.FC<CellPropsType> = ({ elementId, isActive }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
-    const { isHighlighted } = element;
+    const { isHighlighted } = element as PbEditorElement;
     // TODO remove when state is fully switched to use content instead of flat elements
     if (!element) {
         return null;

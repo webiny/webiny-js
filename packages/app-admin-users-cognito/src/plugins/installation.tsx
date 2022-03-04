@@ -44,8 +44,8 @@ export interface InstallProps {
 }
 const Install: React.FC<InstallProps> = ({ onInstalled }) => {
     const client = useApolloClient();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
     const onSubmit = useCallback(async ({ subscribed, ...form }) => {
         setLoading(true);
@@ -93,7 +93,7 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                             {error && (
                                 <Cell span={12}>
                                     <Alert title={"Something went wrong"} type={"danger"}>
-                                        {error.message}
+                                        {error}
                                     </Alert>
                                 </Cell>
                             )}
@@ -143,7 +143,12 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary data-testid="install-security-button" onClick={submit}>
+                        <ButtonPrimary
+                            data-testid="install-security-button"
+                            onClick={ev => {
+                                submit(ev);
+                            }}
+                        >
                             Create Admin User
                         </ButtonPrimary>
                     </SimpleFormFooter>

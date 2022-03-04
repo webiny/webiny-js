@@ -40,11 +40,11 @@ interface UseLocalesListHook {
             createdOn: string;
             [key: string]: any;
         }>;
-        currentLocaleCode: string;
+        currentLocaleCode: string | null;
         createLocale: () => void;
         filter: string;
         setFilter: (filter: string) => void;
-        sort: string;
+        sort: string | null;
         setSort: (sort: string) => void;
         editLocale: (code: I18NLocaleItem) => void;
         deleteLocale: (code: I18NLocaleItem) => void;
@@ -54,7 +54,7 @@ interface UseLocalesListHook {
 export const useLocalesList: UseLocalesListHook = (config: Config) => {
     const defaultSorter = config.sorters.length ? config.sorters[0].sorter : null;
     const [filter, setFilter] = useState<string>("");
-    const [sort, setSort] = useState<string>(defaultSorter);
+    const [sort, setSort] = useState<string | null>(defaultSorter);
     const { refetchLocales, getDefaultLocale, getCurrentLocale, setCurrentLocale } = useI18N();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -105,7 +105,9 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
                 if (getCurrentLocale("content") === item.code) {
                     // Update current "content" locale
                     const defaultLocale = getDefaultLocale();
-                    setCurrentLocale(defaultLocale.code, "content");
+                    if (defaultLocale) {
+                        setCurrentLocale(defaultLocale.code, "content");
+                    }
                 }
 
                 if (currentLocaleCode === item.code) {

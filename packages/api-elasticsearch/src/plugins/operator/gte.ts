@@ -2,7 +2,7 @@ import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/El
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderOperatorGreaterThanOrEqualToPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
-    public name = "elasticsearch.queryBuilder.operator.greaterThanOrEqualTo.default";
+    public override name = "elasticsearch.queryBuilder.operator.greaterThanOrEqualTo.default";
 
     public getOperator(): string {
         return "gte";

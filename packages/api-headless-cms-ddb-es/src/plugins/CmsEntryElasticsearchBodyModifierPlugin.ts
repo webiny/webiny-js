@@ -18,7 +18,7 @@ export interface CmsEntryElasticsearchBodyModifierPluginConfig {
 }
 
 export class CmsEntryElasticsearchBodyModifierPlugin extends ElasticsearchBodyModifierPlugin<ModifyBodyParams> {
-    public static readonly type: string = "cms.elasticsearch.modifier.body.entry";
+    public static override readonly type: string = "cms.elasticsearch.modifier.body.entry";
 
     public readonly modelId?: string;
 

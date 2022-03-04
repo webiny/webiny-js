@@ -25,7 +25,7 @@ export class LabelElement extends UIElement<LabelElementConfig> {
         this.config.text = text;
     }
 
-    public render(): React.ReactNode {
+    public override render(): React.ReactNode {
         return this.config.text;
     }
 }

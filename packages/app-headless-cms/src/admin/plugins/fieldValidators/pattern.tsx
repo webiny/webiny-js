@@ -47,6 +47,10 @@ const plugin: CmsEditorFieldValidatorPlugin = {
                                 const selectedPatternPlugin = presetPlugins.find(
                                     item => item.pattern.name === value
                                 );
+                                if (!selectedPatternPlugin) {
+                                    setMessage(`Missing pattern plugin "${value}".`);
+                                    return;
+                                }
 
                                 setMessage(selectedPatternPlugin.pattern.message);
                             }}

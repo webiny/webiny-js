@@ -1,8 +1,12 @@
 import React from "react";
-import { BindComponent } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import RenderFieldElement from "./RenderFieldElement";
-import { CmsEditorContentModel, CmsEditorField, CmsEditorFieldsLayout } from "~/types";
+import {
+    CmsEditorContentModel,
+    CmsEditorField,
+    CmsEditorFieldsLayout,
+    BindComponent
+} from "~/types";
 
 interface FieldsProps {
     Bind: BindComponent;
@@ -12,8 +16,9 @@ interface FieldsProps {
     gridClassName?: string;
 }
 
-const getFieldById = (fields: CmsEditorField[], id: string): CmsEditorField =>
-    fields.find(field => field.id === id);
+const getFieldById = (fields: CmsEditorField[], id: string): CmsEditorField | null => {
+    return fields.find(field => field.id === id) || null;
+};
 
 export const Fields: React.FC<FieldsProps> = ({
     Bind,
@@ -29,7 +34,7 @@ export const Fields: React.FC<FieldsProps> = ({
                     {row.map(fieldId => (
                         <Cell span={Math.floor(12 / row.length)} key={fieldId}>
                             <RenderFieldElement
-                                field={getFieldById(fields, fieldId)}
+                                field={getFieldById(fields, fieldId) as CmsEditorField}
                                 Bind={Bind}
                                 contentModel={contentModel}
                             />

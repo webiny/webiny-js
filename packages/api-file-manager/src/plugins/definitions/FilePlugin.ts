@@ -122,7 +122,7 @@ export interface FilePluginParams {
 }
 
 export class FilePlugin extends Plugin {
-    public static readonly type = "fm.file";
+    public static override readonly type: string = "fm.file";
     private readonly _params: FilePluginParams;
 
     public constructor(params?: FilePluginParams) {
@@ -165,9 +165,10 @@ export class FilePlugin extends Plugin {
      * Keep any here because it can be a number of params. Method is internal so no need to complicate the code.
      */
     private async _execute(callback: keyof FilePluginParams, params: any): Promise<void> {
-        if (typeof this._params[callback] !== "function") {
+        const cb = this._params[callback];
+        if (typeof cb !== "function") {
             return;
         }
-        await this._params[callback](params);
+        await cb(params);
     }
 }

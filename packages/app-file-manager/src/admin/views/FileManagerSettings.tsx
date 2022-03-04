@@ -28,32 +28,37 @@ function prefixValidator(value: string) {
 
 const FileManagerSettings: React.FC = () => {
     const { showSnackbar } = useSnackbar();
+
     return (
         <Query query={graphql.GET_SETTINGS}>
             {({ data, loading: queryInProgress }: MutationResult<QueryGetSettingsResult>) => (
                 <Mutation mutation={graphql.UPDATE_SETTINGS}>
                     {(update: MutationFunction, result: MutationResult) => {
-                        const settings: Settings = get(data, "fileManager.getSettings.data") || {};
+                        const settings = (get(data, "fileManager.getSettings.data") ||
+                            {}) as Settings;
                         const { loading: mutationInProgress } = result;
+
+                        const onSubmit = async (data: Settings): Promise<void> => {
+                            await update({
+                                variables: {
+                                    data: {
+                                        uploadMinFileSize: parseFloat(data.uploadMinFileSize),
+                                        uploadMaxFileSize: parseFloat(data.uploadMaxFileSize),
+                                        srcPrefix: data.srcPrefix
+                                    }
+                                }
+                            });
+                            showSnackbar("Settings updated successfully.");
+                        };
                         return (
                             <CenteredView>
                                 <Form
                                     data={settings}
-                                    onSubmit={async (data: Settings) => {
-                                        await update({
-                                            variables: {
-                                                data: {
-                                                    uploadMinFileSize: parseFloat(
-                                                        data.uploadMinFileSize
-                                                    ),
-                                                    uploadMaxFileSize: parseFloat(
-                                                        data.uploadMaxFileSize
-                                                    ),
-                                                    srcPrefix: data.srcPrefix
-                                                }
-                                            }
-                                        });
-                                        showSnackbar("Settings updated successfully.");
+                                    onSubmit={data => {
+                                        /**
+                                         * We are positive that data is Settings.
+                                         */
+                                        onSubmit(data as unknown as Settings);
                                     }}
                                 >
                                     {({ Bind, form }) => (
@@ -111,7 +116,11 @@ const FileManagerSettings: React.FC = () => {
                                                 </Grid>
                                             </SimpleFormContent>
                                             <SimpleFormFooter>
-                                                <ButtonPrimary onClick={form.submit}>
+                                                <ButtonPrimary
+                                                    onClick={ev => {
+                                                        form.submit(ev);
+                                                    }}
+                                                >
                                                     Save Settings
                                                 </ButtonPrimary>
                                             </SimpleFormFooter>

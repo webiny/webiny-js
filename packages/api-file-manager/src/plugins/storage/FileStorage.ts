@@ -32,20 +32,24 @@ export class FileStorage {
     private readonly context: FileManagerContext;
 
     constructor({ context }: FileStorageParams) {
-        this.storagePlugin = context.plugins
+        const storagePlugin = context.plugins
             .byType<FilePhysicalStoragePlugin>(storagePluginType)
             .pop();
-        if (!this.storagePlugin) {
+        if (!storagePlugin) {
             throw new WebinyError(
                 `Missing plugin of type "${storagePluginType}".`,
                 "STORAGE_PLUGIN_ERROR"
             );
         }
+        this.storagePlugin = storagePlugin;
         this.context = context;
     }
 
     async upload(params: FileStorageUploadParams): Promise<Result> {
         const settings = await this.context.fileManager.settings.getSettings();
+        if (!settings) {
+            throw new WebinyError("Missing File Manager Settings.", "FILE_MANAGER_ERROR");
+        }
         // Add file to cloud storage.
         const { file: fileData } = await this.storagePlugin.upload({
             ...params,
@@ -56,14 +60,19 @@ export class FileStorage {
 
         // Save file in DB.
         return await fileManager.files.createFile({
-            ...fileData,
-            meta: { private: Boolean(params.hideInFileManager) },
+            ...(fileData as any),
+            meta: {
+                private: Boolean(params.hideInFileManager)
+            },
             tags: Array.isArray(params.tags) ? params.tags : []
         });
     }
 
     async uploadFiles(params: FileStorageUploadMultipleParams) {
         const settings = await this.context.fileManager.settings.getSettings();
+        if (!settings) {
+            throw new WebinyError("Missing File Manager Settings.", "FILE_MANAGER_ERROR");
+        }
         // Upload files to cloud storage.
         const promises = [];
         for (const item of params.files) {

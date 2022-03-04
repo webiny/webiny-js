@@ -37,9 +37,13 @@ declare global {
     }
 }
 
+interface FieldValidator {
+    (value: string): Promise<boolean>;
+}
+
 const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     const theme = useMemo(
-        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
         []
     );
 
@@ -50,7 +54,11 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         if (!data.id) {
             return;
         }
-        onFormMounted({ ...props, client });
+        onFormMounted({
+            preview: props.preview || false,
+            data: props.data || null,
+            client
+        });
     }, [data.id]);
 
     const reCaptchaResponseToken = useRef("");
@@ -63,12 +71,12 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     const formData: FbFormModel = cloneDeep(data);
     const { layout, fields, settings } = formData;
 
-    const getFieldById = (id: string): FbFormModelField => {
-        return fields.find(field => field._id === id);
+    const getFieldById = (id: string): FbFormModelField | null => {
+        return fields.find(field => field._id === id) || null;
     };
 
-    const getFieldByFieldId = (id: string): FbFormModelField => {
-        return fields.find(field => field.fieldId === id);
+    const getFieldByFieldId = (id: string): FbFormModelField | null => {
+        return fields.find(field => field.fieldId === id) || null;
     };
 
     const getFields = (): FormRenderFbFormModelField[][] => {
@@ -76,89 +84,44 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         const validatorPlugins =
             plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
 
-        // TODO @ts-refactor verify that this is correct @pavel / @adrian
         return fieldLayout.map(row => {
             return row.map(id => {
                 /**
                  * We can cast safely because we are adding validators
                  */
                 const field = getFieldById(id) as FormRenderFbFormModelField;
-                // row[idIndex] = getFieldById(id);
-                field.validators = field.validation
-                    .map(item => {
-                        const validatorPlugin = validatorPlugins.find(
-                            plugin => plugin.validator.name === item.name
-                        );
+                field.validators = (field.validation || []).reduce((collection, item) => {
+                    const validatorPlugin = validatorPlugins.find(
+                        plugin => plugin.validator.name === item.name
+                    );
 
-                        if (
-                            !validatorPlugin ||
-                            typeof validatorPlugin.validator.validate !== "function"
-                        ) {
-                            return null;
+                    if (
+                        !validatorPlugin ||
+                        typeof validatorPlugin.validator.validate !== "function"
+                    ) {
+                        return collection;
+                    }
+
+                    const validator: FieldValidator = async (value: string): Promise<boolean> => {
+                        let isInvalid;
+                        try {
+                            const result = await validatorPlugin.validator.validate(value, item);
+                            isInvalid = result === false;
+                        } catch (e) {
+                            isInvalid = true;
                         }
 
-                        return async (value: string): Promise<boolean> => {
-                            let isInvalid;
-                            try {
-                                const result = await validatorPlugin.validator.validate(
-                                    value,
-                                    item
-                                );
-                                isInvalid = result === false;
-                            } catch (e) {
-                                isInvalid = true;
-                            }
-
-                            if (isInvalid) {
-                                throw new Error(item.message || "Invalid value.");
-                            }
-                            return true;
-                        };
-                    })
-                    .filter(Boolean);
+                        if (isInvalid) {
+                            throw new Error(item.message || "Invalid value.");
+                        }
+                        return true;
+                    };
+                    collection.push(validator);
+                    return collection;
+                }, [] as FieldValidator[]);
                 return field;
             });
         });
-        // fieldLayout.forEach(row => {
-        //     // row.forEach((id, idIndex) => {
-        //     row.forEach(id => {
-        //         const field = getFieldById(id);
-        //         // row[idIndex] = getFieldById(id);
-        //         field.validators = field.validation
-        //             .map(item => {
-        //                 const validatorPlugin = validatorPlugins.find(
-        //                     plugin => plugin.validator.name === item.name
-        //                 );
-        //
-        //                 if (
-        //                     !validatorPlugin ||
-        //                     typeof validatorPlugin.validator.validate !== "function"
-        //                 ) {
-        //                     return null;
-        //                 }
-        //
-        //                 return async (value: string): Promise<boolean> => {
-        //                     let isInvalid;
-        //                     try {
-        //                         const result = await validatorPlugin.validator.validate(
-        //                             value,
-        //                             item
-        //                         );
-        //                         isInvalid = result === false;
-        //                     } catch (e) {
-        //                         isInvalid = true;
-        //                     }
-        //
-        //                     if (isInvalid) {
-        //                         throw new Error(item.message || "Invalid value.");
-        //                     }
-        //                     return true;
-        //                 };
-        //             })
-        //             .filter(Boolean);
-        //     });
-        // });
-        // return fieldLayout;
     };
 
     const getDefaultValues = (overrides: Record<string, string> = {}): Record<string, string> => {
@@ -246,7 +209,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         setTermsOfServiceAccepted: value => (termsOfServiceAccepted.current = value)
     });
 
-    const layoutProps: FormRenderPropsType = {
+    const layoutProps: FormRenderPropsType<FbFormSubmissionData> = {
         getFieldById,
         getFieldByFieldId,
         getDefaultValues,

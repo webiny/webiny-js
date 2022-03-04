@@ -30,12 +30,12 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form }) => {
             return true;
         }
         throw new Error("Please enter a unique Field ID");
-    }, undefined);
+    }, []);
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
     let additionalSettings: React.ReactNode = null;
-    if (typeof fieldPlugin.field.renderSettings === "function") {
+    if (fieldPlugin && typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
             form,
             afterChangeLabel,

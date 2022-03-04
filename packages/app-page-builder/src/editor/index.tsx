@@ -17,7 +17,7 @@ interface EditorPropsType {
     revisions: RevisionsAtomType;
 }
 
-export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisions }) => {
+export const Editor: React.FC<EditorPropsType> = ({ page, revisions }) => {
     return (
         <RecoilRoot
             initializeState={({ set }) => {

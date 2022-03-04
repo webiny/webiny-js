@@ -28,14 +28,14 @@ export interface ListParams {
     where: ListWhere;
     sort?: string[];
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 export interface ListMeta {
     /**
      * A cursor for pagination.
      */
-    cursor: string;
+    cursor: string | null;
     /**
      * Is there more items to load?
      */
@@ -93,7 +93,7 @@ export interface CreatedBy {
     /**
      * Full name of the user.
      */
-    displayName: string;
+    displayName: string | null;
     /**
      * Type of the user (admin, user)
      */
@@ -109,7 +109,7 @@ interface BaseFields {
 
 export interface ApwReviewer extends BaseFields {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -137,8 +137,8 @@ export interface ApwContentReviewStep {
     reviewers: ApwReviewer[];
     status: ApwContentReviewStepStatus;
     pendingChangeRequests: number;
-    signOffProvidedOn: string;
-    signOffProvidedBy: CreatedBy;
+    signOffProvidedOn: string | null;
+    signOffProvidedBy: CreatedBy | null;
 }
 
 export interface ApwContentReview extends BaseFields {
@@ -213,7 +213,7 @@ export interface ListWorkflowsParams extends ListParams {
 
 interface CreateReviewerParams {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -376,7 +376,7 @@ export interface ApwContentReviewCrud
     onAfterContentReviewDelete: Topic<OnAfterContentReviewDeleteTopicParams>;
 }
 
-export type WorkflowGetter = (id: string, settings: { modelId?: string }) => Promise<string>;
+export type WorkflowGetter = (id: string, settings: { modelId?: string }) => Promise<string | null>;
 
 export interface AdvancedPublishingWorkflow {
     addWorkflowGetter: (type: ApwContentTypes, func: WorkflowGetter) => void;
@@ -395,7 +395,7 @@ export interface ApwContext extends Context, CmsContext {
 
 export interface LifeCycleHookCallbackParams {
     apw: ApwContext["apw"];
-    security?: ApwContext["security"];
+    security: ApwContext["security"];
     cms?: ApwContext["cms"];
 }
 
@@ -403,7 +403,7 @@ export interface CreateApwParams {
     getLocale: () => I18NLocale;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    getPermission: (name: string) => Promise<SecurityPermission>;
+    getPermission: (name: string) => Promise<SecurityPermission | null>;
     storageOperations: ApwStorageOperations;
 }
 
@@ -415,13 +415,13 @@ type StorageOperationsListReviewersParams = ApwReviewerListParams;
 
 interface CreateApwReviewerData {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
 interface UpdateApwReviewerData {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 

@@ -12,7 +12,9 @@ interface CloneActionPropsType {
 const CloneAction: React.FC<CloneActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element: PbEditorElement = useRecoilValue(elementByIdSelector(activeElementId));
+    const element: PbEditorElement = useRecoilValue(
+        elementByIdSelector(activeElementId as string)
+    ) as PbEditorElement;
 
     if (!element) {
         return null;

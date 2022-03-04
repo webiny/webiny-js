@@ -47,8 +47,9 @@ const createReCaptchaComponent = ({
                 {...props}
                 sitekey={settings.reCaptcha.settings.siteKey}
                 onChange={response => {
-                    setResponseToken(response);
-                    typeof props.onChange === "function" && props.onChange(response);
+                    setResponseToken(response as unknown as string);
+                    typeof props.onChange === "function" &&
+                        props.onChange(response as unknown as string);
                 }}
                 onErrored={(...args) => {
                     setResponseToken("");

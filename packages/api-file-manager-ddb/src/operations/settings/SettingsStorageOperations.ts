@@ -40,7 +40,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
         });
     }
 
-    public async get(): Promise<FileManagerSettings> {
+    public async get(): Promise<FileManagerSettings | null> {
         try {
             const settings = await this._entity.get({
                 PK: this.partitionKey,

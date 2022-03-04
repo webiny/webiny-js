@@ -34,10 +34,10 @@ interface Config {
 }
 
 export class MenuPlugin extends Plugin {
-    public static readonly type = "admin-menu";
-    private _config: Partial<Config>;
+    public static override readonly type: string = "admin-menu";
+    private readonly _config: Partial<Config>;
 
-    constructor(config?: Config) {
+    public constructor(config?: Config) {
         super();
         this._config = config || {};
     }
@@ -46,7 +46,10 @@ export class MenuPlugin extends Plugin {
         return this._config.order;
     }
 
-    render(props: Props): React.ReactNode {
+    public render(props: Props): React.ReactNode {
+        if (!this._config.render) {
+            return null;
+        }
         return this._config.render(props);
     }
 }

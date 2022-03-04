@@ -17,6 +17,11 @@ const TenancyProviderHOC = (Component: React.FC): React.FC => {
 export const TenancyExtension: React.FC = () => {
     plugins.register(installation);
 
+    /**
+     * TODO @ts-refactor
+     * Expects ComponentType
+     */
+    // @ts-ignore
     return <Provider hoc={TenancyProviderHOC} />;
 };
 

@@ -6,7 +6,7 @@ const width: ElementStylesModifier = ({ theme, element }) => {
         return {};
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!width[breakpointName]) {
             return returnStyles;
         }

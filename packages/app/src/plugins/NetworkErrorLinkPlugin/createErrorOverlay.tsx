@@ -6,7 +6,7 @@ interface Params {
     query: string;
     networkError: Record<string, any>;
 }
-const createErrorOverlay = (params: Params) => {
+const createErrorOverlay = (params: Params): void => {
     const { query, networkError } = params;
     // If the element already present in DOM, return immediately.
     if (document.getElementById("overlay-root")) {

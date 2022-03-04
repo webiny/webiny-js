@@ -50,7 +50,6 @@ export interface Context {
 /**
  * Left for backwards-compatibility.
  *
- * @internal
  * @deprecated
  */
 export type ContextPlugin<
@@ -71,7 +70,6 @@ export type ContextPlugin<
 /**
  * Left for backwards-compatibility.
  *
- * @internal
  * @deprecated
  */
 export type HandlerPlugin<
@@ -95,7 +93,6 @@ export type HandlerPlugin<
 /**
  * Left for backwards-compatibility.
  *
- * @internal
  * @deprecated
  */
 export type HandlerResultPlugin<
@@ -116,7 +113,6 @@ export type HandlerResultPlugin<
 /**
  * Left for backwards-compatibility.
  *
- * @internal
  * @deprecated
  */
 export type HandlerErrorPlugin<

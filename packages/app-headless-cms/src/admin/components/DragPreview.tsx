@@ -5,7 +5,7 @@ import { DragSourceMonitorImpl } from "react-dnd/lib/common/DragSourceMonitorImp
 
 let subscribedToOffsetChange = false;
 
-let dragPreviewRef: HTMLDivElement = null;
+let dragPreviewRef: HTMLDivElement | null = null;
 
 const onOffsetChange = (monitor: DragSourceMonitor) => () => {
     if (!dragPreviewRef) {
@@ -25,7 +25,11 @@ const onOffsetChange = (monitor: DragSourceMonitor) => () => {
 
 const DragPreview: React.FC = () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
-    const { isDragging } = useDragLayer((monitor: DragSourceMonitorImpl) => {
+    const { isDragging } = useDragLayer(initialMonitor => {
+        /**
+         * We must cast because TS is complaining. We know that casting as DragSourceMonitorImpl is ok.
+         */
+        const monitor = initialMonitor as unknown as DragSourceMonitorImpl;
         if (!subscribedToOffsetChange) {
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
             subscribedToOffsetChange = true;

@@ -28,12 +28,13 @@ const defaultStyles = { display: "block" };
 
 interface PeHeadingProps {
     isActive?: boolean;
-    element?: PbEditorElement;
+    element: PbEditorElement;
     mediumEditorOptions?: MediumEditorOptions;
 }
 const PeHeading: React.FC<PeHeadingProps> = props => {
     const { element, mediumEditorOptions } = props;
-    const tag = element.data.text.desktop.tag || "h1";
+    const elementDataText = element.data.text || {};
+    const tag = elementDataText.desktop?.tag || "h1";
 
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
     const classNames = combineClassNames(
@@ -55,7 +56,7 @@ const PeHeading: React.FC<PeHeadingProps> = props => {
                 />
             ) : (
                 React.createElement(tag, {
-                    dangerouslySetInnerHTML: { __html: element.data.text.data.text },
+                    dangerouslySetInnerHTML: { __html: elementDataText.data?.text },
                     className: classNames
                 })
             )}

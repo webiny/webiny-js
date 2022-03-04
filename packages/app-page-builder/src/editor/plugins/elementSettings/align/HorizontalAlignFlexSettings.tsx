@@ -53,9 +53,9 @@ enum AlignmentsTypeEnum {
 const alignments = Object.keys(icons);
 const DATA_NAMESPACE = "data.settings.horizontalAlignFlex";
 
-const HorizontalAlignFlexSettings: React.FunctionComponent<
-    PbEditorPageElementSettingsRenderComponentProps
-> = ({ defaultAccordionValue = false }) => {
+const HorizontalAlignFlexSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue = false
+}) => {
     const { displayMode, config } = useDisplayMode();
     const element = useActiveElement();
     const updateElement = useUpdateElement();

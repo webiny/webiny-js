@@ -4,7 +4,7 @@ import { ElasticsearchFieldPlugin } from "./plugins/definition/ElasticsearchFiel
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
-export interface Params {
+interface CreateSortParams {
     sort: string[];
     defaults?: {
         field?: string;
@@ -13,7 +13,7 @@ export interface Params {
     };
     fieldPlugins: Record<string, ElasticsearchFieldPlugin>;
 }
-export const createSort = (params: Params): SortType => {
+export const createSort = (params: CreateSortParams): SortType => {
     const { sort, defaults, fieldPlugins } = params;
     if (!sort || sort.length === 0) {
         const { field, order, unmappedType } = defaults || {};

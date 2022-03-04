@@ -3,10 +3,13 @@ import { Plugin } from "@webiny/plugins/types";
 import { selectorFamily } from "recoil";
 import { pluginsAtom, PluginsAtomType } from "../pluginsAtom";
 
-export const isPluginActiveSelector = selectorFamily<boolean, string>({
+export const isPluginActiveSelector = selectorFamily<boolean, string | undefined>({
     key: "isPluginActiveSelector",
     get: name => {
         return ({ get }) => {
+            if (!name) {
+                return false;
+            }
             const target = plugins.byName(name);
             const state = get(pluginsAtom);
             if (!target) {

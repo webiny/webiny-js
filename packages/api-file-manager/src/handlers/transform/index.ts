@@ -40,8 +40,8 @@ export default (): HandlerPlugin<ArgsContext<TransformHandlerEventArgs>> => ({
                             ...params.optimized,
                             ContentType: optimizedImageObject.ContentType,
                             Body: await optimizeImage(
-                                optimizedImageObject.Body,
-                                optimizedImageObject.ContentType
+                                optimizedImageObject.Body as Buffer,
+                                optimizedImageObject.ContentType as string
                             )
                         })
                         .promise();
@@ -59,7 +59,10 @@ export default (): HandlerPlugin<ArgsContext<TransformHandlerEventArgs>> => ({
                     .putObject({
                         ...params.optimizedTransformed,
                         ContentType: optimizedImageObject.ContentType,
-                        Body: await transformImage(optimizedImageObject.Body, transformations)
+                        Body: await transformImage(
+                            optimizedImageObject.Body as Buffer,
+                            transformations
+                        )
                     })
                     .promise();
 

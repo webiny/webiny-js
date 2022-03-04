@@ -13,7 +13,15 @@ import { I18NLocaleItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/form");
 
-export const useLocaleForm = () => {
+interface UseLocaleForm {
+    loading: boolean;
+    showEmptyView: boolean;
+    createLocale: () => void;
+    cancelEditing: () => void;
+    locale: I18NLocaleItem;
+    onSubmit: (item: I18NLocaleItem) => Promise<void>;
+}
+export const useLocaleForm = (): UseLocaleForm => {
     const { refetchLocales } = useI18N();
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();

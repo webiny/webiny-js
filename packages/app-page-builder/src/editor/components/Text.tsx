@@ -7,7 +7,7 @@ import PbText from "./Text/PbText";
 
 interface TextElementProps {
     elementId: string;
-    mediumEditorOptions: CoreOptions;
+    mediumEditorOptions?: CoreOptions;
     rootClassName?: string;
     tag?: string | [string, Record<string, any>];
 }

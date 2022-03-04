@@ -1,12 +1,12 @@
 import { ErrorResponse } from "@webiny/handler-graphql/responses";
 
-type NotAuthorizedResponseArgsType = {
-    message?: string;
-    code?: string;
-    data?: any;
-};
+interface NotAuthorizedResponseArgsType {
+    message: string;
+    code: string | null;
+    data: any | null;
+}
 class NotAuthorizedResponse extends ErrorResponse {
-    constructor({ message, code, data }: NotAuthorizedResponseArgsType = {}) {
+    constructor({ message, code, data }: Partial<NotAuthorizedResponseArgsType> = {}) {
         super({
             message: message || "Not authorized!",
             code: code || "SECURITY_NOT_AUTHORIZED",

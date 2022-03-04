@@ -7,7 +7,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
     validator: {
         name: "in",
         validate({ value, validator }) {
-            const values = validator.settings.values;
+            const values = validator.settings?.values;
             if (Array.isArray(values)) {
                 return validation
                     .validate(value, `in:${values.join(":")}`)

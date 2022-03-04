@@ -23,14 +23,14 @@ export const renderInputFields: RenderInputFields = ({
 }): CmsModelFieldDefinition[] => {
     return model.fields
         .map(field => renderInputField({ model, field, fieldTypePlugins }))
-        .filter(Boolean);
+        .filter(Boolean) as CmsModelFieldDefinition[];
 };
 
 export const renderInputField = ({
     model,
     field,
     fieldTypePlugins
-}: RenderInputFieldParams): CmsModelFieldDefinition => {
+}: RenderInputFieldParams): CmsModelFieldDefinition | null => {
     // Every time a client updates content model's fields, we check the type of each field. If a field plugin
     // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
     // want to be careful when accessing the field plugin here too. It is still possible to have a content model

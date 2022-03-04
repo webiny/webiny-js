@@ -3,24 +3,9 @@
  * TODO @ts-refactor
  */
 import React, { useRef, useCallback, cloneElement } from "react";
-import {
-    BindComponent as BaseBindComponent,
-    BindComponentRenderProp as BaseBindComponentRenderProp
-} from "@webiny/form";
 import { createValidators } from "./functions/createValidators";
-import { CmsEditorField } from "~/types";
+import { BindComponent, CmsEditorField } from "~/types";
 import { Validator } from "@webiny/validation/types";
-
-interface BindComponentRenderProp extends BaseBindComponentRenderProp {
-    appendValue: (value: any) => void;
-    prependValue: (value: any) => void;
-    appendValues: (values: any[]) => void;
-    removeValue: (index: number) => void;
-}
-
-interface BindComponent extends BaseBindComponent {
-    parentName?: string;
-}
 
 interface UseBindProps {
     field: CmsEditorField;
@@ -30,15 +15,15 @@ interface UseBindProps {
 interface UseBindParams {
     name?: string;
     validators?: Validator[];
-    children: any;
+    children?: any;
 }
 
 export interface GetBindCallable {
-    (index?: number): any;
+    (index?: number): BindComponent;
 }
 
 export function useBind({ Bind: ParentBind, field }: UseBindProps) {
-    const memoizedBindComponents = useRef<any>({});
+    const memoizedBindComponents = useRef<Record<string, BindComponent>>({});
 
     return useCallback(
         (index = -1) => {
@@ -58,7 +43,12 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
             const defaultValue: string[] | undefined = field.multipleValues ? [] : undefined;
             const isMultipleValues = index === -1 && field.multipleValues;
             const inputValidators = isMultipleValues ? listValidators : validators;
-
+            /**
+             * TODO @ts-refactor
+             *
+             * TS is complaining about validators property because UseBindParams.validators cannot be single validator??????
+             */
+            // @ts-ignore
             memoizedBindComponents.current[name] = function UseBind(params: UseBindParams) {
                 const { name: childName, validators: childValidators, children } = params;
                 return (
@@ -67,7 +57,7 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                         validators={childValidators || inputValidators}
                         defaultValue={index === -1 ? defaultValue : null}
                     >
-                        {(bind: BindComponentRenderProp) => {
+                        {bind => {
                             // Multiple-values functions below.
                             const props = { ...bind };
                             if (field.multipleValues && index === -1) {

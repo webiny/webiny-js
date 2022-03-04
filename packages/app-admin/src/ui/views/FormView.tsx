@@ -33,6 +33,9 @@ interface GetterWithoutProps<T> {
 
 export class FormView extends UIView<FormViewConfig> {
     public constructor(id: string, config?: FormViewConfig) {
+        if (!config) {
+            config = {};
+        }
         if (!("setupForm" in config)) {
             config.setupForm = true;
         }
@@ -45,7 +48,9 @@ export class FormView extends UIView<FormViewConfig> {
         this.applyPlugins(FormView);
     }
 
-    public addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
+    public override addElement<TElement extends UIElement = UIElement>(
+        element: TElement
+    ): TElement {
         if (element.id === "form" || element.id === "formContainer") {
             return super.addElement(element);
         }
@@ -70,23 +75,23 @@ export class FormView extends UIView<FormViewConfig> {
     }
 
     public getFormContainer(): FormContainerElement {
-        return this.getElement("formContainer");
+        return this.getElement("formContainer") as FormContainerElement;
     }
 
     public getFormContentElement(): FormContentElement {
-        return this.getElement("formContent");
+        return this.getElement("formContent") as FormContentElement;
     }
 
     public getFormHeaderElement(): FormHeaderElement {
-        return this.getElement("formHeader");
+        return this.getElement("formHeader") as FormHeaderElement;
     }
 
     public getFormFooterElement(): FormFooterElement {
-        return this.getElement("formFooter");
+        return this.getElement("formFooter") as FormFooterElement;
     }
 
     public getSubmitButtonElement(): ButtonElement {
-        return this.getFormFooterElement().getElement("submit");
+        return this.getFormFooterElement().getElement("submit") as ButtonElement;
     }
 
     private addElements(): void {
@@ -99,8 +104,18 @@ export class FormView extends UIView<FormViewConfig> {
         if (this.config.setupForm) {
             const form = this.addElement(
                 new FormElement("form", {
-                    onSubmit: (data, form) => this.config.onSubmit(data, form),
-                    getData: () => this.config.getFormData()
+                    onSubmit: (data, form) => {
+                        if (!this.config.onSubmit) {
+                            return;
+                        }
+                        return this.config.onSubmit(data, form);
+                    },
+                    getData: () => {
+                        if (!this.config.getFormData) {
+                            return {};
+                        }
+                        return this.config.getFormData();
+                    }
                 })
             ) as FormElement;
 
@@ -122,6 +137,9 @@ export class FormView extends UIView<FormViewConfig> {
         this.addElement(
             new FormHeaderElement("formHeader", {
                 getTitle: props => {
+                    if (!this.config.getTitle) {
+                        return "";
+                    }
                     return this.config.getTitle(props);
                 }
             })
@@ -144,7 +162,12 @@ export class FormView extends UIView<FormViewConfig> {
             new ButtonElement("cancel", {
                 type: "default",
                 label: "Cancel",
-                onClick: () => this.config.onCancel(),
+                onClick: () => {
+                    if (!this.config.onCancel) {
+                        return;
+                    }
+                    this.config.onCancel();
+                },
                 shouldRender: () => typeof this.config.onCancel === "function"
             })
         );

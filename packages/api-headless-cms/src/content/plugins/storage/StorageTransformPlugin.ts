@@ -24,7 +24,7 @@ export interface StorageTransformPluginParams<T, R> {
     fromStorage: (params: FromStorageParams<R>) => Promise<T>;
 }
 export class StorageTransformPlugin<T = any, R = any> extends Plugin {
-    public static readonly type: string = "cms.storage.transform.plugin";
+    public static override readonly type: string = "cms.storage.transform.plugin";
     public get fieldType(): string {
         return this.config.fieldType;
     }

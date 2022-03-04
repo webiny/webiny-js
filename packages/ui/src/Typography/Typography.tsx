@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
     Typography as RwmcTypography,
     TypographyProps as RmwcTypographyProps

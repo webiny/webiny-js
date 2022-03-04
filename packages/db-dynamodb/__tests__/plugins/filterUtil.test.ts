@@ -28,7 +28,7 @@ const itemWebiny = {
 const items: any[] = [itemJohn, itemJane, itemWebiny];
 
 class TestField extends FieldPlugin {
-    public static readonly type: string = "dbDynamodb.filtering.test";
+    public static override readonly type: string = "dbDynamodb.filtering.test";
 }
 
 const fields = [

@@ -4,7 +4,7 @@ import { plugins } from "@webiny/plugins";
 import { PbEditorElement, PbEditorPageElementPlugin } from "~/types";
 import Title from "./components/Title";
 
-export default (el: PbEditorElement) => {
+export default (el: PbEditorElement): void => {
     const elementPlugins = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
     const rootPlugin = elementPlugins.find(pl => pl.elementType === el.content.type);
 
@@ -40,12 +40,9 @@ export default (el: PbEditorElement) => {
         create() {
             return cloneDeep(el.content);
         },
-        /**
-         * Must define as null because TS is complaining
-         * Verify that render can be null/undefined
-         * TODO @ts-refactor
-         */
-        render: null
+        render: () => {
+            return null;
+        }
     };
     plugins.register(plugin);
 };

@@ -25,9 +25,8 @@ const LoadTheme: FC<LoadThemeProps> = ({ theme, children }) => {
 };
 
 export const ThemeLoader: FC<ThemeLoaderProps> = ({ themes, children }) => {
-    const theme = useCurrentTheme();
+    const themeName = useCurrentTheme();
 
-    return theme ? (
-        <LoadTheme theme={themes.find(th => th.name === theme)}>{children}</LoadTheme>
-    ) : null;
+    const theme = themes.find(th => th.name === themeName);
+    return theme ? <LoadTheme theme={theme}>{children}</LoadTheme> : null;
 };

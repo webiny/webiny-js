@@ -6,7 +6,7 @@ export interface CmsGroup extends Omit<BaseCmsGroup, "locale" | "tenant" | "webi
     locale?: string;
 }
 export class CmsGroupPlugin extends Plugin {
-    public static readonly type: string = "cms-content-model-group";
+    public static override readonly type: string = "cms-content-model-group";
     contentModelGroup: CmsGroup;
 
     constructor(contentModelGroup: CmsGroup) {

@@ -64,8 +64,8 @@ const SortableContainer: React.FC<SortableContainerProps> = sortableContainer(
 );
 
 interface SetEditOptionParams {
-    index: number;
-    data: FieldOption;
+    index: number | null;
+    data: FieldOption | null;
 }
 interface SortableItemProps {
     setOptionsValue: (value: FieldOption[]) => void;
@@ -92,7 +92,7 @@ const SortableItem: React.FC<SortableItemProps> = sortableElement(
                 dragHandle={<DragHandle />}
                 key={option.value}
                 Bind={Bind}
-                multiple={multiple}
+                multiple={!!multiple}
                 option={option}
                 deleteOption={() => {
                     const newValue = [...options];
@@ -139,7 +139,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple }) => {
                 const onSubmit = useCallback(
                     (data: FieldOption): void => {
                         const newValue = [...optionsValue];
-                        newValue.splice(editOption.index, 1, data);
+                        newValue.splice(editOption.index as number, 1, data);
                         setOptionsValue(newValue);
                         clearEditOption();
                     },
@@ -204,7 +204,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple }) => {
                             open={!!editOption.data}
                             options={optionsValue}
                             option={editOption.data}
-                            optionIndex={editOption.index}
+                            optionIndex={editOption.index as number}
                             onSubmit={onSubmit}
                         />
                     </>

@@ -11,7 +11,11 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
         name: "graphql-playground-tab-manage",
         tab({ locale, identity }) {
             const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
-            if (!identity.getPermission("cms.endpoint.manage")) {
+            if (
+                !identity ||
+                !identity.getPermission ||
+                !identity.getPermission("cms.endpoint.manage")
+            ) {
                 return null;
             }
 
@@ -28,7 +32,11 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
         name: "graphql-playground-tab-read",
         tab({ locale, identity }) {
             const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
-            if (!identity.getPermission("cms.endpoint.read")) {
+            if (
+                !identity ||
+                !identity.getPermission ||
+                !identity.getPermission("cms.endpoint.read")
+            ) {
                 return null;
             }
 
@@ -45,7 +53,11 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
         name: "graphql-playground-tab-preview",
         tab({ locale, identity }) {
             const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
-            if (!identity.getPermission("cms.endpoint.preview")) {
+            if (
+                !identity ||
+                !identity.getPermission ||
+                !identity.getPermission("cms.endpoint.preview")
+            ) {
                 return null;
             }
 

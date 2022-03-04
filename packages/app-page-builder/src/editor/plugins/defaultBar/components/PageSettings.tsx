@@ -24,7 +24,7 @@ import { usePageSettings } from "~/editor/hooks/usePageSettings";
 interface PageSettingsPropsType {
     [key: string]: any;
 }
-const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}) => {
+const PageSettings: React.FC<PageSettingsPropsType> = (props = {}) => {
     const pluginsByType = plugins.byType<PbEditorPageSettingsPlugin>("pb-editor-page-settings");
     const [active, setActive] = useState(pluginsByType[0].name);
     const activePlugin = pluginsByType.find(pl => pl.name === active);
@@ -47,7 +47,7 @@ interface PageSettingsContentPropsType {
     setActive: (name: string) => void;
     activePlugin: PbEditorPageSettingsPlugin;
 }
-const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType> = ({
+const PageSettingsContent: React.FC<PageSettingsContentPropsType> = ({
     pluginsByType,
     setActive,
     activePlugin
@@ -62,7 +62,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                             <ListItem
                                 key={pl.name}
                                 className={listItem}
-                                onClick={() => setActive(pl.name)}
+                                onClick={() => setActive(pl.name || "")}
                             >
                                 <ListItemGraphic>
                                     <Icon icon={pl.icon as any} />
@@ -84,7 +84,13 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                                     {activePlugin.render({ Bind, form, data, setValue } as any)}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
-                                    <ButtonPrimary onClick={submit}>Save settings</ButtonPrimary>
+                                    <ButtonPrimary
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
+                                    >
+                                        Save settings
+                                    </ButtonPrimary>
                                 </SimpleFormFooter>
                             </SimpleForm>
                         )}

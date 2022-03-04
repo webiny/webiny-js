@@ -1,3 +1,7 @@
+/**
+ * Remove this when no apps are using our internal db drivers anymore
+ */
+// @ts-nocheck
 import processStatement from "./processStatement";
 import { ProcessStatementArgsParam, Query, QueryKey, QuerySort } from "~/types";
 

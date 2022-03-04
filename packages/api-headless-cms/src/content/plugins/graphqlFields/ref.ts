@@ -78,16 +78,24 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     isSearchable: true,
     read: {
         createTypeField({ model, field }) {
+            const models = field.settings?.models || [];
             const gqlType =
-                field.settings.models.length > 1
+                models.length > 1
                     ? createUnionTypeName(model, field)
-                    : createReadTypeName(field.settings.models[0].modelId);
+                    : createReadTypeName(models[0].modelId);
 
             return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
-        createResolver({ field }) {
+        /**
+         * TS is complaining about mixed types for createResolver.
+         * TODO @ts-refactor @pavel Maybe we should have a single createResolver method?
+         */
+        // @ts-ignore
+        createResolver(params) {
+            const { field } = params;
             // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
-            for (const item of field.settings.models) {
+            const models = field.settings?.models || [];
+            for (const item of models) {
                 modelIdToTypeName.set(item.modelId, createReadTypeName(item.modelId));
             }
 
@@ -167,7 +175,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 if (!revisions || revisions.length === 0) {
                     return null;
                 }
-                return { ...revisions[0], __typename: modelIdToTypeName.get(value.modelId) };
+                return {
+                    ...revisions[0],
+                    __typename: modelIdToTypeName.get(value.modelId)
+                };
             };
         },
         createSchema({ models }) {
@@ -175,7 +186,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             for (const model of models) {
                 // Generate a dedicated union type for every `ref` field which has more than 1 content model assigned.
                 model.fields
-                    .filter(field => field.type === "ref" && field.settings.models.length > 1)
+                    .filter(
+                        field => field.type === "ref" && (field.settings?.models || []).length > 1
+                    )
                     .forEach(field =>
                         unionFields.push({
                             model,

@@ -35,7 +35,7 @@ const Action: React.FC<ActionProps> = ({
     ...props
 }) => {
     const eventActionHandler = useEventActionHandler();
-    const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin));
+    const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin as string));
     const settingsActive =
         useRecoilValue(activePluginsByTypeTotalSelector(editorPageElementSettingsPluginType)) > 0;
 
@@ -47,7 +47,7 @@ const Action: React.FC<ActionProps> = ({
         }
         eventActionHandler.trigger(
             new TogglePluginActionEvent({
-                name: plugin,
+                name: plugin || "unknown",
                 closeOtherInGroup: true
             })
         );
@@ -61,6 +61,9 @@ const Action: React.FC<ActionProps> = ({
                 }
 
                 e.preventDefault();
+                if (!onClick) {
+                    return;
+                }
                 onClick();
             });
         });
@@ -81,7 +84,7 @@ const Action: React.FC<ActionProps> = ({
             <IconButton
                 icon={icon}
                 onClick={clickHandler}
-                className={isPluginActive && activeStyle}
+                className={isPluginActive ? activeStyle : ""}
                 data-testid={props["data-testid"]}
             />
         </Tooltip>

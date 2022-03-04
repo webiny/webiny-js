@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import BrowseFiles, { SelectedFile, FileError } from "react-butterfiles";
 import { css } from "emotion";
 import classNames from "classnames";
@@ -32,7 +32,7 @@ const imagesStyle = css({
 // Do not apply editping for following image types.
 // const noImageEditorTypes = ["image/svg+xml", "image/gif"];
 
-interface Props extends FormComponentProps {
+interface MultiImageUploadProps extends FormComponentProps {
     // Component label.
     label?: string;
 
@@ -72,15 +72,14 @@ interface State {
     selectedImages: Record<string, any>;
     loading: boolean;
     imageEditor: {
-        image?: SelectedFile;
+        image: SelectedFile | null;
         open: boolean;
         index?: number;
     };
 }
 
-class MultiImageUpload extends React.Component<Props, State> {
-    static defaultProps: Partial<Props> = {
-        validation: { isValid: null, message: null },
+class MultiImageUpload extends React.Component<MultiImageUploadProps, State> {
+    static defaultProps: Partial<MultiImageUploadProps> = {
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         maxSize: "5mb",
         imageEditor: {},
@@ -91,14 +90,14 @@ class MultiImageUpload extends React.Component<Props, State> {
         }
     };
 
-    state: State = {
-        errors: null,
+    public override state: State = {
+        errors: undefined,
         selectedImages: {},
         loading: false,
         imageEditor: {
             open: false,
             image: null,
-            index: null
+            index: undefined
         }
     };
 
@@ -109,32 +108,38 @@ class MultiImageUpload extends React.Component<Props, State> {
     };
 
     handleSelectedImages = async (images: Array<SelectedFile>, selectedIndex = 0) => {
-        this.setState({ errors: null, loading: true }, async () => {
-            const selectedImages: Record<number, any> = {};
-            for (let i = 0; i < images.length; i++) {
-                const image = images[i];
-                selectedImages[selectedIndex + i] = { ...image };
-            }
-
-            this.setState({ selectedImages }, async () => {
-                const newValue = Array.isArray(this.props.value) ? [...this.props.value] : [];
-
-                const convertedImages = [];
+        this.setState(
+            {
+                errors: undefined,
+                loading: true
+            },
+            async () => {
+                const selectedImages: Record<number, any> = {};
                 for (let i = 0; i < images.length; i++) {
                     const image = images[i];
-                    convertedImages.push({
-                        src: image.src.base64,
-                        name: image.name,
-                        size: image.size,
-                        type: image.type
-                    });
+                    selectedImages[selectedIndex + i] = { ...image };
                 }
 
-                newValue.splice(selectedIndex, 0, ...convertedImages);
-                await this.onChange(newValue);
-                this.setState({ loading: false });
-            });
-        });
+                this.setState({ selectedImages }, async () => {
+                    const newValue = Array.isArray(this.props.value) ? [...this.props.value] : [];
+
+                    const convertedImages = [];
+                    for (let i = 0; i < images.length; i++) {
+                        const image = images[i];
+                        convertedImages.push({
+                            src: image.src.base64,
+                            name: image.name,
+                            size: image.size,
+                            type: image.type
+                        });
+                    }
+
+                    newValue.splice(selectedIndex, 0, ...convertedImages);
+                    await this.onChange(newValue);
+                    this.setState({ loading: false });
+                });
+            }
+        );
     };
 
     handleErrors = (errors: Array<FileError>) => {
@@ -152,7 +157,7 @@ class MultiImageUpload extends React.Component<Props, State> {
         onChange(images);
     };
 
-    render() {
+    public override render() {
         const {
             value,
             validation,
@@ -175,6 +180,10 @@ class MultiImageUpload extends React.Component<Props, State> {
             console.log(this.state.imageEditor.image.src);
         }
 
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
+        /**
+         * accept can safely be cast because we have default value
+         */
         return (
             <div className={classNames(imagesStyle, className)}>
                 {label && (
@@ -201,13 +210,18 @@ class MultiImageUpload extends React.Component<Props, State> {
                                     ? [...this.props.value]
                                     : [];
 
-                                const imageEditorImageIndex: number = this.state.imageEditor.index;
+                                const imageEditorImageIndex = this.state.imageEditor
+                                    .index as number;
                                 newValue[imageEditorImageIndex].src = src;
 
                                 await this.onChange(newValue);
                                 this.setState({
                                     loading: false,
-                                    imageEditor: { image: null, open: false, index: null }
+                                    imageEditor: {
+                                        image: null,
+                                        open: false,
+                                        index: undefined
+                                    }
                                 });
                             });
                         });
@@ -215,7 +229,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                 />
 
                 <BrowseFiles
-                    accept={accept}
+                    accept={accept as string[]}
                     maxSize={maxSize}
                     multiple
                     convertToBase64
@@ -291,11 +305,11 @@ class MultiImageUpload extends React.Component<Props, State> {
                     }}
                 </BrowseFiles>
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
 
@@ -312,9 +326,12 @@ class MultiImageUpload extends React.Component<Props, State> {
                                     | "unsupportedFileType"
                                     | "default";
                                 const message = this.props.errorMessages[errorType];
+
+                                const errorFileName = error.file ? error.file.name : "";
+
                                 return (
-                                    <li key={error.file.name + index}>
-                                        {index + 1}. <strong>{error.file.name}</strong> -&nbsp;
+                                    <li key={errorFileName + index}>
+                                        {index + 1}. <strong>{errorFileName}</strong> -&nbsp;
                                         {message || this.props.errorMessages.default}
                                     </li>
                                 );

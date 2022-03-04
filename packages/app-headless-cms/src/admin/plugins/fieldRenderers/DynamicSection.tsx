@@ -18,12 +18,20 @@ const style = {
     })
 };
 
+/**
+ * TODO @ts-refactor figure out correct types
+ */
+interface DynamicSectionPropsChildrenParams {
+    // bind: BindComponentRenderProp;
+    // index: number;
+    [key: string]: any;
+}
 interface DynamicSectionProps {
     field: CmsEditorField;
     getBind: GetBindCallable;
     showLabel?: boolean;
     Label: React.ComponentType<any>;
-    children: (params: any) => React.ReactNode;
+    children: (params: DynamicSectionPropsChildrenParams) => React.ReactElement;
     emptyValue?: any;
     renderTitle?: (value: any[]) => React.ReactElement;
     gridClassName?: string;
@@ -45,7 +53,7 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({
     return (
         /* First we mount the top level field, for example: "items" */
         <Bind>
-            {(bindField: any) => {
+            {bindField => {
                 /**
                  * "value" -> an array of items
                  * "appendValue" -> a callback to add a new value to the top level "items" array
@@ -60,14 +68,17 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({
                             {/* We always render the first item, for better UX */}
                             {showLabel && field.label && <Label>{field.label}</Label>}
                             <FirstFieldBind>
-                                {(bindIndex: any) =>
+                                {bindProps =>
                                     /* We bind it to index "0", so when you start typing, that index in parent array will be populated */
                                     children({
                                         Bind: FirstFieldBind,
                                         field,
                                         // "index" contains Bind props for this particular item in the array
                                         // "field" contains Bind props for the main (parent) field.
-                                        bind: { index: bindIndex, field: bindField },
+                                        bind: {
+                                            index: bindProps,
+                                            field: bindField
+                                        },
                                         index: 0 // Binds to "items.0" in the <Form>.
                                     })
                                 }
@@ -82,11 +93,14 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({
                             return (
                                 <Cell span={12} key={realIndex}>
                                     <BindField>
-                                        {(bindIndex: any) =>
+                                        {bindProps =>
                                             children({
                                                 Bind: BindField,
                                                 field,
-                                                bind: { index: bindIndex, field: bindField },
+                                                bind: {
+                                                    index: bindProps,
+                                                    field: bindField
+                                                },
                                                 index: realIndex
                                             })
                                         }

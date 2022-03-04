@@ -1,10 +1,10 @@
-import * as React from "react";
+import React from "react";
 import classNames from "classnames";
 import { ChipSet } from "@rmwc/chip";
 import { Chip } from "./Chip";
 import { chipIconWrapper, disabledChips } from "./styles";
 
-export type ChipsProps = {
+export interface ChipsProps {
     /**
      * Chips to show
      */
@@ -24,9 +24,9 @@ export type ChipsProps = {
      * Style object.
      */
     style?: React.CSSProperties;
-};
+}
 
-export const Chips = (props: ChipsProps) => {
+export const Chips: React.FC<ChipsProps> = props => {
     const { children, className, disabled, ...rest } = props;
 
     return (

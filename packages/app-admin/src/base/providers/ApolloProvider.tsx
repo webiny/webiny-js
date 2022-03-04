@@ -14,8 +14,9 @@ export const createApolloProvider =
     (clientFactory: ApolloClientFactory) =>
     (Component: React.ComponentType<unknown>): React.FC => {
         return function ApolloProvider({ children }) {
+            const uri = process.env.REACT_APP_GRAPHQL_API_URL as string;
             return (
-                <Apollo client={clientFactory({ uri: process.env.REACT_APP_GRAPHQL_API_URL })}>
+                <Apollo client={clientFactory({ uri })}>
                     <Component>{children}</Component>
                 </Apollo>
             );

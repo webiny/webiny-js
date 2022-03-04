@@ -85,13 +85,14 @@ const elementListStyleSlide5 = css({
     animationDuration: "2s"
 });
 
-type Props = {
+interface Slide5Props {
     currentSlide: number;
-};
+}
 
-class Slide5 extends React.Component<Props> {
-    slideNumber = 5;
-    editorContent = () => {
+class Slide5 extends React.Component<Slide5Props> {
+    public readonly slideNumber = 5;
+
+    private readonly editorContent = (): React.ReactElement => {
         return (
             <React.Fragment>
                 <HandIcon
@@ -110,7 +111,7 @@ class Slide5 extends React.Component<Props> {
         );
     };
 
-    render() {
+    public override render() {
         return (
             <SlideOutline
                 title={"Content"}

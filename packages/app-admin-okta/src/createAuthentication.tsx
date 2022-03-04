@@ -19,8 +19,9 @@ import {
     LOGIN_ST
 } from "./createGetIdentityData";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {};
+const noop = () => {
+    return void 0;
+};
 
 export interface Config {
     getIdentityData?: GetIdentityDataCallable;
@@ -30,13 +31,14 @@ export interface Config {
     clientId: string;
 }
 
-export interface Props {
+export interface AuthenticationProps {
     getIdentityData(params: { client: ApolloClient<any> }): Promise<{ [key: string]: any }>;
     children: React.ReactNode;
 }
 
 interface WithGetIdentityDataProps {
     getIdentityData: GetIdentityDataCallable;
+    children: React.ReactNode;
 }
 
 interface AuthState {
@@ -57,8 +59,8 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
         };
     };
 
-    const Authentication: React.FC<Props> = ({ getIdentityData, children }) => {
-        const timerRef = useRef(null);
+    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+        const timerRef = useRef<number | undefined>(undefined);
         const apolloClient = useApolloClient();
         const { identity, setIdentity } = useSecurity();
         const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -72,7 +74,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
                         timerRef.current = setTimeout(() => {
                             // Reload browser after 1 hour of inactivity
                             window.location.reload();
-                        }, 3600000);
+                        }, 3600000) as unknown as number;
 
                         return payload;
                     });
@@ -106,7 +108,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
         }, []);
 
         const authStateChanged = useCallback(async (authState: AuthState) => {
-            setIsAuthenticated(authState.isAuthenticated);
+            setIsAuthenticated(!!authState.isAuthenticated);
             if (authState.isAuthenticated) {
                 // Make sure current app client ID matches token's clientId.
                 // If not, verify that current identity can access current app, using the given app client id.

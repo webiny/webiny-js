@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { storiesOf } from "@storybook/react";
 import {
     Story,
@@ -16,11 +16,11 @@ const story = storiesOf("Components/Snackbar", module);
 story.addDecorator(withKnobs);
 
 class SnackbarContainer extends React.Component<{ leading: boolean }, { show: boolean }> {
-    state = {
+    public override state = {
         show: false
     };
 
-    render() {
+    public override render() {
         return (
             <React.Fragment>
                 <Snackbar

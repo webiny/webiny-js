@@ -1,9 +1,9 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import set from "lodash/set";
+import { BindComponentRenderProp } from "@webiny/form";
 
 interface Params {
     value: string[];
-    bind: any;
+    bind: BindComponentRenderProp;
     index: number;
     name: string;
 }
@@ -15,6 +15,7 @@ const setValue = (params: Params): void => {
     } else {
         newValue = value;
     }
+
     bind.onChange(newValue);
 };
 

@@ -46,6 +46,11 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
         elementType: elementType,
+        /**
+         * TODO @ts-refactor @ashutosh
+         * Completely different types between method result and variable
+         */
+        // @ts-ignore
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,

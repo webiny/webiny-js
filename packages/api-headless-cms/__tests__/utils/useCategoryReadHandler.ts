@@ -61,7 +61,7 @@ export const useCategoryReadHandler = (
 
     return {
         ...contentHandler,
-        async getCategory(variables, headers: Record<string, any> = {}) {
+        async getCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getCategoryQuery, variables },
                 headers

@@ -19,11 +19,11 @@ import {
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 
-export interface Params {
+interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
 }
 
-export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
+export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): SubmissionsCRUD => {
     const { context } = params;
 
     return {
@@ -85,7 +85,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 where: {
                     tenant: form.tenant,
                     locale: form.locale,
-                    formId: formFormId
+                    formId: formFormId as string
                 },
                 after,
                 limit,
@@ -125,7 +125,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 throwOnNotFound: true
             });
 
-            if (settings.reCaptcha && settings.reCaptcha.enabled) {
+            if (settings && settings.reCaptcha && settings.reCaptcha.enabled) {
                 if (!reCaptchaResponseToken) {
                     throw new Error("Missing reCAPTCHA response token - cannot verify.");
                 }

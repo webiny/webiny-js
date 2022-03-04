@@ -7,7 +7,7 @@ export interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webi
 }
 
 export class CmsModelPlugin extends Plugin {
-    public static readonly type: string = "cms-content-model";
+    public static override readonly type: string = "cms-content-model";
     contentModel: CmsModel;
 
     constructor(contentModel: CmsModel) {

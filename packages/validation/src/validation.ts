@@ -33,7 +33,9 @@ class Validation {
      * Contains a list of all set validators.
      * @private
      */
-    __validators: { [key: string]: Validator };
+    __validators: {
+        [key: string]: Validator;
+    };
 
     constructor() {
         this.__validators = {};
@@ -167,6 +169,9 @@ class Validation {
         validate.forEach((v: string) => {
             const params = _.trim(v).split(":");
             const vName = params.shift();
+            if (!vName) {
+                return;
+            }
             parsedValidators[vName] = params;
         });
         return parsedValidators;

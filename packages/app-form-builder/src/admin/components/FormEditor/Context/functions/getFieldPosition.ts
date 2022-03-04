@@ -1,17 +1,25 @@
 import { FbFormModel, FbFormModelField, FieldIdType, FieldLayoutPositionType } from "~/types";
 
-interface Params {
+interface GetFieldPositionResult extends Omit<FieldLayoutPositionType, "index"> {
+    index: number;
+}
+interface GetFieldPositionParams {
     field: FbFormModelField | FieldIdType;
     data: FbFormModel;
 }
-export default ({ field, data }: Params): FieldLayoutPositionType => {
+
+export default ({ field, data }: GetFieldPositionParams): GetFieldPositionResult | null => {
     const id = typeof field === "string" ? field : field._id;
-    for (let i = 0; i < data.layout.length; i++) {
-        const row = data.layout[i];
-        for (let j = 0; j < row.length; j++) {
-            if (row[j] === id) {
-                return { row: i, index: j };
+    for (let rowIndex = 0; rowIndex < data.layout.length; rowIndex++) {
+        const row = data.layout[rowIndex];
+        for (let fieldIndex = 0; fieldIndex < row.length; fieldIndex++) {
+            if (row[fieldIndex] !== id) {
+                continue;
             }
+            return {
+                row: rowIndex,
+                index: fieldIndex
+            };
         }
     }
 

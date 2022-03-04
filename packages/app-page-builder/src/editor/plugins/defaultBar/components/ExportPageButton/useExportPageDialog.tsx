@@ -48,7 +48,7 @@ export interface ExportPagesDialogProps {
     ids?: string[];
     where?: Record<string, any>;
     sort?: string;
-    search?: { query: string };
+    search: { query: string };
 }
 
 const ExportPageLoadingDialogMessage: React.FC<ExportPagesDialogProps> = props => {
@@ -79,7 +79,7 @@ interface ExportPageDialogProps {
     exportUrl: string;
 }
 
-const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = ({ exportUrl }) => {
+const ExportPageDialogMessage: React.FC<ExportPageDialogProps> = ({ exportUrl }) => {
     const { showSnackbar } = useSnackbar();
 
     return (

@@ -15,15 +15,15 @@ const DATA_NAMESPACE = "data.text";
 
 interface TextElementProps {
     elementId: string;
-    mediumEditorOptions: CoreOptions;
+    mediumEditorOptions?: CoreOptions;
     rootClassName?: string;
 }
 const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, rootClassName }) => {
-    const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const [{ displayMode }] = useRecoilState(uiAtom);
     const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const { getUpdateValue } = useUpdateHandlers({
-        element,
+        element: element as PbEditorElement,
         dataNamespace: DATA_NAMESPACE,
         debounce: false
     });

@@ -8,7 +8,8 @@ export const dragStartAction: EventActionCallable<DragStartActionEvent> = state 
                 ...state.ui,
                 isDragging: true
             }
-        }
+        },
+        actions: []
     };
 };
 
@@ -19,6 +20,7 @@ export const dragEndAction: EventActionCallable<DragEndActionEvent> = state => {
                 ...state.ui,
                 isDragging: false
             }
-        }
+        },
+        actions: []
     };
 };

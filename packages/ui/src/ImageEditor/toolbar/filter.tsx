@@ -11,12 +11,12 @@ import { Tooltip } from "~/Tooltip";
 import { debounce } from "lodash";
 import styled from "@emotion/styled";
 
-interface State {
+interface RenderFormState {
     values: Record<string, any>;
     processing: boolean;
 }
 
-interface Props {
+interface RenderFormProps {
     canvas: any;
     renderApplyCancel?: Function;
 }
@@ -92,17 +92,17 @@ const sliders = [
     }
 ];
 
-class RenderForm extends React.Component<Props, State> {
-    state: State = {
+class RenderForm extends React.Component<RenderFormProps, RenderFormState> {
+    public override state: RenderFormState = {
         processing: false,
         values: {}
     };
 
-    componentDidMount() {
+    public override componentDidMount() {
         this.resetFiltersValues();
     }
 
-    applyFilters = debounce(() => {
+    private readonly applyFilters = debounce(() => {
         const { canvas } = this.props;
         const { values } = this.state;
         // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -122,7 +122,7 @@ class RenderForm extends React.Component<Props, State> {
         });
     }, 200);
 
-    resetFiltersValues = () => {
+    private readonly resetFiltersValues = () => {
         this.setState(state => {
             sliders.reduce((output, current) => {
                 state.values[current.key] = 0;
@@ -133,7 +133,7 @@ class RenderForm extends React.Component<Props, State> {
         });
     };
 
-    render() {
+    public override render() {
         return (
             <Wrapper>
                 <ul>

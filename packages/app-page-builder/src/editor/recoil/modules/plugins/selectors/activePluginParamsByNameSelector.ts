@@ -9,7 +9,11 @@ export const activePluginParamsByNameSelector = selectorFamily<
     key: "activePluginParamsByNameSelector",
     get: (name: string) => {
         return ({ get }) => {
-            const { type } = plugins.byName(name);
+            const pl = plugins.byName(name);
+            if (!pl) {
+                return null;
+            }
+            const { type } = pl;
             if (!type) {
                 return null;
             }

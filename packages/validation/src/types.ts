@@ -1,3 +1,6 @@
+import ValidationError from "~/validationError";
+
+type ValidatorResult = boolean | ValidationError | void | Promise<boolean | ValidationError | void>;
 /**
  * @typedef Validator
  * @name Validator
@@ -6,7 +9,7 @@
  * @param {Array<string>} parameters (Optional) This represents an array validator parameters.
  * @throws {ValidationError}
  */
-export type Validator = (value: any, params: Array<string>) => void;
+export type Validator = (value: any, params?: string[]) => ValidatorResult;
 
 /**
  * @typedef ValidateOptions

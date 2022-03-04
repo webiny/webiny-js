@@ -27,7 +27,7 @@ export class SplitViewPanelElement extends UIElement<any> {
         this.addElement(element);
     }
 
-    public render(props: UiElementRenderProps): React.ReactNode {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         return (
             <Cell span={this._width} className={classNames(Array.from(this._classNames.values()))}>
                 {super.render(props)}

@@ -3,7 +3,7 @@ import get from "lodash/get";
 import set from "lodash/set";
 import merge from "lodash/merge";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import Accordion from "../components/Accordion";
@@ -23,7 +23,7 @@ const BORDER_SETTINGS_COUNT = 4;
 const BorderSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
-    const element = useActiveElement();
+    const element = useActiveElement() as PbEditorElement;
     const { displayMode, config } = useDisplayMode();
 
     const fallbackValue = useMemo(() => {

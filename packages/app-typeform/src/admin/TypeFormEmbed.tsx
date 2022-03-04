@@ -6,7 +6,7 @@ import useRenderEmptyEmbed from "@webiny/app-page-builder/editor/plugins/element
 type TypeFormEmbedPropsType = {
     elementId: string;
 };
-const TypeFormEmbed: React.FunctionComponent<TypeFormEmbedPropsType> = ({ elementId }) => {
+const TypeFormEmbed: React.FC<TypeFormEmbedPropsType> = ({ elementId }) => {
     const element = useRecoilValue(elementByIdSelector(elementId));
     const renderEmpty = useRenderEmptyEmbed(element);
 

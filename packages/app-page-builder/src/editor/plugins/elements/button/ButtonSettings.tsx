@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
-import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
 import IconPickerComponent from "../../../components/IconPicker";
 import Accordion from "../../elementSettings/components/Accordion";
@@ -52,9 +52,13 @@ const ButtonSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> 
     defaultAccordionValue
 }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as PbEditorElement;
     const { theme } = usePageBuilder();
-    const { types } = theme?.elements?.button || {};
+    const { types = [] } = theme?.elements?.button || {
+        types: []
+    };
     const defaultType = types?.[0]?.name || "";
     const { type = defaultType, icon = { width: 36 } } = element.data || {};
 

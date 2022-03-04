@@ -1,14 +1,14 @@
 import { CliPluginsScaffoldCi } from "~/types";
 import { Octokit } from "octokit";
 import chalk from "chalk";
-import commitWorkflows from "./commitWorkflows";
-import fetchAllRepositories from "./fetchAllRepositories";
+import commitWorkflows from "~/githubActions/commitWorkflows";
+import fetchAllRepositories from "~/githubActions/fetchAllRepositories";
 import validateNpmPackageName from "validate-npm-package-name";
 import open from "open";
 
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
 
-interface Input {
+export interface GithubActionsInput {
     provider: string;
     githubAccessTokenCreate: string;
     githubAccessToken: string;
@@ -33,7 +33,7 @@ const LONG_LIVED_BRANCHES = ["dev", "staging", "prod"];
 
 let generateErrorsCount = 0;
 
-const plugin: CliPluginsScaffoldCi<Input> = {
+const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
     type: "cli-plugin-scaffold-ci",
     name: "cli-plugin-scaffold-ci-github",
     provider: "githubActions",
@@ -66,11 +66,11 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                     return `Your GitHub personal access token:`;
                 },
                 required: true,
-                when: (answers: Input) => {
+                when: (answers: GithubActionsInput) => {
                     answers.githubAccessTokenCreate && open(NEW_TOKEN_URL);
                     return true;
                 },
-                validate: async (answer: Input) => {
+                validate: async (answer: GithubActionsInput) => {
                     octokit = new Octokit({ auth: answer });
 
                     try {
@@ -95,7 +95,7 @@ const plugin: CliPluginsScaffoldCi<Input> = {
 
             {
                 name: "newRepoOrgName",
-                when: (answers: Input) => answers.newOrExistingRepo === "newRepo",
+                when: (answers: GithubActionsInput) => answers.newOrExistingRepo === "newRepo",
                 message:
                     "Select an organization within which the new repository will be created (optional):",
                 type: "list",
@@ -115,8 +115,8 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 name: "newRepoName",
                 message: `Enter your code repository name:`,
                 required: true,
-                when: (answers: Input) => answers.newOrExistingRepo === "newRepo",
-                validate: async (answer: string, answers: Input) => {
+                when: (answers: GithubActionsInput) => answers.newOrExistingRepo === "newRepo",
+                validate: async (answer: string, answers: GithubActionsInput) => {
                     const repositories = await fetchAllRepositories({ octokit });
                     for (let i = 0; i < repositories.length; i++) {
                         const repository = repositories[i];
@@ -135,7 +135,7 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             {
                 name: "newRepoPrivacyType",
                 message: "Please select the type of code repository to create:",
-                when: (answers: Input) => answers.newOrExistingRepo === "newRepo",
+                when: (answers: GithubActionsInput) => answers.newOrExistingRepo === "newRepo",
                 type: "list",
                 default: "private",
                 choices: [
@@ -146,7 +146,7 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             {
                 name: "existingRepo",
                 message: "Please select your code repository:",
-                when: (answers: Input) => answers.newOrExistingRepo === "existingRepo",
+                when: (answers: GithubActionsInput) => answers.newOrExistingRepo === "existingRepo",
                 type: "list",
                 choices: async () => {
                     return fetchAllRepositories({ octokit }).then(repositories =>
@@ -246,6 +246,10 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 text: `${chalk.green(newRepoName)} code repository created.`
             });
         } else {
+            /**
+             * TODO @ts-refactor try to get the heads and tails of this.
+             */
+            // @ts-ignore
             repo = await octokit.rest.repos
                 .get({
                     repo: existingRepo.name,
@@ -263,8 +267,8 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 repo: repo.name,
                 branch: repo.default_branch,
                 author: {
-                    name: user.name,
-                    email: user.email
+                    name: user.name as string,
+                    email: user.email as string
                 }
             });
 

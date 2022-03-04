@@ -7,10 +7,10 @@ import {
 } from "~/types";
 import getFieldPosition from "./getFieldPosition";
 
-type CmsModel = Pick<BaseCmsModel, "fields" | "layout">;
+type CmsModel = Required<Pick<BaseCmsModel, "fields" | "layout">>;
 
 interface MoveFieldParams<T> {
-    field: CmsEditorFieldId | CmsEditorField;
+    field: CmsEditorFieldId | Pick<CmsEditorField, "id">;
     position: FieldLayoutPosition;
     data: T;
 }
@@ -21,7 +21,8 @@ const moveField = <T extends CmsModel>(params: MoveFieldParams<T>) => {
     const fieldId = typeof field === "string" ? field : field.id;
 
     let next: T = {
-        ...prev
+        ...prev,
+        layout: prev.layout ? prev.layout || [] : []
     };
 
     const existingPosition = getFieldPosition({ field: fieldId, data: prev });

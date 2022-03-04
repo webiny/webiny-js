@@ -38,40 +38,46 @@ const FbFormModelFieldList = styled("div")({
 });
 
 interface EditFieldDialogProps {
-    field: FbFormModelField;
+    field: FbFormModelField | null;
     onClose: Function;
     onSubmit: FormOnSubmit;
 }
 
 const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
-    const [current, setCurrent] = useState(null);
+    const [current, setCurrent] = useState<FbFormModelField | null>(null);
     const [isNewField, setIsNewField] = useState<boolean>(false);
     const [screen, setScreen] = useState<string>();
 
     const { getFieldPlugin } = useFormEditor();
 
     useEffect(() => {
-        setCurrent(cloneDeep(field));
-        if (field) {
-            setIsNewField(!field._id);
-            setScreen(field.type ? "fieldOptions" : "fieldType");
+        if (!field) {
+            setCurrent(null);
+            return;
         }
+        setCurrent(cloneDeep(field));
+        setIsNewField(!field._id);
+        setScreen(field.type ? "fieldOptions" : "fieldType");
     }, [field]);
 
     const onClose = useCallback(() => {
         setCurrent(null);
         props.onClose();
-    }, undefined);
+    }, []);
 
     let render = null;
     let headerTitle = t`Field Settings`;
 
     if (current) {
-        const fieldPlugin = getFieldPlugin({ name: current.name });
+        const fieldPlugin = getFieldPlugin({
+            name: current.name
+        });
+        let fieldPluginFieldValidators: string[] = [];
         if (fieldPlugin) {
             headerTitle = t`Field Settings - {fieldTypeLabel}`({
                 fieldTypeLabel: fieldPlugin.field.label
             });
+            fieldPluginFieldValidators = fieldPlugin.field.validators || [];
         }
 
         switch (screen) {
@@ -85,12 +91,11 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                         <Tab label={t`General`}>
                                             <GeneralTab form={form} field={current} />
                                         </Tab>
-                                        {Array.isArray(fieldPlugin.field.validators) &&
-                                            fieldPlugin.field.validators.length > 0 && (
-                                                <Tab label={"Validators"}>
-                                                    <ValidatorsTab form={form} field={current} />
-                                                </Tab>
-                                            )}
+                                        {fieldPluginFieldValidators.length > 0 && (
+                                            <Tab label={"Validators"}>
+                                                <ValidatorsTab form={form} field={current} />
+                                            </Tab>
+                                        )}
                                     </Tabs>
                                 </DialogContent>
                                 <DialogActions

@@ -3,6 +3,7 @@ import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+// @ts-ignore
 import mdbid from "mdbid";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -44,6 +45,9 @@ describe("Republish entries", () => {
 
     const setupModel = async (contentModelGroup: CmsGroup, modelId: string): Promise<CmsModel> => {
         const model = models.find(m => m.modelId === modelId);
+        if (!model) {
+            throw new Error(`Could not find model "${modelId}".`);
+        }
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -178,7 +182,7 @@ describe("Republish entries", () => {
          */
         await until(
             () => listCategories(),
-            ([response]) => {
+            ([response]: any) => {
                 return response.data.listCategories.data.length === 3;
             },
             {
@@ -245,7 +249,7 @@ describe("Republish entries", () => {
                 listCategories({
                     sort: ["createdOn_ASC"]
                 }),
-            ([response]) => {
+            ([response]: any) => {
                 const items = response.data.listCategories.data;
                 if (items.length !== 3) {
                     return false;
@@ -415,7 +419,7 @@ describe("Republish entries", () => {
                 listReadProducts({
                     sort: ["createdOn_ASC"]
                 }),
-            ([response]) => {
+            ([response]: any) => {
                 const items = response.data.listProducts.data;
                 if (items.length !== 2) {
                     return false;
@@ -464,7 +468,7 @@ describe("Republish entries", () => {
                 listReadProducts({
                     sort: ["createdOn_ASC"]
                 }),
-            ([response]) => {
+            ([response]: any) => {
                 const items = response.data.listProducts.data;
                 if (items.length !== 2) {
                     return false;

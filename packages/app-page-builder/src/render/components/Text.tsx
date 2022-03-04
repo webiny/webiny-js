@@ -12,7 +12,7 @@ interface TextPropsType {
     element: PbElement;
     rootClassName?: string;
 }
-const TextElement: React.FunctionComponent<TextPropsType> = ({ element, rootClassName }) => {
+const TextElement: React.FC<TextPropsType> = ({ element, rootClassName }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = usePageBuilder();

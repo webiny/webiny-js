@@ -21,7 +21,7 @@ export class GenericView extends UIView {
         this._render = render;
     }
 
-    public render(props?: Record<string, any>): React.ReactNode {
+    public override render(props?: Record<string, any>): React.ReactNode {
         return this._render(props);
     }
 }

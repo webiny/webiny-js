@@ -12,11 +12,11 @@ export interface NotFoundParams<T = any> {
 }
 
 interface Config<TPage extends Page = Page> {
-    notFound?: (params: NotFoundParams) => Promise<TPage | undefined>;
+    notFound?: (params: NotFoundParams) => Promise<TPage | null>;
 }
 
 export class PagePlugin<TPage extends Page = Page> extends Plugin {
-    public static readonly type = "pb.page";
+    public static override readonly type: string = "pb.page";
     private readonly _config: Config<TPage>;
 
     constructor(config?: Config<TPage>) {
@@ -24,17 +24,15 @@ export class PagePlugin<TPage extends Page = Page> extends Plugin {
         this._config = config || {};
     }
 
-    public async notFound<T = Args>(params: NotFoundParams<T>): Promise<TPage | undefined> {
+    public async notFound<T = Args>(params: NotFoundParams<T>): Promise<TPage | null> {
         return this._execute("notFound", params);
     }
 
-    private async _execute(
-        callback: keyof Config,
-        params: NotFoundParams
-    ): Promise<TPage | undefined> {
-        if (typeof this._config[callback] !== "function") {
-            return undefined;
+    private async _execute(callback: keyof Config, params: NotFoundParams): Promise<TPage | null> {
+        const cb = this._config[callback];
+        if (typeof cb !== "function") {
+            return null;
         }
-        return this._config[callback](params);
+        return cb(params);
     }
 }

@@ -132,7 +132,9 @@ const SaveDialog = (props: Props) => {
                                                         onChange={onChange}
                                                         element={element}
                                                     />
-                                                ) : null
+                                                ) : (
+                                                    <></>
+                                                )
                                             }
                                         </Bind>
                                     </PreviewBox>

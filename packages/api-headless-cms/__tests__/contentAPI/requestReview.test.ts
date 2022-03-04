@@ -1,5 +1,5 @@
 import Error from "@webiny/error";
-import { CmsGroup } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import models from "./mocks/contentModels";
@@ -18,9 +18,12 @@ describe("Request review", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModel = async (model = null) => {
+    const setupContentModel = async (model?: string | CmsModel) => {
         if (!model || typeof model === "string") {
             model = models.find(m => m.modelId === (model || "category"));
+            if (!model) {
+                throw new Error(`Could not find model "${model}".`);
+            }
         }
         const [createCMG] = await createContentModelGroupMutation({
             data: {
@@ -101,41 +104,19 @@ describe("Request review", () => {
                 }
             }
         });
-        const fruits = createResponse.data.createCategory.data;
+        const fruits: any = createResponse.data.createCategory.data;
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.listCategories.data.length === 1;
             },
             { name: "create category" }
         );
 
-        // const cmsModel: CmsModel = {
-        //     ...(model as any),
-        //     tenant: "root",
-        //     locale: "en-US"
-        // };
-
         const [requestReviewResponse] = await requestCategoryReview({
             revision: fruits.id
         });
-
-        // const getSoResult = await storageOperations.entries.get(cmsModel, {
-        //     where: {
-        //         id: fruits.id
-        //     }
-        // });
-        //
-        // expect()
-        //
-        // const soResult = await storageOperations.entries.getRevisions(cmsModel, {
-        //     id: fruits.id
-        // });
-        //
-        // const x = soResult;
-        // const y = getSoResult;
-        // console.log(x, y);
 
         expect(requestReviewResponse).toEqual({
             data: {
@@ -144,7 +125,7 @@ describe("Request review", () => {
                         ...fruits,
                         meta: {
                             ...fruits.meta,
-                            revisions: fruits.meta.revisions.map(revision => {
+                            revisions: fruits.meta.revisions.map((revision: any) => {
                                 return {
                                     ...revision,
                                     meta: {
@@ -163,7 +144,7 @@ describe("Request review", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 if (data.listCategories.data.length !== 1) {
                     return false;
                 }
@@ -184,7 +165,7 @@ describe("Request review", () => {
                         ...fruits,
                         meta: {
                             ...fruits.meta,
-                            revisions: fruits.meta.revisions.map(revision => {
+                            revisions: fruits.meta.revisions.map((revision: any) => {
                                 return {
                                     ...revision,
                                     meta: {

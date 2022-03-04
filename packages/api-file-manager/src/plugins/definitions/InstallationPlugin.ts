@@ -12,7 +12,7 @@ interface InstallationPluginConfig {
 }
 
 export abstract class InstallationPlugin extends Plugin {
-    public static readonly type = "fm.install";
+    public static override readonly type: string = "fm.install";
     private readonly _config: Partial<InstallationPluginConfig>;
 
     constructor(config?: Partial<InstallationPluginConfig>) {
@@ -32,9 +32,10 @@ export abstract class InstallationPlugin extends Plugin {
         callback: keyof InstallationPluginConfig,
         params: InstallationPluginParams
     ): Promise<void> {
-        if (typeof this._config[callback] !== "function") {
+        const cb = this._config[callback];
+        if (!cb) {
             return;
         }
-        return this._config[callback](params);
+        return cb(params);
     }
 }

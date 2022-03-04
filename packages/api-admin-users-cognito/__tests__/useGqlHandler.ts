@@ -19,10 +19,19 @@ import { INSTALL, IS_INSTALLED, INSTALL_SECURITY, INSTALL_TENANCY } from "./grap
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 
-type UseGqlHandlerParams = {
+interface UseGqlHandlerParams {
     fullAccess?: boolean;
     plugins?: PluginCollection;
-};
+}
+
+interface InvokeParams {
+    httpMethod?: "POST" | "GET" | "OPTIONS";
+    body: {
+        query: string;
+        variables?: Record<string, any>;
+    };
+    headers?: Record<string, string>;
+}
 
 export default (opts: UseGqlHandlerParams = {}) => {
     const defaults = { fullAccess: false, plugins: [] };
@@ -39,11 +48,11 @@ export default (opts: UseGqlHandlerParams = {}) => {
         }),
         graphqlHandler(),
         authenticateUsingHttpHeader(),
-        ...opts.plugins
+        ...(opts.plugins || [])
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
+    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         if (!("authorization" in headers)) {
             headers["authorization"] = "mock-user";
         }
@@ -62,25 +71,25 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async login(headers = {}) {
             return invoke({ body: { query: LOGIN }, headers });
         },
-        async create(variables) {
+        async create(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_USER, variables } });
         },
-        async update(variables) {
+        async update(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_USER, variables } });
         },
-        async delete(variables) {
+        async delete(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_USER, variables } });
         },
-        async list(variables = {}, headers = {}) {
+        async list(variables: Record<string, any> = {}, headers: Record<string, string> = {}) {
             return invoke({ body: { query: LIST_USERS, variables }, headers });
         },
-        async get(variables) {
+        async get(variables: Record<string, any>) {
             return invoke({ body: { query: GET_USER, variables } });
         },
         async getCurrentUser() {
             return invoke({ body: { query: GET_CURRENT_USER } });
         },
-        async updateCurrentUser(variables) {
+        async updateCurrentUser(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_CURRENT_USER, variables } });
         }
     };
@@ -89,7 +98,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async isInstalled() {
             return invoke({ body: { query: IS_INSTALLED } });
         },
-        async install(variables) {
+        async install(variables: Record<string, any>) {
             await this.installTenancy();
             await this.installSecurity();
             return invoke({ body: { query: INSTALL, variables } });
@@ -103,7 +112,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
     };
 
     const securityGroups = {
-        async get(variables) {
+        async get(variables: Record<string, any>) {
             return invoke({ body: { query: GET_SECURITY_GROUP, variables } });
         }
     };

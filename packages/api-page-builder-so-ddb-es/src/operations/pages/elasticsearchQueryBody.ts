@@ -79,7 +79,7 @@ interface CreateElasticsearchBodyParams {
     plugins: PluginsContainer;
     where: PageStorageOperationsListWhere;
     limit: number;
-    after?: string;
+    after: string | null;
     sort: string[];
 }
 
@@ -104,16 +104,16 @@ const createElasticsearchQuery = (
             return acc;
         }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
 
-    const where: PageStorageOperationsListWhere = {
+    const where: Partial<PageStorageOperationsListWhere> = {
         ...initialWhere
     };
     /**
      * Tags are specific so extract them and remove from where.
      */
-    const { tags_in: tags, tags_rule: tagsRule } = where;
+    const { tags_in: tags, tags_rule: tagsRule } = initialWhere;
     delete where["tags_in"];
     delete where["tags_rule"];
-    if (Array.isArray(tags) === true && tags.length > 0) {
+    if (tags && Array.isArray(tags) === true && tags.length > 0) {
         if (tagsRule === "any") {
             query.filter.push({
                 terms: {
@@ -155,7 +155,7 @@ const createElasticsearchQuery = (
      */
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
     if (sharedIndex) {
-        const tenant = where.tenant;
+        const tenant = initialWhere.tenant;
         query.must.push({ term: { "tenant.keyword": tenant } });
         /**
          * Remove so it is not applied again later.
@@ -176,17 +176,9 @@ const createElasticsearchQuery = (
     return query;
 };
 
-interface CreateElasticsearchBodyParams {
-    plugins: PluginsContainer;
-    where: PageStorageOperationsListWhere;
-    limit: number;
-    after?: string;
-    sort: string[];
-}
-
 export const createElasticsearchQueryBody = (
     params: CreateElasticsearchBodyParams
-): esSearchBody => {
+): esSearchBody & Pick<Required<esSearchBody>, "sort"> => {
     const { plugins, where, limit: initialLimit, sort: initialSort, after } = params;
 
     const fieldPlugins = plugins

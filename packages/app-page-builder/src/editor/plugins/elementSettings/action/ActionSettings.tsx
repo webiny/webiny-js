@@ -51,8 +51,8 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
     let href: string, newTab: boolean;
 
     if (element.data?.link && !element.data?.action) {
-        href = element.data?.link?.href;
-        newTab = element.data?.link?.newTab;
+        href = element.data?.link?.href || "";
+        newTab = element.data?.link?.newTab || false;
     } else {
         href = element.data?.action?.href;
         newTab = element.data?.action?.newTab;
@@ -187,10 +187,10 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
                                             <DelayedOnChange>
                                                 {props => (
                                                     <InputField
+                                                        {...props}
                                                         value={props.value || ""}
                                                         onChange={props.onChange}
                                                         placeholder={"https://webiny.com/blog"}
-                                                        {...props}
                                                     />
                                                 )}
                                             </DelayedOnChange>

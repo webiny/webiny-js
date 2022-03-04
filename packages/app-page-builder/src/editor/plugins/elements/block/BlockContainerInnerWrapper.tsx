@@ -21,7 +21,9 @@ const BlockContainerInnerWrapper: React.FC<BlockContainerInnerWrapperProps> = ({
             {({ elementStyle }) => {
                 // Use per-device style
                 const width =
-                    elementStyle[`--${kebabCase(displayMode)}-width` as keyof CSSProperties];
+                    elementStyle[
+                        `--${kebabCase(displayMode)}-width` as unknown as keyof CSSProperties
+                    ];
                 return (
                     <div
                         key={elementId}

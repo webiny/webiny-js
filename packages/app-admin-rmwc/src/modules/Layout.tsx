@@ -39,6 +39,10 @@ const RMWCLayout = (): React.FC<LayoutProps> => {
     };
 };
 
-export const Layout = () => {
+export const Layout: React.FC = () => {
+    /**
+     * TODO @ts-refactor @pavel
+     */
+    // @ts-ignore
     return <Compose component={LayoutRenderer} with={RMWCLayout} />;
 };

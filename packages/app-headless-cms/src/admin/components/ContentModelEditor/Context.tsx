@@ -15,17 +15,38 @@ import {
 } from "~/admin/graphql/contentModels";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
 import { CmsEditorContentModel, CmsEditorField, CmsModel } from "~/types";
+import { FetchResult } from "apollo-link";
 
-export interface Context {
+export interface ContentModelEditorProviderContext {
     apolloClient: ApolloClient<any>;
-    data: CmsEditorContentModel | null;
+    data: CmsEditorContentModel;
     isPristine: boolean;
-    getContentModel: (modelId: string) => Promise<any>;
-    saveContentModel: (data?: Record<string, any>) => Promise<any>;
+    getContentModel: (modelId: string) => Promise<FetchResult<GetCmsModelQueryResponse>>;
+    saveContentModel: (
+        data?: CmsModel
+    ) => Promise<UpdateCmsModelMutationResponse["updateContentModel"]>;
     setData: (setter: (model: CmsModel) => void, saveContentModel?: boolean) => Promise<any>;
 }
 
-export const contentModelEditorContext = React.createContext<Context>(null);
+export const contentModelEditorContext = React.createContext<ContentModelEditorProviderContext>({
+    apolloClient: null as unknown as ApolloClient<any>,
+    data: null as unknown as CmsEditorContentModel,
+    isPristine: false,
+    getContentModel: async () => {
+        return {
+            data: null
+        };
+    },
+    saveContentModel: async () => {
+        return {
+            data: null,
+            error: null
+        };
+    },
+    setData: async () => {
+        return void 0;
+    }
+});
 
 type PickedCmsEditorContentModel = Pick<
     CmsEditorContentModel,
@@ -34,7 +55,7 @@ type PickedCmsEditorContentModel = Pick<
 interface State {
     modelId: string | null;
     isPristine: boolean;
-    data: CmsModel | null;
+    data: CmsModel;
 }
 interface Action {
     data: Partial<State> | Partial<CmsModel>;
@@ -51,8 +72,9 @@ export const contentModelEditorReducer: Reducer = (prev: State, action: Action):
 
         case "data":
             return { ...prev, data: data as CmsModel };
+        default:
+            return prev;
     }
-    return prev;
 };
 
 /**
@@ -87,7 +109,7 @@ const cleanupModelData = (data: PickedCmsEditorContentModel): PickedCmsEditorCon
 
 interface ContentModelEditorProviderProps {
     apolloClient: ApolloClient<any>;
-    modelId: string;
+    modelId?: string;
     children: React.ReactElement;
 }
 
@@ -97,9 +119,9 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
     modelId
 }) => {
     const [state, dispatch] = useReducer<Reducer>(contentModelEditorReducer, {
-        modelId,
+        modelId: modelId || null,
         isPristine: true,
-        data: null
+        data: null as unknown as CmsModel
     });
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -108,7 +130,9 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
         dispatch({ type: "state", data: { isPristine: flag } });
     };
 
-    const saveContentModel = async (data?: CmsModel) => {
+    const saveContentModel = async (
+        data?: CmsModel
+    ): Promise<UpdateCmsModelMutationResponse["updateContentModel"]> => {
         if (!data) {
             data = state.data;
         }
@@ -130,26 +154,42 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
                 modelId: data.modelId,
                 data: cleanupModelData(modelData)
             },
-            refetchQueries: [{ query: LIST_MENU_CONTENT_GROUPS_MODELS }]
+            refetchQueries: [
+                {
+                    query: LIST_MENU_CONTENT_GROUPS_MODELS
+                }
+            ]
         });
 
         setPristine(true);
 
-        return get(response, "data.updateContentModel");
+        if (!response.data || !response.data.updateContentModel) {
+            return {
+                data: null,
+                error: null
+            };
+        }
+
+        return response.data.updateContentModel;
     };
 
     /**
      * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
      * Return new data once finished.
      */
-    const setData = (setter: (value: any) => any, saveModel = false) => {
+    const setData = async (setter: (value: any) => any, saveModel = false): Promise<void> => {
         setPristine(false);
         const data = setter(state.data);
         dispatch({ type: "data", data });
-        return saveModel !== false && saveContentModel(data);
+        if (!saveModel) {
+            return;
+        }
+        await saveContentModel(data);
     };
 
-    const getContentModel = async (modelId: string) => {
+    const getContentModel = async (
+        modelId: string
+    ): Promise<FetchResult<GetCmsModelQueryResponse>> => {
         const response = await apolloClient.query<
             GetCmsModelQueryResponse,
             GetCmsModelQueryVariables
@@ -171,6 +211,9 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
     };
 
     useEffect(() => {
+        if (!modelId) {
+            return;
+        }
         getContentModel(modelId).catch(() => {
             history.push(`/cms/content-models`);
             showSnackbar(`Could not load content model with given ID.`);

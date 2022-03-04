@@ -18,10 +18,10 @@ import { FormView } from "@webiny/app-admin/ui/views/FormView";
 import { SplitViewPanelElement } from "@webiny/app-admin/ui/views/SplitView/SplitViewPanelElement";
 
 export class PageSettingsView extends OverlayView {
-    private _splitView: SplitView;
+    private _splitView?: SplitView;
     private _sections = new Map<string, PageSettingsTabElementConfig>();
-    private _tabs: PageSettingsTabsElement;
-    private _form: FormElement;
+    private _tabs?: PageSettingsTabsElement;
+    private _form?: FormElement;
 
     public constructor() {
         super("PageSettingsView");
@@ -43,18 +43,29 @@ export class PageSettingsView extends OverlayView {
         this.isRendered().then(() => this.setIsVisible(true));
     }
 
-    public getLeftPanel(): SplitViewPanelElement {
+    public getLeftPanel(): SplitViewPanelElement | null {
+        if (!this._splitView) {
+            return null;
+        }
         return this._splitView.getLeftPanel();
     }
 
-    public getRightPanel(): SplitViewPanelElement {
+    public getRightPanel(): SplitViewPanelElement | null {
+        if (!this._splitView) {
+            return null;
+        }
         return this._splitView.getRightPanel();
     }
 
     public addSection(section: PageSettingsTabElementConfig): void {
         this._sections.set(section.id, section);
 
-        this._tabs.addElement(new PageSettingsTabElement(section.id, section));
+        if (this._tabs) {
+            this._tabs.addElement(new PageSettingsTabElement(section.id, section));
+        }
+        if (!this._form) {
+            return;
+        }
         this._form.addElement(
             new ViewElement(section.id, {
                 view: section.view,
@@ -70,12 +81,12 @@ export class PageSettingsView extends OverlayView {
         );
     }
 
-    public getActiveSection(): PageSettingsTabElementConfig {
+    public getActiveSection(): PageSettingsTabElementConfig | null {
         const { activeSection } = this.getPageSettingsHook();
         if (!activeSection) {
             return this._sections.values().next().value;
         }
-        return this._sections.get(activeSection);
+        return this._sections.get(activeSection) || null;
     }
 
     public getPageSettingsHook(): UsePageSettings {
@@ -94,7 +105,11 @@ export class PageSettingsView extends OverlayView {
             new ViewElement("pageSettingsContent", { view: this._splitView })
         );
         this._tabs = this._splitView.getLeftPanel().addElement(new PageSettingsTabsElement("tabs"));
-        this.getRightPanel().addElement(this._form);
+        const rightPanel = this.getRightPanel();
+        if (!rightPanel) {
+            return;
+        }
+        rightPanel.addElement(this._form);
     }
 
     private setupLegacyPlugins() {
@@ -104,7 +119,7 @@ export class PageSettingsView extends OverlayView {
         );
 
         oldPlugins.forEach(pl => {
-            const formView = new FormView(pl.name);
+            const formView = new FormView(pl.name as string);
             formView.setTitle(() => pl.title);
             formView.setFormData(() => this.getPageSettingsHook().pageData);
             formView.setOnSubmit(data => this.getPageSettingsHook().savePage(data));
@@ -115,7 +130,7 @@ export class PageSettingsView extends OverlayView {
             );
 
             this.addSection({
-                id: pl.name,
+                id: pl.name as string,
                 title: pl.title,
                 description: pl.description,
                 icon: pl.icon,

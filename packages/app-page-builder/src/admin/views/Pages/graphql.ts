@@ -63,7 +63,21 @@ export const CREATE_PAGE_FROM = gql`
         }
     }
 `;
-
+/**
+ * #####################
+ * Get Page Query Response
+ */
+export interface GetPageQueryResponse {
+    pageBuilder: {
+        getPage: {
+            data: PbPageData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface GetPageQueryVariables {
+    id: string;
+}
 export const GET_PAGE = gql`
     query PbGetPage($id: ID!) {
         pageBuilder {

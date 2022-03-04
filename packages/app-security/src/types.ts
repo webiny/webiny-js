@@ -20,6 +20,6 @@ export interface SecurityIdentity {
     permissions?: SecurityPermission[];
     logout(): void;
     // For backwards compatibility, expose the `getPermission` method on the `identity` object.
-    getPermission?<T extends SecurityPermission = SecurityPermission>(name: string): T;
+    getPermission?<T extends SecurityPermission = SecurityPermission>(name: string): T | null;
     [key: string]: any;
 }

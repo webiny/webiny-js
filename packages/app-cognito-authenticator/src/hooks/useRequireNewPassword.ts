@@ -3,13 +3,14 @@ import Auth from "@aws-amplify/auth";
 import get from "lodash.get";
 import { useAuthenticator } from "./useAuthenticator";
 
+interface RequireNewPasswordConfirmParams {
+    password: string;
+    requiredAttributes: { [key: string]: string };
+}
 export interface RequireNewPassword {
     shouldRender: boolean;
 
-    confirm(params: {
-        password: string;
-        requiredAttributes: { [key: string]: string };
-    }): Promise<void>;
+    confirm(params: RequireNewPasswordConfirmParams): Promise<void>;
 
     requiredAttributes: string[];
 }
@@ -51,6 +52,9 @@ export function useRequireNewPassword(): RequireNewPassword {
     return {
         confirm,
         shouldRender: authState === "requireNewPassword",
-        requiredAttributes: get(authData, "challengeParam.requiredAttributes", [])
+        /**
+         * It is safe to cast.
+         */
+        requiredAttributes: get(authData, "challengeParam.requiredAttributes", []) as string[]
     };
 }

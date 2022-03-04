@@ -8,7 +8,7 @@ import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMeth
 import { createTopic } from "@webiny/pubsub";
 
 export interface GetTenant {
-    (): string;
+    (): string | undefined;
 }
 
 export const createSecurity = async (config: SecurityConfig): Promise<Security> => {

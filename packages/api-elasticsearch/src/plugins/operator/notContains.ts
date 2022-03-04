@@ -3,7 +3,7 @@ import { normalizeValue } from "~/normalize";
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderOperatorNotContainsPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
-    public name = "elasticsearch.queryBuilder.operator.notContains.default";
+    public override name = "elasticsearch.queryBuilder.operator.notContains.default";
 
     public getOperator(): string {
         return "not_contains";

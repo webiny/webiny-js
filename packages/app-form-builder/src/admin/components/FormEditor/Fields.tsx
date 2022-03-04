@@ -128,7 +128,6 @@ export const Fields: React.FC<FieldsProps> = ({ onFieldDragStart }) => {
                     <AccordionItem
                         key={group.name}
                         title={group.title}
-                        icon={null}
                         className={accordionItem}
                         data-testid={group.name}
                     >

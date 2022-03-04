@@ -14,13 +14,15 @@ export const SEARCH_LOCALE_CODES = gql`
 `;
 
 interface LocaleCodesAutoCompleteProps {
-    value?: string;
+    value?: {
+        id: string;
+        name: string;
+    };
     label: string;
     disabled?: boolean;
     description?: string;
 }
 const LocaleCodesAutoComplete: React.FC<LocaleCodesAutoCompleteProps> = props => {
-    // TODO validate that this is correct
     const autoComplete = useAutocomplete({
         query: SEARCH_LOCALE_CODES
     });

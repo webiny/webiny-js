@@ -101,7 +101,7 @@ describe("Content entries", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listFruits({}).then(([data]) => data),
-            ({ data }) => data.listFruits.data.length === 3,
+            ({ data }: any) => data.listFruits.data.length === 3,
             { name: `list all fruits - ${name}` }
         );
     };

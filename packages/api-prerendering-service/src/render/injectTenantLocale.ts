@@ -9,6 +9,9 @@ export default (args: Pick<RenderUrlPostHtmlParams, "args">) => async (tree: Nod
     }
 
     tree.match({ tag: "head" }, node => {
+        if (!node.content) {
+            node.content = [];
+        }
         if (meta.tenant) {
             node.content.push(`<script>window.__PS_RENDER_TENANT__ = "${meta.tenant}";</script>`);
         }

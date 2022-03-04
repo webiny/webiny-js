@@ -44,7 +44,7 @@ class MenuItemsList extends React.Component<MenuItemsListProps> {
         return plugin ? plugin.menuItem.canHaveChildren : false;
     }
 
-    render() {
+    public override render() {
         const { items, onChange, editItem, deleteItem, canSave } = this.props;
         const data = Array.isArray(items) ? [...items] : [];
 
