@@ -36,7 +36,7 @@ describe("Reviewer crud test", () => {
 
         await until(
             () => reviewer.listReviewersQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listReviewers.data;
                 return list.length === 1;
             },
@@ -85,7 +85,7 @@ describe("Reviewer crud test", () => {
 
         await until(
             () => reviewer.listReviewersQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listReviewers.data;
                 return list.length === 2;
             },
@@ -159,7 +159,7 @@ describe("Reviewer crud test", () => {
 
         await until(
             () => reviewer.listReviewersQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listReviewers.data;
                 return list.length === 1;
             },
@@ -208,7 +208,7 @@ describe("Reviewer crud test", () => {
 
         await until(
             () => reviewer.listReviewersQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listReviewers.data;
                 return list.length === 1;
             },

@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { CmsErrorResponse, CmsModel } from "~/types";
+import { CmsErrorResponse, CmsLatestContentEntry } from "~/types";
 
 const fields = `
 data {
@@ -19,16 +19,6 @@ error {
 
 /**
  * #########################
- * Common response
- */
-export interface CmsEntryQueryResponseDataEntry {
-    id: string;
-    status: "published" | "draft";
-    title: string;
-    model: Pick<CmsModel, "modelId" | "name">;
-}
-/**
- * #########################
  * Common variables
  */
 export interface CmsEntryGetEntryVariable {
@@ -43,7 +33,7 @@ export interface CmsEntryGetEntryVariable {
 
 export interface CmsEntrySearchQueryResponse {
     content: {
-        data: CmsEntryQueryResponseDataEntry[];
+        data: CmsLatestContentEntry[];
         error?: CmsErrorResponse;
     };
 }
@@ -66,7 +56,7 @@ export const SEARCH_CONTENT_ENTRIES = gql`
 
 export interface CmsEntryGetListResponse {
     content: {
-        data: CmsEntryQueryResponseDataEntry[];
+        data: CmsLatestContentEntry[];
         error?: CmsErrorResponse;
     };
 }
@@ -87,7 +77,7 @@ export const GET_CONTENT_ENTRIES = gql`
  */
 export interface CmsEntryGetQueryResponse {
     content: {
-        data: CmsEntryQueryResponseDataEntry;
+        data: CmsLatestContentEntry;
         error?: CmsErrorResponse;
     };
 }

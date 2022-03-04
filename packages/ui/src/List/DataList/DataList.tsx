@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import Loader from "./Loader";
@@ -133,16 +133,16 @@ const dataListContent = css({
 // This was copied from "./types" so that it can be outputted in docs.
 interface DataListProps {
     // Pass a function to take full control of list render.
-    children?: Function;
+    children?: Function | null;
 
     // A title of paginated list.
     title?: React.ReactNode;
 
     // FormData that needs to be shown in the list.
-    data?: Record<string, any>[];
+    data?: Record<string, any>[] | null;
 
     // A callback that must refresh current view by repeating the previous query.
-    refresh?: Function;
+    refresh?: Function | null;
 
     // If true, Loader component will be shown, disallowing any interaction.
     loading?: boolean;
@@ -157,10 +157,10 @@ interface DataListProps {
     pagination?: PaginationProp;
 
     // Triggered once a sorter has been selected.
-    setSorters?: Function;
+    setSorters?: Function | null;
 
     // Provide all sorters options and callbacks here.
-    sorters?: SortersProp;
+    sorters?: SortersProp | null;
 
     // Provide actions that will be shown in the top right corner (eg. export or import actions).
     actions?: React.ReactNode;
@@ -172,13 +172,13 @@ interface DataListProps {
     multiSelectActions?: React.ReactNode;
 
     // Provide callback that will be executed once user selects all list items.
-    multiSelectAll?: (value: boolean, data: Object[]) => void;
+    multiSelectAll?: (value: boolean, data: Record<string, any>[] | null) => void;
 
     // Callback which returns true if all items were selected, otherwise returns false.
-    isAllMultiSelected?: (data: Object[]) => boolean;
+    isAllMultiSelected?: (data: Record<string, any>[] | null) => boolean;
 
     // Callback which returns true if none of the items were selected, otherwise returns false.
-    isNoneMultiSelected?: (data: Object[]) => boolean;
+    isNoneMultiSelected?: (data: Record<string, any>[] | null) => boolean;
 
     showOptions?: { [key: string]: any };
 
@@ -189,11 +189,11 @@ interface DataListProps {
     // Provide an action element that handle toggling the "Modal overlay".
     modalOverlayAction?: React.ReactElement;
 
-    meta?: Record<string, any>;
+    meta?: Record<string, any> | null;
 
-    setPage?: (page: string) => void;
+    setPage?: ((page: string) => void) | null;
 
-    setPerPage?: (page: string) => void;
+    setPerPage?: ((page: string) => void) | null;
 
     perPageOptions?: number[];
 }
@@ -203,19 +203,21 @@ const MultiSelectAll: React.FC<DataListProps> = props => {
     if (!multiSelectActions) {
         return null;
     }
+    /**
+     * We can safely cast because we have defaults.
+     */
+    const { isAllMultiSelected, isNoneMultiSelected, multiSelectAll, data } =
+        props as Required<DataListProps>;
 
     return (
         <React.Fragment>
-            {typeof props.multiSelectAll === "function" && (
+            {typeof multiSelectAll === "function" && (
                 <ListHeaderItem>
                     <Checkbox
-                        indeterminate={
-                            !props.isAllMultiSelected(props.data) &&
-                            !props.isNoneMultiSelected(props.data)
-                        }
-                        value={props.isAllMultiSelected(props.data)}
+                        indeterminate={!isAllMultiSelected(data) && !isNoneMultiSelected(data)}
+                        value={isAllMultiSelected(data)}
                         onClick={() => {
-                            props.multiSelectAll(!props.isAllMultiSelected(props.data), props.data);
+                            multiSelectAll(!isAllMultiSelected(data), data);
                         }}
                     />
                 </ListHeaderItem>
@@ -368,6 +370,8 @@ export const DataList: React.FC<DataListProps> = props => {
         render = typeof ch === "function" ? ch(props) : null;
     }
 
+    const showOptions = props.showOptions || {};
+
     return (
         <DataListModalOverlayProvider>
             <ListContainer className={"webiny-data-list"} data-testid={"ui.list.data-list"}>
@@ -382,15 +386,15 @@ export const DataList: React.FC<DataListProps> = props => {
                     </Grid>
                 )}
 
-                {Object.keys(props.showOptions).length > 0 && (
+                {Object.keys(showOptions).length > 0 && (
                     <Grid className={listSubHeader}>
                         <Search {...props} />
                         <Cell span={props.search ? 5 : 12} style={{ justifySelf: "end" }}>
                             <MultiSelectAll {...props} />
-                            {props.showOptions.refresh && <RefreshButton {...props} />}
-                            {props.showOptions.pagination && <Pagination {...props} />}
-                            {props.showOptions.sorters && <Sorters {...props} />}
-                            {props.showOptions.filters && <Filters {...props} />}
+                            {showOptions.refresh && <RefreshButton {...props} />}
+                            {showOptions.pagination && <Pagination {...props} />}
+                            {showOptions.sorters && <Sorters {...props} />}
+                            {showOptions.filters && <Filters {...props} />}
                             {props.modalOverlayAction ? (
                                 <ListHeaderItem>{props.modalOverlayAction}</ListHeaderItem>
                             ) : null}

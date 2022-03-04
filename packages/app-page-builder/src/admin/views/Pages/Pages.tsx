@@ -50,10 +50,10 @@ const Pages: React.FC = () => {
 
     const onSelect = operation === Operation.CREATE ? createPageMutation : showDialog;
 
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo(() => {
-        const permission = identity.getPermission("pb.page");
+        const permission = getPermission("pb.page");
         if (!permission) {
             return false;
         }
@@ -63,7 +63,7 @@ const Pages: React.FC = () => {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     return (
         <>

@@ -18,7 +18,7 @@ function appendSDK(props: OEmbedProps) {
     const { sdk, global, element } = props;
     const { url } = element?.data?.source || {};
 
-    if (!sdk || !url || window[global]) {
+    if (!sdk || !url || window[global as unknown as keyof Window]) {
         return Promise.resolve();
     }
 

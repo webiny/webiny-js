@@ -1,3 +1,6 @@
+/**
+ * https://github.com/okta/okta-signin-widget/pull/1443#issuecomment-918008714
+ */
 declare module '@okta/okta-signin-widget' {
     import { OktaAuth, OktaAuthOptions, Tokens } from '@okta/okta-auth-js'
     

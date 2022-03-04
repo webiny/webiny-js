@@ -1,4 +1,4 @@
-import { introspectionQuery } from "graphql";
+import { getIntrospectionQuery } from "graphql";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -55,6 +55,7 @@ import {
     LIST_CHANGES_REQUESTED_QUERY,
     UPDATE_CHANGE_REQUEST_MUTATION
 } from "./graphql/changeRequest";
+import { TestContext } from "../types";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -68,6 +69,15 @@ export interface GQLHandlerCallableParams {
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
     createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
+}
+
+export interface InvokeParams {
+    httpMethod?: "POST" | "GET" | "OPTIONS";
+    body: {
+        query: string;
+        variables?: Record<string, any>;
+    };
+    headers?: Record<string, string>;
 }
 
 const documentClient = new DocumentClient({
@@ -112,7 +122,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             {
                 type: "context",
                 name: "context-security-tenant",
-                apply(context) {
+                apply(context: TestContext) {
                     context.security.getApiKeyByToken = async (
                         token: string
                     ): Promise<ApiKey | null> => {
@@ -124,7 +134,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                             id: apiKey,
                             name: apiKey,
                             tenant: tenant.id,
-                            permissions: identity.permissions || [],
+                            permissions: identity?.permissions || [],
                             token,
                             createdBy: {
                                 id: "test",
@@ -156,7 +166,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         http: { debug: true }
     });
 
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
+    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler({
             httpMethod,
             headers,
@@ -193,7 +203,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         securityIdentity,
         reviewer,
         async introspect() {
-            return invoke({ body: { query: introspectionQuery } });
+            return invoke({ body: { query: getIntrospectionQuery() } });
         },
         // Workflow
         async getWorkflowQuery(variables: Record<string, any>) {
@@ -244,17 +254,17 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             return invoke({ body: { query: DELETE_CHANGE_REQUEST_MUTATION, variables } });
         },
         // Categories
-        async getCategory(variables) {
+        async getCategory(variables: Record<string, any>) {
             return invoke({ body: { query: GET_CATEGORY, variables } });
         },
-        async createCategory(variables) {
+        async createCategory(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },
         // Pages
-        async createPage(variables) {
+        async createPage(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
         },
-        async getPageQuery(variables) {
+        async getPageQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PAGE, variables } });
         },
         // Content Review

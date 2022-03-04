@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { DocumentNode } from "graphql";
 import {
     createAuthentication as baseCreateAuthentication,
-    Config as BaseConfig
+    AuthenticationFactoryConfig as BaseConfig
 } from "@webiny/app-admin-cognito";
 import { NotAuthorizedError } from "./NotAuthorizedError";
 import { createGetIdentityData, LOGIN_ST, LOGIN_MT } from "~/createGetIdentityData";
@@ -15,10 +15,12 @@ export interface CreateAuthenticationConfig extends Partial<BaseConfig> {
 
 interface WithGetIdentityDataProps {
     getIdentityData: GetIdentityDataCallable;
+    children: React.ReactNode;
 }
 
 interface AuthenticationProps {
     getIdentityData: GetIdentityDataCallable;
+    children: React.ReactNode;
 }
 
 export const createAuthentication = (config: CreateAuthenticationConfig = {}) => {
@@ -27,7 +29,12 @@ export const createAuthentication = (config: CreateAuthenticationConfig = {}) =>
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
-
+            /**
+             * TODO @ts-refactor
+             * createGetIdentityData return function does not have payload param so TS is complaining.
+             * createGetIdentityData does not need the payload param
+             */
+            // @ts-ignore
             return <Component getIdentityData={getIdentityData}>{children}</Component>;
         };
 
@@ -35,7 +42,7 @@ export const createAuthentication = (config: CreateAuthenticationConfig = {}) =>
     };
 
     const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
-        const [error, setError] = useState(null);
+        const [error, setError] = useState<string | null>(null);
         const BaseAuthentication = useMemo(() => {
             return baseCreateAuthentication({
                 onError(error: Error) {

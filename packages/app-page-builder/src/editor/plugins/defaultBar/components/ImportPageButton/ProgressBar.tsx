@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 
 const Container = styled.div<{ width: string; color: string }>`
@@ -30,7 +30,7 @@ interface ProgressBarProps {
     width: string;
 }
 
-const ProgressBar: FunctionComponent<ProgressBarProps> = ({ value, max, color, width }) => {
+const ProgressBar: React.FC<ProgressBarProps> = ({ value, max, color, width }) => {
     return (
         <Container color={color} width={width}>
             <progress value={value} max={max} />

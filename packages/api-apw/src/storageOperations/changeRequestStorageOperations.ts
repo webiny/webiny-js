@@ -1,13 +1,21 @@
 import { ApwChangeRequestStorageOperations } from "./types";
 import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
+import WebinyError from "@webiny/error";
 
 export const createChangeRequestStorageOperations = ({
     cms,
     getCmsContext
 }: CreateApwStorageOperationsParams): ApwChangeRequestStorageOperations => {
-    const getChangeRequestModel = () => {
-        return cms.getModel("apwChangeRequestModelDefinition");
+    const getChangeRequestModel = async () => {
+        const model = await cms.getModel("apwChangeRequestModelDefinition");
+        if (!model) {
+            throw new WebinyError(
+                "Could not find `apwWorkflowModelDefinition` model.",
+                "MODEL_NOT_FOUND_ERROR"
+            );
+        }
+        return model;
     };
     const getChangeRequest: ApwChangeRequestStorageOperations["getChangeRequest"] = async ({
         id

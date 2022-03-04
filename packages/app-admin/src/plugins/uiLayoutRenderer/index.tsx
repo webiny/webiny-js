@@ -8,7 +8,7 @@ function getElementKey(element: UIElement) {
 }
 
 const ElementID: React.FC = ({ children }) => {
-    return children as React.ReactElement;
+    return children as unknown as React.ReactElement;
 };
 
 export default new UILayoutPlugin(layout => {

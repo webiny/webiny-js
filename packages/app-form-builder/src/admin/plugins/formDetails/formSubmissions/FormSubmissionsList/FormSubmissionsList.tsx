@@ -70,7 +70,9 @@ export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }
         exportInProgress
     } = useSubmissions(form);
 
-    const [selectedFormSubmission, selectFormSubmission] = useState(null);
+    const [selectedFormSubmission, selectFormSubmission] = useState<FbFormSubmissionData | null>(
+        null
+    );
 
     return (
         <>
@@ -86,7 +88,7 @@ export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }
                         setNextPage: nextPage,
                         setPreviousPage: previousPage
                     }}
-                    multiSelectAll={null}
+                    multiSelectAll={undefined}
                     multiSelectActions={
                         <Tooltip content={t`Export all form submissions`} placement={"bottom"}>
                             <IconButton
@@ -104,7 +106,7 @@ export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }
                         pagination: true
                     }}
                 >
-                    {({ data = [] }) => (
+                    {({ data = [] }: { data: FbFormSubmissionData[] }) => (
                         <Scrollbar>
                             {data.map(submission => {
                                 const submittedOn = submission.meta

@@ -1,7 +1,6 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { plugins } from "@webiny/plugins";
-import get from "lodash/get";
 import { PbIcon, PbIconsPlugin } from "~/types";
 import { PostModifyElementArgs } from "../../elementSettings/useUpdateHandlers";
 // TODO: check is it possible to dynamically add icons?
@@ -12,18 +11,18 @@ const getIcons = (): PbIcon[] => {
         const pluginsByType = plugins.byType<PbIconsPlugin>("pb-icons");
         icons = pluginsByType.reduce((icons, pl) => {
             return icons.concat(pl.getIcons());
-        }, []);
+        }, [] as PbIcon[]);
     }
     return icons;
 };
 
-const getSvg = (id: string[], props: Record<string, any> = {}): string => {
+const getSvg = (id: string[], props: Record<string, any> = {}): string | undefined => {
     if (!props.width) {
         props.width = 50;
     }
-    const icon: PbIcon = getIcons().find(ic => ic.id[0] === id[0] && ic.id[1] === id[1]);
+    const icon = getIcons().find(ic => ic.id[0] === id[0] && ic.id[1] === id[1]);
     if (!icon) {
-        return null;
+        return undefined;
     }
     return renderToStaticMarkup(React.cloneElement(icon.svg, props));
 };
@@ -51,12 +50,16 @@ const updateButtonElementIcon = ({ name, newElement, element }: PostModifyElemen
         ...updatedIcon,
         // By setting "svg" as "null" we can truly reset it;
         // otherwise "undefined" will be overridden during merge.
-        svg: id && !isSelectedIcon ? getSvg(id, { width, color }) : null
+        svg: id && !isSelectedIcon ? getSvg(id, { width, color }) : undefined
     };
 };
 
 const updateIconElement = ({ newElement }: PostModifyElementArgs): void => {
-    const { id, width, color } = get(newElement, "data.icon");
+    if (!newElement.data.icon) {
+        console.log(`Missing data.icon on element "${newElement.id}".`);
+        return;
+    }
+    const { id = [], width, color } = newElement.data.icon;
     // Modify the element directly.
     newElement.data.icon.svg = getSvg(id, { width, color });
 };

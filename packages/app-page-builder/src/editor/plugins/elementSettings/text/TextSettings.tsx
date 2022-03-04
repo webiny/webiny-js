@@ -10,6 +10,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Link } from "@webiny/react-router";
 import {
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin,
     PbThemePlugin
@@ -75,14 +76,23 @@ const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, opti
         peTheme = pageElements.theme;
     }
 
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as PbEditorElement;
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
-    const { config: activeDisplayModeConfig } = useMemo(() => {
+    const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
+
+    const { config: activeDisplayModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
 
     const themeTypographyOptions = useMemo(() => {
         const { types = [] } = theme.elements[element.type];

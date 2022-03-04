@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 
 export abstract class CompressionPlugin extends Plugin {
-    public static readonly type = "elasticsearch.compression";
+    public static override readonly type: string = "elasticsearch.compression";
     /**
      * Check if data can be compressed.
      */

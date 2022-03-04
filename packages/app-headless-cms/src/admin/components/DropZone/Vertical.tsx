@@ -76,7 +76,7 @@ const Vertical: React.FC<VerticalProps> = ({ depth, last, onDrop, isVisible }) =
                         position: "absolute",
                         top: 0,
                         [last ? "right" : "left"]: 0,
-                        zIndex: isDragging ? 1000 + depth : -1
+                        zIndex: isDragging ? 1000 + (depth || 0) : -1
                     }}
                 >
                     <OuterDivVertical isOver={isOver} isDragging={isDragging} last={last}>

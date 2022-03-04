@@ -34,15 +34,15 @@ interface ToggleChildrenVisibilityCallable {
 }
 interface NodeRendererDefaultProps {
     scaffoldBlockPxWidth: number;
-    toggleChildrenVisibility: ToggleChildrenVisibilityCallable;
+    toggleChildrenVisibility: ToggleChildrenVisibilityCallable | null;
     connectDragPreview: ConnectDragPreview;
     connectDragSource: ConnectDragSource;
     isDragging: string;
     canDrop: boolean;
     canDrag: boolean;
     node: MenuTreeItem;
-    title: string;
-    draggedNode?: MenuTreeItem;
+    title: string | null;
+    draggedNode: MenuTreeItem | null;
     path: string;
     treeIndex: string;
     editItem: (item: MenuTreeItem) => void;
@@ -56,18 +56,15 @@ class NodeRendererDefault extends React.Component<NodeRendererDefaultProps> {
     static defaultProps: Partial<NodeRendererDefaultProps> = {
         canDrag: false,
         toggleChildrenVisibility: null,
-        // buttons: [],
         className: "",
         style: {},
-        // parentNode: null,
         draggedNode: null,
         canDrop: false,
         title: null,
-        // subtitle: null,
         canSave: false
     };
 
-    render() {
+    public override render() {
         const {
             scaffoldBlockPxWidth,
             toggleChildrenVisibility,

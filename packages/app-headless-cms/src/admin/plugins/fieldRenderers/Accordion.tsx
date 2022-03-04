@@ -85,7 +85,7 @@ const classes = {
 
 interface AccordionProps {
     title: string;
-    action?: ReactElement;
+    action?: ReactElement | null;
     icon?: ReactElement;
     defaultValue?: boolean;
 }
@@ -112,7 +112,7 @@ const Accordion: React.FC<AccordionProps> = ({
                     </div>
                 </div>
                 <div className="accordion-header--right">
-                    <div className={"action-container"}>{action}</div>
+                    {action && <div className={"action-container"}>{action}</div>}
                     <div className={"icon-container"}>{icon}</div>
                 </div>
             </div>

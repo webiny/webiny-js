@@ -9,6 +9,9 @@ const getUniqueFilePlugins = (accept: string[]): string[] => {
     const exts: Record<string, boolean> = {};
     accept.forEach(item => {
         const ext = mime.getExtension(item);
+        if (!ext) {
+            return;
+        }
         exts[ext] = true;
     });
 

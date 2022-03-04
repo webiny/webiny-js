@@ -98,7 +98,10 @@ const getSchema = async (args: Args): Promise<GraphQLSchema> => {
         });
         return schema;
     }
-    const cache = schemaList.get(id);
+    /**
+     * Safe to cast because check was done few lines up.
+     */
+    const cache = schemaList.get(id) as SchemaCache;
     if (cache.key === cacheKey) {
         return cache.schema;
     }

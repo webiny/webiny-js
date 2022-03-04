@@ -1,4 +1,4 @@
-export type FormComponentProps = {
+export interface FormComponentProps {
     validation?: {
         /* Is form element's value valid? */
         isValid: boolean;
@@ -16,4 +16,4 @@ export type FormComponentProps = {
 
     /* A callback that is executed each time a value is changed. */
     onChange?: (value: any) => void;
-};
+}

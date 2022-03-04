@@ -304,7 +304,9 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
                     getMultiSelected={multiSelectProps.getMultiSelected}
                     where={where}
                     sort={sort}
-                    search={search}
+                    search={{
+                        query: search ? search.query || "" : ""
+                    }}
                 />
             }
             multiSelectAll={multiSelectProps.multiSelectAll}

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Downshift, { ControllerStateAndHelpers, PropGetters } from "downshift";
 import { Input } from "~/Input";
 import classNames from "classnames";
@@ -43,25 +43,25 @@ export interface AutoCompleteProps extends Omit<AutoCompleteBaseProps, "onChange
     loading?: boolean;
 
     /* A component that renders supporting UI in case of no result found. */
-    noResultFound?: Function;
+    noResultFound?: React.ReactNode;
 }
 
-type State = {
+interface State {
     inputValue: string;
-};
-
-function Spinner() {
-    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
+
+const Spinner: React.FC = () => {
+    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
+};
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
     options: AutoCompleteProps["options"];
-    placement: AutoCompleteProps["placement"];
+    placement?: Placement;
 }
 
 interface OptionsListProps {
-    placement: Placement;
+    placement?: Placement;
     getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
 }
 
@@ -101,7 +101,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         }
     };
 
-    state: State = {
+    public override state: State = {
         inputValue: ""
     };
 
@@ -110,7 +110,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
      */
     downshift: any = React.createRef();
 
-    componentDidUpdate(previousProps: any) {
+    public override componentDidUpdate(previousProps: AutoCompleteProps) {
         const { value, options } = this.props;
         const { value: previousValue } = previousProps;
 
@@ -136,7 +136,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
     /**
      * Renders options - based on user's input. It will try to match input text with available options.
      */
-    renderOptions({
+    private renderOptions({
         options,
         isOpen,
         highlightedIndex,
@@ -224,7 +224,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         );
     }
 
-    render() {
+    public override render() {
         const {
             className,
             options,
@@ -278,7 +278,9 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                         const keyCode: string = keycode(ev as unknown as Event);
 
                                         if (keyCode === "backspace") {
-                                            onChange(null);
+                                            if (onChange) {
+                                                onChange(null);
+                                            }
                                             setTimeout(() => openMenu(), 50);
                                         }
                                     },

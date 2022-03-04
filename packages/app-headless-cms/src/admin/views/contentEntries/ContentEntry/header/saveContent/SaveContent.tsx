@@ -16,7 +16,9 @@ const SaveContentButton: React.FC = () => {
     return (
         <ButtonSecondary
             data-testid={"cms-content-save-content-button"}
-            onClick={() => form.current.submit()}
+            onClick={ev => {
+                form.current.submit(ev);
+            }}
         >{t`Save`}</ButtonSecondary>
     );
 };

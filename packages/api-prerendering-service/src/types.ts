@@ -1,8 +1,8 @@
 import { Args as QueueAddArgs, Tag } from "~/queue/add/types";
 
 export interface HandlerResponse<TData = Record<string, any>, TError = Record<string, any>> {
-    data: TData;
-    error: TError;
+    data: TData | null;
+    error: TError | null;
 }
 
 /**
@@ -95,7 +95,9 @@ export interface PrerenderingServiceStorageOperationsListTagUrlLinksParams {
 }
 
 export interface PrerenderingServiceRenderStorageOperations {
-    getRender: (params: PrerenderingServiceStorageOperationsGetRenderParams) => Promise<Render>;
+    getRender: (
+        params: PrerenderingServiceStorageOperationsGetRenderParams
+    ) => Promise<Render | null>;
     createRender: (
         params: PrerenderingServiceStorageOperationsCreateRenderParams
     ) => Promise<Render>;

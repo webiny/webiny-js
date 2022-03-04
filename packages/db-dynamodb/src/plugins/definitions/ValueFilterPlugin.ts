@@ -1,33 +1,33 @@
 import { Plugin } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 
-export interface MatchesParams {
-    value: any;
-    compareValue: any;
+export interface ValueFilterPluginParamsMatchesParams<V = any, C = any> {
+    value: V;
+    compareValue: C;
 }
 
-export interface Matches {
-    (params: MatchesParams): boolean;
+export interface ValueFilterPluginParamsMatches {
+    (params: ValueFilterPluginParamsMatchesParams): boolean;
 }
 
-export interface Params {
+export interface ValueFilterPluginParams {
     operation: string;
-    matches: Matches;
+    matches: ValueFilterPluginParamsMatches;
 }
 export class ValueFilterPlugin extends Plugin {
-    public static readonly type = "dynamodb.value.filter";
-    private readonly _params: Params;
+    public static override readonly type: string = "dynamodb.value.filter";
+    private readonly _params: ValueFilterPluginParams;
 
     public get operation(): string {
         return this.getOperation();
     }
 
-    public constructor(params: Params) {
+    public constructor(params: ValueFilterPluginParams) {
         super();
         this._params = params;
     }
 
-    public matches(params: MatchesParams): boolean {
+    public matches(params: ValueFilterPluginParamsMatchesParams): boolean {
         if (!this._params || !this._params.matches) {
             throw new WebinyError(`Missing "matches" in the plugin.`, "MATCHES_ERROR", {
                 plugin: this,

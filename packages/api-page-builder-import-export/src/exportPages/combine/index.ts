@@ -6,17 +6,18 @@ import { ZipOfZip } from "../zipper";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
-export type HandlerArgs = {
+export interface HandlerArgs {
     taskId: string;
     identity: SecurityIdentity;
-};
+}
 
-export type HandlerResponse = {
-    data: string;
-    error: {
-        message: string;
-    };
-};
+interface HandlerResponseError {
+    message: string;
+}
+export interface HandlerResponse {
+    data: string | null;
+    error: HandlerResponseError | null;
+}
 
 /**
  * Handles the export pages combine workflow.
@@ -34,15 +35,33 @@ export default (): HandlerPlugin<PbPageImportExportContext, ArgsContext<HandlerA
 
         try {
             const task = await pageBuilder.pageImportExportTask.getTask(taskId);
+            if (!task) {
+                return {
+                    data: null,
+                    error: {
+                        message: `There is no task with ID "${taskId}".`
+                    }
+                };
+            }
 
             const { exportPagesDataKey } = task.input;
 
             // Get all files (zip) from given key
             const listObjectResponse = await s3Stream.listObject(exportPagesDataKey);
+            if (!listObjectResponse.Contents) {
+                return {
+                    data: null,
+                    error: {
+                        message: "There is no Contents defined on S3 Stream while combining pages."
+                    }
+                };
+            }
 
             const zipFileKeys = listObjectResponse.Contents.filter(
                 file => file.Key !== exportPagesDataKey
-            ).map(file => file.Key);
+            )
+                .map(file => file.Key)
+                .filter(Boolean) as string[];
 
             // Prepare zip of all zips
             const zipOfZip = new ZipOfZip(zipFileKeys);

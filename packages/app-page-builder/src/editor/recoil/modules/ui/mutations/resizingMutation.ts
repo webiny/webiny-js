@@ -3,7 +3,7 @@ import { EventActionHandlerMutationActionCallable } from "~/types";
 
 const updateResizeValue: EventActionHandlerMutationActionCallable<UiAtomType, boolean> = (
     state,
-    value: boolean
+    value
 ) => {
     return {
         ...state,

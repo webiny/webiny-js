@@ -86,7 +86,9 @@ const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
                                     <ButtonPrimary
-                                        onClick={submit}
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
                                     >{t`Save settings`}</ButtonPrimary>
                                 </SimpleFormFooter>
                             </SimpleForm>

@@ -11,7 +11,7 @@ const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAA
 
 interface DraggableChildrenFunctionParams {
     isDragging: boolean;
-    drag: ConnectDragSource;
+    drag: ConnectDragSource | null;
 }
 export interface DraggableChildrenFunction {
     (params: DraggableChildrenFunctionParams): React.ReactElement;

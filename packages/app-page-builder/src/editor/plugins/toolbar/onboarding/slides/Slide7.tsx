@@ -57,11 +57,11 @@ const addFabStyle = css({
     bottom: -80
 });
 
-type Props = {
+interface Slide7Props {
     closeDialog: (e: SyntheticEvent) => void;
-};
+}
 
-const Slide7: React.FC<Props> = props => {
+const Slide7: React.FC<Slide7Props> = props => {
     return (
         <SlideContainer>
             <Logo>

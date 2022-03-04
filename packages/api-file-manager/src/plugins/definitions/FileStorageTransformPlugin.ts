@@ -23,7 +23,7 @@ export interface FileStorageTransformPluginParams {
 }
 
 export class FileStorageTransformPlugin extends Plugin {
-    public static readonly type = "fm.files.storage.transform";
+    public static override readonly type: string = "fm.files.storage.transform";
     private readonly _params: FileStorageTransformPluginParams;
 
     public constructor(params: FileStorageTransformPluginParams) {

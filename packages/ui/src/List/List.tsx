@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
     List as RmwcList,
     ListProps as RmwcListProps,
@@ -44,7 +44,7 @@ export type ListProps = RmwcListProps & {
  * Use List component to display data and offer additional actions if needed.
  */
 export class List extends React.Component<ListProps> {
-    render() {
+    public override render() {
         return <RmwcList {...this.props}>{this.props.children}</RmwcList>;
     }
 }

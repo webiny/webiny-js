@@ -25,7 +25,7 @@ export interface PermissionSelectorProps {
     locales: string[];
     entity: string;
     getItems: (code: string) => PermissionSelectorCmsModel[] | PermissionSelectorCmsGroup[];
-    RenderItems?: React.FunctionComponent<RenderItemsProps>;
+    RenderItems?: React.FC<RenderItemsProps>;
 }
 
 const DefaultRenderItems: React.FC<RenderItemsProps> = ({ items, getValue, onChange }) => {
@@ -57,19 +57,30 @@ export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
             {locales.map(code => {
                 const items = getItems(code);
 
+                /**
+                 * Lets have two different outputs, depending on if there are any items.
+                 * Checkbox group is not showing when no items.
+                 */
+                if (items.length === 0) {
+                    return (
+                        <Bind key={code} name={`${entity}Props.${selectorKey}.${code}`}>
+                            <></>
+                        </Bind>
+                    );
+                }
                 return (
                     <Bind key={code} name={`${entity}Props.${selectorKey}.${code}`}>
-                        {items.length && (
-                            <CheckboxGroup label={code}>
-                                {({ onChange, getValue }) => (
+                        <CheckboxGroup label={code}>
+                            {({ onChange, getValue }) => {
+                                return (
                                     <RenderItems
                                         items={items}
                                         onChange={onChange}
                                         getValue={getValue}
                                     />
-                                )}
-                            </CheckboxGroup>
-                        )}
+                                );
+                            }}
+                        </CheckboxGroup>
                     </Bind>
                 );
             })}

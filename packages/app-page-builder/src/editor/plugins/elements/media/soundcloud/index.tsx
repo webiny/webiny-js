@@ -39,6 +39,10 @@ export default (args: PbEditorElementPluginArgs = {}) => {
     return [
         createEmbedPlugin({
             type: elementType,
+            /**
+             * TODO @ts-refactor @ashutosh
+             */
+            // @ts-ignore
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             settings: args.settings,

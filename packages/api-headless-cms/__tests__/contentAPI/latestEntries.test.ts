@@ -40,6 +40,9 @@ describe("latest entries", function () {
 
     const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
+        if (!model) {
+            throw new Error(`Could not find model "${name}".`);
+        }
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -64,7 +67,7 @@ describe("latest entries", function () {
         return update.data.updateContentModel.data;
     };
 
-    const createCategoryEntry = async ({ title, slug }) => {
+    const createCategoryEntry = async ({ title, slug }: { title: string; slug: string }) => {
         const [createResponse] = await createCategory({
             data: {
                 title,
@@ -85,7 +88,7 @@ describe("latest entries", function () {
         return publishedEntry;
     };
 
-    const updateCategoryEntry = async (original, { title }) => {
+    const updateCategoryEntry = async (original: any, { title }: { title: string }) => {
         /**
          * We need to create category from the original one and then update the new one.
          */
@@ -118,9 +121,9 @@ describe("latest entries", function () {
     let categoryModel: CmsModel;
     let articleModel: CmsModel;
 
-    let fruitCategory;
-    let vehicleCategory;
-    let animalCategory;
+    let fruitCategory: any;
+    let vehicleCategory: any;
+    let animalCategory: any;
 
     beforeEach(async () => {
         const group = await setupContentModelGroup();
@@ -229,12 +232,12 @@ describe("latest entries", function () {
          */
         await until(
             () => previewListArticles().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 const targetArticle = data?.listArticles?.data[0];
                 if (targetArticle.savedOn !== article.savedOn) {
                     return false;
                 }
-                const categories = targetArticle.categories || [];
+                const categories: any[] = targetArticle.categories || [];
                 return categories.some(category => {
                     return category.id === updatedFruitCategory.id;
                 });
@@ -340,8 +343,8 @@ describe("latest entries", function () {
          */
         await until(
             () => listArticles().then(([data]) => data),
-            ({ data }) => {
-                const categories = data?.listArticles?.data[0]?.categories || [];
+            ({ data }: any) => {
+                const categories: any[] = data?.listArticles?.data[0]?.categories || [];
                 return categories.some(category => {
                     return category.id === publishedFruitCategory.id;
                 });

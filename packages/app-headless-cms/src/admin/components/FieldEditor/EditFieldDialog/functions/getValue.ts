@@ -1,7 +1,8 @@
 import get from "lodash/get";
+import { BindComponentRenderProp } from "@webiny/form";
 
 interface Params {
-    bind: any;
+    bind: BindComponentRenderProp;
     index: number;
     name: string;
 }

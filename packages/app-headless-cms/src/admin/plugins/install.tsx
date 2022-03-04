@@ -62,7 +62,7 @@ interface CMSInstallerProps {
 }
 const CMSInstaller: React.FC<CMSInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
-    const [error, setError] = useState<string>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         // Temporary fix for the ES index creation failure.
@@ -72,8 +72,12 @@ const CMSInstaller: React.FC<CMSInstallerProps> = ({ onInstalled }) => {
                 .mutate<CmsInstallMutationResponse>({
                     mutation: INSTALL
                 })
-                .then(({ data }) => {
-                    const { error } = data.cms.install;
+                .then(result => {
+                    if (!result || !result.data) {
+                        setError("Missing Install Mutation response data.");
+                        return;
+                    }
+                    const { error } = result.data.cms.install;
                     if (error) {
                         setError(error.message);
                         return;

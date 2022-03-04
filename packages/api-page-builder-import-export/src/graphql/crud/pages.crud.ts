@@ -16,8 +16,8 @@ import { MetaResponse } from "@webiny/api-page-builder/types";
 import { zeroPad } from "@webiny/utils";
 
 const PERMISSION_NAME = "pb.page";
-const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PAGES_PROCESS_HANDLER;
-const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGES_CREATE_HANDLER;
+const EXPORT_PAGES_PROCESS_HANDLER = process.env.EXPORT_PAGES_PROCESS_HANDLER as string;
+const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_PAGES_CREATE_HANDLER as string;
 
 export default new ContextPlugin<PbPageImportExportContext>(context => {
     const importExportCrud: PagesImportExportCrud = {
@@ -63,7 +63,7 @@ export default new ContextPlugin<PbPageImportExportContext>(context => {
             await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "w"
             });
-            let pageIds = initialPageIds;
+            let pageIds: string[] = initialPageIds || [];
             // If no ids are provided then it means we want to export all pages
             if (!initialPageIds || (Array.isArray(initialPageIds) && initialPageIds.length === 0)) {
                 pageIds = [];

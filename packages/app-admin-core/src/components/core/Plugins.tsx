@@ -1,7 +1,7 @@
 import React, { Fragment, Children, createContext, useContext, useEffect, memo } from "react";
 import { useAdmin } from "~/admin";
 
-export const PluginsContext = createContext(null);
+export const PluginsContext = createContext<boolean>(false);
 PluginsContext.displayName = "PluginsContext";
 
 interface PluginsProviderComponentProps {

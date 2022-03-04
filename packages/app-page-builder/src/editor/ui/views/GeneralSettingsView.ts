@@ -10,7 +10,14 @@ import { FileManagerElement } from "@webiny/app-admin/ui/elements/form/FileManag
 import { TagsMultiAutocompleteElement } from "~/editor/ui/elements/TagsMultiAutocompleteElement";
 
 const toSlug = (value: string, cb: (value: string) => void): void => {
-    cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
+    cb(
+        slugify(value, {
+            replacement: "-",
+            lower: true,
+            remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+            trim: false
+        })
+    );
 };
 
 export class GeneralSettingsView extends PageSettingsFormView {

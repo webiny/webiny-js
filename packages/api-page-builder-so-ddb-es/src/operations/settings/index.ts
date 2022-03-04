@@ -18,7 +18,11 @@ const extractFromStorage = (settings: Settings): Settings => {
     };
 };
 
-const prepareForStorage = (settings: Settings): Settings => {
+interface StorageSettings extends Omit<Settings, "tenant" | "locale"> {
+    tenant: string | false | null | undefined;
+    locale: string | false | null | undefined;
+}
+const prepareForStorage = (settings: Settings): StorageSettings => {
     return {
         ...settings,
         tenant: !settings.tenant ? null : settings.tenant,
@@ -31,8 +35,8 @@ const prepareForStorage = (settings: Settings): Settings => {
  * it in consideration and create the partition key for the global settings.
  */
 interface PartitionKeyParams {
-    tenant: string | boolean;
-    locale: string | boolean;
+    tenant: string | boolean | undefined;
+    locale: string | boolean | undefined;
 }
 
 const createPartitionKey = (params: PartitionKeyParams): string => {
@@ -72,11 +76,13 @@ const createType = (): string => {
     return "pb.settings";
 };
 
-export interface Params {
+export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
 }
 
-export const createSettingsStorageOperations = ({ entity }: Params): SettingsStorageOperations => {
+export const createSettingsStorageOperations = ({
+    entity
+}: CreateSettingsStorageOperationsParams): SettingsStorageOperations => {
     const get = async (params: SettingsStorageOperationsGetParams) => {
         const { where } = params;
         const keys = {

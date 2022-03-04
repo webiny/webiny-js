@@ -6,6 +6,7 @@ import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import {
+    Category,
     OnAfterInstallTopicParams,
     OnBeforeInstallTopicParams,
     PageBuilderContextObject,
@@ -16,17 +17,13 @@ import {
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
 
-export interface Params {
+export interface CreateSystemCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
 }
-export const createSystemCrud = (params: Params): SystemCrud => {
-    const { context, storageOperations } = params;
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
+export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => {
+    const { context, storageOperations, getTenantId } = params;
     const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>();
     const onAfterInstall = createTopic<OnAfterInstallTopicParams>();
 
@@ -147,7 +144,7 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 const fmSettings = await fileManager.settings.getSettings();
 
                 const welcomeToWebinyPageContent = preparePageData({
-                    srcPrefix: fmSettings && fmSettings.srcPrefix,
+                    srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
                     fileIdToFileMap: fileIdToFileMap
                 });
 
@@ -172,7 +169,8 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 ];
 
                 const initialPages = await Promise.all(
-                    initialPagesData.map(() => this.createPage(staticCategory.slug))
+                    // We can safely cast.
+                    initialPagesData.map(() => this.createPage((staticCategory as Category).slug))
                 );
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {

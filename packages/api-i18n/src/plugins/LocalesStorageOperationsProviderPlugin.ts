@@ -6,7 +6,7 @@ export interface LocalesStorageOperationsProviderPluginParams {
 }
 
 export abstract class LocalesStorageOperationsProviderPlugin extends Plugin {
-    public static readonly type = "i18n.storageOperationsProvider.locales";
+    public static override readonly type: string = "i18n.storageOperationsProvider.locales";
 
     public abstract provide(
         params: LocalesStorageOperationsProviderPluginParams

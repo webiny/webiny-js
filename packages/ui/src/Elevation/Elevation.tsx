@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Elevation as RmwcElevation } from "@rmwc/elevation";
 
 export type ElevationProps = {

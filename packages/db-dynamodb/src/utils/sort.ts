@@ -55,7 +55,7 @@ interface Params<T> {
     /**
      * Sort options. For example: ["id_ASC"]
      */
-    sort: string[];
+    sort?: string[];
     /**
      * Fields we can sort by.
      */

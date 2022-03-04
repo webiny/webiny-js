@@ -492,7 +492,7 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
-        if (entryToSetAsLatest) {
+        if (entryToSetAsLatest && storageEntryToSetAsLatest) {
             const esEntry = prepareEntryToIndex({
                 plugins,
                 model,
@@ -639,7 +639,7 @@ export const createEntriesStorageOperations = (
          * Cursor is the `sort` value of the last item in the array.
          * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
          */
-        const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null;
+        const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null;
         return {
             hasMoreItems,
             totalCount: total.value,
@@ -653,10 +653,7 @@ export const createEntriesStorageOperations = (
             ...params,
             limit: 1
         });
-        if (items.length === 0) {
-            return null;
-        }
-        return items.shift();
+        return items.shift() || null;
     };
 
     const publish = async (model: CmsModel, params: CmsEntryStorageOperationsPublishParams) => {
@@ -683,7 +680,7 @@ export const createEntriesStorageOperations = (
             SK: createPublishedSortKey()
         };
 
-        let latestEsEntry: ElasticsearchDbRecord = null;
+        let latestEsEntry: ElasticsearchDbRecord | null = null;
         try {
             latestEsEntry = await getRecord<ElasticsearchDbRecord>({
                 entity: esEntity,
@@ -763,7 +760,7 @@ export const createEntriesStorageOperations = (
         /**
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
          */
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
+        if (latestEsEntry && latestStorageEntry && latestStorageEntry.id === entry.id) {
             /**
              * Need to decompress the data from Elasticsearch DynamoDB table.
              */
@@ -1146,10 +1143,7 @@ export const createEntriesStorageOperations = (
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
     const getPublishedRevisionByEntryId = async (
         model: CmsModel,
@@ -1159,10 +1153,7 @@ export const createEntriesStorageOperations = (
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
 
     const getRevisionById = async (
@@ -1173,10 +1164,7 @@ export const createEntriesStorageOperations = (
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
 
     const getRevisions = async (

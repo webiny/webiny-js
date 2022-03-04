@@ -40,28 +40,28 @@ const Selector: React.FC<SelectorPropsType> = ({ label, value, updateValue }) =>
                     <Cell span={3} style={cellStyle}>
                         <IconButton
                             onClick={() => updateValue({ ...value, top: !top })}
-                            className={top && enabled}
+                            className={top ? enabled : ""}
                             icon={<TopIcon />}
                         />
                     </Cell>
                     <Cell span={3} style={cellStyle}>
                         <IconButton
                             onClick={() => updateValue({ ...value, right: !right })}
-                            className={right && enabled}
+                            className={right ? enabled : ""}
                             icon={<RightIcon />}
                         />
                     </Cell>
                     <Cell span={3} style={cellStyle}>
                         <IconButton
                             onClick={() => updateValue({ ...value, bottom: !bottom })}
-                            className={bottom && enabled}
+                            className={bottom ? enabled : ""}
                             icon={<BottomIcon />}
                         />
                     </Cell>
                     <Cell span={3} style={cellStyle}>
                         <IconButton
                             onClick={() => updateValue({ ...value, left: !left })}
-                            className={left && enabled}
+                            className={left ? enabled : ""}
                             icon={<LeftIcon />}
                         />
                     </Cell>

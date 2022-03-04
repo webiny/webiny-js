@@ -175,11 +175,17 @@ export default (params: RenderParams): HandlerPlugin => {
                     }
                 }
 
-                return { data: null, error: null };
+                return {
+                    data: null,
+                    error: null
+                };
             } catch (e) {
                 console.log("An error occurred while prerendering...", e);
                 console.log(JSON.stringify(e.message));
-                return { data: null, error: e };
+                return {
+                    data: null,
+                    error: e
+                };
             }
         }
     };

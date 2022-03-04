@@ -10,7 +10,10 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title, errorMessage } from "./StyledComponents";
 import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
-import { useSetNewPassword } from "@webiny/app-cognito-authenticator/hooks/useSetNewPassword";
+import {
+    useSetNewPassword,
+    UseSetNewPasswordCallableParams
+} from "@webiny/app-cognito-authenticator/hooks/useSetNewPassword";
 
 const SetNewPassword: React.FC = () => {
     const { checkingUser, changeState } = useAuthenticator();
@@ -22,7 +25,15 @@ const SetNewPassword: React.FC = () => {
 
     return (
         <StateContainer>
-            <Form onSubmit={setPassword} submitOnEnter>
+            <Form
+                onSubmit={data => {
+                    /**
+                     * We are positive that data is UseSetNewPasswordCallableParams
+                     */
+                    return setPassword(data as unknown as UseSetNewPasswordCallableParams);
+                }}
+                submitOnEnter
+            >
                 {({ Bind, submit, data }) => {
                     const retypePasswordValidator = (value: string) => {
                         if (value !== data.password) {
@@ -100,7 +111,11 @@ const SetNewPassword: React.FC = () => {
                                             </Bind>
                                         </Cell>
                                         <Cell span={12} className={alignRight}>
-                                            <ButtonPrimary onClick={submit}>
+                                            <ButtonPrimary
+                                                onClick={ev => {
+                                                    submit(ev);
+                                                }}
+                                            >
                                                 {"Set new password"}
                                             </ButtonPrimary>
                                         </Cell>

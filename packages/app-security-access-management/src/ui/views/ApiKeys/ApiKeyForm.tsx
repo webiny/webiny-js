@@ -202,7 +202,9 @@ export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
                                     onClick={() => history.push("/access-management/api-keys")}
                                 >{t`Cancel`}</ButtonDefault>
                                 <ButtonPrimary
-                                    onClick={form.submit}
+                                    onClick={ev => {
+                                        form.submit(ev);
+                                    }}
                                 >{t`Save API key`}</ButtonPrimary>
                             </ButtonWrapper>
                         </SimpleFormFooter>

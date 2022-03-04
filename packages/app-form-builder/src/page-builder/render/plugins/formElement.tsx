@@ -16,10 +16,7 @@ const plugin: PbRenderElementPlugin = {
         };
 
         if (form.revision) {
-            const props: FormComponentPropsType = {
-                parentId: null,
-                revisionId: null
-            };
+            const props: FormComponentPropsType = {};
 
             if (form.revision === "latest") {
                 props.parentId = form.parent;

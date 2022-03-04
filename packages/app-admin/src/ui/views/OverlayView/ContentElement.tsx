@@ -13,7 +13,7 @@ export class ContentElement extends UIElement {
         this.useGrid(false);
     }
 
-    render(props: UiElementRenderProps): React.ReactNode {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         return <ContentWrapper>{super.render(props)}</ContentWrapper>;
     }
 }

@@ -64,13 +64,13 @@ export const useReviewReadHandler = (
 
     return {
         ...contentHandler,
-        async getReview(variables, headers: Record<string, any> = {}) {
+        async getReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getReviewQuery, variables },
                 headers
             });
         },
-        async listReviews(variables, headers: Record<string, any> = {}) {
+        async listReviews(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listReviewsQuery, variables },
                 headers

@@ -43,7 +43,7 @@ export interface SearchBarState {
 }
 
 class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
-    state: SearchBarState = {
+    public override state: SearchBarState = {
         active: false,
         searchTerm: {
             previous: "",
@@ -65,12 +65,12 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     /**
      * Helps us trigger some of the downshift's methods (eg. clearSelection) and helps us to avoid adding state.
      */
-    downshift: any = React.createRef();
+    public readonly downshift: any = React.createRef();
 
     /**
      * At some point we must programmatically focus the input.
      */
-    input: any = React.createRef();
+    private readonly input = React.createRef<HTMLInputElement>();
 
     /**
      * Let's check if current route is defined in one of the registered plugins.
@@ -97,7 +97,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         }
     }
 
-    handleOpenHotkey = (e: React.KeyboardEvent) => {
+    private readonly handleOpenHotkey = (e: React.KeyboardEvent): void => {
         for (let i = 0; i < this.state.plugins.hotKeys.length; i++) {
             const hotKey = this.state.plugins.hotKeys[i];
             if (hotKey.preventOpen(e)) {
@@ -106,6 +106,9 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         }
 
         e.preventDefault();
+        if (!this.input.current) {
+            return;
+        }
         this.input.current.focus();
     };
 
@@ -114,7 +117,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
      * It also manages previous and current search terms and automatically highlighted item in dropdown.
      * @param plugin
      */
-    submitSearchTerm = (plugin: AdminGlobalSearchPlugin) => {
+    public readonly submitSearchTerm = (plugin: AdminGlobalSearchPlugin): void => {
         this.setState(
             state => {
                 const newState = set(state, "searchTerm.previous", state.searchTerm.current);
@@ -148,14 +151,14 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         );
     };
 
-    cancelSearchTerm = () => {
+    private readonly cancelSearchTerm = (): void => {
         this.setState(state => {
             state.searchTerm.current = state.searchTerm.previous;
             return state;
         });
     };
 
-    render() {
+    public override render() {
         return (
             <Downshift ref={this.downshift} itemToString={item => item && item.label}>
                 {downshiftProps => {
@@ -245,7 +248,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 }
 
-const SearchBarContainer = () => {
+const SearchBarContainer: React.FC = () => {
     const routerProps = useRouter();
 
     return <SearchBar {...routerProps} />;

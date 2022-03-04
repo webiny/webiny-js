@@ -9,12 +9,15 @@ import Wrapper from "../components/Wrapper";
 import { BaseColorPickerComponent } from "../components/ColorPicker";
 import { ContentWrapper, classes } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
+import { PbEditorElement } from "~/types";
 
 const DATA_NAMESPACE = "data.settings.shadow";
 
 const Settings: React.FC = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as PbEditorElement;
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE

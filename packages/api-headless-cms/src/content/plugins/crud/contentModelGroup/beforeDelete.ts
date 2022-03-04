@@ -15,9 +15,9 @@ export const assignBeforeGroupDelete = (params: AssignBeforeGroupDeleteParams) =
     onBeforeDelete.subscribe(async params => {
         const { group } = params;
 
-        const groupPlugin: CmsGroupPlugin = plugins
+        const groupPlugin = plugins
             .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
-            .find((item: CmsGroupPlugin) => item.contentModelGroup.slug === group.slug);
+            .find(item => item.contentModelGroup.slug === group.slug);
 
         if (groupPlugin) {
             throw new Error(`Cms Groups defined via plugins cannot be deleted.`);

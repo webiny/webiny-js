@@ -149,37 +149,37 @@ export const useAuthorManageHandler = (
 
     return {
         ...contentHandler,
-        async getAuthor(variables, headers: Record<string, any> = {}) {
+        async getAuthor(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getAuthorQuery, variables },
                 headers
             });
         },
-        async getAuthorsByIds(variables, headers: Record<string, any> = {}) {
+        async getAuthorsByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getAuthorsByIdsQuery, variables },
                 headers
             });
         },
-        async listAuthors(variables, headers: Record<string, any> = {}) {
+        async listAuthors(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listAuthorsQuery, variables },
                 headers
             });
         },
-        async createAuthor(variables, headers: Record<string, any> = {}) {
+        async createAuthor(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createAuthorMutation, variables },
                 headers
             });
         },
-        async createAuthorFrom(variables, headers: Record<string, any> = {}) {
+        async createAuthorFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createAuthorFromMutation, variables },
                 headers
             });
         },
-        async updateAuthor(variables, headers: Record<string, any> = {}) {
+        async updateAuthor(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: updateAuthorMutation,
@@ -188,7 +188,7 @@ export const useAuthorManageHandler = (
                 headers
             });
         },
-        async deleteAuthor(variables, headers: Record<string, any> = {}) {
+        async deleteAuthor(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: deleteAuthorMutation,
@@ -197,7 +197,7 @@ export const useAuthorManageHandler = (
                 headers
             });
         },
-        async publishAuthor(variables, headers: Record<string, any> = {}) {
+        async publishAuthor(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: publishAuthorMutation,
@@ -206,7 +206,7 @@ export const useAuthorManageHandler = (
                 headers
             });
         },
-        async unpublishAuthor(variables, headers: Record<string, any> = {}) {
+        async unpublishAuthor(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishAuthorMutation,

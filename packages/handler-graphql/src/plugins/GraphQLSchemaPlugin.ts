@@ -8,7 +8,7 @@ export interface GraphQLSchemaPluginConfig<TContext> {
 }
 
 export class GraphQLSchemaPlugin<TContext = Context> extends Plugin {
-    public static readonly type = "graphql-schema";
+    public static override readonly type: string = "graphql-schema";
     private config: GraphQLSchemaPluginConfig<TContext>;
 
     constructor(config: GraphQLSchemaPluginConfig<TContext>) {

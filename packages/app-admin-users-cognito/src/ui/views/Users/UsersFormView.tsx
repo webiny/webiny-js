@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { UIView } from "@webiny/app-admin/ui/UIView";
-import { FormAPI } from "@webiny/form";
+import { FormAPI, FormData } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
 import {
@@ -59,7 +59,7 @@ export class UsersFormView extends UIView {
                 isLoading: () => {
                     return this.getUserFormHook().loading;
                 },
-                onSubmit: (data: FormData, form: FormAPI) => {
+                onSubmit: (data, form) => {
                     this.submit(data, form);
                 },
                 getTitle: () => {
@@ -149,13 +149,15 @@ export class UsersFormView extends UIView {
         );
 
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
-        groupAccordion.addElement(
-            new GroupAutocompleteElement("group", {
-                name: "group",
-                label: "Group",
-                validators: () => validation.create("required")
-            })
-        );
+        if (groupAccordion) {
+            groupAccordion.addElement(
+                new GroupAutocompleteElement("group", {
+                    name: "group",
+                    label: "Group",
+                    validators: () => validation.create("required")
+                })
+            );
+        }
 
         this.wrapWith(({ children }) => <FormWrapper>{children}</FormWrapper>);
     }

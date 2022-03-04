@@ -52,6 +52,9 @@ const plugin: FbBuilderFormFieldValidatorPlugin = {
                                 const selectedPatternPlugin = presetPlugins.find(
                                     item => item.pattern.name === value
                                 );
+                                if (!selectedPatternPlugin) {
+                                    return;
+                                }
 
                                 setMessage(selectedPatternPlugin.pattern.message);
                             }}

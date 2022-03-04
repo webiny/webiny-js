@@ -16,12 +16,12 @@ interface FormContainerConfig extends UIElementConfig {
 }
 
 export class FormContainerElement extends UIElement<FormContainerConfig> {
-    constructor(id: string, config: FormContainerConfig) {
+    public constructor(id: string, config: FormContainerConfig) {
         super(id, config);
         this.useGrid(false);
     }
 
-    render(props: UiElementRenderProps) {
+    public override render(props: UiElementRenderProps) {
         const children = super.render(props);
 
         return (

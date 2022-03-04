@@ -7,14 +7,14 @@ type GroupAutocompleteProps = Partial<AutoCompleteProps>;
 export const GroupAutocomplete: React.FC<GroupAutocompleteProps> = props => {
     const { data, loading } = useQuery(LIST_GROUPS);
 
-    const options = loading && !data ? [] : data.security.groups.data;
+    const options = loading || !data ? [] : data.security.groups.data;
 
     return (
         <AutoComplete
             {...props}
             options={options}
             valueProp={"id"}
-            value={loading ? null : props.value}
+            value={loading ? undefined : props.value}
         />
     );
 };

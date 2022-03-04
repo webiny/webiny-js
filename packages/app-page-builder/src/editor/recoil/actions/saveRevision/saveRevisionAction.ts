@@ -11,7 +11,7 @@ interface PageRevisionType extends Pick<PageAtomType, "title" | "snippet" | "pat
     content: any;
 }
 
-let lastSavedRevisionData: PageRevisionType = undefined;
+let lastSavedRevisionData: PageRevisionType | unknown = undefined;
 
 const isDataEqualToLastSavedData = (data: PageRevisionType) => {
     return lodashIsEqual(data, lastSavedRevisionData);
@@ -32,7 +32,9 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
     args = {}
 ) => {
     if (state.page.locked) {
-        return {};
+        return {
+            actions: []
+        };
     }
 
     const data: PageRevisionType = {
@@ -41,12 +43,14 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
         path: state.page.path,
         settings: state.page.settings,
         content: await state.getElementTree(),
-        category: state.page.category.slug
+        category: state.page.category ? state.page.category.slug : ""
     };
 
     if (isDataEqualToLastSavedData(data)) {
         triggerOnFinish(args);
-        return {};
+        return {
+            actions: []
+        };
     }
 
     lastSavedRevisionData = data;
@@ -96,11 +100,15 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
          * TODO @ts-refactor should we await for this to finish?
          */
         runSave();
-        return {};
+        return {
+            actions: []
+        };
     }
 
     debouncedSave = lodashDebounce(runSave, 2000);
     debouncedSave();
 
-    return {};
+    return {
+        actions: []
+    };
 };

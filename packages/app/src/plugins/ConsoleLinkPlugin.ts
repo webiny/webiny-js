@@ -11,7 +11,7 @@ interface Log {
  * This link checks for presence of `extensions.console` in the response and logs all items to browser console.
  */
 export class ConsoleLinkPlugin extends ApolloLinkPlugin {
-    createLink() {
+    public override createLink() {
         return new ApolloLink((operation, forward) => {
             const firstDefinition = operation.query.definitions[0] as OperationDefinitionNode;
             const isQuery = firstDefinition["operation"] === "query";

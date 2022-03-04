@@ -56,6 +56,9 @@ describe("richTextField", () => {
 
     const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
+        if (!model) {
+            throw new Error(`Could not find model "${name}".`);
+        }
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -80,7 +83,7 @@ describe("richTextField", () => {
         return update.data.updateContentModel.data;
     };
     const setupContentModels = async (contentModelGroup: CmsGroup) => {
-        const models = {
+        const models: Record<string, any> = {
             category: null,
             product: null,
             review: null,
@@ -202,7 +205,7 @@ describe("richTextField", () => {
                         id: product.id
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.getProduct.data.id === product.id,
+            ({ data }: any) => data.getProduct.data.id === product.id,
             { name: "get created product" }
         );
 

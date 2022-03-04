@@ -7,14 +7,12 @@ import { getEntryTitle } from "~/content/plugins/utils/getEntryTitle";
 interface EntriesByModel {
     [key: string]: string[];
 }
-
-interface GetContentEntriesArgs {
-    entries: { id: string; modelId: string }[];
-}
-
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
-        return null;
+        return new GraphQLSchemaPlugin({
+            typeDefs: "",
+            resolvers: {}
+        });
     }
 
     return new GraphQLSchemaPlugin<CmsContext>({
@@ -113,7 +111,9 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new NotAuthorizedResponse({ data: { modelId } });
                     }
 
-                    const [entry] = await context.cms.getEntriesByIds(model, [id]);
+                    const result = await context.cms.getEntriesByIds(model, [id]);
+
+                    const [entry] = result;
 
                     return new Response({
                         id: entry.id,
@@ -125,7 +125,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         title: getEntryTitle(model, entry)
                     });
                 },
-                async getContentEntries(_, args: GetContentEntriesArgs, context) {
+                async getContentEntries(_, args, context) {
                     const models = await context.cms.listModels();
 
                     const modelsMap = models.reduce((collection, model) => {
@@ -133,10 +133,12 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return collection;
                     }, {} as Record<string, CmsModel>);
 
-                    const entriesByModel = args.entries.reduce((collection, ref) => {
+                    const argsEntries = args.entries as Pick<CmsEntry, "id" | "modelId">[];
+
+                    const entriesByModel = argsEntries.reduce((collection, ref) => {
                         if (!collection[ref.modelId]) {
                             collection[ref.modelId] = [];
-                        } else if (collection[ref.modelId].includes(ref.id) === true) {
+                        } else if (collection[ref.modelId].includes(ref.id)) {
                             return collection;
                         }
                         collection[ref.modelId].push(ref.id);

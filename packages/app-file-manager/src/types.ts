@@ -17,6 +17,7 @@ export type PermissionRendererFileManager = Plugin & {
 export interface Settings {
     uploadMinFileSize: string;
     uploadMaxFileSize: string;
+    srcPrefix: string;
 }
 export interface QueryGetSettingsResult {
     fileManager: {

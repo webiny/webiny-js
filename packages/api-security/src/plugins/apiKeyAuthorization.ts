@@ -19,10 +19,12 @@ export default (config: Config) => {
             if (!identity || identity.type !== identityType) {
                 return null;
             }
-
             // We can expect `permissions` to exist on the identity, because api-key authentication
             // plugin sets them on the identity instance to avoid loading them from DB here.
-            return Array.isArray(identity.permissions) ? identity.permissions : [];
+            if (Array.isArray(identity.permissions) === false) {
+                return [];
+            }
+            return identity.permissions as SecurityPermission[];
         });
     });
 };

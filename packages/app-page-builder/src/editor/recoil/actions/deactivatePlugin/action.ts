@@ -25,7 +25,8 @@ const deactivatePluginByName = (
     return {
         state: {
             plugins: newState
-        }
+        },
+        actions: []
     };
 };
 
@@ -39,7 +40,8 @@ const deactivatePluginByType = (
                 ...state,
                 [type]: []
             }
-        }
+        },
+        actions: []
     };
 };
 
@@ -56,15 +58,22 @@ const deactivatePluginsByName = (
     return {
         state: {
             plugins: newState
-        }
+        },
+        actions: []
     };
 };
 
 export const deactivatePluginAction: EventActionCallable<DeactivatePluginActionArgsType> = (
     { plugins: pluginsState },
     _,
-    { name, names, type }
+    args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
+    const { name, names, type } = args;
     if (name) {
         return deactivatePluginByName(pluginsState, name);
     } else if (type) {

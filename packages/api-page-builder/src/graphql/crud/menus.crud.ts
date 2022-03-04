@@ -46,20 +46,14 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.menu";
 
-export interface Params {
+export interface CreateMenuCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
 }
-export const createMenuCrud = (params: Params): MenusCrud => {
-    const { context, storageOperations } = params;
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
-    const getLocaleCode = (): string => {
-        return context.i18nContent.getCurrentLocale().code;
-    };
+export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
+    const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
     const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>();
     const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>();

@@ -21,13 +21,13 @@ const buttonEditStyle = css({
 });
 
 const DATA_NAMESPACE = "data.buttonText";
-type ButtonContainerPropsType = {
+interface ButtonContainerPropsType {
     getAllClasses: (...classes: string[]) => string;
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     elementId: string;
-};
-const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
+}
+const ButtonContainer: React.FC<ButtonContainerPropsType> = ({
     getAllClasses,
     elementStyle,
     elementAttributes,
@@ -35,7 +35,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
 }) => {
     const eventActionHandler = useEventActionHandler();
     const uiAtomValue = useRecoilValue(uiAtom);
-    const element = useRecoilValue(elementByIdSelector(elementId));
+    const element = useRecoilValue(elementByIdSelector(elementId)) as PbEditorElement;
     const { type = "default", icon = {}, buttonText } = element.data || {};
     const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
     const value = useRef<string>(defaultValue);
@@ -44,7 +44,9 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     // Use per-device style
     const justifyContent =
         elementStyle[
-            `--${kebabCase(uiAtomValue.displayMode)}-justify-content` as keyof CSSProperties
+            `--${kebabCase(
+                uiAtomValue.displayMode
+            )}-justify-content` as unknown as keyof CSSProperties
         ];
 
     const onChange = useCallback(
@@ -85,7 +87,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     return (
         <div style={style}>
             <a
-                href={null}
+                href={"#"}
                 style={elementStyle}
                 {...elementAttributes}
                 className={getAllClasses(

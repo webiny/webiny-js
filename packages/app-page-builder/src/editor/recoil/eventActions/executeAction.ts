@@ -12,7 +12,7 @@ export const executeAction = <T extends EventActionHandlerCallableArgs = any>(
     action: EventActionCallable<T>,
     args: T,
     previousResult?: EventActionHandlerActionCallableResponse
-): EventActionHandlerActionCallableResponse => {
+): Required<EventActionHandlerActionCallableResponse> => {
     const previousState = previousResult?.state || {};
     const previousActions = previousResult?.actions || [];
     const result = action(
@@ -26,7 +26,7 @@ export const executeAction = <T extends EventActionHandlerCallableArgs = any>(
             ...previousState,
             ...result.state
         },
-        actions: previousActions.concat(result.actions || [])
+        actions: previousActions.concat(result.actions)
     };
 };
 
@@ -46,6 +46,6 @@ export const executeAsyncAction = async <T extends EventActionHandlerCallableArg
             ...previousState,
             ...result.state
         },
-        actions: previousActions.concat(result.actions || [])
+        actions: previousActions.concat(result.actions)
     };
 };

@@ -30,10 +30,19 @@ import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "~/hooks/useSnackbar";
 import { useSecurity } from "@webiny/app-security";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
+import {
+    DELETE_FILE,
+    DeleteFileMutationResponse,
+    DeleteFileMutationVariables,
+    LIST_FILES,
+    LIST_TAGS,
+    ListFilesQueryResponse,
+    ListFileTagsQueryResponse
+} from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 import mime from "mime";
 import { FileItem } from "./types";
+import { FilesRenderChildren } from "react-butterfiles";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
 
@@ -148,6 +157,8 @@ const style: any = {
 interface FileDetailsProps {
     canEdit: (item: any) => boolean;
     file: FileItem;
+    uploadFile: (files: FileItem[] | FileItem) => Promise<number | null>;
+    validateFiles: FilesRenderChildren["validateFiles"];
     [key: string]: any;
 }
 
@@ -171,8 +182,10 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
     const { hideFileDetails, queryParams } = useFileManager();
     const [darkImageBackground, setDarkImageBackground] = useState(false);
 
-    const { identity } = useSecurity();
-    const fmFilePermission = useMemo(() => identity.getPermission("fm.file"), []);
+    const { identity, getPermission } = useSecurity();
+    const fmFilePermission = useMemo(() => {
+        return getPermission("fm.file");
+    }, [identity]);
     const canDelete = useCallback(
         item => {
             // Bail out early if no access
@@ -180,7 +193,10 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
                 return false;
             }
             if (fmFilePermission.own) {
-                const identityId = identity.id || identity.login;
+                const identityId = identity ? identity.id || identity.login : null;
+                if (!identityId) {
+                    return false;
+                }
                 return get(item, "createdBy.id") === identityId;
             }
             if (typeof fmFilePermission.rwd === "string") {
@@ -199,29 +215,48 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
         }
     });
 
-    const [deleteFile] = useMutation(DELETE_FILE, {
-        update: cache => {
-            // 1. Update files list cache
-            const data: any = cloneDeep(
-                cache.readQuery({
-                    query: LIST_FILES,
-                    variables: queryParams
-                })
-            );
-            const filteredList = data.fileManager.listFiles.data.filter(
-                (item: FileItem) => item.id !== file.id
-            );
-            const selectedFile = data.fileManager.listFiles.data.find(
-                (item: FileItem) => item.id === file.id
-            );
+    const [deleteFile] = useMutation<DeleteFileMutationResponse, DeleteFileMutationVariables>(
+        DELETE_FILE,
+        {
+            update: cache => {
+                // 1. Update files list cache
+                let data = cloneDeep(
+                    cache.readQuery<ListFilesQueryResponse>({
+                        query: LIST_FILES,
+                        variables: queryParams
+                    })
+                );
+                if (!data) {
+                    data = {
+                        fileManager: {
+                            listFiles: {
+                                data: [],
+                                error: null,
+                                meta: {
+                                    hasMoreItems: false,
+                                    cursor: null,
+                                    totalItem: 0
+                                }
+                            }
+                        }
+                    };
+                }
+                const filteredList = data.fileManager.listFiles.data.filter(
+                    (item: FileItem) => item.id !== file.id
+                );
+                const selectedFile = data.fileManager.listFiles.data.find(
+                    (item: FileItem) => item.id === file.id
+                );
 
-            cache.writeQuery({
-                query: LIST_FILES,
-                variables: queryParams,
-                data: set(data, "fileManager.listFiles.data", filteredList)
-            });
-            // 2. Update "ListTags" cache
-            if (Array.isArray(selectedFile.tags)) {
+                cache.writeQuery({
+                    query: LIST_FILES,
+                    variables: queryParams,
+                    data: set(data, "fileManager.listFiles.data", filteredList)
+                });
+                // 2. Update "ListTags" cache
+                if (!selectedFile || Array.isArray(selectedFile.tags) === false) {
+                    return;
+                }
                 const tagCountMap: Record<string, number> = {};
                 // Prepare "tag" count map
                 data.fileManager.listFiles.data.forEach((file: FileItem) => {
@@ -238,18 +273,20 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
                 });
 
                 // Get tags from cache
-                const listTagsData: any = cloneDeep(
-                    cache.readQuery({
+                const listTagsData = cloneDeep(
+                    cache.readQuery<ListFileTagsQueryResponse>({
                         query: LIST_TAGS
                     })
                 );
                 // Remove selected file tags from list.
-                const filteredTags = listTagsData.fileManager.listTags.filter((tag: string) => {
-                    if (!selectedFile.tags.includes(tag)) {
-                        return true;
+                const filteredTags = (listTagsData?.fileManager?.listTags || []).filter(
+                    (tag: string) => {
+                        if (!selectedFile.tags.includes(tag)) {
+                            return true;
+                        }
+                        return tagCountMap[tag] > 1;
                     }
-                    return tagCountMap[tag] > 1;
-                });
+                );
 
                 // Write it to cache
                 cache.writeQuery({
@@ -258,7 +295,7 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
                 });
             }
         }
-    });
+    );
     const { showSnackbar } = useSnackbar();
 
     const renderDeleteImageAction = useCallback(file => {
@@ -285,7 +322,7 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
                     return (
                         <Tooltip
                             content={
-                                isImage ? (
+                                isImage(file) ? (
                                     <span>{t`Delete image`}</span>
                                 ) : (
                                     <span>{t`Delete file`}</span>
@@ -340,16 +377,17 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
                             dark: darkImageBackground
                         })}
                     >
-                        {filePlugin.render({
-                            /**
-                             * TODO: @ts-refactor
-                             * Figure out which type is the file
-                             */
-                            // @ts-ignore
-                            file,
-                            uploadFile,
-                            validateFiles
-                        })}
+                        {filePlugin &&
+                            filePlugin.render({
+                                /**
+                                 * TODO: @ts-refactor
+                                 * Figure out which type is the file
+                                 */
+                                // @ts-ignore
+                                file,
+                                uploadFile,
+                                validateFiles
+                            })}
                     </div>
                     <div className={style.download}>
                         <>

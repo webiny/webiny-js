@@ -51,11 +51,11 @@ const defaultOptions = {
     )
 };
 
-export interface Props {
+export interface AuthenticationProps {
     children: React.ReactNode;
 }
 
-export interface Config extends AuthOptions {
+export interface AuthenticationFactoryConfig extends AuthOptions {
     onError?(error: Error): void;
     getIdentityData(params: {
         client: ApolloClient<any>;
@@ -64,13 +64,13 @@ export interface Config extends AuthOptions {
 }
 
 interface AuthenticationFactory {
-    (params: Config): React.FC;
+    (params: AuthenticationFactoryConfig): React.FC<AuthenticationProps>;
 }
 export const createAuthentication: AuthenticationFactory = ({
     getIdentityData,
     onError,
     ...config
-}: Config) => {
+}) => {
     /**
      * TODO @ts-refactor
      */
@@ -78,7 +78,7 @@ export const createAuthentication: AuthenticationFactory = ({
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
     Auth.configure({ ...defaultOptions, ...config });
 
-    const Authentication: React.FC<Props> = props => {
+    const Authentication: React.FC<AuthenticationProps> = props => {
         const { children } = props;
         const { setIdentity } = useSecurity();
         const client = useApolloClient();
@@ -98,7 +98,11 @@ export const createAuthentication: AuthenticationFactory = ({
                     type,
                     permissions,
                     ...data,
-                    logout
+                    logout:
+                        logout ||
+                        (() => {
+                            return void 0;
+                        })
                 });
             } catch (err) {
                 console.log("ERROR", err);

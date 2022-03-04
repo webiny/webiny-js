@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { activeElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
-import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
 import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 import Wrapper from "~/editor/plugins/elementSettings/components/Wrapper";
@@ -34,8 +34,8 @@ const spacingPickerStyle = css({
 const ImageSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue = false
 }) => {
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+    const activeElementId = useRecoilValue(activeElementAtom) as string;
+    const element = useRecoilValue(elementByIdSelector(activeElementId)) as PbEditorElement;
     const {
         data: { image }
     } = element;

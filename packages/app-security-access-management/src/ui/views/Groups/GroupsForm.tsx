@@ -209,7 +209,9 @@ export const GroupsForm: React.FC<GroupsFormProps> = () => {
                                         onClick={() => history.push("/access-management/groups")}
                                     >{t`Cancel`}</ButtonDefault>
                                     <ButtonPrimary
-                                        onClick={form.submit}
+                                        onClick={ev => {
+                                            form.submit(ev);
+                                        }}
                                     >{t`Save group`}</ButtonPrimary>
                                 </ButtonWrapper>
                             </SimpleFormFooter>

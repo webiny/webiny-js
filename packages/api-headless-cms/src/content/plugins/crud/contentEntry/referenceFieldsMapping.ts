@@ -30,7 +30,7 @@ interface BuildReferenceFieldPaths {
 const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] => {
     const { fields, parentPaths: initialParentPaths, input } = params;
 
-    const parentPaths = [].concat(initialParentPaths);
+    const parentPaths = [...initialParentPaths];
 
     const isMultipleValues = Array.isArray(input);
 
@@ -93,7 +93,7 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
                 }
                 for (const key in objFieldInputValue) {
                     const result = buildReferenceFieldPaths({
-                        fields: field.settings.fields,
+                        fields: field.settings?.fields || [],
                         input: objFieldInputValue[key],
                         parentPaths: parentPaths.concat([field.fieldId, key])
                     });
@@ -107,13 +107,13 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
              * Single value reference field.
              */
             const results = buildReferenceFieldPaths({
-                fields: field.settings.fields as CmsModelField[],
+                fields: field.settings?.fields || [],
                 input: objFieldInputValue,
                 parentPaths: parentPaths.concat([field.fieldId])
             });
 
             return collection.concat(results);
-        }, []);
+        }, [] as string[]);
 };
 
 const getReferenceFieldValue = (ref: any): { id: string | null; modelId: string | null } => {

@@ -76,16 +76,16 @@ const LearnMore = styled("div")({
     }
 });
 
-type Props = {
+interface SlideOutlineProps {
     icon: React.ReactNode;
     title: string;
     description: string;
     learnMoreText: string;
     learnMoreLink: string;
     editorContent: React.ReactNode;
-};
+}
 
-const SlideOutline: React.FC<Props> = props => {
+const SlideOutline: React.FC<SlideOutlineProps> = props => {
     return (
         <SlideContainer>
             <EditorMock>

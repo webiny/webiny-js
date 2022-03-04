@@ -1,4 +1,5 @@
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
+// @ts-ignore
 import mdbid from "mdbid";
 import { CmsEntry, CmsModel } from "~/types";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
@@ -65,11 +66,11 @@ describe("entry pagination", () => {
     beforeEach(async () => {
         const group = await setupContentModelGroup(manager);
         await setupContentModels(manager, group, ["fruit"]);
-        fruitContentModel = await storageOperations.models.get({
+        fruitContentModel = (await storageOperations.models.get({
             locale: "en-US",
             tenant: "root",
             modelId: "fruit"
-        });
+        })) as CmsModel;
         for (let i = 1; i <= NUMBER_OF_FRUITS; i++) {
             const fruit = createFruitData(i);
             await storageOperations.entries.create(fruitContentModel, {
@@ -88,7 +89,7 @@ describe("entry pagination", () => {
                         limit: 1
                     })
                     .then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.listFruits.meta.totalCount === NUMBER_OF_FRUITS;
             },
             {

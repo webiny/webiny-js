@@ -8,7 +8,7 @@ interface Config {
     storageOperations: AdminUsersStorageOperations;
 }
 
-interface Key {
+interface GetUserLoaderKey {
     id: string;
     tenant: string;
 }
@@ -16,7 +16,7 @@ interface Key {
 export const createUserLoaders = ({ storageOperations }: Config) => {
     const loaders = new Map<string, DataLoader<any, any>>();
 
-    async function getUserLoader(ids: Array<Key>) {
+    async function getUserLoader(ids: readonly GetUserLoaderKey[]) {
         if (ids.length === 0) {
             return [];
         }
@@ -40,7 +40,11 @@ export const createUserLoaders = ({ storageOperations }: Config) => {
             ).then(res => flatten(res));
 
             return ids.map(({ tenant, id }) => {
-                return results.find(item => item.id === id && item.tenant === tenant);
+                const user = results.find(item => item.id === id && item.tenant === tenant);
+                /**
+                 * Casting because DataLoader expect error. But we do not.
+                 */
+                return user || (null as unknown as Error);
             });
         } catch (err) {
             throw WebinyError.from(err, {
@@ -53,26 +57,26 @@ export const createUserLoaders = ({ storageOperations }: Config) => {
 
     return {
         get getUser() {
-            if (!loaders.get("getUser")) {
-                loaders.set(
-                    "getUser",
-                    new DataLoader<Key, AdminUser, string>(getUserLoader, {
-                        cacheKeyFn(key) {
-                            return `${key.tenant}:${key.id}`;
-                        }
-                    })
-                );
+            let userLoader = loaders.get("getUser");
+            if (userLoader) {
+                return userLoader;
             }
-            return loaders.get("getUser");
+            userLoader = new DataLoader<GetUserLoaderKey, AdminUser, string>(getUserLoader, {
+                cacheKeyFn(key) {
+                    return `${key.tenant}:${key.id}`;
+                }
+            });
+            loaders.set("getUser", userLoader);
+            return userLoader;
         },
 
-        clearLoadersCache(ids: Key[]) {
+        clearLoadersCache(ids: GetUserLoaderKey[]) {
             for (const id of ids) {
                 this.getUser.clear(id);
             }
         },
 
-        async updateDataLoaderUserCache(id: Key, data: Partial<AdminUser>) {
+        async updateDataLoaderUserCache(id: GetUserLoaderKey, data: Partial<AdminUser>) {
             const user = await this.getUser.load(id);
             this.getUser.clear(id).prime(id, Object.assign({}, user, data));
         }

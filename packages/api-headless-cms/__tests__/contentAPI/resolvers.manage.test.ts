@@ -58,9 +58,12 @@ describe("MANAGE - Resolvers", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupModel = async (model: CmsModel = null) => {
+    const setupModel = async (model?: CmsModel) => {
         if (!model) {
             model = models.find(m => m.modelId === "category");
+            if (!model) {
+                throw new Error(`Could not find model "category".`);
+            }
         }
         const [createCMG] = await createContentModelGroupMutation({
             data: {
@@ -118,7 +121,7 @@ describe("MANAGE - Resolvers", () => {
         // Use "manage" API to create and publish entries
         const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
 
-        const values = {
+        const values: Record<string, string> = {
             animals: "Animals",
             fruits: "Fruits",
             trees: "Trees",
@@ -138,7 +141,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === Object.keys(values).length,
+            ({ data }: any) => data.listCategories.data.length === Object.keys(values).length,
             {
                 name: "list all categories after creation in setupCategories"
             }
@@ -159,7 +162,7 @@ describe("MANAGE - Resolvers", () => {
         // Need to wait until the new entry is propagated
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id,
+            ({ data }: any) => data.listCategories.data[0].id === id,
             {
                 name: "list categories after create"
             }
@@ -212,7 +215,7 @@ describe("MANAGE - Resolvers", () => {
         // Need to wait until the new entry is propagated to Elastic Search index
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id,
+            ({ data }: any) => data.listCategories.data[0].id === id,
             {
                 name: "list categories after create"
             }
@@ -249,7 +252,7 @@ describe("MANAGE - Resolvers", () => {
         // Need to wait until the new entry is propagated to Elastic Search index
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id,
+            ({ data }: any) => data.listCategories.data[0].id === id,
             {
                 name: "list categories after create"
             }
@@ -322,7 +325,7 @@ describe("MANAGE - Resolvers", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].meta.status === "published",
+            ({ data }: any) => data.listCategories.data[0].meta.status === "published",
             {
                 name: "wait for entry to be published"
             }
@@ -467,7 +470,7 @@ describe("MANAGE - Resolvers", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === category1.id,
+            ({ data }: any) => data.listCategories.data[0].id === category1.id,
             {
                 name: "list categories after create"
             }
@@ -543,7 +546,7 @@ describe("MANAGE - Resolvers", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === category.id,
+            ({ data }: any) => data.listCategories.data[0].id === category.id,
             {
                 name: "list categories after create"
             }
@@ -562,7 +565,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the new category is propagated to ES index (listCategories works with ES directly in MANAGE API)
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id,
+            ({ data }: any) => data.listCategories.data[0].id === id,
             {
                 name: "list categories after create"
             }
@@ -623,7 +626,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the new category revision is propagated to ES index
         const response = await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 const entry = data.listCategories.data[0];
                 if (!entry) {
                     return false;
@@ -712,7 +715,7 @@ describe("MANAGE - Resolvers", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories({}).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === updatedCategory.id,
+            ({ data }: any) => data.listCategories.data[0].id === updatedCategory.id,
             {
                 name: "create category"
             }
@@ -737,7 +740,7 @@ describe("MANAGE - Resolvers", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0,
+            ({ data }: any) => data.listCategories.data.length > 0,
             {
                 name: "create first revision"
             }
@@ -783,7 +786,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the new revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id3,
+            ({ data }: any) => data.listCategories.data[0].id === id3,
             {
                 name: "after create 2 more revisions"
             }
@@ -804,7 +807,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.listCategories.data[0].id === id2;
             },
             {
@@ -858,7 +861,7 @@ describe("MANAGE - Resolvers", () => {
 
         await until(
             () => listLatestCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0,
+            ({ data }: any) => data.listCategories.data.length > 0,
             {
                 name: "create first revision"
             }
@@ -892,7 +895,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the new revision is indexed
         await until(
             () => listLatestCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id3,
+            ({ data }: any) => data.listCategories.data[0].id === id3,
             {
                 name: "create 2 more revisions"
             }
@@ -913,7 +916,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the previous revision is indexed
         await until(
             () => listPublishedCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id3,
+            ({ data }: any) => data.listCategories.data[0].id === id3,
             {
                 name: "publish latest revision"
             }
@@ -935,7 +938,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until there are no categories available in READ API
         await until(
             () => listPublishedCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 0,
+            ({ data }: any) => data.listCategories.data.length === 0,
             {
                 name: "unpublish revision"
             }
@@ -956,7 +959,7 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the previous revision is indexed
         await until(
             () => listPublishedCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id3,
+            ({ data }: any) => data.listCategories.data[0].id === id3,
             {
                 name: "publish latest revision again"
             }
@@ -1267,7 +1270,7 @@ describe("MANAGE - Resolvers", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 if (data.listCategories.data.length !== 1) {
                     return false;
                 }

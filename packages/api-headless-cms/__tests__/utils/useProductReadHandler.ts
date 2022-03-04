@@ -83,13 +83,13 @@ export const useProductReadHandler = (
 
     return {
         ...contentHandler,
-        async getProduct(variables, headers: Record<string, any> = {}) {
+        async getProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getProductQuery, variables },
                 headers
             });
         },
-        async listProducts(variables, headers: Record<string, any> = {}) {
+        async listProducts(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listProductsQuery, variables },
                 headers

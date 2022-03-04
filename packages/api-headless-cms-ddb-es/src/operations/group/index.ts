@@ -180,7 +180,7 @@ export const createGroupsStorageOperations = (
             );
         }
 
-        const where: CmsGroupStorageOperationsListParams["where"] = {
+        const where: Partial<CmsGroupStorageOperationsListParams["where"]> = {
             ...initialWhere
         };
         delete where["tenant"];

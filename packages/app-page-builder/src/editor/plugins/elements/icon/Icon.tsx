@@ -20,7 +20,7 @@ const Icon: React.FC<IconProps> = ({ element }) => {
                 );
 
                 if (!svg) {
-                    return null;
+                    return <></>;
                 }
 
                 return (

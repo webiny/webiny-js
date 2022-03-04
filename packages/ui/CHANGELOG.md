@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* eslint run ([a1ea3dc](https://github.com/webiny/webiny-js/commit/a1ea3dc4ff61f6cb69cf5ed10f3fef2f9fafc514))
+* ui and form ([bb12676](https://github.com/webiny/webiny-js/commit/bb1267630e13142af681685ec27e2eaa958b6cc7))
+* ui rich text and confirmation dialog ([bfa5c47](https://github.com/webiny/webiny-js/commit/bfa5c47309e5335fbf00d03f1754037f8a063dce))
+
+
+### Features
+
+* add types to app-headless-cms wip ([1eb07a1](https://github.com/webiny/webiny-js/commit/1eb07a14083d76b7195a684920cf6efb81895edf))
+* add types to app-i18n ([30a0bf2](https://github.com/webiny/webiny-js/commit/30a0bf2434aae0ded8917d7987b3ef68a2f08aa9))
+* add types to app-page-builder ([e65ce21](https://github.com/webiny/webiny-js/commit/e65ce216d9019657964ddd89194be63544ef2bad))
+* add types to ui ([91486f2](https://github.com/webiny/webiny-js/commit/91486f24d26710c669596245fc52ad73a7600384))
+* add types to ui and ui-composer ([ebc6af1](https://github.com/webiny/webiny-js/commit/ebc6af1cdf1626886375d75605205e3bdd7b7f85))
+* any types in app-form-builder wip 2 ([2034a50](https://github.com/webiny/webiny-js/commit/2034a50c166e7f842eeece0b6ac1acbd06fb45ce))
+* any types in app-headless-cms wip ([79c2c7f](https://github.com/webiny/webiny-js/commit/79c2c7f21d489cddc690556e3f5012fff75176d1))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/ui

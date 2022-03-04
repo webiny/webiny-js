@@ -28,7 +28,7 @@ import { parseIdentifier } from "@webiny/utils";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 
-export interface Params {
+export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
     table: Table;
@@ -37,7 +37,7 @@ export interface Params {
 }
 
 export const createSubmissionStorageOperations = (
-    params: Params
+    params: CreateSubmissionStorageOperationsParams
 ): FormBuilderSubmissionStorageOperations => {
     const { entity, esEntity, table, elasticsearch, plugins } = params;
 
@@ -196,7 +196,7 @@ export const createSubmissionStorageOperations = (
         params: FormBuilderStorageOperationsListSubmissionsParams
     ): Promise<FbSubmission[]> => {
         const { where, sort } = params;
-        const items = where.id_in.map(id => {
+        const items = (where.id_in || []).map(id => {
             return entity.getBatch({
                 PK: createSubmissionPartitionKey({
                     ...where
@@ -227,7 +227,7 @@ export const createSubmissionStorageOperations = (
          */
         const submissions = results.filter(Boolean).map(submission => {
             return cleanupItem(entity, submission);
-        });
+        }) as FbSubmission[];
         if (!sort) {
             return submissions;
         }
@@ -241,7 +241,7 @@ export const createSubmissionStorageOperations = (
     const listSubmissions = async (
         params: FormBuilderStorageOperationsListSubmissionsParams
     ): Promise<FormBuilderStorageOperationsListSubmissionsResponse> => {
-        const { where, sort, limit: initialLimit, after } = params;
+        const { where, sort = [], limit: initialLimit, after } = params;
 
         if (where.id_in) {
             const items = await listSubmissionsByIds(params);
@@ -306,7 +306,7 @@ export const createSubmissionStorageOperations = (
         const meta = {
             hasMoreItems,
             totalCount: total.value,
-            cursor: items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null
+            cursor: items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null
         };
 
         return {
@@ -317,7 +317,7 @@ export const createSubmissionStorageOperations = (
 
     const getSubmission = async (
         params: FormBuilderStorageOperationsGetSubmissionParams
-    ): Promise<FbSubmission> => {
+    ): Promise<FbSubmission | null> => {
         const { where } = params;
 
         const keys = {

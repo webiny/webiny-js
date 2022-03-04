@@ -110,8 +110,11 @@ const ContentModelGroupsDataList: React.FC<ContentModelGroupsDataListProps> = ({
 
                         // Delete the item from list cache
                         const gqlParams = { query: GQL.LIST_CONTENT_MODEL_GROUPS };
-                        const { listContentModelGroups } =
-                            cache.readQuery<ListCmsGroupsQueryResponse>(gqlParams);
+                        const result = cache.readQuery<ListCmsGroupsQueryResponse>(gqlParams);
+                        if (!result || !result.listContentModelGroups) {
+                            return;
+                        }
+                        const { listContentModelGroups } = result;
                         const index = listContentModelGroups.data.findIndex(
                             item => item.id === group.id
                         );
@@ -152,7 +155,7 @@ const ContentModelGroupsDataList: React.FC<ContentModelGroupsDataListProps> = ({
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort groups by"}
                         >
                             {SORTERS.map(({ label, sorters }) => {
                                 return (

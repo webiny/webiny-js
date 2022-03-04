@@ -27,8 +27,8 @@ export const ObjectFields: React.FC<ObjectFieldsProps> = ({ field }) => {
     return (
         <FieldEditor
             parent={field}
-            fields={field.settings.fields}
-            layout={field.settings.layout}
+            fields={(field.settings ? field.settings.fields : null) || []}
+            layout={(field.settings ? field.settings.layout : null) || []}
             onChange={onChange}
         />
     );

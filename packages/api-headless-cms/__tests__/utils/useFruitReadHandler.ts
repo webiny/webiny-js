@@ -74,7 +74,7 @@ export const useFruitReadHandler = (
 
     return {
         ...contentHandler,
-        async getFruit(variables, headers: Record<string, any> = {}) {
+        async getFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getFruitQuery, variables },
                 headers

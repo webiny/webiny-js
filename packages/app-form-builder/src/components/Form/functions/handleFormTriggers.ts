@@ -26,7 +26,7 @@ export default async (args: HandleFormTriggersArgs) => {
         await plugin.trigger.handle({
             trigger: get(props.data, `triggers.${plugin.trigger.id}`) || {},
             data,
-            form: props.data
+            form: props.data || {}
         });
     }
 };

@@ -89,7 +89,7 @@ describe("Comment on a change request test", () => {
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            response => response.data.apw.listComments.data.length === 1,
+            (response: any) => response.data.apw.listComments.data.length === 1,
             {
                 name: "Wait for entry to be available via list query"
             }
@@ -153,7 +153,7 @@ describe("Comment on a change request test", () => {
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            response => response.data.apw.listComments.data.length === 2,
+            (response: any) => response.data.apw.listComments.data.length === 2,
             {
                 name: "Wait for entry to be available via list query"
             }
@@ -224,7 +224,7 @@ describe("Comment on a change request test", () => {
         /*
          * Create two new change request entries.
          */
-        const changesRequested = [];
+        const changesRequested: { id: string }[] = [];
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
                 data: changeRequestMock.changeRequestA
@@ -252,7 +252,7 @@ describe("Comment on a change request test", () => {
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            response => response.data.apw.listComments.data.length === 4,
+            (response: any) => response.data.apw.listComments.data.length === 4,
             {
                 name: "Wait for entry to be available via list query"
             }
@@ -368,7 +368,7 @@ describe("Comment on a change request test", () => {
                         }
                     }
                 }).then(([data]) => data),
-            response => response.data.apw.listComments.data.length === 0,
+            (response: any) => response.data.apw.listComments.data.length === 0,
             {
                 name: "Wait for entry to be removed from list query"
             }

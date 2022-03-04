@@ -26,7 +26,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Objects`,
         description: t`Renders a set of fields.`,
         canUse({ field }) {
-            return field.type === "object" && field.multipleValues;
+            return field.type === "object" && !!field.multipleValues;
         },
         render(props) {
             const { field, contentModel } = props;
@@ -52,12 +52,12 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <Accordion
                             title={`${props.field.label} #${index + 1}`}
                             action={
-                                index > 0 && (
+                                index > 0 ? (
                                     <IconButton
                                         icon={<DeleteIcon />}
                                         onClick={() => bind.field.removeValue(index)}
                                     />
-                                )
+                                ) : null
                             }
                             // Open first Accordion by default
                             defaultValue={index === 0}
@@ -67,8 +67,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     Bind={Bind}
                                     {...bind.index}
                                     contentModel={contentModel}
-                                    fields={field.settings.fields}
-                                    layout={field.settings.layout}
+                                    fields={(field.settings || {}).fields || []}
+                                    layout={(field.settings || {}).layout || []}
                                     gridClassName={fieldsGridStyle}
                                 />
                             </Cell>

@@ -27,7 +27,7 @@ describe(`Link Preloading Test`, () => {
             context: {} as any,
             args: {},
             configuration: {},
-            renderUrlFunction: () => {
+            renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,
                     meta: {}

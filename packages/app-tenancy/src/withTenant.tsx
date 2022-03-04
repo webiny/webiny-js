@@ -26,6 +26,7 @@ interface GetIdentityWithTenantParams {
 }
 interface WithTenantProps {
     getIdentityData: (params: GetIdentityWithTenantParams) => Promise<Record<string, string>>;
+    children: React.ReactNode;
 }
 export const withTenant = (Component: React.FC<WithTenantProps>): React.FC<WithTenantProps> => {
     return function WithTenant({ getIdentityData, children }) {

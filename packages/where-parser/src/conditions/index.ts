@@ -65,13 +65,13 @@ class ConditionContainer {
     }
 
     public get(key: string): Condition {
-        if (!this._items.has(key)) {
+        const condition = this._items.get(key);
+        if (!condition) {
             throw new WebinyError(`Unknown condition "${key}".`, "CONDITION_CONTAINER_ERROR", {
                 key
             });
         }
-
-        return this._items.get(key);
+        return condition;
     }
 }
 

@@ -147,37 +147,37 @@ export const useBugManageHandler = (
 
     return {
         ...contentHandler,
-        async getBug(variables, headers: Record<string, any> = {}) {
+        async getBug(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getBugQuery, variables },
                 headers
             });
         },
-        async getBugsByIds(variables, headers: Record<string, any> = {}) {
+        async getBugsByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getBugsByIdsQuery, variables },
                 headers
             });
         },
-        async listBugs(variables, headers: Record<string, any> = {}) {
+        async listBugs(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listBugsQuery, variables },
                 headers
             });
         },
-        async createBug(variables, headers: Record<string, any> = {}) {
+        async createBug(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createBugMutation, variables },
                 headers
             });
         },
-        async createBugFrom(variables, headers: Record<string, any> = {}) {
+        async createBugFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createBugFromMutation, variables },
                 headers
             });
         },
-        async updateBug(variables, headers: Record<string, any> = {}) {
+        async updateBug(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: updateBugMutation,
@@ -186,7 +186,7 @@ export const useBugManageHandler = (
                 headers
             });
         },
-        async deleteBug(variables, headers: Record<string, any> = {}) {
+        async deleteBug(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: deleteBugMutation,
@@ -195,7 +195,7 @@ export const useBugManageHandler = (
                 headers
             });
         },
-        async publishBug(variables, headers: Record<string, any> = {}) {
+        async publishBug(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: publishBugMutation,
@@ -204,7 +204,7 @@ export const useBugManageHandler = (
                 headers
             });
         },
-        async unpublishBug(variables, headers: Record<string, any> = {}) {
+        async unpublishBug(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishBugMutation,

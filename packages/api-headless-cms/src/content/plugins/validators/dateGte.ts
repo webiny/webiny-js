@@ -7,7 +7,7 @@ export default (): CmsModelFieldValidatorPlugin => ({
     validator: {
         name: "dateGte",
         async validate({ value, validator }) {
-            const { value: gteValue, type } = validator.settings;
+            const { value: gteValue, type } = validator.settings || {};
             if (typeof gteValue === "undefined") {
                 return true;
             } else if (type === "time") {

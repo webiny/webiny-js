@@ -8,13 +8,13 @@ import {
 
 export type InputElementRenderProps = FormFieldElementRenderProps;
 export class InputElement extends FormFieldElement {
-    constructor(id: string, config: FormFieldElementConfig) {
+    public constructor(id: string, config: FormFieldElementConfig) {
         super(id, config);
 
         this.applyPlugins(InputElement);
     }
 
-    public render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`InputElement must be placed inside of a FormElement.`);
         }

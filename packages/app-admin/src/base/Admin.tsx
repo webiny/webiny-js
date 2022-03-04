@@ -9,15 +9,17 @@ import { UserMenuProvider } from "./ui/UserMenu";
 import { NavigationProvider } from "./ui/Navigation";
 
 export interface AdminProps {
-    createApolloClient?: ApolloClientFactory;
+    createApolloClient: ApolloClientFactory;
     children?: React.ReactNode;
 }
 
-export const Admin = ({ children, createApolloClient }: AdminProps) => {
+export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) => {
     const ApolloProvider = createApolloProvider(createApolloClient);
     const TelemetryProvider = createTelemetryProvider();
     const UiStateProvider = createUiStateProvider();
-
+    /**
+     * TODO @ts-refactor
+     */
     return (
         <BaseAdmin>
             <Provider hoc={ApolloProvider} />

@@ -7,23 +7,27 @@ export interface HandlerArgs {
     data: Settings;
 }
 
+interface HandlerResponseError {
+    message: string;
+    code?: string;
+    data: Record<string, any> | null;
+}
+
 export interface HandlerResponse {
-    data: Settings;
-    error: {
-        message: string;
-        code?: string;
-        data?: Record<string, any>;
-    };
+    data: Settings | null;
+    error: HandlerResponseError | null;
 }
 
 /**
  * Updates system default settings, for all tenants and all locales. Of course, these values can later be overridden
  * via the settings UI in the Admin app. But it's with these settings that every new tenant / locale will start off.
  */
-export interface Params {
+export interface UpdateSettingsParams {
     storageOperations: PageBuilderStorageOperations;
 }
-export default (params: Params): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => {
+export default (
+    params: UpdateSettingsParams
+): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => {
     const { storageOperations } = params;
 
     return {
@@ -62,7 +66,7 @@ export default (params: Params): HandlerPlugin<PbContext, ArgsContext<HandlerArg
 
                 const updateSettingsData = await defaultSettingModel.toJSON();
 
-                const settings = {
+                const settings: Settings = {
                     ...original,
                     ...updateSettingsData,
                     ...settingsParams
@@ -70,13 +74,13 @@ export default (params: Params): HandlerPlugin<PbContext, ArgsContext<HandlerArg
 
                 await storageOperations.settings.update({
                     input: updateSettingsData,
-                    original,
+                    original: original as Settings,
                     settings
                 });
 
                 delete settings.locale;
                 delete settings.tenant;
-                delete settings.type;
+                delete (settings as any).type;
                 return {
                     data: settings,
                     error: null

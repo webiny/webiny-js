@@ -28,9 +28,11 @@ import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { FormData } from "@webiny/form";
 
 const removeIds = (el: PbElement): PbElement => {
+    // @ts-ignore
     delete el.id;
 
     el.elements = el.elements.map(el => {
+        // @ts-ignore
         delete el.id;
         if (el.elements && el.elements.length) {
             el = removeIds(el);
@@ -66,9 +68,11 @@ const pluginOnSave = (element: PbEditorElement): PbEditorElement => {
     return plugin.onSave(element);
 };
 
-const SaveAction: React.FunctionComponent = ({ children }) => {
+const SaveAction: React.FC = ({ children }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementByIdSelector(activeElementId as string)
+    ) as PbEditorElement;
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { getElementTree } = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
@@ -76,13 +80,19 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
     const client = useApolloClient();
 
     const onSubmit = async (formData: FormData) => {
-        formData.content = pluginOnSave(removeIds(await getElementTree(element)));
+        formData.content = pluginOnSave(removeIds((await getElementTree(element)) as PbElement));
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);
         blob.name = "pb-editor-page-element-" + element.id + ".png";
 
         const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("app-file-manager-storage");
+        /**
+         * We break the method because it would break if there is no fileUploaderPlugin.
+         */
+        if (!fileUploaderPlugin) {
+            return;
+        }
         const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: client });
         previewImage.meta = meta;
         previewImage.meta.private = true;
@@ -96,9 +106,11 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
 
         const createdImage = get(createdImageResponse, "data.fileManager.createFile", {});
         if (createdImage.error) {
-            return showSnackbar("Image could not be saved.");
+            showSnackbar("Image could not be saved.");
+            return;
         } else if (!createdImage.data.id) {
-            return showSnackbar("Missing saved image id.");
+            showSnackbar("Missing saved image id.");
+            return;
         }
 
         formData.preview = createdImage.data;
@@ -161,7 +173,7 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
                 onSubmit={onSubmit}
                 type={element.type === "block" ? "block" : "element"}
             />
-            {React.cloneElement(children as React.ReactElement, { onClick: showDialog })}
+            {React.cloneElement(children as unknown as React.ReactElement, { onClick: showDialog })}
         </>
     );
 };

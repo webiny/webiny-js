@@ -161,9 +161,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             getWorkflow: async (_, args, context) => {
                 return resolve(() => context.apw.workflow.get(args.id));
             },
-            listWorkflows: async (_, args: ListWorkflowsParams, context) => {
+            listWorkflows: async (_, args, context) => {
                 try {
-                    const [entries, meta] = await context.apw.workflow.list(args);
+                    /**
+                     * We know that args is ListWorkflowsParams.
+                     */
+                    const [entries, meta] = await context.apw.workflow.list(
+                        args as unknown as ListWorkflowsParams
+                    );
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);

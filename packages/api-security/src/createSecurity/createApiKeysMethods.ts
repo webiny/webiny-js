@@ -40,7 +40,17 @@ const generateToken = (tokenLength = 48): string => {
     return `a${token.slice(0, tokenLength - 1)}`;
 };
 
-export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
+export const createApiKeysMethods = ({
+    getTenant: initialGetTenant,
+    storageOperations
+}: SecurityConfig) => {
+    const getTenant = () => {
+        const tenant = initialGetTenant();
+        if (!tenant) {
+            throw new WebinyError("Missing tenant.");
+        }
+        return tenant;
+    };
     return {
         async getApiKeyByToken(token: string) {
             try {
@@ -68,7 +78,10 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
             }
 
             try {
-                return await storageOperations.getApiKey({ tenant: getTenant(), id });
+                return await storageOperations.getApiKey({
+                    tenant: getTenant(),
+                    id
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get API key.",

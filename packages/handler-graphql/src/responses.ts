@@ -5,7 +5,7 @@ export interface ErrorResponseParams {
     stack?: string | null;
 }
 
-const defaultParams: ErrorResponseParams = {
+const defaultParams: Required<ErrorResponseParams> = {
     code: "",
     message: "",
     data: null,

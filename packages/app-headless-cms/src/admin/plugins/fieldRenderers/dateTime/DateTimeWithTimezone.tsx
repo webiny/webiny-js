@@ -53,14 +53,14 @@ const parseTime = (value?: string): Pick<State, "time" | "timezone"> => {
     };
 };
 
-export interface Props {
+export interface DateTimeWithTimezoneProps {
     bind: BindComponentRenderProp;
     // TODO @ts-refactor figure out correct trailing icon type
     // @ts-ignore
     trailingIcon?: any;
     field: CmsEditorField;
 }
-export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
+export const DateTimeWithTimezone: React.FC<DateTimeWithTimezoneProps> = ({
     bind,
     trailingIcon,
     field
@@ -92,10 +92,10 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
                     bind={{
                         ...bind,
                         value: date,
-                        onChange: (value: string) => {
+                        onChange: async (value: string) => {
                             if (!value) {
                                 if (!bind.value) {
-                                    return null;
+                                    return;
                                 }
                                 return bind.onChange("");
                             }
@@ -118,10 +118,10 @@ export const DateTimeWithTimezone: React.FunctionComponent<Props> = ({
                     bind={{
                         ...bind,
                         value: time,
-                        onChange: value => {
+                        onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
-                                    return null;
+                                    return;
                                 }
                                 return bind.onChange("");
                             }

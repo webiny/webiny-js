@@ -41,14 +41,14 @@ import { assignAfterModelCreate } from "./contentModel/afterCreate";
 import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
 import { assignAfterModelDelete } from "./contentModel/afterDelete";
 
-export interface Params {
+export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createModelsCrud = (params: Params): CmsModelContext => {
+export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
     const loaders = {
@@ -117,7 +117,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
     };
 
     const modelsGet = async (modelId: string): Promise<CmsModel> => {
-        const pluginModel: CmsModel = getModelsAsPlugins().find(model => model.modelId === modelId);
+        const pluginModel = getModelsAsPlugins().find(model => model.modelId === modelId);
 
         if (pluginModel) {
             return pluginModel;
@@ -175,7 +175,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
     ): Promise<CmsModelManager> => {
         const modelId = typeof target === "string" ? target : target.modelId;
         if (managers.has(modelId)) {
-            return managers.get(modelId);
+            return managers.get(modelId) as CmsModelManager;
         }
         const models = await modelsList();
         const model = models.find(m => m.modelId === modelId);
@@ -254,7 +254,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
             const model: CmsModel = {
                 name: input.name,
                 description: input.description,
-                modelId: input.modelId,
+                modelId: input.modelId || "",
                 titleFieldId: "id",
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -377,7 +377,7 @@ export const createModelsCrud = (params: Params): CmsModelContext => {
                     name: group.name
                 },
                 name: input.name,
-                modelId: input.modelId,
+                modelId: input.modelId || "",
                 description: input.description,
                 createdBy: {
                     id: identity.id,

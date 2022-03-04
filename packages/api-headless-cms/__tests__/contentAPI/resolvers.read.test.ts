@@ -5,6 +5,7 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
+import { GQLHandlerCallableParams } from "../utils/useGqlHandler";
 
 const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
     {
@@ -36,7 +37,9 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
     }
 ];
 
-const categoryManagerHelper = async manageOpts => {
+const categoryManagerHelper = async (
+    manageOpts: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
+) => {
     // Use "manage" API to create and publish entries
     const { until, createCategory, publishCategory, sleep } = useCategoryManageHandler(manageOpts);
 
@@ -94,6 +97,9 @@ describe("READ - Resolvers", () => {
 
     const setupModel = async (name: string, group: CmsGroup) => {
         const targetModel = models.find(m => m.modelId === name);
+        if (!targetModel) {
+            throw new Error(`Could not find model "${name}".`);
+        }
 
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -178,7 +184,7 @@ describe("READ - Resolvers", () => {
                         id: categoryId
                     }
                 }).then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return !!data.getCategory.data.id;
             },
             {
@@ -412,7 +418,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     limit: 2
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.meta.totalCount === 3,
+            ({ data }: any) => data.listCategories.meta.totalCount === 3,
             { name: "list entries with limit" }
         );
 
@@ -458,7 +464,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     limit: 1
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === animals.id,
+            ({ data }: any) => data.listCategories.data[0].id === animals.id,
             { name: "list entries with limit after" }
         );
 
@@ -493,7 +499,7 @@ describe("READ - Resolvers", () => {
                     limit: 1,
                     after: firstCursor
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1,
+            ({ data }: any) => data.listCategories.data.length === 1,
             { name: "list categories after first cursor with limit" }
         );
 
@@ -528,7 +534,7 @@ describe("READ - Resolvers", () => {
                     limit: 1,
                     after: secondCursor
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1,
+            ({ data }: any) => data.listCategories.data.length === 1,
             { name: "list categories after second cursor with limit" }
         );
 
@@ -563,7 +569,7 @@ describe("READ - Resolvers", () => {
                     limit: 2,
                     after: firstCursor
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 2,
+            ({ data }: any) => data.listCategories.data.length === 2,
             { name: "list categories after first cursor with limit" }
         );
         expect(fourthResult).toEqual({
@@ -608,7 +614,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     sort: ["savedOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 3
+            ({ data }: any) => data.listCategories.data.length === 3
         );
 
         expect(result).toEqual({
@@ -660,7 +666,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     sort: ["title_DESC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 3,
+            ({ data }: any) => data.listCategories.data.length === 3,
             { name: "list entries by title DESC" }
         );
 
@@ -715,7 +721,7 @@ describe("READ - Resolvers", () => {
                         title_contains: "NIMal"
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === animals.id,
+            ({ data }: any) => data.listCategories.data[0].id === animals.id,
             { name: "list categories with NIMal" }
         );
 
@@ -756,7 +762,7 @@ describe("READ - Resolvers", () => {
                         title_not_contains: "fruits"
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 2
+            ({ data }: any) => data.listCategories.data.length === 2
         );
 
         expect(result).toEqual({
@@ -803,7 +809,7 @@ describe("READ - Resolvers", () => {
                         slug_in: [vegetables.slug, animals.slug]
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 2
+            ({ data }: any) => data.listCategories.data.length === 2
         );
 
         expect(result).toEqual({
@@ -850,7 +856,7 @@ describe("READ - Resolvers", () => {
                         slug_not_in: [vegetables.slug, animals.slug]
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1
+            ({ data }: any) => data.listCategories.data.length === 1
         );
 
         expect(result).toEqual({
@@ -893,7 +899,7 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 3,
+            ({ data }: any) => data.listCategories.data.length === 3,
             { name: "list entries with createdOn greater than given date" }
         );
 
@@ -948,7 +954,7 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1,
+            ({ data }: any) => data.listCategories.data.length === 1,
             {
                 name: "after create categories"
             }
@@ -994,7 +1000,7 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => Array.isArray(data.listCategories.data)
+            ({ data }: any) => Array.isArray(data.listCategories.data)
         );
 
         expect(result).toEqual({
@@ -1027,7 +1033,7 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["savedOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 2
+            ({ data }: any) => data.listCategories.data.length === 2
         );
 
         expect(result).toEqual({
@@ -1079,7 +1085,7 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["savedOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 2
+            ({ data }: any) => data.listCategories.data.length === 2
         );
 
         expect(result).toEqual({
@@ -1175,7 +1181,7 @@ describe("READ - Resolvers", () => {
                 listProducts({
                     where: {}
                 }).then(([data]) => data),
-            ({ data }) => data.listProducts.data.length === 3,
+            ({ data }: any) => data.listProducts.data.length === 3,
             { name: "list all products in vegetables categories - range" }
         );
 
@@ -1263,7 +1269,7 @@ describe("READ - Resolvers", () => {
         // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
-            ({ data }) => data.listProducts.data.length === 3,
+            ({ data }: any) => data.listProducts.data.length === 3,
             {
                 name: "list all products in vegetables categories - sort title"
             }
@@ -1368,7 +1374,7 @@ describe("READ - Resolvers", () => {
         // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
-            ({ data }) => data.listProducts.data.length === 3,
+            ({ data }: any) => data.listProducts.data.length === 3,
             {
                 name: "list all products in vegetables categories - sort price"
             }
@@ -1469,7 +1475,7 @@ describe("READ - Resolvers", () => {
                         id: potato.id
                     }
                 }).then(([data]) => data),
-            ({ data }) => !!data.getProduct.data.id
+            ({ data }: any) => !!data.getProduct.data.id
         );
 
         expect(result.data.getProduct.data).toMatchObject({

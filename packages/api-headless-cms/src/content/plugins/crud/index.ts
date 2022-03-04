@@ -8,11 +8,11 @@ import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 
 const debug = process.env.DEBUG === "true";
 
-export interface Params {
+export interface CreateContentCrudsParams {
     storageOperations: HeadlessCmsStorageOperations;
 }
 
-export const createContentCruds = (params: Params) => {
+export const createContentCruds = (params: CreateContentCrudsParams) => {
     const { storageOperations } = params;
     return new ContextPlugin<CmsContext>(async context => {
         /**

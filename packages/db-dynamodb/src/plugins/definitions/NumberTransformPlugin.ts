@@ -1,8 +1,12 @@
-import { ValueTransformPlugin, Params, TransformParams } from "./ValueTransformPlugin";
+import {
+    ValueTransformPlugin,
+    ValueTransformPluginParams,
+    ValueTransformPluginParamsTransformParams
+} from "./ValueTransformPlugin";
 import WebinyError from "@webiny/error";
 import isNumber from "is-number";
 
-const transformNumber = (params: TransformParams): number => {
+const transformNumber = (params: ValueTransformPluginParamsTransformParams): number => {
     const { value } = params;
     const typeOf = typeof value;
     /**
@@ -17,7 +21,7 @@ const transformNumber = (params: TransformParams): number => {
 };
 
 export class NumberTransformPlugin extends ValueTransformPlugin {
-    public constructor(params: Omit<Params, "transform">) {
+    public constructor(params: Omit<ValueTransformPluginParams, "transform">) {
         super({
             transform: transformNumber,
             ...params

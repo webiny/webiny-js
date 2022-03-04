@@ -6,7 +6,16 @@ interface CmsEntry extends Pick<CmsEditorContentEntry, "id" | "title" | "status"
 interface Options {
     (item: CmsEntry): Record<string, string>;
 }
-export const getOptions = (entries: CmsEntry[] = [], extraOptions: Options = null) => {
+
+export interface OptionItem {
+    id: string;
+    modelId: string;
+    modelName: string;
+    name: string;
+    published: boolean;
+}
+
+export const getOptions = (entries: CmsEntry[] = [], extraOptions?: Options): OptionItem[] => {
     return entries
         .map(item => {
             const name = item.title;
@@ -26,5 +35,5 @@ export const getOptions = (entries: CmsEntry[] = [], extraOptions: Options = nul
                 ...extraData
             };
         })
-        .filter(Boolean);
+        .filter(Boolean) as OptionItem[];
 };
