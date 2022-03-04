@@ -5,19 +5,21 @@ import {
     createGenericApplication,
     mergeAppHooks,
     ApplicationContext,
-    ApplicationHooks
+    ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
+import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { adminUpload } from "./AdminHookUpload";
 
-export interface AdminAppConfig extends ApplicationHooks {
-    config?(app: AdminApp, ctx: ApplicationContext): void;
+export interface AdminAppConfig {
+    /** Custom domain configuration */
+    domain?(ctx: ApplicationContext): CustomDomainParams;
 }
 
 export const AdminApp = defineApp({
     name: "Admin",
-    config(app) {
+    config(app, config: AdminAppConfig) {
         const bucket = createPublicAppBucket(app, "admin-app");
 
         const cloudfront = app.addResource(aws.cloudfront.Distribution, {
@@ -57,6 +59,11 @@ export const AdminApp = defineApp({
             }
         });
 
+        const domain = config.domain?.(app.ctx);
+        if (domain) {
+            applyCustomDomain(cloudfront, domain);
+        }
+
         app.addOutputs({
             appStorage: bucket.bucket.output.id,
             appUrl: cloudfront.output.domainName.apply(value => `https://${value}`)
@@ -71,7 +78,7 @@ export const AdminApp = defineApp({
 
 export type AdminApp = InstanceType<typeof AdminApp>;
 
-export function createAdminApp(config: AdminAppConfig) {
+export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminApp>) {
     return createGenericApplication({
         id: "admin",
         name: "admin",
@@ -83,7 +90,7 @@ export function createAdminApp(config: AdminAppConfig) {
             }
         },
         app(ctx) {
-            const app = new AdminApp(ctx);
+            const app = new AdminApp(ctx, config);
             config.config?.(app, ctx);
             return app;
         },

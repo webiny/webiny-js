@@ -1,5 +1,5 @@
 import { Pulumi } from "./Pulumi";
-import { ApplicationConfig } from "./ApplicationConfig";
+import { ApplicationHooks } from "./ApplicationConfig";
 import { ApplicationHook } from "./ApplicationHook";
 
 export interface ApplicationStackArgs {
@@ -12,20 +12,22 @@ export interface ApplicationStackArgs {
     env: string;
 }
 
+export interface ApplicationBuilderConfig extends Partial<ApplicationHooks> {
+    id: string;
+    name: string;
+    description?: string;
+    cli?: Record<string, any>;
+}
+
 export interface ApplicationStack {
     refresh(): Promise<void>;
     preview(): Promise<void>;
     up(): Promise<void>;
 }
 
-export interface ApplicationContext {
-    env: string;
-    appDir: string;
-    projectDir: string;
-}
-
-export abstract class ApplicationBuilder<TConfig extends ApplicationConfig = ApplicationConfig>
-    implements ApplicationConfig
+export abstract class ApplicationBuilder<
+    TConfig extends ApplicationBuilderConfig = ApplicationBuilderConfig
+> implements ApplicationBuilderConfig
 {
     // It needs to duplicate configuration props for backwards compatibility.
     // There is a lot of CLI code, that depends on it.

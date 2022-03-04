@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 
-import { ApplicationContext } from "./ApplicationBuilder";
+import { ApplicationContext } from "./ApplicationConfig";
 import { ResourceArgs, ResourceConstructor, ResourceType } from "./PulumiResource";
 import { tagResources } from "./utils/tagResources";
 
