@@ -1,4 +1,4 @@
-import { CmsGroup } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -39,9 +39,12 @@ describe("Endpoint access", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModel = async (model = null) => {
+    const setupContentModel = async (model?: CmsModel) => {
         if (!model) {
             model = models.find(m => m.modelId === "category");
+            if (!model) {
+                throw new Error("Could not find model `category`.");
+            }
         }
         const [createCMG] = await createContentModelGroupMutation({
             data: {

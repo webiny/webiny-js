@@ -190,13 +190,13 @@ export const useProductManageHandler = (
 
     return {
         ...contentHandler,
-        async getProduct(variables, headers: Record<string, any> = {}) {
+        async getProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getProductQuery, variables },
                 headers
             });
         },
-        async getProductsByIds(variables, headers: Record<string, any> = {}) {
+        async getProductsByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getProductsByIdsQuery, variables },
                 headers
@@ -208,19 +208,19 @@ export const useProductManageHandler = (
                 headers
             });
         },
-        async createProduct(variables, headers: Record<string, any> = {}) {
+        async createProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createProductMutation, variables },
                 headers
             });
         },
-        async createProductFrom(variables, headers: Record<string, any> = {}) {
+        async createProductFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createProductFromMutation, variables },
                 headers
             });
         },
-        async updateProduct(variables, headers: Record<string, any> = {}) {
+        async updateProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: updateProductMutation,
@@ -229,7 +229,7 @@ export const useProductManageHandler = (
                 headers
             });
         },
-        async deleteProduct(variables, headers: Record<string, any> = {}) {
+        async deleteProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: deleteProductMutation,
@@ -238,7 +238,7 @@ export const useProductManageHandler = (
                 headers
             });
         },
-        async publishProduct(variables, headers: Record<string, any> = {}) {
+        async publishProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: publishProductMutation,
@@ -247,7 +247,7 @@ export const useProductManageHandler = (
                 headers
             });
         },
-        async republishProduct(variables, headers: Record<string, any> = {}) {
+        async republishProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: republishProductMutation,
@@ -257,7 +257,7 @@ export const useProductManageHandler = (
             });
         },
 
-        async unpublishProduct(variables, headers: Record<string, any> = {}) {
+        async unpublishProduct(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishProductMutation,

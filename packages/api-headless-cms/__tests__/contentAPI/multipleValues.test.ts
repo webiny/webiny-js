@@ -1,4 +1,4 @@
-import { CmsEntry, CmsGroup, CmsModel } from "~/types";
+import { CmsEntry, CmsGroup, CmsModel, CmsModelField } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -29,6 +29,9 @@ describe("multiple values in field", () => {
 
     const setupCategoryModel = async (contentModelGroup: CmsGroup) => {
         const model = models.find(m => m.modelId === "category");
+        if (!model) {
+            throw new Error(`Could not find model "category".`);
+        }
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -57,6 +60,9 @@ describe("multiple values in field", () => {
         const contentModelGroup = await setupContentModelGroup();
 
         const model = models.find(m => m.modelId === "product");
+        if (!model) {
+            throw new Error(`Could not find model "product".`);
+        }
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: model.name,
@@ -75,9 +81,9 @@ describe("multiple values in field", () => {
             }
         });
 
-        const updatedContentModel = updateResponse.data.updateContentModel.data;
+        const updatedContentModel: any = updateResponse.data.updateContentModel.data;
 
-        const multipleValueFields = updatedContentModel.fields.filter(field => {
+        const multipleValueFields = updatedContentModel.fields.filter((field: CmsModelField) => {
             return field.multipleValues === true;
         });
 
@@ -133,6 +139,9 @@ describe("multiple values in field", () => {
         const contentModelGroup = await setupContentModelGroup();
 
         const model = models.find(m => m.modelId === "product");
+        if (!model) {
+            throw new Error(`Could not find model "product".`);
+        }
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: model.name,
@@ -187,6 +196,9 @@ describe("multiple values in field", () => {
         const category = createCategoryResponse.data.createCategory.data as CmsEntry;
 
         const productModel = models.find(m => m.modelId === "product");
+        if (!productModel) {
+            throw new Error(`Could not find model "product".`);
+        }
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: productModel.name,

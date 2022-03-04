@@ -17,6 +17,9 @@ describe("READ - ContentModel to SDL", () => {
 
     test("Category SDL", async () => {
         const model = contentModels.find(c => c.modelId === "category");
+        if (!model) {
+            throw new Error("Could not find model `category`.");
+        }
         const sdl = createReadSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(categorySDL.trim(), { parser: "graphql" });
@@ -25,6 +28,9 @@ describe("READ - ContentModel to SDL", () => {
 
     test("Product SDL", async () => {
         const model = contentModels.find(c => c.modelId === "product");
+        if (!model) {
+            throw new Error("Could not find model `category`.");
+        }
         const sdl = createReadSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(productSDL.trim(), { parser: "graphql" });
@@ -33,6 +39,9 @@ describe("READ - ContentModel to SDL", () => {
 
     test("Review SDL", async () => {
         const model = contentModels.find(c => c.modelId === "review");
+        if (!model) {
+            throw new Error("Could not find model `category`.");
+        }
         const sdl = createReadSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(reviewSDL.trim(), { parser: "graphql" });

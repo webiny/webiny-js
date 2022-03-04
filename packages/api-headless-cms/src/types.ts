@@ -131,11 +131,11 @@ export interface CmsModelField {
     /**
      * Text below the field to clarify what is it meant to be in the field value
      */
-    helpText?: string;
+    helpText?: string | null;
     /**
      * Text to be displayed in the field
      */
-    placeholderText?: string;
+    placeholderText?: string | null;
     /**
      * Are predefined values enabled? And list of them
      */

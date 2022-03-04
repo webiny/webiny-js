@@ -161,13 +161,13 @@ export const useFruitManageHandler = (
 
     return {
         ...contentHandler,
-        async getFruit(variables, headers: Record<string, any> = {}) {
+        async getFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getFruitQuery, variables },
                 headers
             });
         },
-        async getFruitsByIds(variables, headers: Record<string, any> = {}) {
+        async getFruitsByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getFruitsByIdsQuery, variables },
                 headers
@@ -179,19 +179,19 @@ export const useFruitManageHandler = (
                 headers
             });
         },
-        async createFruit(variables, headers: Record<string, any> = {}) {
+        async createFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createFruitMutation, variables },
                 headers
             });
         },
-        async createFruitFrom(variables, headers: Record<string, any> = {}) {
+        async createFruitFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createFruitFromMutation, variables },
                 headers
             });
         },
-        async updateFruit(variables, headers: Record<string, any> = {}) {
+        async updateFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: updateFruitMutation,
@@ -200,7 +200,7 @@ export const useFruitManageHandler = (
                 headers
             });
         },
-        async deleteFruit(variables, headers: Record<string, any> = {}) {
+        async deleteFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: deleteFruitMutation,
@@ -209,7 +209,7 @@ export const useFruitManageHandler = (
                 headers
             });
         },
-        async publishFruit(variables, headers: Record<string, any> = {}) {
+        async publishFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: publishFruitMutation,
@@ -218,7 +218,7 @@ export const useFruitManageHandler = (
                 headers
             });
         },
-        async unpublishFruit(variables, headers: Record<string, any> = {}) {
+        async unpublishFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishFruitMutation,
