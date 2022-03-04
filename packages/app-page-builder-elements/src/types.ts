@@ -9,7 +9,49 @@ import { CSSObject, cx } from "@emotion/css";
 export interface Element {
     id: string;
     type: string;
-    data: Record<string, any>;
+    data: {
+        settings?: {
+            background?: {
+                [key: string]: string;
+            };
+            border?: {
+                [key: string]: {
+                    style?: string;
+                    color?: string;
+                    radius?: {
+                        advanced?: boolean;
+                        top?: string;
+                        bottom?: string;
+                        left?: string;
+                        right?: string;
+                        all?: string;
+                    };
+                    width?: {
+                        advanced?: boolean;
+                        top?: string;
+                        bottom?: string;
+                        left?: string;
+                        right?: string;
+                        all?: string;
+                    };
+                };
+            };
+            shadow?: {
+                horizontal?: string;
+                vertical?: string;
+                blur?: string;
+                spread?: string;
+                color?: string;
+            };
+            [key: string]: any;
+        };
+        text: {
+            data: {
+                text?: string;
+            };
+        };
+        [key: string]: any;
+    };
     elements: Element[];
     path?: string[];
     [key: string]: any;
@@ -20,7 +62,8 @@ export type Content = Element;
 /**
  * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.
  */
-export type StylesObjects = Record<string, any>; // TODO: CSSObject | Record<string, CSSObject>; doesn't work?
+// TODO: CSSObject | Record<string, CSSObject>; doesn't work?
+export type StylesObjects = Record<string, CSSObject | string>;
 
 export interface PageElementsProviderProps {
     theme: Theme;

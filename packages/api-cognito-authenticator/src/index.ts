@@ -18,6 +18,10 @@ interface VerifyResult {
     token_use: string;
 }
 
+interface Key {
+    kid?: string;
+}
+
 export interface Authenticator {
     (token: string): Record<string, any> | null;
 }
@@ -30,7 +34,7 @@ export const createAuthenticator =
             return `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
         };
 
-        const getJWKs = async (): Promise<Record<string, string>[] | undefined> => {
+        const getJWKs = async (): Promise<Key[] | undefined> => {
             const { region, userPoolId } = config;
             const key = `${region}:${userPoolId}`;
 

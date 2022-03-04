@@ -53,13 +53,13 @@ interface Values {
 }
 
 const background: ElementStylesModifier = ({ element, theme }) => {
-    const { background } = element.data.settings;
+    const { background } = element.data.settings || {};
     if (!background) {
         return null;
     }
 
     return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
-        const values = background[breakpointName] as Values | undefined;
+        const values = background[breakpointName] as unknown as Values | undefined;
         if (!values) {
             return returnStyles;
         }
