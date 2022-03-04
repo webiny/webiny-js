@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Determine whether the current browser supports passive event listeners, and
  * if so, use them.
