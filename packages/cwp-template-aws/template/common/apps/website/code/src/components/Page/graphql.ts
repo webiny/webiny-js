@@ -28,8 +28,8 @@ export interface PublishedPageQueryVariables {
 }
 export const GET_PUBLISHED_PAGE = () => {
     const pageSettingsFields = plugins
-        .byType("pb-page-settings-fields")
-        .map((pl: PbPageSettingsFieldsPlugin) => pl.fields)
+        .byType<PbPageSettingsFieldsPlugin>("pb-page-settings-fields")
+        .map(pl => pl.fields)
         .join("\n");
 
     return gql`

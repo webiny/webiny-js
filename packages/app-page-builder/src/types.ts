@@ -180,8 +180,10 @@ export interface PbElement {
 /**
  * Determine types for elements
  */
-export type PbTheme = {
-    colors: { [key: string]: string };
+export interface PbTheme {
+    colors: {
+        [key: string]: string;
+    };
     // TODO @ts-refactor
     elements: {
         button?: {
@@ -193,7 +195,8 @@ export type PbTheme = {
         };
         [key: string]: any;
     };
-};
+    [key: string]: any;
+}
 
 export type PbThemePlugin = Plugin & {
     theme: PbTheme;
@@ -397,7 +400,7 @@ export interface PbEditorPageElementPluginToolbar {
     // Element group this element belongs to.
     group?: string;
     // A function to render an element preview in the toolbar.
-    preview?: ({ theme }: { theme: PbTheme }) => ReactNode;
+    preview?: ({ theme }?: { theme: PbTheme }) => ReactNode;
 }
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
 export type PbEditorPageElementPlugin = Plugin & {

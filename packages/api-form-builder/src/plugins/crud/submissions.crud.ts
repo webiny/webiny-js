@@ -10,11 +10,13 @@ import * as utils from "~/plugins/crud/utils";
 import * as models from "~/plugins/crud/forms.models";
 import {
     FbForm,
+    FbFormTriggerHandlerPlugin,
     FbSubmission,
     FormBuilder,
     FormBuilderContext,
     FormBuilderStorageOperationsListSubmissionsParams,
-    SubmissionsCRUD
+    SubmissionsCRUD,
+    FbFormFieldValidatorPlugin
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -159,7 +161,8 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             /**
              * Validate data
              */
-            const validatorPlugins = context.plugins.byType("fb-form-field-validator");
+            const validatorPlugins =
+                context.plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
             const { fields } = form;
 
             const data = pick(
@@ -273,7 +276,8 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                  * Execute triggers
                  */
                 if (form.triggers) {
-                    const plugins = context.plugins.byType("form-trigger-handler");
+                    const plugins =
+                        context.plugins.byType<FbFormTriggerHandlerPlugin>("form-trigger-handler");
                     for (let i = 0; i < plugins.length; i++) {
                         const plugin = plugins[i];
                         if (form.triggers[plugin.trigger]) {
@@ -283,7 +287,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                                     submission.logs.push(log);
                                 },
                                 data,
-                                meta,
+                                // meta,
                                 trigger: form.triggers[plugin.trigger]
                             });
                         }
