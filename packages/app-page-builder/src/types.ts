@@ -397,7 +397,7 @@ export interface PbEditorPageElementPluginToolbar {
     // Element group this element belongs to.
     group?: string;
     // A function to render an element preview in the toolbar.
-    preview?: ({ theme }: { theme: PbTheme }) => ReactNode;
+    preview?: ({ theme }?: { theme: PbTheme }) => ReactNode;
 }
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
 export type PbEditorPageElementPlugin = Plugin & {

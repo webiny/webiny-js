@@ -97,6 +97,6 @@ export class PluginsContainer {
     }
 
     private findByType<T extends Plugin>(type: T["type"]): T[] {
-        return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
+        return (Object.values(this.plugins) as T[]).filter(pl => pl.type === type) as T[];
     }
 }
