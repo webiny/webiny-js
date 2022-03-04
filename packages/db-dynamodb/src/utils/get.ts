@@ -1,6 +1,6 @@
 import { Entity } from "dynamodb-toolbox";
 
-export interface Params {
+export interface GetRecordParams {
     entity: Entity<any>;
     keys: {
         PK: string;
@@ -16,7 +16,7 @@ export interface Params {
  *
  * @throws
  */
-export const get = async <T>(params: Params): Promise<T | null> => {
+export const get = async <T>(params: GetRecordParams): Promise<T | null> => {
     const { entity, keys } = params;
 
     const result = await entity.get(keys);

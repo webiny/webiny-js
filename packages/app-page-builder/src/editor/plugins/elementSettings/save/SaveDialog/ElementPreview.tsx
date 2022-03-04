@@ -31,7 +31,7 @@ const replaceContent = (element: PbElement, doc: Document): Document => {
         const wrapper = document.createElement("div");
         wrapper.innerHTML = newContentString;
 
-        const newContentDoc: ChildNode = wrapper.firstChild;
+        const newContentDoc = wrapper.firstChild as ChildNode;
         // Element id must not start with a number.
         const validId = Number.isNaN(parseInt(element.id[0]));
         if (validId) {
@@ -59,14 +59,14 @@ const generateImage = async (element: any, onChange: (value: string) => void): P
 
     const editor = document.querySelector(".pb-editor");
     // Hide element highlight while creating the image
-    editor.classList.add("pb-editor-no-highlight");
+    editor && editor.classList.add("pb-editor-no-highlight");
 
     const dataUrl = await domToImage.toPng(node, {
         onDocument: (doc: Document) => replaceContent(element, doc),
         width: 1000
     });
 
-    editor.classList.remove("pb-editor-no-highlight");
+    editor && editor.classList.remove("pb-editor-no-highlight");
 
     onChange(dataUrl);
 };
@@ -75,10 +75,7 @@ type ElementPreviewPropsType = {
     element: any;
     onChange: (value: string) => void;
 };
-const ElementPreview: React.FunctionComponent<ElementPreviewPropsType> = ({
-    element,
-    onChange
-}) => {
+const ElementPreview: React.FC<ElementPreviewPropsType> = ({ element, onChange }) => {
     useEffect(() => {
         generateImage(element, onChange);
     });

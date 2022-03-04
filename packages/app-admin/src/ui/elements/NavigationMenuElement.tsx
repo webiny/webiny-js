@@ -1,6 +1,7 @@
 import React from "react";
 import { default as localStorage } from "store";
 import { UIElement, UIElementConfig } from "~/ui/UIElement";
+import { UILayoutSorter } from "@webiny/ui-composer/UILayout";
 
 export interface NavigationMenuElementConfig extends UIElementConfig {
     label: React.ReactNode;
@@ -19,15 +20,11 @@ export enum TAGS {
     APP = "app"
 }
 
-interface Sorter {
-    (a: NavigationMenuElement, b: NavigationMenuElement): number;
-}
-
 export class NavigationMenuElement<
     TConfig extends NavigationMenuElementConfig = NavigationMenuElementConfig
 > extends UIElement<TConfig> {
     private _isExpanded = false;
-    private _sorters: Sorter[] = [];
+    private _sorters: UILayoutSorter<NavigationMenuElementConfig>[] = [];
 
     public constructor(id: string, config: TConfig) {
         super(id, config);
@@ -37,7 +34,7 @@ export class NavigationMenuElement<
         const state = this.loadState();
         this._isExpanded = state.includes(this.id);
 
-        this.addSorter((a: NavigationMenuElement, b: NavigationMenuElement) => {
+        this.addSorter((a, b) => {
             if (a.hasTag(TAGS.APP) && b.hasTag(TAGS.UTILS)) {
                 return -1;
             }
@@ -53,13 +50,15 @@ export class NavigationMenuElement<
         this.applyPlugins(NavigationMenuElement);
     }
 
-    public addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
+    public override addElement<TElement extends UIElement = UIElement>(
+        element: TElement
+    ): TElement {
         super.addElement(element);
         this.runSorters();
         return element;
     }
 
-    public addSorter(sorter: Sorter): void {
+    public addSorter(sorter: UILayoutSorter<NavigationMenuElementConfig>): void {
         this._sorters.push(sorter);
     }
 

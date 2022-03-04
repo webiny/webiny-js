@@ -27,6 +27,9 @@ describe("model delete", () => {
 
     const setupCategoryModel = async (group: CmsGroup) => {
         const model = models.find(m => m.modelId === "category");
+        if (!model) {
+            throw new Error(`Could not find model "category".`);
+        }
 
         const [create] = await createContentModelMutation({
             data: {
@@ -89,7 +92,7 @@ describe("model delete", () => {
 
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === categories.length,
+            ({ data }: any) => data.listCategories.data.length === categories.length,
             {
                 name: "after create categories"
             }
@@ -123,7 +126,7 @@ describe("model delete", () => {
         await Promise.all(deletePromises);
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 0,
+            ({ data }: any) => data.listCategories.data.length === 0,
             {
                 name: "after delete categories"
             }

@@ -18,8 +18,11 @@ const createHeadlessCMSProvider =
         };
     };
 
+interface CreateApolloClientParams {
+    uri: string;
+}
 interface CreateApolloClient {
-    (params: { uri: string }): ApolloClient<any>;
+    (params: CreateApolloClientParams): ApolloClient<any>;
 }
 
 export interface HeadlessCMSProps {

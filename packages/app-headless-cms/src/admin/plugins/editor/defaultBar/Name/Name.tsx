@@ -20,7 +20,7 @@ declare global {
 
 export const Name: React.FC = () => {
     const { data, setData } = useContentModelEditor();
-    const [localName, setLocalName] = useState<string>(null);
+    const [localName, setLocalName] = useState<string>("");
     const [editingEnabled, setEditing] = useState<boolean>(false);
 
     const cancelChanges = () => {

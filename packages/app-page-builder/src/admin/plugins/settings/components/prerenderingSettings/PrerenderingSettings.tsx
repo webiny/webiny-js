@@ -95,7 +95,13 @@ const PrerenderingSettings: React.FC = () => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormFooter>
-                            <ButtonPrimary onClick={form.submit}>Save</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >
+                                Save
+                            </ButtonPrimary>
                         </SimpleFormFooter>
                     </SimpleForm>
                 )}

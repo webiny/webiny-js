@@ -53,7 +53,15 @@ export const ContentPermissions: React.FC<ContentPermissionsProps> = ({ value, o
     }, []);
 
     return (
-        <Form data={formData} onChange={onFormChange}>
+        <Form
+            data={formData}
+            onChange={data => {
+                /**
+                 * We are positive that data is SecurityPermission.
+                 */
+                return onFormChange(data as unknown as SecurityPermission);
+            }}
+        >
             {({ data, Bind }) => (
                 <Fragment>
                     <Grid style={{ padding: "0px !important" }}>

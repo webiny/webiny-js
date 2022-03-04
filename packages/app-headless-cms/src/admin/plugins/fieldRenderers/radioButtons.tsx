@@ -14,12 +14,14 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Radio Buttons`,
         description: t`Renders radio buttons, allowing selection of a single value.`,
         canUse({ field }) {
-            return !field.multipleValues && get(field, "predefinedValues.enabled");
+            return !field.multipleValues && !!get(field, "predefinedValues.enabled");
         },
         render({ field, getBind }) {
             const Bind = getBind();
 
-            const { values: options } = field.predefinedValues;
+            const { values: options = [] } = field.predefinedValues || {
+                options: []
+            };
 
             return (
                 <Bind>

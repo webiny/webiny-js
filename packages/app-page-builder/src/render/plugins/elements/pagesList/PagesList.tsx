@@ -47,8 +47,9 @@ const PagesListRender: React.FC<PagesListRenderProps> = props => {
     // Extract page id from URL.
     const query = new URLSearchParams(location.search);
     let pageId;
-    if (query.get("id")) {
-        [pageId] = query.get("id").split("#");
+    const queryPageId = query.get("id");
+    if (queryPageId) {
+        [pageId] = queryPageId.split("#");
     }
 
     if (!pageList) {

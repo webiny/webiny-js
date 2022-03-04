@@ -7,7 +7,11 @@ import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "~/admin/assets/delete.svg";
-import { DELETE_PAGE } from "~/admin/graphql/pages";
+import {
+    DELETE_PAGE,
+    DeletePageMutationResponse,
+    DeletePageMutationVariables
+} from "~/admin/graphql/pages";
 import { i18n } from "@webiny/app/i18n";
 import usePermission from "~/hooks/usePermission";
 import * as GQLCache from "~/admin/views/Pages/cache";
@@ -45,11 +49,17 @@ const DeletePage: React.FC<DeletePageProps> = props => {
             showConfirmation(async () => {
                 const [uniquePageId] = page.id.split("#");
                 const id = `${uniquePageId}#0001`;
-                const { data: res } = await client.mutate({
+                const { data: res } = await client.mutate<
+                    DeletePageMutationResponse,
+                    DeletePageMutationVariables
+                >({
                     mutation: DELETE_PAGE,
                     variables: { id },
-                    update(cache, { data }) {
-                        if (data.pageBuilder.deletePage.error) {
+                    update(cache, response) {
+                        if (!response.data) {
+                            return;
+                        }
+                        if (response.data.pageBuilder.deletePage.error) {
                             return;
                         }
                         // Also, delete the page from "LIST_PAGES_ cache
@@ -57,9 +67,10 @@ const DeletePage: React.FC<DeletePageProps> = props => {
                     }
                 });
 
-                const { error } = res?.pageBuilder?.deletePage;
+                const { error } = res?.pageBuilder?.deletePage || {};
                 if (error) {
-                    return showDialog(error.message, { title: t`Could not delete page.` });
+                    showDialog(error.message, { title: t`Could not delete page.` });
+                    return;
                 }
 
                 showSnackbar(
@@ -81,6 +92,7 @@ const DeletePage: React.FC<DeletePageProps> = props => {
     );
 
     if (!canDelete(page)) {
+        console.log("Does not have permission to delete page.");
         return null;
     }
 

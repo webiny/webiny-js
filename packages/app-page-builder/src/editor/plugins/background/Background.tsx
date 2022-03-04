@@ -11,7 +11,7 @@ const backgroundStyle = css({
     minHeight: "100%"
 });
 
-const Background: React.FunctionComponent = () => {
+const Background: React.FC = () => {
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
 
     const deactivateElement = useCallback(() => {

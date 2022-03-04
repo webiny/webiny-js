@@ -9,7 +9,7 @@ describe(`"renderUrl" Function Test`, () => {
             context: {} as any,
             args: {},
             configuration: {},
-            renderUrlFunction: () => {
+            renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,
                     meta: {}
@@ -55,7 +55,7 @@ describe(`"renderUrl" Function Test`, () => {
                     }
                 }
             },
-            renderUrlFunction: () => {
+            renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,
                     meta: {}

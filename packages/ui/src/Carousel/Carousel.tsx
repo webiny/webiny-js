@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import NukaCarousel, { CarouselProps, CarouselRenderControl } from "nuka-carousel";
 import pick from "lodash/pick";
 
-type Props = CarouselProps & {
+interface Props extends CarouselProps {
     // slides as set of HTMLElements
     children: React.ReactNode;
 
@@ -14,7 +14,7 @@ type Props = CarouselProps & {
 
     // render method for the central navigation
     renderBottomNav?: CarouselRenderControl | null;
-};
+}
 
 class Carousel extends React.Component<Props> {
     static defaultProps = {
@@ -40,7 +40,7 @@ class Carousel extends React.Component<Props> {
         "transitionMode"
     ];
 
-    render() {
+    public override render() {
         return (
             <NukaCarousel
                 {...pick(this.props, Carousel.nukaProps)}

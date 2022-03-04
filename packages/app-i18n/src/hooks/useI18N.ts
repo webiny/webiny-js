@@ -20,7 +20,8 @@ export function useI18N(): UseI18NHook {
     const self: UseI18NHook = {
         refetchLocales,
         getDefaultLocale() {
-            return state.locales.find(item => item.default === true);
+            const locale = state.locales.find(item => item.default === true);
+            return locale || null;
         },
         getCurrentLocales() {
             return state.currentLocales;

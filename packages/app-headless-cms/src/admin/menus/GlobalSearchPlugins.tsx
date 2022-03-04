@@ -39,8 +39,8 @@ const GlobalSearchPlugins: React.FC = () => {
         // 1. Unregister all previously registered plugins.
         plugins
             .byType<AdminGlobalSearchPlugin>("admin-global-search")
-            .filter(item => item.name.startsWith("admin-global-search-headless-cms"))
-            .forEach(item => plugins.unregister(item.name));
+            .filter(item => item.name && item.name.startsWith("admin-global-search-headless-cms"))
+            .forEach(item => plugins.unregister(item.name as string));
 
         // 2. Register a new set of plugins via the latest list of content models.
         contentModelGroups.forEach(group => {

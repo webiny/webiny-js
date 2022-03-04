@@ -6,9 +6,10 @@ export default (): PbEditorEventActionPlugin => {
         type: "pb-editor-event-action-plugin",
         name: "pb-editor-event-action-update-element-tree",
         onEditorMount: handler => {
-            // @ts-ignore
             return handler.on(UpdateElementTreeActionEvent, () => {
-                return {};
+                return {
+                    actions: []
+                };
             });
         }
     };

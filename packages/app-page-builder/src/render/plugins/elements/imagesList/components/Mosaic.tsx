@@ -35,7 +35,7 @@ const reducer = (state: State, action: Action) => {
 const useLightbox = () => {
     const [state, dispatch] = useReducer(reducer, {
         open: false,
-        currentIndex: null
+        currentIndex: 0
     });
 
     return {

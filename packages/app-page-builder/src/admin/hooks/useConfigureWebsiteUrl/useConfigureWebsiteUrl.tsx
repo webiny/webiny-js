@@ -60,8 +60,14 @@ export const ConfigureWebsiteUrlMessage: React.FC<ConfigureWebsiteUrlMessageProp
     );
 };
 
-export const useConfigureWebsiteUrlDialog = (websiteUrl?: string, onAccept: () => void = null) => {
+export const useConfigureWebsiteUrlDialog = (websiteUrl?: string, onAccept?: () => void) => {
     const { showDialog } = useDialog();
+
+    if (!onAccept) {
+        onAccept = () => {
+            return void 0;
+        };
+    }
 
     return {
         showConfigureWebsiteUrlDialog: () => {

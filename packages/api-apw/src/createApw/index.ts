@@ -22,10 +22,11 @@ export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow =
             workflowGetters.set(type, func);
         },
         getWorkflowGetter(type) {
-            if (!workflowGetters.has(type)) {
+            const getter = workflowGetters.get(type);
+            if (!getter) {
                 throw new Error(`No loader found for type: "${type}". You must define a loader.`);
             }
-            return workflowGetters.get(type);
+            return getter;
         },
         workflow: workflowMethods,
         reviewer: reviewerMethods,

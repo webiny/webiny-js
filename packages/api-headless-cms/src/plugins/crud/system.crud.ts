@@ -23,13 +23,13 @@ const initialContentModelGroup = {
     icon: "fas/star"
 };
 
-export interface Params {
+interface CreateSystemCrudParams {
     getTenant: () => Tenant;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createSystemCrud = (params: Params): CmsSystemContext => {
+export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemContext => {
     const { getTenant, storageOperations, context, getIdentity } = params;
 
     const onBeforeInstall = createTopic<BeforeInstallTopicParams>();
@@ -48,7 +48,7 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
             tenant: getTenant().id
         });
 
-        return system ? system.version : null;
+        return system ? system.version || null : null;
     };
 
     const setVersion = async (version: string) => {
@@ -159,7 +159,7 @@ export const createSystemCrud = (params: Params): CmsSystemContext => {
 
             const installedAppVersion = await this.getSystemVersion();
 
-            let plugin: UpgradePlugin;
+            let plugin: UpgradePlugin | undefined = undefined;
             try {
                 plugin = getApplicablePlugin({
                     deployedVersion: context.WEBINY_VERSION,

@@ -14,6 +14,10 @@ export interface Config {
 
 const jwksCache = new Map<string, Record<string, any>[]>();
 
+interface VerifyResult {
+    token_use: string;
+}
+
 export interface Authenticator {
     (token: string): Record<string, any> | null;
 }
@@ -26,7 +30,7 @@ export const createAuthenticator =
             return `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
         };
 
-        const getJWKs = async () => {
+        const getJWKs = async (): Promise<Record<string, string>[] | undefined> => {
             const { region, userPoolId } = config;
             const key = `${region}:${userPoolId}`;
 
@@ -43,7 +47,14 @@ export const createAuthenticator =
         }
 
         const jwks = await getJWKs();
-        const { header } = jwt.decode(idToken, { complete: true });
+        if (!jwks) {
+            return null;
+        }
+        const decodedData = jwt.decode(idToken, { complete: true });
+        if (!decodedData) {
+            return null;
+        }
+        const { header } = decodedData;
         /**
          * TODO: figure out which type is the jwk variable.
          */
@@ -52,7 +63,12 @@ export const createAuthenticator =
         if (!jwk) {
             return null;
         }
-        const token = await verify(idToken, jwkToPem(jwk));
+        /**
+         * TODO @ts-refactor @pavel
+         * Figure out correct types for the verify method. Maybe write your own, without using utils.promisify?
+         */
+        // @ts-ignore
+        const token: VerifyResult = await verify(idToken, jwkToPem(jwk));
         if (token.token_use !== "id") {
             const error: any = new Error("idToken is invalid!");
             error.code = "SECURITY_COGNITO_INVALID_TOKEN";

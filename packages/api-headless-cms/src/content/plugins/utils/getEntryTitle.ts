@@ -13,7 +13,7 @@ export function getEntryTitle(model: CmsModel, entry: CmsEntry): string {
         return titleValue;
     }
     const { enabled = false, values } = field.predefinedValues || {};
-    if (!enabled || Array.isArray(values) === false) {
+    if (!enabled || !values || Array.isArray(values) === false) {
         return titleValue;
     }
     for (const value of values) {

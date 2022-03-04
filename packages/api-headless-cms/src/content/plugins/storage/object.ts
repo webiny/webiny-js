@@ -45,7 +45,7 @@ const plugin = new StorageTransformPlugin({
             return null;
         }
 
-        const fields = field.settings.fields as CmsModelField[];
+        const fields = (field.settings?.fields || []) as CmsModelField[];
 
         if (field.multipleValues) {
             return await pMap(value as Record<string, any>[], value =>
@@ -74,7 +74,7 @@ const plugin = new StorageTransformPlugin({
             return null;
         }
 
-        const fields = field.settings.fields as CmsModelField[];
+        const fields = (field.settings?.fields || []) as CmsModelField[];
 
         if (field.multipleValues) {
             return pMap(value as Record<string, any>[], value =>

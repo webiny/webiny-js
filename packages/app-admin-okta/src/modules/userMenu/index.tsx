@@ -9,13 +9,13 @@ import { UserInfo } from "~/modules/userMenu/userInfo";
 import { SignOut } from "~/modules/userMenu/signOut";
 import { UserImage } from "~/modules/userMenu/userImage";
 
-const UserImageHOC = () => {
+const UserImageHOC = (): React.FC => {
     return function UserImageHOC() {
         return <UserImage />;
     };
 };
 
-export const UserMenuModule = () => {
+export const UserMenuModule: React.FC = () => {
     return (
         <Fragment>
             <Compose component={UserMenuHandleRenderer} with={UserImageHOC} />

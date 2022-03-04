@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/api-page-builder-import-export
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* prettier run ([4703a40](https://github.com/webiny/webiny-js/commit/4703a404f65fdad502b3222209ded71b6f5b85cc))
+
+
+### Features
+
+* add types to api-page-builder-import-export ([dc8ed8b](https://github.com/webiny/webiny-js/commit/dc8ed8b3ea71863c369bb23ebdcbcd3e0bc4e69b))
+* any types for api-apw ([82ec8b1](https://github.com/webiny/webiny-js/commit/82ec8b1cf73b369beedbe60ae173e673d5b81260))
+* any types for api-page-builder ([f5a8b00](https://github.com/webiny/webiny-js/commit/f5a8b005966961e6f0ed3033f8ad945217b2c70d))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/api-page-builder-import-export

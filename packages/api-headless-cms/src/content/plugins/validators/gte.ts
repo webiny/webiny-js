@@ -7,7 +7,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
     validator: {
         name: "gte",
         validate({ value, validator }) {
-            const gteValue = validator.settings.value;
+            const gteValue = validator.settings?.value;
             if (typeof gteValue !== "undefined") {
                 return validation
                     .validate(value, `gte:${gteValue}`)

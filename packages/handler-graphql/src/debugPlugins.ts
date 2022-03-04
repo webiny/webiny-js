@@ -2,9 +2,13 @@ import { interceptConsole } from "./interceptConsole";
 import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin } from "./types";
 import { Context, ContextPlugin } from "@webiny/handler/types";
 
+interface Log {
+    method: string;
+    args: any;
+}
 interface DebugContext extends Context {
     debug: {
-        logs?: { method: string; args: any }[];
+        logs?: Log[];
     };
 }
 
@@ -12,10 +16,14 @@ export default () => [
     {
         type: "context",
         apply(context) {
-            context.debug = context.debug || {};
-            context.debug.logs = [];
+            if (!context.debug) {
+                context.debug = {};
+            }
+            if (!context.debug.logs) {
+                context.debug.logs = [];
+            }
             interceptConsole((method, args) => {
-                context.debug.logs.push({ method, args });
+                (context.debug.logs as Log[]).push({ method, args });
             });
         }
     } as ContextPlugin<DebugContext>,

@@ -5,10 +5,14 @@ import { merge, kebabCase, set } from "lodash";
 import downloadBinaries from "./downloadBinaries";
 
 type Command = string | string[];
-type PulumiArgs = { [key: string]: string | boolean };
-type ExecaArgs = { [key: string]: any };
+interface PulumiArgs {
+    [key: string]: string | boolean;
+}
+interface ExecaArgs {
+    [key: string]: any;
+}
 
-type Options = {
+interface Options {
     args?: PulumiArgs;
     execa?: ExecaArgs;
     beforePulumiInstall?: () => any;
@@ -18,20 +22,20 @@ type Options = {
     // It's recommended this folder is not checked in into a code repository, since the Pulumi CLI can store
     // sensitive information here, for example - user's Pulumi Service credentials.
     pulumiFolder?: string;
-};
+}
 
-type RunArgs = {
+interface RunArgs {
     command: Command;
     args?: PulumiArgs;
     execa?: ExecaArgs;
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
-};
+}
 
-type InstallArgs = {
+interface InstallArgs {
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
-};
+}
 
 export const FLAG_NON_INTERACTIVE = "--non-interactive";
 
@@ -84,6 +88,10 @@ export class Pulumi {
         }
 
         // Prepare execa args.
+        if (!args.execa) {
+            args.execa = {};
+        }
+
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
         set(args.execa, "env.PULUMI_HOME", this.pulumiFolder);
 

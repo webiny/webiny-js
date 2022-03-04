@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import CodeBlock from "../CodeBlock";
 import Markdown from "../Markdown";
 
 export class Story extends React.Component<{ children: React.ReactNode }> {
-    render() {
+    public override render(): React.ReactNode {
         return (
             <div className={"markdown-body"} style={{ padding: "0 20px" }}>
                 {this.props.children}
@@ -12,12 +12,11 @@ export class Story extends React.Component<{ children: React.ReactNode }> {
     }
 }
 
-type StorySandboxProps = {
-    children: React.ReactNode;
+interface StorySandboxProps {
     title?: React.ReactNode;
-};
+}
 
-export const StorySandbox = (props: StorySandboxProps) => {
+export const StorySandbox: React.FC<StorySandboxProps> = props => {
     const children = React.Children.toArray(props.children);
     if (children.length === 2) {
         return <div style={{ display: "flex" }}>{props.children}</div>;
@@ -31,41 +30,31 @@ export const StorySandbox = (props: StorySandboxProps) => {
     );
 };
 
-type StoryReadmeProps = {
-    children: React.ReactNode;
-};
+export const StoryReadme: React.FC = ({ children }) => <Markdown source={children} />;
 
-export const StoryReadme = ({ children }: StoryReadmeProps) => <Markdown source={children} />;
-
-type StoryPropsProps = {
-    children: React.ReactNode;
+interface StoryPropsProps {
     title?: React.ReactNode;
-};
+}
 
-export const StoryProps = ({ title, children }: StoryPropsProps) => (
+export const StoryProps: React.FC<StoryPropsProps> = ({ title, children }) => (
     <React.Fragment>
         <h3>{title || "Props"}</h3>
         <CodeBlock lang={"js"}>{children}</CodeBlock>
     </React.Fragment>
 );
 
-type StorySandboxExampleProps = {
-    children: React.ReactNode;
+interface StorySandboxExampleProps {
     title?: React.ReactNode;
-};
+}
 
-export const StorySandboxExample = ({ children, title }: StorySandboxExampleProps) => (
+export const StorySandboxExample: React.FC<StorySandboxExampleProps> = ({ children, title }) => (
     <div style={{ width: "50%", marginRight: 15 }}>
         <h2>{title || "Example"}</h2>
         {children}
     </div>
 );
 
-type StorySandboxCodeProps = {
-    children: React.ReactNode;
-};
-
-export const StorySandboxCode = ({ children }: StorySandboxCodeProps) => (
+export const StorySandboxCode: React.FC = ({ children }) => (
     <div style={{ width: "50%" }}>
         <h2>Code</h2>
         <CodeBlock copy={true}>{children}</CodeBlock>

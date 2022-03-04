@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Input } from "~/Input";
+import React from "react";
+import { Input, InputProps } from "~/Input";
 import { Chips, Chip } from "../Chips";
 import { FormComponentProps } from "~/types";
 import { css } from "emotion";
@@ -8,7 +8,7 @@ import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px
 import { FormElementMessage } from "~/FormElementMessage";
 import { SyntheticEvent } from "react";
 
-type Props = FormComponentProps & {
+type TagsProps = FormComponentProps & {
     /**
      * Component label.
      */
@@ -55,9 +55,9 @@ type Props = FormComponentProps & {
     autoFocus?: boolean;
 };
 
-type State = {
+interface TagsState {
     inputValue: string;
-};
+}
 
 const tagsStyle = css({
     position: "relative",
@@ -81,20 +81,16 @@ const tagsStyle = css({
     }
 });
 
-export class Tags extends React.Component<Props, State> {
-    state: State = {
+export class Tags extends React.Component<TagsProps, TagsState> {
+    public override state = {
         inputValue: ""
     };
 
-    static defaultProps: Partial<Props> = {
-        validation: { isValid: null, message: null }
-    };
-
-    render() {
+    public override render() {
         const { validation, value, disabled, onChange, description, ...otherInputProps } =
             this.props;
 
-        const inputProps = {
+        const inputProps: InputProps = {
             ...otherInputProps,
             value: this.state.inputValue,
             onChange: (inputValue: string) => {
@@ -128,15 +124,17 @@ export class Tags extends React.Component<Props, State> {
             }
         };
 
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
         return (
             <div className={tagsStyle}>
                 <div>
                     <Input {...inputProps} />
 
-                    {validation.isValid === false && (
-                        <FormElementMessage error>{validation.message}</FormElementMessage>
+                    {validationIsValid === false && (
+                        <FormElementMessage error>{validationMessage}</FormElementMessage>
                     )}
-                    {validation.isValid !== false && description && (
+                    {validationIsValid !== false && description && (
                         <FormElementMessage>{description}</FormElementMessage>
                     )}
 

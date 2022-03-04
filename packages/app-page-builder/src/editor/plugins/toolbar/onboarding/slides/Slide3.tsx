@@ -100,13 +100,13 @@ const elementListStyleSlide3 = css({
     animationDuration: "4s"
 });
 
-type Props = {
+interface Slide3Props {
     currentSlide: number;
-};
+}
 
-class Slide3 extends React.Component<Props> {
-    slideNumber = 3;
-    editorContent = () => {
+class Slide3 extends React.Component<Slide3Props> {
+    public readonly slideNumber = 3;
+    private readonly editorContent = (): React.ReactElement => {
         return (
             <React.Fragment>
                 <HandIcon
@@ -129,7 +129,7 @@ class Slide3 extends React.Component<Props> {
         );
     };
 
-    render() {
+    public override render() {
         return (
             <SlideOutline
                 title={"Rows"}

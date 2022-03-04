@@ -19,8 +19,9 @@ interface PageListVariables {
 export const readPageListVariables = (): PageListVariables => {
     let variables;
 
+    const item = localStorage.getItem("webiny_pb_pages_list_latest_variables") || "";
     try {
-        variables = JSON.parse(localStorage.getItem("webiny_pb_pages_list_latest_variables"));
+        variables = JSON.parse(item);
     } catch {}
 
     return variables;
@@ -150,10 +151,10 @@ export const removeRevisionFromEntryCache = (
     const data = cache.readQuery(gqlParams);
     const revisions: PbPageRevision[] = get(data, "pageBuilder.getPage.data.revisions");
     if (!revisions) {
-        return null;
+        return [];
     }
     const index = revisions.findIndex(item => item.id === revision.id);
-    const newRevisions: PbPageRevision[] = dotProp.delete(revisions, index);
+    const newRevisions = dotProp.delete(revisions, index) as PbPageRevision[];
 
     cache.writeQuery({
         ...gqlParams,

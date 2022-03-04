@@ -40,7 +40,7 @@ interface CreateElasticsearchSortParams {
     plugins: PluginsContainer;
     sort?: CmsEntryListSort;
     modelFields: ModelFields;
-    parentPath?: string;
+    parentPath?: string | null;
     model: CmsModel;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
 }
@@ -50,7 +50,7 @@ interface CreateElasticsearchQueryArgs {
     plugins: PluginsContainer;
     where: CmsEntryListWhere;
     modelFields: ModelFields;
-    parentPath?: string;
+    parentPath?: string | null;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
 }
 
@@ -61,7 +61,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
     const { sort, modelFields, parentPath, searchPlugins } = args;
 
     if (!sort || sort.length === 0) {
-        return undefined;
+        return [];
     }
 
     const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
@@ -154,7 +154,7 @@ interface CreateFieldPathParams {
     modelField: ModelField;
     key: string;
     searchPlugin?: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
-    parentPath?: string;
+    parentPath?: string | null;
 }
 const createFieldPath = ({
     modelField,
@@ -162,7 +162,7 @@ const createFieldPath = ({
     parentPath,
     key
 }: CreateFieldPathParams): string => {
-    let path: string;
+    let path: string | null = null;
     if (searchPlugin && typeof searchPlugin.createPath === "function") {
         path = searchPlugin.createPath({
             field: modelField.field,
@@ -254,7 +254,7 @@ interface FieldPathFactoryParams extends Omit<CreatePathCallableParams, "field">
     plugin?: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
     modelField: ModelField;
     key: string;
-    parentPath?: string;
+    parentPath?: string | null;
     keyword?: boolean;
 }
 const fieldPathFactory = (params: FieldPathFactoryParams): string => {
@@ -262,7 +262,7 @@ const fieldPathFactory = (params: FieldPathFactoryParams): string => {
 
     const field = modelField.field;
 
-    let fieldPath: string;
+    let fieldPath: string | null = null;
     if (plugin) {
         fieldPath = plugin.createPath({ field, value, key });
     }
@@ -289,7 +289,7 @@ interface ApplyFilteringParams {
     value: any;
     operatorPlugins: OperatorPlugins;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
-    parentPath: string;
+    parentPath?: string | null;
 }
 const applyFiltering = (params: ApplyFilteringParams) => {
     const {
@@ -484,7 +484,7 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
             }
         },
         sort,
-        size: limit + 1,
+        size: (limit || 0) + 1,
         // eslint-disable-next-line
         search_after: decodeCursor(after) as any,
         // eslint-disable-next-line

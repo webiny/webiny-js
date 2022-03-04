@@ -20,7 +20,7 @@ const DEFAULT_HEADERS = {
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
 export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
-    let schema: GraphQLSchema = undefined;
+    let schema: GraphQLSchema | undefined = undefined;
 
     const debug = boolean(options.debug);
 

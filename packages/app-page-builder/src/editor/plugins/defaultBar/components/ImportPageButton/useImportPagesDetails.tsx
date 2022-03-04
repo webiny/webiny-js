@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import get from "lodash/get";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
@@ -15,7 +15,7 @@ interface ImportPagesDetailsProps {
     result: ListPageImportExportSubTasksResponse;
 }
 
-const ImportPagesDetails: FunctionComponent<ImportPagesDetailsProps> = ({ loading, result }) => {
+const ImportPagesDetails: React.FC<ImportPagesDetailsProps> = ({ loading, result }) => {
     if (loading || !result) {
         return <Typography use={"caption"}> {t`Loading details...`} </Typography>;
     }

@@ -69,7 +69,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
             logLevel: "ERROR" as LogLevels.ERROR,
             data: initialData,
             onChange: async () => {
+                if (!editorRef.current) {
+                    return;
+                }
                 const { blocks: data } = await editorRef.current.save();
+                if (!props.onChange) {
+                    return;
+                }
                 props.onChange(data);
             },
             onReady() {
@@ -79,7 +85,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
                 onReady({ editor: editorRef.current, initialData });
             },
             tools: Object.keys(props.tools || {}).reduce((tools, name) => {
-                const tool = props.tools[name];
+                const tool = props.tools ? props.tools[name] : null;
+                if (!tool) {
+                    return tools;
+                }
                 tools[name] = tool;
                 if (!tool.config) {
                     tool.config = { context };

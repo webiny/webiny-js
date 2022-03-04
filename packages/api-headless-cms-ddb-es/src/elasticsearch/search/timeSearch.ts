@@ -5,7 +5,7 @@ import {
 
 const transform: TransformCallable = params => {
     const { field, value } = params;
-    if (!value || field.settings.type !== "time") {
+    if (!value || field.settings?.type !== "time") {
         return value;
     }
     const [hours, minutes, seconds = 0] = value.split(":").map(Number);

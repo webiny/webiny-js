@@ -54,7 +54,7 @@ const LocalesDataList: React.FC = () => {
             <DataListModalOverlay>
                 <Grid>
                     <Cell span={12}>
-                        <Select value={sort} onChange={setSort} label={t`Sort by`}>
+                        <Select value={sort || ""} onChange={setSort} label={t`Sort by`}>
                             {SORTERS.map(({ label, sorter }) => {
                                 return (
                                     <option key={label} value={sorter}>

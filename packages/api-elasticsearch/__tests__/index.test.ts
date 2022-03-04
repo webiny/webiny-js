@@ -59,9 +59,10 @@ describe("ElasticsearchContext", () => {
         /**
          * Operators should be registered.
          */
-        const registeredOperatorPlugins = context.plugins.byType(
-            ElasticsearchQueryBuilderOperatorPlugin.type
-        ) as ElasticsearchQueryBuilderOperatorPlugin[];
+        const registeredOperatorPlugins =
+            context.plugins.byType<ElasticsearchQueryBuilderOperatorPlugin>(
+                ElasticsearchQueryBuilderOperatorPlugin.type
+            );
 
         expect(registeredOperatorPlugins).toHaveLength(operators.length);
         const operatorPlugins = registeredOperatorPlugins.filter(pl => {

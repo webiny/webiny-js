@@ -10,16 +10,16 @@ const extrapolateActiveElementValue = (
     value?: string,
     valueKey?: string,
     defaultValue?: string
-): string | undefined => {
+): string => {
     if (!valueKey) {
-        return value;
+        return value || "";
     }
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+    const element = useRecoilValue(elementByIdSelector(activeElementId as string));
     if (!element) {
         throw new Error("There is no active element.");
     }
-    return lodashGet(element, valueKey, defaultValue);
+    return lodashGet(element, valueKey, defaultValue || "");
 };
 
 interface ColorPickerProps {

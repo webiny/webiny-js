@@ -67,19 +67,23 @@ export const defaultElementStylesCallback: ElementStylesCallback = ({
     theme,
     assignStyles: customAssignStylesCallback
 }) => {
-    const styles = {};
+    const styles: Record<string, any> = {};
 
     for (const modifierName in modifiers.styles) {
+        const modifier = modifiers.styles[modifierName];
+
+        const styleValues = modifier({
+            element,
+            theme,
+            renderers,
+            modifiers
+        });
+
         const assign = customAssignStylesCallback || assignStyles;
         assign({
-            breakpoints: theme.breakpoints,
+            breakpoints: theme.breakpoints || {},
             assignTo: styles,
-            styles: modifiers.styles[modifierName]({
-                element,
-                theme,
-                renderers,
-                modifiers
-            })
+            styles: styleValues || {}
         });
     }
 
@@ -102,7 +106,7 @@ export const defaultThemeStylesCallback: ThemeStylesCallback = ({
 
     const assign = customAssignStylesCallback || assignStyles;
     const styles = assign({
-        breakpoints: theme.breakpoints,
+        breakpoints: theme.breakpoints || {},
         styles: themeStyles
     });
 

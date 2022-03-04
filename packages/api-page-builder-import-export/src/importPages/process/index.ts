@@ -7,18 +7,19 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockSecurity } from "~/mockSecurity";
 import { zeroPad } from "@webiny/utils";
 
-export type HandlerArgs = {
+export interface HandlerArgs {
     taskId: string;
     subTaskIndex: number;
     identity: SecurityIdentity;
-};
+}
 
-export type HandlerResponse = {
-    data: string;
-    error: {
-        message: string;
-    };
-};
+interface HandlerResponseError {
+    message: string;
+}
+export interface HandlerResponse {
+    data: string | null;
+    error: HandlerResponseError | null;
+}
 
 interface Configuration {
     handlers: {

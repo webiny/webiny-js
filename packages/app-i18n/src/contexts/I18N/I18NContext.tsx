@@ -20,8 +20,6 @@ export const GET_I18N_INFORMATION = gql`
     }
 `;
 
-export const I18NContext = React.createContext(null);
-
 export interface I18NContextState {
     locales: I18NLocaleItem[];
     currentLocales: I18NCurrentLocaleItem[];
@@ -37,6 +35,22 @@ export interface I18NContextValue {
 export interface I18NProviderProps {
     loader?: React.ReactElement;
 }
+
+export const I18NContext = React.createContext<I18NContextValue>({
+    state: {
+        locales: [],
+        currentLocales: []
+    },
+    setState: () => {
+        return void 0;
+    },
+    refetchLocales: async () => {
+        return null;
+    },
+    updateLocaleStorage: () => {
+        return void 0;
+    }
+});
 
 const defaultState: I18NContextState = { currentLocales: [], locales: [] };
 
@@ -56,18 +70,14 @@ const I18NProviderComponent: React.FC<I18NProviderProps> = props => {
     const { loading, refetch } = useQuery<GetI18NInformationResponse>(GET_I18N_INFORMATION, {
         skip: state.locales.length > 0,
         onCompleted(data) {
-            /**
-             * TODO Figure out the type for currentLocales
-             */
-            // TODO @ts-refactor
             const { currentLocales: fetchedCurrentLocales, locales } =
                 data?.i18n?.getI18NInformation || {};
 
             // wby_i18n_locale: "default:en-US;content:en-US;"
             const parsedLocales: Record<string, string> = {};
-            if (localStorage.getItem("webiny_i18n_locale")) {
-                localStorage
-                    .getItem("webiny_i18n_locale")
+            const webinyI18NLocale = localStorage.getItem("webiny_i18n_locale");
+            if (webinyI18NLocale) {
+                webinyI18NLocale
                     .split(";")
                     .filter(Boolean)
                     .forEach(item => {

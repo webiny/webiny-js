@@ -95,7 +95,7 @@ export class PulumiApp {
         def: PulumiAppModuleDefinition<TModule, TConfig>,
         config?: TConfig
     ) {
-        const module = def.run(this, config);
+        const module = def.run(this, config as TConfig);
         this.modules.set(def.symbol, module);
 
         return module;
@@ -192,17 +192,22 @@ export function defineApp<TOutput extends Record<string, unknown>, TConfig = voi
 
 function createConfigProxy<T extends object>(obj: T) {
     return new Proxy(obj, {
-        get(target, p: keyof T) {
+        get(target, p: string) {
             type V = T[keyof T];
+            const key = p as keyof T;
             const setter: ResourceConfigSetter<V> = (value: V | ResourceConfigModifier<V>) => {
                 if (typeof value === "function") {
                     const modifier = value as ResourceConfigModifier<V>;
-                    target[p] = pulumi.output(target[p]).apply(v => {
+                    const currentValue = target[key];
+                    // Wrap a current config with a function.
+                    const newValue = pulumi.output(currentValue).apply(v => {
                         const newValue = modifier(v);
                         return pulumi.output(newValue);
                     });
+
+                    target[key] = newValue as unknown as V;
                 } else {
-                    target[p] = value;
+                    target[key] = value;
                 }
             };
 

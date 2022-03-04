@@ -87,7 +87,12 @@ const I18NInstaller: React.FC<I18NInstallerProps> = ({ onInstalled }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary data-testid="install-i18n-button" onClick={submit}>
+                        <ButtonPrimary
+                            data-testid="install-i18n-button"
+                            onClick={ev => {
+                                submit(ev);
+                            }}
+                        >
                             Install I18N
                         </ButtonPrimary>
                     </SimpleFormFooter>

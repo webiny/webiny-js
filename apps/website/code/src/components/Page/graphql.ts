@@ -20,16 +20,16 @@ export interface PublishedPageQueryResponse {
     };
 }
 export interface PublishedPageQueryVariables {
-    id: string;
-    path: string;
+    id: string | null;
+    path: string | null;
     returnNotFoundPage: boolean;
     returnErrorPage: boolean;
     preview: boolean;
 }
 export const GET_PUBLISHED_PAGE = () => {
     const pageSettingsFields = plugins
-        .byType("pb-page-settings-fields")
-        .map((pl: PbPageSettingsFieldsPlugin) => pl.fields)
+        .byType<PbPageSettingsFieldsPlugin>("pb-page-settings-fields")
+        .map(pl => pl.fields)
         .join("\n");
 
     return gql`

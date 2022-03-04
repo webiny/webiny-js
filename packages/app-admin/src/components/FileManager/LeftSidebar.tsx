@@ -83,15 +83,18 @@ const LeftSidebar: React.FC<LeftSidebarProps> = props => {
     return (
         <div className={style.leftDrawer}>
             <TagList data-testid={"fm.left-drawer.tag-list"}>
-                {tagList.map((item, index) => (
-                    <Tag
-                        className={activeTags.includes(item) && "active"}
-                        key={item + index}
-                        onClick={() => toggleTag(item)}
-                    >
-                        <Icon icon={<TagIcon />} /> {item}
-                    </Tag>
-                ))}
+                {tagList.map((item, index) => {
+                    const className = activeTags.includes(item) ? "active" : "";
+                    return (
+                        <Tag
+                            className={className}
+                            key={item + index}
+                            onClick={() => toggleTag(item)}
+                        >
+                            <Icon icon={<TagIcon />} /> {item}
+                        </Tag>
+                    );
+                })}
             </TagList>
         </div>
     );

@@ -23,7 +23,7 @@ interface RunUpgradeArgs {
      * Note that this does not have to match the `deployedVersion`. The `installedAppVersion` will tell you which
      * version of Webiny was running at the time of installing/upgrading the app.
      */
-    installedAppVersion: string;
+    installedAppVersion: string | null;
     /**
      * A collection of upgrade plugins you want to check for an applicable plugin. Make sure you only pass plugins
      * that belong to the app you're upgrading. For example: if upgrading `file-manager`, make sure you exclude
@@ -33,7 +33,9 @@ interface RunUpgradeArgs {
 }
 export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     const { upgradePlugins, installedAppVersion, upgradeToVersion } = args;
-    const { version: deployedVersion } = coerce(args.deployedVersion);
+    const semverResult = coerce(args.deployedVersion);
+
+    const deployedVersion = semverResult?.version;
 
     if (upgradeToVersion !== deployedVersion) {
         throw new Error(
@@ -54,7 +56,11 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     }
 
     const upgrades = upgradePlugins.filter(pl => {
-        return lt(pl.version, deployedVersion) && gt(pl.version, installedAppVersion);
+        return (
+            installedAppVersion &&
+            lt(pl.version, deployedVersion) &&
+            gt(pl.version, installedAppVersion)
+        );
     });
 
     if (upgrades.length > 0) {

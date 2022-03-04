@@ -1,13 +1,13 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import { CmsEditorField } from "~/types";
+import { BindComponentRenderProp } from "@webiny/form";
 
-interface Params {
+interface setValueParams {
     value: string[];
-    bind: any;
+    bind: BindComponentRenderProp;
     field: Pick<CmsEditorField, "multipleValues">;
     index: number;
 }
-export const setValue = (params: Params): void => {
+export const setValue = (params: setValueParams): void => {
     const { value, bind, field, index } = params;
     let newValue = field.multipleValues ? [...(bind.value || [])] : bind.value;
 

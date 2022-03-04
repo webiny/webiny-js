@@ -215,7 +215,9 @@ export default (params: Configuration): HandlerPlugin => {
                                  * Future feature - ability to search by prefix, e.g. "/en/*" or "/categories/books/*".
                                  */
                             } else {
-                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] = {
+                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][
+                                    url as string
+                                ] = {
                                     path,
                                     configuration
                                 };

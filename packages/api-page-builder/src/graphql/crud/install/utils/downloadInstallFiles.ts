@@ -10,7 +10,7 @@ const PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY = "pbInstallation.zip";
 
 function extractZip(zipPath: string, dir: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        extract(zipPath, { dir }, (err: Error) => {
+        extract(zipPath, { dir }, err => {
             if (err) {
                 reject(err);
                 return;
@@ -22,7 +22,7 @@ function extractZip(zipPath: string, dir: string): Promise<void> {
 
 export function deleteFile(path: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        rimraf(path, (err: Error) => {
+        rimraf(path, err => {
             if (err) {
                 reject(err);
                 return;

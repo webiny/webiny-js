@@ -238,7 +238,15 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
     }, []);
 
     return (
-        <Form data={formData} onChange={onFormChange}>
+        <Form
+            data={formData}
+            onChange={data => {
+                /**
+                 * We know that data is CmsSecurityPermission.
+                 */
+                return onFormChange(data as unknown as CmsSecurityPermission);
+            }}
+        >
             {({ data, Bind, setValue }) => {
                 const graphQLEndpointAccess =
                     data.endpoints.includes("read") ||

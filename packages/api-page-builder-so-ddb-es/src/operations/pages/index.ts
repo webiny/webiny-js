@@ -50,13 +50,15 @@ import {
     createSortKey
 } from "./keys";
 
-export interface Params {
+export interface CreatePageStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
-export const createPageStorageOperations = (params: Params): PageStorageOperations => {
+export const createPageStorageOperations = (
+    params: CreatePageStorageOperationsParams
+): PageStorageOperations => {
     const { entity, esEntity, elasticsearch, plugins } = params;
 
     const create = async (params: PageStorageOperationsCreateParams): Promise<Page> => {
@@ -197,7 +199,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
          * If visibility is set to false - delete the record
          * Otherwise update it.
          */
-        let esData: Record<string, any> = undefined;
+        let esData: Record<string, any> | null = null;
         let deleteEsRecord = false;
         if (latestPage && latestPage.id === page.id) {
             if (lodashGet(page, "visibility.list.latest") === false) {
@@ -260,7 +262,9 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
      * Update:
      *  - latest
      */
-    const deleteOne = async (params: PageStorageOperationsDeleteParams): Promise<[Page, Page]> => {
+    const deleteOne = async (
+        params: PageStorageOperationsDeleteParams
+    ): Promise<[Page, Page | null]> => {
         const { page, latestPage, publishedPage } = params;
 
         const partitionKey = createPartitionKey(page);
@@ -292,7 +296,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
                 })
             );
         }
-        let previousLatestPage: Page = null;
+        let previousLatestPage: Page | null = null;
         if (latestPage && latestPage.id === page.id) {
             const previousLatestRecord = await queryOne<Page>({
                 entity,
@@ -840,7 +844,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
         if (id && id.includes("#") && !version) {
             version = Number(id.split("#").pop());
         }
-        let partitionKey: string = undefined;
+        let partitionKey: string | null = null;
         let sortKey: string;
         if (path) {
             partitionKey = createPathPartitionKey(where);
@@ -860,7 +864,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
         if (!partitionKey) {
             partitionKey = createPartitionKey({
                 ...where,
-                id: pid || id
+                id: pid || (id as string)
             });
         }
         const keys = {
@@ -902,7 +906,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
             );
         }
 
-        const { after: previousCursor, limit: initialLimit } = params;
+        const { after: previousCursor = null, limit: initialLimit } = params;
 
         const limit = createLimit(initialLimit, 50);
         const body = createElasticsearchQueryBody({
@@ -997,7 +1001,9 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
          * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
          */
         const cursor =
-            items.length > 0 && hasMoreItems ? encodeCursor(hits[items.length - 1].sort) : null;
+            items.length > 0 && hasMoreItems
+                ? encodeCursor(hits[items.length - 1].sort) || null
+                : null;
         return {
             items,
             meta: {
@@ -1020,6 +1026,7 @@ export const createPageStorageOperations = (params: Params): PageStorageOperatio
                 tenant
             },
             sort: [],
+            after: null,
             limit: 100000,
             plugins
         });

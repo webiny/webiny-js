@@ -28,7 +28,7 @@ import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
 import EditBlockDialog from "./EditBlockDialog";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
-import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "~/types";
+import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin, PbEditorElement } from "~/types";
 import { elementWithChildrenByIdSelector, rootElementAtom } from "../../recoil/modules";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
@@ -62,12 +62,14 @@ const sortBlocks = (blocks: PbEditorBlockPlugin[]): PbEditorBlockPlugin[] => {
 
 const SearchBar = () => {
     const rootElementId = useRecoilValue(rootElementAtom);
-    const content = useRecoilValue(elementWithChildrenByIdSelector(rootElementId));
+    const content = useRecoilValue(
+        elementWithChildrenByIdSelector(rootElementId)
+    ) as PbEditorElement;
     const eventActionHandler = useEventActionHandler();
 
     const [search, setSearch] = useState<string>("");
-    const [editingBlock, setEditingBlock] = useState(null);
-    const [activeCategory, setActiveCategory] = useState("all");
+    const [editingBlock, setEditingBlock] = useState<PbEditorBlockPlugin | null>(null);
+    const [activeCategory, setActiveCategory] = useState<string>("all");
 
     const [updatePageElementMutation, { loading: updateInProgress }] =
         useMutation(UPDATE_PAGE_ELEMENT);
@@ -243,7 +245,10 @@ const SearchBar = () => {
         deactivatePlugin();
     }, []);
 
-    const categoryPlugin = allCategories.find(pl => pl.categoryName === activeCategory);
+    const categoryPlugin = allCategories.find(pl => pl.categoryName === activeCategory) || {
+        title: null,
+        icon: <></>
+    };
 
     return (
         <OverlayLayout barMiddle={renderSearchInput()} onExited={onExited}>

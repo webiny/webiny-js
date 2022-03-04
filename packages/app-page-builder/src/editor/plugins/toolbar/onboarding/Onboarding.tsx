@@ -77,7 +77,7 @@ const SlideControl = styled("div")({
 
 const onboardingPluginName = "pb-editor-toolbar-onboarding";
 
-const Onboarding: React.FunctionComponent = () => {
+const Onboarding: React.FC = () => {
     const handler = useEventActionHandler();
     const [slideIndex, setSlideIndex] = useState(0);
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();

@@ -1,17 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import * as GQL from "./graphql";
-import { getOptions } from "./getOptions";
+import { getOptions, OptionItem } from "./getOptions";
 import { CmsEditorField, CmsModel } from "~/types";
 import { CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables } from "./graphql";
-
-export interface ReferencedEntry {
-    id: string;
-    modelId: string;
-    modelName: string;
-    published: boolean;
-    name: string;
-}
+import { BindComponentRenderProp } from "@webiny/form";
 
 interface DataEntry {
     id: string;
@@ -24,16 +17,16 @@ interface DataEntry {
 }
 
 interface UseReferenceHookArgs {
-    bind: any;
+    bind: BindComponentRenderProp;
     field: CmsEditorField;
 }
 
 interface UseReferenceHookValue {
-    onChange: (value: any, entry: ReferencedEntry) => void;
+    onChange: (value: any, entry: OptionItem) => void;
     setSearch: (value: string) => void;
-    value: ReferencedEntry | null;
+    value: OptionItem | null;
     loading: boolean;
-    options: ReferencedEntry[];
+    options: OptionItem[];
 }
 
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
@@ -47,7 +40,7 @@ const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
     }, {} as EntryCollection);
 };
 
-const convertValueEntryToData = (entry: ReferencedEntry): DataEntry => {
+const convertValueEntryToData = (entry: OptionItem): DataEntry => {
     return {
         id: entry.id,
         model: {
@@ -59,7 +52,7 @@ const convertValueEntryToData = (entry: ReferencedEntry): DataEntry => {
     };
 };
 
-const convertDataEntryToValue = (entry: DataEntry): ReferencedEntry => {
+const convertDataEntryToValue = (entry: DataEntry): OptionItem => {
     return {
         id: entry.id,
         modelId: entry.model.modelId,
@@ -69,7 +62,7 @@ const convertDataEntryToValue = (entry: DataEntry): ReferencedEntry => {
     };
 };
 
-const assignValueEntry = (entry: ReferencedEntry | null, collection: EntryCollection): void => {
+const assignValueEntry = (entry: OptionItem | null, collection: EntryCollection): void => {
     if (!entry) {
         return;
     }
@@ -83,9 +76,12 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [entries, setEntries] = useState<EntryCollection>({});
     const [latestEntries, setLatestEntries] = useState<EntryCollection>({});
-    const [valueEntry, setValueEntry] = useState<ReferencedEntry>(null);
+    const [valueEntry, setValueEntry] = useState<OptionItem | null>(null);
 
-    const models = field.settings.models as Pick<CmsModel, "modelId" | "name">[];
+    const models = (field.settings ? field.settings.models || [] : []) as Pick<
+        CmsModel,
+        "modelId" | "name"
+    >[];
     const modelsHash = models.join(",");
 
     const value = bind.value;
@@ -180,14 +176,15 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             });
     }, [valueHash, modelsHash]);
 
-    const onChange = useCallback((value, entry) => {
+    const onChange = useCallback((value: string, entry: OptionItem) => {
         if (value !== null) {
             setSearch("");
 
             setValueEntry(() => {
                 return entry;
             });
-            return bind.onChange({ modelId: entry.modelId, id: entry.id });
+            bind.onChange({ modelId: entry.modelId, id: entry.id });
+            return;
         }
 
         setValueEntry(() => null);
@@ -198,9 +195,11 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const options = useMemo(() => getOptions(Object.values(entries)), [entries]);
 
     // Format default options for the Autocomplete component.
-    const defaultOptions = useMemo(() => getOptions(Object.values(latestEntries)), [latestEntries]);
+    const defaultOptions = useMemo(() => {
+        return getOptions(Object.values(latestEntries));
+    }, [latestEntries]);
 
-    const outputOptions: ReferencedEntry[] = search ? options : defaultOptions || [];
+    const outputOptions: OptionItem[] = (search && options ? options : defaultOptions) || [];
 
     if (valueEntry && outputOptions.some(opt => opt.id === valueEntry.id) === false) {
         outputOptions.push(valueEntry);

@@ -104,7 +104,7 @@ describe("sorting + cursor", () => {
             }
             acc[key] = fruit[key];
             return acc;
-        }, {});
+        }, {} as Record<string, string>);
     };
 
     const createFruits = async () => {
@@ -125,8 +125,8 @@ describe("sorting + cursor", () => {
     const waitFruits = async (name: string, { listFruits }: any) => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
-            () => listFruits({}).then(([data]) => data),
-            ({ data }) => data.listFruits.data.length === 4,
+            () => listFruits({}).then(([data]: any) => data),
+            ({ data }: any) => data.listFruits.data.length === 4,
             {
                 name: `list all fruits - ${name}`,
                 tries: 10

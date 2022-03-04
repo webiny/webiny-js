@@ -67,20 +67,20 @@ export interface FbForm {
     version: number;
     locked: boolean;
     published: boolean;
-    publishedOn: string;
+    publishedOn: string | null;
     status: string;
     fields: Record<string, any>[];
     layout: string[][];
     stats: Omit<FbFormStats, "conversionRate">;
     settings: Record<string, any>;
-    triggers: Record<string, any>;
+    triggers: Record<string, any> | null;
     formId: string;
     webinyVersion: string;
 }
 
 export interface CreatedBy {
     id: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -111,7 +111,7 @@ interface FbListSubmissionsOptions {
 }
 
 export interface FbListSubmissionsMeta {
-    cursor: string;
+    cursor: string | null;
     hasMoreItems: boolean;
     totalCount: number;
 }
@@ -170,8 +170,8 @@ export interface SystemCRUD {
     /**
      * @internal
      */
-    getSystem(): Promise<System>;
-    getSystemVersion(): Promise<string>;
+    getSystem(): Promise<System | null>;
+    getSystemVersion(): Promise<string | null>;
     setSystemVersion(version: string): Promise<void>;
     installSystem(args: { domain?: string }): Promise<void>;
     upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;
@@ -234,7 +234,7 @@ export interface SettingsCRUDGetParams {
 }
 
 export interface SettingsCRUD {
-    getSettings(params?: SettingsCRUDGetParams): Promise<Settings>;
+    getSettings(params?: SettingsCRUDGetParams): Promise<Settings | null>;
     createSettings(data: Partial<Settings>): Promise<Settings>;
     updateSettings(data: Partial<Settings>): Promise<Settings>;
     deleteSettings(): Promise<void>;
@@ -461,7 +461,7 @@ export interface FormBuilderStorageOperationsDeleteFormRevisionParams {
     /**
      * Previous revision of the current form. Always the first lesser available version.
      */
-    previous: FbForm;
+    previous: FbForm | null;
     form: FbForm;
 }
 
@@ -507,7 +507,7 @@ export interface FormBuilderStorageOperationsListSubmissionsParams {
         locale: string;
         tenant: string;
     };
-    after?: string;
+    after?: string | null;
     limit?: number;
     sort?: string[];
 }
@@ -545,7 +545,7 @@ export interface FormBuilderStorageOperationsDeleteSubmissionParams {
  * @category StorageOperations
  */
 export interface FormBuilderSystemStorageOperations {
-    getSystem(params: FormBuilderStorageOperationsGetSystemParams): Promise<System>;
+    getSystem(params: FormBuilderStorageOperationsGetSystemParams): Promise<System | null>;
     createSystem(params: FormBuilderStorageOperationsCreateSystemParams): Promise<System>;
     updateSystem(params: FormBuilderStorageOperationsUpdateSystemParams): Promise<System>;
 }
@@ -554,7 +554,7 @@ export interface FormBuilderSystemStorageOperations {
  * @category StorageOperations
  */
 export interface FormBuilderSettingsStorageOperations {
-    getSettings(params: FormBuilderStorageOperationsGetSettingsParams): Promise<Settings>;
+    getSettings(params: FormBuilderStorageOperationsGetSettingsParams): Promise<Settings | null>;
     createSettings(params: FormBuilderStorageOperationsCreateSettingsParams): Promise<Settings>;
     updateSettings(params: FormBuilderStorageOperationsUpdateSettingsParams): Promise<Settings>;
     deleteSettings(params: FormBuilderStorageOperationsDeleteSettingsParams): Promise<void>;
@@ -564,7 +564,7 @@ export interface FormBuilderSettingsStorageOperations {
  * @category StorageOperations
  */
 export interface FormBuilderFormStorageOperations {
-    getForm(params: FormBuilderStorageOperationsGetFormParams): Promise<FbForm>;
+    getForm(params: FormBuilderStorageOperationsGetFormParams): Promise<FbForm | null>;
     listForms(
         params: FormBuilderStorageOperationsListFormsParams
     ): Promise<FormBuilderStorageOperationsListFormsResponse>;
@@ -600,7 +600,9 @@ export interface FormBuilderStorageOperationsListSubmissionsResponse {
  * @category StorageOperations
  */
 export interface FormBuilderSubmissionStorageOperations {
-    getSubmission(params: FormBuilderStorageOperationsGetSubmissionParams): Promise<FbSubmission>;
+    getSubmission(
+        params: FormBuilderStorageOperationsGetSubmissionParams
+    ): Promise<FbSubmission | null>;
     listSubmissions(
         params: FormBuilderStorageOperationsListSubmissionsParams
     ): Promise<FormBuilderStorageOperationsListSubmissionsResponse>;

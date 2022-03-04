@@ -7,7 +7,7 @@ import React from "react";
 interface GridPropsType {
     element: PbElement;
 }
-const Grid: React.FunctionComponent<GridPropsType> = ({ element }) => {
+const Grid: React.FC<GridPropsType> = ({ element }) => {
     return (
         <ElementAnimation>
             <ElementRoot

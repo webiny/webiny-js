@@ -18,7 +18,11 @@ interface GroupContextValue {
     // TODO @ts-refactor
     addElement: (element: any) => void;
 }
-const GroupContext = createContext<GroupContextValue>(null);
+const GroupContext = createContext<GroupContextValue>({
+    addElement: () => {
+        return void 0;
+    }
+});
 
 const VIEW_NAME = "PbWebsiteSettings";
 
@@ -60,7 +64,10 @@ const GenerateElementsComponent: React.FC<GenerateElementsProps> = ({ name }) =>
             );
         };
     };
-
+    /**
+     * TODO @ts-refactor @pavel
+     */
+    // @ts-ignore
     return <Compose component={SettingsFields} with={ElementsHOC} />;
 };
 

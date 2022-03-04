@@ -7,6 +7,11 @@ export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType>
     _,
     args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
     const { name, params = {}, closeOtherInGroup = false } = args;
     const plugin = plugins.byName(name);
     if (!plugin) {
@@ -31,6 +36,7 @@ export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType>
                 ...pluginsAtomValue,
                 [plugin.type]: newPluginsList
             }
-        }
+        },
+        actions: []
     };
 };

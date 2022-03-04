@@ -8,13 +8,14 @@ import { renderItem } from "./renderItem";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 import { useNewRefEntry } from "../hooks/useNewRefEntry";
 import { CmsEditorField } from "~/types";
+import { BindComponentRenderProp } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const warn = t`Before publishing the main content entry, make sure you publish the following referenced entries: {entries}`;
 
 interface ContentEntriesMultiAutocompleteProps {
-    bind: any;
+    bind: BindComponentRenderProp;
     field: CmsEditorField;
 }
 const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteProps> = ({
@@ -25,7 +26,7 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
 
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
 
-    const entryWarning = (entry: ReferencedCmsEntry, index: number): React.ReactElement => {
+    const entryWarning = (entry: ReferencedCmsEntry, index: number): React.ReactElement | null => {
         const { id, modelId, name, published } = entry;
         if (published) {
             return null;

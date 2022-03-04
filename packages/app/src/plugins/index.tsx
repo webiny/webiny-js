@@ -58,8 +58,17 @@ export const renderPlugins: RenderPlugins = (type, params = {}, options = {}) =>
 
     const content = plugins
         .byType(type)
-        .filter(filter)
-        .map(plugin => renderPlugin(plugin.name, params, { wrapper, fn }))
+        .filter(pl => {
+            /**
+             * TODO @ts-refactor Problem with possibility of a different subtype.
+             */
+            // @ts-ignore
+            return filter(pl);
+        })
+        /**
+         * We cast as string because renderPlugin checks for the plugin.name
+         */
+        .map(plugin => renderPlugin(plugin.name as string, params, { wrapper, fn }))
         .filter(Boolean);
 
     if (reverse) {

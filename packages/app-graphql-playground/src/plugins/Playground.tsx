@@ -15,6 +15,8 @@ import { playgroundDialog, PlaygroundContainer } from "./Playground.styles";
 import { settings } from "./settings";
 import { config as appConfig } from "@webiny/app/config";
 import ApolloClient from "apollo-client";
+import { GraphQLPlaygroundTabPlugin } from "~/types";
+import { SecurityIdentity } from "@webiny/app-security/types";
 
 const withHeaders = (link: ApolloLink, headers: Record<string, string>): ApolloLink => {
     return ApolloLink.from([
@@ -59,8 +61,13 @@ const Playground: React.FC<PlaygroundProps> = ({ createApolloClient }) => {
     const locale = getCurrentLocale("content");
 
     const tabs = plugins
-        .byType("graphql-playground-tab")
-        .map(pl => pl.tab({ locale, identity }))
+        .byType<GraphQLPlaygroundTabPlugin>("graphql-playground-tab")
+        .map(pl =>
+            pl.tab({
+                locale: locale as string,
+                identity: identity as SecurityIdentity
+            })
+        )
         .filter(Boolean);
 
     const createApolloLink = useCallback(({ endpoint, headers }) => {

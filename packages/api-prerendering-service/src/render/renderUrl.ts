@@ -13,7 +13,12 @@ import injectTenantLocale from "./injectTenantLocale";
 import injectNotFoundPageFlag from "./injectNotFoundPageFlag";
 import getPsTags from "./getPsTags";
 import shortid from "shortid";
-import { RenderResult, RenderUrlParams, RenderUrlPostHtmlParams } from "./types";
+import {
+    RenderResult,
+    RenderUrlCallableParams,
+    RenderUrlParams,
+    RenderUrlPostHtmlParams
+} from "./types";
 import { Browser, Page } from "puppeteer";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {
@@ -46,10 +51,10 @@ export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta
 
     console.log(`Rendering "${url}" (render ID: ${id})...`);
 
-    const renderUrl =
-        typeof args.renderUrlFunction === "function"
-            ? args.renderUrlFunction
-            : defaultRenderUrlFunction;
+    let renderUrl = defaultRenderUrlFunction;
+    if (typeof args.renderUrlFunction === "function") {
+        renderUrl = args.renderUrlFunction;
+    }
     const render = await renderUrl(url, args);
 
     // Process HTML.
@@ -117,7 +122,7 @@ interface GraphQLCache {
 
 export const defaultRenderUrlFunction = async (
     url: string,
-    params: RenderUrlParams
+    params: RenderUrlCallableParams
 ): Promise<RenderResult> => {
     if (!browser) {
         browser = await chromium.puppeteer.launch({
@@ -171,8 +176,8 @@ export const defaultRenderUrlFunction = async (
         const request = response.request();
         const url = request.url();
         if (url.includes("/graphql") && request.method() === "POST") {
-            const responses: Record<string, any> = await response.json();
-            const postData = JSON.parse(request.postData());
+            const responses = (await response.json()) as Record<string, any>;
+            const postData = JSON.parse(request.postData() as string);
             const operations = Array.isArray(postData) ? postData : [postData];
 
             for (let i = 0; i < operations.length; i++) {

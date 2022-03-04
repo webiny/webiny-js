@@ -1,4 +1,4 @@
-import _ from "lodash";
+import lodashTrim from "lodash/trim";
 import { Modifier, Processor } from "~/types";
 
 const processTextPart = (
@@ -6,23 +6,28 @@ const processTextPart = (
     values: Record<string, any>,
     modifiers: Record<string, Modifier>
 ): string => {
-    if (!_.startsWith(part, "{")) {
+    if (part.startsWith("{") === false) {
         return part;
     }
 
-    const parts = _.trim(part, "{}").split("|");
+    const parts = lodashTrim(part, "{}").split("|");
 
     const [variable, modifier] = parts;
 
-    if (!_.has(values, variable)) {
+    if (!values[variable]) {
         return `{${variable}}`;
     }
 
-    const output = { value: values[variable] };
+    const output = {
+        value: values[variable]
+    };
 
     if (modifier) {
         const parameters: string[] = modifier.split(":");
         const name = parameters.shift();
+        if (!name) {
+            return output.value;
+        }
         if (modifiers[name]) {
             const modifier = modifiers[name];
             output.value = modifier.execute(output.value, parameters);

@@ -12,10 +12,10 @@ export const gridNoPaddingClass = css({
     padding: "0px !important"
 });
 
-interface Props {
+interface PermissionInfoProps {
     title: string;
 }
-export const PermissionInfo: React.FC<Props> = ({ title }) => (
+export const PermissionInfo: React.FC<PermissionInfoProps> = ({ title }) => (
     <div className={flexClass}>
         <Typography use={"subtitle2"}>{title}</Typography>
     </div>

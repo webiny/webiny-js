@@ -50,7 +50,7 @@ const labelStyle = css({
 });
 
 interface GetValueParams {
-    value: string | number;
+    value: string | number | undefined;
     defaultValue: string | number;
     type: "number" | "string";
 }
@@ -88,8 +88,11 @@ const InputField: React.FC<InputBoxProps> = ({
             <input
                 className={classNames(inputStyle, className)}
                 value={getValue({ value, type: props.type, defaultValue })}
-                onChange={({ target: { value } }) => {
-                    onChange(value.toLowerCase());
+                onChange={ev => {
+                    if (!onChange) {
+                        return;
+                    }
+                    onChange((ev.target.value || "").toLowerCase());
                 }}
                 {...omit(props, "validate")}
             />

@@ -33,6 +33,8 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
 import { HeadlessCmsStorageOperations } from "~/types";
 import { GET_CONTENT_ENTRIES_QUERY, GET_CONTENT_ENTRY_QUERY } from "./graphql/contentEntry";
+import { ContextPlugin } from "@webiny/handler";
+import { TestContext } from "./types";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -45,6 +47,15 @@ export interface GQLHandlerCallableParams {
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
     createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
+}
+
+export interface InvokeParams {
+    httpMethod?: "POST" | "GET" | "OPTIONS";
+    body?: {
+        query: string;
+        variables?: Record<string, any>;
+    };
+    headers?: Record<string, string>;
 }
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
@@ -93,7 +104,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                             id: apiKey,
                             name: apiKey,
                             tenant: tenant.id,
-                            permissions: identity.permissions || [],
+                            permissions: identity?.permissions || [],
                             token,
                             createdBy: {
                                 id: "test",
@@ -106,27 +117,26 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                         };
                     };
                 }
-            },
+            } as ContextPlugin<TestContext>,
             {
                 type: "context",
                 name: "context-path-parameters",
                 apply(context) {
-                    if (!context.http) {
-                        context.http = {
-                            request: {
-                                path: {
-                                    parameters: null
+                    context.http = {
+                        ...(context?.http || {}),
+                        request: {
+                            ...(context?.http?.request || {}),
+                            path: {
+                                ...(context?.http?.request?.path || {}),
+                                parameters: {
+                                    ...(context?.http?.request?.path?.parameters || {}),
+                                    key: path
                                 }
                             }
-                        };
-                    } else if (!context.http.request.path) {
-                        context.http.request.path = {
-                            parameters: null
-                        };
-                    }
-                    context.http.request.path.parameters = { key: path };
+                        }
+                    };
                 }
-            },
+            } as ContextPlugin<TestContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
@@ -139,7 +149,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         http: { debug: true }
     });
 
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
+    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler({
             httpMethod,
             headers,

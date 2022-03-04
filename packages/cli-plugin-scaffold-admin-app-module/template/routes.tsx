@@ -11,7 +11,7 @@ import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
 
 const Loader: React.FC = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>
-        {React.cloneElement(children as React.ReactElement, props)}
+        {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>
 );
 

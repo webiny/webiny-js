@@ -36,10 +36,13 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
         delay: 400
     };
 
-    private delay: number = null;
-    public readonly state: DelayedOnChangeState = { value: "" };
+    private delay: number | null = null;
 
-    public componentDidMount() {
+    public override readonly state: DelayedOnChangeState = {
+        value: ""
+    };
+
+    public override componentDidMount() {
         this.setState({ value: this.props.value });
     }
 
@@ -62,9 +65,9 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
         ) as unknown as number;
     };
 
-    render(): React.ReactNode {
+    public override render(): React.ReactNode {
         const { children, ...other } = this.props;
-        const newProps = {
+        const newProps: Omit<DelayedOnChangeProps, "children"> = {
             ...other,
             value: this.state.value,
             onChange: this.onChange
@@ -72,8 +75,8 @@ class DelayedOnChange extends React.Component<DelayedOnChangeProps, DelayedOnCha
 
         const renderProp = typeof children === "function" ? children : false;
         const child = renderProp
-            ? renderProp(newProps)
-            : React.cloneElement(children as React.ReactElement, newProps);
+            ? renderProp(newProps as Required<DelayedOnChangeProps>)
+            : React.cloneElement(children as unknown as React.ReactElement, newProps);
 
         const props = { ...child.props };
         const realOnKeyDown = props.onKeyDown || noop;

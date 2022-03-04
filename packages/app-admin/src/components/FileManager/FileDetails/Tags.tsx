@@ -12,10 +12,16 @@ import { Icon } from "@webiny/ui/Icon";
 import { Form } from "@webiny/form";
 import { useSnackbar } from "~/hooks/useSnackbar";
 import { useFileManager } from "./../FileManagerContext";
-import { UPDATE_FILE, LIST_FILES, LIST_TAGS } from "./../graphql";
+import {
+    UPDATE_FILE,
+    LIST_FILES,
+    LIST_TAGS,
+    ListFilesQueryResponse,
+    ListFileTagsQueryResponse
+} from "./../graphql";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { ReactComponent as LabelIcon } from "./../icons/round-label-24px.svg";
-import { FileItem, ListFilesResponse, ListFileTagsResponse } from "../types";
+import { FileItem } from "../types";
 
 const chipsStyle = css({
     "&.mdc-chip-set": {
@@ -127,18 +133,20 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                             );
 
                             // 1. Update files list cache
-                            const data: ListFilesResponse = cloneDeep(
-                                cache.readQuery({
+                            const data = cloneDeep(
+                                cache.readQuery<ListFilesQueryResponse>({
                                     query: LIST_FILES,
                                     variables: queryParams
                                 })
                             );
 
-                            data.fileManager.listFiles.data.forEach(item => {
-                                if (item.key === newFileData.key) {
-                                    item.tags = newFileData.tags;
-                                }
-                            });
+                            if (data) {
+                                data.fileManager.listFiles.data.forEach(item => {
+                                    if (item.key === newFileData.key) {
+                                        item.tags = newFileData.tags;
+                                    }
+                                });
+                            }
 
                             cache.writeQuery({
                                 query: LIST_FILES,
@@ -148,11 +156,14 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                             // 2. Update "LIST_TAGS" cache
                             if (Array.isArray(newFileData.tags)) {
                                 // Get list tags data
-                                const listTagsData: ListFileTagsResponse = cloneDeep(
-                                    cache.readQuery({
+                                const listTagsData = cloneDeep(
+                                    cache.readQuery<ListFileTagsQueryResponse>({
                                         query: LIST_TAGS
                                     })
                                 );
+                                if (!listTagsData) {
+                                    return;
+                                }
                                 // Add new tag in list
                                 const updatedTagsList = [...newFileData.tags];
 
@@ -216,7 +227,9 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                             <div className={actionWrapperStyle}>
                                 <ButtonPrimary
                                     small
-                                    onClick={submit}
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
                                     data-testid={"fm.tags.submit"}
                                 >
                                     Submit

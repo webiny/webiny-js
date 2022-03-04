@@ -45,7 +45,6 @@ const LIST_PUBLISHED_PAGES = gql`
 `;
 
 interface PagesAutocompleteProps extends Partial<AutoCompleteProps> {
-    value?: string;
     trailingIcon?: React.ReactNode;
 }
 export const PagesAutocomplete: React.FC<PagesAutocompleteProps> = props => {

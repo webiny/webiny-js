@@ -6,7 +6,7 @@ import { FilesStorageOperations } from "./FilesStorageOperations";
 import fields from "./fields";
 
 export class FilesStorageOperationsProviderDdb extends FilesStorageOperationsProviderPlugin {
-    public name = "fm.storageOperationsProvider.files.ddb";
+    public override name = "fm.storageOperationsProvider.files.ddb";
     async provide({ context }: FilesStorageOperationsProviderPluginParams) {
         context.plugins.register(fields());
         return new FilesStorageOperations({

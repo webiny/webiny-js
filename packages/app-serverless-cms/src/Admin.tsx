@@ -24,7 +24,7 @@ import { createApolloClient as defaultApolloClientFactory } from "./apolloClient
 import apolloLinks from "./apolloLinks";
 import { createViewCompositionProvider } from "@webiny/app-admin/base/providers/ViewCompositionProvider";
 
-export interface AdminProps extends BaseAdminProps {
+export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
 }
 

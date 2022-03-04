@@ -23,7 +23,7 @@ const updatePendingChangeRequests = async ({
     const [entryId, version, slug] = stepSlug.split("#");
     const revisionId = `${entryId}#${version}`;
 
-    let contentReviewEntry: ApwContentReview;
+    let contentReviewEntry: ApwContentReview | null = null;
     try {
         contentReviewEntry = await contentReviewMethods.get(revisionId);
     } catch (e) {
@@ -31,25 +31,28 @@ const updatePendingChangeRequests = async ({
             throw e;
         }
     }
-    if (contentReviewEntry) {
-        /**
-         * Update "pendingChangeRequests" count of corresponding step in content review entry.
-         */
-        await contentReviewMethods.update(contentReviewEntry.id, {
-            steps: contentReviewEntry.steps.map(step => {
-                if (step.slug === slug) {
-                    return {
-                        ...step,
-                        pendingChangeRequests: step.pendingChangeRequests + delta
-                    };
-                }
-                return step;
-            })
-        });
+    if (!contentReviewEntry) {
+        return;
     }
+    /**
+     * Update "pendingChangeRequests" count of corresponding step in content review entry.
+     */
+    await contentReviewMethods.update(contentReviewEntry.id, {
+        steps: contentReviewEntry.steps.map(step => {
+            if (step.slug === slug) {
+                return {
+                    ...step,
+                    pendingChangeRequests: step.pendingChangeRequests + delta
+                };
+            }
+            return step;
+        })
+    });
 };
 
-export const updatePendingChangeRequestsCount = ({ apw }: LifeCycleHookCallbackParams) => {
+export const updatePendingChangeRequestsCount = ({
+    apw
+}: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
         /**
          * After a "changeRequest" is deleted, decrement the "pendingChangeRequests" count

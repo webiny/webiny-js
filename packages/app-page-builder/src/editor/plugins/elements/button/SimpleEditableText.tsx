@@ -5,7 +5,7 @@ interface SimpleTextPropsType {
     onFocus?: () => void;
     onBlur?: () => void;
     onChange: (value: string) => void;
-    options?: Record<keyof HTMLElement, any>;
+    options?: Partial<Record<keyof HTMLElement, any>>;
     element?: string;
     className?: string;
     focusInput?: boolean;
@@ -54,7 +54,7 @@ const SimpleEditableText: React.FC<SimpleTextPropsType> = ({
     }, [onFocus]);
 
     return React.createElement(element || "div", {
-        className: className,
+        className: className || "",
         contentEditable: true,
         onInput: onChangeHandler,
         onBlur: onBlurHandler,

@@ -27,8 +27,8 @@ interface Config {
 }
 
 export class FileManagerFileTypePlugin extends Plugin {
-    public static readonly type = "admin-file-manager-file-type";
-    private config: Partial<Config>;
+    public static override readonly type: string = "admin-file-manager-file-type";
+    private readonly config: Partial<Config>;
 
     public constructor(config?: Config) {
         super();
@@ -44,6 +44,9 @@ export class FileManagerFileTypePlugin extends Plugin {
     }
 
     public render(params: RenderParams): React.ReactNode {
+        if (!this.config.render) {
+            return null;
+        }
         return this.config.render(params);
     }
 }

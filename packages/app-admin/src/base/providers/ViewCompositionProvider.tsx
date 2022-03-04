@@ -11,11 +11,18 @@ interface ElementSetter {
 }
 
 export interface ViewCompositionContext {
-    getViewElement(view: string, name: string): ViewElement;
+    getViewElement(view: string, name: string): ViewElement | null;
     setViewElement(view: string, name: string, setter: ElementSetter): void;
 }
 
-const ViewCompositionContext = createContext<ViewCompositionContext>(null);
+const ViewCompositionContext = createContext<ViewCompositionContext>({
+    getViewElement: () => {
+        return null;
+    },
+    setViewElement: () => {
+        return void 0;
+    }
+});
 ViewCompositionContext.displayName = "ViewCompositionContext";
 
 interface ViewCompositionProviderState {

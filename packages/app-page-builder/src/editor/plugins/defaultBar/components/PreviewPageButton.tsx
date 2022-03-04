@@ -11,7 +11,7 @@ import { useRecoilValue } from "recoil";
 
 const openTarget = window.Cypress ? "_self" : "_blank";
 
-const PreviewPageButton: React.FunctionComponent = () => {
+const PreviewPageButton: React.FC = () => {
     const page = useRecoilValue(pageAtom) as Required<PageAtomType>;
     const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());

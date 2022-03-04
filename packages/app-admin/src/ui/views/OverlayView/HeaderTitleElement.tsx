@@ -4,11 +4,11 @@ import { Typography } from "@webiny/ui/Typography";
 import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 
 interface HeaderTitleElementConfig extends UIElementConfig {
-    title: () => string;
+    title: () => string | null;
 }
 
 export class HeaderTitleElementRenderer extends UIRenderer<HeaderTitleElement> {
-    public render({ element }: UIRenderParams<HeaderTitleElement>): React.ReactNode {
+    public override render({ element }: UIRenderParams<HeaderTitleElement>): React.ReactNode {
         return (
             <Typography
                 style={{ margin: "0 auto", color: "var(--mdc-theme-on-surface)" }}

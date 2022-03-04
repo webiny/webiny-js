@@ -6,7 +6,11 @@ export const activatePluginByNameMutation: EventActionHandlerMutationActionCalla
     PluginsAtomType,
     string
 > = (state, name) => {
-    const { type } = plugins.byName(name) || {};
+    const pl = plugins.byName(name);
+    if (!pl) {
+        return state;
+    }
+    const { type } = pl;
     if (!type) {
         return state;
     }

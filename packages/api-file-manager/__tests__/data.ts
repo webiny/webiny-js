@@ -1,3 +1,5 @@
+import { File } from "~/types";
+
 export default [
     {
         key: "/files/credit_navigate_bifurcated.otf",
@@ -798,4 +800,4 @@ export default [
         type: "image/jpeg",
         tags: ["serverless"]
     }
-];
+] as File[];

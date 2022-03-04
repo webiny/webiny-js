@@ -2,6 +2,7 @@ import React, { useMemo, createElement } from "react";
 import { plugins } from "@webiny/plugins";
 import { PbPageLayoutPlugin, PbPageData } from "@webiny/app-page-builder/types";
 import { SettingsQueryResponseData } from "./graphql";
+import lodashGet from "lodash/get";
 
 interface LayoutProps {
     page: PbPageData;
@@ -13,7 +14,11 @@ const Layout: React.FC<LayoutProps> = ({ page, settings, children }) => {
         return layoutPlugins.map(pl => pl.layout);
     }, []);
 
-    const themeLayout = layouts.find(l => l.name === page.settings.general.layout);
+    const layout = lodashGet(page, "settings.general.layout", null);
+    if (!layout) {
+        return children as React.ReactElement;
+    }
+    const themeLayout = layouts.find(l => l.name === layout);
 
     if (!themeLayout) {
         return children as React.ReactElement;

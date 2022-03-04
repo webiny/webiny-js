@@ -71,12 +71,13 @@ export default (): HandlerPlugin<Context> => ({
 
             const { params, object } = await getS3Object(event, s3, context);
 
-            if (object.ContentLength < MAX_RETURN_CONTENT_LENGTH) {
+            const contentLength = object.ContentLength === undefined ? 0 : object.ContentLength;
+            if (contentLength < MAX_RETURN_CONTENT_LENGTH) {
                 return {
                     /**
                      * It is safe to cast as buffer or unknown
                      */
-                    data: object.Body,
+                    data: object.Body || null,
                     headers: {
                         "Content-Type": object.ContentType,
                         "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE

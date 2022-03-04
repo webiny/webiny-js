@@ -7,15 +7,14 @@ import { Element as PeElement } from "@webiny/app-page-builder-elements/componen
 import tryRenderingPlugin from "~/utils/tryRenderingPlugin";
 
 export interface ElementProps {
-    element: PbElement;
+    element: PbElement | null;
 }
 
 const Element: React.FC<ElementProps> = props => {
     const { element } = props;
 
-    // TODO @ts-refactor verify that PbTheme is correct
     const theme: PbTheme = useMemo(
-        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
         []
     );
 
@@ -36,8 +35,12 @@ const Element: React.FC<ElementProps> = props => {
         return null;
     }
 
-    const renderedPlugin = tryRenderingPlugin(() => plugin.render({ theme, element }));
-
+    const renderedPlugin = tryRenderingPlugin(() =>
+        plugin.render({
+            theme,
+            element: element
+        })
+    );
     return <>{renderedPlugin}</>;
 };
 

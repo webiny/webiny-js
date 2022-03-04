@@ -86,11 +86,8 @@ export const entryToStorageTransform = async (
 export const entryFromStorageTransform = async (
     context: CmsContext,
     model: CmsModel,
-    entry?: CmsEntry & Record<string, any>
+    entry: CmsEntry
 ): Promise<CmsEntry> => {
-    if (!entry) {
-        return null;
-    }
     return entryStorageTransform(context, model, "fromStorage", entry);
 };
 

@@ -18,7 +18,7 @@ interface GeneralTabProps {
 
 const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => {
     const { Bind, setValue } = form;
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
     const { data } = useContentModelEditor();
     const { getField } = useFieldEditor();
 
@@ -30,7 +30,10 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
     //    it seems it's behaving correctly. ¯\_(ツ)_/¯
     useEffect(() => {
         setTimeout(() => {
-            inputRef.current && inputRef.current.focus();
+            if (!inputRef.current) {
+                return;
+            }
+            inputRef.current.focus();
         }, 200);
     }, []);
 
@@ -53,7 +56,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
         }
 
         throw new Error(`Cannot use "id" as Field ID.`);
-    }, undefined);
+    }, []);
 
     const uniqueFieldIdValidator = useCallback((fieldId: string) => {
         const existingField = getField({ fieldId });
@@ -65,9 +68,9 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
             return true;
         }
         throw new Error("Please enter a unique Field ID.");
-    }, undefined);
+    }, []);
 
-    let additionalSettings: React.ReactNode = null;
+    let additionalSettings: React.ReactNode | null = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
             form,
@@ -91,7 +94,12 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                     <Bind
                         name={"label"}
                         validators={validation.create("required")}
-                        afterChange={!field.id && afterChangeLabel}
+                        afterChange={(value: string) => {
+                            if (field.id) {
+                                return;
+                            }
+                            afterChangeLabel(value);
+                        }}
                     >
                         <Input label={"Label"} inputRef={inputRef} />
                     </Bind>

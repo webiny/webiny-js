@@ -160,13 +160,13 @@ export const useReviewManageHandler = (
 
     return {
         ...contentHandler,
-        async getReview(variables, headers: Record<string, any> = {}) {
+        async getReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getReviewQuery, variables },
                 headers
             });
         },
-        async getReviewsByIds(variables, headers: Record<string, any> = {}) {
+        async getReviewsByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getReviewsByIdsQuery, variables },
                 headers
@@ -178,19 +178,19 @@ export const useReviewManageHandler = (
                 headers
             });
         },
-        async createReview(variables, headers: Record<string, any> = {}) {
+        async createReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createReviewMutation, variables },
                 headers
             });
         },
-        async createReviewFrom(variables, headers: Record<string, any> = {}) {
+        async createReviewFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createReviewFromMutation, variables },
                 headers
             });
         },
-        async updateReview(variables, headers: Record<string, any> = {}) {
+        async updateReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: updateReviewMutation,
@@ -199,7 +199,7 @@ export const useReviewManageHandler = (
                 headers
             });
         },
-        async deleteReview(variables, headers: Record<string, any> = {}) {
+        async deleteReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: deleteReviewMutation,
@@ -208,7 +208,7 @@ export const useReviewManageHandler = (
                 headers
             });
         },
-        async publishReview(variables, headers: Record<string, any> = {}) {
+        async publishReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: publishReviewMutation,
@@ -217,7 +217,7 @@ export const useReviewManageHandler = (
                 headers
             });
         },
-        async unpublishReview(variables, headers: Record<string, any> = {}) {
+        async unpublishReview(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishReviewMutation,

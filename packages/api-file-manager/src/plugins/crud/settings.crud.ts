@@ -77,7 +77,7 @@ const settingsCrudContextPlugin = new ContextPlugin<FileManagerContext>(async co
             const updatedValue = new UpdateDataModel().populate(data);
             await updatedValue.validate();
 
-            const existingSettings = await storageOperations.get();
+            const existingSettings = (await storageOperations.get()) as FileManagerSettings;
 
             const updatedSettings: Partial<FileManagerSettings> = await updatedValue.toJSON({
                 onlyDirty: true

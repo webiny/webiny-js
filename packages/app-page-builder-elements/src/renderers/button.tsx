@@ -13,7 +13,7 @@ declare global {
     }
 }
 
-export interface Params {
+export interface CreateButtonParams {
     LinkComponent?: React.ComponentType<{ href: string; newTab: boolean }>;
 }
 
@@ -29,7 +29,7 @@ const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTa
     );
 };
 
-export const createButton = (args: Params = {}): ElementRenderer => {
+export const createButton = (args: CreateButtonParams = {}): ElementRenderer => {
     const LinkComponent = args?.LinkComponent || DefaultLinkComponent;
 
     // TODO @ts-refactor fix "Component definition is missing display name"
@@ -39,7 +39,13 @@ export const createButton = (args: Params = {}): ElementRenderer => {
 
         const { getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
 
-        const themeClassNames = getThemeClassNames(theme => theme.styles.buttons[type]);
+        const themeClassNames = getThemeClassNames(theme => {
+            if (!theme.styles || !theme.styles.buttons) {
+                return "";
+            }
+
+            return theme.styles.buttons[type];
+        });
         const elementClassNames = getElementClassNames(element);
 
         const classNames = combineClassNames(themeClassNames, elementClassNames);

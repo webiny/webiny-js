@@ -13,18 +13,19 @@ import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { zeroPad } from "@webiny/utils";
 
-export type HandlerArgs = {
+export interface HandlerArgs {
     taskId: string;
     subTaskIndex: number;
     identity?: SecurityIdentity;
-};
+}
 
-export type HandlerResponse = {
-    data: string;
-    error: {
-        message: string;
-    };
-};
+interface HandlerResponseError {
+    message: string;
+}
+export interface HandlerResponse {
+    data: string | null;
+    error: HandlerResponseError | null;
+}
 
 interface Configuration {
     handlers: {
@@ -51,7 +52,7 @@ export default (
         const { taskId, subTaskIndex, identity } = args;
         // Disable authorization; this is necessary because we call Page Builder CRUD methods which include authorization checks
         // and this Lambda is invoked internally, without credentials.
-        mockSecurity(identity, context);
+        mockSecurity(identity as SecurityIdentity, context);
 
         try {
             /*

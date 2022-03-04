@@ -6,7 +6,7 @@ import { ElementRoot } from "../../../components/ElementRoot";
 import { PbElement } from "~/types";
 import ElementAnimation from "../../../components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
-import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
+import { PageBuilderContext } from "../../../../contexts/PageBuilder";
 
 interface BlockProps {
     element: PbElement;
@@ -14,7 +14,7 @@ interface BlockProps {
 const Block: React.FC<BlockProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
-    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
+    } = React.useContext(PageBuilderContext);
     return (
         <ElementAnimation>
             <ElementRoot element={element}>
@@ -23,7 +23,9 @@ const Block: React.FC<BlockProps> = ({ element }) => {
                     // Use per-device style
                     const width =
                         elementStyle[
-                            `--${kebabCase(displayMode)}-align-items` as keyof CSSProperties
+                            `--${kebabCase(
+                                displayMode
+                            )}-align-items` as unknown as keyof CSSProperties
                         ];
                     /**
                      * We're swapping "justifyContent" & "alignItems" value here because
@@ -31,11 +33,15 @@ const Block: React.FC<BlockProps> = ({ element }) => {
                      */
                     const alignItems =
                         elementStyle[
-                            `--${kebabCase(displayMode)}-justify-content` as keyof CSSProperties
+                            `--${kebabCase(
+                                displayMode
+                            )}-justify-content` as unknown as keyof CSSProperties
                         ];
                     const justifyContent =
                         elementStyle[
-                            `--${kebabCase(displayMode)}-align-items` as keyof CSSProperties
+                            `--${kebabCase(
+                                displayMode
+                            )}-align-items` as unknown as keyof CSSProperties
                         ];
 
                     // TODO @ts-refactor style type

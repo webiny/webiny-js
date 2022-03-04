@@ -40,14 +40,28 @@ import {
 import { SecurityPermission } from "@webiny/api-security/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import { createTenancyAndSecurity } from "./tenancySecurity";
+import { PluginCollection } from "@webiny/plugins/types";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
-    plugins?: any;
+    identity?: SecurityIdentity | null;
+    plugins?: PluginCollection;
 }
 
-const defaultIdentity = { id: "12345678", type: "admin", displayName: "John Doe" };
+interface InvokeParams {
+    httpMethod?: "POST";
+    body: {
+        query: string;
+        variables?: Record<string, any>;
+    };
+    headers?: Record<string, string>;
+}
+
+const defaultIdentity: SecurityIdentity = {
+    id: "12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
 
 export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
@@ -86,7 +100,7 @@ export default (params: UseGqlHandlerParams = {}) => {
         {
             type: "api-file-manager-storage",
             name: "api-file-manager-storage",
-            async upload(args) {
+            async upload(args: any) {
                 // TODO: use tmp OS directory
                 const key = path.join(__dirname, args.name);
 
@@ -108,7 +122,7 @@ export default (params: UseGqlHandlerParams = {}) => {
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
+    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler({
             httpMethod,
             headers,
@@ -131,68 +145,68 @@ export default (params: UseGqlHandlerParams = {}) => {
         invoke,
         defaultIdentity,
         // Form builder settings
-        async updateSettings(variables = {}) {
+        async updateSettings(variables: Record<string, any> = {}) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
         },
-        async getSettings(variables = {}) {
+        async getSettings(variables: Record<string, any> = {}) {
             return invoke({ body: { query: GET_SETTINGS, variables } });
         },
         // Install Form builder
-        async install(variables = {}) {
+        async install(variables: Record<string, any> = {}) {
             return invoke({ body: { query: INSTALL, variables } });
         },
-        async isInstalled(variables = {}) {
+        async isInstalled(variables: Record<string, any> = {}) {
             return invoke({ body: { query: IS_INSTALLED, variables } });
         },
         // Install File Manager
-        async installFileManager(variables) {
+        async installFileManager(variables: Record<string, any>) {
             return invoke({ body: { query: INSTALL_FILE_MANAGER, variables } });
         },
         // Forms
-        async createForm(variables) {
+        async createForm(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_FROM, variables } });
         },
-        async createRevisionFrom(variables) {
+        async createRevisionFrom(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_REVISION_FROM, variables } });
         },
-        async deleteForm(variables) {
+        async deleteForm(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_FORM, variables } });
         },
-        async updateRevision(variables) {
+        async updateRevision(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_REVISION, variables } });
         },
-        async publishRevision(variables) {
+        async publishRevision(variables: Record<string, any>) {
             return invoke({ body: { query: PUBLISH_REVISION, variables } });
         },
-        async unpublishRevision(variables) {
+        async unpublishRevision(variables: Record<string, any>) {
             return invoke({ body: { query: UNPUBLISH_REVISION, variables } });
         },
-        async deleteRevision(variables) {
+        async deleteRevision(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_REVISION, variables } });
         },
-        async saveFormView(variables) {
+        async saveFormView(variables: Record<string, any>) {
             return invoke({ body: { query: SAVE_FORM_VIEW, variables } });
         },
-        async getForm(variables) {
+        async getForm(variables: Record<string, any>) {
             return invoke({ body: { query: GET_FORM, variables } });
         },
-        async getFormRevisions(variables) {
+        async getFormRevisions(variables: Record<string, any>) {
             return invoke({ body: { query: GET_FORM_REVISIONS, variables } });
         },
-        async getPublishedForm(variables) {
+        async getPublishedForm(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PUBLISHED_FORM, variables } });
         },
-        async listForms(variables = {}) {
+        async listForms(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_FORMS, variables } });
         },
         // Form Submission
-        async createFormSubmission(variables) {
+        async createFormSubmission(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_FROM_SUBMISSION, variables } });
         },
-        async listFormSubmissions(variables) {
+        async listFormSubmissions(variables: Record<string, any>) {
             return invoke({ body: { query: LIST_FROM_SUBMISSIONS, variables } });
         },
-        async exportFormSubmissions(variables) {
+        async exportFormSubmissions(variables: Record<string, any>) {
             return invoke({ body: { query: EXPORT_FORM_SUBMISSIONS, variables } });
         }
     };

@@ -26,7 +26,7 @@ export class TextareaElement extends FormFieldElement<TextareaElementConfig> {
         return this.config.rows;
     }
 
-    public render(props: TextareaElementRenderProps): React.ReactNode {
+    public override render(props: TextareaElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`TextareaElement must be placed inside of a FormElement.`);
         }

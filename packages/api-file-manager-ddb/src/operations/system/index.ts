@@ -5,8 +5,8 @@ import {
 } from "@webiny/api-file-manager/plugins/definitions/SystemStorageOperationsProviderPlugin";
 
 export class SystemStorageOperationsProviderDdbPlugin extends SystemStorageOperationsProviderPlugin {
-    public name = "fm.storageOperationsProvider.system.ddb";
-    async provide({ context }: SystemStorageOperationsProviderPluginParams) {
+    public override name = "fm.storageOperationsProvider.system.ddb";
+    public async provide({ context }: SystemStorageOperationsProviderPluginParams) {
         return new SystemStorageOperations({
             context
         });

@@ -7,7 +7,7 @@ export interface TransformValueCb {
     (value: any): any;
 }
 
-export interface Params {
+export interface FieldPluginParams {
     /**
      * Default is string.
      */
@@ -23,14 +23,14 @@ export interface Params {
 }
 
 export abstract class FieldPlugin extends Plugin {
-    private readonly path: string;
+    private readonly path?: string;
     private readonly field: string;
     private readonly fieldType: FieldType;
     private readonly dynamoDbType: DynamoDBTypes;
     private readonly sortable: boolean;
     private readonly _transformValue: TransformValueCb | undefined;
 
-    public constructor(params: Params) {
+    public constructor(params: FieldPluginParams) {
         super();
         this.fieldType = params.type || "string";
         this.dynamoDbType = params.type === "date" ? "string" : params.type;

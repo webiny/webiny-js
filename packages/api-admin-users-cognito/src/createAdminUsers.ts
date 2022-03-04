@@ -9,13 +9,13 @@ import Error from "@webiny/error";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { AdminUser, AdminUsers, AdminUsersStorageOperations, System } from "./types";
+import { AdminUser, AdminUsers, AdminUsersStorageOperations, CreatedBy, System } from "./types";
 import { createUserLoaders } from "./createAdminUsers/users.loaders";
 import { attachUserValidation } from "./createAdminUsers/users.validation";
 
 interface AdminUsersConfig {
     getIdentity(): SecurityIdentity;
-    getPermission(name: string): Promise<SecurityPermission>;
+    getPermission(name: string): Promise<SecurityPermission | null>;
     getTenant(): string;
     storageOperations: AdminUsersStorageOperations;
 }
@@ -75,7 +75,7 @@ export const createAdminUsers = ({
 
             const identity = getIdentity();
 
-            let createdBy = null;
+            let createdBy: CreatedBy | null = null;
             if (identity) {
                 createdBy = {
                     id: identity.id,
@@ -90,7 +90,7 @@ export const createAdminUsers = ({
                 createdOn: new Date().toISOString(),
                 createdBy,
                 tenant,
-                webinyVersion: process.env.WEBINY_VERSION
+                webinyVersion: process.env.WEBINY_VERSION as string
             };
 
             let result;
@@ -111,6 +111,7 @@ export const createAdminUsers = ({
             try {
                 await this.onUserAfterCreate.publish({ user: result, inputData: data });
             } catch (err) {
+                console.log("@webiny/api-admin-users-cognito/src/createAdminUsers.ts");
                 // Not sure if we care about errors in `onAfterCreate`.
                 // Maybe add an `onCreateError` event for potential cleanup operations?
                 // For now, just log it.
@@ -227,11 +228,8 @@ export const createAdminUsers = ({
             }
 
             const system = await storageOperations.getSystemData({ tenant: tenantId });
-            if (system) {
-                return system.version;
-            }
 
-            return null;
+            return system ? system.version || null : null;
         },
 
         async setVersion(version) {
@@ -282,7 +280,7 @@ export const createAdminUsers = ({
             }
 
             // Store app version
-            await this.setVersion(process.env.WEBINY_VERSION);
+            await this.setVersion(process.env.WEBINY_VERSION as string);
         }
     };
 

@@ -53,12 +53,12 @@ export const createMenuGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
             `,
             resolvers: {
                 PbQuery: {
-                    getMenu: async (_, args: { slug: string }, context) => {
+                    getMenu: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.getMenu(args.slug);
                         });
                     },
-                    getPublicMenu: async (_, args: { slug: string }, context) => {
+                    getPublicMenu: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.getPublicMenu(args.slug);
                         });
@@ -70,21 +70,17 @@ export const createMenuGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    createMenu: async (_, args: { data: Record<string, any> }, context) => {
+                    createMenu: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.createMenu(args.data);
                         });
                     },
-                    updateMenu: async (
-                        _,
-                        args: { slug: string; data: Record<string, any> },
-                        context
-                    ) => {
+                    updateMenu: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.updateMenu(args.slug, args.data);
                         });
                     },
-                    deleteMenu: async (_, args: { slug: string }, context) => {
+                    deleteMenu: async (_, args, context) => {
                         return resolve(() => {
                             return context.pageBuilder.deleteMenu(args.slug);
                         });

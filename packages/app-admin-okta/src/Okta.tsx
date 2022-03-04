@@ -28,7 +28,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
     children
 }) => {
     const [loaded, setState] = useState<boolean>(false);
-    const authRef = useRef(null);
+    const authRef = useRef<React.FC | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 
@@ -63,7 +63,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
         });
     }, []);
 
-    return loaded ? React.createElement(authRef.current, {}, children) : null;
+    return loaded ? React.createElement(authRef.current as React.FC, {}, children) : null;
 };
 
 const createLoginScreen = (params: OktaProps) => {
@@ -97,12 +97,17 @@ export interface OktaFactory {
 export interface OktaProps {
     rootAppClientId: string;
     factory: OktaFactory;
+    children?: React.ReactNode;
 }
 
 export const Okta: React.FC<OktaProps> = props => {
+    /**
+     * TODO @ts-refactor
+     * Figure correct type for Compose.component
+     */
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
+            <Compose component={LoginScreenRenderer as any} with={createLoginScreen(props)} />
             <UserMenuModule />
             <AppClientModule />
         </Fragment>

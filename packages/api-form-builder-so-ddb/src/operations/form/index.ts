@@ -7,6 +7,7 @@ import {
     FormBuilderStorageOperationsDeleteFormRevisionParams,
     FormBuilderStorageOperationsGetFormParams,
     FormBuilderStorageOperationsListFormRevisionsParams,
+    FormBuilderStorageOperationsListFormRevisionsParamsWhere,
     FormBuilderStorageOperationsListFormsParams,
     FormBuilderStorageOperationsListFormsResponse,
     FormBuilderStorageOperationsPublishFormParams,
@@ -51,13 +52,15 @@ interface GsiKeys {
     GSI1_SK: string;
 }
 
-export interface Params {
+export interface CreateFormStorageOperationsParams {
     entity: Entity<any>;
     table: Table;
     plugins: PluginsContainer;
 }
 
-export const createFormStorageOperations = (params: Params): FormBuilderFormStorageOperations => {
+export const createFormStorageOperations = (
+    params: CreateFormStorageOperationsParams
+): FormBuilderFormStorageOperations => {
     const { entity, table, plugins } = params;
 
     const formDynamoDbFields = plugins.byType<FormDynamoDbFieldPlugin>(
@@ -296,7 +299,9 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         return form;
     };
 
-    const getForm = async (params: FormBuilderStorageOperationsGetFormParams): Promise<FbForm> => {
+    const getForm = async (
+        params: FormBuilderStorageOperationsGetFormParams
+    ): Promise<FbForm | null> => {
         const { where } = params;
         const { id, formId, latest, published, version } = where;
         if (latest && published) {
@@ -319,8 +324,8 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 id:
                     id ||
                     createIdentifier({
-                        id: formId,
-                        version
+                        id: formId as string,
+                        version: version as number
                     })
             });
         } else {
@@ -380,7 +385,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
         }
         const totalCount = results.length;
 
-        const where = {
+        const where: Partial<FormBuilderStorageOperationsListFormsParams["where"]> = {
             ...initialWhere
         };
         /**
@@ -402,7 +407,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
             fields: formDynamoDbFields
         });
 
-        const start = parseInt(decodeCursor(after)) || 0;
+        const start = parseInt(decodeCursor(after) || "0") || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const items = sortedItems.slice(start, end);
@@ -456,7 +461,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                 }
             );
         }
-        const where = {
+        const where: Partial<FormBuilderStorageOperationsListFormRevisionsParamsWhere> = {
             ...initialWhere
         };
         /**
@@ -569,7 +574,8 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                     .filter(f => !!f.publishedOn && f.version !== form.version)
                     .sort((a, b) => {
                         return (
-                            new Date(b.publishedOn).getTime() - new Date(a.publishedOn).getTime()
+                            new Date(b.publishedOn as string).getTime() -
+                            new Date(a.publishedOn as string).getTime()
                         );
                     })
                     .shift();
@@ -584,9 +590,7 @@ export const createFormStorageOperations = (params: Params): FormBuilderFormStor
                         })
                     );
                 } else {
-                    items.push(
-                        entity.deleteBatch(createLatestPublishedKeys(previouslyPublishedForm))
-                    );
+                    items.push(entity.deleteBatch(createLatestPublishedKeys(form)));
                 }
             }
             /**

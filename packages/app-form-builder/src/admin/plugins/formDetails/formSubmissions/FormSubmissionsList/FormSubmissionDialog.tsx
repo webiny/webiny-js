@@ -18,13 +18,14 @@ const dialogBody = css({
 });
 
 interface FormSubmissionDialogProps {
-    formSubmission: FbFormSubmissionData;
+    formSubmission: FbFormSubmissionData | null;
     onClose: () => void;
 }
 
 const getFieldValueLabel = (field: FbFormModelField, value: string): string => {
-    if (field.options.length > 0) {
-        const selectedOption = field.options.find(option => option.value === value);
+    const options = field.options || [];
+    if (options.length > 0) {
+        const selectedOption = options.find(option => option.value === value);
         if (selectedOption) {
             return selectedOption.label;
         }
@@ -55,6 +56,9 @@ const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmiss
                                     const field = formSubmission.form.fields.find(
                                         field => field._id === id
                                     );
+                                    if (!field) {
+                                        return null;
+                                    }
 
                                     return (
                                         <div

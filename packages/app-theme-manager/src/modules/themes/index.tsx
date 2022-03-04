@@ -95,7 +95,7 @@ const WebsiteSettings: React.FC = () => {
 
 const AppReloader: React.FC = () => {
     const theme = useCurrentTheme();
-    const themeRef = useRef(null);
+    const themeRef = useRef<string | null>(null);
 
     useEffect(() => {
         if (!theme) {
@@ -126,6 +126,10 @@ interface ThemesModuleProps {
     themes?: ThemeSource[];
 }
 
+/**
+ * TODO @ts-refactor @pavel
+ * Provider.hoc
+ */
 export const ThemesModule: React.FC<ThemesModuleProps> = ({ themes = [] }) => {
     return (
         <Fragment>

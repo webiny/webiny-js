@@ -58,7 +58,7 @@ const background: ElementStylesModifier = ({ element, theme }) => {
         return null;
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         const values = background[breakpointName] as Values | undefined;
         if (!values) {
             return returnStyles;

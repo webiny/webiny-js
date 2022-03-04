@@ -4,7 +4,6 @@ import { ElasticsearchQueryBuilderOperatorLesserThanPlugin } from "~/plugins/ope
 
 describe("ElasticsearchQueryBuilderOperatorLesserThanPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorLesserThanPlugin();
-    const context: any = {};
 
     it("should apply lt correctly", () => {
         const query = createBlankQuery();
@@ -12,7 +11,6 @@ describe("ElasticsearchQueryBuilderOperatorLesserThanPlugin", () => {
             value: 100,
             path: "id",
             basePath: "id",
-            context,
             keyword: false
         });
 
@@ -40,7 +38,6 @@ describe("ElasticsearchQueryBuilderOperatorLesserThanPlugin", () => {
             value: 100,
             path: "id",
             basePath: "id",
-            context,
             keyword: false
         });
 
@@ -49,7 +46,6 @@ describe("ElasticsearchQueryBuilderOperatorLesserThanPlugin", () => {
             value: to,
             path: "date",
             basePath: "date",
-            context,
             keyword: false
         });
 

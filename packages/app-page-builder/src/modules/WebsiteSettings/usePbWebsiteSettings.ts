@@ -13,7 +13,9 @@ import {
     GET_SETTINGS,
     UPDATE_SETTINGS,
     GetSettingsQueryResponse,
-    GetSettingsResponseData
+    GetSettingsResponseData,
+    UpdateSettingsMutationResponse,
+    UpdateSettingsMutationVariables
 } from "./graphql";
 
 export function usePbWebsiteSettings() {
@@ -29,9 +31,17 @@ export function usePbWebsiteSettings() {
         {}
     );
 
-    const [update, { loading: mutationInProgress }] = useMutation(UPDATE_SETTINGS, {
+    const [update, { loading: mutationInProgress }] = useMutation<
+        UpdateSettingsMutationResponse,
+        UpdateSettingsMutationVariables
+    >(UPDATE_SETTINGS, {
         update: (cache, { data }) => {
-            const dataFromCache = cache.readQuery<Record<string, any>>({ query: GET_SETTINGS });
+            const dataFromCache = cache.readQuery<GetSettingsQueryResponse>({
+                query: GET_SETTINGS
+            });
+            if (!dataFromCache) {
+                return;
+            }
             const updatedSettings = get(data, "pageBuilder.updateSettings.data");
 
             if (updatedSettings) {

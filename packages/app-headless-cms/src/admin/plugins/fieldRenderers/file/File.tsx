@@ -17,26 +17,26 @@ const defaultStyles = {
 
 interface ValidationStatus {
     isValid?: boolean;
-    message: string;
+    message?: string;
 }
 const defaultValidation: ValidationStatus = {
-    isValid: null,
-    message: null
+    isValid: undefined,
+    message: undefined
 };
 
 export interface FileProps {
     url: string;
-    onRemove: Function;
-    placeholder: string;
+    onRemove: () => void;
+    placeholder?: string;
     styles?: Record<string, any>;
-    showFileManager?: Function;
+    showFileManager?: () => void;
     validation?: {
         isValid?: boolean;
         message?: string;
     };
     description?: string;
 }
-const File: React.FunctionComponent<FileProps> = props => {
+const File: React.FC<FileProps> = props => {
     const { url, onRemove, placeholder, showFileManager, description } = props;
 
     const styles = props.styles || defaultStyles;
@@ -72,7 +72,12 @@ const File: React.FunctionComponent<FileProps> = props => {
                 renderImagePreview={renderImagePreview(url)}
                 style={styles}
                 value={url ? { src: getImageSrc(url) } : null}
-                uploadImage={showFileManager}
+                uploadImage={() => {
+                    if (!showFileManager) {
+                        return;
+                    }
+                    showFileManager();
+                }}
                 removeImage={onRemove}
                 placeholder={placeholder}
                 containerStyle={{ height: "auto" }}

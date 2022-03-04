@@ -33,7 +33,10 @@ export default () => {
                 console.log(
                     `Path wasn't passed via "args.path", trying to extract it from "args.url"...`
                 );
-                path = url.parse(args.url).pathname;
+                const parsed = url.parse(args.url as string);
+                if (parsed && parsed.pathname) {
+                    path = parsed.pathname;
+                }
             }
 
             if (!path) {
@@ -62,7 +65,6 @@ export default () => {
                     })
                     .promise();
             } catch (e) {
-                // eslint-disable-next-line
                 console.log(
                     `Failed to issue a cache invalidation request to CloudFront distribution "${distributionId}".`,
                     e.stack

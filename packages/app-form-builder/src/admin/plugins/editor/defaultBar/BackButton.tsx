@@ -9,14 +9,17 @@ const backStyles = css({
     marginLeft: -10
 });
 
+interface MatchedTypeValues {
+    id?: string;
+}
+type MatchedType = match<MatchedTypeValues> | null;
+
 const BackButton = React.memo(() => {
     const router = useRouter();
 
-    const matched: match<{
-        id?: string;
-    }> = router.match;
+    const matched: MatchedType = router.match;
 
-    const { id } = matched.params;
+    const { id }: MatchedTypeValues = matched ? matched.params : {};
 
     return (
         <IconButton

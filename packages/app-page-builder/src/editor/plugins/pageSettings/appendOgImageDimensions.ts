@@ -5,7 +5,7 @@ import {
 } from "~/types";
 
 const OG_IMAGE_DIMENSIONS_PROPERTIES = ["og:image:width", "og:image:height"];
-import { get } from "lodash";
+import get from "lodash/get";
 
 interface Params {
     data: PageBuilderFormDataSettings;

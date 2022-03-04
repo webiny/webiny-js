@@ -53,6 +53,9 @@ const getRevisionById = (params: LoaderParams) => {
                 id
             });
             const { version } = parseIdentifier(id);
+            if (!version) {
+                return collection;
+            }
             const sortKey = createRevisionSortKey({
                 version
             });
@@ -262,7 +265,10 @@ export class DataLoadersHandler {
     public clearLatestRevisionByEntryId(params: ClearLoaderParams): void {
         this.clear("getLatestRevisionByEntryId", params);
     }
-
+    /**
+     * TODO @ts-refactor
+     * Maybe pass on the generics to DataLoader definition?
+     */
     private getLoader(name: Loaders, params: GetLoaderParams): DataLoader<any, any> {
         if (!dataLoaders[name]) {
             throw new WebinyError("Unknown data loader.", "UNKNOWN_DATA_LOADER", {
@@ -281,7 +287,7 @@ export class DataLoadersHandler {
                 })
             );
         }
-        return this.loaders.get(loaderKey);
+        return this.loaders.get(loaderKey) as DataLoader<any, any>;
     }
 
     private async loadMany(

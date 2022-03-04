@@ -165,13 +165,13 @@ export const useArticleManageHandler = (
 
     return {
         ...contentHandler,
-        async getArticle(variables, headers: Record<string, any> = {}) {
+        async getArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getArticleQuery, variables },
                 headers
             });
         },
-        async getArticlesByIds(variables, headers: Record<string, any> = {}) {
+        async getArticlesByIds(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getArticlesByIdsQuery, variables },
                 headers
@@ -183,19 +183,19 @@ export const useArticleManageHandler = (
                 headers
             });
         },
-        async createArticle(variables, headers: Record<string, any> = {}) {
+        async createArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createArticleMutation, variables },
                 headers
             });
         },
-        async createArticleFrom(variables, headers: Record<string, any> = {}) {
+        async createArticleFrom(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: createArticleFromMutation, variables },
                 headers
             });
         },
-        async updateArticle(variables, headers: Record<string, any> = {}) {
+        async updateArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: updateArticleMutation,
@@ -204,7 +204,7 @@ export const useArticleManageHandler = (
                 headers
             });
         },
-        async deleteArticle(variables, headers: Record<string, any> = {}) {
+        async deleteArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: deleteArticleMutation,
@@ -213,7 +213,7 @@ export const useArticleManageHandler = (
                 headers
             });
         },
-        async publishArticle(variables, headers: Record<string, any> = {}) {
+        async publishArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: publishArticleMutation,
@@ -222,7 +222,7 @@ export const useArticleManageHandler = (
                 headers
             });
         },
-        async unpublishArticle(variables, headers: Record<string, any> = {}) {
+        async unpublishArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishArticleMutation,

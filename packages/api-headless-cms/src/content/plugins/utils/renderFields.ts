@@ -23,7 +23,7 @@ export const renderFields: RenderFields = ({
 }): CmsModelFieldDefinition[] => {
     return model.fields
         .map(field => renderField({ model, type, field, fieldTypePlugins }))
-        .filter(Boolean);
+        .filter(Boolean) as CmsModelFieldDefinition[];
 };
 
 interface RenderFieldParams extends RenderFieldsParams {

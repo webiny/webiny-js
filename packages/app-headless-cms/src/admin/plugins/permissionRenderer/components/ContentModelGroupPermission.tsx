@@ -79,10 +79,14 @@ const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = 
                                     <option value={"r"}>{t`Read`}</option>
                                     {data.endpoints.includes("manage") ? (
                                         <option value={"rw"}>{t`Read, write`}</option>
-                                    ) : null}
+                                    ) : (
+                                        <></>
+                                    )}
                                     {data.endpoints.includes("manage") ? (
                                         <option value={"rwd"}>{t`Read, write, delete`}</option>
-                                    ) : null}
+                                    ) : (
+                                        <></>
+                                    )}
                                 </Select>
                             </Bind>
                         </Cell>

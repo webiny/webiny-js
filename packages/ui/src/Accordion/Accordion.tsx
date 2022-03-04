@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { List, ListItem } from "../List";
 import { AccordionItem } from "./AccordionItem";
 import { Elevation } from "../Elevation";

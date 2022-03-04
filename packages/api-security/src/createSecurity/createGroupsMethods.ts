@@ -24,6 +24,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { GetGroupParams, Group, GroupInput, GroupTenantLink, Security } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
+import WebinyError from "@webiny/error";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -59,20 +60,33 @@ async function updateTenantLinks(security: Security, tenant: string, group: Grou
 
     await security.updateTenantLinks(
         links
-            .filter(link => link.data.group === group.id)
+            .filter(link => link.data && link.data.group === group.id)
             .map(link => ({
                 ...link,
-                data: { group: group.id, permissions: group.permissions }
+                data: {
+                    group: group.id,
+                    permissions: group.permissions
+                }
             }))
     );
 }
 
-export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
+export const createGroupsMethods = ({
+    getTenant: initialGetTenant,
+    storageOperations
+}: SecurityConfig) => {
+    const getTenant = () => {
+        const tenant = initialGetTenant();
+        if (!tenant) {
+            throw new WebinyError("Missing tenant.");
+        }
+        return tenant;
+    };
     return {
         async getGroup(this: Security, { where }: GetGroupParams): Promise<Group> {
             await checkPermission(this);
 
-            let group: Group = null;
+            let group: Group | null = null;
             try {
                 group = await storageOperations.getGroup({
                     where: { ...where, tenant: where.tenant || getTenant() }
@@ -131,7 +145,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
                 tenant: currentTenant,
                 ...input,
                 system: input.system === true,
-                webinyVersion: process.env.WEBINY_VERSION,
+                webinyVersion: process.env.WEBINY_VERSION as string,
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {

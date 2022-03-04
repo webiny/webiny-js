@@ -47,7 +47,14 @@ export default {
             })
             .promise();
 
+        if (!imagesList.Contents) {
+            return;
+        }
+
         for (const imageObject of imagesList.Contents) {
+            if (!imageObject.Key) {
+                continue;
+            }
             await s3.deleteObject(getObjectParams(imageObject.Key)).promise();
         }
     }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 
 export type PaginationProp = {
     // Triggered when a page is about to be changed.

@@ -47,7 +47,10 @@ const Revisions: React.FC = () => {
         }
     );
 
-    const revisions = getRevisions.loading ? [] : getRevisions.data.formBuilder.revisions.data;
+    const revisions =
+        getRevisions.loading || !getRevisions.data
+            ? []
+            : getRevisions.data.formBuilder.revisions.data;
 
     return (
         <Menu

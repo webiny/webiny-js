@@ -15,7 +15,6 @@ import {
     ButtonContainer
 } from "../../elementSettings/components/StyledComponents";
 import { BindComponent } from "@webiny/form";
-import { FileItem } from "@webiny/app-admin/components/FileManager/types";
 
 const style = {
     addImagesButton: css({ clear: "both", padding: "20px 10px", textAlign: "center" }),
@@ -25,7 +24,7 @@ const style = {
 };
 
 class Item extends React.Component {
-    render() {
+    public override render() {
         return (
             <li style={style.liItem} {...this.props}>
                 {this.props.children}
@@ -58,10 +57,11 @@ const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props 
                                 <FileManager
                                     images
                                     multiple
-                                    onChange={(files: FileItem[]) => {
+                                    onChange={files => {
+                                        const filesArray = Array.isArray(files) ? files : [files];
                                         Array.isArray(value)
-                                            ? onChange([...value, ...files])
-                                            : onChange([...files]);
+                                            ? onChange([...value, ...filesArray])
+                                            : onChange([...filesArray]);
                                     }}
                                 >
                                     {({ showFileManager }) => (

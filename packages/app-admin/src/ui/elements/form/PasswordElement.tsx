@@ -4,7 +4,7 @@ import { FormFieldElementRenderProps } from "~/ui/elements/form/FormFieldElement
 import { Input } from "@webiny/ui/Input";
 
 export class PasswordElement extends InputElement {
-    public render(props: FormFieldElementRenderProps): React.ReactElement {
+    public override render(props: FormFieldElementRenderProps): React.ReactElement {
         if (!props.formProps) {
             throw Error(`PasswordElement must be placed inside of a FormElement.`);
         }

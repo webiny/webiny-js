@@ -1,5 +1,6 @@
-import { CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugins/CmsGroupPlugin";
 import contentModelPluginFactory from "./contentModelPluginFactory";
+import WebinyError from "@webiny/error";
+import { CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugins/CmsGroupPlugin";
 import { createWorkflowModelDefinition } from "./workflow.model";
 import { createContentReviewModelDefinition } from "./contentReview.model";
 import { createReviewerModelDefinition } from "./reviewer.model";
@@ -17,6 +18,14 @@ export const createApwModels = (context: CmsContext) => {
         return;
     }
     context.security.disableAuthorization();
+
+    const locale = context.i18nContent.locale;
+    if (!locale) {
+        throw new WebinyError(
+            "Missing context.i18nContent.locale in api-apw/storageOperations/index.ts",
+            "LOCALE_ERROR"
+        );
+    }
     /**
      * TODO:@ashutosh
      * We need to move these plugin in an installation plugin
@@ -60,7 +69,7 @@ export const createApwModels = (context: CmsContext) => {
         const cmsModelPlugin = contentModelPluginFactory({
             group: cmsGroupPlugin.contentModelGroup,
             tenant: context.tenancy.getCurrentTenant().id,
-            locale: context.i18nContent.locale.code,
+            locale: locale.code,
             modelDefinition
         });
         cmsModelPlugins.push(cmsModelPlugin);

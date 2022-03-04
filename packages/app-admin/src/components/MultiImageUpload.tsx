@@ -5,14 +5,17 @@ import { MultiImageUpload as UiMultiImageUpload } from "@webiny/ui/ImageUpload";
 /**
  * TODO @ts-refactor
  */
-interface Props {
+interface MultiImageUploadProps {
     imagePreviewProps: {
         src: string;
         [key: string]: any;
     };
     [key: string]: any;
 }
-const MultiImageUpload: React.FC<Props> = ({ imagePreviewProps, ...multiImageUploadProps }) => {
+const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
+    imagePreviewProps,
+    ...multiImageUploadProps
+}) => {
     return (
         <UiMultiImageUpload
             /**
