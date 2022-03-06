@@ -52,7 +52,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
                     return new ErrorResponse(error);
                 }
             },
-            async getApiKey(_, args, context) {
+            async getApiKey(_, args: any, context) {
                 try {
                     const apiKey = await context.security.getApiKey(args.id);
 
@@ -63,7 +63,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             }
         },
         SecurityMutation: {
-            async createApiKey(_, args, context) {
+            async createApiKey(_, args: any, context) {
                 try {
                     const apiKey = await context.security.createApiKey(args.data);
 
@@ -72,7 +72,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
                     return new ErrorResponse(error);
                 }
             },
-            async updateApiKey(_, args, context) {
+            async updateApiKey(_, args: any, context) {
                 try {
                     const apiKey = await context.security.updateApiKey(args.id, args.data);
 
@@ -81,7 +81,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
                     return new ErrorResponse(error);
                 }
             },
-            async deleteApiKey(_, args, context) {
+            async deleteApiKey(_, args: any, context) {
                 try {
                     await context.security.deleteApiKey(args.id);
 

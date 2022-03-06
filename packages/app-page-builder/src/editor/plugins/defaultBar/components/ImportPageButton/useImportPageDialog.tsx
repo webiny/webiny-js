@@ -67,10 +67,11 @@ export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = (
                 <Form
                     data={{ url: "" }}
                     onSubmit={data => {
-                        if (typeof onPasteFileLink === "function") {
-                            closeDialog();
-                            onPasteFileLink(data.url);
+                        if (typeof onPasteFileLink !== "function") {
+                            return;
                         }
+                        closeDialog();
+                        onPasteFileLink(data["url"]);
                     }}
                 >
                     {({ Bind, submit }) => (

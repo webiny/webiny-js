@@ -9,6 +9,7 @@ import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 export enum PageImportExportTaskStatus {
     PENDING = "pending",
@@ -137,6 +138,13 @@ export interface PbElementDataSettingsType {
     [key: string]: any;
 }
 export type PbElementDataType = {
+    action?: {
+        href: string;
+        newTab: boolean;
+        clickHandler: string;
+        actionType: string;
+        variables: PbButtonElementClickHandlerVariable[];
+    };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
     text?: PbElementDataTextType;
@@ -167,6 +175,9 @@ export interface PbEditorElement {
     data: PbElementDataType;
     parent?: string;
     elements: (string | PbEditorElement)[];
+    content?: {
+        type?: string;
+    };
     [key: string]: any;
 }
 
@@ -197,6 +208,11 @@ export interface PbTheme {
     };
     [key: string]: any;
 }
+
+export type PbPluginsLoader = Plugin & {
+    loadEditorPlugins?: () => Promise<any>;
+    loadRenderPlugins?: () => Promise<any>;
+};
 
 export type PbThemePlugin = Plugin & {
     theme: PbTheme;
@@ -302,11 +318,11 @@ export type PbRenderElementAttributesPlugin = Plugin & {
     }) => { [key: string]: string };
 };
 
-export type PbButtonElementClickHandlerVariable = {
+export interface PbButtonElementClickHandlerVariable {
     name: string;
     label: string;
     defaultValue: any;
-};
+}
 
 export interface PbButtonElementClickHandlerPlugin<TVariables = Record<string, any>>
     extends Plugin {
@@ -550,6 +566,7 @@ export type PbEditorToolbarBottomPlugin = Plugin & {
 };
 
 export type PbEditorBlockPlugin = Plugin & {
+    id?: string;
     type: "pb-editor-block";
     title: string;
     category: string;
@@ -857,4 +874,10 @@ export interface PageBuilderFormDataSettings {
             };
         };
     };
+}
+
+export interface PageBuilderSecurityPermission extends SecurityPermission {
+    own?: boolean;
+    rwd?: string;
+    pw?: string;
 }

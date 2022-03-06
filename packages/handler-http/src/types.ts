@@ -23,7 +23,7 @@ export interface HttpObject {
     request: HttpRequestObject;
 }
 
-export interface HttpContext extends ArgsContext {
+export interface HttpContext extends ArgsContext<HttpRequestObject> {
     http: HttpObject;
 }
 

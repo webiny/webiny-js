@@ -36,7 +36,7 @@
      * Change to true at some point and fix the errors.
      * https://www.typescriptlang.org/tsconfig#noPropertyAccessFromIndexSignature
      */
-    "noPropertyAccessFromIndexSignature": false,
+    "noPropertyAccessFromIndexSignature": true,
     "suppressImplicitAnyIndexErrors": false,
     "suppressExcessPropertyErrors": false,
     "keyofStringsOnly": false,

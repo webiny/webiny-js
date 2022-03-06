@@ -10206,6 +10206,7 @@ __metadata:
     "@types/react-helmet": ^6.1.5
     "@webiny/app": ^5.24.0
     "@webiny/app-admin": ^5.24.0
+    "@webiny/app-plugin-admin-welcome-screen": ^5.24.0
     "@webiny/app-security": ^5.24.0
     "@webiny/cli": ^5.24.0
     "@webiny/plugins": ^5.24.0

@@ -1,4 +1,7 @@
-type StackOutput = Record<string, any>;
+interface StackOutput {
+    apiUrl: string;
+    // [key: string]: any;
+}
 
 export function tagResources(tags: Record<string, string>): void;
 

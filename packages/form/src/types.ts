@@ -72,6 +72,8 @@ export interface FormData {
 }
 
 export interface Validation {
+    isValid?: boolean;
+    message?: string;
     [key: string]: any;
 }
 

@@ -1,4 +1,4 @@
-import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
+import { CliCommandScaffoldTemplate, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import fs from "fs";
 import path from "path";
 import util from "util";
@@ -152,7 +152,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Get needed dependencies updates.
             const graphqlDependenciesUpdates = [];
-            const packageJson = await loadJsonFile<Record<string, any>>(graphqlPackageJsonPath);
+            const packageJson = await loadJsonFile<PackageJson>(graphqlPackageJsonPath);
             if (!packageJson?.devDependencies?.["graphql-request"]) {
                 graphqlDependenciesUpdates.push(["devDependencies", "graphql-request", "^3.4.0"]);
             }

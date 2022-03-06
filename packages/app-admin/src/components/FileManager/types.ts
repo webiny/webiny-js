@@ -1,3 +1,5 @@
+import { SecurityPermission } from "@webiny/app-security/types";
+
 export interface FileItem {
     id: string;
     name: string;
@@ -11,4 +13,9 @@ export interface FileItem {
         id: string;
     };
     [key: string]: any;
+}
+
+export interface FileManagerSecurityPermission extends SecurityPermission {
+    rwd?: string;
+    own?: boolean;
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { CSSObject, cx } from "@emotion/css";
+import { Property } from "csstype";
 
 /**
  * TODO @ts-refactor
@@ -11,6 +12,15 @@ export interface Element {
     type: string;
     data: {
         settings?: {
+            grid?: {
+                cellsType: string;
+            };
+            horizontalAlignFlex?: {
+                [key: string]: string;
+            };
+            verticalAlign?: {
+                [key: string]: string;
+            };
             background?: {
                 [key: string]: string;
             };
@@ -43,11 +53,65 @@ export interface Element {
                 spread?: string;
                 color?: string;
             };
+            height?: {
+                [key: string]: {
+                    value: string;
+                };
+            };
+            width?: {
+                [key: string]: {
+                    value: string;
+                };
+            };
+            margin?: {
+                [key: string]: {
+                    advanced?: boolean;
+                    top?: string;
+                    bottom?: string;
+                    left?: string;
+                    right?: string;
+                    all?: string;
+                };
+            };
+            padding?: {
+                [key: string]: {
+                    advanced?: boolean;
+                    top?: string;
+                    bottom?: string;
+                    left?: string;
+                    right?: string;
+                    all?: string;
+                };
+            };
             [key: string]: any;
         };
         text: {
             data: {
                 text?: string;
+                typography: string;
+                color?: string;
+                alignment?: Property.TextAlign;
+                tag?: string;
+            };
+            desktop: {
+                text?: string;
+                typography: string;
+                color?: string;
+                alignment?: Property.TextAlign;
+                tag?: string;
+            };
+            [key: string]: {
+                text?: string;
+                typography: string;
+                color?: string;
+                alignment?: Property.TextAlign;
+                tag?: string;
+            };
+        };
+        image: {
+            file: {
+                name: string;
+                src: string;
             };
         };
         [key: string]: any;
@@ -146,6 +210,7 @@ export type ThemeBreakpoints = Record<string, Breakpoint>;
 export interface ThemeStyles {
     colors?: Record<string, any>;
     typography?: Record<string, StylesObjects>;
+    buttons?: Record<string, StylesObjects>;
     [key: string]: any;
 }
 

@@ -20,6 +20,7 @@ import { ReactComponent as SlackIcon } from "./icons/slack.svg";
 import { ReactComponent as TwitterIcon } from "./icons/twitter.svg";
 import { ReactComponent as TextbookIcon } from "./icons/textbook.svg";
 import { ReactComponent as LaptopIcon } from "./icons/laptop.svg";
+import { AdminWelcomeScreenWidgetPlugin } from "@webiny/app-plugin-admin-welcome-screen/types";
 
 const linkStyle = css({
     textDecoration: "none",
@@ -109,12 +110,14 @@ const Welcome: React.FC = () => {
         return null;
     }
 
-    const widgets = plugins.byType("admin-welcome-screen-widget").filter(pl => {
-        if (pl.permission) {
-            return getPermission(pl.permission);
-        }
-        return true;
-    });
+    const widgets = plugins
+        .byType<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget")
+        .filter(pl => {
+            if (pl.permission) {
+                return getPermission(pl.permission);
+            }
+            return true;
+        });
 
     const canSeeAnyWidget = widgets.length > 0;
 

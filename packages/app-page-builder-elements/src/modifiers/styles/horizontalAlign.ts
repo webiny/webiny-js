@@ -1,7 +1,7 @@
 import { ElementStylesModifier } from "~/types";
 
 const horizontalAlign: ElementStylesModifier = ({ element, theme }) => {
-    const { horizontalAlignFlex: horizontalAlign } = element.data.settings;
+    const { horizontalAlignFlex: horizontalAlign } = element.data.settings || {};
     if (!horizontalAlign) {
         return null;
     }

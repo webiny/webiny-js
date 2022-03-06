@@ -26,7 +26,7 @@ interface Input {
     path: string;
 }
 
-export const deployGraphQLAPI = (stack: string, env: string, inputs: Record<string, any>) =>
+export const deployGraphQLAPI = (stack: string, env: string, inputs: unknown) =>
     execa(
         "yarn",
         [
@@ -36,6 +36,13 @@ export const deployGraphQLAPI = (stack: string, env: string, inputs: Record<stri
             "--env",
             env,
             "--debug",
+            /**
+             * TODO @ts-refactor
+             * There is no debug flag in
+             * * packages/cli-plugin-scaffold-full-stack-app/src/index.ts:239
+             * * packages/cli-plugin-scaffold-graphql-api/src/index.ts:345
+             */
+            // @ts-ignore
             Boolean(inputs.debug) ? "true" : "false"
         ],
         {
@@ -72,7 +79,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "description",
                     message: "Enter description:",
-                    default: (input: Record<string, string>) => {
+                    default: (input: Input) => {
                         return `This is the ${input.name} GraphQL API.`;
                     },
                     validate: description => {
@@ -86,7 +93,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "path",
                     message: "Enter GraphQL API path:",
-                    default: (input: Record<string, string>) => {
+                    default: (input: Input) => {
                         return `${Case.kebab(input.name)}`;
                     },
                     validate: appPath => {

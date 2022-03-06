@@ -3,7 +3,6 @@ import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { BindComponentRenderPropValidation, Form } from "@webiny/form";
-import { FormData } from "@webiny/form/types";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
 
@@ -61,6 +60,12 @@ interface SpacingPickerProps {
     inputClassName?: string;
     selectClassName?: string;
 }
+
+interface SpacingPickerFormData {
+    unit: "auto" | string;
+    value: string;
+}
+
 const SpacingPicker: React.FC<SpacingPickerProps> = ({
     value,
     onChange,
@@ -89,7 +94,7 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
         };
     }, [value]);
 
-    const onFormChange = useCallback((formData: FormData) => {
+    const onFormChange = useCallback((formData: SpacingPickerFormData) => {
         if (formData.unit === "auto") {
             onChange(formData.unit);
         } else {
@@ -98,7 +103,15 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
     }, []);
 
     return (
-        <Form data={formData} onChange={onFormChange}>
+        <Form
+            data={formData}
+            onChange={data => {
+                /**
+                 * We are positive that data is SpacingPickerFormData.
+                 */
+                return onFormChange(data as unknown as SpacingPickerFormData);
+            }}
+        >
             {({ data, Bind }) => (
                 <div className={classNames(className, { [defaultWrapperStyle]: useDefaultStyle })}>
                     <div className={"inner-wrapper"}>

@@ -2,7 +2,7 @@ import { ElementStylesModifier } from "~/types";
 import { CSSObject } from "@emotion/css";
 
 const text: ElementStylesModifier = ({ element, theme }) => {
-    const { text } = element.data;
+    const { text } = element.data || {};
     // Here we have data and display modes in the same object.
     if (!text) {
         return null;

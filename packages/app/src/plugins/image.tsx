@@ -55,7 +55,7 @@ const sanitizeTransformArgs = (args?: SanitizeTransformArgsParams): SanitizeTran
     return output;
 };
 
-const getSizes = (width?: string): string | undefined => {
+const getSizes = (width?: string | number): string | undefined => {
     if (typeof width !== "string") {
         return undefined;
     }
@@ -87,7 +87,7 @@ const isFixedImageWidth = (width?: number | string) => {
     return false;
 };
 
-const getSrcSetAutoSizes = (max: number | undefined) => {
+const getSrcSetAutoSizes = (max?: string | number) => {
     max = isFixedImageWidth(max) ? parseInt("" + max) : 2500;
     const maxWidth = getSupportedImageResizeWidth(max);
     return SUPPORTED_IMAGE_RESIZE_WIDTHS.filter((supportedWidth: number) => {
@@ -126,9 +126,9 @@ export default () => {
             const params = convertTransformToQueryParams(sanitizedParams);
             return src + "?" + params;
         },
-        render(props: { [key: string]: any }) {
+        render(props) {
             const { transform, srcSet: srcSetInitial, ...imageProps } = props;
-            let srcSet = srcSetInitial;
+            let srcSet: any = srcSetInitial;
             let sizes: string | undefined;
             const src = imageProps.src;
             if (srcSet && srcSet === "auto") {
