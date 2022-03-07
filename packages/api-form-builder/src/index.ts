@@ -7,11 +7,11 @@ import formsGraphQL from "./plugins/graphql/form";
 import formSettingsGraphQL from "./plugins/graphql/formSettings";
 import { FormBuilderStorageOperations } from "~/types";
 
-export interface Params {
+export interface CreateFormBuilderParams {
     storageOperations: FormBuilderStorageOperations;
 }
 
-export const createFormBuilder = (params: Params) => {
+export const createFormBuilder = (params: CreateFormBuilderParams) => {
     return [
         createCruds(params),
         graphql,

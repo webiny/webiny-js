@@ -20,7 +20,7 @@ export interface BlockElement {
     };
 }
 
-export default (element: BlockElement) => {
+export default (element: BlockElement): void => {
     const plugin: PbEditorBlockPlugin = {
         id: element.id,
         name: "pb-saved-block-" + element.id,

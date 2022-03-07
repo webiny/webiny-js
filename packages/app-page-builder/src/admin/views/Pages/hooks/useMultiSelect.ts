@@ -11,19 +11,23 @@ export type MultiListProps = {
     isSelected: (item: any) => boolean;
     select: (item: any) => void;
     isMultiSelected: (item: any) => boolean;
-    isNoneMultiSelected: (data: any[]) => boolean;
-    isAllMultiSelected: (data: any[]) => boolean;
-    multiSelectAll: (value: boolean, data: any[]) => void;
+    isNoneMultiSelected: (data: any[] | null) => boolean;
+    isAllMultiSelected: (data: any[] | null) => boolean;
+    multiSelectAll: (value: boolean, data: any[] | null) => void;
     getMultiSelected: () => any[];
     multiSelect: (items: Record<string, any> | Record<string, any>[], value?: boolean) => void;
 };
 
 const useMultiSelect = (params: UseMultiSelectParams) => {
-    const [multiSelectedItems, multiSelect] = useState([]);
+    const [multiSelectedItems, multiSelect] = useState<string[]>([]);
     let history = null;
-    let location: History.Location = null;
+    let location: History.Location | null = null;
     const routerHook = useRouter();
-    const { getValue } = params;
+    const {
+        getValue = (): string => {
+            return "";
+        }
+    } = params;
 
     if (params.useRouter !== false) {
         history = routerHook.history;
@@ -31,10 +35,10 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
     }
 
     const multiListProps: MultiListProps = {
-        multiSelect(items: Record<string, any>[], value): void {
-            if (!Array.isArray(items)) {
-                items = [items];
-            }
+        multiSelect(initialItems, value): void {
+            const items = Array.isArray(initialItems)
+                ? (initialItems as Record<string, any>[])
+                : [initialItems as Record<string, any>];
 
             const returnItems = [...multiSelectedItems];
 
@@ -57,11 +61,11 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
             multiSelect(returnItems);
         },
         isSelected(item) {
-            const query = new URLSearchParams(location.search);
+            const query = new URLSearchParams(location ? location.search : "");
             return query.get("id") === item.id;
         },
         select(item) {
-            const query = new URLSearchParams(location.search);
+            const query = new URLSearchParams(location ? location.search : "");
             query.set("id", item.id);
             history.push({ search: query.toString() });
         },

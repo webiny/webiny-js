@@ -22,6 +22,9 @@ export default ({ render }: Pick<RenderUrlPostHtmlParams, "render">) =>
             const script = `<script>window.__APOLLO_STATE__ = ${stringifyApolloState(
                 render.meta.apolloState
             )};</script>`;
+            if (!node.content) {
+                node.content = [];
+            }
 
             node.content.push(script);
             return node;

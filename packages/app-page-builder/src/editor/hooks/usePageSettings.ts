@@ -12,7 +12,7 @@ import {
 export type UsePageSettings = ReturnType<typeof usePageSettings>;
 
 export function usePageSettings() {
-    const [activeSection, setActiveSection] = useState<string>(null);
+    const [activeSection, setActiveSection] = useState<string | null>(null);
     const eventActionHandler = useEventActionHandler();
     const pageData = useRecoilValue(pageAtom);
 

@@ -76,10 +76,6 @@ export const createInitialPerDeviceSettingValue = (
     });
     return value;
 };
-/**
- * Verify that this fn return type is correct.
- */
-// TODO @ts-refactor
 export const applyFallbackDisplayMode = (
     mode: DisplayMode,
     getValue: (value: string) => string
@@ -94,7 +90,7 @@ export const applyFallbackDisplayMode = (
     const index = orderedConfigs.findIndex(({ displayMode }) => displayMode === mode);
 
     // Merge all values from base "DisplayMode" upto current
-    let output: string = undefined;
+    let output: string | undefined = undefined;
     for (let i = 0; i < index; i++) {
         const currentValue = getValue(orderedConfigs[i].displayMode);
         // In case of "string", we don't need to merge all values

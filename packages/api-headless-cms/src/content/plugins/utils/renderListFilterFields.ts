@@ -21,7 +21,7 @@ const getCreateListFilters = (
     plugins: CmsFieldTypePlugins,
     fieldType: string,
     type: ApiEndpoint
-): CreateListFiltersType => {
+): CreateListFiltersType | null => {
     if (!plugins[fieldType]) {
         return null;
     } else if (!plugins[fieldType][type]) {

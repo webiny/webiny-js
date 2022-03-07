@@ -10,7 +10,7 @@ export interface SanitizeImageTransformations {
 /**
  * Takes only allowed transformations into consideration, and discards the rest.
  */
-export default (args: SanitizeImageArgs): SanitizeImageTransformations => {
+export default (args?: SanitizeImageArgs): SanitizeImageTransformations | null => {
     const transformations: Partial<SanitizeImageTransformations> = {};
 
     if (!args || !args.width) {

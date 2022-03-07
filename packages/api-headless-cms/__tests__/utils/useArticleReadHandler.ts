@@ -75,7 +75,7 @@ export const useArticleReadHandler = (
 
     return {
         ...contentHandler,
-        async getArticle(variables, headers: Record<string, any> = {}) {
+        async getArticle(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: getArticleQuery, variables },
                 headers

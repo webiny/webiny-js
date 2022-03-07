@@ -42,8 +42,14 @@ export class PluginsContainer {
         this.register(...args);
     }
 
-    public byName<T extends Plugin>(name: T["name"]): T {
-        return this.plugins[name] as T;
+    public byName<T extends Plugin>(name: T["name"]): T | null {
+        if (!name) {
+            return null;
+        }
+        /**
+         * We can safely cast name as string, we know it is so.
+         */
+        return this.plugins[name as string] as T;
     }
 
     public byType<T extends Plugin>(type: T["type"]): T[] {
@@ -91,6 +97,6 @@ export class PluginsContainer {
     }
 
     private findByType<T extends Plugin>(type: T["type"]): T[] {
-        return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
+        return (Object.values(this.plugins) as T[]).filter(pl => pl.type === type) as T[];
     }
 }

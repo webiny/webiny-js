@@ -20,7 +20,7 @@ declare global {
 // Make sure the final path looks like `/xyz`. We don't want to run into situations where the prerendering engine is
 // visiting `/xyz`, but delivery URL is forcing `/xyz/`. This ensures the path is standardized, and the GraphQL
 // queries are the same on both sides.
-const trimPath = (value: string) => {
+const trimPath = (value: string): string | null => {
     if (typeof value === "string") {
         return "/" + trim(value, "/");
     }
@@ -35,13 +35,16 @@ const isNotFoundPage = window.__PS_NOT_FOUND_PAGE__;
 // allow navigating to other pages, in the `getPath` function below.
 const notFoundInitialPath = trimPath(location.pathname);
 
-const getPath = (): string => {
-    let path = location.pathname;
+const getPath = (): string | null => {
+    let path: string | null = location.pathname;
     if (typeof path !== "string") {
         return null;
     }
 
     path = trimPath(path);
+    if (path === null) {
+        return null;
+    }
 
     // Let's check if the not-found page was just served to the user. If so, let's just return page content for the
     // "/not-found" path, which is already present in the initially served HTML and ready to be used by Apollo Cache.
@@ -79,7 +82,8 @@ const Page: React.FC = () => {
     // Here we get all site data like website name, favicon image, social links etc.
     const getSettingsQuery = useQuery<SettingsQueryResponse>(GET_SETTINGS);
 
-    const { data: page, error } = getPublishedPageQuery.data?.pageBuilder?.getPublishedPage || {};
+    const { data: page = null, error = null } =
+        getPublishedPageQuery.data?.pageBuilder?.getPublishedPage || {};
     const settings =
         getSettingsQuery.data?.pageBuilder?.getSettings?.data || ({} as SettingsQueryResponseData);
 

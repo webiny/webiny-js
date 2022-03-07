@@ -4,7 +4,6 @@ import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/opera
 
 describe("ElasticsearchQueryBuilderOperatorContainsPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorContainsPlugin();
-    const context: any = {};
 
     it("should apply contains correctly", () => {
         const query = createBlankQuery();
@@ -13,7 +12,6 @@ describe("ElasticsearchQueryBuilderOperatorContainsPlugin", () => {
             path: "name.keyword",
             basePath: "name",
             value: "John",
-            context,
             keyword: true
         });
 
@@ -21,7 +19,6 @@ describe("ElasticsearchQueryBuilderOperatorContainsPlugin", () => {
             path: "name.keyword",
             basePath: "name",
             value: "Doe",
-            context,
             keyword: true
         });
 

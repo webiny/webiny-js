@@ -7,11 +7,11 @@ import { HandlerPlugin, QueueAddHookPlugin } from "./types";
 import { PrerenderingServiceStorageOperations, QueueJob } from "~/types";
 import { HandlerResponse } from "~/types";
 
-export interface Params {
+export interface CreateQueueAddParams {
     storageOperations: PrerenderingServiceStorageOperations;
 }
 
-export default (params: Params): HandlerPlugin => {
+export default (params: CreateQueueAddParams): HandlerPlugin => {
     const { storageOperations } = params;
 
     return {

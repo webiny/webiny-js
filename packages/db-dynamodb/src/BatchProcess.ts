@@ -1,3 +1,7 @@
+/**
+ * Remove this when no apps are using our internal db drivers anymore
+ */
+// @ts-nocheck
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Batch } from "@webiny/db";
 

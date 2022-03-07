@@ -13,15 +13,17 @@ const activeStyle = css({
     }
 });
 
-const getButtonIcon = (icon: Element | Element[], isActive: boolean): Element => {
+type IconType = React.ReactElement | React.ReactElement[];
+
+const getButtonIcon = (icon: IconType, isActive: boolean): React.ReactElement => {
     if (Array.isArray(icon)) {
         return isActive ? icon[0] : icon[1];
     }
     return icon;
 };
-type ActionPropsType = {
+interface ActionPropsType {
     id?: string;
-    icon: any;
+    icon: IconType;
     onClick?: () => any;
     tooltip?: string;
     plugin?: string;
@@ -29,8 +31,8 @@ type ActionPropsType = {
      * If set "true", will close all other active plugins of same type.
      * */
     closeOtherInGroup?: boolean;
-};
-const Action: React.FunctionComponent<ActionPropsType> = ({
+}
+const Action: React.FC<ActionPropsType> = ({
     id,
     icon,
     onClick,
@@ -39,7 +41,7 @@ const Action: React.FunctionComponent<ActionPropsType> = ({
     closeOtherInGroup
 }) => {
     const handler = useEventActionHandler();
-    const isActive = useRecoilValue(isPluginActiveSelector(plugin));
+    const isActive = useRecoilValue(isPluginActiveSelector(plugin as string));
 
     const togglePlugin = useCallback(() => {
         if (!plugin) {
@@ -67,7 +69,7 @@ const Action: React.FunctionComponent<ActionPropsType> = ({
             id={id}
             icon={btnIcon}
             onClick={clickHandler}
-            className={isActive && activeStyle}
+            className={isActive ? activeStyle : ""}
         />
     );
 

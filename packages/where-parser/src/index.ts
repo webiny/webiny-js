@@ -25,7 +25,7 @@ interface Value {
     AND?: Value;
     OR?: Value;
 }
-
+// @ts-refactor
 const extractValues = (target: any): Value[] => {
     if (
         typeof target === "object" &&
@@ -175,6 +175,9 @@ export const parseWhere = <T = WhereParserResult>(args: WhereParserArgs): T => {
     return result.reduce((acc: Record<string, string>, value: Record<string, string>) => {
         const rKeys = Object.keys(value);
         const key = rKeys.shift();
+        if (!key) {
+            return acc;
+        }
         acc[key] = value[key];
         return acc;
     }, {} as Record<string, string>);

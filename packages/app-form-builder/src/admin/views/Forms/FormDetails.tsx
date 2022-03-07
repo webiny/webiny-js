@@ -72,7 +72,7 @@ const FormDetails: React.FC<FormDetailsProps> = ({ onCreateForm }) => {
         GET_FORM,
         {
             variables: {
-                revision: formId
+                revision: formId as string
             },
             skip: !formId,
             onCompleted: data => {
@@ -99,7 +99,7 @@ const FormDetails: React.FC<FormDetailsProps> = ({ onCreateForm }) => {
         GET_FORM_REVISIONS,
         {
             variables: {
-                id: formId ? formId.split("#")[0] : null
+                id: (formId || "").split("#")[0]
             },
             skip: !formId
         }
@@ -109,8 +109,11 @@ const FormDetails: React.FC<FormDetailsProps> = ({ onCreateForm }) => {
         return <EmptyFormDetails canCreate={canCreate} onCreateForm={onCreateForm} />;
     }
 
-    const form = getForm.loading ? null : getForm.data.formBuilder.form.data;
-    const revisions = getRevisions.loading ? [] : getRevisions.data.formBuilder.revisions.data;
+    const form = getForm.loading || !getForm.data ? null : getForm.data.formBuilder.form.data;
+    const revisions =
+        getRevisions.loading || !getRevisions.data
+            ? []
+            : getRevisions.data.formBuilder.revisions.data;
 
     return (
         <DetailsContainer>

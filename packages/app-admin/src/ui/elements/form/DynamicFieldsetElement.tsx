@@ -14,18 +14,30 @@ interface DynamicFieldsetActions {
     remove: (index: number) => () => void;
 }
 
-export interface DynamicFieldsetElementConfig extends FormFieldElementConfig {
-    createHeader?: (params: { actions: DynamicFieldsetActions }) => UIElement;
-    createRow?: (params: {
+interface CreateHeaderCallable {
+    (params: { actions: DynamicFieldsetActions }): UIElement;
+}
+
+interface CreateRowCallable {
+    (params: {
         actions: DynamicFieldsetActions;
         index: number;
         row: DynamicFieldsetRowElement;
-    }) => UIElement;
-    createEmpty?: (params: { actions: DynamicFieldsetActions }) => UIElement;
+    }): UIElement;
+}
+
+interface CreateEmptyCallable {
+    (params: { actions: DynamicFieldsetActions }): UIElement;
+}
+
+export interface DynamicFieldsetElementConfig extends FormFieldElementConfig {
+    createHeader?: CreateHeaderCallable;
+    createRow?: CreateRowCallable;
+    createEmpty?: CreateEmptyCallable;
 }
 
 export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElementConfig> {
-    constructor(id: string, config: DynamicFieldsetElementConfig) {
+    public constructor(id: string, config: DynamicFieldsetElementConfig) {
         super(id, config);
 
         this.useGrid(false);
@@ -33,39 +45,39 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
         this.applyPlugins(DynamicFieldsetElement);
     }
 
-    getCreateHeaderElement() {
+    public getCreateHeaderElement() {
         return this.config.createHeader;
     }
 
-    setHeaderElement(element: UIElement) {
+    public setHeaderElement(element: UIElement): void {
         this.config.createHeader = () => element;
     }
 
-    setCreateHeaderElement(cb: DynamicFieldsetElementConfig["createHeader"]) {
+    public setCreateHeaderElement(cb: DynamicFieldsetElementConfig["createHeader"]): void {
         this.config.createHeader = cb;
     }
 
-    getCreateRowElement() {
+    public getCreateRowElement() {
         return this.config.createRow;
     }
 
-    setCreateRowElement(cb: DynamicFieldsetElementConfig["createRow"]) {
+    public setCreateRowElement(cb: DynamicFieldsetElementConfig["createRow"]): void {
         this.config.createRow = cb;
     }
 
-    getCreateEmptyElement() {
+    public getCreateEmptyElement() {
         return this.config.createEmpty;
     }
 
-    setEmptyElement(element: UIElement) {
+    public setEmptyElement(element: UIElement): void {
         this.config.createEmpty = () => element;
     }
 
-    setCreateEmptyElement(cb: DynamicFieldsetElementConfig["createEmpty"]) {
+    public setCreateEmptyElement(cb: DynamicFieldsetElementConfig["createEmpty"]): void {
         this.config.createEmpty = cb;
     }
 
-    render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`DynamicFieldsetElement must be placed inside of a FormElement.`);
         }
@@ -81,6 +93,9 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
                     {({ actions, header, row, empty }) => (
                         <React.Fragment>
                             {header(() => {
+                                if (!createHeader) {
+                                    return null;
+                                }
                                 const headerElement = createHeader({
                                     actions: actions as DynamicFieldsetActions
                                 });
@@ -91,6 +106,9 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
                                 return headerElement ? headerElement.render(props) : null;
                             })}
                             {row(({ index }) => {
+                                if (!createRow) {
+                                    return null;
+                                }
                                 const rowElement = createRow({
                                     actions: actions as DynamicFieldsetActions,
                                     index,
@@ -104,6 +122,9 @@ export class DynamicFieldsetElement extends FormFieldElement<DynamicFieldsetElem
                                 return rowElement ? <Grid>{rowElement.render(props)}</Grid> : null;
                             })}
                             {empty(() => {
+                                if (!createEmpty) {
+                                    return null;
+                                }
                                 const emptyElement = createEmpty({
                                     actions: actions as DynamicFieldsetActions
                                 });

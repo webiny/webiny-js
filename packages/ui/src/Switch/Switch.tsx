@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Switch as RmwcSwitch, SwitchProps } from "@rmwc/switch";
 import { FormComponentProps } from "~/types";
 import pick from "lodash/pick";
@@ -18,18 +18,16 @@ type Props = FormComponentProps &
  * Switch component can be used to store simple boolean values.
  */
 class Switch extends React.Component<Props> {
-    static defaultProps: Partial<Props> = {
-        validation: { isValid: null, message: null }
-    };
-
     static rmwcProps = ["id", "disabled", "checked", "label", "rootProps", "className"];
 
     onChange = (e: React.SyntheticEvent<HTMLElement>) => {
         this.props.onChange && this.props.onChange((e.target as any).checked);
     };
 
-    render() {
+    public override render() {
         const { value, description, validation } = this.props;
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <React.Fragment>
@@ -39,11 +37,11 @@ class Switch extends React.Component<Props> {
                     onChange={this.onChange}
                 />
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>

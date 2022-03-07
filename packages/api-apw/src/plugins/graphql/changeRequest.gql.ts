@@ -115,9 +115,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             getChangeRequest: async (_, args, context) => {
                 return resolve(() => context.apw.changeRequest.get(args.id));
             },
-            listChangeRequests: async (_, args: CmsEntryListParams, context) => {
+            listChangeRequests: async (_, args, context) => {
                 try {
-                    const [entries, meta] = await context.apw.changeRequest.list(args);
+                    /**
+                     * We know that args is CmsEntryListParams.
+                     */
+                    const [entries, meta] = await context.apw.changeRequest.list(
+                        args as unknown as CmsEntryListParams
+                    );
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);

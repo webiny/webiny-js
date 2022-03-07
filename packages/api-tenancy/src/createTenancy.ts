@@ -22,7 +22,7 @@ export async function createTenancy({
     storageOperations,
     multiTenancy = false
 }: TenancyConfig): Promise<Tenancy> {
-    let currentTenant: Tenant = null;
+    let currentTenant: Tenant | null = null;
 
     const tenancy: Tenancy = {
         getStorageOperations() {

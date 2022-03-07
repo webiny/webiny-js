@@ -1,4 +1,3 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import React, { useCallback, useRef, cloneElement } from "react";
 import getValue from "./functions/getValue";
 import setValue from "./functions/setValue";
@@ -11,8 +10,7 @@ export interface PredefinedValuesProps {
     form: FormRenderPropParams;
 }
 interface MemoizedBindComponents {
-    // TODO @ts-refactor
-    [key: string]: any;
+    [key: string]: React.FC<BindProps>;
 }
 interface BindProps {
     name: string;
@@ -43,7 +41,7 @@ const PredefinedValues: React.FC<PredefinedValuesProps> = ({ field, fieldPlugin,
                             return children(props);
                         }
 
-                        return cloneElement(children as React.ReactElement, props);
+                        return cloneElement(children as unknown as React.ReactElement, props);
                     }}
                 </BaseFormBind>
             );
@@ -53,6 +51,11 @@ const PredefinedValues: React.FC<PredefinedValuesProps> = ({ field, fieldPlugin,
 
         return memoizedBindComponents.current[memoKey];
     }, []);
+    if (!fieldPlugin.field.renderPredefinedValues) {
+        return (
+            <>{`Missing "field.renderPredefinedValues" method in field type plugin: "${field.type}".`}</>
+        );
+    }
 
     return <>{fieldPlugin.field.renderPredefinedValues({ field, getBind, form })}</>;
 };

@@ -34,7 +34,9 @@ const fields = /* GraphQL */ `
         }
     }
 `;
-
+/**
+ *
+ */
 export interface GetSettingsResponseData {
     websiteUrl: string;
     websitePreviewUrl: string;
@@ -87,7 +89,51 @@ export const GET_SETTINGS = gql`
         }
     }
 `;
-
+/**
+ * ################################
+ */
+export interface UpdateSettingsMutationResponse {
+    pageBuilder: {
+        updateSettings: GetSettingsResponseData;
+    };
+}
+export interface UpdateSettingsMutationVariablesData {
+    name?: string;
+    websiteUrl?: string;
+    websitePreviewUrl?: string;
+    favicon?: {
+        id: string;
+        src: string;
+    };
+    logo?: {
+        id: string;
+        src: string;
+    };
+    social?: {
+        facebook: string;
+        twitter: string;
+        instagram: string;
+        image: {
+            id: string;
+            src: string;
+        };
+    };
+    pages?: {
+        home: string;
+        notFound: string;
+    };
+    prerendering?: {
+        storage: {
+            name: string;
+        };
+        app: {
+            url: string;
+        };
+    };
+}
+export interface UpdateSettingsMutationVariables {
+    data: UpdateSettingsMutationVariablesData;
+}
 export const UPDATE_SETTINGS = gql`
     mutation UpdateSettings($data: PbSettingsInput!) {
         pageBuilder {

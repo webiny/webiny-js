@@ -8,6 +8,7 @@ import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
+    CreatedBy,
     OnBeforePageCreateTopicParams,
     Page,
     PageBuilderContextObject,
@@ -17,7 +18,8 @@ import {
     PageStorageOperationsGetWhereParams,
     PageStorageOperationsListParams,
     PageStorageOperationsListTagsParams,
-    PbContext
+    PbContext,
+    PbSecurityPermission
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -64,7 +66,11 @@ interface DataLoaderGetByIdKey {
     published?: boolean;
 }
 
-const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => {
+interface NotInResult {
+    paths: string[] | undefined;
+    ids: string[] | undefined;
+}
+const createNotIn = (exclude?: string[]): NotInResult => {
     const paths: string[] = [];
     const ids: string[] = [];
     if (Array.isArray(exclude)) {
@@ -89,7 +95,7 @@ const createNotIn = (exclude?: string[]): { paths: string[]; ids: string[] } => 
 };
 
 const createSort = (sort?: string[]): string[] => {
-    if (Array.isArray(sort) === false || sort.length === 0) {
+    if (!sort || Array.isArray(sort) === false || sort.length === 0) {
         return ["createdOn_DESC"];
     }
     return sort;
@@ -123,12 +129,14 @@ const createDataLoaderKeys = (id: string): DataLoaderGetByIdKey[] => {
     ];
 };
 
-export interface Params {
+export interface CreatePageCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
 }
-export const createPageCrud = (params: Params): PagesCrud => {
-    const { context, storageOperations } = params;
+export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
+    const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
     /**
      * Used in a couple of key events - (un)publishing and pages deletion.
@@ -139,25 +147,17 @@ export const createPageCrud = (params: Params): PagesCrud => {
         plugins: context.plugins
     });
 
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
-    const getLocaleCode = (): string => {
-        return context.i18nContent.getCurrentLocale().code;
-    };
-
     /**
      * We need a data loader to fetch a page by id because it is being called a lot throughout the code.
      * This used to be more complex, with checks if it is preview mode and some others.
      * We do those checks after the page was loaded.
      */
-    const dataLoaderGetById = new DataLoader<DataLoaderGetByIdKey, Page, string>(
+    const dataLoaderGetById = new DataLoader<DataLoaderGetByIdKey, Page | null, string>(
         async keys => {
             const tenant = getTenantId();
             const locale = getLocaleCode();
             try {
-                const pages: Page[] = [];
+                const pages: (Page | null)[] = [];
                 for (const key of keys) {
                     const { id, version } = parseIdentifier(key.id);
                     const where: PageStorageOperationsGetWhereParams = {
@@ -198,7 +198,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
             }
         }
     );
-    const clearDataLoaderCache = (pages: Page[]) => {
+    const clearDataLoaderCache = (pages: (Page | null)[]) => {
         for (const page of pages) {
             if (!page) {
                 continue;
@@ -259,11 +259,11 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             let pagePath = "";
             if (category.slug === "static") {
-                pagePath = normalizePath("untitled-" + uniqid.time());
+                pagePath = normalizePath("untitled-" + uniqid.time()) as string;
             } else {
                 pagePath = normalizePath(
                     [category.url, "untitled-" + uniqid.time()].join("/").replace(/\/\//g, "/")
-                );
+                ) as string;
             }
 
             const identity = context.security.getIdentity();
@@ -280,7 +280,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 }
             });
 
-            const owner = {
+            const owner: CreatedBy = {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type
@@ -292,8 +292,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
             const page: Page = {
                 id,
                 pid: pageId,
-                locale: context.i18nContent.getCurrentLocale().code,
-                tenant: context.tenancy.getCurrentTenant().id,
+                locale: getLocaleCode(),
+                tenant: getTenantId(),
                 editor: DEFAULT_EDITOR,
                 category: category.slug,
                 title,
@@ -601,6 +601,13 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     latest: true
                 }
             });
+            if (!latestPage) {
+                throw new WebinyError("Missing latest page record.", "LATEST_PAGE_RECORD", {
+                    pid: pageId,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
+                });
+            }
             const publishedPage = await storageOperations.pages.get({
                 where: {
                     pid: pageId,
@@ -641,7 +648,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
                 await onAfterPageDelete.publish({
                     page: resultPage,
-                    latestPage: resultLatestPage,
+                    latestPage: resultLatestPage || null,
                     publishedPage
                 });
 
@@ -838,6 +845,17 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     latest: true
                 }
             });
+            if (!latestPage) {
+                throw new WebinyError(
+                    "Could not find latest revision of the page.",
+                    "LATEST_PAGE_REVISION_ERROR",
+                    {
+                        pid: original.pid,
+                        tenant: getTenantId(),
+                        locale: getLocaleCode()
+                    }
+                );
+            }
 
             if (original.status !== "published") {
                 throw new WebinyError(`Page is not published.`);
@@ -924,6 +942,17 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     latest: true
                 }
             });
+            if (!latestPage) {
+                throw new WebinyError(
+                    "Could not find latest revision of the page.",
+                    "LATEST_PAGE_REVISION_ERROR",
+                    {
+                        pid: original.pid,
+                        tenant: getTenantId(),
+                        locale: getLocaleCode()
+                    }
+                );
+            }
 
             const page: Page = {
                 ...original,
@@ -999,6 +1028,17 @@ export const createPageCrud = (params: Params): PagesCrud => {
                     latest: true
                 }
             });
+            if (!latestPage) {
+                throw new WebinyError(
+                    "Could not find latest revision of the page.",
+                    "LATEST_PAGE_REVISION_ERROR",
+                    {
+                        pid: original.pid,
+                        tenant: getTenantId(),
+                        locale: getLocaleCode()
+                    }
+                );
+            }
 
             const page: Page = {
                 ...original,
@@ -1046,7 +1086,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 rwd: "r"
             });
 
-            let page: Page = null;
+            let page: Page | null = null;
 
             try {
                 page = await dataLoaderGetById.load({
@@ -1081,7 +1121,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
         async getPublishedPageById(this: PageBuilderContextObject, params): Promise<any> {
             const { id, preview } = params;
 
-            let page: Page = null;
+            let page: Page | null = null;
 
             try {
                 page = await dataLoaderGetById.load({
@@ -1119,7 +1159,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 );
             }
 
-            const normalizedPath = normalizePath(params.path);
+            const normalizedPath = normalizePath(params.path) as string;
             if (normalizedPath === "/") {
                 const settings = await this.getCurrentSettings();
                 const homePage = lodashGet(settings, "pages.home");
@@ -1132,7 +1172,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                 });
             }
 
-            let page: Page = undefined;
+            let page: Page | null = null;
 
             try {
                 page = await storageOperations.pages.get({
@@ -1163,7 +1203,7 @@ export const createPageCrud = (params: Params): PagesCrud => {
                  */
                 for (const plugin of pagePlugins) {
                     if (typeof plugin.notFound === "function") {
-                        page = await plugin.notFound({ args: params, context });
+                        page = (await plugin.notFound({ args: params, context })) || null;
                         if (page) {
                             break;
                         }
@@ -1182,19 +1222,26 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
         async listLatestPages(params, options = {}) {
             const { auth } = options;
-            let permission: { own?: boolean } = null;
+            let permission: PbSecurityPermission | null = null;
             if (auth !== false) {
                 permission = await checkBasePermissions(context, PERMISSION_NAME, {
                     rwd: "r"
                 });
             }
 
-            const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
+            const {
+                after = null,
+                limit = 10,
+                sort,
+                search,
+                exclude,
+                where: initialWhere = {}
+            } = params;
 
             /**
              * If users can only manage own records, let's add the special filter.
              */
-            let createdBy: string = undefined;
+            let createdBy: string | undefined = undefined;
             if (permission && permission.own === true) {
                 const identity = context.security.getIdentity();
                 createdBy = identity.id;
@@ -1245,7 +1292,14 @@ export const createPageCrud = (params: Params): PagesCrud => {
         },
 
         async listPublishedPages(params) {
-            const { after, limit, sort, search, exclude, where: initialWhere = {} } = params;
+            const {
+                after = null,
+                limit = 10,
+                sort,
+                search,
+                exclude,
+                where: initialWhere = {}
+            } = params;
 
             const { paths: pathNotIn, ids: pidNotIn } = createNotIn(exclude);
 
@@ -1329,8 +1383,8 @@ export const createPageCrud = (params: Params): PagesCrud => {
 
             const listTagsParams: PageStorageOperationsListTagsParams = {
                 where: {
-                    tenant: context.tenancy.getCurrentTenant().id,
-                    locale: context.i18nContent.getCurrentLocale().code,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode(),
                     search
                 }
             };

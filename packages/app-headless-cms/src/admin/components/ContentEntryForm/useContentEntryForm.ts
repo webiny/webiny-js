@@ -52,7 +52,9 @@ interface UseContentEntryForm {
 
 export interface UseContentEntryFormParams {
     contentModel: CmsEditorContentModel;
-    entry?: { [key: string]: any };
+    entry: {
+        [key: string]: any;
+    };
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
     addEntryToListCache: boolean;
@@ -117,11 +119,21 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             setLoading(true);
             const response = await createMutation({
                 variables: { data },
-                update(cache, { data }) {
-                    const { data: entry, error } = data.content;
+                update(cache, response) {
+                    if (!response.data) {
+                        showSnackbar("Missing response data in Create Entry.");
+                        return;
+                    }
+                    const { data } = response;
+                    const { data: entry, error } = data.content || {};
                     if (error) {
                         showSnackbar(error.message);
                         setInvalidFieldValues(error.data as InvalidFieldError[]);
+                        return;
+                    } else if (!entry) {
+                        showSnackbar(
+                            "Missing entry data in update callback on Create Entry Response."
+                        );
                         return;
                     }
                     resetInvalidFieldValues();
@@ -137,10 +149,13 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             });
             setLoading(false);
 
-            const { error, data: entry } = response.data.content;
+            const { error, data: entry } = response.data?.content || {};
             if (error) {
                 showSnackbar(error.message);
                 setInvalidFieldValues(error.data as InvalidFieldError[]);
+                return null;
+            } else if (!entry) {
+                showSnackbar("Missing entry data in Create Entry Response.");
                 return null;
             }
             resetInvalidFieldValues();
@@ -162,6 +177,10 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 variables: { revision, data }
             });
             setLoading(false);
+            if (!response.data) {
+                showSnackbar("Missing response data on Update Entry Response.");
+                return;
+            }
 
             const { error } = response.data.content;
             if (error) {
@@ -183,11 +202,20 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             setLoading(true);
             const response = await createFromMutation({
                 variables: { revision, data: formData },
-                update(cache, { data }) {
-                    const { data: newRevision, error } = data.content;
+                update(cache, response) {
+                    if (!response.data) {
+                        showSnackbar(
+                            "Missing data in update callback on Create From Entry Response."
+                        );
+                        return;
+                    }
+                    const { data: newRevision, error } = response.data.content;
                     if (error) {
                         showSnackbar(error.message);
                         setInvalidFieldValues(error.data as InvalidFieldError[]);
+                        return;
+                    } else if (!newRevision) {
+                        showSnackbar("Missing entry data in update callback on Create From Entry.");
                         return;
                     }
                     resetInvalidFieldValues();
@@ -204,6 +232,11 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 }
             });
             setLoading(false);
+
+            if (!response.data) {
+                showSnackbar("Missing response data on Create From Entry Mutation.");
+                return;
+            }
 
             const { data, error } = response.data.content;
             if (error) {
@@ -297,7 +330,11 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         data: entry && entry.id ? entry : getDefaultValues(),
         loading,
         setLoading,
-        onChange: params.onChange,
+        onChange:
+            params.onChange ||
+            (() => {
+                return void 0;
+            }),
         onSubmit,
         invalidFields,
         renderPlugins

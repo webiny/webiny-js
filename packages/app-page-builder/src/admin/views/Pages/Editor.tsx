@@ -9,7 +9,9 @@ import {
     GET_PAGE,
     CREATE_PAGE_FROM,
     CreatePageFromMutationResponse,
-    CreatePageFromMutationVariables
+    CreatePageFromMutationVariables,
+    GetPageQueryResponse,
+    GetPageQueryVariables
 } from "./graphql";
 import { EditorLoadingScreen } from "~/admin/components/EditorLoadingScreen";
 import {
@@ -19,6 +21,14 @@ import {
 } from "~/admin/graphql/pages";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import createBlockPlugin from "~/admin/utils/createBlockPlugin";
+import dotProp from "dot-prop-immutable";
+import { PbEditorElement, PbErrorResponse } from "~/types";
+import { PageAtomType, RevisionsAtomType } from "~/editor/recoil/modules";
+
+interface PageDataAndRevisionsState {
+    page: (PageAtomType & PbEditorElement) | null;
+    revisions: RevisionsAtomType;
+}
 
 const extractPageGetPage = (data: any): any => {
     return data.pageBuilder?.getPage || {};
@@ -39,7 +49,10 @@ const Editor: React.FC = () => {
     const params = useParams<{ id: string }>();
     const history = useHistory();
     const { showSnackbar } = useSnackbar();
-    const [data, setData] = useState({ page: null, revisions: null });
+    const [data, setData] = useState<PageDataAndRevisionsState>({
+        page: null,
+        revisions: []
+    });
     const [createPageFrom] = useMutation<
         CreatePageFromMutationResponse,
         CreatePageFromMutationVariables
@@ -69,9 +82,11 @@ const Editor: React.FC = () => {
             });
 
         const pageData = client
-            .query({
+            .query<GetPageQueryResponse, GetPageQueryVariables>({
                 query: GET_PAGE,
-                variables: { id: decodeURIComponent(params.id) },
+                variables: {
+                    id: decodeURIComponent(params.id)
+                },
                 fetchPolicy: "network-only"
             })
             .then(async ({ data }) => {
@@ -84,25 +99,38 @@ const Editor: React.FC = () => {
                 }
 
                 const { revisions = [], content, ...restOfPageData } = extractPageData(data);
-                const page = {
+                const page: PageAtomType & PbEditorElement = {
                     ...restOfPageData,
                     content: content || createElement("document")
                 };
 
                 if (page.status === "draft") {
                     setData({ page, revisions });
-                } else {
-                    const response = await createPageFrom({
-                        variables: { from: page.id }
-                    });
-
-                    history.push(
-                        `/page-builder/editor/${encodeURIComponent(
-                            response.data.pageBuilder.createPage.data.id
-                        )}`
-                    );
-                    setTimeout(() => showSnackbar("New revision created."), 1500);
+                    return;
                 }
+                const response = await createPageFrom({
+                    variables: { from: page.id }
+                });
+                const createPageFromError = dotProp.get(
+                    response,
+                    "data.pageBuilder.createPage.error",
+                    null
+                ) as PbErrorResponse;
+                if (createPageFromError) {
+                    showSnackbar(createPageFromError.message);
+                    return;
+                }
+                const id: string | null = dotProp.get(
+                    response,
+                    "data.pageBuilder.createPage.data.id",
+                    null
+                );
+                if (!id) {
+                    showSnackbar("Missing ID in Create Page From Mutation Response.");
+                    return;
+                }
+                history.push(`/page-builder/editor/${encodeURIComponent(id)}`);
+                setTimeout(() => showSnackbar("New revision created."), 1500);
             });
 
         return React.lazy(() =>
@@ -115,7 +143,7 @@ const Editor: React.FC = () => {
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
             <LoadData>
-                <PbEditor page={page} revisions={revisions} />
+                <PbEditor page={page as PageAtomType & PbEditorElement} revisions={revisions} />
             </LoadData>
         </React.Suspense>
     );

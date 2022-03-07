@@ -7,6 +7,10 @@ import Error from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
+interface VerifyResponse {
+    jti?: string;
+}
+
 // All JWTs are split into 3 parts by two periods
 const isJwt = (token: string) => token.split(".").length === 3;
 
@@ -19,10 +23,11 @@ export interface AuthenticatorConfig {
     getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
 }
 
-const jwksCache = new Map<string, Record<string, any>[]>();
+type JwksCacheItem = Record<string, any>;
+const jwksCache = new Map<string, JwksCacheItem[]>();
 
 export const createAuthenticator = (config: AuthenticatorConfig) => {
-    const getJWKs = async () => {
+    const getJWKs = async (): Promise<JwksCacheItem[]> => {
         const key = config.issuer;
 
         if (!jwksCache.has(key)) {
@@ -30,14 +35,18 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
             jwksCache.set(key, response.keys);
         }
 
-        return jwksCache.get(key);
+        return jwksCache.get(key) as JwksCacheItem[];
     };
 
     const oktaAuthenticator = async (idToken?: string) => {
         if (typeof idToken === "string" && isJwt(idToken)) {
             try {
                 const jwks = await getJWKs();
-                const { header } = jwt.decode(idToken, { complete: true });
+                const decoded = jwt.decode(idToken, { complete: true });
+                if (!decoded) {
+                    return null;
+                }
+                const { header } = decoded;
                 const jwk = jwks.find(key => key.kid === header.kid);
 
                 if (!jwk) {
@@ -48,8 +57,8 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                  * TODO @ts-refactor
                  */
                 // @ts-ignore
-                const token = await verify(idToken, jwkToPem(jwk));
-                if (!token.jti.startsWith("ID.")) {
+                const token = (await verify(idToken, jwkToPem(jwk))) as VerifyResponse;
+                if (!token.jti || !token.jti.startsWith("ID.")) {
                     throw new Error("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");
                 }
 

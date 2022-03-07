@@ -20,10 +20,10 @@ interface RenderCellCallableParams {
     style: CSSProperties;
 }
 interface RenderCellCallable {
-    (params: RenderCellCallableParams): React.ReactElement;
+    (params: RenderCellCallableParams): React.ReactElement | null;
 }
 
-const noop = (): React.ReactElement => null;
+const noop = (): React.ReactElement | null => null;
 const gridItem = css({
     position: "relative",
     display: "flex",
@@ -151,15 +151,15 @@ const iconPickerWrapper = css({
     }
 });
 
-type IconPickerPropsType = {
-    value: [string, string];
+interface IconPickerPropsType {
+    value?: [string, string];
     onChange: (item: PbIcon) => void;
     removable?: boolean;
     handlerClassName?: string;
     useInSidebar?: boolean;
     removeIcon?: () => void;
-};
-const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
+}
+const IconPicker: React.FC<IconPickerPropsType> = ({
     value,
     onChange,
     removable = true,

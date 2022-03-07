@@ -4,7 +4,7 @@ import { MediumEditorOptions, PbThemePlugin } from "~/types";
 
 export const getMediumEditorOptions = (
     defaultOptions: CoreOptions,
-    mediumEditorOptions: MediumEditorOptions
+    mediumEditorOptions?: MediumEditorOptions
 ): CoreOptions => {
     if (typeof mediumEditorOptions === "function") {
         return mediumEditorOptions(defaultOptions);

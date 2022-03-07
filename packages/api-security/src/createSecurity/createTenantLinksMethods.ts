@@ -17,7 +17,7 @@ export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) 
                 params.map(item => ({
                     ...item,
                     createdOn: new Date().toISOString(),
-                    webinyVersion: process.env.WEBINY_VERSION
+                    webinyVersion: process.env.WEBINY_VERSION as string
                 }))
             );
         },
@@ -46,7 +46,7 @@ export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) 
 
         async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
             params: GetTenantLinkByIdentityParams
-        ): Promise<TLink> {
+        ): Promise<TLink | null> {
             return storageOperations.getTenantLinkByIdentity(params);
         }
     };

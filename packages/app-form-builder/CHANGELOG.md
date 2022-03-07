@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* admin and website ([d1006ed](https://github.com/webiny/webiny-js/commit/d1006ed659d5dff910795d61687bff9528a19129))
+* eslint run ([a1ea3dc](https://github.com/webiny/webiny-js/commit/a1ea3dc4ff61f6cb69cf5ed10f3fef2f9fafc514))
+* prettier run ([4703a40](https://github.com/webiny/webiny-js/commit/4703a404f65fdad502b3222209ded71b6f5b85cc))
+* revision from in form builder ([87dedcc](https://github.com/webiny/webiny-js/commit/87dedcc7f2f0ff3a50d4c706288f935b129d358a))
+* sorters ([2ac422e](https://github.com/webiny/webiny-js/commit/2ac422ec316b2ea286b0f897abd3018b72dd8d6b))
+
+
+### Features
+
+* any types in app-form-builder ([87b373b](https://github.com/webiny/webiny-js/commit/87b373b0d67a6da23685f87373ed71aa71eefba6))
+* any types in app-form-builder wip ([c9f8378](https://github.com/webiny/webiny-js/commit/c9f8378cc9249a35d4d24ca9f9d3927eee58d22c))
+* any types in app-form-builder wip 2 ([2034a50](https://github.com/webiny/webiny-js/commit/2034a50c166e7f842eeece0b6ac1acbd06fb45ce))
+* any types in app-headless-cms wip ([79c2c7f](https://github.com/webiny/webiny-js/commit/79c2c7f21d489cddc690556e3f5012fff75176d1))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/app-form-builder

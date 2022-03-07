@@ -27,21 +27,25 @@ interface SkippingVersionState {
     latest: string;
     availableUpgrades: string[];
 }
-export interface Installer {
+
+interface BaseInstaller {
+    installed: string | null;
+    plugin: AdminInstallationPlugin;
+}
+
+export interface Installer extends BaseInstaller {
     type: "install" | "upgrade";
     name: string;
     title: string;
     render: AdminInstallationPlugin["render"];
-    installed: string | null;
     secure?: boolean;
-    plugin: AdminInstallationPlugin;
 }
 interface State {
     loading: boolean;
     installers: Installer[];
     installerIndex: number;
     showLogin: boolean;
-    skippingVersions: SkippingVersionState;
+    skippingVersions: SkippingVersionState | null;
 }
 
 interface Reducer {
@@ -79,16 +83,16 @@ export const useInstaller = (params: UseInstallerParams) => {
         throw new Error(msg.join("\n"));
     };
 
-    const createGraph = (installers: Partial<Installer>[]): Graph => {
+    const createGraph = (installers: BaseInstaller[]): Graph => {
         const graph = new Graph();
         installers.forEach(({ plugin }) => {
-            graph.setNode(plugin.name, plugin);
+            graph.setNode(plugin.name as string, plugin);
         });
 
         installers.forEach(({ plugin: pl }) => {
             if (Array.isArray(pl.dependencies)) {
                 pl.dependencies.forEach(dep => {
-                    graph.setEdge(pl.name, dep);
+                    graph.setEdge(pl.name as string, dep);
                 });
             }
         });
@@ -100,7 +104,7 @@ export const useInstaller = (params: UseInstallerParams) => {
 
     const getInstallers = useCallback(
         (
-            installers: Partial<Installer>[],
+            installers: BaseInstaller[],
             graph: Graph,
             toInstall: Installer[] = [],
             toUpgrade: Installer[] = []
@@ -126,12 +130,12 @@ export const useInstaller = (params: UseInstallerParams) => {
                 } else {
                     const wbyVersion = appConfig.getKey(
                         "WEBINY_VERSION",
-                        process.env.REACT_APP_WEBINY_VERSION
+                        process.env.REACT_APP_WEBINY_VERSION as string
                     );
 
                     const upgrades = (installer.plugin.upgrades || []).filter(({ version }) => {
                         // TODO use coerce
-                        return lte(version, wbyVersion) && gt(version, installer.installed);
+                        return lte(version, wbyVersion) && gt(version, installer.installed || "");
                     });
 
                     if (upgrades.length > 1) {
@@ -190,12 +194,12 @@ export const useInstaller = (params: UseInstallerParams) => {
 
         installers[installerIndex].installed = appConfig.getKey(
             "WEBINY_VERSION",
-            process.env.REACT_APP_WEBINY_VERSION
+            process.env.REACT_APP_WEBINY_VERSION as string
         );
         setState({ installers });
 
         if (installers.length < installerIndex + 1) {
-            setState({ installerIndex: null });
+            setState({ installerIndex: undefined });
             return;
         }
 
@@ -218,7 +222,7 @@ export const useInstaller = (params: UseInstallerParams) => {
                 return;
             }
 
-            const allInstallers: Partial<Installer>[] = [];
+            const allInstallers: BaseInstaller[] = [];
             await Promise.all(
                 plugins.byType<AdminInstallationPlugin>("admin-installation").map(async pl => {
                     const installed = await pl.getInstalledVersion({ client });

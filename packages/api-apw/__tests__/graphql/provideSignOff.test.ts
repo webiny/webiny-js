@@ -37,7 +37,7 @@ describe("Provide sign off for a step in content review process", function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => response.data.apw.getContentReview.data !== null,
+            (response: any) => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for entry to be available in get query"
             }
@@ -85,7 +85,7 @@ describe("Provide sign off for a step in content review process", function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const entry = response.data.apw.getContentReview.data;
 
                 const hasChanged = entry && entry.savedOn !== previousSavedOn;
@@ -193,7 +193,7 @@ describe("Provide sign off for a step in content review process", function () {
                 gqlHandlerForIdentityA
                     .getContentReviewQuery({ id: createdContentReview.id })
                     .then(([data]) => data),
-            response => response.data.apw.getContentReview.data !== null,
+            (response: any) => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for entry to be available in get query"
             }
@@ -242,7 +242,7 @@ describe("Provide sign off for a step in content review process", function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => response.data.apw.getContentReview.data !== null,
+            (response: any) => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for entry to be available in get query"
             }
@@ -280,7 +280,7 @@ describe("Provide sign off for a step in content review process", function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const entry = response.data.apw.getContentReview.data;
                 const hasChanged = entry && entry.savedOn !== previousSavedOn;
                 if (hasChanged) {

@@ -2,7 +2,7 @@ import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/El
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderOperatorBetweenPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
-    public name = "elasticsearch.queryBuilder.operator.between.default";
+    public override name = "elasticsearch.queryBuilder.operator.between.default";
 
     public getOperator(): string {
         return "between";

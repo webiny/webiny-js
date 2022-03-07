@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { FormComponentProps } from "~/types";
 import BrowseFiles, { SelectedFile, FileError } from "react-butterfiles";
 import { FormElementMessage } from "~/FormElementMessage";
@@ -24,7 +24,7 @@ const ImageUploadWrapper = styled("div")({
     }
 });
 
-interface Props extends FormComponentProps {
+interface SingleImageUploadProps extends FormComponentProps {
     // Component label.
     label?: string;
 
@@ -64,19 +64,20 @@ interface Props extends FormComponentProps {
     };
 }
 
-type State = {
+interface StateImage {
+    name: string;
+    type: string;
+    size: number;
+    src?: string;
+}
+interface State {
     loading: boolean;
-    error?: FileError;
+    error: FileError | null;
     imageEditor: {
-        image?: {
-            name: string;
-            type: string;
-            size: number;
-            src?: string;
-        };
+        image: StateImage | null;
         open: boolean;
     };
-};
+}
 
 // Do not apply editing for following image types.
 const noImageEditingTypes = ["image/svg+xml", "image/gif"];
@@ -88,12 +89,8 @@ type ErrorType =
     | "multipleNotAllowed"
     | "multipleMaxSizeExceeded";
 
-export class SingleImageUpload extends React.Component<Props, State> {
-    static defaultProps: Partial<Props> = {
-        validation: {
-            isValid: null,
-            message: null
-        },
+export class SingleImageUpload extends React.Component<SingleImageUploadProps, State> {
+    static defaultProps: Partial<SingleImageUploadProps> = {
         maxSize: "10mb",
         imageEditor: {},
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
@@ -107,7 +104,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
         }
     };
 
-    state: State = {
+    public override state: State = {
         loading: false,
         error: null,
         imageEditor: {
@@ -139,7 +136,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
         this.setState({ error });
     };
 
-    render() {
+    public override render() {
         const {
             className,
             value,
@@ -155,7 +152,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
         } = this.props;
 
         let imageEditorImageSrc = "";
-        if (this.state.imageEditor.image) {
+        if (this.state.imageEditor.image && this.state.imageEditor.image.src) {
             imageEditorImageSrc = this.state.imageEditor.image.src;
         }
 
@@ -163,6 +160,11 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
         const errorType = this.state.error ? (this.state.error.type as ErrorType) : null;
 
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
+        /**
+         * accept can be safely cast because of default value
+         * errorType as keyof Props["errorMessages"] can be safely
+         */
         return (
             <ImageUploadWrapper className={classNames(className)}>
                 {label && !src && (
@@ -189,14 +191,17 @@ export class SingleImageUpload extends React.Component<Props, State> {
                                     (await onChange({ ...this.state.imageEditor.image, src }));
                                 this.setState({
                                     loading: false,
-                                    imageEditor: { image: null, open: false }
+                                    imageEditor: {
+                                        image: null,
+                                        open: false
+                                    }
                                 });
                             });
                         });
                     }}
                 />
                 <BrowseFiles
-                    accept={accept}
+                    accept={accept as string[]}
                     maxSize={maxSize}
                     convertToBase64
                     onSuccess={this.handleFiles}
@@ -208,7 +213,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                                 renderImagePreview={renderImagePreview}
                                 loading={this.state.loading}
                                 value={value}
-                                removeImage={showRemoveImageButton ? onChange : null}
+                                removeImage={showRemoveImageButton ? onChange : undefined}
                                 uploadImage={browseFiles}
                                 editImage={browseFiles}
                             />
@@ -216,17 +221,19 @@ export class SingleImageUpload extends React.Component<Props, State> {
                     )}
                 </BrowseFiles>
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
 
                 {this.state.error && (
                     <FormElementMessage error>
-                        {this.props.errorMessages[errorType] || this.props.errorMessages.default}
+                        {this.props.errorMessages[
+                            errorType as keyof SingleImageUploadProps["errorMessages"]
+                        ] || this.props.errorMessages.default}
                     </FormElementMessage>
                 )}
             </ImageUploadWrapper>

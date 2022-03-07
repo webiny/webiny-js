@@ -9,6 +9,7 @@ import { ReactComponent as UnpublishIcon } from "../../../../assets/unpublish.sv
 import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisionHandler";
 import usePermission from "../../../../../hooks/usePermission";
 import { PbPageData } from "~/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
 
@@ -16,7 +17,7 @@ interface PublishRevisionProps {
     page: PbPageData;
 }
 const PublishRevision: React.FC<PublishRevisionProps> = props => {
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
     const { canPublish, canUnpublish } = usePermission();
     const { page } = props;
 
@@ -46,7 +47,9 @@ const PublishRevision: React.FC<PublishRevisionProps> = props => {
         )
     });
 
-    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
+    const pbPagePermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.page");
+    }, [identity]);
     if (!pbPagePermission) {
         return null;
     }

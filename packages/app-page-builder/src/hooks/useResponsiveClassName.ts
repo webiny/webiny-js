@@ -2,12 +2,16 @@ import React from "react";
 import { plugins } from "@webiny/plugins";
 import kebabCase from "lodash/kebabCase";
 import { PbRenderResponsiveModePlugin } from "~/types";
-import { PageBuilderContext, PageBuilderContextValue } from "../contexts/PageBuilder";
+import { PageBuilderContext } from "~/contexts/PageBuilder";
 
-const useResponsiveClassName = () => {
+interface UseResponsiveClassName {
+    pageElementRef: (node: HTMLElement | null) => void;
+    responsiveClassName: string;
+}
+const useResponsiveClassName = (): UseResponsiveClassName => {
     const {
         responsiveDisplayMode: { displayMode, setDisplayMode }
-    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
+    } = React.useContext(PageBuilderContext);
     const ref = React.useRef<HTMLElement>();
 
     // Get "responsive-mode" plugins
@@ -18,7 +22,7 @@ const useResponsiveClassName = () => {
     }, []);
     // Create resize observer
     const resizeObserver = React.useMemo(() => {
-        return new ResizeObserver(entries => {
+        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
                 handlerResize({ width, height });
@@ -26,7 +30,7 @@ const useResponsiveClassName = () => {
         });
     }, []);
 
-    const pageElementRef = React.useCallback((node: HTMLElement): void => {
+    const pageElementRef = React.useCallback((node: HTMLElement | null): void => {
         if (ref.current) {
             // Make sure to cleanup any events/references added to the last instance
             resizeObserver.disconnect();

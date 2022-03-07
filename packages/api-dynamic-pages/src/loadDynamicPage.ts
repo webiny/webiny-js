@@ -33,7 +33,7 @@ export const loadDynamicPage = async (
                 });
                 // Load data sources
                 const dataSources = await loadDataSources(
-                    fullPage.settings.dataSources,
+                    fullPage.settings.dataSources || [],
                     { path: match.groups },
                     context
                 );

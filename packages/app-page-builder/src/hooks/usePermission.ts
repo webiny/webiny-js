@@ -8,14 +8,25 @@ interface CreatableItem {
         id: string;
     };
 }
-const usePermission = () => {
-    const { identity } = useSecurity();
 
-    const pbPagePermission = useMemo(
-        (): SecurityPermission => identity.getPermission("pb.page"),
-        []
-    );
-    const hasFullAccess = useMemo((): SecurityPermission => identity.getPermission("pb.*"), []);
+interface UsePermission {
+    canEdit: (item: CreatableItem) => boolean;
+    canDelete: (item: CreatableItem) => boolean;
+    canPublish: () => boolean;
+    canUnpublish: () => boolean;
+    canRequestReview: () => boolean;
+    canRequestChange: () => boolean;
+}
+
+const usePermission = (): UsePermission => {
+    const { identity, getPermission } = useSecurity();
+
+    const pbPagePermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.page");
+    }, [identity]);
+    const hasFullAccess = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.*");
+    }, [identity]);
 
     const canEdit = useCallback(
         (item: CreatableItem): boolean => {
@@ -27,7 +38,7 @@ const usePermission = () => {
                 return false;
             }
             if (pbPagePermission.own && creatorId) {
-                return creatorId === identity.login;
+                return !!identity && creatorId === identity.login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("w");
@@ -46,7 +57,8 @@ const usePermission = () => {
                 return false;
             }
             if (pbPagePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+                const login = identity ? identity.login : null;
+                return get(item, "createdBy.id", undefined) === login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("d");

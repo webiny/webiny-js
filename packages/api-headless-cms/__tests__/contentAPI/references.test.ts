@@ -5,7 +5,7 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 import { until } from "../utils/helpers";
 
-const createCategoryItem = async ({ manager, from = null, publish, data }) => {
+const createCategoryItem = async ({ manager, from = null, publish, data }: any) => {
     const [response] = await (from
         ? manager.createCategoryFrom({ revision: from.id })
         : manager.createCategory({ data }));
@@ -45,7 +45,7 @@ const createCategoryItem = async ({ manager, from = null, publish, data }) => {
     return publishResponse.data.publishCategory.data;
 };
 
-const createArticleItem = async ({ manager, from = null, publish, data }) => {
+const createArticleItem = async ({ manager, from = null, publish, data }: any) => {
     const [response] = await (from
         ? manager.createArticleFrom({ revision: from.id })
         : manager.createArticle({ data }));
@@ -222,12 +222,12 @@ describe("entry references", () => {
          */
         await until(
             () => articleManager.listArticles().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 const entries = data.listArticles.data || [];
                 if (entries.length !== 3) {
                     return false;
                 }
-                return entries.every(entry => {
+                return entries.every((entry: any) => {
                     return !!entry.meta.publishedOn;
                 });
             },
@@ -366,8 +366,8 @@ describe("entry references", () => {
          */
         await until(
             () => articleManager.listArticles().then(([data]) => data),
-            ({ data }) => {
-                const entries = data?.listArticles?.data || [];
+            ({ data }: any) => {
+                const entries: any[] = data?.listArticles?.data || [];
                 if (entries.length !== 1) {
                     return false;
                 }
@@ -454,7 +454,7 @@ describe("entry references", () => {
          */
         await until(
             () => categoryManager.listCategories().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 const entries = data?.listCategories?.data || [];
                 return entries.length === 0;
             },
@@ -650,8 +650,8 @@ describe("entry references", () => {
          */
         await until(
             () => articleManager.listArticles().then(([data]) => data),
-            ({ data }) => {
-                const entries = data?.listArticles?.data || [];
+            ({ data }: any) => {
+                const entries: any[] = data?.listArticles?.data || [];
                 if (entries.length !== 4) {
                     return false;
                 }

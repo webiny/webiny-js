@@ -8,11 +8,17 @@ export const CurrentTenant: React.FC = () => {
     const { identity } = useSecurity();
     const [settingsShown, showSettings] = useState(false);
 
-    const { currentTenant, defaultTenant } = identity;
+    const { currentTenant, defaultTenant } = identity || {
+        currentTenant: null,
+        defaultTenant: null
+    };
+
+    const currentTenantId = currentTenant ? currentTenant.id : "unknown";
+    const defaultTenantId = defaultTenant ? defaultTenant.id : "unknown";
 
     const closeDialog = useCallback(() => showSettings(false), []);
 
-    if (currentTenant.id === "root") {
+    if (currentTenantId === "root") {
         return (
             <Fragment>
                 <SettingsDialog open={settingsShown} onClose={closeDialog} />
@@ -24,7 +30,7 @@ export const CurrentTenant: React.FC = () => {
         );
     }
 
-    if (currentTenant.id !== "root" && currentTenant.id !== defaultTenant.id) {
+    if (currentTenantId !== "root" && currentTenantId !== defaultTenantId) {
         return (
             <ButtonDefault flat disabled style={{ color: "white" }}>
                 <ButtonIcon icon={<TenantIcon />} />

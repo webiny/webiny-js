@@ -7,6 +7,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import {
+    CreatedBy,
     File,
     FileManagerContext,
     FileManagerFilesStorageOperationsListParamsWhere,
@@ -278,7 +279,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             const identity = context.security.getIdentity();
             const tenant = context.tenancy.getCurrentTenant();
-            const createdBy = {
+            const createdBy: CreatedBy = {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type
@@ -345,7 +346,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...initialWhere,
                 private: false,
-                locale: context.i18nContent.getCurrentLocale().code,
+                locale: getLocaleCode(context),
                 tenant: context.tenancy.getCurrentTenant().id
             };
             /**
@@ -410,11 +411,10 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         },
         async listTags({ after, limit }) {
             await checkBasePermissions(context);
-            const { i18nContent } = context;
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
                 tenant: context.tenancy.getCurrentTenant().id,
-                locale: i18nContent.locale.code
+                locale: getLocaleCode(context)
             };
 
             const params = {

@@ -88,6 +88,7 @@ describe("filtering", () => {
         const fruit: Fruit = publish.data.publishFruit.data;
 
         for (const field of filterOutFields) {
+            // @ts-ignore
             delete fruit[field];
         }
         return fruit;
@@ -110,8 +111,8 @@ describe("filtering", () => {
     const waitFruits = async (name: string, { listFruits }: any) => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
-            () => listFruits({}).then(([data]) => data),
-            ({ data }) => data.listFruits.data.length === 3,
+            () => listFruits({}).then(([data]: any) => data),
+            ({ data }: any) => data.listFruits.data.length === 3,
             { name: `list all fruits - ${name}` }
         );
     };
@@ -697,7 +698,7 @@ describe("filtering", () => {
          */
         await until(
             () => productReader.listProducts({}).then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.listProducts.data.length === 4;
             },
             { name: "list all products" }
@@ -1142,7 +1143,7 @@ describe("filtering", () => {
          */
         await until(
             () => productManager.listProducts().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.listProducts.data.length === 3;
             },
             { name: "list products after create" }
@@ -1227,8 +1228,8 @@ describe("filtering", () => {
          */
         await until(
             () => articleManager.listArticles().then(([data]) => data),
-            ({ data }) => {
-                const entries = data?.listArticles?.data || [];
+            ({ data }: any) => {
+                const entries: any[] = data?.listArticles?.data || [];
                 if (entries.length !== 2) {
                     return false;
                 }
@@ -1572,8 +1573,8 @@ describe("filtering", () => {
          */
         await until(
             () => articleManager.listArticles().then(([data]) => data),
-            ({ data }) => {
-                const entries = data?.listArticles?.data || [];
+            ({ data }: any) => {
+                const entries: any[] = data?.listArticles?.data || [];
                 if (entries.length < 2) {
                     return false;
                 }
@@ -1748,8 +1749,8 @@ describe("filtering", () => {
          */
         await until(
             () => articleManager.listArticles().then(([data]) => data),
-            ({ data }) => {
-                const entries = data?.listArticles?.data || [];
+            ({ data }: any) => {
+                const entries: any[] = data?.listArticles?.data || [];
                 if (entries.length !== 2) {
                     return false;
                 }

@@ -47,7 +47,7 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
                     where: { slug: groupSlug, tenant: tenant.parent }
                 });
 
-                return group ? group.permissions : undefined;
+                return group ? group.permissions : null;
             }
 
             return null;

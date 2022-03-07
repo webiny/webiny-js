@@ -38,7 +38,7 @@ const getStatus = (revision: RevisionItemAtomType): RevisionStatusEnum => {
     return RevisionStatusEnum.DRAFT;
 };
 
-const Revisions: React.FunctionComponent = () => {
+const Revisions: React.FC = () => {
     const revisions = useRecoilValue(revisionsAtom);
     const { history } = useRouter();
     return (

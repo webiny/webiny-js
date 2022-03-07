@@ -10,7 +10,7 @@ export const headingClassName = classNames(
 interface TextPropsType {
     element: PbElement;
 }
-const Heading: React.FunctionComponent<TextPropsType> = ({ element }) => {
+const Heading: React.FC<TextPropsType> = ({ element }) => {
     return <Text element={element} rootClassName={headingClassName} />;
 };
 

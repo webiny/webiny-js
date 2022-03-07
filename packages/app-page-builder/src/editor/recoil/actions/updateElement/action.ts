@@ -6,8 +6,14 @@ import { UpdateElementActionArgsType } from "./types";
 export const updateElementAction: EventActionCallable<UpdateElementActionArgsType> = (
     _,
     { client },
-    { element, history, triggerUpdateElementTree, debounce, onFinish }
+    args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
+    const { element, history, triggerUpdateElementTree, debounce, onFinish } = args;
     const actions = [];
     if (history === true) {
         if (!client) {

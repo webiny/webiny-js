@@ -14,5 +14,5 @@ export interface GraphQLPlaygroundTab {
 
 export type GraphQLPlaygroundTabPlugin = Plugin<{
     type: "graphql-playground-tab";
-    tab(params: GraphQLPlaygroundTabParams): GraphQLPlaygroundTab;
+    tab: (params: GraphQLPlaygroundTabParams) => GraphQLPlaygroundTab | null;
 }>;

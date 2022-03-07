@@ -10,20 +10,22 @@ import * as utils from "~/plugins/crud/utils";
 import * as models from "~/plugins/crud/forms.models";
 import {
     FbForm,
+    FbFormTriggerHandlerPlugin,
     FbSubmission,
     FormBuilder,
     FormBuilderContext,
     FormBuilderStorageOperationsListSubmissionsParams,
-    SubmissionsCRUD
+    SubmissionsCRUD,
+    FbFormFieldValidatorPlugin
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 
-export interface Params {
+interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
 }
 
-export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
+export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): SubmissionsCRUD => {
     const { context } = params;
 
     return {
@@ -85,7 +87,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 where: {
                     tenant: form.tenant,
                     locale: form.locale,
-                    formId: formFormId
+                    formId: formFormId as string
                 },
                 after,
                 limit,
@@ -125,7 +127,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                 throwOnNotFound: true
             });
 
-            if (settings.reCaptcha && settings.reCaptcha.enabled) {
+            if (settings && settings.reCaptcha && settings.reCaptcha.enabled) {
                 if (!reCaptchaResponseToken) {
                     throw new Error("Missing reCAPTCHA response token - cannot verify.");
                 }
@@ -159,7 +161,8 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
             /**
              * Validate data
              */
-            const validatorPlugins = context.plugins.byType("fb-form-field-validator");
+            const validatorPlugins =
+                context.plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
             const { fields } = form;
 
             const data = pick(
@@ -273,7 +276,8 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                  * Execute triggers
                  */
                 if (form.triggers) {
-                    const plugins = context.plugins.byType("form-trigger-handler");
+                    const plugins =
+                        context.plugins.byType<FbFormTriggerHandlerPlugin>("form-trigger-handler");
                     for (let i = 0; i < plugins.length; i++) {
                         const plugin = plugins[i];
                         if (form.triggers[plugin.trigger]) {
@@ -283,7 +287,7 @@ export const createSubmissionsCrud = (params: Params): SubmissionsCRUD => {
                                     submission.logs.push(log);
                                 },
                                 data,
-                                meta,
+                                // meta,
                                 trigger: form.triggers[plugin.trigger]
                             });
                         }

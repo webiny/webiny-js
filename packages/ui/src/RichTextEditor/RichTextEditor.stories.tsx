@@ -26,7 +26,7 @@ story.add(
                 <StoryReadme>{readme}</StoryReadme>
                 <StorySandbox>
                     <StorySandboxExample>
-                        <RichTextEditor value={null} onChange={onChange} />
+                        <RichTextEditor value={undefined} onChange={onChange} />
                     </StorySandboxExample>
                     <StorySandboxCode>
                         {`

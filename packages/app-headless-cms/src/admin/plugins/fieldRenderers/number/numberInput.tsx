@@ -1,4 +1,3 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import React from "react";
 import get from "lodash/get";
 import { CmsEditorFieldRendererPlugin } from "~/types";

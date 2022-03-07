@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef } from "react";
+import RenderFieldElement from "./RenderFieldElement";
 import styled from "@emotion/styled";
 import { Form } from "@webiny/form";
 import { FormAPI, FormRenderPropParams } from "@webiny/form/types";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
-import RenderFieldElement from "./RenderFieldElement";
 import { CmsContentFormRendererPlugin } from "~/types";
 import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntryForm";
 import { Fields } from "./Fields";
@@ -22,10 +22,13 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
     const { contentModel } = props;
     const { loading, data, onChange, onSubmit, invalidFields } = useContentEntryForm(props);
 
-    const ref = useRef(null);
+    const ref = useRef<FormAPI | null>(null);
 
     useEffect(() => {
-        typeof onForm === "function" && onForm(ref.current);
+        if (typeof onForm !== "function" || !ref.current) {
+            return;
+        }
+        onForm(ref.current);
     }, []);
 
     const formRenderer = plugins
@@ -35,17 +38,33 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
     const renderCustomLayout = useCallback(
         (formRenderProps: FormRenderPropParams) => {
             const fields = contentModel.fields.reduce((acc, field) => {
+                /**
+                 * TODO @ts-refactor
+                 * Figure out type for Bind.
+                 */
                 acc[field.fieldId] = (
                     <RenderFieldElement
                         field={field}
-                        Bind={formRenderProps.Bind}
+                        Bind={formRenderProps.Bind as any}
                         contentModel={contentModel}
                     />
                 );
 
                 return acc;
             }, {} as Record<string, React.ReactElement>);
-            return formRenderer.render({ ...formRenderProps, contentModel, fields });
+            if (!formRenderer) {
+                return <>{`Missing form renderer for modelId "${contentModel.modelId}".`}</>;
+            }
+            return formRenderer.render({
+                ...formRenderProps,
+                contentModel,
+                fields,
+                /**
+                 * TODO @ts-refactor
+                 * Figure out type for Bind.
+                 */
+                Bind: formRenderProps.Bind as any
+            });
         },
         [formRenderer]
     );
@@ -66,9 +85,10 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                     ) : (
                         <Fields
                             contentModel={contentModel}
-                            fields={contentModel.fields}
-                            layout={contentModel.layout}
+                            fields={contentModel.fields || []}
+                            layout={contentModel.layout || []}
                             {...formProps}
+                            Bind={formProps.Bind as any}
                         />
                     )}
                 </FormWrapper>

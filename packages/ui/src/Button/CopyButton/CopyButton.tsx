@@ -1,21 +1,18 @@
-import * as React from "react";
+import React from "react";
 import { ReactComponent as CopyToClipboardIcon } from "../assets/file_copy-24px.svg";
 import { IconButton } from "../index";
 import { FormComponentProps } from "../../types";
 import { useCallback } from "react";
 
-export type CopyButtonProps = FormComponentProps & {
+export interface CopyButtonProps extends FormComponentProps {
     value: string;
     onCopy?: () => void;
-};
+}
 
 /**
  * Shows the icon button.
- * @param props
- * @returns {*}
- * @constructor
  */
-const CopyButton = (props: CopyButtonProps) => {
+const CopyButton: React.FC<CopyButtonProps> = props => {
     const { value, onCopy, ...otherProps } = props;
 
     const copyToClipboard = useCallback(() => {

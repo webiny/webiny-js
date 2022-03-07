@@ -28,6 +28,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { PbMenu } from "~/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
@@ -116,14 +117,17 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
         [slug]
     );
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
-        return identity.getPermission("pb.menu");
-    }, []);
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.menu");
+    }, [identity]);
 
     const canDelete = useCallback(item => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         if (pbMenuPermission.own) {
-            const identityId = identity.id || identity.login;
+            const identityId = identity ? identity.id || identity.login : null;
             return item.createdBy.id === identityId;
         }
 
@@ -143,7 +147,7 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort menus by"}
                         >
                             {SORTERS.map(({ label, sort: value }) => {
                                 return (

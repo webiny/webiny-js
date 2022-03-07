@@ -19,7 +19,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Date/Time Inputs`,
         description: t`Renders inputs for various formats of dates and times.`,
         canUse({ field }) {
-            return (
+            return !!(
                 field.type === "datetime" &&
                 field.multipleValues &&
                 !get(field, "predefinedValues.enabled")
@@ -28,15 +28,20 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render(props) {
             const { field } = props;
 
+            const fieldSettingsType = field.settings ? field.settings.type : null;
+
             return (
                 <DynamicSection {...props}>
                     {({ bind, index }) => {
-                        const trailingIcon = index > 0 && {
-                            icon: <DeleteIcon />,
-                            onClick: () => bind.field.removeValue(index)
-                        };
+                        let trailingIcon = undefined;
+                        if (index > 0) {
+                            trailingIcon = {
+                                icon: <DeleteIcon />,
+                                onClick: () => bind.field.removeValue(index)
+                            };
+                        }
 
-                        if (field.settings.type === "dateTimeWithoutTimezone") {
+                        if (fieldSettingsType === "dateTimeWithoutTimezone") {
                             return (
                                 <DateTimeWithoutTimezone
                                     field={field}
@@ -45,7 +50,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 />
                             );
                         }
-                        if (field.settings.type === "dateTimeWithTimezone") {
+                        if (fieldSettingsType === "dateTimeWithTimezone") {
                             return (
                                 <DateTimeWithTimezone
                                     field={field}
@@ -54,7 +59,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 />
                             );
                         }
-                        if (field.settings.type === "time") {
+                        if (fieldSettingsType === "time") {
                             return (
                                 <Time
                                     field={{

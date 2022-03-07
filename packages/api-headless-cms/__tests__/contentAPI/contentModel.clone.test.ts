@@ -74,6 +74,9 @@ describe("content model - cloning", () => {
         cloneGroup = createCloneGroupResponse.data.createContentModelGroup.data;
 
         const targetModel = models.find(m => m.modelId === "product");
+        if (!targetModel) {
+            throw new Error("Could not find model `product`.");
+        }
         const [createModelResponse] = await createContentModelMutation({
             data: {
                 name: targetModel.name,

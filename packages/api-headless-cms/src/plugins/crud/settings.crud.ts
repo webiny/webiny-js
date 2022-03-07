@@ -9,13 +9,13 @@ import {
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 
-export interface Params {
+export interface CreateSettingsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
 }
-export const createSettingsCrud = (params: Params): CmsSettingsContext => {
+export const createSettingsCrud = (params: CreateSettingsCrudParams): CmsSettingsContext => {
     const { storageOperations, context, getTenant, getLocale } = params;
 
     const checkPermissions = (): Promise<CmsSettingsPermission> => {

@@ -18,7 +18,11 @@ export const updateLatestRevisionInListCache = (
 
     const [uniqueId] = revision.id.split("#");
 
-    const { formBuilder } = cache.readQuery<ListFormsQueryResponse>(gqlParams);
+    const response = cache.readQuery<ListFormsQueryResponse>(gqlParams);
+    if (!response || !response.formBuilder) {
+        return;
+    }
+    const { formBuilder } = response;
     const index = formBuilder.listForms.data.findIndex(item => item.id.startsWith(uniqueId));
 
     cache.writeQuery({
@@ -32,7 +36,11 @@ export const updateLatestRevisionInListCache = (
 export const addFormToListCache = (cache: DataProxy, revision: FbRevisionModel): void => {
     const gqlParams = { query: LIST_FORMS };
 
-    const { formBuilder } = cache.readQuery<ListFormsQueryResponse>(gqlParams);
+    const response = cache.readQuery<ListFormsQueryResponse>(gqlParams);
+    if (!response || !response.formBuilder) {
+        return;
+    }
+    const { formBuilder } = response;
 
     cache.writeQuery({
         ...gqlParams,
@@ -54,10 +62,13 @@ export const addRevisionToRevisionsCache = (
         variables: { id: newRevision.id.split("#")[0] }
     };
 
-    const { formBuilder } = cache.readQuery<
-        GetFormRevisionsQueryResponse,
-        GetFormRevisionsQueryVariables
-    >(gqlParams);
+    const response = cache.readQuery<GetFormRevisionsQueryResponse, GetFormRevisionsQueryVariables>(
+        gqlParams
+    );
+    if (!response || !response.formBuilder) {
+        return;
+    }
+    const { formBuilder } = response;
 
     cache.writeQuery({
         ...gqlParams,
@@ -73,7 +84,12 @@ export const addRevisionToRevisionsCache = (
 export const removeFormFromListCache = (cache: DataProxy, form: FbRevisionModel): void => {
     // Delete the form from list cache
     const gqlParams = { query: LIST_FORMS };
-    const { formBuilder } = cache.readQuery<ListFormsQueryResponse>(gqlParams);
+    const response = cache.readQuery<ListFormsQueryResponse>(gqlParams);
+    if (!response || !response.formBuilder) {
+        return;
+    }
+    const { formBuilder } = response;
+
     const index = formBuilder.listForms.data.findIndex(item => item.id === form.id);
 
     cache.writeQuery({
@@ -94,10 +110,15 @@ export const removeRevisionFromFormCache = (
         variables: { id: form.id.split("#")[0] }
     };
 
-    let { formBuilder } = cache.readQuery<
-        GetFormRevisionsQueryResponse,
-        GetFormRevisionsQueryVariables
-    >(gqlParams);
+    const response = cache.readQuery<GetFormRevisionsQueryResponse, GetFormRevisionsQueryVariables>(
+        gqlParams
+    );
+
+    if (!response || !response.formBuilder) {
+        return [];
+    }
+    let { formBuilder } = response;
+
     const index = formBuilder.revisions.data.findIndex(item => item.id === revision.id);
 
     formBuilder = dotProp.delete(

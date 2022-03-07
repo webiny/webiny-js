@@ -28,7 +28,7 @@ const getCreateResolver = (
     plugins: CmsFieldTypePlugins,
     field: CmsModelField,
     endpointType: ApiEndpoint
-): CmsModelFieldToGraphQLCreateResolver => {
+): CmsModelFieldToGraphQLCreateResolver | null => {
     if (!plugins[field.type]) {
         return null;
     } else if (!plugins[field.type][endpointType]) {

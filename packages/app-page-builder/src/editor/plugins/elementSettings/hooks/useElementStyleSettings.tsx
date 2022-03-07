@@ -10,7 +10,7 @@ interface ElementAction {
     plugin: PbEditorPageElementStyleSettingsPlugin;
     options: Record<string, any>;
 }
-const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] => {
+const getElementActions = (plugin?: PbEditorPageElementPlugin): ElementAction[] => {
     if (!plugin || !plugin.settings) {
         return [];
     }
@@ -20,17 +20,19 @@ const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] =
         ...(plugin.settings as string[])
     ];
 
-    const elementActions: ElementAction[] = pluginSettings.map(pl => {
-        if (typeof pl === "string") {
-            return { plugin: plugins.byName(pl), options: {} };
-        }
+    const elementActions = pluginSettings
+        .map(pl => {
+            if (typeof pl === "string") {
+                return { plugin: plugins.byName(pl), options: {} };
+            }
 
-        if (Array.isArray(pl)) {
-            return { plugin: plugins.byName(pl[0]), options: pl[1] };
-        }
+            if (Array.isArray(pl)) {
+                return { plugin: plugins.byName(pl[0]), options: pl[1] };
+            }
 
-        return null;
-    });
+            return null;
+        })
+        .filter(Boolean) as ElementAction[];
 
     return (
         elementActions
@@ -54,7 +56,7 @@ const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] =
 
 const useElementStyleSettings = (): ElementAction[] => {
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElement));
+    const element = useRecoilValue(elementByIdSelector(activeElement as string));
     const elementType = element?.type;
 
     const deactivateElement = useCallback(() => {

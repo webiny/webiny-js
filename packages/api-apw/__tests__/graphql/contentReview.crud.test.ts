@@ -76,7 +76,7 @@ describe("Content Review crud test", () => {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => response.data.apw.getContentReview.data !== null,
+            (response: any) => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for getContentReview query"
             }
@@ -126,7 +126,7 @@ describe("Content Review crud test", () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listContentReviews.data;
                 return list.length === 1;
             },
@@ -201,7 +201,7 @@ describe("Content Review crud test", () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listContentReviews.data;
                 return list.length === 0;
             },

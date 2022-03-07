@@ -7,10 +7,10 @@ interface Config<Props> {
 }
 
 export class ViewPlugin<Props = any> extends Plugin {
-    public static readonly type = "view";
-    private _config: Partial<Config<Props>>;
+    public static override readonly type: string = "view";
+    private readonly _config: Partial<Config<Props>>;
 
-    constructor(config?: Config<Props>) {
+    public constructor(config?: Config<Props>) {
         super();
         this._config = config || {};
     }
@@ -19,7 +19,10 @@ export class ViewPlugin<Props = any> extends Plugin {
         return this._config.name;
     }
 
-    render(props: Props) {
+    public render(props: Props) {
+        if (!this._config.render) {
+            return null;
+        }
         return this._config.render(props);
     }
 }

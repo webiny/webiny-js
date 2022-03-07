@@ -21,6 +21,10 @@ const I18NProviderHOC = (Component: React.FC): React.FC => {
 const I18NExtension: React.FC = () => {
     plugins.register(i18nPlugins());
 
+    /**
+     * TODO @ts-refactor
+     * Provider.hoc expects ComponentType.
+     */
     return (
         <Fragment>
             <Provider hoc={I18NProviderHOC} />

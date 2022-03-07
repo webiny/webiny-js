@@ -4,7 +4,6 @@ import { ElasticsearchQueryBuilderOperatorEqualPlugin } from "~/plugins/operator
 
 describe("ElasticsearchQueryBuilderOperatorEqualPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorEqualPlugin();
-    const context: any = {};
 
     it("should apply must correctly", () => {
         const query = createBlankQuery();
@@ -13,7 +12,6 @@ describe("ElasticsearchQueryBuilderOperatorEqualPlugin", () => {
             basePath: "name",
             path: "name.keyword",
             value: "John",
-            context,
             keyword: true
         });
 
@@ -21,7 +19,6 @@ describe("ElasticsearchQueryBuilderOperatorEqualPlugin", () => {
             basePath: "name",
             path: "name.keyword",
             value: "Doe",
-            context,
             keyword: true
         });
 

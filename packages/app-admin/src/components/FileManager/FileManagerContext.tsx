@@ -17,9 +17,9 @@ interface StateQueryParams {
     sort: number;
 }
 interface State {
-    showingFileDetails: string;
+    showingFileDetails: string | null;
     selected: FileItem[];
-    hasPreviouslyUploadedFiles: boolean;
+    hasPreviouslyUploadedFiles: boolean | null;
     queryParams: StateQueryParams;
     dragging: boolean;
     uploading: boolean;
@@ -106,6 +106,11 @@ const fileManagerReducer: Reducer = (state: State, action) => {
 const FileManagerContext = React.createContext({});
 
 const FileManagerProvider: React.FC = ({ children, ...props }) => {
+    /**
+     * TODO @ts-refactor
+     * Figure out how to type the rest of the types.
+     */
+    // @ts-ignore
     const [state, dispatch] = React.useReducer(fileManagerReducer, props, init);
 
     const value = React.useMemo(() => {

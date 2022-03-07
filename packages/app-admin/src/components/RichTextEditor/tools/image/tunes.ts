@@ -113,10 +113,12 @@ export default class Tunes {
 
         const button = this.buttons.find(el => el.dataset.tune === tuneName);
 
-        button.classList.toggle(
-            this.CSS.buttonActive,
-            !button.classList.contains(this.CSS.buttonActive)
-        );
+        if (button) {
+            button.classList.toggle(
+                this.CSS.buttonActive,
+                !button.classList.contains(this.CSS.buttonActive)
+            );
+        }
 
         this.onChange(tuneName);
         return true;

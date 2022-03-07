@@ -131,11 +131,11 @@ export interface CmsModelField {
     /**
      * Text below the field to clarify what is it meant to be in the field value
      */
-    helpText?: string;
+    helpText?: string | null;
     /**
      * Text to be displayed in the field
      */
-    placeholderText?: string;
+    placeholderText?: string | null;
     /**
      * Are predefined values enabled? And list of them
      */
@@ -345,7 +345,7 @@ export interface CmsModel {
     /**
      * Description for the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * Date created
      */
@@ -410,7 +410,7 @@ interface CmsModelFieldToGraphQLCreateResolverParams {
 export interface CmsModelFieldToGraphQLCreateResolver {
     (params: CmsModelFieldToGraphQLCreateResolverParams):
         | GraphQLFieldResolver
-        | { resolver: GraphQLFieldResolver; typeResolvers: Resolvers<CmsContext> }
+        | { resolver: GraphQLFieldResolver | null; typeResolvers: Resolvers<CmsContext> }
         | false;
 }
 
@@ -612,7 +612,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
             model: CmsModel;
             field: CmsModelField;
             fieldTypePlugins: CmsFieldTypePlugins;
-        }) => CmsModelFieldDefinition | string;
+        }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
          * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
@@ -677,7 +677,7 @@ export interface CreatedBy {
     /**
      * Full name of the user.
      */
-    displayName: string;
+    displayName: string | null;
     /**
      * Type of the user (admin, user)
      */
@@ -733,9 +733,9 @@ export interface AfterInstallTopicParams {
 }
 
 export type CmsSystemContext = {
-    getSystemVersion: () => Promise<string>;
+    getSystemVersion: () => Promise<string | null>;
     setSystemVersion: (version: string) => Promise<void>;
-    getReadAPIKey(): Promise<string>;
+    getReadAPIKey(): Promise<string | null>;
     installSystem: () => Promise<void>;
     upgradeSystem: (version: string) => Promise<boolean>;
     /**
@@ -1451,7 +1451,7 @@ export interface CmsEntryListParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 /**
@@ -1464,7 +1464,7 @@ export interface CmsEntryMeta {
     /**
      * A cursor for pagination.
      */
-    cursor: string;
+    cursor: string | null;
     /**
      * Is there more items to load?
      */
@@ -1625,7 +1625,7 @@ export interface CmsEntryContext {
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
-    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[] | null>;
+    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[]>;
     /**
      * Get the entry for a model by a given ID.
      */
@@ -1674,7 +1674,7 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: (model: CmsModel, id: string, input?: UpdateCmsEntryInput) => Promise<CmsEntry>;
+    updateEntry: (model: CmsModel, id: string, input: UpdateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Method that republishes entry with given identifier.
      * @internal
@@ -1951,7 +1951,7 @@ export interface CmsEntryStorageOperationsListParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 export interface CmsEntryStorageOperationsCreateParams<
@@ -1985,11 +1985,11 @@ export interface CmsEntryStorageOperationsCreateRevisionFromParams<
     /**
      * Latest entry, used to calculate the new version.
      */
-    latestEntry: CmsEntry;
+    latestEntry: CmsEntry | null;
     /**
      * Latest entry, used to calculate the new version, directly from storage, with transformations.
      */
-    latestStorageEntry: T;
+    latestStorageEntry: T | null;
     /**
      * Real entry, with no transformations on it.
      */
@@ -2039,11 +2039,11 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
     /**
      * Entry that was set as latest.
      */
-    entryToSetAsLatest?: CmsEntry;
+    entryToSetAsLatest: CmsEntry | null;
     /**
      * Entry that was set as latest, directly from storage, with transformations.
      */
-    storageEntryToSetAsLatest?: T;
+    storageEntryToSetAsLatest: T | null;
 }
 
 export interface CmsEntryStorageOperationsDeleteParams<

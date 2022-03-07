@@ -15,7 +15,7 @@ const convertToBuffer = (value: string | Buffer): Buffer => {
 
 export interface StorageValue {
     compression: string;
-    value: any;
+    value: string;
 }
 
 const plugin = new StorageTransformPlugin<string, StorageValue>({
@@ -56,8 +56,9 @@ const plugin = new StorageTransformPlugin<string, StorageValue>({
             const buf = await ungzip(convertToBuffer(value));
             return buf.toString(FROM_STORAGE_ENCODING);
         } catch (ex) {
+            console.log("Error while transforming long-text.");
             console.log(ex.message);
-            return null;
+            return "";
         }
     },
     toStorage: async ({ value }) => {

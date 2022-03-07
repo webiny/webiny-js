@@ -1,10 +1,13 @@
+import apwHooks from "./hooks";
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 import { createApw } from "~/createApw";
-import apwHooks from "./hooks";
 import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
 import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { SecurityPermission } from "@webiny/api-security/types";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 export default () => [
     new ContextPlugin<ApwContext>(async context => {
@@ -19,15 +22,23 @@ export default () => [
         context.plugins.register([createManageCMSPlugin(), ...contentHeadlessCmsContextPlugins]);
 
         const getLocale = () => {
+            if (!i18nContent.locale) {
+                throw new WebinyError(
+                    "Missing context.i18nContent.locale in api-apw/plugins/context.ts",
+                    "LOCALE_ERROR"
+                );
+            }
             // TODO: Check which locale do we need here?
             return i18nContent.locale;
         };
 
-        const getTenant = () => {
+        const getTenant = (): Tenant => {
             return tenancy.getCurrentTenant();
         };
 
-        const getPermission = (name: string) => security.getPermission(name);
+        const getPermission = async (name: string): Promise<SecurityPermission | null> => {
+            return security.getPermission(name);
+        };
         const getIdentity = () => security.getIdentity();
 
         context.apw = createApw({
@@ -56,9 +67,18 @@ export default () => [
         });
 
         context.apw.addWorkflowGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+            if (!settings.modelId) {
+                return null;
+            }
             const model = await context.cms.getModel(settings.modelId);
+            if (!model) {
+                return null;
+            }
             const entry = await context.cms.getEntry(model, { where: { id: id } });
-            return entry.values.workflow;
+            if (!entry) {
+                return null;
+            }
+            return entry.values.workflow || null;
         });
     }),
     apwHooks()

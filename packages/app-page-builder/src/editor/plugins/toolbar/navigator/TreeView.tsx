@@ -152,7 +152,7 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
             inActivePath={activeElementPath.includes(elementId)}
             style={contentStyle}
         >
-            {children as React.ReactElement}
+            {children as unknown as React.ReactElement}
         </CollapsableList>
     );
 };

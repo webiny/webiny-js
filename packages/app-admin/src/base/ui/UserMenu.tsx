@@ -14,7 +14,12 @@ export interface UserMenuContext {
     addMenuItem(item: UserMenuItemData): void;
 }
 
-const UserMenuContext = React.createContext<UserMenuContext>(null);
+const UserMenuContext = React.createContext<UserMenuContext>({
+    addMenuItem: () => {
+        return void 0;
+    },
+    menuItems: []
+});
 UserMenuContext.displayName = "UserMenuContext";
 
 export function useUserMenu() {
@@ -23,7 +28,7 @@ export function useUserMenu() {
 
 export const UserMenuProvider = (Component: React.FC): React.FC => {
     return function UserMenuProvider({ children, ...props }) {
-        const [menuItems, setItems] = useState([]);
+        const [menuItems, setItems] = useState<UserMenuItemData[]>([]);
 
         const addMenuItem = useCallback<UserMenuContext["addMenuItem"]>(
             item => {
@@ -94,7 +99,15 @@ export const AddUserMenuItem: React.FC<UserMenuItemProps["menuItem"]> = props =>
 
 export type UserMenuItemContext = UserMenuItemData;
 
-const UserMenuItemContext = React.createContext<UserMenuItemContext>(null);
+const UserMenuItemContext = React.createContext<UserMenuItemContext>({
+    element: undefined,
+    icon: undefined,
+    label: undefined,
+    onClick: () => {
+        return void 0;
+    },
+    path: undefined
+});
 UserMenuItemContext.displayName = "UserMenuItemContext";
 
 export function useUserMenuItem() {

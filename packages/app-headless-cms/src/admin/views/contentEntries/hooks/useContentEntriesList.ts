@@ -85,7 +85,7 @@ export function useContentEntriesList() {
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
     }, [contentModel]);
 
-    const filterByStatus = useCallback((entries: CmsEditorContentEntry[], status: string) => {
+    const filterByStatus = useCallback((entries: CmsEditorContentEntry[], status?: string) => {
         if (!status || status === "all") {
             return entries;
         }
@@ -101,10 +101,11 @@ export function useContentEntriesList() {
                 variables: {
                     after: meta.cursor
                 },
-                updateQuery: (prev, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) {
+                updateQuery: (prev: CmsEntriesListQueryResponse, result) => {
+                    if (!result || !result.fetchMoreResult) {
                         return prev;
                     }
+                    const fetchMoreResult = result.fetchMoreResult;
 
                     const next = { ...fetchMoreResult };
 

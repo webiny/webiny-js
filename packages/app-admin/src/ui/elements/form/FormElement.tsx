@@ -24,7 +24,7 @@ export class FormElement extends UIElement<FormElementConfig> {
         this.useGrid(false);
     }
 
-    public render(props: FormElementRenderProps): React.ReactNode {
+    public override render(props: FormElementRenderProps): React.ReactNode {
         return (
             <Form onSubmit={this.config.onSubmit} data={this.config.getData()}>
                 {formProps => <Fragment>{super.render({ ...props, formProps })}</Fragment>}

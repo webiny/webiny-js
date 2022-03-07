@@ -25,14 +25,11 @@ describe("where", () => {
         ]
     ];
 
-    test.each(whereKeys)(
-        "parse should result in field and operator values",
-        (key: string, expected: any) => {
-            const result = parseWhereKey(key);
+    test.each(whereKeys)("parse should result in field and operator values", (key, expected) => {
+        const result = parseWhereKey(key as unknown as string);
 
-            expect(result).toEqual(expected);
-        }
-    );
+        expect(result).toEqual(expected);
+    });
 
     const malformedWhereKeys = [["_a"], ["_"], ["__"], ["a_"]];
 

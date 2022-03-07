@@ -66,7 +66,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data.length > 0
+            ({ data }: any) => data.formBuilder.listForms.data.length > 0
         );
 
         const [list] = await listForms();
@@ -89,7 +89,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].name === newData.name,
+            ({ data }: any) => data.formBuilder.listForms.data[0].name === newData.name,
             {
                 name: "list forms after update revision"
             }
@@ -110,7 +110,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data.length > 0,
+            ({ data }: any) => data.formBuilder.listForms.data.length > 0,
             {
                 name: "after create form"
             }
@@ -125,7 +125,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].id === id3,
+            ({ data }: any) => data.formBuilder.listForms.data[0].id === id3,
             {
                 name: "after create revisions"
             }
@@ -152,7 +152,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].id === id2,
+            ({ data }: any) => data.formBuilder.listForms.data[0].id === id2,
             {
                 name: "after delete revision 3"
             }
@@ -199,7 +199,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data.length === 0,
+            ({ data }: any) => data.formBuilder.listForms.data.length === 0,
             {
                 name: "list after delete form"
             }
@@ -220,7 +220,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].id === id,
+            ({ data }: any) => data.formBuilder.listForms.data[0].id === id,
             {
                 name: "list forms after publish revision"
             }
@@ -236,7 +236,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listForms().then(([data]) => data),
-            ({ data }) => data.formBuilder.listForms.data[0].id === id2
+            ({ data }: any) => data.formBuilder.listForms.data[0].id === id2
         );
 
         // Latest published form should still be #1
@@ -332,7 +332,7 @@ describe('Form Builder "Form" Test', () => {
 
         await until(
             () => listFormSubmissions({ form: id, sort: "savedOn_ASC" }).then(([data]) => data),
-            ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2,
+            ({ data }: any) => data.formBuilder.listFormSubmissions.data.length === 2,
             {
                 name: "after create submission"
             }

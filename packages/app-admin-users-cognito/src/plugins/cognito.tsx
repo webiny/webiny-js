@@ -13,7 +13,9 @@ import { config as appConfig } from "@webiny/app/config";
 export default (): PluginCollection => {
     let envPasswordValidatorPolicy;
     try {
-        envPasswordValidatorPolicy = JSON.parse(process.env.REACT_APP_USER_POOL_PASSWORD_POLICY);
+        envPasswordValidatorPolicy = JSON.parse(
+            process.env.REACT_APP_USER_POOL_PASSWORD_POLICY as string
+        );
     } catch {
         // Do nothing.
     }
@@ -70,6 +72,9 @@ export default (): PluginCollection => {
         // Add password input to admin user form
         new UIViewPlugin<UsersFormView>(UsersFormView, view => {
             const bioSection = view.getElement("bio");
+            if (!bioSection) {
+                return;
+            }
 
             const useFormHook = () => view.getUserFormHook();
 
@@ -79,7 +84,10 @@ export default (): PluginCollection => {
                     label: "Password",
                     description: () => {
                         const { isNewUser } = useFormHook();
-                        return !isNewUser && "Type a new password to reset it.";
+                        if (!isNewUser) {
+                            return "Type a new password to reset it.";
+                        }
+                        return "";
                     },
                     validators: () => {
                         const { isNewUser } = useFormHook();

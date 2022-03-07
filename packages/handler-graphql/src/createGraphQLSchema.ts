@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { GraphQLScalarPlugin } from "./types";
+import { GraphQLScalarPlugin, GraphQLSchemaPlugin } from "./types";
 import { HttpContext } from "@webiny/handler-http/types";
 import {
     RefInput,
@@ -52,10 +52,16 @@ export const createGraphQLSchema = (context: HttpContext) => {
         }
     ];
 
-    const gqlPlugins = context.plugins.byType("graphql-schema");
+    const gqlPlugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
     for (let i = 0; i < gqlPlugins.length; i++) {
         const plugin = gqlPlugins[i];
+        /**
+         * TODO @ts-refactor
+         * Figure out correct tyeps on typeDefs and resolvers
+         */
+        // @ts-ignore
         typeDefs.push(plugin.schema.typeDefs);
+        // @ts-ignore
         resolvers.push(plugin.schema.resolvers);
     }
 

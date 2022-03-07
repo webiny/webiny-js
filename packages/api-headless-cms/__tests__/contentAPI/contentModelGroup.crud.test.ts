@@ -29,7 +29,7 @@ const createContentModelGroupData = ({
     };
 };
 
-const createPermissions = groups => [
+const createPermissions = (groups: string[]) => [
     {
         name: "cms.settings"
     },
@@ -339,7 +339,7 @@ describe("Cms Group crud test", () => {
         const prefixes = Array.from(Array(TestHelperEnum.MODELS_AMOUNT).keys()).map(prefix => {
             return createContentModelGroupPrefix(prefix);
         });
-        const groups = [];
+        const groups: string[] = [];
         for (const prefix of prefixes) {
             const modelData = createContentModelGroupData({ prefix });
 

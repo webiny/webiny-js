@@ -1,35 +1,21 @@
 import { CmsFieldValueTransformer } from "~/types";
 import WebinyError from "@webiny/error";
 
-interface TransformerCallable {
-    (value: string | number | Date): string | null;
+interface TransformerCallable<T> {
+    (value?: T): string | null;
 }
-interface ThrowTransformErrorParams {
-    ex: WebinyError;
-    type: string;
-    value: string;
-}
-const throwTransformError = (params: ThrowTransformErrorParams): WebinyError => {
-    const { type, value, ex: error } = params;
-    return new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
-        error,
-        type,
-        value
-    });
-};
-
-const dateOnly: TransformerCallable = (value?: string): string | null => {
+const dateOnly: TransformerCallable<string> = value => {
     if (!value) {
         return null;
     }
     try {
         const date = new Date(value).toISOString();
         return date.substr(0, 10);
-    } catch (ex) {
-        throw throwTransformError({
-            ex,
-            value,
-            type: "date"
+    } catch (error) {
+        throw new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
+            error,
+            type: "date",
+            value
         });
     }
 };
@@ -55,7 +41,7 @@ const extractTimeZone = (value?: string): [string, string] => {
     return result as [string, string];
 };
 
-const extractTime = (value?: string): string | null => {
+const extractTime = (value?: string, def: string | null = null): string | null => {
     if (!value) {
         return null;
     } else if (value.includes(":") === false) {
@@ -69,10 +55,10 @@ const extractTime = (value?: string): string | null => {
     } else if (result.length === 2) {
         return `${value}:00`;
     }
-    return null;
+    return def;
 };
 
-const dateTimeWithTimezone: TransformerCallable = (value?: string): string => {
+const dateTimeWithTimezone: TransformerCallable<string> = value => {
     if (!value) {
         return null;
     } else if (value.includes("T") === false) {
@@ -99,12 +85,12 @@ const dateTimeWithTimezone: TransformerCallable = (value?: string): string => {
     }
     const [initialTime] = extractTimeZone(initialTimeZone);
 
-    const time = extractTime(initialTime);
+    const time = extractTime(initialTime, "00:00:00") as string;
 
     return value.replace(initialDate, date).replace(initialTime, time);
 };
 
-const dateTimeWithoutTimezone: TransformerCallable = (value?: string): string | null => {
+const dateTimeWithoutTimezone: TransformerCallable<string> = (value): string | null => {
     if (!value) {
         return null;
     } else if (value.includes(" ") === false) {
@@ -112,23 +98,23 @@ const dateTimeWithoutTimezone: TransformerCallable = (value?: string): string | 
     }
     try {
         return new Date(`${value.replace(" ", "T")}.000Z`).toISOString();
-    } catch (ex) {
-        throw throwTransformError({
-            ex,
-            value,
-            type: "dateTimeWithoutTimezone"
+    } catch (error) {
+        throw new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
+            error,
+            type: "dateTimeWithoutTimezone",
+            value
         });
     }
 };
 
-const time: TransformerCallable = (value?: string) => {
+const time: TransformerCallable<string> = value => {
     if (!value) {
         return null;
     }
     return extractTime(value);
 };
 
-const transformers: Record<string, TransformerCallable> = {
+const transformers: Record<string, TransformerCallable<string>> = {
     time,
     date: dateOnly,
     dateTimeWithoutTimezone,
@@ -139,9 +125,12 @@ export default (): CmsFieldValueTransformer => ({
     type: "cms-field-value-transformer",
     name: "cms-field-value-transformer-date",
     fieldType: "datetime",
-    transform: (value, field) => {
+    transform: (value: any, field) => {
         // check types in packages/app-headless-cms/src/admin/plugins/fieldRenderers/dateTime/dateTimeField.tsx
-        const type = field.settings.type;
+        const type = field.settings && field.settings.type ? String(field.settings.type) : null;
+        if (!type) {
+            return value;
+        }
         const transform = transformers[type];
 
         if (!transform) {

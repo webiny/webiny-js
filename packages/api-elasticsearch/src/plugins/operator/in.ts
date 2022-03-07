@@ -2,7 +2,7 @@ import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/El
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderOperatorInPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
-    public name = "elasticsearch.queryBuilder.operator.in.default";
+    public override name = "elasticsearch.queryBuilder.operator.in.default";
 
     public getOperator(): string {
         return "in";

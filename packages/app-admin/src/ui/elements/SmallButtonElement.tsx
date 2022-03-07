@@ -15,7 +15,7 @@ export class SmallButtonElement<TRenderProps = any> extends ButtonElement<TRende
         this.applyPlugins(SmallButtonElement);
     }
 
-    public render(props: TRenderProps): React.ReactElement {
+    public override render(props: TRenderProps): React.ReactElement {
         const Component = BUTTONS[this.getType()];
         const onClick = this.getOnClick();
 

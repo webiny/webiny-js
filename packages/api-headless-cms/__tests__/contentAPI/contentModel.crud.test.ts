@@ -1,5 +1,6 @@
+// @ts-ignore
 import mdbid from "mdbid";
-import { CmsModelFieldInput, CmsGroup } from "~/types";
+import { CmsModelFieldInput, CmsGroup, CmsModelField } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
@@ -7,12 +8,12 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { pubSubTracker, assignModelEvents } from "./mocks/lifecycleHooks";
 import { useBugManageHandler } from "../utils/useBugManageHandler";
 
-const getTypeFields = type => {
-    return type.fields.filter(f => f.name !== "_empty").map(f => f.name);
+const getTypeFields = (type: any) => {
+    return type.fields.filter((f: any) => f.name !== "_empty").map((f: any) => f.name);
 };
 
-const getTypeObject = (schema, type) => {
-    return schema.types.find(t => t.name === type);
+const getTypeObject = (schema: any, type: string) => {
+    return schema.types.find((t: any) => t.name === type);
 };
 
 const createPermissions = ({ models, groups }: { models?: string[]; groups?: string[] }) => [
@@ -271,6 +272,9 @@ describe("content model test", () => {
         const { createCategory, until, listCategories } =
             useCategoryManageHandler(manageHandlerOpts);
         const category = models.find(m => m.modelId === "category");
+        if (!category) {
+            throw new Error("Could not find model `category`.");
+        }
 
         // Create initial record
         const [createContentModelResponse] = await createContentModelMutation({
@@ -301,7 +305,7 @@ describe("content model test", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0,
+            ({ data }: any) => data.listCategories.data.length > 0,
             { name: "list categories to check that categories are available" }
         );
 
@@ -686,6 +690,9 @@ describe("content model test", () => {
         const { listBugs } = useBugManageHandler(manageHandlerOpts);
 
         const bugModel = models.find(m => m.modelId === "bug");
+        if (!bugModel) {
+            throw new Error("Could not find model `bug`.");
+        }
         // Create initial record
         const [createBugModelResponse] = await createContentModelMutation({
             data: {
@@ -695,13 +702,13 @@ describe("content model test", () => {
             }
         });
 
-        const removedFields = [];
+        const removedFields: CmsModelField[] = [];
 
         const initialFields = Array.from(bugModel.fields);
         const initialLayouts = Array.from(bugModel.layout);
 
-        removedFields.push(initialFields.pop());
-        removedFields.push(initialFields.pop());
+        removedFields.push(initialFields.pop() as CmsModelField);
+        removedFields.push(initialFields.pop() as CmsModelField);
 
         initialLayouts.pop();
         initialLayouts.pop();

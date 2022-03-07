@@ -3,7 +3,7 @@ import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { BindComponentRenderPropValidation, Form } from "@webiny/form";
-import { FormData } from "@webiny/form/Form";
+import { FormData } from "@webiny/form/types";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
 

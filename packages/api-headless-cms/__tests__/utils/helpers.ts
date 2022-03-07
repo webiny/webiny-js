@@ -20,7 +20,7 @@ const getSecurityIdentity = () => {
     return identity;
 };
 
-export const createPermissions = (permissions: PermissionsArg[]): PermissionsArg[] => {
+export const createPermissions = (permissions?: PermissionsArg[]): PermissionsArg[] => {
     if (permissions) {
         return permissions;
     }

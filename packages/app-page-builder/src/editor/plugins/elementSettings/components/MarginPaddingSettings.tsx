@@ -9,6 +9,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { plugins } from "@webiny/plugins";
 import {
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "../../../../types";
@@ -143,19 +144,28 @@ const options = {
 const SIDES = ["top", "right", "bottom", "left"];
 const DEFAULT_VALUE = "0px";
 
-const MarginPaddingSettings: React.FunctionComponent<
+const MarginPaddingSettings: React.FC<
     PMSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ styleAttribute, defaultAccordionValue }) => {
     const valueKey = `data.settings.${styleAttribute}`;
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as PbEditorElement;
 
-    const { config: activeEditorModeConfig } = useMemo(() => {
+    const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
+
+    const { config: activeEditorModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
 
     const fallbackValue = useMemo(
         () => applyFallbackDisplayMode(displayMode, mode => get(element, `${valueKey}.${mode}`)),

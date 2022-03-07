@@ -76,7 +76,7 @@ export const Vertical: React.FC<VerticalProps> = ({ last, onDrop, isVisible }) =
                         zIndex: isDragging ? 1000 : -1
                     }}
                 >
-                    <OuterDivVertical isOver={isOver} isDragging={isDragging} last={last}>
+                    <OuterDivVertical isOver={isOver} isDragging={isDragging} last={!!last}>
                         <InnerDivVertical>
                             <BackgroundColorDiv />
                         </InnerDivVertical>

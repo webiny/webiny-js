@@ -18,13 +18,16 @@ export const createParentTenantGroupAuthorizer =
         if (!identity || identity.type !== config.identityType) {
             return null;
         }
+        if (!tenant.parent) {
+            return null;
+        }
 
         const tenantLink = await security.getTenantLinkByIdentity<GroupTenantLink>({
             identity: identity.id,
             tenant: tenant.parent
         });
 
-        if (!tenantLink || !tenantLink.data.permissions) {
+        if (!tenantLink || !tenantLink.data || !tenantLink.data.permissions) {
             return null;
         }
 

@@ -61,9 +61,9 @@ interface BlocksListProps extends Omit<RenderRowProps, "index" | "key" | "style"
 }
 
 const BlocksList: React.FC<BlocksListProps> = props => {
-    const [, setTimestamp] = useState(null);
-    const rightPanelElement = useRef(null);
-    const prevProps = useRef(null);
+    const [, setTimestamp] = useState<number>(-1);
+    const rightPanelElement = useRef<HTMLElement | null>(null);
+    const prevProps = useRef<BlocksListProps | null>(null);
 
     useEffect(() => {
         rightPanelElement.current = document.querySelector(".webiny-split-view__right-panel");
@@ -76,7 +76,7 @@ const BlocksList: React.FC<BlocksListProps> = props => {
         }
 
         // Scroll only if the active block category has changed
-        if (rightPanelElement && prevProps.current.category !== props.category) {
+        if (rightPanelElement.current && prevProps.current.category !== props.category) {
             if (rightPanelElement.current.scrollTop === 0) {
                 rightPanelElement.current.scroll(0, 1);
                 return;

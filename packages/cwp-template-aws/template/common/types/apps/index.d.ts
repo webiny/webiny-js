@@ -17,11 +17,13 @@ declare module "*.jpg" {
 }
 
 declare module "*.svg" {
-    import { FunctionComponent, SVGProps } from "react";
+    import React from "react";
 
-    export const ReactComponent: FunctionComponent<SVGProps<SVGSVGElement> & {
-        alt?: string;
-    }>;
+    export const ReactComponent: React.FC<
+        React.SVGProps<SVGSVGElement> & {
+            alt?: string;
+        }
+    >;
 
     const src: string;
     export default src;

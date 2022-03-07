@@ -2,13 +2,6 @@ import jsonpack from "jsonpack";
 import WebinyError from "@webiny/error";
 import { StorageTransformPlugin } from "@webiny/api-headless-cms/content/plugins/storage/StorageTransformPlugin";
 
-export type OriginalValue = Record<string, any> | any[];
-
-export interface StorageValue {
-    compression: string;
-    value: any;
-}
-
 /**
  * Remove when jsonpack gets PR with a fix merged
  * https://github.com/rgcl/jsonpack/pull/25/files

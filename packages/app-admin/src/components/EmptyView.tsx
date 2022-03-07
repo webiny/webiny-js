@@ -37,7 +37,7 @@ const EmptyViewWrapper = styled("div")({
 export interface EmptyViewProps {
     icon?: ReactElement;
     title: string;
-    action: ReactElement;
+    action: ReactElement | null;
 }
 const EmptyView: React.FC<EmptyViewProps> = ({ icon = <TouchIcon />, title, action }) => {
     return (

@@ -9,7 +9,13 @@ export default () => {
             ...(context.cms || ({} as any)),
             locale: locale ? locale.code : "en-US",
             getLocale() {
-                return locale || { code: "en-US" };
+                if (!locale) {
+                    return {
+                        code: "en-US",
+                        default: true
+                    };
+                }
+                return locale;
             }
         };
     });

@@ -75,7 +75,13 @@ const RequireNewPassword: React.FC = () => {
 
                             <Grid>
                                 <Cell span={12} className={alignRight}>
-                                    <ButtonPrimary onClick={submit}>{"Set password"}</ButtonPrimary>
+                                    <ButtonPrimary
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
+                                    >
+                                        {"Set password"}
+                                    </ButtonPrimary>
                                 </Cell>
                             </Grid>
                         </InnerContent>

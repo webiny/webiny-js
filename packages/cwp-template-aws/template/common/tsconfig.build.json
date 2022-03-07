@@ -18,10 +18,40 @@
     "typeRoots": ["node_modules/@types", "./types"],
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "noImplicitUseStrict": true,
+    "noImplicitUseStrict": false,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": false,
+    "noStrictGenericChecks": false,
+    "noFallthroughCasesInSwitch": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitOverride": true,
+    "strict": true,
+    /**
+     * Leave at false.
+     * https://www.typescriptlang.org/tsconfig#noPropertyAccessFromIndexSignature
+     */
+    "noPropertyAccessFromIndexSignature": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "suppressExcessPropertyErrors": false,
+    "keyofStringsOnly": false,
+    "experimentalDecorators": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    /**
+     * If you set to true there would need to be A LOT of error handling changes.
+     * https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables
+     */
+    "useUnknownInCatchVariables": false,
+    /**
+     * Setting to true will start producing TS errors that are inside libraries we use.
+     * https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes
+     */
+    "exactOptionalPropertyTypes": false
   },
   "exclude": ["node_modules", "dist", "**jest**", "**resources.js"]
 }

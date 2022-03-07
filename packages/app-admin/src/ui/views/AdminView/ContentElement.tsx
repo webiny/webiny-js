@@ -9,7 +9,7 @@ const ContentWrapper = styled("div")({
 });
 
 class ContentElementRenderer extends UIRenderer<ContentElement> {
-    public render({ next, props }: UIRenderParams<ContentElement>): React.ReactNode {
+    public override render({ next, props }: UIRenderParams<ContentElement>): React.ReactNode {
         return <ContentWrapper>{props.children ? props.children : next()}</ContentWrapper>;
     }
 }

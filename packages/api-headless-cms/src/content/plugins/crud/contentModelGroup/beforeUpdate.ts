@@ -11,9 +11,9 @@ export const assignBeforeGroupUpdate = (params: AssignBeforeGroupUpdateParams) =
     const { onBeforeUpdate, plugins } = params;
 
     onBeforeUpdate.subscribe(({ group }) => {
-        const groupPlugin: CmsGroupPlugin = plugins
+        const groupPlugin = plugins
             .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
-            .find((item: CmsGroupPlugin) => item.contentModelGroup.slug === group.slug);
+            .find(item => item.contentModelGroup.slug === group.slug);
         if (!groupPlugin) {
             return;
         }

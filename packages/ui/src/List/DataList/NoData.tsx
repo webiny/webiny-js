@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Typography } from "../../Typography";
 import styled from "@emotion/styled";
 
@@ -8,7 +8,7 @@ const NoDataWrapper = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-const NoData = () => (
+const NoData: React.FC = () => (
     <NoDataWrapper>
         <Typography use="overline">No records found.</Typography>
     </NoDataWrapper>

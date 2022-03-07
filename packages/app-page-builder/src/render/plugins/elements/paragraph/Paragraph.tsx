@@ -4,10 +4,10 @@ import Text from "../../../components/Text";
 
 export const className = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
-type TextPropsType = {
+interface TextPropsType {
     element: PbElement;
-};
-const Paragraph: React.FunctionComponent<TextPropsType> = ({ element }) => {
+}
+const Paragraph: React.FC<TextPropsType> = ({ element }) => {
     return <Text element={element} />;
 };
 

@@ -41,9 +41,11 @@ const plugin: CmsEditorFieldTypePlugin = {
             };
         },
         renderSettings({ form: { Bind, data: formData }, contentModel }) {
-            const lockedFields = get(contentModel, "lockedFields", []);
-            const fieldId = get(formData, "fieldId", null);
-            const lockedField = lockedFields.find(lockedField => lockedField.fieldId === fieldId);
+            const lockedFields = contentModel.lockedFields || [];
+            const fieldId = (formData || {}).fieldId || null;
+            const isFieldLocked = lockedFields.some(
+                lockedField => fieldId && lockedField.fieldId === fieldId
+            );
 
             const { data, loading, error } =
                 useQuery<ListCmsModelsQueryResponse>(LIST_CONTENT_MODELS);
@@ -93,7 +95,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                                         label={t`Content Models`}
                                         description={t`Cannot be changed later`}
                                         options={options}
-                                        disabled={lockedField && lockedField.modelId}
+                                        disabled={isFieldLocked}
                                     />
                                 );
                             }}

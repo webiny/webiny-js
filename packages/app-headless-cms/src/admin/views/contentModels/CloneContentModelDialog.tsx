@@ -69,13 +69,13 @@ const getSelectedGroup = (
 };
 
 const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel, closeModal }) => {
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = React.useState<boolean>(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { getLocales, getCurrentLocale, setCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale();
-    const [locale, setLocale] = React.useState<string>(currentLocale);
+    const [locale, setLocale] = React.useState<string>(currentLocale || "");
 
     const [createContentModelFrom] = useMutation<
         CreateCmsModelFromMutationResponse,
@@ -86,6 +86,10 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
             showSnackbar(error.message);
         },
         update(cache, response) {
+            if (!response.data) {
+                showSnackbar(`Missing data on Create Content Model From Mutation Response.`);
+                return;
+            }
             const { data: model, error } = response.data.createContentModelFrom;
 
             if (error) {
@@ -144,7 +148,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
             throw new Error(`Model name that ends with "${ending}" is not allowed.`);
         }
         return true;
-    }, undefined);
+    }, []);
 
     const locales = getLocales().map(locale => {
         return {
@@ -170,12 +174,15 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                         locale,
                         name: contentModel.name
                     }}
-                    onSubmit={async (data: CmsModel) => {
+                    onSubmit={data => {
                         setLoading(true);
-                        await createContentModelFrom({
+                        createContentModelFrom({
                             variables: {
                                 modelId: contentModel.modelId,
-                                data
+                                /**
+                                 * We know that data is CmsModel
+                                 */
+                                data: data as unknown as CmsModel
                             }
                         });
                     }}
@@ -247,7 +254,13 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                                 </Grid>
                             </UID.DialogContent>
                             <UID.DialogActions>
-                                <ButtonDefault onClick={submit}>+ {t`Clone`}</ButtonDefault>
+                                <ButtonDefault
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
+                                >
+                                    + {t`Clone`}
+                                </ButtonDefault>
                             </UID.DialogActions>
                         </>
                     )}

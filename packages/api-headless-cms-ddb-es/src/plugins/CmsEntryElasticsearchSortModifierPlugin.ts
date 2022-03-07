@@ -18,7 +18,7 @@ export interface CmsEntryElasticsearchSortModifierPluginConfig {
 }
 
 export class CmsEntryElasticsearchSortModifierPlugin extends ElasticsearchSortModifierPlugin<ModifySortParams> {
-    public static readonly type: string = "cms.elasticsearch.modifier.sort.entry";
+    public static override readonly type: string = "cms.elasticsearch.modifier.sort.entry";
 
     public readonly modelId?: string;
 

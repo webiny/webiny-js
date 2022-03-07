@@ -103,7 +103,7 @@ const checkModelIdEndingAllowed = (modelId: string): void => {
 
 const getModelId = (model: CmsModel): string => {
     const { modelId, name } = model;
-    if (modelId) {
+    if (!!modelId) {
         return camelCase(modelId.trim());
     } else if (name) {
         return camelCase(name.trim());
@@ -127,7 +127,7 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
 
         const modelId = getModelId(model);
 
-        const modelPlugin: CmsModelPlugin = plugins
+        const modelPlugin = plugins
             .byType<CmsModelPlugin>(CmsModelPlugin.type)
             .find((item: CmsModelPlugin) => item.contentModel.modelId === modelId);
 
@@ -164,7 +164,7 @@ const createOnBeforeCb = ({ plugins, storageOperations }: CreateOnBeforeCreateCb
 
 interface AssignBeforeModelCreateParams {
     onBeforeModelCreate: Topic<BeforeModelCreateTopicParams>;
-    onBeforeModelCreateFrom: Topic<BeforeModelCreateTopicParams>;
+    onBeforeModelCreateFrom: Topic<BeforeModelCreateFromTopicParams>;
     storageOperations: HeadlessCmsStorageOperations;
     plugins: PluginsContainer;
 }

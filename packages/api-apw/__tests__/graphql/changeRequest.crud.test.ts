@@ -107,7 +107,7 @@ describe("ChangeRequest crud test", () => {
 
         await until(
             () => getChangeRequestQuery({ id: createdChangeRequest.id }).then(([data]) => data),
-            response => response.data.apw.getChangeRequest.data !== null,
+            (response: any) => response.data.apw.getChangeRequest.data !== null,
             {
                 name: "Wait for getChangeRequest query"
             }
@@ -176,7 +176,7 @@ describe("ChangeRequest crud test", () => {
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const [updatedItem] = response.data.apw.listChangeRequests.data;
                 return updatedItem && createdChangeRequest.savedOn !== updatedItem.savedOn;
             },
@@ -238,7 +238,7 @@ describe("ChangeRequest crud test", () => {
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 0;
             },

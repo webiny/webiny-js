@@ -95,8 +95,11 @@ const InputField: React.FC<InputBoxProps> = ({
             )}
             <input
                 className={classNames(inputStyle, className)}
-                value={getValue({ value, type: props.type, defaultValue })}
+                value={getValue({ value: value as string, type: props.type, defaultValue })}
                 onChange={({ target: { value } }) => {
+                    if (!onChange) {
+                        return;
+                    }
                     onChange(value);
                 }}
                 {...omit(props, "validate")}

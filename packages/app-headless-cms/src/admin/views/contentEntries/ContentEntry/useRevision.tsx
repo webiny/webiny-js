@@ -8,6 +8,8 @@ import * as GQLCache from "./cache";
 import { useApolloClient } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import {
+    CmsEntryCreateFromMutationResponse,
+    CmsEntryCreateFromMutationVariables,
     CmsEntryDeleteMutationResponse,
     CmsEntryDeleteMutationVariables,
     CmsEntryPublishMutationResponse,
@@ -96,13 +98,28 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                 (): CreateRevisionHandler =>
                 async (id): Promise<void> => {
                     setLoading(true);
-                    const { data: res } = await client.mutate({
+                    const createResponse = await client.mutate<
+                        CmsEntryCreateFromMutationResponse,
+                        CmsEntryCreateFromMutationVariables
+                    >({
                         mutation: CREATE_REVISION,
                         variables: {
                             revision: id || revision.id
                         },
-                        update(cache, { data }) {
-                            const newRevision = data.content.data;
+                        update(cache, result) {
+                            if (!result || !result.data) {
+                                showSnackbar(
+                                    `Missing result in update callback on Create Revision Mutation.`
+                                );
+                                return;
+                            }
+                            const newRevision = result.data.content.data;
+                            if (!newRevision) {
+                                showSnackbar(
+                                    "Missing revision data in update callback on Create Revision Mutation."
+                                );
+                                return;
+                            }
 
                             GQLCache.updateLatestRevisionInListCache(
                                 contentModel,
@@ -115,11 +132,19 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                     });
 
                     setLoading(false);
+                    if (!createResponse || !createResponse.data) {
+                        showSnackbar(`Missing response data in Create Revision Callable.`);
+                        return;
+                    }
 
-                    const { data, error } = res.content;
+                    const { data, error } = createResponse.data.content;
 
                     if (error) {
-                        return showSnackbar(error.message);
+                        showSnackbar(error.message);
+                        return;
+                    } else if (!data) {
+                        showSnackbar(`Missing data in Create Revision callable.`);
+                        return;
                     }
 
                     history.push(
@@ -147,8 +172,14 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         variables: {
                             revision: id || revision.id
                         },
-                        update: (cache, { data }) => {
-                            const { error } = data.content;
+                        update: (cache, result) => {
+                            if (!result || !result.data) {
+                                showSnackbar(
+                                    `Missing result in update callback on Delete Mutation.`
+                                );
+                                return;
+                            }
+                            const { error } = result.data.content;
                             if (error) {
                                 showSnackbar(error.message);
                                 return;
@@ -190,10 +221,18 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                     variables: {
                         revision: id || revision.id
                     },
-                    update(cache, { data }) {
-                        const { data: published, error } = data.content;
+                    update(cache, result) {
+                        if (!result || !result.data) {
+                            showSnackbar(`Missing result in update callback on Publish Mutation.`);
+                            return;
+                        }
+                        const { data: published, error } = result.data.content;
                         if (error) {
-                            return showSnackbar(error.message);
+                            showSnackbar(error.message);
+                            return;
+                        } else if (!published) {
+                            showSnackbar("Missing published data on Publish Mutation Response.");
+                            return;
                         }
 
                         GQLCache.unpublishPreviouslyPublishedRevision(
@@ -217,7 +256,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                 (): UnpublishRevisionHandler =>
                 async (id): Promise<void> => {
                     setLoading(true);
-                    const { data } = await client.mutate<
+                    const result = await client.mutate<
                         CmsEntryUnpublishMutationResponse,
                         CmsEntryUnpublishMutationVariables
                     >({
@@ -226,10 +265,13 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             revision: id || revision.id
                         }
                     });
-
                     setLoading(false);
+                    if (!result || !result.data) {
+                        showSnackbar(`Missing result in update callback on Unpublish Mutation.`);
+                        return;
+                    }
 
-                    const { error } = data.content;
+                    const { error } = result.data.content;
                     if (error) {
                         showSnackbar(error.message);
                         return;
@@ -254,8 +296,14 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         variables: {
                             revision: id || revision.id
                         },
-                        update(_, { data }) {
-                            const { error } = data.content;
+                        update(_, result) {
+                            if (!result || !result.data) {
+                                showSnackbar(
+                                    `Missing result in update callback on Request Review Mutation.`
+                                );
+                                return;
+                            }
+                            const { error } = result.data.content;
                             if (error) {
                                 return showSnackbar(error.message);
                             }
@@ -278,10 +326,17 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         variables: {
                             revision: id || revision.id
                         },
-                        update(_, { data }) {
-                            const { error } = data.content;
+                        update(_, result) {
+                            if (!result || !result.data) {
+                                showSnackbar(
+                                    `Missing result in update callback on Request Changes Mutation.`
+                                );
+                                return;
+                            }
+                            const { error } = result.data.content;
                             if (error) {
-                                return showSnackbar(error.message);
+                                showSnackbar(error.message);
+                                return;
                             }
 
                             showSnackbar(<span>Changes requested successfully!</span>);

@@ -11,7 +11,7 @@ const baseHeaders: HandlerHeaders = {
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
 interface EventHandlerResponse {
-    data: Body;
+    data: Body | null;
     statusCode?: number;
     headers: HandlerHeaders;
 }

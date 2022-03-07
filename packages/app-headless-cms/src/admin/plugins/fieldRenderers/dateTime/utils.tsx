@@ -179,7 +179,7 @@ export const getDefaultFieldValue = (
     return getCurrent();
 };
 
-export const getCurrentTimeZone = (date?: Date): string => {
+export const getCurrentTimeZone = (date?: Date): string | null => {
     if (!date) {
         date = new Date();
     }

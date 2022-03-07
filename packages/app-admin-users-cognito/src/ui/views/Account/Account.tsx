@@ -22,6 +22,7 @@ import {
 import { useSecurity } from "@webiny/app-security";
 import { View } from "@webiny/app/components/View";
 import { CenteredView, useSnackbar } from "@webiny/app-admin";
+import { SecurityIdentity } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
@@ -50,10 +51,10 @@ const UserAccountForm: React.FC = () => {
 
         setIdentity(identity => {
             return {
-                ...identity,
+                ...(identity || ({} as SecurityIdentity)),
                 displayName: `${formData.firstName} ${formData.lastName}`,
                 profile: {
-                    ...identity.profile,
+                    ...(identity?.profile || {}),
                     firstName: formData.firstName,
                     lastName: formData.lastName,
                     avatar: formData.avatar
@@ -124,7 +125,11 @@ const UserAccountForm: React.FC = () => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormFooter>
-                            <ButtonPrimary onClick={form.submit}>{t`Update account`}</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >{t`Update account`}</ButtonPrimary>
                         </SimpleFormFooter>
                     </SimpleForm>
                 )}

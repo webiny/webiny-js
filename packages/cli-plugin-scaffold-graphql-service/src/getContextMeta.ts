@@ -1,4 +1,16 @@
-import { Project, InterfaceDeclaration, ImportDeclaration, Node } from "ts-morph";
+/**
+ * TODO @ts-refactor
+ * Added a lot of casts so clean those and write proper checks.
+ */
+import {
+    Project,
+    InterfaceDeclaration,
+    ImportDeclaration,
+    Node,
+    ImportClause,
+    ImportSpecifier,
+    Identifier
+} from "ts-morph";
 
 interface ContextMeta {
     i18n: boolean;
@@ -32,8 +44,7 @@ export default function (typesTsPath: string): ContextMeta {
                 Node.isImportDeclaration(node) &&
                 node.getModuleSpecifier().getText() === `"@webiny/api-i18n/types"` &&
                 Boolean(
-                    node
-                        .getImportClause()
+                    (node.getImportClause() as ImportClause)
                         .getNamedImports()
                         .find(item => item.getName() === "I18NContext")
                 )
@@ -41,14 +52,16 @@ export default function (typesTsPath: string): ContextMeta {
         }) as ImportDeclaration;
 
         if (i18NContextImportDeclaration) {
-            const i18nContextImportSpecifier = i18NContextImportDeclaration
-                .getImportClause()
+            const importClause = i18NContextImportDeclaration.getImportClause() as ImportClause;
+            const i18nContextImportSpecifier = importClause
                 .getNamedImports()
-                .find(item => item.getName() === "I18NContext");
+                .find(item => item.getName() === "I18NContext") as ImportSpecifier;
 
             let i18nContextIdentifier = i18nContextImportSpecifier.getName();
             if (i18nContextImportSpecifier.getAliasNode()) {
-                i18nContextIdentifier = i18nContextImportSpecifier.getAliasNode().getText();
+                i18nContextIdentifier = (
+                    i18nContextImportSpecifier.getAliasNode() as Identifier
+                ).getText();
             }
 
             meta.i18n = Boolean(
@@ -62,8 +75,7 @@ export default function (typesTsPath: string): ContextMeta {
                 Node.isImportDeclaration(node) &&
                 node.getModuleSpecifier().getText() === `"@webiny/api-security/types"` &&
                 Boolean(
-                    node
-                        .getImportClause()
+                    (node.getImportClause() as ImportClause)
                         .getNamedImports()
                         .find(item => item.getName() === "SecurityContext")
                 )
@@ -71,14 +83,17 @@ export default function (typesTsPath: string): ContextMeta {
         }) as ImportDeclaration;
 
         if (securityContextImportDeclaration) {
-            const securityContextImportSpecifier = securityContextImportDeclaration
-                .getImportClause()
+            const securityContextImportSpecifier = (
+                securityContextImportDeclaration.getImportClause() as ImportClause
+            )
                 .getNamedImports()
-                .find(item => item.getName() === "SecurityContext");
+                .find(item => item.getName() === "SecurityContext") as ImportSpecifier;
 
             let securityContextIdentifier = securityContextImportSpecifier.getName();
             if (securityContextImportSpecifier.getAliasNode()) {
-                securityContextIdentifier = securityContextImportSpecifier.getAliasNode().getText();
+                securityContextIdentifier = (
+                    securityContextImportSpecifier.getAliasNode() as Identifier
+                ).getText();
             }
 
             meta.security = Boolean(

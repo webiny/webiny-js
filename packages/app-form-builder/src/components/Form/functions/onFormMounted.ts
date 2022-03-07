@@ -5,9 +5,8 @@ import {
     SaveFormViewMutationResponse,
     SaveFormViewMutationVariables
 } from "./graphql";
-import { ApolloClient } from "apollo-client";
 
-const saveFormView = ({ data, client }: FbFormRenderComponentProps) => {
+const saveFormView = ({ data, client }: Required<FbFormRenderComponentProps>) => {
     // SSR?
     if (!window || !data) {
         return;
@@ -26,7 +25,7 @@ const saveFormView = ({ data, client }: FbFormRenderComponentProps) => {
     });
 };
 
-export default (props: FbFormRenderComponentProps & { client: ApolloClient<any> }): void => {
+export default (props: Required<FbFormRenderComponentProps>): void => {
     const { data, preview } = props;
     if (!data || preview) {
         return;

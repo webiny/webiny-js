@@ -119,6 +119,11 @@ export class Context implements ContextInterface {
          */
         this.waiters.push({
             targets,
+            /**
+             * TODO @ts-refactor
+             * Problem with possible subtype initialization
+             */
+            // @ts-ignore
             cb
         });
     }

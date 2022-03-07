@@ -13,7 +13,14 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { validation } from "@webiny/validation";
-import { GET_MENU, CREATE_MENU, UPDATE_MENU, LIST_MENUS } from "./graphql";
+import {
+    GET_MENU,
+    CREATE_MENU,
+    UPDATE_MENU,
+    LIST_MENUS,
+    GetMenuQueryResponse,
+    GetMenuQueryVariables
+} from "./graphql";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
@@ -26,6 +33,7 @@ import isEmpty from "lodash/isEmpty";
 import omit from "lodash/omit";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-page-builder/admin/menus/form");
 const ButtonWrapper = styled("div")({
@@ -62,14 +70,16 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
     const [update, updateMutation] = useMutation(UPDATE_MENU, {
         refetchQueries: [{ query: LIST_MENUS }],
         update: (cache, { data }) => {
-            const dataFromCache = cache.readQuery<Record<string, any>>({
+            const dataFromCache = cache.readQuery<GetMenuQueryResponse, GetMenuQueryVariables>({
                 query: GET_MENU,
-                variables: { slug }
+                variables: {
+                    slug: slug as string
+                }
             });
             const updatedData = get(data, "pageBuilder.menu.data");
 
-            if (updatedData) {
-                cache.writeQuery({
+            if (updatedData && dataFromCache) {
+                cache.writeQuery<GetMenuQueryResponse, GetMenuQueryVariables>({
                     query: GET_MENU,
                     data: set(dataFromCache, "pageBuilder.getMenu.data", updatedData)
                 });
@@ -110,12 +120,15 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
         return data;
     }, [loadedMenu.slug]);
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
-        return identity.getPermission("pb.menu");
-    }, []);
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.menu");
+    }, [identity]);
 
     const canSave = useMemo((): boolean => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         // User should be able to save the form
         // if it's a new entry and user has the "own" permission set.
         if (!loadedMenu.slug && pbMenuPermission.own) {
@@ -123,6 +136,9 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
         }
 
         if (pbMenuPermission.own) {
+            if (!identity) {
+                return false;
+            }
             return loadedMenu?.createdBy?.id === identity.id;
         }
 
@@ -149,7 +165,9 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
                         >
                             <ButtonIcon icon={<AddIcon />} /> {t`New Menu`}
                         </ButtonDefault>
-                    ) : null
+                    ) : (
+                        <></>
+                    )
                 }
             />
         );
@@ -189,7 +207,11 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
                                 onClick={() => history.push("/page-builder/menus")}
                             >{t`Cancel`}</ButtonDefault>
                             {canSave && (
-                                <ButtonPrimary onClick={form.submit}>{t`Save menu`}</ButtonPrimary>
+                                <ButtonPrimary
+                                    onClick={ev => {
+                                        form.submit(ev);
+                                    }}
+                                >{t`Save menu`}</ButtonPrimary>
                             )}
                         </ButtonWrapper>
                     </SimpleFormFooter>

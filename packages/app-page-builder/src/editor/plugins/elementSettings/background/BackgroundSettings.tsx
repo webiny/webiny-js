@@ -10,6 +10,7 @@ import { plugins } from "@webiny/plugins";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import {
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "~/types";
@@ -54,7 +55,9 @@ interface SettingsPropsType extends PbEditorPageElementSettingsRenderComponentPr
 const BackgroundSettings: React.FC<SettingsPropsType> = ({ options, defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as PbEditorElement;
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE,
@@ -67,11 +70,18 @@ const BackgroundSettings: React.FC<SettingsPropsType> = ({ options, defaultAccor
         }
     });
 
-    const { config: activeDisplayModeConfig } = useMemo(() => {
+    const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
+
+    const { config: activeDisplayModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
 
     const setImage = useCallback(
         value => getUpdateValue(`${displayMode}.image.file`)(value),

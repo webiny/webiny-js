@@ -35,7 +35,7 @@ const FormLoad: React.FC<FormLoadComponentPropsType> = props => {
         );
     }
 
-    if (loading) {
+    if (loading || !data) {
         return <span>Loading...</span>;
     }
 

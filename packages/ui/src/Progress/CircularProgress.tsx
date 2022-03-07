@@ -1,10 +1,10 @@
 // This is just to center the spinner
-import * as React from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import Spinner from "react-spinner-material";
 import { Typography } from "../Typography";
 
-interface Props {
+interface CircularProgressProps {
     label?: React.ReactNode;
     size?: number;
     spinnerColor?: string;
@@ -38,22 +38,19 @@ const Label = styled("div")({
     marginTop: 15
 });
 
-const CircularProgress: React.FC<Props> = ({
-    label,
-    size,
-    spinnerWidth,
-    spinnerColor,
-    visible,
-    style
-}) => {
+const CircularProgress: React.FC<CircularProgressProps> = props => {
+    const { label, size, spinnerWidth, spinnerColor, visible, style } = props;
+    /**
+     * We can safely cast because we have default props
+     */
     return (
         <SpinnerWrapper style={style}>
             <div className={"spinner__inner-wrapper"}>
                 <Spinner
-                    size={size}
-                    spinnerColor={spinnerColor}
-                    spinnerWidth={spinnerWidth}
-                    visible={visible}
+                    size={size as number}
+                    spinnerColor={spinnerColor as string}
+                    spinnerWidth={spinnerWidth as number}
+                    visible={visible as boolean}
                 />
                 {label && (
                     <Label>

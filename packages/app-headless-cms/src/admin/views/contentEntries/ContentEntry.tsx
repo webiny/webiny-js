@@ -81,7 +81,7 @@ export const ContentEntry: React.FC = () => {
     return (
         <DetailsContainer>
             <test-id data-testid="cms-content-details">
-                <Tabs ref={tabs => setTabsRef(tabs)}>
+                <Tabs ref={tabs => setTabsRef(tabs as Tabs)}>
                     <Tab
                         label={"Content"}
                         disabled={loading}

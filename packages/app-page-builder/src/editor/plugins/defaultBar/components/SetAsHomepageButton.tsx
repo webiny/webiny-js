@@ -31,7 +31,7 @@ const PUBLISH_PAGE = gql`
     }
 `;
 
-const SetAsHomepageButton: React.FunctionComponent = () => {
+const SetAsHomepageButton: React.FC = () => {
     const page = useRecoilValue(pageAtom) as Required<PageAtomType>;
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();

@@ -32,7 +32,7 @@ export interface Tenancy {
     getStorageOperations(): TenancyStorageOperations;
     getCurrentTenant<TTenant extends Tenant = Tenant>(): TTenant;
     setCurrentTenant(tenant: Tenant): void;
-    getVersion(): Promise<string>;
+    getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<void>;
     install(): Promise<void>;
     getRootTenant(): Promise<Tenant>;

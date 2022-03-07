@@ -29,7 +29,7 @@ export default class Ui {
         wrapper: HTMLElement;
         imageContainer: HTMLElement;
         fileButton: HTMLElement;
-        imageEl: HTMLElement;
+        imageEl?: HTMLElement;
         caption: HTMLElement;
     };
 
@@ -252,7 +252,7 @@ export default class Ui {
  */
 export const make = function make(
     tagName: string,
-    classNames: string[] | string = null,
+    classNames: string[] | string | null = null,
     attributes?: Record<string, string | number | boolean>
 ): HTMLElement {
     const el: HTMLElement = document.createElement(tagName);

@@ -53,7 +53,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
             return acc;
         }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
 
-    const where: FormBuilderStorageOperationsListSubmissionsParams["where"] = {
+    const where: Partial<FormBuilderStorageOperationsListSubmissionsParams["where"]> = {
         ...initialWhere
     };
     /**
@@ -63,7 +63,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
      * No need for the tenant filtering otherwise as each index is for single tenant.
      */
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-    if (sharedIndex) {
+    if (sharedIndex && where.tenant) {
         query.must.push({
             term: {
                 "tenant.keyword": where.tenant
@@ -80,7 +80,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
      */
     query.must.push({
         term: {
-            "locale.keyword": where.locale
+            "locale.keyword": where.locale as string
         }
     });
     delete where.locale;
@@ -89,7 +89,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
      */
     query.must.push({
         term: {
-            "form.parent.keyword": where.formId
+            "form.parent.keyword": where.formId as string
         }
     });
     delete where.formId;

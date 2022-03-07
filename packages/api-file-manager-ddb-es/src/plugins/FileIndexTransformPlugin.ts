@@ -7,7 +7,7 @@ import {
 } from "~/types";
 
 export class FileIndexTransformPlugin extends Plugin {
-    public static readonly type = "fm.ddbEs.file.index";
+    public static override readonly type: string = "fm.ddbEs.file.index";
     private readonly _params: FileIndexTransformPluginConfig;
 
     public constructor(params: FileIndexTransformPluginConfig) {

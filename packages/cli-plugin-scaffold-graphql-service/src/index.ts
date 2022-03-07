@@ -105,7 +105,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const newCodePath = path.join(scaffoldsPath, Case.camel(dataModelName.plural));
             const packageJsonPath = path.relative(
                 context.project.root,
-                findUp.sync("package.json", { cwd: input.pluginsFolderPath })
+                findUp.sync("package.json", { cwd: input.pluginsFolderPath }) as string
             );
             const templateFolderPath = path.join(__dirname, "template");
 

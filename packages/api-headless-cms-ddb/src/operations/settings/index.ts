@@ -134,7 +134,7 @@ export const createSettingsStorageOperations = (
             if (!record) {
                 return null;
             }
-            const settings = cleanupItem(entity, record);
+            const settings = cleanupItem(entity, record) as CmsSettingsDb;
             return convertFromDbData(settings);
         } catch (ex) {
             throw new WebinyError(

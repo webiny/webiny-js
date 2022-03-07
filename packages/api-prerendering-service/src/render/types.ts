@@ -35,15 +35,19 @@ export interface RenderResult {
     content: string;
     meta: Record<string, any>;
 }
-
 /**
  * @internal
  */
-export interface RenderUrlParams {
+export interface RenderUrlCallableParams {
     context: HandlerContext;
     args: BaseHandlerArgs;
     configuration: Configuration;
-    renderUrlFunction?: (url: string) => RenderResult;
+}
+/**
+ * @internal
+ */
+export interface RenderUrlParams extends RenderUrlCallableParams {
+    renderUrlFunction?: (url: string, params: RenderUrlCallableParams) => Promise<RenderResult>;
 }
 /**
  * @internal

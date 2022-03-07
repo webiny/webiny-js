@@ -68,7 +68,7 @@ export class HeaderElement extends UIElement<HeaderElementConfig> {
         return this._rightSection;
     }
 
-    public render(props: UiElementRenderProps): React.ReactNode {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         return (
             <TopAppBarSecondary fixed style={{ top: 0 }}>
                 <TopAppBarSection className={width} alignStart>

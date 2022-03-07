@@ -44,12 +44,12 @@ const parseDateTime = (value?: string): State => {
     };
 };
 
-export interface Props {
+export interface DateTimeWithoutTimezoneProps {
     bind: BindComponentRenderProp;
     trailingIcon?: any;
     field: CmsEditorField;
 }
-export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
+export const DateTimeWithoutTimezone: React.FC<DateTimeWithoutTimezoneProps> = ({
     field,
     bind,
     trailingIcon
@@ -80,10 +80,10 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
                     bind={{
                         ...bind,
                         value: date,
-                        onChange: value => {
+                        onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
-                                    return null;
+                                    return;
                                 }
                                 return bind.onChange("");
                             }
@@ -102,10 +102,10 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
                     bind={{
                         ...bind,
                         value: time,
-                        onChange: value => {
+                        onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
-                                    return null;
+                                    return;
                                 }
                                 return bind.onChange("");
                             }

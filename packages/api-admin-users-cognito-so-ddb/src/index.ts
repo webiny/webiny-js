@@ -27,7 +27,10 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
         });
     }
 
-    const table = createTable({ table: tableName, documentClient });
+    const table = createTable({
+        table: tableName,
+        documentClient
+    });
 
     const entities = {
         system: createSystemEntity(table, attributes ? attributes[ENTITIES.SYSTEM] : {}),

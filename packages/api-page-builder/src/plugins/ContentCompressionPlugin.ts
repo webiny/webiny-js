@@ -3,7 +3,7 @@ import WebinyError from "@webiny/error";
 
 export interface CompressedValue {
     compression: string;
-    content: string;
+    content: string | null;
 }
 
 /**
@@ -11,7 +11,7 @@ export interface CompressedValue {
  * canDecompress only expects boolean, no try/catch around it.
  */
 export abstract class ContentCompressionPlugin extends Plugin {
-    public static readonly type: string = "pageBuilder.page.content.compression";
+    public static override readonly type: string = "pageBuilder.page.content.compression";
 
     public readonly identifier: string;
 

@@ -30,7 +30,7 @@ interface ElementRootProps {
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;
 }
 
-const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
+const ElementRootComponent: React.FC<ElementRootProps> = ({
     element,
     style,
     children,
@@ -38,9 +38,9 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
 }) => {
     const shallowElement = useMemo(
         () => ({
-            id: element ? element.id : null,
-            type: element ? element.type : null,
-            data: element ? element.data : null,
+            id: element.id,
+            type: element.type,
+            data: element.data,
             elements: []
         }),
         [element.id, element.data]
@@ -77,7 +77,8 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         return null;
     }
     // Handle element visibility.// Use per-device style
-    const visibility = finalStyle[`--${kebabCase(displayMode)}-visibility`];
+    const visibility =
+        finalStyle[`--${kebabCase(displayMode)}-visibility` as unknown as keyof CSSProperties];
     if (visibility === "hidden") {
         return null;
     }
