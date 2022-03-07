@@ -3,13 +3,14 @@ import type { Configuration } from "webpack";
 import { Plugin as ApiPlugin } from "@webiny/plugins";
 import { PulumiApp } from "@webiny/pulumi-sdk-v6";
 import { AsyncProcessor } from "./compose";
+import { BabelConfig } from "./types";
 
 export interface PluginAdminConfig {
     plugin?: string;
     config?: string;
     define?: Record<string, string>;
     webpack?(config: Configuration): Configuration;
-    babel?(config: unknown): unknown;
+    babel?(config: BabelConfig): BabelConfig;
 }
 
 export enum FunctionHandlerTemplate {
@@ -118,6 +119,8 @@ export interface FunctionHandlerConfig {
     debug: boolean;
 }
 
+// We need an empty interface to augment it with plugins.
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AdminConfig {}
 
 export type ConfigModifier<TConfig> = AsyncProcessor<TConfig>;

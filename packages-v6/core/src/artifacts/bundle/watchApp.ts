@@ -1,7 +1,7 @@
 import { applyDefaults } from "./utils";
 import { createWatchConfig, WatchOptions } from "./createWatchConfig";
 
-export default (options: WatchOptions) => {
+export const watchApp = (options: WatchOptions) => {
     applyDefaults();
 
     if (!("REACT_APP_DEBUG" in process.env)) {

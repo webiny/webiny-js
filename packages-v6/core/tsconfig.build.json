@@ -5,9 +5,9 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "declarationMap": true,
-    "outDir": "dist/types",
+    "outDir": "dist",
     "rootDir": "./src",
-    "declarationDir": "./dist/types",
+    "declarationDir": "./dist",
     "baseUrl": "."
   },
   "include": ["./src"]

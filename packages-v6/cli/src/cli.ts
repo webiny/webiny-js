@@ -1,6 +1,6 @@
 import * as yargs from "yargs";
 import type { MiddlewareFunction, Options } from "yargs";
-import { initializeWebiny, Webiny } from "@webiny/core";
+import { initializeWebiny, Webiny } from "@webiny/core/webiny";
 
 interface ParsedOptions {
     // Even though `debug` has a default value, and will always be present, we have to mark it as optional

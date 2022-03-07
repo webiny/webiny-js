@@ -1,4 +1,3 @@
-import path from "path";
 import fs from "fs";
 import webpack from "webpack";
 import WebpackDevServer from "webpack-dev-server";
@@ -12,20 +11,18 @@ import openBrowserTab from "react-dev-utils/openBrowser";
 // @ts-ignore
 import { checkBrowsers } from "react-dev-utils/browsersHelper";
 import getPaths from "./config/paths";
+import { BabelConfigModifier, WebpackConfigModifier } from "./config/webpack.config";
 
 export interface WatchOptions {
     cwd: string;
+    entry: string;
+    html: string;
+    babelConfigModifier: BabelConfigModifier;
+    webpackConfigModifier: WebpackConfigModifier;
     openBrowser?: boolean;
-    overrides?: {
-        entry?: string;
-        webpack?(config: webpack.Configuration): webpack.Configuration;
-    };
 }
 
 export const createWatchConfig = async (options: WatchOptions) => {
-    const { overrides, cwd } = options;
-    const appIndexJs = overrides.entry || path.resolve(cwd, "src", "index.tsx");
-
     if (typeof options.openBrowser === "undefined") {
         options.openBrowser = true;
     }
@@ -37,9 +34,9 @@ export const createWatchConfig = async (options: WatchOptions) => {
         throw err;
     });
 
-    const paths = getPaths({ appIndexJs, cwd });
-    const configFactory = require("./config/webpack.config");
-    const createDevServerConfig = require("./config/webpackDevServer.config");
+    const paths = getPaths({ appIndexJs: options.entry, cwd: options.cwd });
+    const { createWebpackConfig } = await import("./config/webpack.config");
+    const { createDevServerConfig } = await import("./config/webpackDevServer.config");
 
     const useYarn = fs.existsSync(paths.yarnLockFile);
     const isInteractive = process.stdout.isTTY;
@@ -49,11 +46,12 @@ export const createWatchConfig = async (options: WatchOptions) => {
         process.exit(1);
     }
 
-    let buildConfig = configFactory("development", { paths, options });
+    let buildConfig = createWebpackConfig("development", {
+        paths,
+        babelConfigModifier: options.babelConfigModifier
+    });
 
-    if (typeof overrides.webpack === "function") {
-        buildConfig = overrides.webpack(buildConfig);
-    }
+    buildConfig = options.webpackConfigModifier(buildConfig);
 
     try {
         await checkBrowsers(paths.appPath, isInteractive);
@@ -139,8 +137,7 @@ function getHost() {
 }
 
 async function getPort(host: string) {
-    // Tools like Cloud9 rely on this.
-    const defaultPort = parseInt(process.env.PORT, 10) || 3000;
+    const defaultPort = parseInt(process.env.PORT || "3000", 10);
 
     const port = await choosePort(host, defaultPort);
     if (port == null) {

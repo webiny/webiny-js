@@ -59,4 +59,4 @@ export default async ({ preview }: DeployApiOptions) => {
     }
 };
 
-export interface APIPulumiApplication extends Record<string, unknown> {}
+export type APIPulumiApplication = Record<string, unknown>;

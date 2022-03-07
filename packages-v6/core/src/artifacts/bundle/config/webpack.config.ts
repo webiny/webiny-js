@@ -13,8 +13,8 @@ import getCSSModuleLocalIdent from "react-dev-utils/getCSSModuleLocalIdent";
 // @ts-ignore
 import ModuleNotFoundPlugin from "react-dev-utils/ModuleNotFoundPlugin";
 import { getClientEnvironment } from "./env";
-import ESLintPlugin from "eslint-webpack-plugin";
-import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+// import ESLintPlugin from "eslint-webpack-plugin";
+// import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import WebpackBar from "webpackbar";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import { Paths } from "./paths";
@@ -52,13 +52,21 @@ const sassLoader = {
     }
 };
 
-interface BabelConfig {
+export interface BabelConfig {
     [key: string]: any;
+}
+
+export interface BabelConfigModifier {
+    (config: BabelConfig): BabelConfig;
+}
+
+export interface WebpackConfigModifier {
+    (config: webpack.Configuration): webpack.Configuration;
 }
 
 interface CreateWebpackConfigParams {
     paths: Paths;
-    babelCustomizer?(config: BabelConfig): BabelConfig;
+    babelConfigModifier?: BabelConfigModifier;
 }
 
 interface CreateWebpackConfig {
@@ -67,15 +75,15 @@ interface CreateWebpackConfig {
 
 export const createWebpackConfig: CreateWebpackConfig = (
     webpackEnv,
-    { paths, babelCustomizer }
+    { paths, babelConfigModifier }
 ): webpack.Configuration => {
     const isEnvDevelopment = webpackEnv === "development";
     const isEnvProduction = webpackEnv === "production";
 
     const modules = getModules({ paths });
 
-    if (!babelCustomizer) {
-        babelCustomizer = v => v;
+    if (!babelConfigModifier) {
+        babelConfigModifier = v => v;
     }
 
     // Variable used for enabling profiling in Production
@@ -85,7 +93,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
     // Webpack uses `publicPath` to determine where the app is being served from.
     // It requires a trailing slash, or the file assets will get an incorrect path.
     // In development, we always serve from the root. This makes config easier.
-    const publicPath = isEnvProduction ? paths.servedPath : isEnvDevelopment && "/";
+    const publicPath = isEnvProduction ? paths.servedPath : "/";
     // Some apps do not use client-side routing with pushState.
     // For these, "homepage" can be set to "." to enable relative asset paths.
     const shouldUseRelativeAssetPaths = publicPath === "./";
@@ -96,7 +104,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
     // `publicUrl` is just like `publicPath`, but we will provide it to our app
     // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
     // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
-    const publicUrl = isEnvProduction ? publicPath.slice(0, -1) : isEnvDevelopment && "";
+    const publicUrl = isEnvProduction ? publicPath.slice(0, -1) : "";
     // Get environment variables to inject into our app.
     const env = getClientEnvironment(publicUrl);
 
@@ -125,15 +133,15 @@ export const createWebpackConfig: CreateWebpackConfig = (
             // In development, it does not produce real files.
             filename: isEnvProduction
                 ? `${STATIC_FOLDER}/js/[name].[contenthash:8].js`
-                : isEnvDevelopment && `${STATIC_FOLDER}/js/[name].js`,
+                : `${STATIC_FOLDER}/js/[name].js`,
 
             // There are also additional JS chunk files if you use code splitting.
             chunkFilename: isEnvProduction
                 ? `${STATIC_FOLDER}/js/[name].[contenthash:8].chunk.js`
-                : isEnvDevelopment && `${STATIC_FOLDER}/js/[name].chunk.js`,
+                : `${STATIC_FOLDER}/js/[name].chunk.js`,
             // We inferred the "public path" (such as / or /my-project) from homepage.
             // We use "/" in development.
-            publicPath: publicPath,
+            publicPath,
             // Point sourcemap entries to original disk location (format as URL on Windows)
             devtoolModuleFilenameTemplate: (info: { absoluteResourcePath: string }) => {
                 if (isEnvProduction) {
@@ -237,8 +245,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
                 ...(isEnvProductionProfile && {
                     "react-dom$": require.resolve("react-dom/profiling"),
                     "scheduler/tracing": require.resolve("scheduler/tracing-profiling")
-                }),
-                ...(modules.webpackAliases || {})
+                })
             },
             fallback: {
                 path: false
@@ -299,7 +306,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
                             include: [paths.appSrc, paths.appIndexJs, ...paths.allWorkspaces],
                             loader: require.resolve("babel-loader"),
-                            options: babelCustomizer({
+                            options: babelConfigModifier({
                                 sourceType: "unambiguous",
                                 presets: [
                                     require.resolve("@babel/preset-env"),
@@ -486,7 +493,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
             //   can be used to reconstruct the HTML if necessary
             new WebpackManifestPlugin({
                 fileName: "asset-manifest.json",
-                publicPath: publicPath,
+                publicPath: publicPath ? publicPath : undefined,
                 // @ts-ignore The return value of this function doesn't match the TS type of this plugin!
                 generate: (seed, files, entrypoints) => {
                     const manifestFiles = files.reduce((manifest, file) => {
@@ -502,12 +509,6 @@ export const createWebpackConfig: CreateWebpackConfig = (
                         entrypoints: entrypointFiles
                     };
                 }
-            }),
-
-            new webpack.IgnorePlugin({
-                checkResource(resource) {
-                    return resource === "./webiny";
-                },
             }),
 
             // new ESLintPlugin({
@@ -551,7 +552,10 @@ export const createWebpackConfig: CreateWebpackConfig = (
     };
 
     // common function to get style loaders
-    function getStyleLoaders(cssOptions: Record<string, unknown>, preProcessor?: unknown) {
+    function getStyleLoaders(
+        cssOptions: Record<string, unknown>,
+        preProcessor?: unknown
+    ): webpack.RuleSetUseItem[] {
         const loaders = [
             isEnvDevelopment && require.resolve("style-loader"),
             isEnvProduction && {
@@ -624,7 +628,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
                 preProcessor
             );
         }
-        return loaders.filter(Boolean);
+        return loaders.filter(Boolean) as webpack.RuleSetUseItem[];
     }
 
     function getUrlLoader() {

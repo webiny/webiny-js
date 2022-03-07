@@ -11,38 +11,38 @@ import { useContext } from "@webiny/cli";
 const SELF_MANAGED_BACKEND = ["s3://", "azblob://", "gs://"];
 
 export const login = async (appName: string) => {
-  const context = await useContext();
-  // Do the login with Pulumi CLI.
-  const pulumi = await getPulumi();
+    const context = await useContext();
+    // Do the login with Pulumi CLI.
+    const pulumi = await getPulumi();
 
-  // A couple of variations here, just to preserve backwards compatibility.
-  let login =
-    process.env.WEBINY_PULUMI_BACKEND ||
-    process.env.WEBINY_PULUMI_BACKEND_URL ||
-    process.env.PULUMI_LOGIN;
+    // A couple of variations here, just to preserve backwards compatibility.
+    let login =
+        process.env.WEBINY_PULUMI_BACKEND ||
+        process.env.WEBINY_PULUMI_BACKEND_URL ||
+        process.env.PULUMI_LOGIN;
 
-  if (login) {
-    // If the user passed `s3://my-bucket`, we want to store files in `s3://my-bucket/{project-application-path}`
-    const selfManagedBackend = SELF_MANAGED_BACKEND.find((item) => login!.startsWith(item));
-    if (selfManagedBackend) {
-      login = trimEnd(login, "/") + "/" + appName;
-      login = login.replace(/\\/g, "/");
+    if (login) {
+        // If the user passed `s3://my-bucket`, we want to store files in `s3://my-bucket/{project-application-path}`
+        const selfManagedBackend = SELF_MANAGED_BACKEND.find(item => login!.startsWith(item));
+        if (selfManagedBackend) {
+            login = trimEnd(login, "/") + "/" + appName;
+            login = login.replace(/\\/g, "/");
+        }
+    } else {
+        // By default, we use local file system as backend. All files are stored in project root's
+        // `.pulumi` folder, e.g. `.pulumi/apps/admin`.
+        const stateFilesFolder = context.resolve(".pulumi", appName);
+
+        if (!fs.existsSync(stateFilesFolder)) {
+            fs.mkdirSync(stateFilesFolder, { recursive: true });
+        }
+
+        login = `file://${stateFilesFolder}`;
     }
-  } else {
-    // By default, we use local file system as backend. All files are stored in project root's
-    // `.pulumi` folder, e.g. `.pulumi/apps/admin`.
-    const stateFilesFolder = context.resolve(".pulumi", appName);
 
-    if (!fs.existsSync(stateFilesFolder)) {
-      fs.mkdirSync(stateFilesFolder, { recursive: true });
-    }
+    await pulumi.run({
+        command: ["login", login]
+    });
 
-    login = `file://${stateFilesFolder}`;
-  }
-
-  await pulumi.run({
-    command: ["login", login],
-  });
-
-  return { login };
+    return { login };
 };

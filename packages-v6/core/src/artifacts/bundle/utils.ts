@@ -23,7 +23,7 @@ export const applyDefaults = () => {
     }
 
     if (!("REACT_APP_WEBINY_VERSION" in process.env)) {
-        const pkg = readJsonSync(findUp.sync("package.json"));
+        const pkg = readJsonSync(findUp.sync("package.json") as string);
         process.env.REACT_APP_WEBINY_VERSION = pkg.version;
     }
 

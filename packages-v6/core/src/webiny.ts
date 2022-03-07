@@ -2,58 +2,9 @@ import fs from "fs-extra";
 import path from "path";
 // @ts-ignore TODO: convert `telemetry` package to TS
 import { isEnabled } from "@webiny/telemetry/cli";
-import { FunctionName, Plugin, Preset } from "./index";
+import { Plugin, ProjectConfig, Webiny, WebinyOptions } from "./index";
 import { createLogger, Logger } from "./utils/logger";
 import { getRoot } from "./utils/getRoot";
-
-export interface ProjectDeployConfig {
-    resourceName?: (name: string) => string;
-    resourceTags?: Record<string, string>;
-}
-
-export interface ProjectConfig {
-    artifacts?: string;
-    deploy?: (env: string) => ProjectDeployConfig;
-    presets?: (Preset | Promise<Preset>)[];
-    plugins?: Plugin[];
-    telemetry?: boolean;
-}
-
-interface BuildAdmin {
-    watch?: boolean;
-}
-
-interface BuildApi {
-    watch?: boolean;
-}
-
-export interface Webiny {
-    // Build methods
-    buildApi(params: BuildApi): Promise<void>;
-    buildAdmin(params: BuildAdmin): Promise<void>;
-    buildWebsite(): Promise<void>;
-    // Deploy methods
-    deployAll(): Promise<void>;
-    deployApi(): Promise<void>;
-    deployAdmin(): Promise<void>;
-    deployWebsite(): Promise<void>;
-    deployStorage(): Promise<void>;
-    // Utility methods
-    resolve(...paths: string[]): string;
-    getOutputPath(): string;
-    getApiArtifactPath(functionName: FunctionName): string;
-    getAdminArtifactPath(): string;
-    getWebsiteArtifactPath(): string;
-    getEnv(): string;
-    getPlugins(): Plugin[];
-    setLogger(logger: Logger): void;
-    logger: Logger;
-    telemetry: boolean;
-}
-
-export interface ProjectConfigFactory {
-    (options: unknown): ProjectConfig;
-}
 
 async function loadPluginsFromPresets(presets: ProjectConfig["presets"]) {
     if (!presets) {
@@ -80,11 +31,6 @@ function deduplicatePlugins(plugins: Plugin[]) {
     }, []);
 }
 
-interface WebinyOptions {
-    env?: string;
-    debug?: boolean;
-}
-
 let webiny: Webiny;
 
 export const useWebiny = () => {
@@ -105,7 +51,7 @@ export async function initializeWebiny(options: WebinyOptions) {
     let output = "";
 
     // Create default logger
-    let logger: Logger = createLogger(options.debug);
+    let logger: Logger = createLogger(!!options.debug);
 
     // Project plugins
     let plugins: Plugin[] = [];
@@ -117,7 +63,7 @@ export async function initializeWebiny(options: WebinyOptions) {
             return path.resolve(root, ...paths);
         },
         async buildAdmin({ watch }) {
-            const { buildAdmin } = await import("./build/admin");
+            const { buildAdmin } = await import("./artifacts/admin");
             return buildAdmin({ watch });
         },
         buildApi(): Promise<void> {

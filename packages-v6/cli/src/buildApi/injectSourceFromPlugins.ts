@@ -3,48 +3,48 @@ import { FunctionName, PluginHandlerConfig, Plugin } from "@webiny/core";
 import { getModulePath, getDeclaration } from "../utils";
 
 export function injectSourceFromPlugins(
-  fnName: FunctionName,
-  source: SourceFile,
-  plugins: Plugin[]
+    fnName: FunctionName,
+    source: SourceFile,
+    plugins: Plugin[]
 ) {
-  const configModifiers = getDeclaration("configModifiers", source);
-  const pluginsModifiers = getDeclaration("pluginsModifiers", source);
+    const configModifiers = getDeclaration("configModifiers", source);
+    const pluginsModifiers = getDeclaration("pluginsModifiers", source);
 
-  const configModifiersArray = configModifiers.getInitializer() as ArrayLiteralExpression;
-  const pluginsModifiersArray = pluginsModifiers.getInitializer() as ArrayLiteralExpression;
+    const configModifiersArray = configModifiers.getInitializer() as ArrayLiteralExpression;
+    const pluginsModifiersArray = pluginsModifiers.getInitializer() as ArrayLiteralExpression;
 
-  // In case the given template doesn't contain the required placeholders, don't inject anything.
-  if (!configModifiersArray || !pluginsModifiersArray) {
-    return;
-  }
-
-  [...plugins].reverse().forEach((plugin) => {
-    // In here we only process `HandlerConfig` so we can cast it explicitly.
-    const fnConfig = plugin.api![fnName] as PluginHandlerConfig;
-    if (!fnConfig) {
-      return;
+    // In case the given template doesn't contain the required placeholders, don't inject anything.
+    if (!configModifiersArray || !pluginsModifiersArray) {
+        return;
     }
 
-    const factoryName = `create${plugin.name}`;
+    [...plugins].reverse().forEach(plugin => {
+        // In here we only process `HandlerConfig` so we can cast it explicitly.
+        const fnConfig = plugin.api![fnName] as PluginHandlerConfig;
+        if (!fnConfig) {
+            return;
+        }
 
-    if (fnConfig.handler) {
-      source.addImportDeclaration({
-        defaultImport: factoryName,
-        moduleSpecifier: getModulePath(fnConfig.handler),
-      });
+        const factoryName = `create${plugin.name}`;
 
-      pluginsModifiersArray.addElement(`${factoryName}(config)`);
-    }
+        if (fnConfig.handler) {
+            source.addImportDeclaration({
+                defaultImport: factoryName,
+                moduleSpecifier: getModulePath(fnConfig.handler)
+            });
 
-    if (fnConfig.config) {
-      const configModifierName = `${factoryName}Config`;
+            pluginsModifiersArray.addElement(`${factoryName}(config)`);
+        }
 
-      source.addImportDeclaration({
-        defaultImport: configModifierName,
-        moduleSpecifier: getModulePath(fnConfig.config),
-      });
+        if (fnConfig.config) {
+            const configModifierName = `${factoryName}Config`;
 
-      configModifiersArray.addElement(configModifierName);
-    }
-  });
+            source.addImportDeclaration({
+                defaultImport: configModifierName,
+                moduleSpecifier: getModulePath(fnConfig.config)
+            });
+
+            configModifiersArray.addElement(configModifierName);
+        }
+    });
 }

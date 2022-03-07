@@ -10,16 +10,17 @@ import printBuildError from "react-dev-utils/printBuildError";
 import { checkBrowsers } from "react-dev-utils/browsersHelper";
 import { applyDefaults } from "./utils";
 import getPaths, { Paths } from "./config/paths";
-import { Plugin } from "../../index";
 import { useWebiny } from "../../webiny";
 import { Logger } from "../../utils/logger";
+import { BabelConfigModifier, WebpackConfigModifier } from "./config/webpack.config";
 
 export interface BuildOptions {
     cwd: string;
     entry: string;
     html: string;
     output: string;
-    plugins: Plugin[];
+    babelConfigModifier: BabelConfigModifier;
+    webpackConfigModifier: WebpackConfigModifier;
 }
 
 export const buildApp = async (options: BuildOptions) => {
@@ -56,27 +57,17 @@ export const buildApp = async (options: BuildOptions) => {
     // We require that you explicitly set browsers and do not fall back to browsers list defaults.
     await checkBrowsers(paths.appPath, isInteractive);
 
-    const babelCustomizer = (config: unknown) => {
-        options.plugins
-            .filter(pl => "babel" in pl.admin)
-            .forEach(pl => {
-                config = pl.admin.babel(config);
-            });
-
-        return config;
-    };
-
     // Generate configuration
     paths.appBuild = options.output;
-    let config = createWebpackConfig(process.env.NODE_ENV, { paths, babelCustomizer });
+    let config = createWebpackConfig(process.env.NODE_ENV, {
+        paths,
+        babelConfigModifier: options.babelConfigModifier
+    });
 
     // Apply webpack modifiers
-    options.plugins
-        .filter(pl => "webpack" in pl.admin)
-        .forEach(pl => {
-            config = pl.admin.webpack(config);
-        });
-
+    if (options.webpackConfigModifier) {
+        config = options.webpackConfigModifier(config);
+    }
     // First, read the current file sizes in build directory.
     // This lets us display how much they changed later.
     const existingFileSizes = await measureFileSizesBeforeBuild(paths.appBuild);
@@ -176,7 +167,7 @@ function build({ config, previousFileSizes, logger }: BuildParams): Promise<Buil
                 });
             } else {
                 messages = formatWebpackMessages(
-                    stats.toJson({
+                    stats!.toJson({
                         all: false,
                         warnings: true,
                         errors: true
@@ -204,7 +195,7 @@ function build({ config, previousFileSizes, logger }: BuildParams): Promise<Buil
             }
 
             return resolve({
-                stats,
+                stats: stats!,
                 previousFileSizes,
                 warnings: messages.warnings
             });

@@ -5,11 +5,17 @@ interface Params {
     host: string;
     port: Port;
     https: boolean;
-    allowedHost: string;
+    allowedHost: string | undefined;
     paths: Paths;
 }
 
-export default function ({ host, port, https, allowedHost, paths }: Params): Configuration {
+export const createDevServerConfig = function ({
+    host,
+    port,
+    https,
+    allowedHost,
+    paths
+}: Params): Configuration {
     return {
         host,
         port,
@@ -65,4 +71,4 @@ export default function ({ host, port, https, allowedHost, paths }: Params): Con
         },
         allowedHosts: allowedHost ? [allowedHost] : undefined
     };
-}
+};

@@ -1,6 +1,11 @@
 export * from "./compose";
-export * from "./webiny";
-export type { Webiny } from "./webiny";
+export type {
+    Webiny,
+    WebinyOptions,
+    ProjectConfigFactory,
+    ProjectDeployConfig,
+    ProjectConfig
+} from "./types";
 export type { AsyncProcessor, NextAsyncProcessor } from "./compose";
 export * from "./definePlugin";
 export type {
