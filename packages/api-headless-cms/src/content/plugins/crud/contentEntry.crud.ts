@@ -311,14 +311,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Get a single entry by revision ID from the database.
          */
         getEntryById: async (model, id) => {
-            const where = {
-                id
+            const where: CmsEntryListWhere = {
+                id,
+                tenant: model.tenant
             };
             await onBeforeEntryGet.publish({
                 where,
                 model
             });
-            const [entry] = await getEntriesByIds(model, [where.id]);
+            const [entry] = await getEntriesByIds(model, [where.id as string]);
             if (!entry) {
                 throw new NotFoundError(`Entry by ID "${id}" not found.`);
             }
@@ -451,7 +452,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return [items, meta];
         },
         listLatestEntries: async function (model, params) {
-            const where = params ? params.where : {};
+            const where = params ? params.where : ({} as CmsEntryListWhere);
+            if (!where.tenant) {
+                where.tenant = model.tenant;
+            }
 
             return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],
@@ -463,7 +467,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         },
         listPublishedEntries: async function (model, params) {
-            const where = params ? params.where : {};
+            const where = params ? params.where : ({} as CmsEntryListWhere);
+            if (!where.tenant) {
+                where.tenant = model.tenant;
+            }
 
             return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],

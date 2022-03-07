@@ -18,7 +18,14 @@ const getKey = (field: CmsEditorField, bind: BindComponentRenderProp, index: num
 };
 
 const emptyValue: Record<string, any>[] = [
-    { type: "paragraph", data: { textAlign: "left", className: null, text: "" } }
+    {
+        type: "paragraph",
+        data: {
+            textAlign: "left",
+            className: null,
+            text: ""
+        }
+    }
 ];
 
 const EditorWrapper = styled("div")({
@@ -48,6 +55,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
             const { field } = props;
 
             const rteProps = useMemo(() => {
+                /**
+                 * TODO @ts-refactor
+                 * Missing cms-rte-config plugin.
+                 */
+                // @ts-ignore
                 return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
             }, []);
 

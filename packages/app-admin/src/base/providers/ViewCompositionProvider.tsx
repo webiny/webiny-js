@@ -3,6 +3,7 @@ import React, { createContext, useContext, useMemo, useState } from "react";
 export interface ViewElement {
     name: string;
     elements: JSX.Element[];
+    label?: string;
     [key: string]: any;
 }
 

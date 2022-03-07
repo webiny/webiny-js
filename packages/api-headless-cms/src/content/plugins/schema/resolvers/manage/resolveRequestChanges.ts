@@ -8,7 +8,7 @@ type ResolveRequestChanges = ResolverFactory<any, ResolveRequestChangesArgs>;
 
 export const resolveRequestChanges: ResolveRequestChanges =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const entry = await context.cms.requestEntryChanges(model, args.revision);
 

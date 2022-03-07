@@ -124,8 +124,10 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         });
     };
 
-    const getDefaultValues = (overrides: Record<string, string> = {}): Record<string, string> => {
-        const values: Record<string, string> = {};
+    const getDefaultValues = (
+        overrides: Record<string, string> = {}
+    ): Record<string, string | string[]> => {
+        const values: Record<string, string | string[]> = {};
         fields.forEach(field => {
             const fieldId = field.fieldId;
 

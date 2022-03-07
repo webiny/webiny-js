@@ -3,6 +3,7 @@ import { ApwCommentStorageOperations } from "./types";
 import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 import WebinyError from "@webiny/error";
+import { ApwComment } from "~/types";
 
 export const createCommentStorageOperations = ({
     cms,
@@ -33,10 +34,16 @@ export const createCommentStorageOperations = ({
         getComment,
         async listComments(params) {
             const model = await getCommentModel();
-            const [entries, meta] = await cms.listLatestEntries(model, params);
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where,
+                    tenant: model.tenant
+                }
+            });
             const all = await Promise.all(
                 entries.map(entry =>
-                    getFieldValues({
+                    getFieldValues<ApwComment>({
                         entry,
                         fields: baseFields,
                         context: getCmsContext(),

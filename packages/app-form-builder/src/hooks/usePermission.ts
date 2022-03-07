@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
-import { SecurityPermission } from "@webiny/app-security/types";
+import { FormBuilderSecurityPermission } from "~/types";
 
 interface CreatableItem {
     createdBy?: {
@@ -12,10 +12,10 @@ interface CreatableItem {
 export const usePermission = () => {
     const { identity, getPermission } = useSecurity();
 
-    const fbFormPermission = useMemo((): SecurityPermission | null => {
+    const fbFormPermission = useMemo((): FormBuilderSecurityPermission | null => {
         return getPermission("fb.form");
     }, [identity]);
-    const hasFullAccess = useMemo((): SecurityPermission | null => {
+    const hasFullAccess = useMemo((): FormBuilderSecurityPermission | null => {
         return getPermission("fb.*");
     }, [identity]);
 
@@ -62,7 +62,7 @@ export const usePermission = () => {
         if (typeof fbFormPermission.pw === "string") {
             return fbFormPermission.pw.includes("p");
         }
-        return fbFormPermission.pw;
+        return fbFormPermission.pw || false;
     }, [fbFormPermission, hasFullAccess]);
 
     const canUnpublish = useCallback((): boolean => {
@@ -75,7 +75,7 @@ export const usePermission = () => {
         if (typeof fbFormPermission.pw === "string") {
             return fbFormPermission.pw.includes("u");
         }
-        return fbFormPermission.pw;
+        return fbFormPermission.pw || false;
     }, [fbFormPermission, hasFullAccess]);
 
     return {

@@ -5,6 +5,11 @@ declare namespace NodeJS {
         DB_TABLE_TENANCY?: string;
         DB_TABLE_PRERENDERING_SERVICE?: string;
         DB_TABLE_ELASTICSEARCH?: string;
+        DB_TABLE_ADMIN_USERS?: string;
+        DB_TABLE_FILE_MANGER?: string;
+        DB_TABLE_HEADLESS_CMS?: string;
+        DB_PAGE_BUILDER?: string;
+        DB_TABLE_PAGE_BUILDER?: string;
         ELASTICSEARCH_SHARED_INDEXES?: "true" | "false" | string;
         WEBINY_VERSION?: string;
         WEBINY_ENABLE_VERSION_HEADER?: "true" | "false" | string;
@@ -29,5 +34,12 @@ declare namespace NodeJS {
         REACT_APP_USER_POOL_WEB_CLIENT_ID?: string;
         REACT_APP_USER_POOL_PASSWORD_POLICY?: string;
         REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL?: string;
+        COGNITO_USER_POOL_ID?: string;
+        COGNITO_REGION?: string;
+        IMAGE_TRANSFORMER_FUNCTION?: string;
+        S3_BUCKET?: string;
+        ELASTIC_SEARCH_INDEX_PREFIX?: string;
+        EXPORT_PAGES_PROCESS_HANDLER?: string;
+        IMPORT_PAGES_CREATE_HANDLER?: string;
     }
 }

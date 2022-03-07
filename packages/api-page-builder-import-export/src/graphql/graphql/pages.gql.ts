@@ -50,7 +50,7 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
         `,
         resolvers: {
             PbMutation: {
-                exportPages: async (_, args, context) => {
+                exportPages: async (_, args: any, context) => {
                     /**
                      * We know that args is ExportPagesParams.
                      */
@@ -59,7 +59,7 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
                     );
                 },
 
-                importPages: async (_, args, context) => {
+                importPages: async (_, args: any, context) => {
                     /**
                      * We know that args is ExportPagesParams.
                      */

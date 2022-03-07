@@ -6,7 +6,7 @@ import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security";
 import { Cell } from "@webiny/ui/Grid";
 import { Grid } from "@webiny/ui/Grid";
-import { CmsModel } from "~/types";
+import { CmsModel, CmsSecurityPermission } from "~/types";
 
 const grid = css({
     "&.mdc-layout-grid": {
@@ -44,7 +44,7 @@ const ContentModels: React.FC = () => {
     const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo((): boolean => {
-        const permission = getPermission("cms.contentModel");
+        const permission = getPermission<CmsSecurityPermission>("cms.contentModel");
         if (!permission) {
             return false;
         }

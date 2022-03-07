@@ -29,7 +29,13 @@ export const createWorkflowStorageOperations = ({
         getWorkflow,
         async listWorkflows(params) {
             const model = await getWorkflowModel();
-            const [entries, meta] = await cms.listLatestEntries(model, params);
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where,
+                    tenant: model.tenant
+                }
+            });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createWorkflow(params) {

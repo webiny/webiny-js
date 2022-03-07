@@ -7,13 +7,13 @@ import { Typography } from "@webiny/ui/Typography";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 import { useCmsData } from "./useCmsData";
 import { BindComponent } from "@webiny/form/types";
-import { FormData } from "@webiny/form/types";
+import { CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 interface ContentModelGroupPermissionProps {
     Bind: BindComponent;
-    data: FormData;
+    data: CmsSecurityPermission;
     entity: string;
     title: string;
     locales: string[];
@@ -51,11 +51,11 @@ const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = 
                                 <Select label={t`Access Scope`}>
                                     <option value={"full"}>{t`All groups`}</option>
                                     <option value={"groups"}>{t`Only specific groups`}</option>
-                                    {data.endpoints.includes("manage") && (
+                                    {(data.endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only groups created by the user`}</option>
-                                    )}
+                                    )) || <></>}
                                 </Select>
                             </Bind>
                         </Cell>

@@ -8,7 +8,7 @@ type ResolveRequestReview = ResolverFactory<any, ResolveRequestReviewArgs>;
 
 export const resolveRequestReview: ResolveRequestReview =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const entry = await context.cms.requestEntryReview(model, args.revision);
 

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import get from "lodash/get";
 import { useSecurity } from "@webiny/app-security";
-import { SecurityPermission } from "@webiny/app-security/types";
+import { PageBuilderSecurityPermission } from "~/types";
 
 interface CreatableItem {
     createdBy: {
@@ -21,10 +21,10 @@ interface UsePermission {
 const usePermission = (): UsePermission => {
     const { identity, getPermission } = useSecurity();
 
-    const pbPagePermission = useMemo((): SecurityPermission | null => {
+    const pbPagePermission = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.page");
     }, [identity]);
-    const hasFullAccess = useMemo((): SecurityPermission | null => {
+    const hasFullAccess = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.*");
     }, [identity]);
 

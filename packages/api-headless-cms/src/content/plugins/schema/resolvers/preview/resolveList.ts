@@ -10,7 +10,7 @@ type ResolveList = ResolverFactory<any, CmsEntryListParams>;
 
 export const resolveList: ResolveList =
     ({ model }) =>
-    async (_: any, args, context) => {
+    async (_: any, args: any, context) => {
         try {
             const response: [CmsEntry[], CmsEntryMeta] = await context.cms.listLatestEntries(
                 model,

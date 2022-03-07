@@ -80,17 +80,23 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
             }
 
             if (data.accessLevel === FULL_ACCESS) {
-                newValue.push({ name: CMS_PERMISSION_FULL_ACCESS });
+                newValue.push({
+                    name: CMS_PERMISSION_FULL_ACCESS,
+                    endpoints: []
+                });
                 onChange(newValue);
                 return;
             }
 
+            const endpoints = data.endpoints;
+
             // Handling custom access level.
-            if (Array.isArray(data.endpoints)) {
+            if (endpoints && Array.isArray(data.endpoints)) {
                 API_ENDPOINTS.forEach(api => {
-                    if (data.endpoints.includes(api.id)) {
+                    if (endpoints.includes(api.id)) {
                         newValue.push({
-                            name: `${CMS_PERMISSION}.endpoint.${api.id}`
+                            name: `${CMS_PERMISSION}.endpoint.${api.id}`,
+                            endpoints: []
                         });
                     }
                 });
@@ -108,7 +114,8 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
                         rwd: "r",
                         pw: "",
                         groups: undefined,
-                        models: undefined
+                        models: undefined,
+                        endpoints: []
                     };
 
                     if (accessScope === "own") {
@@ -137,7 +144,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
                                         acc[locale] = props[entity][locale];
                                     }
                                     return acc;
-                                }, {});
+                                }, {} as Record<string, string>);
                             }
                         });
                     }
@@ -189,7 +196,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
         };
 
         ENTITIES.forEach(entity => {
-            const data = {
+            const data: Record<string, any> = {
                 [`${entity}AccessScope`]: FULL_ACCESS,
                 [`${entity}RWD`]: "r",
                 [`${entity}Props`]: {}

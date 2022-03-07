@@ -9,7 +9,7 @@ import {
     FormAPI
 } from "@webiny/form/types";
 import { ApolloClient } from "apollo-client";
-import { SecurityContext } from "@webiny/app-security";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 export interface FbErrorResponse {
     message: string;
@@ -121,7 +121,8 @@ export interface FbRevisionModel {
 }
 
 export interface FbFormDetailsPluginRenderParams {
-    security: SecurityContext;
+    // @ts-refactor
+    security: Record<string, any>;
     refreshForms: () => Promise<void>;
     form: FbFormModel;
     revisions: FbRevisionModel[];
@@ -172,14 +173,20 @@ export interface FbFormModelField {
     placeholderText?: string;
     validation?: FbBuilderFieldValidator[];
     options?: Array<{ value: string; label: string }>;
-    settings: { [key: string]: any };
+    settings: {
+        defaultValue?: string | string[];
+        [key: string]: any;
+    };
 }
 
 export interface FbFormSubmissionData {
     id: string;
     locale: string;
     data: Record<string, any>;
-    meta: Record<string, any>;
+    meta: {
+        ip: string;
+        submittedOn: string;
+    };
     form: {
         id: string;
         parent: string;
@@ -375,4 +382,11 @@ export interface FbUpdateFormInput {
     layout?: FbFormModelFieldsLayout;
     settings?: FbFormSettingsInput;
     triggers?: Record<string, string>;
+}
+
+export interface FormBuilderSecurityPermission extends SecurityPermission {
+    own?: boolean;
+    rwd?: string;
+    pw?: string | boolean;
+    submissions?: boolean;
 }

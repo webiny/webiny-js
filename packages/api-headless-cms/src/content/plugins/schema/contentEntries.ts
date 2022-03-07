@@ -61,7 +61,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         `,
         resolvers: {
             Query: {
-                async searchContentEntries(_, args, context) {
+                async searchContentEntries(_, args: any, context) {
                     const { modelIds, query, limit = 10 } = args;
                     const models = await context.cms.listModels();
 
@@ -70,7 +70,9 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         .map(async model => {
                             const latest = query === "__latest__";
                             const modelManager = await context.cms.getModelManager(model.modelId);
-                            const where: CmsEntryListWhere = {};
+                            const where: CmsEntryListWhere = {
+                                tenant: model.tenant
+                            };
                             if (!latest) {
                                 where[`${model.titleFieldId}_contains`] = query;
                             }
@@ -102,7 +104,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                             .slice(0, limit)
                     );
                 },
-                async getContentEntry(_, args, context) {
+                async getContentEntry(_, args: any, context) {
                     const { modelId, id } = args.entry;
                     const models = await context.cms.listModels();
                     const model = models.find(m => m.modelId === modelId);
@@ -125,7 +127,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         title: getEntryTitle(model, entry)
                     });
                 },
-                async getContentEntries(_, args, context) {
+                async getContentEntries(_, args: any, context) {
                     const models = await context.cms.listModels();
 
                     const modelsMap = models.reduce((collection, model) => {

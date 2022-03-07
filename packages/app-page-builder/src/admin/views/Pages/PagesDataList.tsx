@@ -281,7 +281,10 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
         );
     }, [canCreate, showImportPageDialog]);
 
-    const multiSelectProps = useMultiSelect({ useRouter: false, getValue: item => item.pid });
+    const multiSelectProps = useMultiSelect({
+        useRouter: false,
+        getValue: (item: any) => item.pid
+    });
 
     return (
         <DataList

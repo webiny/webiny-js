@@ -170,9 +170,22 @@ export interface CmsModelField {
      */
     settings?: {
         /**
+         * Predefined values (text, number)
          * The default value for the field in case it is not predefined values field.
          */
         defaultValue?: string | number | null | undefined;
+        /**
+         * Object field.
+         */
+        fields?: CmsModelField[];
+        /**
+         * Ref field.
+         */
+        models?: Pick<CmsModel, "modelId">[];
+        /**
+         * Date field.
+         */
+        type?: string;
         /**
          * There are a lot of other settings that are possible to add so we keep the type opened.
          */
@@ -935,7 +948,12 @@ export interface CmsGroupContext {
 export interface CmsModelFieldValidation {
     name: string;
     message: string;
-    settings?: Record<string, any>;
+    settings?: {
+        value?: string;
+        values?: string[];
+        preset?: string;
+        [key: string]: any;
+    };
 }
 
 /**
@@ -1417,6 +1435,15 @@ export interface CmsEntryListWhere {
      */
     latest?: boolean;
     /**
+     * Search for exact locale.
+     * This will most likely be populated, but leave it as optional.
+     */
+    locale?: string;
+    /**
+     * Exact tenant. No multi-tenancy search.
+     */
+    tenant: string;
+    /**
      * Can be reference field or, actually, anything else.
      */
     [key: string]: any | CmsEntryListWhereRef;
@@ -1759,15 +1786,23 @@ export type CmsEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsCo
  * @category SecurityPermission
  */
 export interface CmsSettingsPermission extends SecurityPermission {} // eslint-disable-line
+
+/**
+ * A base security permission for CMS.
+ *
+ * @category SecurityPermission
+ */
+export interface BaseCmsSecurityPermission extends SecurityPermission {
+    own?: boolean;
+    rwd: string | number;
+}
 /**
  * A security permission for content model.
  *
  * @category SecurityPermission
  * @category CmsModel
  */
-export interface CmsModelPermission extends SecurityPermission {
-    own: boolean;
-    rwd: string;
+export interface CmsModelPermission extends BaseCmsSecurityPermission {
     /**
      * A object representing `key: model.modelId` values where key is locale code.
      */
@@ -1788,9 +1823,7 @@ export interface CmsModelPermission extends SecurityPermission {
  * @category SecurityPermission
  * @category CmsGroup
  */
-export interface CmsGroupPermission extends SecurityPermission {
-    own: boolean;
-    rwd: string;
+export interface CmsGroupPermission extends BaseCmsSecurityPermission {
     /**
      * A object representing `key: group.id` values where key is locale code.
      */
@@ -1805,10 +1838,8 @@ export interface CmsGroupPermission extends SecurityPermission {
  * @category SecurityPermission
  * @category CmsEntry
  */
-export interface CmsEntryPermission extends SecurityPermission {
-    own: boolean;
-    rwd: string;
-    pw: string;
+export interface CmsEntryPermission extends BaseCmsSecurityPermission {
+    pw?: string;
     /**
      * A object representing `key: model.modelId` values where key is locale code.
      */

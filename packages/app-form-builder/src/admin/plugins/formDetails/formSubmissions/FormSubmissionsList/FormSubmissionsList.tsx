@@ -110,7 +110,7 @@ export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }
                         <Scrollbar>
                             {data.map(submission => {
                                 const submittedOn = submission.meta
-                                    ? submission.meta.submittedOn
+                                    ? new Date(submission.meta.submittedOn)
                                     : new Date();
 
                                 return (

@@ -100,9 +100,9 @@ interface EntryFieldFromStorageTransformParams {
 /*
  * A function that is used to transform a single field from storage
  */
-export const entryFieldFromStorageTransform = async (
+export const entryFieldFromStorageTransform = async <T = any>(
     params: EntryFieldFromStorageTransformParams
-): Promise<any> => {
+): Promise<T> => {
     const { context, model, field, value } = params;
     const getStoragePlugin = getStoragePluginFactory(context);
 

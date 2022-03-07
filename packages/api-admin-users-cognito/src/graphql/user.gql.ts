@@ -147,7 +147,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             }
         },
         AdminUsersQuery: {
-            getUser: async (_, { where }, context) => {
+            getUser: async (_, { where }: any, context) => {
                 try {
                     const user = await context.adminUsers.getUser({ where });
                     if (!user) {
@@ -185,7 +185,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             }
         },
         AdminUsersMutation: {
-            updateCurrentUser: async (_, args, context) => {
+            updateCurrentUser: async (_, args: any, context) => {
                 const { security, adminUsers } = context;
                 const identity = security.getIdentity();
                 if (!identity) {
@@ -207,7 +207,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     return new ErrorResponse(e);
                 }
             },
-            createUser: async (_, { data }, context) => {
+            createUser: async (_, { data }: any, context) => {
                 try {
                     const user = await context.adminUsers.createUser(data);
 
@@ -216,7 +216,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     return new ErrorResponse(e);
                 }
             },
-            updateUser: async (_, { data, id }, { adminUsers }) => {
+            updateUser: async (_, { data, id }: any, { adminUsers }) => {
                 try {
                     const user = await adminUsers.updateUser(id, data);
 
@@ -225,7 +225,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     return new ErrorResponse(e);
                 }
             },
-            deleteUser: async (_, { id }, context) => {
+            deleteUser: async (_, { id }: any, context) => {
                 try {
                     await context.adminUsers.deleteUser(id);
 

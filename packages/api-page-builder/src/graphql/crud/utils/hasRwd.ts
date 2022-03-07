@@ -1,6 +1,6 @@
-import { SecurityPermission } from "@webiny/api-security/types";
+import { PbSecurityPermission } from "~/graphql/types";
 
-export default (permission: SecurityPermission, rwd?: string): boolean => {
+export default (permission: PbSecurityPermission, rwd?: string): boolean => {
     if (typeof permission.rwd !== "string" || !rwd) {
         return true;
     }

@@ -112,10 +112,10 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     `,
     resolvers: {
         ApwQuery: {
-            getChangeRequest: async (_, args, context) => {
+            getChangeRequest: async (_, args: any, context) => {
                 return resolve(() => context.apw.changeRequest.get(args.id));
             },
-            listChangeRequests: async (_, args, context) => {
+            listChangeRequests: async (_, args: any, context) => {
                 try {
                     /**
                      * We know that args is CmsEntryListParams.
@@ -130,13 +130,13 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             }
         },
         ApwMutation: {
-            createChangeRequest: async (_, args, context) => {
+            createChangeRequest: async (_, args: any, context) => {
                 return resolve(() => context.apw.changeRequest.create(args.data));
             },
-            updateChangeRequest: async (_, args, context) => {
+            updateChangeRequest: async (_, args: any, context) => {
                 return resolve(() => context.apw.changeRequest.update(args.id, args.data));
             },
-            deleteChangeRequest: async (_, args, context) => {
+            deleteChangeRequest: async (_, args: any, context) => {
                 return resolve(() => context.apw.changeRequest.delete(args.id));
             }
         }

@@ -8,7 +8,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { Note } from "./StyledComponents";
 import { BindComponent } from "@webiny/form/types";
-import { FormData } from "@webiny/form/types";
+import { CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
@@ -25,7 +25,7 @@ const pwOptions: PermissionOption[] = [
 
 interface ContentEntryPermissionProps {
     Bind: BindComponent;
-    data: FormData;
+    data: CmsSecurityPermission;
     entity: string;
     setValue: (name: string, value: string) => void;
     title: string;
@@ -75,11 +75,11 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
                                     disabled={data[`contentModelAccessScope`] === "own"}
                                 >
                                     <option value={"full"}>{t`All entries`}</option>
-                                    {data.endpoints.includes("manage") && (
+                                    {(data.endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only entries created by the user`}</option>
-                                    )}
+                                    )) || <></>}
                                 </Select>
                             </Bind>
                             {data[`contentModelAccessScope`] === "own" && (

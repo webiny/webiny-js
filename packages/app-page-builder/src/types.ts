@@ -134,8 +134,14 @@ export interface PbElementDataSettingsType {
         value?: string;
     };
     className?: string;
+    cellsType?: string;
     form?: PbElementDataSettingsFormType;
     [key: string]: any;
+}
+
+export interface PbElementDataTypeSource {
+    url?: string;
+    size?: string;
 }
 export type PbElementDataType = {
     action?: {
@@ -156,9 +162,7 @@ export type PbElementDataType = {
     };
     type?: string;
     icon?: PbElementDataIconType;
-    source?: {
-        url?: string;
-    };
+    source?: PbElementDataTypeSource;
     oembed?: {
         source?: {
             url?: string;
@@ -175,9 +179,9 @@ export interface PbEditorElement {
     data: PbElementDataType;
     parent?: string;
     elements: (string | PbEditorElement)[];
-    content?: {
-        type?: string;
-    };
+    content?: PbEditorElement;
+    path?: string[];
+    source?: string;
     [key: string]: any;
 }
 
@@ -186,6 +190,8 @@ export interface PbElement {
     type: string;
     data: PbElementDataType;
     elements: PbElement[];
+    content?: PbElement;
+    text?: string;
 }
 
 /**
@@ -193,7 +199,8 @@ export interface PbElement {
  */
 export interface PbTheme {
     colors: {
-        [key: string]: string;
+        background?: string;
+        [key: string]: string | undefined;
     };
     // TODO @ts-refactor
     elements: {
@@ -416,7 +423,7 @@ export interface PbEditorPageElementPluginToolbar {
     // Element group this element belongs to.
     group?: string;
     // A function to render an element preview in the toolbar.
-    preview?: ({ theme }?: { theme: PbTheme }) => ReactNode;
+    preview?: (params?: { theme: PbTheme }) => ReactNode;
 }
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
 export type PbEditorPageElementPlugin = Plugin & {
@@ -430,10 +437,7 @@ export type PbEditorPageElementPlugin = Plugin & {
     // Array of element settings plugin names.
     settings?: PbEditorPageElementPluginSettings;
     // A function to create an element data structure.
-    create: (
-        options: { [key: string]: any },
-        parent?: PbEditorElement
-    ) => Omit<PbEditorElement, "id">;
+    create: (options: Partial<PbElement>, parent?: PbEditorElement) => Omit<PbEditorElement, "id">;
     // A function to render an element in the editor.
     render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
     // A function to check if an element can be deleted.
@@ -879,5 +883,5 @@ export interface PageBuilderFormDataSettings {
 export interface PageBuilderSecurityPermission extends SecurityPermission {
     own?: boolean;
     rwd?: string;
-    pw?: string;
+    pw?: string | boolean;
 }
