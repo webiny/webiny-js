@@ -180,8 +180,10 @@ export interface PbElement {
 /**
  * Determine types for elements
  */
-export type PbTheme = {
-    colors: { [key: string]: string };
+export interface PbTheme {
+    colors: {
+        [key: string]: string;
+    };
     // TODO @ts-refactor
     elements: {
         button?: {
@@ -193,7 +195,8 @@ export type PbTheme = {
         };
         [key: string]: any;
     };
-};
+    [key: string]: any;
+}
 
 export type PbThemePlugin = Plugin & {
     theme: PbTheme;
