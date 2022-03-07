@@ -452,7 +452,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return [items, meta];
         },
         listLatestEntries: async function (model, params) {
-            const where = params ? params.where : ({} as CmsEntryListWhere);
+            const where = params?.where || ({} as CmsEntryListWhere);
             if (!where.tenant) {
                 where.tenant = model.tenant;
             }
@@ -467,7 +467,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         },
         listPublishedEntries: async function (model, params) {
-            const where = params ? params.where : ({} as CmsEntryListWhere);
+            const where = params?.where || ({} as CmsEntryListWhere);
             if (!where.tenant) {
                 where.tenant = model.tenant;
             }
