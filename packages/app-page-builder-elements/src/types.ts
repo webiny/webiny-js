@@ -126,8 +126,9 @@ export type Content = Element;
 /**
  * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.
  */
-// TODO: CSSObject | Record<string, CSSObject>; doesn't work?
-export type StylesObjects = Record<string, CSSObject | string>;
+export interface StylesObjects {
+    [key: string]: CSSObject | string | number;
+}
 
 export interface PageElementsProviderProps {
     theme: Theme;
@@ -144,24 +145,24 @@ export type GetThemeClassNames = (getStyles: (theme: Theme) => StylesObjects) =>
 export type GetStyles = (styles: StylesObjects) => Array<CSSObject>;
 export type GetClassNames = (styles: StylesObjects) => Array<string>;
 
-type SetAssignStylesCallbackParams = {
+interface SetAssignStylesCallbackParams {
     breakpoints: Record<string, Breakpoint>;
     styles: StylesObjects;
     assignTo?: CSSObject;
-};
+}
 
-type SetElementStylesCallbackParams = PageElementsProviderProps & {
+interface SetElementStylesCallbackParams extends PageElementsProviderProps {
     element: Element;
     assignStyles?: AssignStylesCallback;
-};
-type SetThemeStylesCallbackParams = PageElementsProviderProps & {
+}
+interface SetThemeStylesCallbackParams extends PageElementsProviderProps {
     getStyles: (theme: Theme) => StylesObjects;
     assignStyles?: AssignStylesCallback;
-};
-type SetStylesCallbackParams = PageElementsProviderProps & {
+}
+interface SetStylesCallbackParams extends PageElementsProviderProps {
     styles: StylesObjects;
     assignStyles?: AssignStylesCallback;
-};
+}
 
 export type AssignStylesCallback = (params: SetAssignStylesCallbackParams) => CSSObject;
 export type ElementStylesCallback = (params: SetElementStylesCallbackParams) => Array<CSSObject>;

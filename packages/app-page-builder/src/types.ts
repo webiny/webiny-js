@@ -213,6 +213,10 @@ export interface PbTheme {
         };
         [key: string]: any;
     };
+    typography?: {
+        paragraph?: string;
+        description?: string;
+    };
     [key: string]: any;
 }
 

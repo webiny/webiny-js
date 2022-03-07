@@ -41,5 +41,6 @@ declare namespace NodeJS {
         ELASTIC_SEARCH_INDEX_PREFIX?: string;
         EXPORT_PAGES_PROCESS_HANDLER?: string;
         IMPORT_PAGES_CREATE_HANDLER?: string;
+        PUBLIC_URL?: string;
     }
 }

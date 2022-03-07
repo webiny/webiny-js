@@ -32,10 +32,6 @@
     "strictFunctionTypes": true,
     "noImplicitOverride": true,
     "strict": true,
-    /**
-     * Change to true at some point and fix the errors.
-     * https://www.typescriptlang.org/tsconfig#noPropertyAccessFromIndexSignature
-     */
     "noPropertyAccessFromIndexSignature": true,
     "suppressImplicitAnyIndexErrors": false,
     "suppressExcessPropertyErrors": false,

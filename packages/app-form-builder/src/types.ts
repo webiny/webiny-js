@@ -175,6 +175,7 @@ export interface FbFormModelField {
     options?: Array<{ value: string; label: string }>;
     settings: {
         defaultValue?: string | string[];
+        rows?: number;
         [key: string]: any;
     };
 }
