@@ -31,6 +31,7 @@ import {
     CreateCmsGroupMutationVariables,
     GetCmsGroupQueryResponse,
     GetCmsGroupQueryVariables,
+    ListCmsGroupsQueryResponse,
     UpdateCmsGroupMutationResponse,
     UpdateCmsGroupMutationVariables
 } from "./graphql";
@@ -55,7 +56,9 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
     const getQuery = useQuery<GetCmsGroupQueryResponse, GetCmsGroupQueryVariables>(
         GQL.GET_CONTENT_MODEL_GROUP,
         {
-            variables: { id },
+            variables: {
+                id: id as string
+            },
             skip: !id,
             onCompleted: data => {
                 if (!data) {
@@ -77,12 +80,18 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
         CreateCmsGroupMutationVariables
     >(GQL.CREATE_CONTENT_MODEL_GROUP, {
         update(cache, { data }) {
-            if (data.contentModelGroup.error) {
+            if (!data || data.contentModelGroup.error) {
                 return;
             }
 
-            const gqlParams = { query: GQL.LIST_CONTENT_MODEL_GROUPS };
-            const { listContentModelGroups } = cache.readQuery(gqlParams);
+            const gqlParams = {
+                query: GQL.LIST_CONTENT_MODEL_GROUPS
+            };
+            const result = cache.readQuery<ListCmsGroupsQueryResponse>(gqlParams);
+            if (!result || !result.listContentModelGroups) {
+                return;
+            }
+            const { listContentModelGroups } = result;
             cache.writeQuery({
                 ...gqlParams,
                 data: {
@@ -134,6 +143,10 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
              * Create or update, depends if group object has id property
              */
             const response = await createOperation(group);
+            if (!response.data) {
+                showSnackbar(`Missing response data ain Content Model Group Mutation Response.`);
+                return;
+            }
 
             const { data, error } = response.data.contentModelGroup;
             if (error) {
@@ -171,7 +184,9 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
                         >
                             <ButtonIcon icon={<AddIcon />} /> {t`New Group`}
                         </ButtonDefault>
-                    ) : null
+                    ) : (
+                        <></>
+                    )
                 }
             />
         );
@@ -219,7 +234,9 @@ const ContentModelGroupsForm: React.FC<ContentModelGroupsFormProps> = ({ canCrea
                                 <React.Fragment>
                                     {!data.plugin ? (
                                         <ButtonPrimary
-                                            onClick={form.submit}
+                                            onClick={ev => {
+                                                form.submit(ev);
+                                            }}
                                         >{t`Save content model group`}</ButtonPrimary>
                                     ) : (
                                         <Tooltip

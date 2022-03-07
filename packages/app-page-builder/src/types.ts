@@ -6,7 +6,7 @@ import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import { Form, FormData, FormOnCancel, FormOnSubmit, FormSetValue } from "@webiny/form/Form";
+import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 
@@ -110,7 +110,7 @@ export enum AlignmentTypesEnum {
     VERTICAL_CENTER = "verticalCenter",
     VERTICAL_BOTTOM = "verticalBottom"
 }
-export type PbElementDataSettingsType = {
+export interface PbElementDataSettingsType {
     alignment?: AlignmentTypesEnum;
     horizontalAlign?: "left" | "center" | "right" | "justify";
     horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
@@ -135,7 +135,7 @@ export type PbElementDataSettingsType = {
     className?: string;
     form?: PbElementDataSettingsFormType;
     [key: string]: any;
-};
+}
 export type PbElementDataType = {
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
@@ -180,8 +180,10 @@ export interface PbElement {
 /**
  * Determine types for elements
  */
-export type PbTheme = {
-    colors: { [key: string]: string };
+export interface PbTheme {
+    colors: {
+        [key: string]: string;
+    };
     // TODO @ts-refactor
     elements: {
         button?: {
@@ -193,7 +195,8 @@ export type PbTheme = {
         };
         [key: string]: any;
     };
-};
+    [key: string]: any;
+}
 
 export type PbThemePlugin = Plugin & {
     theme: PbTheme;
@@ -214,11 +217,37 @@ export interface PbErrorResponse {
     data: Record<string, any>;
     code: string;
 }
+
+export interface PbPageDataSettingsGeneral {
+    layout?: string;
+}
+export interface PbPageDataSettingsSeo {
+    title: string;
+    description: string;
+    meta: {
+        name: string;
+        content: string;
+    }[];
+}
+export interface PbPageDataSettingsSocial {
+    title: string;
+    description: string;
+    meta: {
+        property: string;
+        content: string;
+    }[];
+    image?: { src: string } | null;
+}
+export interface PbPageDataSettings {
+    general?: PbPageDataSettingsGeneral;
+    seo?: PbPageDataSettingsSeo;
+    social?: PbPageDataSettingsSocial;
+}
 export interface PbPageData {
     id: string;
     pid: string;
     path: string;
-    title?: string;
+    title: string;
     editor: string;
     createdFrom?: string;
     content: any;
@@ -226,24 +255,7 @@ export interface PbPageData {
     version?: number;
     category: PbCategory;
     status: string | "draft" | "published" | "unpublished";
-    settings?: {
-        general?: {
-            layout?: string;
-        };
-        seo?: {
-            title: string;
-            description: string;
-            meta: { name: string; content: string }[];
-        };
-        social?: {
-            title: string;
-            description: string;
-            meta: { property: string; content: string }[];
-            image: {
-                src: string;
-            };
-        };
-    };
+    settings?: PbPageDataSettings;
     createdOn: string;
     savedOn: string;
     publishedOn: string;
@@ -363,7 +375,7 @@ export type PbMenuItemPlugin = Plugin & {
         renderForm: (params: {
             data: MenuTreeItem;
             onSubmit: FormOnSubmit;
-            onCancel: FormOnCancel;
+            onCancel: () => void;
         }) => ReactElement;
     };
 };
@@ -388,7 +400,7 @@ export interface PbEditorPageElementPluginToolbar {
     // Element group this element belongs to.
     group?: string;
     // A function to render an element preview in the toolbar.
-    preview?: ({ theme }: { theme: PbTheme }) => ReactNode;
+    preview?: ({ theme }?: { theme: PbTheme }) => ReactNode;
 }
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
 export type PbEditorPageElementPlugin = Plugin & {
@@ -412,11 +424,11 @@ export type PbEditorPageElementPlugin = Plugin & {
     canDelete?: (params: { element: PbEditorElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
-        state?: EventActionHandlerCallableState;
+        state: EventActionHandlerCallableState;
         meta: EventActionHandlerMeta;
         source: PbEditorElement | DragObjectWithTypeWithTarget;
         target: PbEditorElement;
-        position: number | null;
+        position: number;
     }) => EventActionHandlerActionCallableResponse;
     // Executed when an immediate child element is deleted
     onChildDeleted?: (params: {
@@ -455,7 +467,7 @@ export type PbEditorPageSettingsPlugin = Plugin & {
     render: (params: {
         data: Record<string, any>;
         setValue: FormSetValue;
-        form: Form;
+        form: FormAPI;
         Bind: BindComponent;
     }) => ReactNode;
 };
@@ -577,7 +589,7 @@ export type PbEditorPageElementStyleSettingsPlugin = Plugin & {
 export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
-    render(params?: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
+    render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
     onSave?: (data: FormData) => FormData;
 };
 
@@ -598,7 +610,7 @@ export type PbEditorGridPresetPluginType = Plugin & {
     name: string;
     type: "pb-editor-grid-preset";
     cellsType: string;
-    icon: React.FunctionComponent;
+    icon: React.FC;
 };
 // this will run when saving the element for later use
 export type PbEditorPageElementSaveActionPlugin = Plugin & {
@@ -694,7 +706,7 @@ export interface EventActionHandler {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
-    getElementTree: (element?: PbEditorElement) => Promise<any>;
+    getElementTree: (element?: PbEditorElement) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
@@ -715,11 +727,11 @@ export interface EventActionHandlerConfig {
 
 export interface EventActionHandlerActionCallableResponse {
     state?: Partial<EventActionHandlerCallableState>;
-    actions?: BaseEventAction[];
+    actions: BaseEventAction[];
 }
 
-export interface EventActionHandlerMutationActionCallable<T, A = any> {
-    (state: T, args?: A): T;
+export interface EventActionHandlerMutationActionCallable<T, A = void> {
+    (state: T, args: A): T;
 }
 
 export interface EventActionHandlerCallableArgs {

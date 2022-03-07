@@ -75,7 +75,7 @@ interface State {
     [key: string]: UseCmsDataResponseRecords;
 }
 interface Reducer {
-    (prev: State, next: Partial<State>): State;
+    (prev: State, next: State): State;
 }
 
 export interface UseCmsDataResponse {
@@ -83,7 +83,12 @@ export interface UseCmsDataResponse {
 }
 export const useCmsData = (locales: string[]): UseCmsDataResponse => {
     const { getApolloClient } = useCms();
-    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {});
+    const [state, setState] = useReducer<Reducer>((prev, next) => {
+        return {
+            ...prev,
+            ...next
+        };
+    }, {});
 
     const loadData = async () => {
         for (const code of locales) {
@@ -91,9 +96,12 @@ export const useCmsData = (locales: string[]): UseCmsDataResponse => {
 
             if (!state[code]) {
                 client.query<ListCmsPermissionsResponse>({ query: LIST_DATA }).then(({ data }) => {
-                    const models = data.listContentModels.data;
-                    const groups = data.listContentModelGroups.data;
-                    setState({ ...state, [code]: { models, groups } });
+                    setState({
+                        [code]: {
+                            models: data.listContentModels.data,
+                            groups: data.listContentModelGroups.data
+                        }
+                    });
                 });
             }
         }

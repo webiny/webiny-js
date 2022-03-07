@@ -9,13 +9,13 @@ import { FormBuilderSystemCreateKeysParams, FormBuilderSystemStorageOperations }
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
 
-export interface Params {
+export interface CreateSystemStorageOperationsParams {
     entity: Entity<any>;
     table: Table;
 }
 
 export const createSystemStorageOperations = (
-    params: Params
+    params: CreateSystemStorageOperationsParams
 ): FormBuilderSystemStorageOperations => {
     const { entity } = params;
 
@@ -60,7 +60,7 @@ export const createSystemStorageOperations = (
 
     const getSystem = async (
         params: FormBuilderStorageOperationsGetSystemParams
-    ): Promise<System> => {
+    ): Promise<System | null> => {
         const keys = createKeys(params);
 
         try {

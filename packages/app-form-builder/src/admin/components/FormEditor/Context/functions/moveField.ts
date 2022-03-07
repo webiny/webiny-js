@@ -9,17 +9,27 @@ const cleanupEmptyRows = (data: FbFormModel): void => {
     data.layout = data.layout.filter(row => row.length > 0);
 };
 
-interface Params {
+interface MoveFieldParams {
     field: FieldIdType | FbFormModelField;
     position: FieldLayoutPositionType;
     data: FbFormModel;
 }
 
-const moveField = ({ field, position, data }: Params) => {
+const moveField = (params: MoveFieldParams) => {
+    const { field, position, data } = params;
     const { row, index } = position;
     const fieldId = typeof field === "string" ? field : field._id;
+    if (!fieldId) {
+        console.log("Missing data when moving field.");
+        console.log(params);
+        return;
+    }
 
-    const existingPosition = getFieldPosition({ field: fieldId, data });
+    const existingPosition = getFieldPosition({
+        field: fieldId,
+        data
+    });
+
     if (existingPosition) {
         data.layout[existingPosition.row].splice(existingPosition.index, 1);
     }
@@ -40,7 +50,7 @@ const moveField = ({ field, position, data }: Params) => {
     data.layout[row].splice(index, 0, fieldId);
 };
 
-export default (params: Params) => {
+export default (params: MoveFieldParams) => {
     moveField(params);
     cleanupEmptyRows(params.data);
 };

@@ -12,7 +12,7 @@ interface Config {
 }
 
 export class PbEditorPageSettingsPlugin extends Plugin {
-    public static readonly type: string = "pb-editor-page-settings";
+    public static override readonly type: string = "pb-editor-page-settings";
     private readonly config: Config;
 
     public constructor(config: Config) {

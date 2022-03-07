@@ -19,11 +19,8 @@ export interface HasReviewersParams {
     getReviewer: ApwReviewerCrud["get"];
 }
 
-export const hasReviewer = async ({
-    getReviewer,
-    identity,
-    step
-}: HasReviewersParams): Promise<Boolean> => {
+export const hasReviewer = async (params: HasReviewersParams): Promise<Boolean> => {
+    const { getReviewer, identity, step } = params;
     for (const stepReviewer of step.reviewers) {
         const entry = await getReviewer(stepReviewer.id);
 

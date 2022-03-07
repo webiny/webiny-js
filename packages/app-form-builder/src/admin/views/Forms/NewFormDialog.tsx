@@ -54,17 +54,28 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
             data-testid="fb-new-form-modal"
         >
             <Form
-                onSubmit={async (formData: CreateFormMutationVariables) => {
+                onSubmit={formData => {
                     setLoading(true);
 
-                    await create({
-                        variables: formData,
-                        update(cache, { data }) {
+                    create({
+                        /**
+                         * We know that formData is CreateFormMutationVariables.
+                         */
+                        variables: formData as unknown as CreateFormMutationVariables,
+                        update(cache, result) {
+                            if (!result.data) {
+                                return;
+                            }
+                            const { data } = result;
                             const { data: revision, error } = data.formBuilder.form;
 
+                            setLoading(false);
                             if (error) {
-                                setLoading(false);
-                                return showSnackbar(error.message);
+                                showSnackbar(error.message);
+                                return;
+                            } else if (!revision) {
+                                showSnackbar(`Missing revision data in Create Form Mutation.`);
+                                return;
                             }
 
                             addFormToListCache(cache, revision);
@@ -84,7 +95,13 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
                             </Bind>
                         </DialogContent>
                         <DialogActions>
-                            <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
+                            <ButtonDefault
+                                onClick={ev => {
+                                    submit(ev);
+                                }}
+                            >
+                                + {t`Create`}
+                            </ButtonDefault>
                         </DialogActions>
                     </>
                 )}

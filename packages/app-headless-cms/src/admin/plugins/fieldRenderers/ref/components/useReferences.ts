@@ -1,17 +1,16 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import * as GQL from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorField, CmsModel } from "~/types";
+import { CmsEditorField, CmsLatestContentEntry, CmsModel } from "~/types";
 import {
     CmsEntrySearchQueryResponse,
-    CmsEntryQueryResponseDataEntry,
     CmsEntrySearchQueryVariables,
     CmsEntryGetListResponse,
     CmsEntryGetListVariables,
     CmsEntryGetEntryVariable
 } from "./graphql";
+import { BindComponentRenderProp } from "@webiny/form";
 
 export interface ReferencedCmsEntry {
     id: string;
@@ -22,27 +21,30 @@ export interface ReferencedCmsEntry {
 }
 
 function distinctBy(
-    key: keyof ReferencedCmsEntry,
-    array: ReferencedCmsEntry[]
-): ReferencedCmsEntry[] {
+    key: keyof CmsLatestContentEntry,
+    array: CmsLatestContentEntry[]
+): CmsLatestContentEntry[] {
     const keys = array.map(value => value[key]);
     return array.filter((value, index) => keys.indexOf(value[key]) === index);
 }
 
 interface UseReferencesParams {
-    bind: any;
+    bind: BindComponentRenderProp;
     field: CmsEditorField;
 }
 export const useReferences = ({ bind, field }: UseReferencesParams) => {
-    const allEntries = useRef([]);
+    const allEntries = useRef<CmsLatestContentEntry[]>([]);
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const [entries, setEntries] = useState<CmsEntryQueryResponseDataEntry[]>([]);
-    const [latestEntries, setLatestEntries] = useState([]);
+    const [entries, setEntries] = useState<CmsLatestContentEntry[]>([]);
+    const [latestEntries, setLatestEntries] = useState<CmsLatestContentEntry[]>([]);
     const [valueEntries, setValueEntries] = useState<ReferencedCmsEntry[]>([]);
 
-    const models = field.settings.models as Pick<CmsModel, "modelId">[];
+    const models = (field.settings ? field.settings.models || [] : []) as Pick<
+        CmsModel,
+        "modelId"
+    >[];
     const modelsHash = models.join(",");
     const values: CmsEntryGetEntryVariable[] = bind.value ? bind.value : [];
 

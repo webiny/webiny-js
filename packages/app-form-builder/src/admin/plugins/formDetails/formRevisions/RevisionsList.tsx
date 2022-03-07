@@ -21,29 +21,28 @@ const listWrapper = css({
 });
 
 interface RevisionsListProps {
-    form: FbFormModel;
+    form: FbFormModel | null;
     revisions: FbRevisionModel[];
     loading: boolean;
 }
 export const RevisionsList: React.FC<RevisionsListProps> = ({ form, revisions, loading }) => {
+    if (!form) {
+        return null;
+    }
     return (
-        form && (
-            <Elevation className={listWrapper} z={2}>
-                <div style={{ position: "relative" }}>
-                    {loading && <CircularProgress />}
-                    <List
-                        nonInteractive
-                        twoLine
-                        data-testid={"fb.form-details.tab.revisions.content-list"}
-                    >
-                        {Array.isArray(revisions)
-                            ? revisions.map(rev => (
-                                  <Revision form={form} revision={rev} key={rev.id} />
-                              ))
-                            : null}
-                    </List>
-                </div>
-            </Elevation>
-        )
+        <Elevation className={listWrapper} z={2}>
+            <div style={{ position: "relative" }}>
+                {loading && <CircularProgress />}
+                <List
+                    nonInteractive
+                    twoLine
+                    data-testid={"fb.form-details.tab.revisions.content-list"}
+                >
+                    {Array.isArray(revisions)
+                        ? revisions.map(rev => <Revision form={form} revision={rev} key={rev.id} />)
+                        : null}
+                </List>
+            </div>
+        </Elevation>
     );
 };

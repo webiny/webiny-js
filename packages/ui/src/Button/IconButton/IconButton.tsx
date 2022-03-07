@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
     IconButton as RIconButton,
     IconButtonProps as RmwcIconButtonProps
@@ -6,48 +6,44 @@ import {
 
 import { FormComponentProps } from "../../types";
 
-export type IconButtonProps = FormComponentProps &
-    RmwcIconButtonProps & {
-        id?: string;
-        /**
-         * Icon should be provided as an SvgComponent.
-         */
-        icon: React.ReactNode;
+export interface IconButtonProps extends Omit<FormComponentProps, "onChange">, RmwcIconButtonProps {
+    id?: string;
+    /**
+     * Icon should be provided as an SvgComponent.
+     */
+    icon: React.ReactNode;
 
-        /**
-         * Button label
-         */
-        label?: string;
+    /**
+     * Button label
+     */
+    label?: string;
 
-        /**
-         * onClick handler
-         * @param event
-         */
-        onClick?: (event: React.MouseEvent) => void;
+    /**
+     * onClick handler
+     * @param event
+     */
+    onClick?: (event: React.MouseEvent) => void;
 
-        /**
-         * Custom CSS class
-         */
-        className?: string;
-        /**
-         * For testing purposes.
-         */
+    /**
+     * Custom CSS class
+     */
+    className?: string;
+    /**
+     * For testing purposes.
+     */
 
-        "data-testid"?: string;
+    "data-testid"?: string;
 
-        /**
-         * Should icon be disabled?
-         */
-        disabled?: boolean;
-    };
+    /**
+     * Should icon be disabled?
+     */
+    disabled?: boolean;
+}
 
 /**
  * Shows the icon button.
- * @param props
- * @returns {*}
- * @constructor
  */
-const IconButton = (props: IconButtonProps) => {
+const IconButton: React.FC<IconButtonProps> = props => {
     const { id, icon, label, onClick, className, disabled, ripple = true } = props;
 
     return (

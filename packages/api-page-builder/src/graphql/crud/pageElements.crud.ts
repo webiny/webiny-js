@@ -52,20 +52,14 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.page";
 
-export interface Params {
+export interface CreatePageElementsCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
 }
-export const createPageElementsCrud = (params: Params): PageElementsCrud => {
-    const { context, storageOperations } = params;
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
-    const getLocaleCode = (): string => {
-        return context.i18nContent.getCurrentLocale().code;
-    };
+export const createPageElementsCrud = (params: CreatePageElementsCrudParams): PageElementsCrud => {
+    const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
     const onBeforePageElementCreate = createTopic<OnBeforePageElementCreateTopicParams>();
     const onAfterPageElementCreate = createTopic<OnAfterPageElementCreateTopicParams>();
@@ -97,7 +91,7 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
                 }
             };
 
-            let pageElement: PageElement | undefined;
+            let pageElement: PageElement | null = null;
             try {
                 pageElement = await storageOperations.pageElements.get(params);
                 if (!pageElement) {
@@ -168,8 +162,8 @@ export const createPageElementsCrud = (params: Params): PageElementsCrud => {
 
             const pageElement: PageElement = {
                 ...data,
-                tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getCurrentLocale().code,
+                tenant: getTenantId(),
+                locale: getLocaleCode(),
                 id,
                 createdOn: new Date().toISOString(),
                 createdBy: {

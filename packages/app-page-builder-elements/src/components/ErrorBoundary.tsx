@@ -9,20 +9,24 @@ interface Props {
 class ErrorBoundary extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.state = { hasError: false };
+        this.state = {
+            hasError: false
+        };
     }
 
     static getDerivedStateFromError() {
         // Update state so the next render will show the fallback UI.
-        return { hasError: true };
+        return {
+            hasError: true
+        };
     }
 
-    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.log("An error occurred while rendering a page element:");
         console.log(error, errorInfo);
     }
 
-    render() {
+    public override render() {
         if (this.state.hasError) {
             // You can render any custom fallback UI
             return <h1>Something went wrong.</h1>;

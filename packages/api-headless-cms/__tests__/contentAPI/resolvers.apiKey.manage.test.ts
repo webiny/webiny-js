@@ -69,6 +69,9 @@ describe("MANAGE - resolvers - api key", () => {
         contentModelGroup = createCMG.data.createContentModelGroup.data;
 
         const category = models.find(m => m.modelId === "category");
+        if (!category) {
+            throw new Error(`Could not find model "category".`);
+        }
 
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -177,7 +180,7 @@ describe("MANAGE - resolvers - api key", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories({}, headers).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === category.id,
+            ({ data }: any) => data.listCategories.data[0].id === category.id,
             { name: "create category" }
         );
 
@@ -284,7 +287,7 @@ describe("MANAGE - resolvers - api key", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         const listResponse = await until(
             () => listCategories({}, headers).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].slug === updatedCategory.slug,
+            ({ data }: any) => data.listCategories.data[0].slug === updatedCategory.slug,
             { name: `waiting for green-vegetables slug on list categories` }
         );
 
@@ -355,7 +358,7 @@ describe("MANAGE - resolvers - api key", () => {
          */
         await until(
             () => listCategories({}, headers).then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.listCategories.data.length === 0;
             },
             { name: "after delete list categories" }
@@ -381,7 +384,7 @@ describe("MANAGE - resolvers - api key", () => {
          */
         await until(
             () => listCategoriesRead({}, headers).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 0,
+            ({ data }: any) => data.listCategories.data.length === 0,
             { name: "after delete list read categories" }
         );
 

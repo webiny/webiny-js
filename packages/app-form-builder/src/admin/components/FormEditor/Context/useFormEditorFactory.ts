@@ -27,8 +27,8 @@ import {
     FormEditorProviderContextState
 } from "~/admin/components/FormEditor/Context/index";
 
-interface SetDataCallable<T = any> {
-    (value: T): T;
+interface SetDataCallable {
+    (value: FbFormModel): FbFormModel;
 }
 
 interface MoveFieldParams {
@@ -42,20 +42,22 @@ export interface FormEditor {
     data: FbFormModel;
     state: State;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
-    saveForm: (data?: FbFormModel) => Promise<{ data: FbFormModel; error: FbErrorResponse }>;
+    saveForm: (
+        data: FbFormModel | null
+    ) => Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
     getLayoutFields: () => FbFormModelField[][];
-    getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField;
+    getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField | null;
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
-    ) => FbBuilderFieldPlugin;
+    ) => FbBuilderFieldPlugin | null;
     insertField: (field: FbFormModelField, position: FieldLayoutPositionType) => void;
     moveField: (params: MoveFieldParams) => void;
     moveRow: (source: number, destination: number) => void;
     updateField: (field: FbFormModelField) => void;
     deleteField: (field: FbFormModelField) => void;
-    getFieldPosition: (field: FieldIdType | FbFormModelField) => FieldLayoutPositionType;
+    getFieldPosition: (field: FieldIdType | FbFormModelField) => FieldLayoutPositionType | null;
 }
 
 export const useFormEditorFactory = (
@@ -71,7 +73,7 @@ export const useFormEditorFactory = (
 
         const self: FormEditor = {
             apollo: state.apollo,
-            data: state.data,
+            data: state.data || ({} as FbFormModel),
             state,
             async getForm(id) {
                 const response = await self.apollo.query<
@@ -87,7 +89,7 @@ export const useFormEditorFactory = (
                 }
 
                 self.setData(() => {
-                    const form = cloneDeep(data);
+                    const form = cloneDeep(data) as FbFormModel;
                     if (!form.settings.layout.renderer) {
                         form.settings.layout.renderer = state.defaultLayoutRenderer;
                     }
@@ -98,6 +100,14 @@ export const useFormEditorFactory = (
             },
             saveForm: async data => {
                 data = data || state.data;
+                if (!data) {
+                    return {
+                        data: null,
+                        error: {
+                            message: "Missing form data to be saved."
+                        }
+                    };
+                }
                 const response = await self.apollo.mutate<
                     UpdateFormRevisionMutationResponse,
                     UpdateFormRevisionMutationVariables
@@ -118,7 +128,12 @@ export const useFormEditorFactory = (
                     }
                 });
 
-                return response?.data?.formBuilder?.updateRevision;
+                return (
+                    response.data?.formBuilder?.updateRevision || {
+                        data: null,
+                        error: null
+                    }
+                );
             },
             /**
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
@@ -126,8 +141,11 @@ export const useFormEditorFactory = (
              */
             setData: async (setter, saveForm = true) => {
                 const data = setter(cloneDeep(self.data));
-                dispatch({ type: "data", data });
-                if (saveForm !== true) {
+                dispatch({
+                    type: "data",
+                    data
+                });
+                if (!saveForm) {
                     return;
                 }
                 self.saveForm(data);
@@ -137,6 +155,9 @@ export const useFormEditorFactory = (
              * Returns fields list.
              */
             getFields() {
+                if (!state.data) {
+                    return [];
+                }
                 return state.data.fields;
             },
             /**
@@ -145,11 +166,13 @@ export const useFormEditorFactory = (
             getLayoutFields: () => {
                 // Replace every field ID with actual field object.
                 return state.data.layout.map(row => {
-                    return row.map(id => {
-                        return self.getField({
-                            _id: id
-                        });
-                    });
+                    return row
+                        .map(id => {
+                            return self.getField({
+                                _id: id
+                            });
+                        })
+                        .filter(Boolean) as FbFormModelField[];
                 });
             },
 
@@ -157,15 +180,41 @@ export const useFormEditorFactory = (
              * Return field plugin.
              */
             getFieldPlugin(query) {
-                return plugins
-                    .byType<FbBuilderFieldPlugin>("form-editor-field-type")
-                    .find(({ field }) => {
+                return (
+                    plugins
+                        .byType<FbBuilderFieldPlugin>("form-editor-field-type")
+                        .find(({ field }) => {
+                            for (const key in query) {
+                                if (!(key in field)) {
+                                    return false;
+                                }
+                                const fieldKeyValue =
+                                    field[key as keyof FbBuilderFieldPlugin["field"]];
+                                const queryKeyValue =
+                                    query[key as keyof FbBuilderFieldPlugin["field"]];
+
+                                if (fieldKeyValue !== queryKeyValue) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        }) || null
+                );
+            },
+
+            /**
+             * Checks if field of given type already exists in the list of fields.
+             */
+            getField(query) {
+                return (
+                    state.data.fields.find(field => {
                         for (const key in query) {
                             if (!(key in field)) {
                                 return false;
                             }
-                            const fieldKeyValue = field[key as keyof FbBuilderFieldPlugin["field"]];
-                            const queryKeyValue = query[key as keyof FbBuilderFieldPlugin["field"]];
+                            const fieldKeyValue = field[key as keyof FbFormModelField];
+                            const queryKeyValue = query[key as keyof FbFormModelField];
 
                             if (fieldKeyValue !== queryKeyValue) {
                                 return false;
@@ -173,28 +222,8 @@ export const useFormEditorFactory = (
                         }
 
                         return true;
-                    });
-            },
-
-            /**
-             * Checks if field of given type already exists in the list of fields.
-             */
-            getField(query) {
-                return state.data.fields.find(field => {
-                    for (const key in query) {
-                        if (!(key in field)) {
-                            return false;
-                        }
-                        const fieldKeyValue = field[key as keyof FbFormModelField];
-                        const queryKeyValue = query[key as keyof FbFormModelField];
-
-                        if (fieldKeyValue !== queryKeyValue) {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                });
+                    }) || null
+                );
             },
 
             /**
@@ -223,7 +252,11 @@ export const useFormEditorFactory = (
                     }
                     data.fields.push(field);
 
-                    moveField({ field, position, data });
+                    moveField({
+                        field,
+                        position,
+                        data
+                    });
 
                     // We are dropping a new field at the specified index.
                     return data;
@@ -235,7 +268,11 @@ export const useFormEditorFactory = (
              */
             moveField: ({ field, position }) => {
                 self.setData(data => {
-                    moveField({ field, position, data });
+                    moveField({
+                        field,
+                        position,
+                        data
+                    });
                     return data;
                 });
             },

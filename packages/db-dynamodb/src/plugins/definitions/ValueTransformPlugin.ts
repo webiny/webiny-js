@@ -2,27 +2,27 @@ import { Plugin } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 import { assignFields } from "./assignFields";
 
-export interface TransformParams {
+export interface ValueTransformPluginParamsTransformParams {
     value: any;
 }
-export interface Transform {
-    (params: TransformParams): any;
+export interface ValueTransformPluginParamsTransform {
+    (params: ValueTransformPluginParamsTransformParams): any;
 }
 export interface CanTransform {
     (field: string): boolean;
 }
-export interface Params {
+export interface ValueTransformPluginParams {
     fields: string[];
-    transform: Transform;
+    transform: ValueTransformPluginParamsTransform;
     canTransform?: CanTransform;
 }
 
 export class ValueTransformPlugin extends Plugin {
-    public static readonly type = "dynamodb.value.transform";
+    public static override readonly type: string = "dynamodb.value.transform";
 
-    private readonly _params: Params;
+    private readonly _params: ValueTransformPluginParams;
 
-    public constructor(params: Params) {
+    public constructor(params: ValueTransformPluginParams) {
         super();
         this._params = {
             ...params,
@@ -37,7 +37,7 @@ export class ValueTransformPlugin extends Plugin {
         return this._params.canTransform(field);
     }
 
-    public transform(params: TransformParams): any {
+    public transform(params: ValueTransformPluginParamsTransformParams): any {
         if (!this._params.transform) {
             throw new WebinyError(`Missing "transform" in the plugin.`, "TRANSFORM_ERROR", {
                 fields: this._params.fields

@@ -86,8 +86,8 @@ export const GET_CONTENT_MODEL = gql`
  */
 export interface UpdateCmsModelMutationResponse {
     updateContentModel: {
-        data?: CmsModel;
-        error?: CmsErrorResponse;
+        data: CmsModel | null;
+        error: CmsErrorResponse | null;
     };
 }
 export interface UpdateCmsModelMutationVariables {

@@ -39,10 +39,13 @@ const FormsSettings: React.FC = () => {
         <CenteredView>
             <Form
                 data={settings}
-                onSubmit={async (data: FbSettings) => {
-                    await updateSettings({
+                onSubmit={data => {
+                    updateSettings({
                         variables: {
-                            data
+                            /**
+                             * We know that data is FbSettings.
+                             */
+                            data: data as unknown as FbSettings
                         }
                     });
 
@@ -116,7 +119,13 @@ const FormsSettings: React.FC = () => {
                                 </Grid>
                             </SimpleFormContent>
                             <SimpleFormFooter>
-                                <ButtonPrimary onClick={form.submit}>Save</ButtonPrimary>
+                                <ButtonPrimary
+                                    onClick={ev => {
+                                        form.submit(ev);
+                                    }}
+                                >
+                                    Save
+                                </ButtonPrimary>
                             </SimpleFormFooter>
                         </SimpleForm>
                     );

@@ -6,7 +6,7 @@ export interface HandlerErrorCallable<T extends Context = Context> {
 }
 
 export class HandlerErrorPlugin<T extends Context = Context> extends Plugin {
-    public static readonly type: string = "handler-error";
+    public static override readonly type: string = "handler-error";
 
     private readonly _callable: HandlerErrorCallable<T>;
 
@@ -15,7 +15,7 @@ export class HandlerErrorPlugin<T extends Context = Context> extends Plugin {
         this._callable = callable;
     }
 
-    async handle(context: T, error: Error, next: Function): Promise<any> {
+    public async handle(context: T, error: Error, next: Function): Promise<any> {
         return this._callable(context, error, next);
     }
 }

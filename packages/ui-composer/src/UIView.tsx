@@ -25,7 +25,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
     private _events = new Map();
     private _hookDefinitions: Record<string, Function> = {};
     private _hookValues: Record<string, any> = {};
-    private _props: UIViewProps;
+    private _props?: UIViewProps;
     private _isRendered = false;
     private _wrappers: UIElementWrapper[] = [];
 
@@ -35,7 +35,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         this.useGrid(false);
     }
 
-    get props(): UIViewProps {
+    get props(): UIViewProps | undefined {
         return this._props;
     }
 
@@ -47,7 +47,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         this._hookDefinitions[key] = hook;
     }
 
-    public applyPlugins(viewClass: Class<UIView>): void {
+    public override applyPlugins(viewClass: Class<UIView>): void {
         const type = `UIViewPlugin.${viewClass.prototype.constructor.name}`;
         const elPlugins = plugins.byType<UIViewPlugin<any>>(type);
         elPlugins
@@ -55,10 +55,14 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
             .forEach(plugin => plugin.apply(this));
     }
 
-    async awaitElement<TElement extends UIElement = UIElement<any>>(id: string): Promise<TElement> {
+    public async awaitElement<TElement extends UIElement = UIElement<any>>(
+        id: string
+    ): Promise<TElement> {
         await pWaitFor(() => this.getElement<TElement>(id) !== undefined);
-
-        return this.getElement<TElement>(id);
+        /**
+         * TODO @pavel check if casting is ok
+         */
+        return this.getElement<TElement>(id) as TElement;
     }
 
     public getHookDefinitions(): Record<string, Function> {
@@ -93,11 +97,11 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         this._events.set(event, callbacks);
     }
 
-    async isRendered() {
+    public override async isRendered() {
         return pWaitFor(() => this._isRendered, { interval: 50 });
     }
 
-    public render(props?: UIViewProps): React.ReactNode {
+    public override render(props?: UIViewProps): React.ReactNode {
         // We want to keep track of props that triggered the render cycle.
         this._props = props;
 
@@ -122,7 +126,7 @@ export interface ApplyFunction<TView> {
 type Class<T> = new (...args: any[]) => T;
 
 export class UIViewPlugin<TView extends UIView> extends Plugin {
-    public static readonly type: string = "UIViewPlugin";
+    public static override readonly type: string = "UIViewPlugin";
     private readonly _apply: ApplyFunction<TView>;
     private readonly _viewClass: Class<TView>;
 
@@ -133,7 +137,7 @@ export class UIViewPlugin<TView extends UIView> extends Plugin {
         this._viewClass = viewClass;
     }
 
-    get type(): string {
+    override get type(): string {
         return `UIViewPlugin.${this._viewClass.prototype.constructor.name}`;
     }
 

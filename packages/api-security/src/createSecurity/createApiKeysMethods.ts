@@ -17,7 +17,7 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import { NotAuthorizedError } from "~/index";
 import { NotFoundError } from "@webiny/handler-graphql";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { ApiKey, ApiKeyInput, ApiKeyPermission, Security } from "~/types";
 import { SecurityConfig } from "~/types";
 
@@ -40,7 +40,17 @@ const generateToken = (tokenLength = 48): string => {
     return `a${token.slice(0, tokenLength - 1)}`;
 };
 
-export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
+export const createApiKeysMethods = ({
+    getTenant: initialGetTenant,
+    storageOperations
+}: SecurityConfig) => {
+    const getTenant = () => {
+        const tenant = initialGetTenant();
+        if (!tenant) {
+            throw new WebinyError("Missing tenant.");
+        }
+        return tenant;
+    };
     return {
         async getApiKeyByToken(token: string) {
             try {
@@ -49,7 +59,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
                     token
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not get API key by token.",
                     ex.code || "GET_API_KEY_BY_TOKEN_ERROR",
                     {
@@ -68,9 +78,12 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
             }
 
             try {
-                return await storageOperations.getApiKey({ tenant: getTenant(), id });
+                return await storageOperations.getApiKey({
+                    tenant: getTenant(),
+                    id
+                });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not get API key.",
                     ex.code || "GET_API_KEY_ERROR",
                     {
@@ -94,7 +107,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
                     sort: ["createdOn_ASC"]
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not list API keys.",
                     ex.code || "LIST_API_KEY_ERROR"
                 );
@@ -130,7 +143,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
                     apiKey
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not create API key.",
                     ex.code || "CREATE_API_KEY_ERROR",
                     {
@@ -166,7 +179,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
                     apiKey
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not update API key.",
                     ex.code || "UPDATE_API_KEY_ERROR",
                     {
@@ -193,7 +206,7 @@ export const createApiKeysMethods = ({ getTenant, storageOperations }: SecurityC
                 await storageOperations.deleteApiKey({ apiKey });
                 return true;
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not delete API key.",
                     ex.code || "DELETE_API_KEY_ERROR",
                     {

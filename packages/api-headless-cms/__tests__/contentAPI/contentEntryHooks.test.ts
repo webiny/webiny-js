@@ -2,7 +2,7 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { assignEntryEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsGroup } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 
 describe("contentEntryHooks", () => {
     let contentModelGroup: CmsGroup;
@@ -14,9 +14,12 @@ describe("contentEntryHooks", () => {
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
-    const setupContentModel = async (model = null) => {
+    const setupContentModel = async (model?: CmsModel) => {
         if (!model) {
             model = models.find(m => m.modelId === "category");
+            if (!model) {
+                throw new Error("Could not find model `category`.");
+            }
         }
         const [createCMG] = await createContentModelGroupMutation({
             data: {
@@ -553,7 +556,7 @@ describe("contentEntryHooks", () => {
 
         await until(
             () => listCategories(),
-            ([response]) => {
+            ([response]: any) => {
                 return response.data.listCategories.data.length > 0;
             },
             {

@@ -4,7 +4,7 @@ export interface Config {
     name: string;
 }
 export class CmsFieldValidatorFileTypePlugin extends Plugin {
-    public static readonly type: string = "cms-model-field-validator-fileType";
+    public static override readonly type: string = "cms-model-field-validator-fileType";
 
     private readonly config: Config;
 

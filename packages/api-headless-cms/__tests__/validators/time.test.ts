@@ -2,7 +2,7 @@ import timeLtePlugin from "../../src/content/plugins/validators/timeLte";
 import timeGtePlugin from "../../src/content/plugins/validators/timeGte";
 import { CmsModelFieldValidation } from "../../src/types";
 
-const createValidator = (args): CmsModelFieldValidation => {
+const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
     return {
         name: "test-validator",
         message: "test validation message",
@@ -37,7 +37,7 @@ describe("time validators", () => {
             validator,
             context,
             field: {} as any,
-            contentModel: {} as any
+            model: {} as any
         });
         expect(result).toEqual(true);
     });
@@ -62,7 +62,7 @@ describe("time validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -89,7 +89,7 @@ describe("time validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -114,7 +114,7 @@ describe("time validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -126,20 +126,20 @@ describe("time validators", () => {
         ["22:00:00", "10:00:00", "22:00:00"]
     ];
 
-    const validate = async ({ value, lteValidator, gteValidator }) => {
+    const validate = async ({ value, lteValidator, gteValidator }: any) => {
         const lteValid = await ltePlugin.validator.validate({
             value,
             validator: lteValidator,
             context,
             field: {} as any,
-            contentModel: {} as any
+            model: {} as any
         });
         const gteValid = await gtePlugin.validator.validate({
             value,
             validator: gteValidator,
             context,
             field: {} as any,
-            contentModel: {} as any
+            model: {} as any
         });
         return lteValid && gteValid;
     };

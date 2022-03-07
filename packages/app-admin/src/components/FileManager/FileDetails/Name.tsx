@@ -5,9 +5,15 @@ import { Input } from "@webiny/ui/Input";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { useSnackbar } from "~/hooks/useSnackbar";
-import { UPDATE_FILE, LIST_FILES } from "./../graphql";
+import {
+    UPDATE_FILE,
+    LIST_FILES,
+    UpdateFileMutationResponse,
+    UpdateFileMutationVariables,
+    ListFilesQueryResponse
+} from "./../graphql";
 import { useFileManager } from "./../FileManagerContext";
-import { FileItem, ListFilesResponse, UpdateFileResponse } from "../types";
+import { FileItem } from "../types";
 
 interface NameProps {
     file: FileItem;
@@ -32,7 +38,7 @@ const Name: React.FC<NameProps> = ({ file, canEdit }) => {
                         return;
                     }
                     // Update file.
-                    await client.mutate<UpdateFileResponse>({
+                    await client.mutate<UpdateFileMutationResponse, UpdateFileMutationVariables>({
                         mutation: UPDATE_FILE,
                         variables: {
                             id: file.id,
@@ -43,18 +49,20 @@ const Name: React.FC<NameProps> = ({ file, canEdit }) => {
                                 updated,
                                 "data.fileManager.updateFile.data"
                             );
-                            const data: ListFilesResponse = cloneDeep(
-                                cache.readQuery({
+                            const data = cloneDeep(
+                                cache.readQuery<ListFilesQueryResponse>({
                                     query: LIST_FILES,
                                     variables: queryParams
                                 })
                             );
 
-                            data.fileManager.listFiles.data.forEach(item => {
-                                if (item.src === newFileData.src) {
-                                    item.name = newFileData.name;
-                                }
-                            });
+                            if (data) {
+                                data.fileManager.listFiles.data.forEach(item => {
+                                    if (item.src === newFileData.src) {
+                                        item.name = newFileData.name;
+                                    }
+                                });
+                            }
 
                             cache.writeQuery({
                                 query: LIST_FILES,

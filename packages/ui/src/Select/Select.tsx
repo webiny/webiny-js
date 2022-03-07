@@ -1,5 +1,9 @@
-import * as React from "react";
-import { Select as RmwcSelect, SelectProps as RmwcSelectProps } from "@rmwc/select";
+import React from "react";
+import {
+    FormattedOption,
+    Select as RmwcSelect,
+    SelectProps as RmwcSelectProps
+} from "@rmwc/select";
 import { FormElementMessage } from "~/FormElementMessage";
 import { FormComponentProps } from "~/types";
 import { css } from "emotion";
@@ -46,11 +50,42 @@ const noLabel = css({
         }
     }
 });
+/**
+ * TODO verify that this is correct method get all options.
+ */
+const getOptions = (initialOptions: SelectProps["options"]): FormattedOption[] => {
+    if (!initialOptions) {
+        return [];
+    } else if (Array.isArray(initialOptions)) {
+        const options: FormattedOption[] = [];
+        for (const option of initialOptions) {
+            if (typeof option === "string") {
+                options.push({
+                    label: option,
+                    value: option
+                });
+                continue;
+            }
+            options.push({
+                label: option.label,
+                value: option.value,
+                options: option.options
+            });
+        }
+        return options;
+    }
+    return Object.keys(initialOptions).map(key => {
+        return {
+            label: initialOptions[key],
+            value: key
+        };
+    });
+};
 
 /**
  * Select component lets users choose a value from given set of options.
  */
-const skipProps = ["validate"];
+const skipProps = ["validate", "form"];
 
 const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps => {
     const newProps: FormComponentProps & RmwcSelectProps = {};
@@ -69,10 +104,16 @@ export const Select: React.FC<SelectProps> = props => {
     const { value: initialValue, description, validation, ...other } = props;
 
     const value = initialValue === null || initialValue === undefined ? "" : initialValue;
+
+    const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
+    const options = getOptions(other.options);
+
     return (
         <React.Fragment>
             <RmwcSelect
                 {...getRmwcProps(other)}
+                options={options}
                 value={value}
                 className={classNames("webiny-ui-select", props.className, {
                     [noLabel]: !props.label
@@ -82,19 +123,15 @@ export const Select: React.FC<SelectProps> = props => {
                 }}
             />
 
-            {validation.isValid === false && (
-                <FormElementMessage error>{validation.message}</FormElementMessage>
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
             )}
 
-            {validation.isValid !== false && description && (
+            {validationIsValid !== false && description && (
                 <FormElementMessage>{description}</FormElementMessage>
             )}
         </React.Fragment>
     );
-};
-
-Select.defaultProps = {
-    validation: { isValid: null, message: null }
 };
 
 export default Select;

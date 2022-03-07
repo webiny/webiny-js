@@ -84,14 +84,14 @@ const hoverStyleSlide2 = css({
     animationDuration: "2s"
 });
 
-type Props = {
+interface Slide2Props {
     currentSlide: number;
-};
+}
 
-class Slide2 extends React.Component<Props> {
-    slideNumber = 2;
+class Slide2 extends React.Component<Slide2Props> {
+    public readonly slideNumber = 2;
 
-    editorContent = () => {
+    private readonly editorContent = (): React.ReactElement => {
         return (
             <React.Fragment>
                 <HandIcon
@@ -113,7 +113,7 @@ class Slide2 extends React.Component<Props> {
         );
     };
 
-    render() {
+    public override render() {
         return (
             <SlideOutline
                 title={"Blocks"}

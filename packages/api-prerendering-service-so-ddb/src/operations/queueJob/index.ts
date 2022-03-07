@@ -3,7 +3,6 @@ import {
     PrerenderingServiceQueueJobStorageOperations,
     PrerenderingServiceStorageOperationsCreateQueueJobParams,
     PrerenderingServiceStorageOperationsDeleteQueueJobsParams,
-    PrerenderingServiceStorageOperationsListQueueJobsParams,
     QueueJob
 } from "@webiny/api-prerendering-service/types";
 import { Entity } from "dynamodb-toolbox";
@@ -11,12 +10,12 @@ import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 
-export interface Params {
+export interface CreateQueueJobStorageOperationsParams {
     entity: Entity<any>;
 }
 
 export const createQueueJobStorageOperations = (
-    params: Params
+    params: CreateQueueJobStorageOperationsParams
 ): PrerenderingServiceQueueJobStorageOperations => {
     const { entity } = params;
 
@@ -58,8 +57,8 @@ export const createQueueJobStorageOperations = (
             );
         }
     };
-    // eslint-disable-next-line
-    const listQueueJobs = async (_: PrerenderingServiceStorageOperationsListQueueJobsParams) => {
+
+    const listQueueJobs = async () => {
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createQueueJobPartitionKey(),

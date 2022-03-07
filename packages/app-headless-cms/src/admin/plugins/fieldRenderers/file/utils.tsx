@@ -57,9 +57,9 @@ export const createRenderImagePreview = ({
     return renderImagePreview;
 };
 
-const getFileName = (value: string): string => {
+const getFileName = (value?: string): string => {
     if (!value) {
-        return "";
+        return "unknown";
     }
-    return value.split("/").pop();
+    return value.split("/").pop() || "unknown";
 };

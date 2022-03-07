@@ -5,7 +5,7 @@ import {
     Response
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-import { GroupInput, SecurityContext } from "~/types";
+import { SecurityContext } from "~/types";
 
 export default new GraphQLSchemaPlugin<SecurityContext>({
     typeDefs: /* GraphQL */ `
@@ -79,7 +79,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             }
         },
         SecurityMutation: {
-            createGroup: async (_, { data }: { data: GroupInput }, context) => {
+            createGroup: async (_, { data }, context) => {
                 try {
                     const group = await context.security.createGroup(data);
 
@@ -88,11 +88,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
                     return new ErrorResponse(e);
                 }
             },
-            updateGroup: async (
-                _,
-                { id, data }: { id: string; data: Omit<GroupInput, "slug" | "system"> },
-                context
-            ) => {
+            updateGroup: async (_, { id, data }, context) => {
                 try {
                     const group = await context.security.updateGroup(id, data);
                     return new Response(group);
@@ -100,7 +96,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
                     return new ErrorResponse(e);
                 }
             },
-            deleteGroup: async (_, { id }: { id: string }, context) => {
+            deleteGroup: async (_, { id }, context) => {
                 try {
                     await context.security.deleteGroup(id);
 

@@ -30,7 +30,10 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
                 documentClient,
-                table: table => ({ ...table, name: process.env.DB_TABLE })
+                table: table => ({
+                    ...table,
+                    name: process.env.DB_TABLE as string
+                })
             })
         }),
         createTenancyGraphQL(),
@@ -42,7 +45,16 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
         }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
-            context.tenancy.setCurrentTenant({ id: "root", name: "Root" });
+            context.tenancy.setCurrentTenant({
+                id: "root",
+                name: "Root",
+                status: "unknown",
+                parent: null,
+                settings: {
+                    domains: []
+                },
+                description: ""
+            });
 
             context.security.addAuthenticator(async () => {
                 return (

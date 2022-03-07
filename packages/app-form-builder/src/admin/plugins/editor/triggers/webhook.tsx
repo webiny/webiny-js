@@ -27,7 +27,13 @@ const plugin: FbEditorTrigger = {
                         </Bind>
                     </Cell>
                     <Cell>
-                        <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
+                        <ButtonPrimary
+                            onClick={ev => {
+                                submit(ev);
+                            }}
+                        >
+                            Save
+                        </ButtonPrimary>
                     </Cell>
                 </Grid>
             );

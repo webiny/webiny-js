@@ -33,6 +33,9 @@ describe("refField", () => {
 
     const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
+        if (!model) {
+            throw new Error(`Could not find model "${name}".`);
+        }
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -60,7 +63,7 @@ describe("refField", () => {
         return update.data.updateContentModel.data;
     };
     const setupContentModels = async (contentModelGroup: CmsGroup) => {
-        const models = {
+        const models: Record<string, any> = {
             category: null,
             product: null,
             review: null,
@@ -223,7 +226,7 @@ describe("refField", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => manageListReviews().then(([data]) => data),
-            ({ data }) => data.listReviews.data[0].meta.publishedOn === publishedOn,
+            ({ data }: any) => data.listReviews.data[0].meta.publishedOn === publishedOn,
             { name: "manage list reviews" }
         );
 
@@ -293,7 +296,7 @@ describe("refField", () => {
                         id: review.id
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.getReview.data.id === review.id,
+            ({ data }: any) => data.getReview.data.id === review.id,
             { name: "get created review" }
         );
 

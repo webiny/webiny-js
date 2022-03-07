@@ -6,8 +6,8 @@ import set from "lodash/set";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { Form } from "@webiny/form";
-import { Form as FormDef, FormData } from "@webiny/form/Form";
+import { Form, FormAPI } from "@webiny/form";
+import { FormData } from "@webiny/form/types";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorElement,
@@ -26,6 +26,7 @@ import { classes } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
 import SpacingPicker from "../components/SpacingPicker";
+import { Validator } from "@webiny/validation/types";
 
 const rightCellStyle = css({
     justifySelf: "end"
@@ -69,9 +70,9 @@ enum HeightUnits {
     auto = "auto"
 }
 
-const validateHeight = (value: string | undefined) => {
+const validateHeight: Validator = (value: string | undefined) => {
     if (!value) {
-        return null;
+        return true;
     }
     const parsedValue = parseInt(value);
 
@@ -105,7 +106,7 @@ const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     const handler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const updateSettings = async (data: FormData, form: FormDef) => {
+    const updateSettings = async (data: FormData, form: FormAPI) => {
         const valid = await form.validate();
         if (!valid) {
             return null;
@@ -125,11 +126,18 @@ const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
         );
     };
 
-    const { config: activeDisplayModeConfig } = React.useMemo(() => {
+    const memoizedResponsiveModePlugin = React.useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
+
+    const { config: activeDisplayModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
 
     const settings = React.useMemo(() => {
         const fallbackValue = applyFallbackDisplayMode(displayMode, mode =>
@@ -148,27 +156,37 @@ const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
                 </Tooltip>
             }
         >
-            <Form data={settings} onChange={updateSettings}>
-                {({ Bind }) => (
-                    <Wrapper
-                        label={"Height"}
-                        containerClassName={classes.simpleGrid}
-                        rightCellClassName={rightCellStyle}
-                    >
-                        <Bind name={"value"} validators={validateHeight}>
-                            {({ value, onChange, validation }) => (
-                                <SpacingPicker
-                                    value={value}
-                                    onChange={onChange}
-                                    validation={validation}
-                                    options={heightUnitOptions}
-                                    className={spacingPickerStyle}
-                                    useDefaultStyle={false}
-                                />
-                            )}
-                        </Bind>
-                    </Wrapper>
-                )}
+            <Form
+                data={settings}
+                onChange={(data, form) => {
+                    if (!form) {
+                        return;
+                    }
+                    return updateSettings(data, form);
+                }}
+            >
+                {({ Bind }) => {
+                    return (
+                        <Wrapper
+                            label={"Height"}
+                            containerClassName={classes.simpleGrid}
+                            rightCellClassName={rightCellStyle}
+                        >
+                            <Bind name={"value"} validators={validateHeight}>
+                                {({ value, onChange, validation }) => (
+                                    <SpacingPicker
+                                        value={value}
+                                        onChange={onChange}
+                                        validation={validation}
+                                        options={heightUnitOptions}
+                                        className={spacingPickerStyle}
+                                        useDefaultStyle={false}
+                                    />
+                                )}
+                            </Bind>
+                        </Wrapper>
+                    );
+                }}
             </Form>
         </Accordion>
     );

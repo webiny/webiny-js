@@ -39,12 +39,12 @@ const centeredContent = css({
 const ContentModels: React.FC = () => {
     const [newContentModelDialogOpened, openNewContentModelDialog] = React.useState(false);
 
-    const [cloneContentModel, setCloneContentModel] = React.useState<CmsModel>(null);
+    const [cloneContentModel, setCloneContentModel] = React.useState<CmsModel | null>(null);
 
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo((): boolean => {
-        const permission = identity.getPermission("cms.contentModel");
+        const permission = getPermission("cms.contentModel");
         if (!permission) {
             return false;
         }
@@ -54,7 +54,7 @@ const ContentModels: React.FC = () => {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     const closeModal = useCallback(() => {
         setCloneContentModel(null);
@@ -71,12 +71,14 @@ const ContentModels: React.FC = () => {
     return (
         <>
             <NewContentModelDialog open={newContentModelDialogOpened} onClose={onClose} />
-            <CloneContentModelDialog
-                open={!!cloneContentModel}
-                contentModel={cloneContentModel}
-                onClose={onCloneClose}
-                closeModal={closeModal}
-            />
+            {cloneContentModel && (
+                <CloneContentModelDialog
+                    open={!!cloneContentModel}
+                    contentModel={cloneContentModel}
+                    onClose={onCloneClose}
+                    closeModal={closeModal}
+                />
+            )}
             <Grid className={grid}>
                 <Cell span={3} />
                 <Cell span={6} className={centeredContent}>

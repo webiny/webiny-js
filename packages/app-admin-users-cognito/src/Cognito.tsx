@@ -24,16 +24,23 @@ import installation from "./plugins/installation";
 import permissionRenderer from "./plugins/permissionRenderer";
 import cognito from "./plugins/cognito";
 
+/**
+ * TODO @ts-refactor figure out correct LoginScreenTypes.
+ */
+// @ts-ignore
 const LoginScreen: React.FC = createAuthentication();
 
 const CognitoLoginScreen: HigherOrderComponent = () => LoginScreen;
-
+/**
+ * TODO @ts-refactor @pavel
+ * Compose.component
+ */
 const CognitoIdP: React.FC = () => {
     plugins.register([globalSearchUsers, installation, permissionRenderer, cognito()]);
 
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer} with={CognitoLoginScreen} />
+            <Compose component={LoginScreenRenderer as any} with={CognitoLoginScreen} />
             <Plugins>
                 <HasPermission name={Permission.Users}>
                     <AddRoute exact path={"/admin-users"}>

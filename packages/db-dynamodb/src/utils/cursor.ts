@@ -6,7 +6,7 @@ export const encodeCursor = (cursor?: any): string | null => {
     return Buffer.from(JSON.stringify(cursor)).toString("base64");
 };
 
-export const decodeCursor = (cursor?: string): string | null => {
+export const decodeCursor = (cursor?: string | null): string | null => {
     if (!cursor) {
         return null;
     }

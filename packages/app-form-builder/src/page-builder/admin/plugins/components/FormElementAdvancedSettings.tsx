@@ -128,7 +128,7 @@ const FormElementAdvancedSettings: React.FC<FormElementAdvancedSettingsProps> = 
                             {({ onChange }) => (
                                 <AutoComplete
                                     options={latestRevisions.options}
-                                    value={latestRevisions.value}
+                                    value={latestRevisions.value || undefined}
                                     onChange={value => {
                                         onChange(value);
                                         getFormRevisions();
@@ -165,7 +165,7 @@ const FormElementAdvancedSettings: React.FC<FormElementAdvancedSettingsProps> = 
                                             description={description}
                                             disabled={!parentSelected || noPublished}
                                             options={publishedRevisions.options}
-                                            value={publishedRevisions.value}
+                                            value={publishedRevisions.value || undefined}
                                             onChange={onChange}
                                         />
                                     );

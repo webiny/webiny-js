@@ -23,7 +23,7 @@ export class FilePhysicalStoragePlugin<
     U extends FilePhysicalStoragePluginUploadParams = FilePhysicalStoragePluginUploadParams,
     D extends FilePhysicalStoragePluginDeleteParams = FilePhysicalStoragePluginDeleteParams
 > extends Plugin {
-    public static readonly type = "api-file-manager-storage";
+    public static override readonly type: string = "api-file-manager-storage";
     private readonly _params: FilePhysicalStoragePluginParams<U, D>;
 
     public constructor(params: FilePhysicalStoragePluginParams<U, D>) {

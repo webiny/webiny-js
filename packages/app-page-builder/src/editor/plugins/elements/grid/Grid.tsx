@@ -21,7 +21,7 @@ type GridPropsType = {
     element: PbEditorElement;
     displayMode: DisplayMode;
 };
-const Grid: React.FunctionComponent<GridPropsType> = ({
+const Grid: React.FC<GridPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,
@@ -32,7 +32,7 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
     const containerStyle = elementStyle || {};
     // Use per-device style
     const alignItems =
-        elementStyle[`--${kebabCase(displayMode)}-align-items` as keyof CSSProperties];
+        elementStyle[`--${kebabCase(displayMode)}-align-items` as unknown as keyof CSSProperties];
     /**
      * Figure out better types.
      */
@@ -58,7 +58,7 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
             {...elementAttributes}
             style={gridStyles}
         >
-            {element.elements.map((child: PbEditorElement) => {
+            {(element.elements as PbEditorElement[]).map(child => {
                 return (
                     <div
                         key={`cell-${child.id}`}

@@ -3,17 +3,20 @@ import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/S
 import { useSecurity } from "@webiny/app-security";
 import CategoriesDataList from "./CategoriesDataList";
 import CategoriesForm from "./CategoriesForm";
-import { SecurityPermission } from "@webiny/app-security/types";
 
 const Categories: React.FC = () => {
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission => {
-        return identity.getPermission("pb.category");
-    }, []);
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermissionRwd = useMemo((): string | null => {
+        const permission = getPermission("pb.category");
+        if (!permission) {
+            return null;
+        }
+        return permission.rwd || null;
+    }, [identity]);
 
     const canCreate = useMemo((): boolean => {
-        if (typeof pbMenuPermission.rwd === "string") {
-            return pbMenuPermission.rwd.includes("w");
+        if (typeof pbMenuPermissionRwd === "string") {
+            return pbMenuPermissionRwd.includes("w");
         }
 
         return true;

@@ -6,7 +6,7 @@ const height: ElementStylesModifier = ({ element, theme }) => {
         return {};
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!height[breakpointName]) {
             return returnStyles;
         }

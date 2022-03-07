@@ -224,7 +224,9 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
         peTheme = pageElements.theme;
     }
 
-    const themeColors = { ...theme.colors, ...peTheme.styles?.colors };
+    const colors = theme ? theme.colors : {};
+
+    const themeColors = { ...colors, ...peTheme.styles?.colors };
 
     let themeColor = false;
 
@@ -238,7 +240,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                 return (
                     <ColorBox key={index}>
                         <Color
-                            className={color === value ? styles.selectedColor : null}
+                            className={color === value ? styles.selectedColor : ""}
                             style={{ backgroundColor: color }}
                             onClick={() => {
                                 hidePicker();
@@ -263,7 +265,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
 
             <ColorBox>
                 <Color
-                    className={value && !themeColor ? styles.selectedColor : null}
+                    className={value && !themeColor ? styles.selectedColor : ""}
                     style={{ backgroundColor: themeColor ? "#fff" : value }}
                     onClick={togglePicker}
                 >

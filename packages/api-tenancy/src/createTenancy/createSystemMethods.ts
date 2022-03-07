@@ -3,20 +3,20 @@ import { Tenancy, TenancyStorageOperations } from "~/types";
 
 export function createSystemMethods(storageOperations: TenancyStorageOperations) {
     return {
-        async getVersion(this: Tenancy) {
+        async getVersion(this: Tenancy): Promise<string | null> {
             const system = await storageOperations.getSystemData();
 
             // BC check
             if (!system) {
                 const rootTenant = await this.getTenantById("root");
                 if (rootTenant) {
-                    await this.setVersion(process.env.WEBINY_VERSION);
-                    return process.env.WEBINY_VERSION;
+                    await this.setVersion(process.env.WEBINY_VERSION as string);
+                    return process.env.WEBINY_VERSION as string;
                 }
                 return null;
             }
 
-            return system ? system.version : null;
+            return system?.version || null;
         },
 
         async setVersion(version: string) {
@@ -64,7 +64,7 @@ export function createSystemMethods(storageOperations: TenancyStorageOperations)
                     description: "The top-level Webiny tenant.",
                     parent: ""
                 });
-                await this.setVersion(process.env.WEBINY_VERSION);
+                await this.setVersion(process.env.WEBINY_VERSION as string);
             } catch (err) {
                 throw new Error(err.message, "TENANCY_INSTALL_ABORTED", err.data || {});
             }

@@ -4,8 +4,7 @@ import { SUPPORTED_IMAGES, SUPPORTED_TRANSFORMABLE_IMAGES, getImageKey } from ".
 import { ClientContext } from "@webiny/handler-client/types";
 import S3 from "aws-sdk/clients/s3";
 
-// @ts-ignore
-const IMAGE_TRANSFORMER_FUNCTION = process.env.IMAGE_TRANSFORMER_FUNCTION;
+const IMAGE_TRANSFORMER_FUNCTION = process.env.IMAGE_TRANSFORMER_FUNCTION as string;
 
 interface TransformerParams {
     context: ClientContext;
@@ -29,18 +28,18 @@ interface File {
     name: string;
 }
 interface Options {
-    width: string;
+    width?: string;
 }
 export interface CanProcessParams {
     s3: S3;
     file: File;
-    options: Options;
+    options?: Options;
     context: ClientContext;
 }
 export interface ProcessParams {
     s3: S3;
     file: File;
-    options: Options;
+    options?: Options;
     context: ClientContext;
 }
 export default {

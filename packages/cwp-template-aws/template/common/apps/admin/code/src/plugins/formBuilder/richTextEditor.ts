@@ -14,6 +14,7 @@ import TextColor from "@webiny/app-admin/components/RichTextEditor/tools/textCol
 import Header from "@webiny/app-admin/components/RichTextEditor/tools/header";
 import Paragraph from "@webiny/app-admin/components/RichTextEditor/tools/paragraph";
 import { plugins } from "@webiny/plugins";
+import { PbThemePlugin } from "@webiny/app-page-builder/types";
 
 export default {
     type: "fb-rte-config",
@@ -49,7 +50,7 @@ export default {
                 class: TextColor,
                 shortcut: "CMD+M",
                 config: () => {
-                    const [pbTheme] = plugins.byType("pb-theme");
+                    const [pbTheme] = plugins.byType<PbThemePlugin>("pb-theme");
 
                     const themeColors = pbTheme
                         ? Object.values(pbTheme.theme.colors)

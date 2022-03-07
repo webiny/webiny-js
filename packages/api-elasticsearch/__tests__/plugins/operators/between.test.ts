@@ -4,7 +4,6 @@ import { ElasticsearchBoolQueryConfig } from "~/types";
 
 describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorBetweenPlugin();
-    const context: any = {};
 
     it("should apply between correctly", () => {
         const query = createBlankQuery();
@@ -12,7 +11,6 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
             value: [100, 110],
             path: "id",
             basePath: "id",
-            context,
             keyword: false
         });
 
@@ -41,7 +39,6 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
             value: [100, 110],
             path: "id",
             basePath: "id",
-            context,
             keyword: false
         });
 
@@ -52,7 +49,6 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
             value: [from, to],
             path: "date",
             basePath: "date",
-            context,
             keyword: false
         });
 
@@ -90,7 +86,6 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
                 value: "notAnArray",
                 path: "id",
                 basePath: "id",
-                context,
                 keyword: false
             });
         }).toThrow(
@@ -110,7 +105,6 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
                     value,
                     path: "id",
                     basePath: "id",
-                    context,
                     keyword: false
                 });
             }).toThrow(`You must pass 2 values in the array for field path "id" filtering.`);

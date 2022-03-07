@@ -92,7 +92,7 @@ export type ElementStylesModifier = (args: {
     theme: Theme;
     renderers?: PageElementsProviderProps["renderers"];
     modifiers?: PageElementsProviderProps["modifiers"];
-}) => StylesObjects;
+}) => StylesObjects | null;
 
 export interface Breakpoint {
     mediaQuery: string;

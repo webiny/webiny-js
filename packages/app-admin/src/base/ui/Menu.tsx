@@ -2,16 +2,16 @@ import React, { createContext, useContext, useEffect } from "react";
 import { useNavigation } from "~/index";
 
 export interface MenuUpdater {
-    (menuItem: MenuData): MenuData;
+    (menuItem: MenuData | undefined | null): MenuData | undefined;
 }
 
 export interface MenuContext {
-    menuItem: MenuData;
+    menuItem: MenuData | null;
     setMenu(id: string, updater: MenuUpdater): void;
     removeMenu(id: string): void;
 }
 
-const MenuContext = createContext<MenuContext>(null);
+const MenuContext = createContext<MenuContext | undefined>(undefined);
 MenuContext.displayName = "MenuContext";
 
 const useMenu = () => {
@@ -79,12 +79,8 @@ const mergeMenuItems = (item1: MenuData, item2: MenuData): MenuData => {
 
 /**
  * Register a new menu item into the Admin app.
- *
- * @param children
- * @param props
- * @constructor
  */
-export const AddMenu = ({ children, ...props }: MenuProps) => {
+export const AddMenu: React.FC<MenuProps> = ({ children, ...props }) => {
     const menu = useMenu();
     const navigation = useNavigation();
 
@@ -99,6 +95,13 @@ export const AddMenu = ({ children, ...props }: MenuProps) => {
             });
         } else {
             navigation.setMenu(props.name, existing => {
+                /**
+                 * We return props because this will break otherwise.
+                 * TODO @pavel check if this is correct
+                 */
+                if (!existing) {
+                    return props as MenuData;
+                }
                 return mergeMenuItems(existing, props as MenuData);
             });
         }
@@ -146,7 +149,7 @@ export const AddMenu = ({ children, ...props }: MenuProps) => {
                 if (childIndex === -1) {
                     return {
                         ...existing,
-                        children: [...subItems, updater(null)].filter(Boolean)
+                        children: [...subItems, updater(null)].filter(Boolean) as MenuData[]
                     };
                 }
 
@@ -156,7 +159,7 @@ export const AddMenu = ({ children, ...props }: MenuProps) => {
                         ...subItems.slice(0, childIndex),
                         updater(subItems[childIndex]),
                         ...subItems.slice(childIndex + 1)
-                    ].filter(Boolean)
+                    ].filter(Boolean) as MenuData[]
                 };
             });
         }

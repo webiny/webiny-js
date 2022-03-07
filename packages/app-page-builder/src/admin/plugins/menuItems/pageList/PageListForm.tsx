@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
@@ -9,7 +9,7 @@ import { TagsMultiAutocomplete } from "~/admin/components/TagsMultiAutocomplete"
 import { CategoriesAutocomplete } from "~/admin/components/CategoriesAutocomplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
-import { FormOnCancel, FormOnSubmit } from "@webiny/form/Form";
+import { FormOnSubmit } from "@webiny/form/types";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 
 const menuPageFormStyle = {
@@ -20,7 +20,7 @@ const menuPageFormStyle = {
 interface LinkFormProps {
     data: MenuTreeItem;
     onSubmit: FormOnSubmit;
-    onCancel: FormOnCancel;
+    onCancel: () => void;
 }
 const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
     return (
@@ -103,7 +103,12 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                         <Grid>
                             <Cell span={12}>
                                 <ButtonSecondary onClick={onCancel}>Cancel</ButtonSecondary>
-                                <ButtonPrimary onClick={submit} style={{ float: "right" }}>
+                                <ButtonPrimary
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
+                                    style={{ float: "right" }}
+                                >
                                     Save menu item
                                 </ButtonPrimary>
                             </Cell>

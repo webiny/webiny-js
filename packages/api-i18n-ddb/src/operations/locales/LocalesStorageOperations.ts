@@ -1,6 +1,6 @@
 import {
     I18NContext,
-    I18NLocale,
+    I18NLocaleData,
     I18NLocalesStorageOperations,
     I18NLocalesStorageOperationsCreateParams,
     I18NLocalesStorageOperationsDeleteParams,
@@ -43,7 +43,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         });
     }
 
-    public async getDefault(): Promise<I18NLocale> {
+    public async getDefault(): Promise<I18NLocaleData | null> {
         try {
             const locale = await this.entity.get({
                 PK: this.createDefaultPartitionKey(),
@@ -61,7 +61,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         }
     }
 
-    public async get(code: string): Promise<I18NLocale> {
+    public async get(code: string): Promise<I18NLocaleData | null> {
         try {
             const locale = await this.entity.get({
                 PK: this.createPartitionKey(),
@@ -79,7 +79,9 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         }
     }
 
-    public async create({ locale }: I18NLocalesStorageOperationsCreateParams): Promise<I18NLocale> {
+    public async create({
+        locale
+    }: I18NLocalesStorageOperationsCreateParams): Promise<I18NLocaleData> {
         const keys = {
             PK: this.createPartitionKey(),
             SK: this.getSortKey(locale)
@@ -103,7 +105,9 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         }
     }
 
-    public async update({ locale }: I18NLocalesStorageOperationsUpdateParams): Promise<I18NLocale> {
+    public async update({
+        locale
+    }: I18NLocalesStorageOperationsUpdateParams): Promise<I18NLocaleData> {
         const keys = {
             PK: this.createPartitionKey(),
             SK: this.getSortKey(locale)
@@ -129,7 +133,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
     public async updateDefault({
         previous,
         locale
-    }: I18NLocalesStorageOperationsUpdateDefaultParams): Promise<I18NLocale> {
+    }: I18NLocalesStorageOperationsUpdateDefaultParams): Promise<I18NLocaleData> {
         /**
          * Set the locale as the default one.
          */
@@ -204,9 +208,9 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
             where
         });
 
-        let results: I18NLocale[] = [];
+        let results: I18NLocaleData[] = [];
         try {
-            results = await queryAll<I18NLocale>(queryAllParams);
+            results = await queryAll<I18NLocaleData>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Cannot list I18N locales.",
@@ -241,7 +245,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         /**
          * Use the common db-dynamodb method to create the required response.
          */
-        return createListResponse<I18NLocale>({
+        return createListResponse<I18NLocaleData>({
             items: cleanupItems(this.entity, sortedFiles),
             after,
             totalCount,
@@ -261,7 +265,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         return `${this.createPartitionKey()}#D`;
     }
 
-    public getSortKey(locale: I18NLocale): string {
+    public getSortKey(locale: I18NLocaleData): string {
         if (!locale.code) {
             throw new WebinyError("Missing locale code.", "CODE_ERROR", {
                 locale
@@ -274,8 +278,9 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
         params: I18NLocalesStorageOperationsListParams
     ): QueryAllParams {
         const { where } = params;
+
         let partitionKey = this.createPartitionKey();
-        if (where.default === true) {
+        if (where && where.default === true) {
             partitionKey = this.createDefaultPartitionKey();
             delete where.default;
         }

@@ -81,12 +81,15 @@ const EditorRendererHOC: HigherOrderComponent<EditorProps> = () => {
         return <EditorLoader {...props} />;
     };
 };
-
-export const PageBuilder = () => {
+/**
+ * TODO @ts-refactor @pavel
+ * as any in hoc and provider
+ */
+export const PageBuilder: React.FC = () => {
     return (
         <Fragment>
             <Provider hoc={PageBuilderProviderHOC} />
-            <Compose component={EditorRenderer} with={EditorRendererHOC} />
+            <Compose component={EditorRenderer as any} with={EditorRendererHOC as any} />
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />

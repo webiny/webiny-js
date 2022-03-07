@@ -6,7 +6,12 @@ export interface ThemeManagerContext {
     addTheme(theme: ThemeSource): void;
 }
 
-export const ThemeManagerContext = createContext<ThemeManagerContext>(null);
+export const ThemeManagerContext = createContext<ThemeManagerContext>({
+    themes: [],
+    addTheme: () => {
+        return void 0;
+    }
+});
 ThemeManagerContext.displayName = "ThemeManagerContext";
 
 export const ThemeManagerProviderHOC = (PreviousProvider: React.FC): React.FC => {

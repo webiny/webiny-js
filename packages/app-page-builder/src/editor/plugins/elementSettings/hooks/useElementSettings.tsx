@@ -1,7 +1,11 @@
 import { useEffect, useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "~/types";
+import {
+    PbEditorElement,
+    PbEditorPageElementPlugin,
+    PbEditorPageElementSettingsPlugin
+} from "~/types";
 import { useKeyHandler } from "../../../hooks/useKeyHandler";
 import { userElementSettingsPlugins } from "../../../helpers";
 import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
@@ -10,7 +14,7 @@ interface ElementAction {
     plugin: PbEditorPageElementSettingsPlugin;
     options: Record<string, any>;
 }
-const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] => {
+const getElementActions = (plugin?: PbEditorPageElementPlugin): ElementAction[] => {
     if (!plugin || !plugin.settings) {
         return [];
     }
@@ -20,7 +24,7 @@ const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] =
         ...(plugin.settings as string[])
     ];
 
-    const actions: ElementAction[] = pluginSettings
+    const actions = pluginSettings
         .map(pl => {
             if (typeof pl === "string") {
                 return {
@@ -38,9 +42,9 @@ const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] =
 
             return null;
         })
-        .filter(Boolean);
+        .filter(Boolean) as ElementAction[];
 
-    const elementActions: ElementAction[] = [
+    const elementActions = [
         ...actions,
         {
             plugin: plugins.byName<PbEditorPageElementSettingsPlugin>(
@@ -48,7 +52,7 @@ const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] =
             ),
             options: {}
         }
-    ];
+    ] as ElementAction[];
 
     return (
         elementActions
@@ -65,7 +69,7 @@ const getElementActions = (plugin: PbEditorPageElementPlugin): ElementAction[] =
 
 const useElementSettings = (): ElementAction[] => {
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElement));
+    const element = useRecoilValue(elementByIdSelector(activeElement as string)) as PbEditorElement;
     const elementType = element ? element.type : undefined;
 
     const deactivateElement = useCallback(() => {

@@ -1,34 +1,12 @@
-import { CmsGroup, CmsModelField } from "~/types";
+import { CmsGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-
-const noNestedFieldsObject: CmsModelField = {
-    id: "nonestedfieldsobject",
-    multipleValues: false,
-    helpText: "",
-    label: "No fields object",
-    fieldId: "noFieldsObject",
-    type: "object",
-    settings: {
-        fields: []
-    },
-    validation: [],
-    listValidation: [],
-    placeholderText: "",
-    predefinedValues: {
-        enabled: false,
-        values: []
-    },
-    renderer: {
-        name: "renderer"
-    }
-};
+import { emptyObjectFields } from "./mocks/emptyObjectFields";
 
 describe("Model - nested field", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
         createContentModelMutation,
-        getContentModelQuery,
         listContentModelsQuery,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -48,7 +26,7 @@ describe("Model - nested field", () => {
         contentModelGroup = createCMG.data.createContentModelGroup.data;
     });
 
-    it("should not fail list models if any model has empty nested field", async () => {
+    it("should prevent update of the model if it doesn't produce a valid GraphQL SDL", async () => {
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Model",
@@ -68,29 +46,24 @@ describe("Model - nested field", () => {
         const [updateResponse] = await updateContentModelMutation({
             modelId: "testModel",
             data: {
-                fields: [noNestedFieldsObject],
-                layout: [[noNestedFieldsObject.id]]
+                fields: emptyObjectFields.fields,
+                layout: emptyObjectFields.layout
             }
         });
 
         expect(updateResponse).toEqual({
             data: {
                 updateContentModel: {
-                    data: expect.any(Object),
-                    error: null
-                }
-            }
-        });
-
-        const [getResponse] = await getContentModelQuery({
-            modelId: "testModel"
-        });
-
-        expect(getResponse).toEqual({
-            data: {
-                getContentModel: {
-                    data: expect.any(Object),
-                    error: null
+                    data: null,
+                    error: {
+                        code: "INVALID_MODEL_DEFINITION",
+                        data: {
+                            modelId: "testModel",
+                            sdl: expect.any(String),
+                            invalidField: "repeat"
+                        },
+                        message: expect.any(String)
+                    }
                 }
             }
         });

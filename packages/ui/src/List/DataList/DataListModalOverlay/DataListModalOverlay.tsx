@@ -16,7 +16,9 @@ export const SimpleOverlay = styled<"div", SimpleOverlayProps>("div")(({ showOve
     opacity: showOverlay ? 1 : 0
 }));
 
-export type DataListModalWrapperProps = { showOverlay: boolean };
+export interface DataListModalWrapperProps {
+    showOverlay: boolean;
+}
 export const DataListModalWrapper = styled<"div", DataListModalWrapperProps>("div")(
     ({ showOverlay }) => ({
         position: "absolute",
@@ -59,18 +61,17 @@ export const DataListModalWrapper = styled<"div", DataListModalWrapperProps>("di
     })
 );
 
-export type DataListModalOverlayProps = {
+export interface DataListModalOverlayProps {
     /*
      * This function is called after closing the modal overlay.
      */
     onDismiss?: (event?: React.SyntheticEvent) => void;
-    /*
-     * Accepts any renderable content.
-     */
-    children: React.ReactNode;
-};
+}
 
-export const DataListModalOverlay = ({ onDismiss, children }: DataListModalOverlayProps) => {
+export const DataListModalOverlay: React.FC<DataListModalOverlayProps> = ({
+    onDismiss,
+    children
+}) => {
     const { isOpen, setIsOpen } = useContext(DataListModalOverlayContext);
     return (
         <React.Fragment>

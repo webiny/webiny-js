@@ -28,6 +28,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { PbCategory } from "~/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-page-builder/admin/categories/data-list");
 
@@ -122,15 +123,18 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
         [slug]
     );
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
-        return identity.getPermission("pb.category");
-    }, []);
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+        return getPermission("pb.category");
+    }, [identity]);
 
     const canDelete = useCallback((item: CreatableItem): boolean => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         if (pbMenuPermission.own) {
-            const identityId = identity.id || identity.login;
-            return item.createdBy.id === identityId;
+            const identityId = identity ? identity.id || identity.login : null;
+            return item.createdBy?.id === identityId;
         }
 
         if (typeof pbMenuPermission.rwd === "string") {
@@ -151,7 +155,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort categories by"}
                         >
                             {SORTERS.map(({ label, sort: value }) => {
                                 return (

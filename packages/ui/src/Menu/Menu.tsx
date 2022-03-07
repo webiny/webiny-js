@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
     Menu as BaseMenu,
     MenuProps as RmwcMenuProps,
@@ -46,35 +46,34 @@ type MenuProps = RmwcMenuProps & {
     "data-testid"?: string;
 };
 
-type State = {
+interface MenuState {
     menuIsOpen: boolean;
-};
+}
 
 /**
  * Use Menu component to display a list of choices, once the handler is triggered.
  */
-class Menu extends React.Component<MenuProps, State> {
+class Menu extends React.Component<MenuProps, MenuState> {
     static defaultProps: Partial<MenuProps> = {
-        handle: null,
         anchor: "topStart"
     };
 
-    state = {
+    public override state: MenuState = {
         menuIsOpen: false
     };
 
     anchorRef = React.createRef();
     menuRef = React.createRef();
 
-    openMenu = () => {
+    private readonly openMenu = () => {
         this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
     };
 
-    closeMenu = () => {
+    private readonly closeMenu = () => {
         this.setState({ menuIsOpen: false }, () => this.props.onClose && this.props.onClose());
     };
 
-    renderMenuWithPortal = () => {
+    private readonly renderMenuWithPortal = () => {
         return (
             <BaseMenu
                 anchorCorner={this.props.anchor}
@@ -89,7 +88,7 @@ class Menu extends React.Component<MenuProps, State> {
         );
     };
 
-    renderCustomContent = () => {
+    private readonly renderCustomContent = () => {
         const { children } = this.props;
         return (
             <MenuSurface open={this.state.menuIsOpen} onClose={this.closeMenu}>
@@ -100,13 +99,13 @@ class Menu extends React.Component<MenuProps, State> {
         );
     };
 
-    renderMenuContent = () => {
+    private readonly renderMenuContent = () => {
         return Array.isArray(this.props.children)
             ? this.renderMenuWithPortal()
             : this.renderCustomContent();
     };
 
-    render() {
+    public override render(): React.ReactNode {
         return (
             <MenuSurfaceAnchor ref={this.anchorRef} data-testid={this.props["data-testid"]}>
                 {this.renderMenuContent()}
@@ -117,7 +116,7 @@ class Menu extends React.Component<MenuProps, State> {
     }
 }
 
-const MenuDivider = () => {
+const MenuDivider: React.FC = () => {
     return <li className="mdc-list-divider" role="separator" />;
 };
 
@@ -128,7 +127,7 @@ interface MenuItemProps extends BaseMenuItemProps {
     "data-testid"?: string;
 }
 
-const MenuItem = ({ disabled, className, ...rest }: MenuItemProps) => {
+const MenuItem: React.FC<MenuItemProps> = ({ disabled, className, ...rest }) => {
     return (
         <BaseMenuItem
             {...rest}

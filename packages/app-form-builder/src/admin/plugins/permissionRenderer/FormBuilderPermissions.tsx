@@ -121,8 +121,8 @@ export const FormBuilderPermissions: React.FC<FormBuilderPermissionsProps> = ({
         const data: FormPermissionsData = {
             accessLevel: CUSTOM_ACCESS,
             formAccessLevel: NO_ACCESS,
-            formRWD: undefined,
-            formPW: undefined,
+            formRWD: "",
+            formPW: "",
             submissionPermissions: NO_ACCESS,
             settingsAccessLevel: NO_ACCESS
         };

@@ -10,7 +10,18 @@ export interface CmsContextValue {
     apolloClient: ApolloClient<any>;
 }
 
-export const CmsContext = React.createContext<CmsContextValue>(null);
+export const CmsContext = React.createContext<CmsContextValue>({
+    getApolloClient: () => {
+        return null;
+    },
+    createApolloClient: () => {
+        return null;
+    },
+    apolloClient: null
+    /**
+     * Safe to cast.
+     */
+} as unknown as CmsContextValue);
 
 interface ApolloClientsCache {
     [locale: string]: ApolloClient<any>;
@@ -28,7 +39,9 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
     const { getCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale("content");
-
+    /**
+     * TODO @ts-refactor @pavel did you think about this?
+     */
     // TODO: not sure why this was necessary :thinking:
     // const hasPermission = identity.getPermission("cms.endpoint.manage");
     // if (!hasPermission) {
@@ -39,6 +52,10 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
         apolloClientsCache[currentLocale] = props.createApolloClient({
             uri: `${apiUrl}/cms/manage/${currentLocale}`
         });
+    }
+
+    if (!currentLocale) {
+        return <CircularProgress />;
     }
 
     const value = {
@@ -53,10 +70,6 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
         createApolloClient: props.createApolloClient,
         apolloClient: apolloClientsCache[currentLocale]
     };
-
-    if (!currentLocale) {
-        return <CircularProgress />;
-    }
 
     return <CmsContext.Provider value={value} {...props} />;
 };

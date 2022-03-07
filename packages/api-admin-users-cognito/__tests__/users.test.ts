@@ -3,7 +3,7 @@ import mocks from "./mocks/securityUser";
 import md5 from "md5";
 import { AdminUser } from "~/types";
 
-const createGravatar = email => `https://www.gravatar.com/avatar/${md5(email)}`;
+const createGravatar = (email: string) => `https://www.gravatar.com/avatar/${md5(email)}`;
 
 describe("Security User CRUD Test", () => {
     const { install, adminUsers, securityGroups } = useGqlHandler({ fullAccess: true });

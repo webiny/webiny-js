@@ -96,10 +96,8 @@ export const queryOne = async <T>(params: QueryOneParams): Promise<DbItem<T> | n
             limit: 1
         }
     });
-    if (items.length === 0) {
-        return null;
-    }
-    return items.shift();
+    const item = items.shift();
+    return item ? item : null;
 };
 /**
  * Will run the query to fetch the results no matter how much iterations it needs to go through.

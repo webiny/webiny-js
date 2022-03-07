@@ -19,7 +19,7 @@ const Radio: React.FC<RadioProps> = props => {
                 {props.field.label}
             </label>
             <div className="webiny-fb-form-field__radio-group">
-                {props.field.options.map(option => {
+                {(props.field.options || []).map(option => {
                     return (
                         <div className="webiny-fb-form-field__radio" key={option.value}>
                             <input

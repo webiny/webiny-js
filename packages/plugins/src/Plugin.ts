@@ -1,6 +1,6 @@
 export abstract class Plugin {
     public static readonly type: string;
-    public name: string;
+    public name?: string;
 
     constructor() {
         if (!(this.constructor as typeof Plugin).type) {

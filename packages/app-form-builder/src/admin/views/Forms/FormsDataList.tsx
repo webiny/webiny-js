@@ -138,15 +138,26 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                 >({
                     mutation: CREATE_REVISION_FROM,
                     variables: { revision: form.id },
-                    update(cache, { data }) {
-                        updateLatestRevisionInListCache(cache, data.formBuilder.revision.data);
+                    update(cache, result) {
+                        if (!result.data) {
+                            return;
+                        }
+                        updateLatestRevisionInListCache(
+                            cache,
+                            result.data.formBuilder.revision.data
+                        );
                     }
                 });
 
+                if (!res) {
+                    showSnackbar("Missing response data on Create Revision From Mutation.");
+                    return;
+                }
                 const { data, error } = res.formBuilder.revision;
 
                 if (error) {
-                    return showSnackbar(error.message);
+                    showSnackbar(error.message);
+                    return;
                 }
 
                 history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
@@ -184,7 +195,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort forms by"}
                         >
                             {SORTERS.map(({ label, sorter }) => {
                                 return (
@@ -203,7 +214,8 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
 
     const query = new URLSearchParams(location.search);
 
-    const listFormsData = listQuery.loading ? [] : listQuery.data.formBuilder.listForms.data;
+    const listFormsData =
+        listQuery.loading || !listQuery.data ? [] : listQuery.data.formBuilder.listForms.data;
 
     const filteredData = filter === "" ? listFormsData : listFormsData.filter(filterData);
     const forms = sortData(filteredData);
@@ -226,10 +238,10 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
             modalOverlay={formsDataListModalOverlay}
             modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
-            {({ data = [] }) => (
+            {({ data = [] }: { data: FbFormModel[] }) => (
                 <List data-testid="default-data-list">
                     {data.map(form => {
-                        const name = form.createdBy.firstName || form.createdBy.displayName;
+                        const name = form.createdBy.displayName;
                         return (
                             <ListItem key={form.id} className={listItemMinHeight}>
                                 <ListItemText

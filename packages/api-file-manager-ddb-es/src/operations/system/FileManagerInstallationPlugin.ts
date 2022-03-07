@@ -9,9 +9,9 @@ interface FileManagerInstallationPluginBeforeInstallParams {
     context: FileManagerContext & ElasticsearchContext;
 }
 export class FileManagerInstallationPlugin extends InstallationPlugin {
-    public name = "fm.system.ddb-es-installation";
+    public override name = "fm.system.ddb-es-installation";
 
-    public async beforeInstall({
+    public override async beforeInstall({
         context
     }: FileManagerInstallationPluginBeforeInstallParams): Promise<void> {
         const { elasticsearch, tenancy } = context;

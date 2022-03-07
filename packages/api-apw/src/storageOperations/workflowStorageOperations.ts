@@ -4,12 +4,20 @@ import {
     CreateApwStorageOperationsParams,
     getFieldValues
 } from "~/storageOperations/index";
+import WebinyError from "@webiny/error";
 
 export const createWorkflowStorageOperations = ({
     cms
 }: Pick<CreateApwStorageOperationsParams, "cms">): ApwWorkflowStorageOperations => {
-    const getWorkflowModel = () => {
-        return cms.getModel("apwWorkflowModelDefinition");
+    const getWorkflowModel = async () => {
+        const model = await cms.getModel("apwWorkflowModelDefinition");
+        if (!model) {
+            throw new WebinyError(
+                "Could not find `apwWorkflowModelDefinition` model.",
+                "MODEL_NOT_FOUND_ERROR"
+            );
+        }
+        return model;
     };
     const getWorkflow: ApwWorkflowStorageOperations["getWorkflow"] = async ({ id }) => {
         const model = await getWorkflowModel();

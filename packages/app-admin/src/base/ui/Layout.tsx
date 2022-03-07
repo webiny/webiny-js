@@ -6,11 +6,8 @@ export interface LayoutProps {
     children: React.ReactNode;
 }
 
-export const Layout = makeComposable<LayoutProps>(
-    "Layout",
-    ({ children, ...props }: LayoutProps) => {
-        return <LayoutRenderer {...props}>{children}</LayoutRenderer>;
-    }
-);
+export const Layout = makeComposable<LayoutProps>("Layout", ({ children, ...props }) => {
+    return <LayoutRenderer {...props}>{children}</LayoutRenderer>;
+});
 
 export const LayoutRenderer = makeComposable<LayoutProps>("LayoutRenderer");

@@ -30,7 +30,7 @@ import { compress } from "@webiny/api-elasticsearch/compression";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchSearchResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
 interface FileItem extends File {
     PK: string;
@@ -56,12 +56,12 @@ interface CreatePartitionKeyParams {
 }
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly context: FileManagerContext;
+    private readonly context: FileManagerContext & Partial<ElasticsearchContext>;
     private readonly table: Table;
     private readonly esTable: Table;
     private readonly entity: Entity<any>;
     private readonly esEntity: Entity<any>;
-    private _esIndex: string;
+    private _esIndex?: string;
 
     private get esIndex(): string {
         if (!this._esIndex) {
@@ -74,7 +74,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private get esClient() {
-        const ctx = this.context as any;
+        const ctx = this.context;
         if (!ctx.elasticsearch) {
             throw new WebinyError(
                 "Missing Elasticsearch client on the context.",
@@ -349,7 +349,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const meta = {
             hasMoreItems,
             totalCount: total.value,
-            cursor: files.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null
+            cursor: files.length > 0 ? encodeCursor(hits[files.length - 1].sort) || null : null
         };
 
         return [files, meta];
@@ -392,7 +392,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             search_after: decodeCursor(null)
         };
 
-        let response: ElasticsearchSearchResponse<string> = undefined;
+        let response: ElasticsearchSearchResponse<string> | undefined = undefined;
 
         try {
             response = await this.esClient.search({

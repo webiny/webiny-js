@@ -10,17 +10,21 @@ interface Props {
     textProp?: string;
 }
 
-export const getOptionValue = (option: Option | string, props: Props): string | undefined => {
+export const getOptionValue = (option: Option | string, props: Props): string => {
     if (option) {
-        return props.useSimpleValues ? (option as string) : (option as Option)[props.valueProp];
+        return props.useSimpleValues
+            ? (option as string)
+            : (option as Option)[props.valueProp as string];
     }
 
     return option as string;
 };
 
-export const getOptionText = (option: Option | string, props: Props): string | undefined => {
+export const getOptionText = (option: Option | string, props: Props): string => {
     if (option) {
-        return props.useSimpleValues ? (option as string) : (option as Option)[props.textProp];
+        return props.useSimpleValues
+            ? (option as string)
+            : (option as Option)[props.textProp as string];
     }
 
     return option as string;
@@ -28,6 +32,6 @@ export const getOptionText = (option: Option | string, props: Props): string | u
 
 export const findInAliases = (option: Option, search?: string): boolean => {
     return (option.aliases || []).some((alias: string): boolean => {
-        return alias.toLowerCase().includes(search.toLowerCase());
+        return alias.toLowerCase().includes((search || "").toLowerCase());
     });
 };

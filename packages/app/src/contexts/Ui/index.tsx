@@ -24,15 +24,17 @@ export interface UiContextValue {
 }
 
 export class UiProvider extends React.Component<Props, State> {
-    state: State = { ui: {} };
+    public override state: State = {
+        ui: {}
+    };
 
-    setData = (setter: Function) => {
+    private readonly setData = (setter: Function): void => {
         return this.setState((state: State) => {
             return { ui: { ...state.ui, ...setter(state.ui) } };
         });
     };
 
-    render() {
+    public override render() {
         const value: UiContextValue = { ...this.state.ui, setState: this.setData };
         const uiStatePlugins = plugins.byType<UiStatePlugin>("ui-state");
         return (

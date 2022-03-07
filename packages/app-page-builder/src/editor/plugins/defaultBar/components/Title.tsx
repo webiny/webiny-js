@@ -32,7 +32,7 @@ interface PageInfo {
 const extractPageInfo = (page: PageAtomType): PageInfo => {
     const { title, version, locked, category } = page;
     return {
-        pageTitle: title,
+        pageTitle: title as string,
         pageVersion: version,
         pageLocked: locked,
         pageCategory: category?.name,
@@ -40,13 +40,13 @@ const extractPageInfo = (page: PageAtomType): PageInfo => {
     };
 };
 
-const Title: React.FunctionComponent = () => {
+const Title: React.FC = () => {
     const handler = useEventActionHandler();
     const page = useRecoilValue(pageAtom);
     const { showSnackbar } = useSnackbar();
     const { pageTitle, pageVersion, pageLocked, pageCategory } = extractPageInfo(page);
     const [editTitle, setEdit] = useState<boolean>(false);
-    const [stateTitle, setTitle] = useState<string>(null);
+    const [stateTitle, setTitle] = useState<string | null>(null);
     let title = stateTitle === null ? pageTitle : stateTitle;
 
     const updatePage = (data: Partial<PageAtomType>) => {

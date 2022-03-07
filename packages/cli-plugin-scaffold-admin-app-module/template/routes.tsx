@@ -9,8 +9,10 @@ import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
  * Registers new "/target-data-models" route.
  */
 
-const Loader = ({ children, ...props }) => (
-    <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
+const Loader: React.FC = ({ children, ...props }) => (
+    <Suspense fallback={<CircularProgress />}>
+        {React.cloneElement(children as unknown as React.ReactElement, props)}
+    </Suspense>
 );
 
 const TargetDataModels = lazy(() => import("./views"));

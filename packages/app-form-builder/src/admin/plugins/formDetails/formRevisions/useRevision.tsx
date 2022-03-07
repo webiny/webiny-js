@@ -57,89 +57,99 @@ export const useRevision = ({ revision, form }: UseRevisionProps): UseRevisionRe
     const client = useApolloClient();
 
     const { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision } =
-        useHandlers(null, {
-            createRevision: (): CreateRevisionCallable => async (id?: string) => {
-                const { data: res } = await client.mutate<
-                    CreateRevisionFromMutationResponse,
-                    CreateRevisionFromMutationVariables
-                >({
-                    mutation: CREATE_REVISION_FROM,
-                    variables: {
-                        revision: id || revision.id
-                    },
-                    update(cache, { data }) {
-                        const newRevision = data.formBuilder.revision.data;
-                        updateLatestRevisionInListCache(cache, newRevision);
-                        addRevisionToRevisionsCache(cache, newRevision);
-                    }
-                });
-
-                const { data, error } = res.formBuilder.revision;
-
-                if (error) {
-                    showSnackbar(error.message);
-                    return;
-                }
-
-                history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
-            },
-            editRevision: (): EditRevisionCallable => (id?: string) => {
-                const target = encodeURIComponent(id || revision.id);
-                history.push(`/form-builder/forms/${target}`);
-            },
-            deleteRevision: (): DeleteRevisionCallable => async (id?: string) => {
-                await client.mutate({
-                    mutation: DELETE_REVISION,
-                    variables: {
-                        revision: id || revision.id
-                    },
-                    update: (cache, updated) => {
-                        const { error } = updated.data.formBuilder.deleteForm; // `deleteForm` because we assigned an alias
-                        if (error) {
-                            return showSnackbar(error.message);
+        useHandlers(
+            {},
+            {
+                createRevision: (): CreateRevisionCallable => async (id?: string) => {
+                    const { data: res } = await client.mutate<
+                        CreateRevisionFromMutationResponse,
+                        CreateRevisionFromMutationVariables
+                    >({
+                        mutation: CREATE_REVISION_FROM,
+                        variables: {
+                            revision: id || revision.id
+                        },
+                        update(cache, response) {
+                            if (!response.data) {
+                                return;
+                            }
+                            const newRevision = response.data.formBuilder.revision.data;
+                            updateLatestRevisionInListCache(cache, newRevision);
+                            addRevisionToRevisionsCache(cache, newRevision);
                         }
+                    });
 
-                        // We have other revisions, update form's cache
-                        const revisions = removeRevisionFromFormCache(cache, form, revision);
+                    if (!res) {
+                        showSnackbar("Missing response data on Create Revision Mutation.");
+                        return;
+                    }
+                    const { data, error } = res.formBuilder.revision;
 
-                        if (revision.id === form.id) {
-                            updateLatestRevisionInListCache(cache, revisions[0]);
-                            // Redirect to the first revision in the list of all form revisions.
-                            return history.push(
-                                `/form-builder/forms?id=${encodeURIComponent(revisions[0].id)}`
-                            );
+                    if (error) {
+                        showSnackbar(error.message);
+                        return;
+                    }
+
+                    history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
+                },
+                editRevision: (): EditRevisionCallable => (id?: string) => {
+                    const target = encodeURIComponent(id || revision.id);
+                    history.push(`/form-builder/forms/${target}`);
+                },
+                deleteRevision: (): DeleteRevisionCallable => async (id?: string) => {
+                    await client.mutate({
+                        mutation: DELETE_REVISION,
+                        variables: {
+                            revision: id || revision.id
+                        },
+                        update: (cache, updated) => {
+                            const { error } = updated.data.formBuilder.deleteForm; // `deleteForm` because we assigned an alias
+                            if (error) {
+                                return showSnackbar(error.message);
+                            }
+
+                            // We have other revisions, update form's cache
+                            const revisions = removeRevisionFromFormCache(cache, form, revision);
+
+                            if (revision.id === form.id) {
+                                updateLatestRevisionInListCache(cache, revisions[0]);
+                                // Redirect to the first revision in the list of all form revisions.
+                                return history.push(
+                                    `/form-builder/forms?id=${encodeURIComponent(revisions[0].id)}`
+                                );
+                            }
                         }
-                    }
-                });
-            },
-            publishRevision: (): PublishRevisionCallable => async (id?: string) => {
-                const { data: res } = await client.mutate({
-                    mutation: PUBLISH_REVISION,
-                    variables: {
-                        revision: id || revision.id
-                    }
-                });
+                    });
+                },
+                publishRevision: (): PublishRevisionCallable => async (id?: string) => {
+                    const { data: res } = await client.mutate({
+                        mutation: PUBLISH_REVISION,
+                        variables: {
+                            revision: id || revision.id
+                        }
+                    });
 
-                const { error } = res.formBuilder.publishRevision;
-                if (error) {
-                    return showSnackbar(error.message);
+                    const { error } = res.formBuilder.publishRevision;
+                    if (error) {
+                        return showSnackbar(error.message);
+                    }
+
+                    showSnackbar(
+                        <span>
+                            Successfully published revision <strong>#{revision.version}</strong>!
+                        </span>
+                    );
+                },
+                unpublishRevision: (): UnpublishRevisionCallable => async (id?: string) => {
+                    await client.mutate({
+                        mutation: UNPUBLISH_REVISION,
+                        variables: {
+                            revision: id || revision.id
+                        }
+                    });
                 }
-
-                showSnackbar(
-                    <span>
-                        Successfully published revision <strong>#{revision.version}</strong>!
-                    </span>
-                );
-            },
-            unpublishRevision: (): UnpublishRevisionCallable => async (id?: string) => {
-                await client.mutate({
-                    mutation: UNPUBLISH_REVISION,
-                    variables: {
-                        revision: id || revision.id
-                    }
-                });
             }
-        });
+        );
 
     return { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision };
 };

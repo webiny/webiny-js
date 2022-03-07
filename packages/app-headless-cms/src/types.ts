@@ -1,7 +1,12 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { BindComponent, FormRenderPropParams, FormAPI } from "@webiny/form/types";
+import {
+    FormRenderPropParams,
+    FormAPI,
+    BindComponentRenderProp as BaseBindComponentRenderProp,
+    BindComponentProps as BaseBindComponentProps
+} from "@webiny/form/types";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/components/ContentEntryForm/Label";
@@ -105,7 +110,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * })
          * ```
          */
-        createField: () => CmsEditorField;
+        createField: () => Pick<CmsEditorField, "type" | "validation" | "renderer" | "settings">;
         /**
          * A ReactNode that you can add in the section below the help text when creating/editing field.
          *
@@ -250,9 +255,9 @@ export interface CmsEditorFieldPredefinedValues {
 }
 
 export type CmsEditorField<T = unknown> = T & {
-    id?: string;
+    id: string;
     type: string;
-    fieldId?: CmsEditorFieldId;
+    fieldId: CmsEditorFieldId;
     label?: string;
     helpText?: string;
     placeholderText?: string;
@@ -311,6 +316,13 @@ export interface CmsEditorContentEntry {
     };
 }
 
+export interface CmsLatestContentEntry {
+    id: string;
+    status: "published" | "draft";
+    title: string;
+    model: Pick<CmsModel, "modelId" | "name">;
+}
+
 export interface CmsContentEntryRevision {
     id: string;
     savedOn: string;
@@ -350,7 +362,7 @@ export interface CmsEditorFieldValidatorPlugin extends Plugin {
     validator: CmsEditorFieldValidatorPluginValidator;
 }
 
-export type CmsEditorContentTab = React.FunctionComponent<{ activeTab: boolean }>;
+export type CmsEditorContentTab = React.FC<{ activeTab: boolean }>;
 
 // ------------------------------------------------------------------------------------------------------------
 export interface CmsEditorFieldOptionPlugin extends Plugin {
@@ -421,7 +433,7 @@ export interface CmsModelFieldValidatorPatternPlugin extends Plugin {
 
 export interface FieldLayoutPosition {
     row: number;
-    index: number;
+    index: number | null;
 }
 
 export interface CmsEditorFormSettingsPlugin extends Plugin {
@@ -570,3 +582,22 @@ export interface CmsMetaResponse {
     cursor: string | null;
     hasMoreItems: boolean;
 }
+
+/***
+ * ###### FORM ########
+ */
+interface BindComponentRenderProp extends BaseBindComponentRenderProp {
+    parentName: string;
+    appendValue: (value: any) => void;
+    prependValue: (value: any) => void;
+    appendValues: (values: any[]) => void;
+    removeValue: (index: number) => void;
+}
+interface BindComponentProps extends Omit<BaseBindComponentProps, "children" | "name"> {
+    name?: string;
+    children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
+}
+
+export type BindComponent = React.FC<BindComponentProps> & {
+    parentName?: string;
+};

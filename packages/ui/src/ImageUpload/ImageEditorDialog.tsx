@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ImageEditor } from "~/ImageEditor";
 import { Tooltip } from "~/Tooltip";
 import { css } from "emotion";
@@ -11,7 +11,7 @@ import {
     DialogOnClose
 } from "../Dialog";
 
-interface Props {
+interface ImageEditorDialogProps {
     dialogZIndex?: number;
     onClose?: DialogOnClose;
     open?: boolean;
@@ -25,6 +25,10 @@ interface Props {
 
     // For testing purposes.
     "data-testid"?: string;
+}
+
+interface ImageEditorDialogState {
+    imageProcessing: boolean;
 }
 
 const imageEditorDialog = css({
@@ -43,10 +47,10 @@ const imageEditorDialog = css({
     }
 });
 
-class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolean }> {
-    imageEditor: React.RefObject<ImageEditor> = React.createRef();
+class ImageEditorDialog extends React.Component<ImageEditorDialogProps, ImageEditorDialogState> {
+    public imageEditor = React.createRef<ImageEditor>();
 
-    render() {
+    public override render() {
         const { src, options, onAccept, open, dialogZIndex, ...dialogProps } = this.props;
 
         return (
@@ -57,11 +61,7 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
                 {...dialogProps}
             >
                 {open && (
-                    <ImageEditor
-                        ref={this.imageEditor as React.Ref<any>}
-                        src={src}
-                        options={options}
-                    >
+                    <ImageEditor ref={this.imageEditor} src={src} options={options}>
                         {({ render, activeTool }) => (
                             <>
                                 <DialogContent>{render()}</DialogContent>
@@ -76,11 +76,15 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
                                         </Tooltip>
                                     ) : (
                                         <DialogAccept
-                                            onClick={() =>
-                                                onAccept(
-                                                    this.imageEditor.current.getCanvasDataUrl()
-                                                )
-                                            }
+                                            onClick={() => {
+                                                const url = this.imageEditor.current
+                                                    ? this.imageEditor.current.getCanvasDataUrl()
+                                                    : "";
+                                                /**
+                                                 * We are certain that ref exists.
+                                                 */
+                                                onAccept(url);
+                                            }}
                                         >
                                             Save
                                         </DialogAccept>

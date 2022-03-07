@@ -15,6 +15,7 @@ interface State {
 }
 interface EditorPluginsLoaderProps {
     location: History.Location;
+    children: React.ReactNode;
 }
 export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ children, location }) => {
     const [loaded, setLoaded] = useReducer(
@@ -72,11 +73,11 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
     }, []);
 
     if (location.pathname.startsWith("/page-builder/pages") && loaded.render) {
-        return children as React.ReactElement;
+        return children as unknown as React.ReactElement;
     }
 
     if (location.pathname.startsWith("/page-builder/editor") && loaded.editor) {
-        return children as React.ReactElement;
+        return children as unknown as React.ReactElement;
     }
 
     return <CircularProgress />;

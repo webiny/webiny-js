@@ -1,6 +1,11 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import { PbErrorResponse, PbPageData } from "@webiny/app-page-builder/types";
+import {
+    PbErrorResponse,
+    PbPageData,
+    PbPageDataSettingsSeo,
+    PbPageDataSettingsSocial
+} from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
 import Element from "@webiny/app-page-builder/render/components/Element";
 import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
@@ -13,16 +18,16 @@ interface Head {
         src: string;
     };
     title: string;
-    seo: PbPageData["settings"]["seo"];
-    social: PbPageData["settings"]["social"];
+    seo: PbPageDataSettingsSeo;
+    social: PbPageDataSettingsSocial;
 }
 
 /**
  * This component will render the page, including the page content, its layout, and also meta tags.
  */
 interface RenderProps {
-    page: PbPageData;
-    error: PbErrorResponse;
+    page: PbPageData | null;
+    error: PbErrorResponse | null;
     settings: SettingsQueryResponseData;
 }
 const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
@@ -40,19 +45,20 @@ const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
     }
 
     const head: Head = {
-        favicon: settings?.favicon,
-        title: page.title || settings?.name,
+        favicon: settings.favicon,
+        title: page.title || settings.name,
         seo: {
             title: "",
             description: "",
             meta: [],
-            ...page?.settings?.seo
+            ...(page.settings?.seo || {})
         },
         social: {
             title: "",
             description: "",
             image: null,
-            ...page?.settings?.social
+            meta: [],
+            ...(page.settings?.social || {})
         }
     };
 

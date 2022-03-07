@@ -7,11 +7,11 @@ export interface CmsParametersPluginResponse {
 }
 
 export interface CmsParametersPluginCallable {
-    (context: CmsContext): Promise<CmsParametersPluginResponse>;
+    (context: CmsContext): Promise<CmsParametersPluginResponse | null>;
 }
 
 export class CmsParametersPlugin extends Plugin {
-    public static readonly type: string = "cms-parameters-plugin";
+    public static override readonly type: string = "cms-parameters-plugin";
 
     private readonly callable: CmsParametersPluginCallable;
 

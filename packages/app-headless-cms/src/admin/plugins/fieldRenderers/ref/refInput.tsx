@@ -1,4 +1,3 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
@@ -21,7 +20,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             const Bind = props.getBind();
             return (
                 <Bind>
-                    {(bind: any) => (
+                    {bind => (
                         <NewRefEntryDialogContextProvider>
                             <ContentEntriesAutocomplete {...props} bind={bind} />
                         </NewRefEntryDialogContextProvider>

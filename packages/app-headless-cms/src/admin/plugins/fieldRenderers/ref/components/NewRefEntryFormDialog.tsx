@@ -57,7 +57,12 @@ const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     return (
         <ContentEntryForm
             contentModel={contentModel}
-            onSubmit={onCreate}
+            onSubmit={data => {
+                /**
+                 * We know that data is CmsEditorContentEntry.
+                 */
+                return onCreate(data as unknown as CmsEditorContentEntry);
+            }}
             onForm={form => setFormRef(form)}
             entry={{}}
             addEntryToListCache={false}
@@ -65,10 +70,10 @@ const EntryForm: React.FC<EntryFormProps> = ({ onCreate }) => {
     );
 };
 
-const DialogSaveButton = () => {
+const DialogSaveButton: React.FC = () => {
     const { form } = useContentEntry();
 
-    return <DialogButton onClick={() => form.current.submit()}>{t`Save`}</DialogButton>;
+    return <DialogButton onClick={ev => form.current.submit(ev)}>{t`Save`}</DialogButton>;
 };
 
 const DefaultButton = styled(ButtonDefault)`
@@ -92,7 +97,7 @@ interface NewRefEntryProps {
 }
 
 const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, onChange }) => {
-    const [contentModel, setContentModel] = useState<CmsModel>();
+    const [contentModel, setContentModel] = useState<CmsModel | null>(null);
 
     const { showSnackbar } = useSnackbar();
 
@@ -119,6 +124,10 @@ const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, 
 
     const onCreate = useCallback(
         (entry: CmsEditorContentEntry) => {
+            if (!contentModel) {
+                setOpen(false);
+                return;
+            }
             onChange({
                 ...entry,
                 /*
@@ -128,9 +137,6 @@ const NewRefEntryFormDialog: React.FC<NewRefEntryProps> = ({ modelId, children, 
                 modelId: contentModel.modelId,
                 modelName: contentModel.name
             });
-            /*
-            Close the modal
-             */
             setOpen(false);
         },
         [onChange, contentModel]

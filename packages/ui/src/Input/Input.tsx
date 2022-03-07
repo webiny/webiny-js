@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TextField, TextFieldProps } from "@rmwc/textfield";
 import { FormElementMessage } from "~/FormElementMessage";
 import pick from "lodash/pick";
@@ -46,8 +46,7 @@ export type InputProps = FormComponentProps &
 
 export class Input extends React.Component<InputProps> {
     static defaultProps: InputProps = {
-        rawOnChange: false,
-        validation: { isValid: null, message: null }
+        rawOnChange: false
     };
 
     // IconProps directly passed to RMWC
@@ -92,7 +91,7 @@ export class Input extends React.Component<InputProps> {
         onBlur && onBlur(e);
     };
 
-    render() {
+    public override render() {
         const {
             autoFocus,
             value,
@@ -111,6 +110,8 @@ export class Input extends React.Component<InputProps> {
         if (value === null || typeof value === "undefined") {
             inputValue = "";
         }
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <React.Fragment>
@@ -137,10 +138,10 @@ export class Input extends React.Component<InputProps> {
                     rows={this.props.rows}
                 />
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>

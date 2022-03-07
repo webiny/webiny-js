@@ -4,7 +4,7 @@ import { SecurityPermission } from "~/types";
 
 interface ChildrenRenderFunctionArgs<T extends SecurityPermission> {
     hasPermission: boolean;
-    permission: T;
+    permission: T | null;
 }
 
 interface Props<T extends SecurityPermission> {
@@ -15,18 +15,21 @@ interface Props<T extends SecurityPermission> {
 function SecureView<T extends SecurityPermission>({
     children,
     permission
-}: Props<T>): React.ReactElement {
-    const { identity } = useSecurity();
+}: Props<T>): React.ReactElement | null {
+    const { getPermission } = useSecurity();
 
     let hasPermission = false;
-    let matchedPermission: T = null;
-    if (identity) {
-        matchedPermission = identity.getPermission<T>(permission);
+    let matchedPermission: T | null = null;
+    if (permission) {
+        matchedPermission = getPermission<T>(permission);
         hasPermission = Boolean(matchedPermission);
     }
 
     if (typeof children === "function") {
-        return children({ hasPermission, permission: matchedPermission });
+        return children({
+            hasPermission,
+            permission: matchedPermission
+        });
     }
 
     return hasPermission ? children : null;

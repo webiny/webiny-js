@@ -13,7 +13,7 @@ interface LoaderProps {
 }
 const Loader: React.FC<LoaderProps> = ({ children, label, ...props }) => (
     <Suspense fallback={<CircularProgress label={label} />}>
-        {React.cloneElement(children as React.ReactElement, props)}
+        {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>
 );
 

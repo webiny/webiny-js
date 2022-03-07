@@ -13,7 +13,7 @@ import { SecurityContext } from "@webiny/app-security";
 
 export interface FbErrorResponse {
     message: string;
-    code: string;
+    code?: string | null;
     data?: Record<string, any>;
 }
 export interface FbMetaResponse {
@@ -81,7 +81,7 @@ export type FbFormModelFieldsLayout = FieldIdType[][];
 
 export interface FieldLayoutPositionType {
     row: number;
-    index: number;
+    index: number | null;
 }
 
 export type FbBuilderFieldPlugin = Plugin & {
@@ -166,7 +166,7 @@ export interface FbFormModelField {
     _id?: string;
     type: string;
     name: string;
-    fieldId?: FieldIdType;
+    fieldId: FieldIdType;
     label?: string;
     helpText?: string;
     placeholderText?: string;
@@ -194,7 +194,7 @@ export type FbFormTriggerHandlerPlugin = Plugin & {
     type: "form-trigger-handler";
     trigger: {
         id: string;
-        handle: (params: { trigger: any; data: any; form: FbFormModel }) => void;
+        handle: (params: { trigger: any; data: any; form: Partial<FbFormModel> }) => void;
     };
 };
 
@@ -248,14 +248,14 @@ export type FormRenderFbFormModelField = FbFormModelField & {
     validators: ((value: string) => Promise<boolean>)[];
 };
 
-export type FormRenderPropsType = {
+export type FormRenderPropsType<T = Record<string, any>> = {
     getFieldById: Function;
     getFieldByFieldId: Function;
     getFields: () => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponent;
     TermsOfService: TermsOfServiceComponent;
-    submit: (data: Record<string, any>) => Promise<FormSubmitResponseType>;
+    submit: (data: T) => Promise<FormSubmitResponseType>;
     formData: FbFormModel;
 };
 
@@ -271,14 +271,14 @@ export interface FormComponentPropsType {
 
 export interface FbFormRenderComponentProps {
     preview?: boolean;
-    data?: FbFormModel;
+    data?: FbFormModel | null;
     client?: ApolloClient<any>;
 }
 
 export interface FormSubmitResponseType {
     data: any;
     preview: boolean;
-    error: FbErrorResponse;
+    error: FbErrorResponse | null;
 }
 
 export type FormLoadComponentPropsType = {

@@ -1,9 +1,15 @@
 import Fuse from "fuse.js";
-import { MatchesParams, ValueFilterPlugin } from "../definitions/ValueFilterPlugin";
+import {
+    ValueFilterPluginParamsMatchesParams,
+    ValueFilterPlugin
+} from "../definitions/ValueFilterPlugin";
 
 export default new ValueFilterPlugin({
     operation: "fuzzy",
-    matches: ({ value, compareValue }: MatchesParams) => {
+    matches: ({
+        value,
+        compareValue
+    }: ValueFilterPluginParamsMatchesParams<string | null, string>) => {
         if (typeof value !== "string") {
             return false;
         }

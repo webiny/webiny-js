@@ -2,13 +2,21 @@ import { ApwStorageOperations } from "./types";
 import { ApwCommentStorageOperations } from "./types";
 import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
+import WebinyError from "@webiny/error";
 
 export const createCommentStorageOperations = ({
     cms,
     getCmsContext
 }: CreateApwStorageOperationsParams): ApwCommentStorageOperations => {
-    const getCommentModel = () => {
-        return cms.getModel("apwCommentModelDefinition");
+    const getCommentModel = async () => {
+        const model = await cms.getModel("apwCommentModelDefinition");
+        if (!model) {
+            throw new WebinyError(
+                "Could not find `apwContentReviewModelDefinition` model.",
+                "MODEL_NOT_FOUND_ERROR"
+            );
+        }
+        return model;
     };
     const getComment: ApwCommentStorageOperations["getComment"] = async ({ id }) => {
         const model = await getCommentModel();

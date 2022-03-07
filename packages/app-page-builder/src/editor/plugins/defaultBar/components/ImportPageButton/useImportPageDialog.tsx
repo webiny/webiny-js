@@ -85,7 +85,13 @@ export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = (
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <ButtonSecondary onClick={submit}>Continue</ButtonSecondary>
+                                <ButtonSecondary
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
+                                >
+                                    Continue
+                                </ButtonSecondary>
                             </Cell>
                         </Grid>
                     )}
@@ -129,8 +135,18 @@ const useImportPageDialog = () => {
         ) => {
             showDialog(
                 <ImportPageDialogContent
-                    onUploadFile={onUploadFile}
-                    onPasteFileLink={onPasteFileLink}
+                    onUploadFile={file => {
+                        if (!onUploadFile) {
+                            return;
+                        }
+                        onUploadFile(file);
+                    }}
+                    onPasteFileLink={url => {
+                        if (!onPasteFileLink) {
+                            return;
+                        }
+                        onPasteFileLink(url);
+                    }}
                 />,
                 {
                     title: importPageDialogTitle,

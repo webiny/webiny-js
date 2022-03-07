@@ -53,7 +53,7 @@ const Icon: React.FC<IconProps> = ({ group }) => {
     return (
         <FontAwesomeIcon
             style={{ color: "var(--mdc-theme-text-secondary-on-background)" }}
-            icon={group.icon.split("/") as IconProp}
+            icon={(group.icon || "").split("/") as IconProp}
         />
     );
 };

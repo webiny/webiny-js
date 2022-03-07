@@ -43,6 +43,11 @@ export default (args: PbEditorElementPluginArgs = {}) => {
     return [
         createEmbedPlugin({
             type: elementType,
+            /**
+             * TODO @ts-refactor @ashutosh
+             * Completely different types between method result and variable
+             */
+            // @ts-ignore
             toolbar:
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,

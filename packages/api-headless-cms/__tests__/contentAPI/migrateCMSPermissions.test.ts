@@ -1,3 +1,7 @@
+/**
+ * File not used or needed anymore
+ */
+// @ts-nocheck
 import { migrateCMSPermissions } from "~/migrateCMSPermissions";
 import * as mocked from "./mocks/cmsContentPermissions";
 

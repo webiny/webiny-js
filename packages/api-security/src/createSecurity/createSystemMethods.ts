@@ -7,15 +7,26 @@ import {
     InstallEvent
 } from "../types";
 import { createTopic } from "@webiny/pubsub";
+import WebinyError from "@webiny/error";
 
-export const createSystemMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
+export const createSystemMethods = ({
+    getTenant: initialGetTenant,
+    storageOperations
+}: SecurityConfig) => {
+    const getTenant = () => {
+        const tenant = initialGetTenant();
+        if (!tenant) {
+            throw new WebinyError("Missing tenant.");
+        }
+        return tenant;
+    };
     return {
         onBeforeInstall: createTopic<InstallEvent>("security.onBeforeInstall"),
         onInstall: createTopic<InstallEvent>("security.onInstall"),
         onAfterInstall: createTopic<InstallEvent>("security.onAfterInstall"),
         onCleanup: createTopic<ErrorEvent>("security.onCleanup"),
         async getVersion(): Promise<string | null> {
-            const tenantId = getTenant();
+            const tenantId = initialGetTenant();
 
             if (!tenantId) {
                 return null;
@@ -29,7 +40,10 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
         async setVersion(version: string): Promise<SystemRecord> {
             const original = await storageOperations.getSystemData({ tenant: getTenant() });
 
-            const system: SystemRecord = { tenant: getTenant(), version };
+            const system: SystemRecord = {
+                tenant: getTenant(),
+                version
+            };
 
             if (original) {
                 try {
@@ -58,7 +72,9 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
                 throw new Error("Security is already installed.", "SECURITY_INSTALL_ABORTED");
             }
 
-            const installEvent = { tenant: getTenant() };
+            const installEvent = {
+                tenant: getTenant()
+            };
 
             try {
                 this.disableAuthorization();
@@ -73,7 +89,7 @@ export const createSystemMethods = ({ getTenant, storageOperations }: SecurityCo
             }
 
             // Store app version
-            await this.setVersion(process.env.WEBINY_VERSION);
+            await this.setVersion(process.env.WEBINY_VERSION as string);
         }
     };
 };

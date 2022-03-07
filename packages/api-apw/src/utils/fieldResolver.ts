@@ -11,16 +11,12 @@ interface Transformer {
 interface GetFieldValuesParams {
     entry: Record<string, any>;
     fields: string[];
-    transformers?: Array<Transformer>;
+    transformers?: Transformer[];
     context: CmsContext;
 }
 
-export const getFieldValues = async ({
-    entry,
-    context,
-    transformers,
-    fields
-}: GetFieldValuesParams) => {
+export const getFieldValues = async (params: GetFieldValuesParams) => {
+    const { entry, context, transformers = [], fields } = params;
     const values = { ...pick(entry, fields), ...entry.values };
     /**
      * Transform field value for each transformers.

@@ -16,7 +16,7 @@ interface ElementAnimationProps {
     children: React.ReactNode | ElementAnimationChildrenFunction;
 }
 
-const ElementAnimation: React.FunctionComponent<ElementAnimationProps> = ({ children }) => {
+const ElementAnimation: React.FC<ElementAnimationProps> = ({ children }) => {
     useEffect(() => {
         init();
         refresh();

@@ -12,7 +12,7 @@ export default function GroupSelect({ value, ...props }: FormComponentProps) {
         LIST_MENU_CONTENT_GROUPS_MODELS
     );
 
-    const groups = loading && !data ? [] : data.listContentModelGroups.data;
+    const groups = loading || !data ? [] : data.listContentModelGroups.data;
     const options = useMemo(() => {
         return groups.map(item => ({ value: item.id, label: item.name }));
     }, [groups]);

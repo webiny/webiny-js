@@ -9,6 +9,6 @@
     "@webiny/api-file-manager": "latest",
     "@webiny/cli": "latest",
     "@webiny/handler-aws": "latest",
-    "@webiny/project-utils": "^5.3.0"
+    "@webiny/project-utils": "latest"
   }
 }

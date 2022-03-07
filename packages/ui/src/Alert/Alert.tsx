@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { css } from "emotion";
 
 const alertStyles = css({
@@ -32,7 +32,7 @@ const alertStyles = css({
 
 export type AlertType = "success" | "info" | "warning" | "danger";
 
-type AlertProps = {
+interface AlertProps {
     // Alert title.
     title: string;
 
@@ -47,12 +47,12 @@ type AlertProps = {
 
     // Style object
     style?: React.CSSProperties;
-};
+}
 
 /**
  * Use Alert component to display user's avatar.
  */
-const Alert = (props: AlertProps) => {
+const Alert: React.FC<AlertProps> = props => {
     const { title, type, children, ...rest } = props;
 
     return (

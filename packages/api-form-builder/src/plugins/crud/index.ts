@@ -6,16 +6,23 @@ import { createFormsCrud } from "~/plugins/crud/forms.crud";
 import { createSubmissionsCrud } from "~/plugins/crud/submissions.crud";
 import WebinyError from "@webiny/error";
 
-export interface Params {
+export interface CreateFormBuilderCrudParams {
     storageOperations: FormBuilderStorageOperations;
 }
 
-export default (params: Params) => {
+export default (params: CreateFormBuilderCrudParams) => {
     const { storageOperations } = params;
 
     return new ContextPlugin<FormBuilderContext>(async context => {
         const getLocale = () => {
-            return context.i18nContent.getCurrentLocale();
+            const locale = context.i18nContent.getCurrentLocale();
+            if (!locale) {
+                throw new WebinyError(
+                    "Missing locale on context.i18nContent locale in API Form Builder.",
+                    "LOCALE_ERROR"
+                );
+            }
+            return locale;
         };
 
         const getIdentity = () => {

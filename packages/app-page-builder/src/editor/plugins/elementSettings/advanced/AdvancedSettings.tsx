@@ -7,9 +7,9 @@ import { withActiveElement } from "../../../components";
 import { Form } from "@webiny/form";
 import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
-import { FormData } from "@webiny/form/Form";
+import { FormData } from "@webiny/form/types";
 
-const emptyElement: Partial<PbEditorElement> = { data: {}, type: null };
+const emptyElement: Partial<PbEditorElement> = { data: {}, type: "" };
 
 interface AdvancedSettingsPropsType {
     element: PbEditorElement;

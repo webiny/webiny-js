@@ -1,16 +1,17 @@
 import {
     ElasticsearchFieldPlugin,
-    Params as BaseParams
+    ElasticsearchFieldPluginParams as ElasticsearchFieldPluginParamsBaseParams
 } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 
-export interface CmsEntryElasticsearchFieldPluginParams extends BaseParams {
+export interface CmsEntryElasticsearchFieldPluginParams
+    extends ElasticsearchFieldPluginParamsBaseParams {
     /**
      * If modelId is not passed, there is no filtering of plugins by it when plugin is applied during the runtime.
      */
     modelId?: string;
 }
 export class CmsEntryElasticsearchFieldPlugin extends ElasticsearchFieldPlugin {
-    public static readonly type: string = "elasticsearch.fieldDefinition.cms.entry";
+    public static override readonly type: string = "elasticsearch.fieldDefinition.cms.entry";
 
     public readonly modelId?: string;
 

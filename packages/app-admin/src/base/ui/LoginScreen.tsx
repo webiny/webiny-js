@@ -6,7 +6,7 @@ export interface LoginScreenProps {
     children: React.ReactNode;
 }
 
-export const LoginScreen = ({ children }: LoginScreenProps) => {
+export const LoginScreen: React.FC<LoginScreenProps> = ({ children }) => {
     return (
         <Tags tags={{ location: "loginScreen" }}>
             <LoginScreenRenderer>{children}</LoginScreenRenderer>

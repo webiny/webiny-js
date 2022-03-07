@@ -27,7 +27,7 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
     options = {},
     onSelect
 }) => {
-    const elementRef = React.useRef();
+    const elementRef = React.useRef<HTMLElement>(null);
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
     const handleChange = (_: any, editable: HTMLElement): void => {
@@ -51,8 +51,8 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
      * Here we're recreating the "Medium editor" whenever the "tag" changes because that's the element editor is mounted on.
      */
     useEffect(() => {
-        if (!elementRef && !elementRef.current) {
-            return null;
+        if (!elementRef || !elementRef.current) {
+            return;
         }
         let mediumEditorOptions = merge(
             {
@@ -77,6 +77,9 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
         editorRef.current.subscribe("editableInput", handleSelect);
 
         return () => {
+            if (!editorRef.current) {
+                return;
+            }
             editorRef.current.destroy();
         };
     }, [options, tagName]);

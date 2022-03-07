@@ -19,7 +19,7 @@ context("Headless CMS - Content Models CRUD", () => {
             cy.findByText("Ungrouped");
             cy.findByLabelText("Name").type(newModel);
             cy.findByLabelText("Description").type(newModelDescription);
-            cy.findByText("+ Create").click();
+            cy.findByText("+ Create Model").click();
         });
         // 3. Editor
 
@@ -38,7 +38,7 @@ context("Headless CMS - Content Models CRUD", () => {
         );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
             cy.findByLabelText("Label").type("Title");
-            cy.findByText("Save").click();
+            cy.findByText("Save Field").click();
         });
         cy.wait(1000);
 
@@ -48,7 +48,7 @@ context("Headless CMS - Content Models CRUD", () => {
         );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
             cy.findByLabelText("Label").type("Edition");
-            cy.findByText("Save").click();
+            cy.findByText("Save Field").click();
         });
         cy.wait(1000);
         // Saving the "Book" model should complete successfully.
@@ -95,7 +95,7 @@ context("Headless CMS - Content Models CRUD", () => {
                 cy.findByLabelText("Message").clear().type("Title is required.");
             });
             // d) Save field
-            cy.findByText("Save").click();
+            cy.findByText("Save Field").click();
         });
         // e) Save model
         cy.findByTestId("cms-editor-top-bar").within(() => {

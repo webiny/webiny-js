@@ -36,7 +36,9 @@ const plugin: CmsEditorFieldTypePlugin = {
         },
         graphql: {
             queryField({ field }) {
-                return `{ ${createFieldsList(field.settings.fields)} }`;
+                return `{ ${createFieldsList(
+                    (field.settings ? field.settings.fields : []) || []
+                )} }`;
             }
         }
     }

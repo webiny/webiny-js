@@ -9,17 +9,17 @@ export interface Settings {
     fileType: "all" | "image" | "document" | string;
 }
 export class CmsEditorFieldValidatorFileTypePlugin extends Plugin {
-    public static readonly type: string = "cms-editor-field-validator-fileType";
+    public static override readonly type: string = "cms-editor-field-validator-fileType";
 
     private readonly config: Config;
-    private _settings: Settings;
+    private _settings: Settings | undefined;
 
     public set settings(settings: Settings) {
         this.setSettings(settings);
     }
 
     public get settings(): Settings {
-        return this._settings;
+        return this._settings as Settings;
     }
 
     public constructor(config: Config) {

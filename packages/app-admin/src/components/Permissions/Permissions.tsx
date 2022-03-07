@@ -1,19 +1,19 @@
 import React, { useMemo } from "react";
-import { AdminAppPermissionRendererPlugin } from "../../types";
+import { AdminAppPermissionRendererPlugin } from "~/types";
 import { Accordion } from "@webiny/ui/Accordion";
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";
 
-type Props = BindComponentRenderProp & {
+interface PermissionsProps extends BindComponentRenderProp {
     id: string;
-};
+}
 
-type PermissionPlugins = {
+interface PermissionPlugins {
     systemPlugins: AdminAppPermissionRendererPlugin[];
     permissionPlugins: AdminAppPermissionRendererPlugin[];
-};
+}
 
-export const Permissions = ({ id, value, onChange }: Props) => {
+export const Permissions: React.FC<PermissionsProps> = ({ id, value, onChange }) => {
     const { systemPlugins, permissionPlugins } = useMemo<PermissionPlugins>(() => {
         return plugins
             .byType<AdminAppPermissionRendererPlugin>("admin-app-permissions-renderer")
@@ -26,7 +26,7 @@ export const Permissions = ({ id, value, onChange }: Props) => {
                     }
                     return acc;
                 },
-                { systemPlugins: [], permissionPlugins: [] }
+                { systemPlugins: [], permissionPlugins: [] } as PermissionPlugins
             );
     }, []);
 

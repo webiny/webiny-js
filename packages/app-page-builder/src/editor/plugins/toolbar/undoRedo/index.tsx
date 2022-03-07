@@ -8,7 +8,8 @@ import { activeElementAtom } from "../../../recoil/modules";
 import Action from "../Action";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 
-const metaKey = platform.os.family === "OS X" ? "CMD" : "CTRL";
+const osFamily = platform.os ? platform.os.family : null;
+const metaKey = osFamily === "OS X" ? "CMD" : "CTRL";
 
 export const undo: PbEditorToolbarBottomPlugin = {
     name: "pb-editor-toolbar-undo",

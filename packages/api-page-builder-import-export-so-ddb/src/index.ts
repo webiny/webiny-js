@@ -98,7 +98,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
         async listTasks(
             params: PageImportExportTaskStorageOperationsListParams
         ): Promise<PageImportExportTaskStorageOperationsListResponse> {
-            const { limit } = params;
+            const { limit = 100 } = params;
 
             const queryAllParams: QueryAllParams = {
                 entity: entity,
@@ -125,7 +125,9 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 );
             }
 
-            const items = results.map(item => cleanupItem<PageImportExportTask>(entity, item));
+            const items = results.map(item =>
+                cleanupItem<PageImportExportTask>(entity, item)
+            ) as PageImportExportTask[];
 
             // TODO: Implement sort and filter
 
@@ -382,7 +384,7 @@ export const createStorageOperations: CreateStorageOperations = params => {
         async listSubTasks(
             params: PageImportExportTaskStorageOperationsListSubTaskParams
         ): Promise<PageImportExportTaskStorageOperationsListSubTaskResponse> {
-            const { where, limit } = params;
+            const { where, limit = 100 } = params;
 
             const { tenant, locale, parent, status } = where;
             const queryAllParams: QueryAllParams = {
@@ -414,7 +416,9 @@ export const createStorageOperations: CreateStorageOperations = params => {
                 );
             }
 
-            const items = results.map(item => cleanupItem<PageImportExportTask>(entity, item));
+            const items = results.map(item =>
+                cleanupItem<PageImportExportTask>(entity, item)
+            ) as PageImportExportTask[];
 
             return createListResponse({
                 items: items,

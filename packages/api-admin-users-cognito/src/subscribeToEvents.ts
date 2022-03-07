@@ -15,10 +15,20 @@ export const subscribeToEvents = (context: Context): void => {
 
     // After a new user is created, link him to a tenant via the assigned group.
     adminUsers.onUserAfterCreate.subscribe(async ({ user }) => {
+        /**
+         * TODO @ts-refactor @pavel
+         * Are we continuing if there is no tenant?
+         */
+        const tenant = getTenant();
+
         const group = await security.getGroup({ where: { id: user.group } });
         await security.createTenantLinks([
             {
-                tenant: getTenant(),
+                /**
+                 * Check few lines up.
+                 */
+                // @ts-ignore
+                tenant,
                 // IMPORTANT!
                 // Use the `id` that was assigned in the user creation process.
                 // `syncWithCognito` will assign the `sub` value to the user id, so that the identity id matches the user id.
@@ -38,10 +48,17 @@ export const subscribeToEvents = (context: Context): void => {
             return;
         }
 
+        const tenant = getTenant();
+
         const group = await security.getGroup({ where: { id: updatedUser.group } });
         await security.updateTenantLinks([
             {
-                tenant: getTenant(),
+                /**
+                 * TODO @ts-refactor @pavel
+                 * Same as in afterCreate method
+                 */
+                // @ts-ignore
+                tenant,
                 identity: updatedUser.id,
                 type: "group",
                 data: { group: group.id, permissions: group.permissions }

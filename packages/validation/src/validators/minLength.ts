@@ -1,8 +1,8 @@
 import _ from "lodash";
 import ValidationError from "~/validationError";
 
-export default (value: any, params: Array<string>) => {
-    if (!value) {
+export default (value: any, params?: string[]) => {
+    if (!value || !params) {
         return;
     }
 

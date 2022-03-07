@@ -20,7 +20,13 @@ export const WebsiteSettingsView: React.FC = () => {
                         {saving && <CircularProgress label={"Saving settings..."} />}
                         <SettingsFields />
                         <SimpleFormFooter>
-                            <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    submit(ev);
+                                }}
+                            >
+                                Save
+                            </ButtonPrimary>
                         </SimpleFormFooter>
                     </SimpleForm>
                 )}

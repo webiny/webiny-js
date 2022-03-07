@@ -48,7 +48,7 @@ class Paragraph {
     private readonly _preserveBlank: boolean;
     private readonly alignments: Alignment[];
     private readonly settingsButtons: HTMLElement[];
-    private readonly typography: Typography;
+    private readonly typography: Typography | null;
 
     /**
      * Render plugin`s main Element and fill it with saved data

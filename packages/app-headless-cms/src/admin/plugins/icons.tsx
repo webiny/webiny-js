@@ -21,14 +21,19 @@ const plugin: CmsIconsPlugin = {
     type: "cms-icons",
     init() {
         library.add(fab, fas, far);
+        const definitions = (library as any).definitions as unknown as Record<IconPrefix, IconName>;
+        /**
+         * Ignoring TS errors. We know what we coded is good, but cannot get it to work with typescript.
+         */
         // @ts-ignore
-        const definitions = library.definitions;
         Object.keys(definitions).forEach((pack: IconPrefix) => {
             const defs = definitions[pack];
+            // @ts-ignore
             Object.keys(defs).forEach((icon: IconName) => {
                 icons.push({
                     id: [pack, icon],
                     name: icon,
+                    // @ts-ignore
                     svg: createSvg(defs[icon])
                 });
             });

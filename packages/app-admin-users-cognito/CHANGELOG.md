@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/app-admin-users-cognito
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* adio run ([7374289](https://github.com/webiny/webiny-js/commit/73742897e1710bb159a2a63fc587c68fc8cf164f))
+* sorters ([2ac422e](https://github.com/webiny/webiny-js/commit/2ac422ec316b2ea286b0f897abd3018b72dd8d6b))
+* yarn adio ([601de41](https://github.com/webiny/webiny-js/commit/601de41833048b0f7d331c27e96929475cdda297))
+
+
+### Features
+
+* add types to app-admin-users-cognito ([d39c6ed](https://github.com/webiny/webiny-js/commit/d39c6ed2fa997713d1b12198254aea4211a7fdc3))
+* add types to app-security ([5edf41a](https://github.com/webiny/webiny-js/commit/5edf41a7f7b0cff5404256e8190d03846e46d49e))
+
+
+
+
+
 ## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
 
 **Note:** Version bump only for package @webiny/app-admin-users-cognito

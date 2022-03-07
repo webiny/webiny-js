@@ -115,12 +115,17 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                 mutation: GQL.DELETE_CONTENT_MODEL,
                 variables: { modelId: item.modelId },
                 update(cache, { data }) {
+                    if (!data) {
+                        showSnackbar("Missing data on Delete Content Model Mutation Response.");
+                        return;
+                    }
                     const { error } = data.deleteContentModel;
 
                     if (error) {
-                        return showSnackbar(error.message, {
+                        showSnackbar(error.message, {
                             title: t`Something unexpected happened.`
                         });
+                        return;
                     }
 
                     removeModelFromListCache(cache, item);
@@ -140,7 +145,7 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
 
     const viewContentEntries = useCallback(contentModel => {
         return () => history.push("/cms/content-entries/" + contentModel.modelId);
-    }, undefined);
+    }, []);
 
     const contentModelsDataListModalOverlay = useMemo(
         () => (

@@ -8,40 +8,60 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { GET_PAGE } from "~/admin/graphql/pages";
+import {
+    GET_PAGE,
+    GetPageQueryVariables,
+    GetPageQueryResponse,
+    PageResponseData
+} from "~/admin/graphql/pages";
 import { pageAtom } from "../../../recoil/modules";
-import { PUBLISH_PAGE } from "./PublishPageButton/graphql";
+import {
+    PUBLISH_PAGE,
+    PublishPageMutationResponse,
+    PublishPageMutationVariables
+} from "./PublishPageButton/graphql";
 import usePermission from "../../../../hooks/usePermission";
-import { PbPageData, PbPageRevision } from "~/types";
 
-const PublishPageButton: React.FunctionComponent = () => {
+const PublishPageButton: React.FC = () => {
     const page = useRecoilValue(pageAtom);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const [publishRevision] = useMutation(PUBLISH_PAGE, {
+    const [publishRevision] = useMutation<
+        PublishPageMutationResponse,
+        PublishPageMutationVariables
+    >(PUBLISH_PAGE, {
         refetchQueries: ["PbListPages"],
-        update: (cache, { data }) => {
+        update: (cache, result) => {
+            if (!result || !result.data) {
+                return;
+            }
             // Don't do anything if there was an error during publishing!
-            if (data.pageBuilder.publishPage.error) {
+            if (result.data.pageBuilder.publishPage.error) {
                 return;
             }
 
             // Update revisions
-            let pageFromCache: PbPageData;
+            let pageFromCache: GetPageQueryResponse;
             try {
                 pageFromCache = cloneDeep(
-                    cache.readQuery({
+                    cache.readQuery<GetPageQueryResponse, GetPageQueryVariables>({
                         query: GET_PAGE,
-                        variables: { id: page.id }
+                        variables: {
+                            id: page.id as string
+                        }
                     })
-                );
+                ) as GetPageQueryResponse;
             } catch {
                 // This means page could not be found in the cache. Exiting...
                 return;
             }
 
-            const revisions = get(pageFromCache, "pageBuilder.getPage.data.revisions", []);
-            revisions.forEach((revision: PbPageRevision) => {
+            const revisions = get(
+                pageFromCache,
+                "pageBuilder.getPage.data.revisions",
+                []
+            ) as PageResponseData["revisions"];
+            revisions.forEach(revision => {
                 // Update published/locked fields on the revision that was just published.
                 if (revision.id === page.id) {
                     revision.status = "published";
@@ -76,20 +96,26 @@ const PublishPageButton: React.FunctionComponent = () => {
         >
             {({ showConfirmation }) => (
                 <ButtonPrimary
-                    onClick={async () => {
+                    onClick={() => {
                         showConfirmation(async () => {
                             const response = await publishRevision({
                                 variables: {
-                                    id: page.id
+                                    id: page.id as string
                                 }
                             });
-
+                            if (!response || !response.data) {
+                                showSnackbar("No response data from Publish Revision Mutation.");
+                                return;
+                            }
                             const { error } = response.data.pageBuilder.publishPage;
                             if (error) {
-                                return showSnackbar(error.message);
+                                showSnackbar(error.message);
+                                return;
                             }
 
-                            history.push(`/page-builder/pages?id=${encodeURIComponent(page.id)}`);
+                            history.push(
+                                `/page-builder/pages?id=${encodeURIComponent(page.id as string)}`
+                            );
 
                             // Let's wait a bit, because we are also redirecting the user.
                             setTimeout(() => {

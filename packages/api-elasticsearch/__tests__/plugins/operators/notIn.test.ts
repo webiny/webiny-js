@@ -4,7 +4,6 @@ import { ElasticsearchQueryBuilderOperatorNotInPlugin } from "~/plugins/operator
 
 describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorNotInPlugin();
-    const context: any = {};
 
     it("should apply not in correctly", () => {
         const query = createBlankQuery();
@@ -13,7 +12,6 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
             basePath: "name",
             path: "name.keyword",
             value: ["John", "Doe", "P."],
-            context,
             keyword: true
         });
         const expected: ElasticsearchBoolQueryConfig = {
@@ -39,7 +37,6 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
                 basePath: "name",
                 path: "name.keyword",
                 value: "somethingString",
-                context,
                 keyword: true
             });
         }).toThrow(
@@ -57,7 +54,6 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
                 value: {
                     key: "value"
                 },
-                context,
                 keyword: true
             });
         }).toThrow(

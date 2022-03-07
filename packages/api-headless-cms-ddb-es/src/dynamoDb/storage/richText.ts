@@ -73,7 +73,9 @@ const plugin = new StorageTransformPlugin({
         }
         try {
             return jsonpack.unpack(value);
-        } catch {
+        } catch (ex) {
+            console.log("Error while decompressing rich-text.");
+            console.log(ex.message);
             return null;
         }
     },
@@ -86,9 +88,17 @@ const plugin = new StorageTransformPlugin({
             return value as any;
         }
         value = transformArray(value);
+
+        let jsonValue: string | null = null;
+        try {
+            jsonValue = jsonpack.pack(value);
+        } catch (ex) {
+            console.log("Error while compressing rich-text.");
+            console.log(ex.message);
+        }
         return {
             compression: "jsonpack",
-            value: value ? jsonpack.pack(value) : value
+            value: jsonValue
         };
     }
 });

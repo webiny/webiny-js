@@ -1,6 +1,7 @@
 import { TableModifier } from "~/types";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Table } from "dynamodb-toolbox";
+import { TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 
 export interface CreateElasticsearchTableParams {
     table?: TableModifier;
@@ -10,8 +11,8 @@ export const createElasticsearchTable = ({
     table,
     documentClient
 }: CreateElasticsearchTableParams): Table => {
-    const tableConfig = {
-        name: process.env.DB_TABLE_ELASTICSEARCH,
+    const tableConfig: TableConstructor = {
+        name: process.env.DB_TABLE_ELASTICSEARCH as string,
         partitionKey: "PK",
         sortKey: "SK",
         DocumentClient: documentClient

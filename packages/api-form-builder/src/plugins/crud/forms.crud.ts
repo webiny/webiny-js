@@ -22,23 +22,23 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { createIdentifier } from "@webiny/utils";
 
-export interface Params {
+export interface CreateFormsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     context: FormBuilderContext;
 }
 
-export const createFormsCrud = (params: Params): FormsCRUD => {
+export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
     const { context, getTenant, getLocale } = params;
 
     return {
         async getForm(this: FormBuilder, id, options) {
-            let permission: FbFormPermission = undefined;
+            let permission: FbFormPermission | null = null;
             if (!options || options.auth !== false) {
                 permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
             }
 
-            let form: FbForm = undefined;
+            let form: FbForm | null = null;
             try {
                 form = await this.storageOperations.getForm({
                     where: {
@@ -133,7 +133,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
             }
         },
         async getFormRevisions(this: FormBuilder, id, options) {
-            let permission: FbFormPermission = null;
+            let permission: FbFormPermission | null = null;
             if (!options || options.auth !== false) {
                 permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
             }
@@ -170,7 +170,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 });
             }
 
-            let form: FbForm = undefined;
+            let form: FbForm | null = null;
             try {
                 form = await this.storageOperations.getForm({
                     where: {
@@ -201,7 +201,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
              */
             const [formId] = id.split("#");
 
-            let form: FbForm = undefined;
+            let form: FbForm | null = null;
             try {
                 form = await this.storageOperations.getForm({
                     where: {
@@ -403,7 +403,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 sort: ["version_DESC"]
             });
 
-            const previous = revisions.find(rev => rev.version < form.version);
+            const previous = revisions.find(rev => rev.version < form.version) || null;
             if (!previous && revisions.length === 1) {
                 /**
                  * Means we're deleting the last revision, so we need to delete the whole form.
@@ -515,7 +515,7 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                 auth: false
             });
 
-            const originalFormFormId = original.formId || original.id.split("#").pop();
+            const originalFormFormId = original.formId || (original.id.split("#").pop() as string);
 
             const latest = await this.storageOperations.getForm({
                 where: {
@@ -525,6 +525,17 @@ export const createFormsCrud = (params: Params): FormsCRUD => {
                     locale: original.locale
                 }
             });
+            if (!latest) {
+                throw new WebinyError(
+                    "Could not fetch latest form revision.",
+                    "LATEST_FORM_REVISION_ERROR",
+                    {
+                        formId: originalFormFormId,
+                        tenant: original.tenant,
+                        locale: original.locale
+                    }
+                );
+            }
 
             const identity = context.security.getIdentity();
             const version = (latest ? latest.version : original.version) + 1;

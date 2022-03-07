@@ -33,7 +33,7 @@ export interface ListFormsQueryResponse {
     formBuilder: {
         listForms: {
             data: FbFormModel[];
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }
@@ -60,7 +60,7 @@ export interface CreateFormMutationResponse {
     formBuilder: {
         form: {
             data: FbRevisionModel | null;
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }
@@ -92,7 +92,7 @@ export interface GetFormRevisionQueryResponse {
     formBuilder: {
         form: {
             data: FbRevisionModel | null;
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }
@@ -127,7 +127,7 @@ export interface GetFormRevisionsQueryResponse {
     formBuilder: {
         revisions: {
             data: FbRevisionModel[];
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }
@@ -157,7 +157,7 @@ export interface ListFormSubmissionsQueryResponse {
     formBuilder: {
         listFormSubmissions: {
             data: FbFormSubmissionData[];
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
             meta: FbMetaResponse;
         };
     };
@@ -224,7 +224,7 @@ export interface ExportFormSubmissionsMutationResponse {
             data: {
                 src: string;
             };
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }
@@ -253,7 +253,7 @@ export interface CreateRevisionFromMutationResponse {
     formBuilder: {
         revision: {
             data: FbRevisionModel;
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }
@@ -282,7 +282,7 @@ export interface PublishRevisionMutationResponse {
     formBuilder: {
         publishRevision: {
             data: FbRevisionModel;
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }
@@ -312,7 +312,7 @@ export interface UnpublishRevisionMutationResponse {
     formBuilder: {
         unpublishRevision: {
             data: FbRevisionModel;
-            error?: FbErrorResponse;
+            error: FbErrorResponse | null;
         };
     };
 }

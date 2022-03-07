@@ -8,10 +8,14 @@ export type ReactRouterContextValue = {
     onLink(link: string): void;
 };
 
-export const RouterContext = React.createContext<ReactRouterContextValue>(null);
+export const RouterContext = React.createContext<ReactRouterContextValue>({
+    onLink: () => {
+        return void 0;
+    }
+});
 
 export const RouterProvider: React.FC = ({ children }) => {
-    let apolloClient: ApolloClient<any> = null;
+    let apolloClient: ApolloClient<any>;
     try {
         apolloClient = useApolloClient();
     } catch {
@@ -25,7 +29,13 @@ export const RouterProvider: React.FC = ({ children }) => {
                 for (let i = 0; i < onLinkPlugins.length; i++) {
                     const { onLink } = onLinkPlugins[i];
                     if (typeof onLink === "function") {
-                        onLink({ link, apolloClient });
+                        onLink({
+                            link,
+                            /**
+                             * TODO @pavel this function expect ApolloClient but possibly it is not defined.
+                             */
+                            apolloClient
+                        });
                     }
                 }
             }

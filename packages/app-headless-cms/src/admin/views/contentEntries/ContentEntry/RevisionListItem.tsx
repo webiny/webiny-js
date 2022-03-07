@@ -134,9 +134,10 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                                 <MenuItem
                                     onClick={() => {
                                         editRevision();
-                                        if (tabs.current) {
-                                            tabs.current.switchTab(0);
+                                        if (!tabs.current) {
+                                            return;
                                         }
+                                        tabs.current.switchTab(0);
                                     }}
                                 >
                                     <ListItemGraphic>

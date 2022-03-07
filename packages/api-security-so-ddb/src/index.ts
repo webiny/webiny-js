@@ -249,7 +249,7 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getSystemData({ tenant }): Promise<System> {
+        async getSystemData({ tenant }): Promise<System | null> {
             const keys = createSystemKeys(tenant);
             try {
                 const result = await entities.system.get(keys);
@@ -268,7 +268,7 @@ export const createStorageOperations = (
         async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>({
             tenant,
             identity
-        }: StorageOperationsGetTenantLinkByIdentityParams): Promise<TLink> {
+        }: StorageOperationsGetTenantLinkByIdentityParams): Promise<TLink | null> {
             try {
                 const result = await queryOne<TLink>({
                     entity: entities.tenantLinks,
@@ -310,7 +310,9 @@ export const createStorageOperations = (
                 sort,
                 fields: []
             });
-            return sortedItems.map(item => cleanupItem(entities.apiKeys, item));
+            return sortedItems
+                .map(item => cleanupItem(entities.apiKeys, item))
+                .filter(Boolean) as ApiKey[];
         },
         async listGroups({ where: { tenant }, sort }): Promise<Group[]> {
             let items: Group[];

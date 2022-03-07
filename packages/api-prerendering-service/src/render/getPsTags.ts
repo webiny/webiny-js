@@ -43,7 +43,7 @@ export default (content: string, unique = true): ParseAttributesOutput[] => {
     if (unique && psTags.length > 0) {
         const uniqueMap: Record<string, ParseAttributesOutput> = psTags.reduce(
             (collection, psTag) => {
-                collection[psTag.key + psTag.value] = psTag;
+                collection[`${psTag.key || ""}${psTag.value || ""}`] = psTag;
 
                 return collection;
             },

@@ -21,7 +21,7 @@ interface CreateElasticsearchBodyParams {
     context: FileManagerContext;
     where: FileManagerFilesStorageOperationsListParamsWhere;
     limit: number;
-    after?: string;
+    after?: string | null;
     sort: string[];
 }
 
@@ -65,7 +65,8 @@ const createElasticsearchQuery = (
          * Remove so it is not applied again later.
          * Possibly tenant is not defined, but just in case, remove it.
          */
-        delete where.tenant;
+        // cast as any because TS is complaining about deleting non-optional property
+        delete (where as any).tenant;
     }
     /**
      * If there is a search value passed in where, it is treated a bit differently.

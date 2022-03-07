@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
-import { PbEditorPageElementSettingsRenderComponentProps } from "~/types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
 // Components
 import IconPicker from "../../../components/IconPicker";
 import Accordion from "../../elementSettings/components/Accordion";
@@ -27,11 +27,13 @@ const classes = {
     })
 };
 
-const IconSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+const IconSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as PbEditorElement;
     const { data: { icon = {} } = {} } = element;
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({

@@ -44,7 +44,7 @@ declare module "react-butterfiles" {
         browseFiles: (params?: BrowseFilesParams) => void;
         getDropZoneProps: (additionalProps?: Object) => Object;
         getLabelProps(additionalProps?: Object): Object;
-        validateFiles(files: Array<SelectedFile> | Array<File>): Array<FileError>;
+        validateFiles(files: SelectedFile[] | File[]): FileError[];
     };
 
     export type FilesRules = {

@@ -1,5 +1,7 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 import workflowMocks from "../graphql/mocks/workflows";
+import { Category } from "@webiny/api-page-builder/types";
+import { ApwWorkflow } from "~/types";
 
 export { until } from "@webiny/project-utils/testing/helpers/until";
 export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
@@ -22,7 +24,7 @@ const getSecurityIdentity = () => {
     return identity;
 };
 
-export const createPermissions = (permissions: PermissionsArg[]): PermissionsArg[] => {
+export const createPermissions = (permissions?: PermissionsArg[]): PermissionsArg[] => {
     if (permissions) {
         return permissions;
     }
@@ -66,7 +68,12 @@ export const createIdentity = (identity?: SecurityIdentity) => {
     return identity;
 };
 
-export const setupCategory = async ({ getCategory, createCategory }) => {
+interface SetupCategoryParams {
+    getCategory: ({ slug }: { slug: string }) => Promise<any>;
+    createCategory: ({ data }: { data: Partial<Category> }) => Promise<any>;
+}
+
+export const setupCategory = async ({ getCategory, createCategory }: SetupCategoryParams) => {
     const [getCategoryResponse] = await getCategory({ slug: "static" });
     const category = getCategoryResponse.data.pageBuilder.getCategory.data;
     if (category) {
@@ -83,13 +90,13 @@ export const setupCategory = async ({ getCategory, createCategory }) => {
     return createCategoryResponse.data.pageBuilder.createCategory.data;
 };
 
-export const createSetupForContentReview = async gqlHandler => {
+export const createSetupForContentReview = async (gqlHandler: any) => {
     const setupReviewer = async () => {
         await gqlHandler.securityIdentity.login();
 
         await gqlHandler.until(
-            () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]) => data),
-            response => response.data.apw.listReviewers.data.length === 1,
+            () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]: any) => data),
+            (response: any) => response.data.apw.listReviewers.data.length === 1,
             {
                 name: "Wait for listReviewer query"
             }
@@ -110,7 +117,7 @@ export const createSetupForContentReview = async gqlHandler => {
         return createPageResponse.data.pageBuilder.createPage.data;
     };
 
-    const setupWorkflow = async () => {
+    const setupWorkflow = async (): Promise<ApwWorkflow> => {
         const reviewer = await setupReviewer();
         const [createWorkflowResponse] = await gqlHandler.createWorkflowMutation({
             data: workflowMocks.createWorkflowWithThreeSteps({}, [reviewer])
@@ -122,8 +129,8 @@ export const createSetupForContentReview = async gqlHandler => {
         const workflow = await setupWorkflow();
 
         await gqlHandler.until(
-            () => gqlHandler.listWorkflowsQuery({}).then(([data]) => data),
-            response => {
+            () => gqlHandler.listWorkflowsQuery({}).then(([data]: any) => data),
+            (response: any) => {
                 const list = response.data.apw.listWorkflows.data;
                 return list.length === 1;
             },

@@ -6,6 +6,6 @@ export default (args: Args, configuration: Configuration) => {
         return args.url;
     }
 
-    const websiteUrl = args?.configuration?.website.url || configuration?.website?.url;
-    return path.join(websiteUrl, args.path);
+    const websiteUrl = args?.configuration?.website?.url || configuration?.website?.url;
+    return path.join(websiteUrl as string, args.path as string);
 };

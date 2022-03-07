@@ -6,13 +6,13 @@ import {
 } from "~/ui/elements/form/FormFieldElement";
 
 export class HiddenElement extends FormFieldElement {
-    constructor(id: string, config: FormFieldElementConfig) {
+    public constructor(id: string, config: FormFieldElementConfig) {
         super(id, config);
 
         this.applyPlugins(HiddenElement);
     }
 
-    public render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`HiddenElement must be placed inside of a FormElement.`);
         }

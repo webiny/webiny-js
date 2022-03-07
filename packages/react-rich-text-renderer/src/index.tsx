@@ -22,7 +22,7 @@ interface RenderParagraphProps {
     className: string;
 }
 const renderParagraph = (block: OutputBlockData): React.ReactElement => {
-    const props: RenderParagraphProps = { style: {}, className: null };
+    const props: RenderParagraphProps = { style: {}, className: "" };
 
     if (block.data.textAlign) {
         props.style["textAlign"] = block.data.textAlign;
@@ -51,7 +51,7 @@ interface RenderHeaderProps {
 }
 
 const renderHeader = (block: OutputBlockData) => {
-    const props: RenderHeaderProps = { style: {}, className: null };
+    const props: RenderHeaderProps = { style: {}, className: "" };
 
     if (block.data.textAlign) {
         props.style["textAlign"] = block.data.textAlign;
@@ -191,7 +191,7 @@ interface RichTextRendererProps {
     renderers?: Record<string, RichTextBlockRenderer>;
 }
 
-export const RichTextRenderer: React.FunctionComponent<RichTextRendererProps> = props => {
+export const RichTextRenderer: React.FC<RichTextRendererProps> = props => {
     // Combine default renderers with custom renderers
     const renderers = Object.assign({}, defaultRenderers, props.renderers);
 

@@ -33,7 +33,9 @@ const GridContainer: React.FC<GridContainerPropsType> = ({ element: { id } }) =>
                     // Use per-device style
                     const justifyContent =
                         elementStyle[
-                            `--${kebabCase(displayMode)}-justify-content` as keyof CSSProperties
+                            `--${kebabCase(
+                                displayMode
+                            )}-justify-content` as unknown as keyof CSSProperties
                         ];
                     /**
                      * Figure out better type

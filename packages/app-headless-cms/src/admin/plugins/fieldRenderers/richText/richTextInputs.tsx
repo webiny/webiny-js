@@ -1,4 +1,3 @@
-// TODO @ts-refactor figure out correct bind types and remove any
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
@@ -9,11 +8,12 @@ import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/compone
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
+import { BindComponentRenderProp } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (field: CmsEditorField, bind: any, index: number): string => {
-    const formId = bind.index.form.data.id || "new";
+const getKey = (field: CmsEditorField, bind: BindComponentRenderProp, index: number): string => {
+    const formId = (bind as any).index?.form?.data?.id || "new";
     return `${formId}.${field.fieldId}.${index}`;
 };
 
@@ -40,7 +40,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "rich-text" &&
-                field.multipleValues &&
+                !!field.multipleValues &&
                 !get(field, "predefinedValues.enabled")
             );
         },
