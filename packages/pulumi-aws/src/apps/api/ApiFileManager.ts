@@ -146,7 +146,7 @@ export function createFileManager(app: PulumiApp, params: FileManagerParams) {
             sourceArn: bucketArn
         },
         opts: {
-            dependsOn: [, /* TODO this.bucket */ manage.output]
+            dependsOn: [/* TODO this.bucket, */ manage.output]
         }
     });
 
@@ -162,7 +162,7 @@ export function createFileManager(app: PulumiApp, params: FileManagerParams) {
             ]
         },
         opts: {
-            dependsOn: [, /* TODO this.bucket */ manage.output, manageS3LambdaPermission.output]
+            dependsOn: [/* TODO this.bucket, */ manage.output, manageS3LambdaPermission.output]
         }
     });
 
