@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { get } from "lodash";
-import { PbEditorElement } from "~/types";
+import { PbEditorElement, PbElementDataTypeSource } from "~/types";
 import useRenderEmptyEmbed from "../../../elements/utils/oembed/useRenderEmptyEmbed";
 
 declare global {
@@ -48,7 +48,7 @@ const centerAlign = css({
     textAlign: "center"
 });
 
-const getHTML = (data: Record<string, any>): string => {
+const getHTML = (data: PbElementDataTypeSource): string => {
     return `<a
         data-pin-do="embedPin"
         data-pin-width="${data.size || "small"}"
@@ -66,7 +66,7 @@ const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
     const renderEmpty = useRenderEmptyEmbed(element);
 
     const renderEmbed = useCallback((): React.ReactElement => {
-        const data: Record<string, any> = get(element, "data.source");
+        const data: PbElementDataTypeSource = get(element, "data.source");
         return (
             <div
                 id={element.id}

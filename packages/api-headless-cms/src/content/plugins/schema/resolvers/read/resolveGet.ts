@@ -6,7 +6,7 @@ type ResolveGet = ResolverFactory<any, CmsEntryListParams>;
 
 export const resolveGet: ResolveGet =
     ({ model }) =>
-    async (_: any, args, context) => {
+    async (_: any, args: any, context) => {
         try {
             const [[entry]] = await context.cms.listPublishedEntries(model, {
                 ...args,

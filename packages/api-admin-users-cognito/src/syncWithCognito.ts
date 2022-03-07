@@ -179,10 +179,11 @@ export const syncWithCognito = ({
 
             await cognito.adminUpdateUserAttributes(params).promise();
 
-            if (inputData.password) {
+            const { password } = (inputData as any) || {};
+            if (password) {
                 const pass = {
                     Permanent: true,
-                    Password: inputData.password,
+                    Password: password,
                     Username: getUsername(updatedUser),
                     UserPoolId: userPoolId
                 };

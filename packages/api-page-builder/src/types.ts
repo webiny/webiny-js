@@ -95,8 +95,14 @@ export interface Page {
     locked: boolean;
     status: PageStatus;
     visibility: {
-        list: { latest: boolean; published: boolean };
-        get: { latest: boolean; published: boolean };
+        list: {
+            latest: boolean;
+            published: boolean;
+        };
+        get: {
+            latest: boolean;
+            published: boolean;
+        };
     };
     home: boolean;
     notFound: boolean;

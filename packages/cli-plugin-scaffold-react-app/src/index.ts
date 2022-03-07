@@ -52,7 +52,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "description",
                     message: "Enter application description:",
-                    default: (input: Record<string, string>) => {
+                    default: (input: Input) => {
                         return `This is the ${input.name} React application.`;
                     },
                     validate: description => {
@@ -66,7 +66,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "path",
                     message: "Enter application path:",
-                    default: (input: Record<string, string>) => {
+                    default: (input: Input) => {
                         return Case.kebab(input.name);
                     },
                     validate: appPath => {

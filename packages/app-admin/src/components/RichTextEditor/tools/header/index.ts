@@ -170,7 +170,7 @@ class Header {
             /**
              * Save level to its button
              */
-            selectTypeButton.dataset.level = level.number + "";
+            selectTypeButton.dataset["level"] = level.number + "";
 
             /**
              * Set up click handler
@@ -213,7 +213,7 @@ class Header {
             /**
              * Save alignment to its button
              */
-            selectTypeButton.dataset.textAlign = alignment.name;
+            selectTypeButton.dataset["textAlign"] = alignment.name;
 
             /**
              * Set up click handler
@@ -485,7 +485,7 @@ class Header {
         /**
          * Add Placeholder
          */
-        tag.dataset.placeholder = this.api.i18n.t(this._settings.placeholder || "");
+        tag.dataset["placeholder"] = this.api.i18n.t(this._settings.placeholder || "");
 
         return tag;
     }

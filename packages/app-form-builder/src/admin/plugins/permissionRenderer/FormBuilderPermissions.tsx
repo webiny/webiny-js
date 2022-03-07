@@ -8,6 +8,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { FormBuilderSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-form-builder/admin/plugins/permissionRenderer");
 
@@ -46,7 +47,7 @@ export const FormBuilderPermissions: React.FC<FormBuilderPermissionsProps> = ({
 }) => {
     const onFormChange = useCallback(
         data => {
-            let newValue: SecurityPermission[] = [];
+            let newValue: FormBuilderSecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `fb` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(FB));
@@ -65,7 +66,7 @@ export const FormBuilderPermissions: React.FC<FormBuilderPermissionsProps> = ({
 
             // Handling custom access level.
             if (data.formAccessLevel && data.formAccessLevel !== NO_ACCESS) {
-                const permission: SecurityPermission = {
+                const permission: FormBuilderSecurityPermission = {
                     name: FB_ACCESS_FORM,
                     own: false,
                     rwd: undefined,

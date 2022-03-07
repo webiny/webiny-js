@@ -9,6 +9,7 @@ import {
     Category,
     OnAfterInstallTopicParams,
     OnBeforeInstallTopicParams,
+    Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PbContext,
@@ -148,12 +149,17 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     fileIdToFileMap: fileIdToFileMap
                 });
 
-                const initialPagesData = [
+                const initialPagesData: Page[] = [
                     {
                         title: "Welcome to Webiny",
                         path: "/welcome-to-webiny",
                         content: welcomeToWebinyPageContent,
-                        settings: {}
+                        settings: {},
+                        /**
+                         * Category will be added when page is created.
+                         */
+                        // @ts-ignore
+                        category: undefined
                     },
                     {
                         title: "Not Found",
@@ -162,9 +168,20 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         settings: {},
                         // Do not show the page in page lists, only direct get is possible.
                         visibility: {
-                            get: { latest: true, published: true },
-                            list: { latest: false, published: false }
-                        }
+                            get: {
+                                latest: true,
+                                published: true
+                            },
+                            list: {
+                                latest: false,
+                                published: false
+                            }
+                        },
+                        /**
+                         * Category will be added when page is created.
+                         */
+                        // @ts-ignore
+                        category: undefined
                     }
                 ];
 

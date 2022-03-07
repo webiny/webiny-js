@@ -1,9 +1,10 @@
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { PbSecurityPermission } from "~/graphql/types";
 
 export default (
     identity: SecurityIdentity,
-    permission: Record<string, any>,
+    permission: PbSecurityPermission,
     entity: Record<string, any>,
     entityField = "createdBy"
 ): void => {

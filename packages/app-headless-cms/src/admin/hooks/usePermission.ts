@@ -2,8 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { CmsCreatedBy, CmsGroup, CmsModel } from "~/types";
-import { SecurityPermission } from "@webiny/app-security/types";
+import { CmsCreatedBy, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
 
 interface CreatableItem {
     createdBy: Pick<CmsCreatedBy, "id">;
@@ -20,13 +19,13 @@ export const usePermission = () => {
 
     const currentLocale = getCurrentLocale("content");
 
-    const hasFullAccess = useMemo((): SecurityPermission | null => {
+    const hasFullAccess = useMemo((): CmsSecurityPermission | null => {
         return getPermission("cms.*");
     }, [identity]);
 
     const canRead = useCallback(
         (permissionName: string): boolean => {
-            const permission = getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
             if (!permission) {
                 return false;
             }
@@ -46,7 +45,7 @@ export const usePermission = () => {
                 return true;
             }
 
-            const permission = getPermission("cms.contentEntry");
+            const permission = getPermission<CmsSecurityPermission>("cms.contentEntry");
             const contentModelPermission = getPermission("cms.contentModel");
             const contentModelGroupPermission = getPermission("cms.contentModelGroup");
 
@@ -76,7 +75,7 @@ export const usePermission = () => {
 
     const canEdit = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
-            const permission = getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission || !identity) {
                 return false;
@@ -105,7 +104,7 @@ export const usePermission = () => {
      * */
     const canCreate = useCallback(
         (permissionName: string): boolean => {
-            const permission = getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
             if (!permission) {
                 return false;
             }
@@ -121,7 +120,7 @@ export const usePermission = () => {
 
     const canDelete = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
-            const permission = getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
@@ -142,7 +141,7 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
@@ -161,7 +160,7 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
@@ -180,7 +179,7 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
@@ -199,7 +198,7 @@ export const usePermission = () => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;

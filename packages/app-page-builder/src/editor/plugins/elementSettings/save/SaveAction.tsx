@@ -21,11 +21,11 @@ import { FileUploaderPlugin } from "@webiny/app/types";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
-    PbEditorElement,
-    PbElement
+    PbEditorElement as BasePbEditorElement,
+    PbElement,
+    PbEditorElement
 } from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { FormData } from "@webiny/form";
 
 const removeIds = (el: PbElement): PbElement => {
     // @ts-ignore
@@ -44,10 +44,10 @@ const removeIds = (el: PbElement): PbElement => {
     return el;
 };
 
-type ImageDimensionsType = {
+interface ImageDimensionsType {
     width: number;
     height: number;
-};
+}
 function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType> {
     return new Promise(resolve => {
         const image = new window.Image();
@@ -58,7 +58,16 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
-const pluginOnSave = (element: PbEditorElement): PbEditorElement => {
+interface PbDocumentElement extends BasePbEditorElement {
+    preview: string;
+    overwrite?: boolean;
+}
+
+interface RecoilPbEditorElement extends PbEditorElement {
+    source: string;
+}
+
+const pluginOnSave = (element: BasePbEditorElement): BasePbEditorElement => {
     const plugin = plugins
         .byType<PbEditorPageElementSaveActionPlugin>("pb-editor-page-element-save-action")
         .find(pl => pl.elementType === element.type);
@@ -72,14 +81,14 @@ const SaveAction: React.FC = ({ children }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementByIdSelector(activeElementId as string)
-    ) as PbEditorElement;
+    ) as RecoilPbEditorElement;
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { getElementTree } = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const [isDialogOpened, setOpenDialog] = useState<boolean>(false);
     const client = useApolloClient();
 
-    const onSubmit = async (formData: FormData) => {
+    const onSubmit = async (formData: PbDocumentElement) => {
         formData.content = pluginOnSave(removeIds((await getElementTree(element)) as PbElement));
 
         const meta = await getDataURLImageDimensions(formData.preview);
@@ -170,10 +179,17 @@ const SaveAction: React.FC = ({ children }) => {
                 element={element}
                 open={isDialogOpened}
                 onClose={hideDialog}
-                onSubmit={onSubmit}
+                onSubmit={data => {
+                    /**
+                     * We are positive that data is PbEditorElement.
+                     */
+                    onSubmit(data as PbDocumentElement);
+                }}
                 type={element.type === "block" ? "block" : "element"}
             />
-            {React.cloneElement(children as unknown as React.ReactElement, { onClick: showDialog })}
+            {React.cloneElement(children as unknown as React.ReactElement, {
+                onClick: showDialog
+            })}
         </>
     );
 };

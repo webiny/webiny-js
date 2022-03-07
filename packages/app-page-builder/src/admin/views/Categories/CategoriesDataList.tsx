@@ -27,8 +27,7 @@ import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { PbCategory } from "~/types";
-import { SecurityPermission } from "@webiny/app-security/types";
+import { PageBuilderSecurityPermission, PbCategory } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/categories/data-list");
 
@@ -124,7 +123,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
     );
 
     const { identity, getPermission } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.category");
     }, [identity]);
 

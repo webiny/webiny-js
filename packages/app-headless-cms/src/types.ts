@@ -267,6 +267,12 @@ export type CmsEditorField<T = unknown> = T & {
     predefinedValues?: CmsEditorFieldPredefinedValues;
     settings?: {
         defaultValue?: string | null | undefined;
+        defaultSetValue?: string;
+        type?: string;
+        fields?: CmsEditorField<any>[];
+        layout?: string[][];
+        models?: Pick<CmsModel, "modelId" | "name">[];
+        imagesOnly?: boolean;
         [key: string]: any;
     };
     renderer: {
@@ -306,7 +312,6 @@ export interface CmsEditorContentEntry {
     savedOn: string;
     modelId: string;
     createdBy: CmsCreatedBy;
-    [key: string]: any;
     meta: {
         title: string;
         publishedOn: string;
@@ -314,6 +319,7 @@ export interface CmsEditorContentEntry {
         status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
         version: number;
     };
+    [key: string]: any;
 }
 
 export interface CmsLatestContentEntry {
@@ -536,6 +542,11 @@ export interface CmsSecurityPermission extends SecurityPermission {
     accessLevel?: "full" | "no" | "custom";
     models?: Record<string, string>;
     groups?: Record<string, string>;
+    endpoints: string[];
+    locales?: string[];
+    rwd?: string;
+    own?: boolean;
+    pw?: string;
 }
 export interface CmsCreatedBy {
     id: string;

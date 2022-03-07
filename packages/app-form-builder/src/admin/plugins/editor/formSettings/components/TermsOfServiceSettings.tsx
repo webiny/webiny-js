@@ -3,7 +3,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { get } from "lodash";
-import { FormSettingsPluginRenderFunctionType } from "../../../../../types";
+import { FormSettingsPluginRenderFunctionType } from "~/types";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { useMemo } from "react";
 import { plugins } from "@webiny/plugins";
@@ -12,6 +12,11 @@ const TermsOfServiceSettings: FormSettingsPluginRenderFunctionType = ({ Bind, fo
     const enabled = get(formData, "termsOfServiceMessage.enabled");
 
     const rteProps = useMemo(() => {
+        /**
+         * TODO @ts-refactor
+         * Missing plugin type for fb-rte-config
+         */
+        // @ts-ignore
         return createPropsFromConfig(plugins.byType("fb-rte-config").map(pl => pl.config));
     }, []);
 

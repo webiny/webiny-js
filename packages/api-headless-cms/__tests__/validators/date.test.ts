@@ -1,8 +1,8 @@
-import dateLtePlugin from "../../src/content/plugins/validators/dateLte";
-import dateGtePlugin from "../../src/content/plugins/validators/dateGte";
-import { CmsModelFieldValidation } from "../../src/types";
+import dateLtePlugin from "~/content/plugins/validators/dateLte";
+import dateGtePlugin from "~/content/plugins/validators/dateGte";
+import { CmsModelFieldValidation } from "~/types";
 
-const createValidator = (args): CmsModelFieldValidation => {
+const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
     return {
         name: "test-validator",
         message: "test validation message",
@@ -36,7 +36,7 @@ describe("date validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -60,7 +60,7 @@ describe("date validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -84,7 +84,7 @@ describe("date validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -108,7 +108,7 @@ describe("date validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -134,7 +134,7 @@ describe("date validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -158,7 +158,7 @@ describe("date validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(false);
         }
@@ -184,7 +184,7 @@ describe("date validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(true);
         }
@@ -210,7 +210,7 @@ describe("date validators", () => {
                 validator,
                 context,
                 field: {} as any,
-                contentModel: {} as any
+                model: {} as any
             });
             expect(result).toEqual(false);
         }

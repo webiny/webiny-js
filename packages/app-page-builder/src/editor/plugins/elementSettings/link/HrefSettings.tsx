@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
-import { Form, FormData } from "@webiny/form";
+import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "~/editor/components";
 import { DelayedOnChange } from "~/editor/components/DelayedOnChange";
@@ -26,9 +26,14 @@ const classes = {
     })
 };
 
-type LinkSettingsPropsType = {
+interface LinkSettingsFormData {
+    newTab?: boolean;
+    href?: string;
+}
+
+interface LinkSettingsPropsType {
     element: PbEditorElement;
-};
+}
 const LinkSettingsComponent: React.FC<
     LinkSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ element, defaultAccordionValue }) => {
@@ -45,7 +50,7 @@ const LinkSettingsComponent: React.FC<
         );
     };
 
-    const updateSettings = (data: FormData) => {
+    const updateSettings = (data: LinkSettingsFormData) => {
         // Skip update if nothing is change.
         if (data.newTab === newTab && data.href === href) {
             return;

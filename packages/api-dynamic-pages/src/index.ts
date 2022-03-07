@@ -28,7 +28,11 @@ export default () => [
     }),
     // - Store "dynamic" flag into ES if page URL is a pattern
     new IndexPageDataPlugin<DynamicPage>(({ page, data }) => {
-        data.dynamic = page.dynamic;
+        /**
+         * TODO @ts-refactor @pavel
+         * Throw in some generics for the IndexPageDataPlugin
+         */
+        (data as any).dynamic = page.dynamic;
     }),
     // - Add `dynamic` filter to ES search
     new SearchPublishedPagesPlugin({

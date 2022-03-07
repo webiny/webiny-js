@@ -47,7 +47,11 @@ export default (options: HandlerHttpOptions = {}): Plugin[] => [
             return;
         }
 
-        const path = invocationArgs.path ?? {};
+        const path = invocationArgs.path ?? {
+            base: "",
+            parameters: {},
+            query: ""
+        };
 
         const request = {
             method: invocationArgs.method,

@@ -343,7 +343,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbQuery: {
-                    getPage: async (_, args, context) => {
+                    getPage: async (_, args: any, context) => {
                         try {
                             return new Response(await context.pageBuilder.getPage(args.id));
                         } catch (e) {
@@ -351,7 +351,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         }
                     },
 
-                    listPages: async (_, args, context) => {
+                    listPages: async (_, args: any, context) => {
                         try {
                             const [data, meta] = await context.pageBuilder.listLatestPages(args);
                             return new ListResponse(data, meta);
@@ -360,7 +360,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         }
                     },
 
-                    listPublishedPages: async (_, args, context) => {
+                    listPublishedPages: async (_, args: any, context) => {
                         try {
                             const [data, meta] = await context.pageBuilder.listPublishedPages(args);
                             return new ListResponse(data, meta);
@@ -368,7 +368,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return new ErrorResponse(e);
                         }
                     },
-                    listPageTags: async (_, args, context) => {
+                    listPageTags: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.listPagesTags(args as any));
                     },
 
@@ -393,7 +393,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         );
                     },
 
-                    oembedData: async (_, args) => {
+                    oembedData: async (_, args: any) => {
                         try {
                             const provider = findProvider(args.url);
                             if (!provider) {
@@ -431,7 +431,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return context.pageBuilder.createPage(category as string);
                         });
                     },
-                    deletePage: async (_, args, context: PbContext) => {
+                    deletePage: async (_, args: any, context) => {
                         return resolve(async () => {
                             const [page, latestPage] = await context.pageBuilder.deletePage(
                                 args.id
@@ -440,30 +440,30 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         });
                     },
 
-                    updatePage: async (_, args, context: PbContext) => {
+                    updatePage: async (_, args: any, context) => {
                         return resolve(() => {
                             const { data } = args;
                             return context.pageBuilder.updatePage(args.id, data);
                         });
                     },
 
-                    publishPage: async (_, args, context) => {
+                    publishPage: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.publishPage(args.id));
                     },
 
-                    unpublishPage: async (_, args, context) => {
+                    unpublishPage: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.unpublishPage(args.id));
                     },
 
-                    requestReview: async (_, args, context) => {
+                    requestReview: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.requestPageReview(args.id));
                     },
 
-                    requestChanges: async (_, args, context) => {
+                    requestChanges: async (_, args: any, context) => {
                         return resolve(() => context.pageBuilder.requestPageChanges(args.id));
                     },
 
-                    rerenderPage: async (_, args, context) => {
+                    rerenderPage: async (_, args: any, context) => {
                         try {
                             await checkBasePermissions<PageSecurityPermission>(context, "pb.page", {
                                 pw: "p"

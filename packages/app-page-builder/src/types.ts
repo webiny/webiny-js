@@ -9,6 +9,7 @@ import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 export enum PageImportExportTaskStatus {
     PENDING = "pending",
@@ -133,10 +134,23 @@ export interface PbElementDataSettingsType {
         value?: string;
     };
     className?: string;
+    cellsType?: string;
     form?: PbElementDataSettingsFormType;
     [key: string]: any;
 }
+
+export interface PbElementDataTypeSource {
+    url?: string;
+    size?: string;
+}
 export type PbElementDataType = {
+    action?: {
+        href: string;
+        newTab: boolean;
+        clickHandler: string;
+        actionType: string;
+        variables: PbButtonElementClickHandlerVariable[];
+    };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
     text?: PbElementDataTextType;
@@ -148,9 +162,7 @@ export type PbElementDataType = {
     };
     type?: string;
     icon?: PbElementDataIconType;
-    source?: {
-        url?: string;
-    };
+    source?: PbElementDataTypeSource;
     oembed?: {
         source?: {
             url?: string;
@@ -167,6 +179,9 @@ export interface PbEditorElement {
     data: PbElementDataType;
     parent?: string;
     elements: (string | PbEditorElement)[];
+    content?: PbEditorElement;
+    path?: string[];
+    source?: string;
     [key: string]: any;
 }
 
@@ -175,6 +190,8 @@ export interface PbElement {
     type: string;
     data: PbElementDataType;
     elements: PbElement[];
+    content?: PbElement;
+    text?: string;
 }
 
 /**
@@ -182,7 +199,8 @@ export interface PbElement {
  */
 export interface PbTheme {
     colors: {
-        [key: string]: string;
+        background?: string;
+        [key: string]: string | undefined;
     };
     // TODO @ts-refactor
     elements: {
@@ -195,8 +213,17 @@ export interface PbTheme {
         };
         [key: string]: any;
     };
+    typography?: {
+        paragraph?: string;
+        description?: string;
+    };
     [key: string]: any;
 }
+
+export type PbPluginsLoader = Plugin & {
+    loadEditorPlugins?: () => Promise<any>;
+    loadRenderPlugins?: () => Promise<any>;
+};
 
 export type PbThemePlugin = Plugin & {
     theme: PbTheme;
@@ -302,11 +329,11 @@ export type PbRenderElementAttributesPlugin = Plugin & {
     }) => { [key: string]: string };
 };
 
-export type PbButtonElementClickHandlerVariable = {
+export interface PbButtonElementClickHandlerVariable {
     name: string;
     label: string;
     defaultValue: any;
-};
+}
 
 export interface PbButtonElementClickHandlerPlugin<TVariables = Record<string, any>>
     extends Plugin {
@@ -400,7 +427,7 @@ export interface PbEditorPageElementPluginToolbar {
     // Element group this element belongs to.
     group?: string;
     // A function to render an element preview in the toolbar.
-    preview?: ({ theme }?: { theme: PbTheme }) => ReactNode;
+    preview?: (params?: { theme: PbTheme }) => ReactNode;
 }
 export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
 export type PbEditorPageElementPlugin = Plugin & {
@@ -414,10 +441,7 @@ export type PbEditorPageElementPlugin = Plugin & {
     // Array of element settings plugin names.
     settings?: PbEditorPageElementPluginSettings;
     // A function to create an element data structure.
-    create: (
-        options: { [key: string]: any },
-        parent?: PbEditorElement
-    ) => Omit<PbEditorElement, "id">;
+    create: (options: Partial<PbElement>, parent?: PbEditorElement) => Omit<PbEditorElement, "id">;
     // A function to render an element in the editor.
     render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
     // A function to check if an element can be deleted.
@@ -550,6 +574,7 @@ export type PbEditorToolbarBottomPlugin = Plugin & {
 };
 
 export type PbEditorBlockPlugin = Plugin & {
+    id?: string;
     type: "pb-editor-block";
     title: string;
     category: string;
@@ -857,4 +882,10 @@ export interface PageBuilderFormDataSettings {
             };
         };
     };
+}
+
+export interface PageBuilderSecurityPermission extends SecurityPermission {
+    own?: boolean;
+    rwd?: string;
+    pw?: string | boolean;
 }

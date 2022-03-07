@@ -1,5 +1,6 @@
 import React from "react";
 import { CSSObject, cx } from "@emotion/css";
+import { Property } from "csstype";
 
 /**
  * TODO @ts-refactor
@@ -9,7 +10,112 @@ import { CSSObject, cx } from "@emotion/css";
 export interface Element {
     id: string;
     type: string;
-    data: Record<string, any>;
+    data: {
+        settings?: {
+            grid?: {
+                cellsType: string;
+            };
+            horizontalAlignFlex?: {
+                [key: string]: string;
+            };
+            verticalAlign?: {
+                [key: string]: string;
+            };
+            background?: {
+                [key: string]: string;
+            };
+            border?: {
+                [key: string]: {
+                    style?: string;
+                    color?: string;
+                    radius?: {
+                        advanced?: boolean;
+                        top?: string;
+                        bottom?: string;
+                        left?: string;
+                        right?: string;
+                        all?: string;
+                    };
+                    width?: {
+                        advanced?: boolean;
+                        top?: string;
+                        bottom?: string;
+                        left?: string;
+                        right?: string;
+                        all?: string;
+                    };
+                };
+            };
+            shadow?: {
+                horizontal?: string;
+                vertical?: string;
+                blur?: string;
+                spread?: string;
+                color?: string;
+            };
+            height?: {
+                [key: string]: {
+                    value: string;
+                };
+            };
+            width?: {
+                [key: string]: {
+                    value: string;
+                };
+            };
+            margin?: {
+                [key: string]: {
+                    advanced?: boolean;
+                    top?: string;
+                    bottom?: string;
+                    left?: string;
+                    right?: string;
+                    all?: string;
+                };
+            };
+            padding?: {
+                [key: string]: {
+                    advanced?: boolean;
+                    top?: string;
+                    bottom?: string;
+                    left?: string;
+                    right?: string;
+                    all?: string;
+                };
+            };
+            [key: string]: any;
+        };
+        text: {
+            data: {
+                text?: string;
+                typography: string;
+                color?: string;
+                alignment?: Property.TextAlign;
+                tag?: string;
+            };
+            desktop: {
+                text?: string;
+                typography: string;
+                color?: string;
+                alignment?: Property.TextAlign;
+                tag?: string;
+            };
+            [key: string]: {
+                text?: string;
+                typography: string;
+                color?: string;
+                alignment?: Property.TextAlign;
+                tag?: string;
+            };
+        };
+        image: {
+            file: {
+                name: string;
+                src: string;
+            };
+        };
+        [key: string]: any;
+    };
     elements: Element[];
     path?: string[];
     [key: string]: any;
@@ -20,7 +126,9 @@ export type Content = Element;
 /**
  * Should be a `CSSObject` object or an object with breakpoint names as keys and `CSSObject` objects as values.
  */
-export type StylesObjects = Record<string, any>; // TODO: CSSObject | Record<string, CSSObject>; doesn't work?
+export interface StylesObjects {
+    [key: string]: CSSObject | string | number;
+}
 
 export interface PageElementsProviderProps {
     theme: Theme;
@@ -37,24 +145,24 @@ export type GetThemeClassNames = (getStyles: (theme: Theme) => StylesObjects) =>
 export type GetStyles = (styles: StylesObjects) => Array<CSSObject>;
 export type GetClassNames = (styles: StylesObjects) => Array<string>;
 
-type SetAssignStylesCallbackParams = {
+interface SetAssignStylesCallbackParams {
     breakpoints: Record<string, Breakpoint>;
     styles: StylesObjects;
     assignTo?: CSSObject;
-};
+}
 
-type SetElementStylesCallbackParams = PageElementsProviderProps & {
+interface SetElementStylesCallbackParams extends PageElementsProviderProps {
     element: Element;
     assignStyles?: AssignStylesCallback;
-};
-type SetThemeStylesCallbackParams = PageElementsProviderProps & {
+}
+interface SetThemeStylesCallbackParams extends PageElementsProviderProps {
     getStyles: (theme: Theme) => StylesObjects;
     assignStyles?: AssignStylesCallback;
-};
-type SetStylesCallbackParams = PageElementsProviderProps & {
+}
+interface SetStylesCallbackParams extends PageElementsProviderProps {
     styles: StylesObjects;
     assignStyles?: AssignStylesCallback;
-};
+}
 
 export type AssignStylesCallback = (params: SetAssignStylesCallbackParams) => CSSObject;
 export type ElementStylesCallback = (params: SetElementStylesCallbackParams) => Array<CSSObject>;
@@ -103,6 +211,7 @@ export type ThemeBreakpoints = Record<string, Breakpoint>;
 export interface ThemeStyles {
     colors?: Record<string, any>;
     typography?: Record<string, StylesObjects>;
+    buttons?: Record<string, StylesObjects>;
     [key: string]: any;
 }
 

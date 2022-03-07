@@ -23,7 +23,10 @@ export interface AuthenticatorConfig {
     getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
 }
 
-type JwksCacheItem = Record<string, any>;
+interface JwksCacheItem {
+    kid: string;
+    [key: string]: string;
+}
 const jwksCache = new Map<string, JwksCacheItem[]>();
 
 export const createAuthenticator = (config: AuthenticatorConfig) => {

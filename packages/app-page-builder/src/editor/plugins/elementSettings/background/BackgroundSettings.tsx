@@ -49,6 +49,7 @@ const BACKGROUND_SETTINGS_COUNT = 2;
 
 interface SettingsPropsType extends PbEditorPageElementSettingsRenderComponentProps {
     options: {
+        image?: boolean;
         [key: string]: any;
     };
 }

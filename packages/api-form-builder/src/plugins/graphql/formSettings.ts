@@ -55,7 +55,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             },
             FbMutation: {
-                updateSettings: async (_, args, context) => {
+                updateSettings: async (_, args: any, context) => {
                     try {
                         const settings = await context.formBuilder.updateSettings(args.data);
                         return new Response(settings);

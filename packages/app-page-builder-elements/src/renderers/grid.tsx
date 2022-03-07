@@ -22,10 +22,12 @@ const Grid: ElementRenderer = ({ element }) => {
         getElementClassNames(element)
     );
 
-    const cellsWidths: number[] = useMemo(
-        () => element.data.settings.grid.cellsType.split("-"),
-        []
-    );
+    const cellsWidths: number[] = useMemo(() => {
+        if (!element.data.settings || !element.data.settings.grid) {
+            return [];
+        }
+        return element.data.settings.grid.cellsType.split("-").map(Number);
+    }, []);
 
     return (
         <pb-grid class={classNames}>

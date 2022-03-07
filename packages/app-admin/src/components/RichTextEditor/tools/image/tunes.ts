@@ -82,7 +82,7 @@ export default class Tunes {
                 this.tuneClicked(tune.name, tune.action);
             });
 
-            el.dataset.tune = tune.name;
+            el.dataset["tune"] = tune.name;
             const name = tune.name as keyof ImageToolData;
             el.classList.toggle(this.CSS.buttonActive, !!toolData[name]);
 
@@ -111,7 +111,7 @@ export default class Tunes {
             }
         }
 
-        const button = this.buttons.find(el => el.dataset.tune === tuneName);
+        const button = this.buttons.find(el => el.dataset["tune"] === tuneName);
 
         if (button) {
             button.classList.toggle(

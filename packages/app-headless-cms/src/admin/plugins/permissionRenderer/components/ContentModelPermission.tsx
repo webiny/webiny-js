@@ -10,13 +10,13 @@ import { useCmsData, CmsDataCmsModel } from "./useCmsData";
 import { Note } from "./StyledComponents";
 import ContentModelList from "./ContentModelList";
 import { BindComponent } from "@webiny/form/types";
-import { FormData } from "@webiny/form/types";
+import { CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 interface ContentModelPermissionProps {
     Bind: BindComponent;
-    data: FormData;
+    data: CmsSecurityPermission;
     setValue: (name: string, value: string) => void;
     entity: string;
     title: string;
@@ -79,11 +79,11 @@ export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
                                 >
                                     <option value={"full"}>{t`All models`}</option>
                                     <option value={"models"}>{t`Only specific models`}</option>
-                                    {data.endpoints.includes("manage") && (
+                                    {(data.endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only models created by the user`}</option>
-                                    )}
+                                    )) || <></>}
                                 </Select>
                             </Bind>
                             {data[`contentModelGroupAccessScope`] === "own" && (

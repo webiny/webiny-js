@@ -3,11 +3,12 @@ import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/S
 import { useSecurity } from "@webiny/app-security";
 import CategoriesDataList from "./CategoriesDataList";
 import CategoriesForm from "./CategoriesForm";
+import { PageBuilderSecurityPermission } from "~/types";
 
 const Categories: React.FC = () => {
     const { identity, getPermission } = useSecurity();
     const pbMenuPermissionRwd = useMemo((): string | null => {
-        const permission = getPermission("pb.category");
+        const permission = getPermission<PageBuilderSecurityPermission>("pb.category");
         if (!permission) {
             return null;
         }

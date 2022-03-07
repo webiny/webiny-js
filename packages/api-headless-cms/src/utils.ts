@@ -1,6 +1,5 @@
 import slugify from "slugify";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { SecurityPermission } from "@webiny/api-security/types";
 
 import {
     CmsModelPermission,
@@ -8,10 +7,12 @@ import {
     CmsContext,
     CreatedBy,
     CmsGroupPermission,
-    CmsGroup
+    CmsGroup,
+    CmsEntryPermission,
+    BaseCmsSecurityPermission
 } from "~/types";
 
-export const hasRwd = (permission: SecurityPermission, rwd: string): boolean => {
+export const hasRwd = (permission: BaseCmsSecurityPermission, rwd: string): boolean => {
     if (typeof permission.rwd !== "string") {
         return true;
     }
@@ -19,7 +20,7 @@ export const hasRwd = (permission: SecurityPermission, rwd: string): boolean => 
     return permission.rwd.includes(rwd);
 };
 
-export const hasPw = (permission: SecurityPermission, pw: string): boolean => {
+export const hasPw = (permission: CmsEntryPermission, pw: string): boolean => {
     const isCustom = Object.keys(permission).length > 1; // "name" key is always present
 
     if (!isCustom) {
@@ -47,7 +48,9 @@ const RWD: Record<string, string> = {
     d: "delete"
 };
 
-export const checkPermissions = async <TPermission extends SecurityPermission = SecurityPermission>(
+export const checkPermissions = async <
+    TPermission extends BaseCmsSecurityPermission = BaseCmsSecurityPermission
+>(
     context: CmsContext,
     name: string,
     check?: { rwd?: string; pw?: string }
@@ -113,10 +116,15 @@ export const checkPermissions = async <TPermission extends SecurityPermission = 
     return permission;
 };
 
+interface OwnableRecord {
+    createdBy?: CreatedBy;
+    ownedBy?: CreatedBy;
+}
+
 export const checkOwnership = (
     context: CmsContext,
-    permission: SecurityPermission,
-    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy }
+    permission: BaseCmsSecurityPermission,
+    record: OwnableRecord
 ): void => {
     if (!permission.own) {
         return;
@@ -137,8 +145,8 @@ export const checkOwnership = (
 
 export const validateOwnership = (
     context: CmsContext,
-    permission: SecurityPermission,
-    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy }
+    permission: BaseCmsSecurityPermission,
+    record: OwnableRecord
 ): boolean => {
     try {
         checkOwnership(context, permission, record);

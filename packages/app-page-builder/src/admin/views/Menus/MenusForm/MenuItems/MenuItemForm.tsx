@@ -14,6 +14,8 @@ interface MenuItemFormProps {
     deleteItem: (item: MenuTreeItem) => void;
     items: MenuTreeItem[];
 }
+
+type MenuItemFormData = Partial<MenuTreeItem>;
 const MenuItemForm: React.FC<MenuItemFormProps> = props => {
     const { onCancel, onSubmit } = useHandlers(props, {
         onCancel:
@@ -27,8 +29,8 @@ const MenuItemForm: React.FC<MenuItemFormProps> = props => {
             },
         onSubmit:
             ({ items, onChange, editItem }) =>
-            data => {
-                const item = omit(omitBy(data, isNull), ["__new"]);
+            (data: MenuItemFormData) => {
+                const item = omit(omitBy(data, isNull), ["__new"]) as MenuItemFormData;
                 if (item.id) {
                     const target = findObject(items, item.id);
                     if (target) {
@@ -50,7 +52,11 @@ const MenuItemForm: React.FC<MenuItemFormProps> = props => {
     if (!plugin) {
         return null;
     }
-    return plugin.menuItem.renderForm({ onSubmit, onCancel, data: currentMenuItem });
+    return plugin.menuItem.renderForm({
+        onSubmit,
+        onCancel,
+        data: currentMenuItem
+    });
 };
 
 export default MenuItemForm;

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, Dispatch, SetStateAction } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorContentModel } from "~/types";
+import { CmsEditorContentModel, CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/contents/entries");
 
@@ -65,7 +65,7 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
     });
 
     const canCreate = useMemo((): boolean => {
-        const permission = getPermission("cms.contentEntry");
+        const permission = getPermission<CmsSecurityPermission>("cms.contentEntry");
         if (!permission) {
             return false;
         }

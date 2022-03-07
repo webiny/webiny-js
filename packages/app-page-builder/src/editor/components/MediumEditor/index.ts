@@ -88,7 +88,7 @@ const ReactMediumEditor: React.FC<ReactMediumEditorProps> = ({
         dangerouslySetInnerHTML: { __html: value },
         ref: elementRef,
         ...tagProps,
-        className: `${editorClass} ${tagProps.className}`
+        className: `${editorClass} ${tagProps["className"]}`
     });
 };
 
