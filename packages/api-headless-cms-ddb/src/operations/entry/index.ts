@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
+    CmsEntryListWhere,
     CmsEntryStorageOperations,
     CmsEntryStorageOperationsCreateParams,
     CmsEntryStorageOperationsCreateRevisionFromParams,
@@ -524,7 +525,7 @@ export const createEntriesStorageOperations = (
                 items: []
             };
         }
-        const where: CmsEntryStorageOperationsListParams["where"] = {
+        const where: Partial<CmsEntryListWhere> = {
             ...originalWhere
         };
         delete where["published"];

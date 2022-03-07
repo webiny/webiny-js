@@ -1,5 +1,7 @@
 interface StackOutput {
     apiUrl: string;
+    region: string;
+    dynamoDbTable: string;
     // [key: string]: any;
 }
 

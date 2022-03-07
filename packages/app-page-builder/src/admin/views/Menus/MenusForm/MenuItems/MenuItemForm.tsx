@@ -15,7 +15,7 @@ interface MenuItemFormProps {
     items: MenuTreeItem[];
 }
 
-type MenuItemFormData = Partial<MenuTreeItem>
+type MenuItemFormData = Partial<MenuTreeItem>;
 const MenuItemForm: React.FC<MenuItemFormProps> = props => {
     const { onCancel, onSubmit } = useHandlers(props, {
         onCancel:

@@ -31,7 +31,7 @@ type MappedPlugins<T extends Plugin> = Record<string, T>;
 
 interface CreateFiltersParams {
     plugins: PluginsContainer;
-    where: CmsEntryListWhere;
+    where: Partial<CmsEntryListWhere>;
     fields: ModelFieldRecords;
 }
 
@@ -49,7 +49,7 @@ export interface FilterItemFromStorage {
 }
 interface FilterItemsParams {
     items: CmsEntry[];
-    where: CmsEntryListWhere;
+    where: Partial<CmsEntryListWhere>;
     plugins: PluginsContainer;
     fields: ModelFieldRecords;
     fromStorage: FilterItemFromStorage;
