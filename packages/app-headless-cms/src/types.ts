@@ -542,7 +542,7 @@ export interface CmsSecurityPermission extends SecurityPermission {
     accessLevel?: "full" | "no" | "custom";
     models?: Record<string, string>;
     groups?: Record<string, string>;
-    endpoints: string[];
+    endpoints?: string[];
     locales?: string[];
     rwd?: string;
     own?: boolean;

@@ -34,9 +34,11 @@ const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = 
         [modelsGroups]
     );
 
+    const endpoints = data.endpoints || [];
+
     const disabledPrimaryActions =
         [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
-        !data.endpoints.includes("manage");
+        !endpoints.includes("manage");
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -51,7 +53,7 @@ const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = 
                                 <Select label={t`Access Scope`}>
                                     <option value={"full"}>{t`All groups`}</option>
                                     <option value={"groups"}>{t`Only specific groups`}</option>
-                                    {(data.endpoints.includes("manage") && (
+                                    {(endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only groups created by the user`}</option>
@@ -77,12 +79,12 @@ const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = 
                                     disabled={disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
-                                    {data.endpoints.includes("manage") ? (
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rw"}>{t`Read, write`}</option>
                                     ) : (
                                         <></>
                                     )}
-                                    {data.endpoints.includes("manage") ? (
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rwd"}>{t`Read, write, delete`}</option>
                                     ) : (
                                         <></>
