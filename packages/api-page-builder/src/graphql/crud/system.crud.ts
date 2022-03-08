@@ -150,17 +150,20 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                 });
 
                 const initialPagesData: Page[] = [
+                    /**
+                     * Category is missing but we cannot set it because it will override the created one.
+                     */
+                    // @ts-ignore
                     {
                         title: "Welcome to Webiny",
                         path: "/welcome-to-webiny",
                         content: welcomeToWebinyPageContent,
-                        settings: {},
-                        /**
-                         * Category will be added when page is created.
-                         */
-                        // @ts-ignore
-                        category: undefined
+                        settings: {}
                     },
+                    /**
+                     * Category is missing but we cannot set it because it will override the created one.
+                     */
+                    // @ts-ignore
                     {
                         title: "Not Found",
                         path: "/not-found",
@@ -176,12 +179,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                                 latest: false,
                                 published: false
                             }
-                        },
-                        /**
-                         * Category will be added when page is created.
-                         */
-                        // @ts-ignore
-                        category: undefined
+                        }
                     }
                 ];
 
