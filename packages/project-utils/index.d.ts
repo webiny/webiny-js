@@ -1,4 +1,5 @@
 import { Configuration as WebpackConfig, DefinePlugin, Loader } from "webpack";
+import { OutputChunk } from 'rollup';
 
 export function traverseLoaders(loaders: Loader[], onLoader: (loader: Loader) => void): void;
 
@@ -48,6 +49,7 @@ interface BuildFunctionConfig {
 
 export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
 export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
+export function buildLambdaEdge(options: { file: string}) : Promise<OutputChunk>;
 
 // Build commands - packages.
 interface BuildPackageConfig {
