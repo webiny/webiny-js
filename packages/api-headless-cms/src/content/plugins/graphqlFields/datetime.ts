@@ -1,5 +1,5 @@
 import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
-import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
+import { createGraphQLInputField } from "./helpers";
 
 const fieldGraphQLTypes: Record<string, string> = {
     time: "Time",
@@ -57,10 +57,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
         },
         createInputField({ field }) {
-            return attachRequiredFieldValue(
-                `${field.fieldId}: ${getFieldGraphQLType(field)}`,
-                field
-            );
+            return createGraphQLInputField(field, getFieldGraphQLType(field));
         }
     }
 };
