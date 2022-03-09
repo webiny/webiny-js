@@ -3,7 +3,12 @@
   "version": "5.24.0",
   "types": "dist/index.d.ts",
   "exports": {
-    "import": "./dist/index.js"
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./stagedRollouts": {
+      "import": "./dist/stagedRollouts/index.js"
+    }
   },
   "repository": {
     "type": "git",
@@ -23,6 +28,7 @@
   "devDependencies": {
     "@webiny/project-utils": "^5.24.0"
   },
+  "sideEffects": false,
   "adio": {
     "ignore": {
       "src": [

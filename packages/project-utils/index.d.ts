@@ -1,7 +1,5 @@
-import { Configuration as WebpackConfig, DefinePlugin, Loader } from "webpack";
+import { Configuration as WebpackConfig } from "webpack";
 import { OutputChunk } from 'rollup';
-
-export function traverseLoaders(loaders: Loader[], onLoader: (loader: Loader) => void): void;
 
 // Build commands.
 export type BuildCommand<TOptions = Record<string, any>> = (options: TOptions) => Promise<void>;
@@ -11,7 +9,7 @@ interface BabelConfig {
 }
 
 interface DefinePluginOptions {
-    [key: string]: DefinePlugin.CodeValueObject;
+    [key: string]: any;
 }
 
 // Build commands - apps.
@@ -49,7 +47,7 @@ interface BuildFunctionConfig {
 
 export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
 export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
-export function buildLambdaEdge(options: { file: string}) : Promise<OutputChunk>;
+export function buildLambdaEdge(content: string) : Promise<OutputChunk>;
 
 // Build commands - packages.
 interface BuildPackageConfig {

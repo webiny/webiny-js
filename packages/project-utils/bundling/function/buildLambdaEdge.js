@@ -3,11 +3,15 @@ const esbuild = require("rollup-plugin-esbuild");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require("@rollup/plugin-commonjs");
 const { babel } = require("@rollup/plugin-babel");
+const virtual = require("@rollup/plugin-virtual");
 
-module.exports = async function ({ file }) {
+module.exports = async function (fileContent) {
     const inputOptions = {
-        input: file,
+        input: "~index",
         plugins: [
+            virtual({
+                "~index": fileContent
+            }),
             nodeResolve(),
             commonjs(),
             esbuild.default({

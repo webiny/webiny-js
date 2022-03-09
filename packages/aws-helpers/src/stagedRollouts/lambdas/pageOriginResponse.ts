@@ -1,6 +1,6 @@
 import { defineLambdaEdgeResponseHandler } from "~/lambdaEdge";
 
-import { pointsToFile, stageCookie, stageHeader } from "../utils/common";
+import { pointsToFile, variantCookie, variantHeader } from "../utils/common";
 import { getHeader, setResponseCookie } from "../utils/headers";
 
 export const pageOriginResponse = defineLambdaEdgeResponseHandler(async event => {
@@ -16,9 +16,9 @@ export const pageOriginResponse = defineLambdaEdgeResponseHandler(async event =>
         return response;
     }
 
-    const stage = getHeader(request.headers, stageHeader);
+    const stage = getHeader(request.headers, variantHeader);
     if (stage) {
-        setResponseCookie(response, `${stageCookie}=${stage}; Secure; Path=/;`);
+        setResponseCookie(response, `${variantCookie}=${stage}; Secure; Path=/;`);
     }
 
     return response;

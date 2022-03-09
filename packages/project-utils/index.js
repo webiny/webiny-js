@@ -5,7 +5,6 @@ const {
     buildLambdaEdge
 } = require("./bundling/function");
 const { createWatchPackage, createBuildPackage } = require("./packages");
-const { traverseLoaders } = require("./traverseLoaders");
 
 module.exports = {
     createBuildApp,
@@ -18,8 +17,5 @@ module.exports = {
 
     // Packages.
     createWatchPackage,
-    createBuildPackage,
-
-    // Other.
-    traverseLoaders
+    createBuildPackage
 };

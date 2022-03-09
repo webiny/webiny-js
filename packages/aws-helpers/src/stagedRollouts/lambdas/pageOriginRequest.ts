@@ -1,6 +1,6 @@
 import { defineLambdaEdgeRequestHandler } from "~/lambdaEdge";
 
-import { stageCookie, stageHeader } from "../utils/common";
+import { variantCookie, variantHeader } from "../utils/common";
 import { isConfigRequest, loadConfig } from "../utils/config";
 import {
     getHeader,
@@ -19,11 +19,11 @@ export const pageOriginRequest = defineLambdaEdgeRequestHandler(async event => {
         return request;
     }
 
-    let stageName = getHeader(request.headers, stageHeader);
+    let stageName = getHeader(request.headers, variantHeader);
     let stageFromCookie = false;
 
     if (!stageName) {
-        stageName = getRequestCookies(request)[stageCookie];
+        stageName = getRequestCookies(request)[variantCookie];
         stageFromCookie = true;
     }
 
@@ -43,7 +43,7 @@ export const pageOriginRequest = defineLambdaEdgeRequestHandler(async event => {
                 query: request.querystring
             });
 
-            setResponseCookie(response, `${stageCookie}=; Secure; Path=/;`);
+            setResponseCookie(response, `${variantCookie}=; Secure; Path=/;`);
             return response;
         } else {
             // Do not make a redirect for stage selected with header,

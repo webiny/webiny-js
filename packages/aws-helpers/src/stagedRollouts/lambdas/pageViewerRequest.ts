@@ -1,6 +1,6 @@
 import { CloudFrontRequest, defineLambdaEdgeRequestHandler } from "~/lambdaEdge";
 
-import { stageCookie, stageHeader } from "../utils/common";
+import { variantCookie, variantHeader } from "../utils/common";
 import { GatewayConfig, isConfigRequest, loadConfig } from "../utils/config";
 import { getHeader, getRequestCookies, setHeader } from "../utils/headers";
 
@@ -15,9 +15,9 @@ export const pageViewerRequest = defineLambdaEdgeRequestHandler(async event => {
 
     let stage =
         //  Try to get stage name from header.
-        getHeader(request.headers, stageHeader) ||
+        getHeader(request.headers, variantHeader) ||
         // Try to get stage name from cookie.
-        getRequestCookies(request)[stageCookie];
+        getRequestCookies(request)[variantCookie];
 
     if (stage) {
         // If there is a sticky session cookie, we just pass it further to origin request handler.
@@ -79,7 +79,7 @@ function selectStage(request: CloudFrontRequest, stage: string) {
     console.log(`Forwarding to ${stage}`);
 
     setHeader(request.headers, {
-        key: stageHeader,
+        key: variantHeader,
         value: stage
     });
 

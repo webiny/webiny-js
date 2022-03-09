@@ -6374,6 +6374,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/plugin-virtual@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@rollup/plugin-virtual@npm:2.1.0"
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0
+  checksum: 85ce90f3f30f20d6ada01909e905e7c7627af51d710f94d5677b37434fb62f2bee9aab50c4068c68c5626fbf481f7d32281b3af54f628f1f96a381523da31be8
+  languageName: node
+  linkType: hard
+
 "@rollup/pluginutils@npm:^3.1.0":
   version: 3.1.0
   resolution: "@rollup/pluginutils@npm:3.1.0"
@@ -11828,6 +11837,7 @@ __metadata:
     "@rollup/plugin-babel": ^5.3.1
     "@rollup/plugin-commonjs": ^21.0.2
     "@rollup/plugin-node-resolve": ^13.1.3
+    "@rollup/plugin-virtual": ^2.1.0
     "@svgr/webpack": 6.1.1
     "@types/webpack-env": 1.16.3
     "@webiny/cli": ^5.24.0

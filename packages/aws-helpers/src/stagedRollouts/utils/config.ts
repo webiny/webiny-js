@@ -1,4 +1,4 @@
-import * as https from "https";
+import { get } from "https";
 import { CloudFrontRequest, CloudFrontRequestEvent } from "~/lambdaEdge";
 
 const configTTL = 60 * 1000; // 1 minute
@@ -35,7 +35,7 @@ function loadConfigCore(event: CloudFrontRequestEvent) {
     return new Promise<GatewayConfig>((resolve, reject) => {
         let dataString = "";
 
-        const req = https.get(
+        const req = get(
             {
                 hostname: domain,
                 port: 443,
