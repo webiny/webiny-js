@@ -10,3 +10,4 @@ export * from "./ApplicationBuilderLegacy";
 export * from "./utils/getPulumiWorkDir";
 export * from "./utils/mergeAppHooks";
 export * from "./utils/tagResources";
+export * from "./utils/stagedRollouts";

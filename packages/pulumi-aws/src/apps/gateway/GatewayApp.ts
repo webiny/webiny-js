@@ -4,9 +4,11 @@ import * as aws from "@pulumi/aws";
 import {
     defineApp,
     createGenericApplication,
+    loadGatewayConfig,
     ApplicationContext,
     ApplicationConfig
 } from "@webiny/pulumi-sdk";
+
 import { buildLambdaEdge } from "@webiny/project-utils";
 
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
@@ -28,6 +30,24 @@ export const GatewayApp = defineApp({
                     indexDocument: "index.html",
                     errorDocument: "index.html"
                 }
+            }
+        });
+
+        app.addResource(aws.s3.BucketObject, {
+            name: "admin-gateway-config",
+            config: {
+                bucket: bucket.output,
+                acl: "public-read",
+                key: "_config.json",
+                content: pulumi.output(
+                    loadGatewayConfig({
+                        app: "admin",
+                        cwd: app.ctx.projectDir,
+                        env: app.ctx.env
+                    }).then(JSON.stringify)
+                ),
+                contentType: "application/json",
+                cacheControl: "public, max-age=31536000"
             }
         });
 
@@ -53,13 +73,22 @@ export const GatewayApp = defineApp({
             }
         });
 
-        // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
-        const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
+        const lambdas = app.addHandler(() => {
+            // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
+            const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
-        const pageViewerRequest = createLambda("pageViewerRequest");
-        const pageOriginRequest = createLambda("pageOriginRequest");
-        const pageOriginResponse = createLambda("pageOriginResponse");
-        const assetOriginRequest = createLambda("assetOriginRequest");
+            const pageViewerRequest = createLambda("pageViewerRequest", awsUsEast1);
+            const pageOriginRequest = createLambda("pageOriginRequest", awsUsEast1);
+            const pageOriginResponse = createLambda("pageOriginResponse", awsUsEast1);
+            const assetOriginRequest = createLambda("assetOriginRequest", awsUsEast1);
+
+            return {
+                pageViewerRequest,
+                pageOriginRequest,
+                pageOriginResponse,
+                assetOriginRequest
+            };
+        });
 
         const cloudfront = app.addResource(aws.cloudfront.Distribution, {
             name: "admin-gateway-cdn",
@@ -99,15 +128,15 @@ export const GatewayApp = defineApp({
                     lambdaFunctionAssociations: [
                         {
                             eventType: "viewer-request",
-                            lambdaArn: pageViewerRequest.qualifiedArn
+                            lambdaArn: lambdas.pageViewerRequest.qualifiedArn
                         },
                         {
                             eventType: "origin-request",
-                            lambdaArn: pageOriginRequest.qualifiedArn
+                            lambdaArn: lambdas.pageOriginRequest.qualifiedArn
                         },
                         {
                             eventType: "origin-response",
-                            lambdaArn: pageOriginResponse.qualifiedArn
+                            lambdaArn: lambdas.pageOriginResponse.qualifiedArn
                         }
                     ]
                 },
@@ -126,7 +155,7 @@ export const GatewayApp = defineApp({
                         lambdaFunctionAssociations: [
                             {
                                 eventType: "origin-request",
-                                lambdaArn: assetOriginRequest.qualifiedArn
+                                lambdaArn: lambdas.assetOriginRequest.qualifiedArn
                             }
                         ]
                     }
@@ -160,15 +189,10 @@ export const GatewayApp = defineApp({
             bucket,
             role,
             cloudfront,
-            lambdaEdge: {
-                pageViewerRequest,
-                pageOriginRequest,
-                pageOriginResponse,
-                assetOriginRequest
-            }
+            lambdaEdge: lambdas
         };
 
-        function createLambda(name: string) {
+        function createLambda(name: string, provider: aws.Provider) {
             const content = [
                 `import { ${name} } from '@webiny/aws-helpers/stagedRollouts';`,
                 `export default ${name}`
@@ -188,7 +212,7 @@ export const GatewayApp = defineApp({
                         "index.js": new pulumi.asset.StringAsset(output.then(o => o.code))
                     })
                 },
-                { provider: awsUsEast1 }
+                { provider }
             );
         }
     }

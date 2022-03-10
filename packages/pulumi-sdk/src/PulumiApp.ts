@@ -39,10 +39,19 @@ export interface ResourceConfigModifier<T> {
     (value: pulumi.Unwrap<T>): T | void;
 }
 
+interface DeployEventParams {
+    outputs: Record<string, any>;
+}
+
+interface DeployEventHandler {
+    (params: DeployEventParams): Promise<void> | void;
+}
+
 export class PulumiApp {
     public readonly name: string;
     public readonly ctx: ApplicationContext;
     private readonly resourceHandlers: ResourceHandler[] = [];
+    private readonly deployHandlers: DeployEventHandler[] = [];
     private readonly handlers: (() => void | Promise<void>)[] = [];
     private readonly outputs: Record<string, any> = {};
     private readonly modules = new Map<symbol, unknown>();
@@ -54,6 +63,10 @@ export class PulumiApp {
 
     public onResource(handler: ResourceHandler): void {
         this.resourceHandlers.push(handler);
+    }
+
+    public onDeploy(handler: DeployEventHandler) {
+        this.deployHandlers.push(handler);
     }
 
     public addResource<T extends ResourceConstructor>(ctor: T, params: CreateResourceParams<T>) {
@@ -101,8 +114,14 @@ export class PulumiApp {
         return module;
     }
 
-    public addHandler(handler: () => Promise<void> | void) {
-        this.handlers.push(handler);
+    public addHandler<T>(handler: () => Promise<T> | T) {
+        const promise = new Promise<T>(resolve => {
+            this.handlers.push(async () => {
+                resolve(await handler());
+            });
+        });
+
+        return pulumi.output(promise);
     }
 
     public getModule<TConfig, TModule>(def: PulumiAppModuleDefinition<TModule, TConfig>): TModule;
@@ -131,7 +150,14 @@ export class PulumiApp {
         return module;
     }
 
-    public async run() {
+    public createController() {
+        return {
+            run: this.runProgram.bind(this),
+            deployFinished: this.deployFinished.bind(this)
+        };
+    }
+
+    private async runProgram() {
         tagResources({
             WbyProjectName: String(process.env.WEBINY_PROJECT_NAME),
             WbyEnvironment: String(process.env.WEBINY_ENV)
@@ -143,6 +169,12 @@ export class PulumiApp {
         }
 
         return this.outputs;
+    }
+
+    private async deployFinished(params: DeployEventParams) {
+        for (const handler of this.deployHandlers) {
+            await handler(params);
+        }
     }
 }
 

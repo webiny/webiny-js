@@ -6,7 +6,7 @@ const buildPackages = require("./deploy/buildPackages");
 const { ApplicationBuilderGeneric, ApplicationBuilderLegacy } = require("@webiny/pulumi-sdk");
 
 module.exports = async (inputs, context) => {
-    const { env, folder, build, deploy } = inputs;
+    const { env, folder, build, deploy, variant } = inputs;
 
     // If folder not specified, that means we want to deploy the whole project (all project applications).
     // For that, we look if there are registered plugins that perform that.
@@ -79,6 +79,7 @@ module.exports = async (inputs, context) => {
         appDir: projectApplication.root,
         projectDir: projectApplication.project.root,
         env,
+        variant,
         pulumi: pulumi
     });
 

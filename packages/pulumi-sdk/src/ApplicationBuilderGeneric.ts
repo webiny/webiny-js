@@ -32,19 +32,22 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
             fs.mkdirSync(pulumiWorkDir, { recursive: true });
         }
 
+        const app = this.config.app({
+            env: args.env,
+            variant: args.variant,
+            appDir: args.appDir,
+            projectDir: args.projectDir
+        });
+
+        const appController = app.createController();
+
         const stack = await LocalWorkspace.createOrSelectStack(
             {
                 projectName: this.config.name,
-                stackName: args.env,
-                program: async () => {
-                    const app = this.config.app({
-                        env: args.env,
-                        appDir: args.appDir,
-                        projectDir: args.projectDir
-                    });
-
-                    return await app.run();
-                }
+                // TODO this makes sense only for API/Admin/Website, but not for storage/gateway
+                // We should add additional logic around that.
+                stackName: args.variant ? `${args.env}.${args.variant}` : args.env,
+                program: () => appController.run()
             },
             {
                 workDir: pulumiWorkDir,
@@ -64,7 +67,7 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
             }
         );
 
-        type SharedOptions = Pick<UpOptions, "onOutput" | "color">;
+        type SharedOptions = Pick<UpOptions, "onOutput" | "color" | "onEvent">;
         const options: SharedOptions = {
             onOutput: line => console.log(trimNewlines(line)),
             color: "always"
@@ -78,7 +81,14 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
                 await stack.preview(options);
             },
             async up() {
-                await stack.up(options);
+                const result = await stack.up(options);
+
+                const outputs: Record<string, any> = {};
+                for (const key of Object.keys(result.outputs)) {
+                    outputs[key] = result.outputs[key].value;
+                }
+
+                await appController.deployFinished({ outputs });
             }
         };
     }

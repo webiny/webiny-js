@@ -3,14 +3,14 @@ import * as aws from "@pulumi/aws";
 import {
     defineApp,
     createGenericApplication,
-    mergeAppHooks,
     ApplicationContext,
-    ApplicationConfig
+    ApplicationConfig,
+    updateGatewayConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { adminUpload } from "./AdminHookUpload";
+import { adminUpload } from "./AdminUpload";
 
 export interface AdminAppConfig {
     /** Custom domain configuration */
@@ -66,8 +66,29 @@ export const AdminApp = defineApp({
 
         app.addOutputs({
             appStorage: bucket.bucket.output.id,
+            appDomain: cloudfront.output.domainName,
             appUrl: cloudfront.output.domainName.apply(value => `https://${value}`)
         });
+
+        app.onDeploy(async ({ outputs }) => {
+            await adminUpload({
+                appDir: app.ctx.appDir,
+                bucket: outputs.appStorage
+            });
+        });
+
+        const variant = app.ctx.variant;
+        if (variant) {
+            app.onDeploy(async ({ outputs }) => {
+                await updateGatewayConfig({
+                    app: "admin",
+                    cwd: app.ctx.projectDir,
+                    env: app.ctx.env,
+                    variant: variant,
+                    domain: outputs.appDomain
+                });
+            });
+        }
 
         return {
             ...bucket,
@@ -97,6 +118,6 @@ export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminA
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(adminUpload, config.afterDeploy)
+        afterDeploy: config.afterDeploy
     });
 }

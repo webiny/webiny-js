@@ -27,6 +27,10 @@ module.exports = [
                         describe: `Environment`,
                         type: "string"
                     });
+                    yargs.option("variant", {
+                        describe: `Variant (only for staged rollouts)`,
+                        type: "string"
+                    });
                     yargs.option("build", {
                         default: true,
                         describe: `Build packages before deploying`,

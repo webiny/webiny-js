@@ -10,6 +10,7 @@ export interface ApplicationStackArgs {
     pulumi: Pulumi;
     debug?: boolean;
     env: string;
+    variant?: string;
 }
 
 export interface ApplicationBuilderConfig extends Partial<ApplicationHooks> {
