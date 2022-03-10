@@ -31,7 +31,7 @@ export const createGraphQLInputField = (field: CmsModelField, graphQlType: strin
     const multipleRequired = getIsRequired(field.listValidation) ? "!" : "";
 
     const itemRequired =
-        process.env.HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM === "false" ? "" : "!";
+        process.env.HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM === "false" ? "" : singleRequired;
 
     return `${field.fieldId}: [${graphQlType}${itemRequired}]${multipleRequired}`;
 };
