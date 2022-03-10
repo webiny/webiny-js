@@ -1421,4 +1421,172 @@ describe("MANAGE - Resolvers", () => {
             }
         });
     });
+
+    it("should get latest, published or exact category", async () => {
+        const { getCategory, createCategory, publishCategory, createCategoryFrom } =
+            useCategoryManageHandler(manageOpts);
+
+        const { listCategories: listPublishedCategories } = useCategoryReadHandler(readOpts);
+
+        await setupModel();
+
+        const title = "Webiny Serverless Framework";
+        const slug = "webiny-serverless-framework";
+        const [createWebinyResponse] = await createCategory({
+            data: {
+                title,
+                slug
+            }
+        });
+        const [publishWebinyResponse] = await publishCategory({
+            revision: createWebinyResponse.data.createCategory.data.id
+        });
+        const webiny = publishWebinyResponse.data.publishCategory.data;
+
+        const [response] = await createCategoryFrom({
+            revision: webiny.id
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                createCategoryFrom: {
+                    data: {
+                        entryId: webiny.entryId,
+                        meta: {
+                            status: "draft",
+                            version: 2
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        await until(
+            () => listPublishedCategories().then(([data]) => data),
+            ({ data }: any) => {
+                return data.listCategories.data.length === 1;
+            },
+            {
+                name: "list categories after publishing"
+            }
+        );
+
+        const [exactResponse] = await getCategory({
+            revision: webiny.id
+        });
+        expect(exactResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        id: webiny.id,
+                        meta: {
+                            status: "published",
+                            version: 1
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [publishedResponse] = await getCategory({
+            entryId: webiny.entryId,
+            status: "published"
+        });
+
+        expect(publishedResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        id: webiny.id,
+                        meta: {
+                            status: "published",
+                            version: 1
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [publishedWithIdResponse] = await getCategory({
+            entryId: webiny.id,
+            status: "published"
+        });
+
+        expect(publishedWithIdResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        id: webiny.id,
+                        meta: {
+                            status: "published",
+                            version: 1
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [latestResponse] = await getCategory({
+            entryId: webiny.entryId,
+            status: "latest"
+        });
+
+        expect(latestResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        entryId: webiny.entryId,
+                        meta: {
+                            status: "draft",
+                            version: 2
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [latestWithIdResponse] = await getCategory({
+            entryId: webiny.id,
+            status: "latest"
+        });
+
+        expect(latestWithIdResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        entryId: webiny.entryId,
+                        meta: {
+                            status: "draft",
+                            version: 2
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [latest2Response] = await getCategory({
+            entryId: webiny.entryId
+        });
+
+        expect(latest2Response).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        entryId: webiny.entryId,
+                        meta: {
+                            status: "draft",
+                            version: 2
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });
