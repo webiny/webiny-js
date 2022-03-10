@@ -116,7 +116,7 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getCategory(revision: ID!, status: CmsEntryStatusType): CategoryResponse
+        getCategory(revision: ID, entryId: ID, status: CmsEntryStatusType): CategoryResponse
         
         getCategoryRevisions(id: ID!): CategoryArrayResponse
         

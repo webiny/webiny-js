@@ -11,7 +11,7 @@ type ResolveGet = ResolverFactory<any, ResolveGetArgs>;
 
 interface ValuesFromArgsParams {
     type?: "published" | "latest";
-    latest?: boolean;
+    entryId?: string;
     revision: string;
 }
 interface ArgsValues {
@@ -22,14 +22,22 @@ interface ArgsValues {
 
 const possibleTypes = ["published", "latest"];
 
-const getValuesFromArgs = (params?: ValuesFromArgsParams): ArgsValues => {
-    const { type, revision } = params || {};
-    if (!revision) {
+const getValuesFromArgs = (args?: ValuesFromArgsParams): ArgsValues => {
+    const { type, revision, entryId } = args || {};
+    if (!revision && !entryId) {
         throw new WebinyError(
-            "Missing revision ID in the GraphQL arguments.",
+            "Missing both of GraphQL query arguments: revision and entryId. Must have one.",
             "GRAPHQL_ARGS_ERROR",
             {
-                ...(params || {})
+                ...(args || {})
+            }
+        );
+    } else if (revision && entryId) {
+        throw new WebinyError(
+            "Cannot have both of GraphQL query arguments: revision and entryId. Must have only one.",
+            "GRAPHQL_ARGS_ERROR",
+            {
+                ...args
             }
         );
     }
@@ -38,16 +46,21 @@ const getValuesFromArgs = (params?: ValuesFromArgsParams): ArgsValues => {
             `Status cannot be anything other than ${possibleTypes.join(", ")}.`,
             "GRAPHQL_ARGS_ERROR",
             {
-                ...params
+                ...args
             }
         );
     }
-    const { id, version } = parseIdentifier(revision);
     /**
      * In case we are searching for latest or published but we do not have entryId, we need to set it.
      * OR if version was not passed we will find latest or published, depending on type sent.
      */
-    if (type || !version) {
+    if (type) {
+        if (!entryId || !revision) {
+            throw new WebinyError(`Missing GraphQL query argument entryId.`, "GRAPHQL_ARGS_ERROR", {
+                ...args
+            });
+        }
+        const { id } = parseIdentifier(entryId || revision);
         return {
             published: type === "published",
             entryId: id
@@ -68,7 +81,7 @@ export const resolveGet: ResolveGet =
                 const result = published
                     ? await context.cms.getPublishedEntriesByIds(model, [entryId])
                     : await context.cms.getLatestEntriesByIds(model, [entryId]);
-                return new Response(result.pop() || null);
+                return new Response(result.shift() || null);
             }
             const entry = await context.cms.getEntryById(model, revision as string);
             return new Response(entry);
