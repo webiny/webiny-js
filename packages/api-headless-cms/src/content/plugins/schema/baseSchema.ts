@@ -71,6 +71,11 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                 displayName: String
                 type: String
             }
+
+            enum CmsEntryStatusType {
+                latest
+                published
+            }
         `,
         resolvers: {
             ...scalars.reduce((acc, s) => {
