@@ -9,7 +9,7 @@ import { withFields, string, fields, boolean, onSet } from "@commodo/fields";
 // @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 import normalizePath from "./normalizePath";
 
 export const CreateDataModel = withFields({
@@ -47,7 +47,7 @@ export const UpdateSettingsModel = withFields({
                     }
 
                     if (value.length > 30) {
-                        throw new WebinyError("Cannot store more than 30 tags.");
+                        throw new Error("Cannot store more than 30 tags.");
                     }
 
                     for (let i = 0; i < value.length; i++) {
@@ -74,7 +74,7 @@ export const UpdateSettingsModel = withFields({
                     }
 
                     if (value.length > 30) {
-                        throw new WebinyError("Cannot store more than 30 SEO tags.");
+                        throw new Error("Cannot store more than 30 SEO tags.");
                     }
                     for (let i = 0; i < value.length; i++) {
                         validation.validateSync(value[i], "maxLength:50");
@@ -99,7 +99,7 @@ export const UpdateSettingsModel = withFields({
                     }
 
                     if (value.length > 30) {
-                        throw new WebinyError("Cannot store more than 30 social tags.");
+                        throw new Error("Cannot store more than 30 social tags.");
                     }
                     for (let i = 0; i < value.length; i++) {
                         validation.validateSync(value[i], "maxLength:50");

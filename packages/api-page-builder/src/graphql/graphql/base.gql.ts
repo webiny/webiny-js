@@ -27,7 +27,6 @@ export const createBaseGraphQL = (): GraphQLSchemaPlugin => {
                     code: String
                     message: String
                     data: JSON
-                    stack: String
                 }
 
                 type PbDeleteResponse {

@@ -42,7 +42,6 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                 code: String
                 message: String
                 data: JSON
-                stack: String
             }
 
             type CmsListMeta {

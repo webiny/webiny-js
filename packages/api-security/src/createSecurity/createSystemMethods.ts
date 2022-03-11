@@ -1,4 +1,4 @@
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 import {
     System as SystemRecord,
     SecurityConfig,
@@ -7,6 +7,7 @@ import {
     InstallEvent
 } from "../types";
 import { createTopic } from "@webiny/pubsub";
+import WebinyError from "@webiny/error";
 
 export const createSystemMethods = ({
     getTenant: initialGetTenant,
@@ -48,7 +49,7 @@ export const createSystemMethods = ({
                 try {
                     return await storageOperations.updateSystemData({ original, system });
                 } catch (ex) {
-                    throw new WebinyError(
+                    throw new Error(
                         ex.message || "Could not update existing system data.",
                         ex.code || "UPDATE_SYSTEM_ERROR",
                         { original, system }
@@ -58,7 +59,7 @@ export const createSystemMethods = ({
             try {
                 return await storageOperations.createSystemData({ system });
             } catch (ex) {
-                throw new WebinyError(
+                throw new Error(
                     ex.message || "Could not create the system data.",
                     ex.code || "CREATE_SYSTEM_ERROR",
                     { system }
@@ -68,7 +69,7 @@ export const createSystemMethods = ({
 
         async install(this: Security): Promise<void> {
             if (await this.getVersion()) {
-                throw new WebinyError("Security is already installed.", "SECURITY_INSTALL_ABORTED");
+                throw new Error("Security is already installed.", "SECURITY_INSTALL_ABORTED");
             }
 
             const installEvent = {
@@ -84,7 +85,7 @@ export const createSystemMethods = ({
             } catch (err) {
                 await this.onCleanup.publish({ error: err, tenant: getTenant() });
 
-                throw new WebinyError(err.message, "SECURITY_INSTALL_ABORTED", err.data || {});
+                throw new Error(err.message, "SECURITY_INSTALL_ABORTED", err.data || {});
             }
 
             // Store app version

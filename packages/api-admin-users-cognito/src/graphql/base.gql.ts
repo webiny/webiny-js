@@ -30,7 +30,6 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             code: String
             message: String
             data: JSON
-            stack: String
         }
 
         type AdminUsersBooleanResponse {

@@ -1,4 +1,3 @@
-/* eslint-disable */
 export declare class EventEmitter {
     events_: {
         [evtName: string]: Array<Function>;
