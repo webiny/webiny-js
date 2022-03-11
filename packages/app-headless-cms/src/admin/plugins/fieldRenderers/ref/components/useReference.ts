@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
-import * as GQL from "./graphql";
+import {
+    SEARCH_CONTENT_ENTRIES,
+    GET_CONTENT_ENTRY,
+    CmsEntryGetQueryResponse,
+    CmsEntryGetQueryVariables,
+    CmsEntrySearchQueryResponse,
+    CmsEntrySearchQueryVariables
+} from "./graphql";
 import { getOptions, OptionItem } from "./getOptions";
 import { CmsEditorField, CmsModel } from "~/types";
-import { CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables } from "./graphql";
 import { BindComponentRenderProp } from "@webiny/form";
 
 interface DataEntry {
@@ -93,9 +99,15 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         }
 
         setLoading(true);
-        const { data } = await client.query({
-            query: GQL.SEARCH_CONTENT_ENTRIES,
-            variables: { modelIds: models.map(m => m.modelId), query: search }
+        const { data } = await client.query<
+            CmsEntrySearchQueryResponse,
+            CmsEntrySearchQueryVariables
+        >({
+            query: SEARCH_CONTENT_ENTRIES,
+            variables: {
+                modelIds: models.map(m => m.modelId),
+                query: search
+            }
         });
 
         setLoading(false);
@@ -114,10 +126,9 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     useEffect(() => {
         client
             .query<CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables>({
-                query: GQL.SEARCH_CONTENT_ENTRIES,
+                query: SEARCH_CONTENT_ENTRIES,
                 variables: {
                     modelIds: models.map(m => m.modelId),
-                    query: "__latest__",
                     limit: 10
                 },
                 /**
@@ -152,9 +163,15 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
 
         setLoading(true);
         client
-            .query({
-                query: GQL.GET_CONTENT_ENTRY,
-                variables: { entry: { modelId: value.modelId, id: value.id } }
+            .query<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>({
+                query: GET_CONTENT_ENTRY,
+                variables: {
+                    entry: {
+                        modelId: value.modelId,
+                        id: value.id
+                    },
+                    latest: true
+                }
             })
             .then(res => {
                 setLoading(false);

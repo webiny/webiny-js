@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
-import * as GQL from "./graphql";
 import { getOptions } from "./getOptions";
 import { CmsEditorField, CmsLatestContentEntry, CmsModel } from "~/types";
 import {
+    SEARCH_CONTENT_ENTRIES,
+    GET_CONTENT_ENTRIES,
     CmsEntrySearchQueryResponse,
     CmsEntrySearchQueryVariables,
     CmsEntryGetListResponse,
@@ -58,7 +59,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
             CmsEntrySearchQueryResponse,
             CmsEntrySearchQueryVariables
         >({
-            query: GQL.SEARCH_CONTENT_ENTRIES,
+            query: SEARCH_CONTENT_ENTRIES,
             variables: { modelIds: models.map(m => m.modelId), query: search }
         });
         setLoading(false);
@@ -74,10 +75,9 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
     useEffect(() => {
         client
             .query<CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables>({
-                query: GQL.SEARCH_CONTENT_ENTRIES,
+                query: SEARCH_CONTENT_ENTRIES,
                 variables: {
                     modelIds: models.map(m => m.modelId),
-                    query: "__latest__",
                     limit: 10
                 },
                 /**
@@ -101,8 +101,10 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
 
         client
             .query<CmsEntryGetListResponse, CmsEntryGetListVariables>({
-                query: GQL.GET_CONTENT_ENTRIES,
-                variables: { entries: values }
+                query: GET_CONTENT_ENTRIES,
+                variables: {
+                    entries: values
+                }
             })
             .then(res => {
                 setLoading(false);
@@ -125,7 +127,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
      * onChange callback will update internal component state using the previously loaded entries by IDs.
      * It will also format the value to store to the DB.
      */
-    const onChange = useCallback((values: ReferencedCmsEntry[]) => {
+    const onChange = useCallback((values: ReferencedCmsEntry[]): void => {
         setSearch("");
         setValueEntries(values);
 

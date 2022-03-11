@@ -39,11 +39,11 @@ export interface CmsEntrySearchQueryResponse {
 }
 export interface CmsEntrySearchQueryVariables {
     modelIds: string[];
-    query: string;
+    query?: string;
     limit?: number;
 }
 export const SEARCH_CONTENT_ENTRIES = gql`
-    query CmsSearchContentEntries($modelIds: [ID!]!, $query: String!, $limit: Int) {
+    query CmsSearchContentEntries($modelIds: [ID!]!, $query: String, $limit: Int) {
         content: searchContentEntries(modelIds: $modelIds, query: $query, limit: $limit) {
             ${fields}
         }
@@ -62,10 +62,11 @@ export interface CmsEntryGetListResponse {
 }
 export interface CmsEntryGetListVariables {
     entries: CmsEntryGetEntryVariable[];
+    latest?: boolean;
 }
 export const GET_CONTENT_ENTRIES = gql`
-    query CmsGetContentEntries($entries: [CmsModelEntryInput!]!) {
-        content: getContentEntries(entries: $entries) {
+    query CmsGetContentEntries($entries: [CmsModelEntryInput!]!, $latest: Boolean) {
+        content: getContentEntries(entries: $entries, latest: $latest) {
             ${fields}
         }
     }
@@ -83,23 +84,27 @@ export interface CmsEntryGetQueryResponse {
 }
 export interface CmsEntryGetQueryVariables {
     entry: CmsEntryGetEntryVariable;
+    latest?: boolean;
 }
 
 export const GET_CONTENT_ENTRY = gql`
-    query CmsGetContentEntry($entry: CmsModelEntryInput!) {
-        content: getContentEntry(entry: $entry) {
+    query CmsGetContentEntry($entry: CmsModelEntryInput!, $latest: Boolean) {
+        content: getContentEntry(entry: $entry, latest: $latest) {
             ${fields}
         }
     }
 `;
-
-export const GET_CONTENT_MODELS = gql`
-    query CmsGetContentModels {
-        listContentModels {
-            data {
-                modelId
-                titleFieldId
-            }
-        }
-    }
-`;
+/**
+ * Not used anywhere.
+ * Remove if determined that is correct
+ */
+// export const GET_CONTENT_MODELS = gql`
+//     query CmsGetContentModels {
+//         listContentModels {
+//             data {
+//                 modelId
+//                 titleFieldId
+//             }
+//         }
+//     }
+// `;

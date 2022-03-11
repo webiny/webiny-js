@@ -139,7 +139,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
             : contentEntryProviderProps.getContentId();
 
     const revisionId = contentId ? decodeURIComponent(contentId) : null;
-    let entryId = null;
+    let entryId: string | null = null;
     if (revisionId) {
         const result = parseIdentifier(revisionId);
         entryId = result ? result.id : null;
@@ -177,9 +177,9 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
 
     const getEntry = useQuery<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>(READ_CONTENT, {
         variables: {
-            revision: contentId ? decodeURIComponent(contentId) : ""
+            revision: revisionId || ""
         },
-        skip: !contentId,
+        skip: !revisionId,
         onCompleted: data => {
             if (!data) {
                 return;
