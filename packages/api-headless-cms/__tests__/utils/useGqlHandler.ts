@@ -32,7 +32,14 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
 import { HeadlessCmsStorageOperations } from "~/types";
-import { GET_CONTENT_ENTRIES_QUERY, GET_CONTENT_ENTRY_QUERY } from "./graphql/contentEntry";
+import {
+    GET_CONTENT_ENTRIES_QUERY,
+    GET_CONTENT_ENTRY_QUERY,
+    GET_LATEST_CONTENT_ENTRY_QUERY,
+    GET_LATEST_CONTENT_ENTRIES_QUERY,
+    GET_PUBLISHED_CONTENT_ENTRIES_QUERY,
+    GET_PUBLISHED_CONTENT_ENTRY_QUERY
+} from "./graphql/contentEntry";
 import { ContextPlugin } from "@webiny/handler";
 import { TestContext } from "./types";
 
@@ -104,6 +111,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                             id: apiKey,
                             name: apiKey,
                             tenant: tenant.id,
+                            // @ts-ignore
                             permissions: identity?.permissions || [],
                             token,
                             createdBy: {
@@ -217,8 +225,20 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         async getContentEntry(variables: Record<string, any>) {
             return invoke({ body: { query: GET_CONTENT_ENTRY_QUERY, variables } });
         },
+        async getLatestContentEntry(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_LATEST_CONTENT_ENTRY_QUERY, variables } });
+        },
+        async getPublishedContentEntry(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_PUBLISHED_CONTENT_ENTRY_QUERY, variables } });
+        },
         async getContentEntries(variables: Record<string, any>) {
             return invoke({ body: { query: GET_CONTENT_ENTRIES_QUERY, variables } });
+        },
+        async getLatestContentEntries(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_LATEST_CONTENT_ENTRIES_QUERY, variables } });
+        },
+        async getPublishedContentEntries(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_PUBLISHED_CONTENT_ENTRIES_QUERY, variables } });
         }
     };
 };
