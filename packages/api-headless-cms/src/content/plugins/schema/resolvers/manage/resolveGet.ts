@@ -26,7 +26,7 @@ const getValuesFromArgs = (args?: ValuesFromArgsParams): ArgsValues => {
     const { status, revision, entryId } = args || {};
     if (!revision && !entryId) {
         throw new WebinyError(
-            "Missing both of GraphQL query arguments: revision and entryId. Must have one.",
+            "Missing both of GraphQL query arguments: revision and entryId. You must pass a 'revision' or an 'entryId' argument.",
             "GRAPHQL_ARGS_ERROR",
             {
                 ...(args || {})
