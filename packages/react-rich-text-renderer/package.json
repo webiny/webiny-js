@@ -9,7 +9,6 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "@babel/runtime": "^7.16.3",
     "@editorjs/editorjs": "^2.20.1",
     "@types/react": "^16.14.0",
@@ -19,6 +18,7 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
