@@ -136,7 +136,8 @@ describe("Endpoint access", () => {
                 code: "SECURITY_NOT_AUTHORIZED",
                 data: {
                     reason: `Not allowed to access "manage" endpoint.`
-                }
+                },
+                stack: null
             }
         });
     });
@@ -194,7 +195,8 @@ describe("Endpoint access", () => {
                 code: "SECURITY_NOT_AUTHORIZED",
                 data: {
                     reason: `Not allowed to access "read" endpoint.`
-                }
+                },
+                stack: null
             }
         });
     });
@@ -252,7 +254,8 @@ describe("Endpoint access", () => {
                 code: "SECURITY_NOT_AUTHORIZED",
                 data: {
                     reason: `Not allowed to access "preview" endpoint.`
-                }
+                },
+                stack: null
             }
         });
     });

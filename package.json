@@ -99,7 +99,6 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "semver": "^6.3.0",
-    "source-map-support": "^0.5.0",
     "ts-jest": "^26.4.4",
     "typescript": "4.5.5",
     "typescript-transform-paths": "^2.2.3",

@@ -1,4 +1,4 @@
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -78,7 +78,7 @@ describe("MANAGE - Resolvers", () => {
         if (data) {
             contentModelGroup = data;
         } else if (error.code !== "SLUG_ALREADY_EXISTS") {
-            throw new Error(error.message, error.code);
+            throw new WebinyError(error.message, error.code);
         }
 
         // Create initial record
@@ -319,7 +319,7 @@ describe("MANAGE - Resolvers", () => {
 
         const { data: publishedCategory, error } = publish.data.publishCategory;
         if (error) {
-            throw new Error(error);
+            throw new WebinyError(error);
         }
 
         // If this `until` resolves successfully, we know entry is accessible via the "read" API

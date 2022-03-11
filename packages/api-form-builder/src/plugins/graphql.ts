@@ -39,6 +39,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
 
             type FbDeleteResponse {
