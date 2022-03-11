@@ -23,7 +23,8 @@
   "license": "MIT",
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
   "dependencies": {
-    "@types/aws-lambda": "^8.10.93"
+    "@types/aws-lambda": "^8.10.93",
+    "cheerio": "^1.0.0-rc.10"
   },
   "devDependencies": {
     "@webiny/project-utils": "^5.24.0"

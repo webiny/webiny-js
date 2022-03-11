@@ -1,4 +1,6 @@
-import { defineLambdaEdgeRequestHandler } from "~/lambdaEdge";
+import { get } from "https";
+import { load } from "cheerio";
+import { defineLambdaEdgeRequestHandler, CloudFrontResponse } from "~/lambdaEdge";
 
 import { variantCookie, variantHeader } from "../utils/common";
 import { isConfigRequest, loadConfig } from "../utils/config";
@@ -8,7 +10,7 @@ import {
     setResponseCookie,
     getRequestCookies
 } from "../utils/headers";
-import { setDomainOrigin } from "../utils/origin";
+import { isHeaderBlacklisted } from "../utils/headerBlacklist";
 
 export const pageOriginRequest = defineLambdaEdgeRequestHandler(async event => {
     const cf = event.Records[0].cf;
@@ -57,7 +59,77 @@ export const pageOriginRequest = defineLambdaEdgeRequestHandler(async event => {
 
     console.log(`Forwarding to ${stageConfig.domain}`);
 
-    setDomainOrigin(request, stageConfig.domain);
-
-    return request;
+    const response = await getOriginPage(stageConfig.domain, request.uri);
+    return response;
 });
+
+function getOriginPage(domain: string, path: string) {
+    return new Promise<CloudFrontResponse>((resolve, reject) => {
+        let responseBody = "";
+        const req = get(
+            {
+                hostname: domain,
+                port: 443,
+                path: path
+            },
+            res => {
+                res.on("data", chunk => (responseBody += chunk));
+                res.on("end", () => {
+                    const doc = load(responseBody);
+                    const host = `https://${domain}`;
+
+                    doc("head > link").each((_i, el) => {
+                        const href = el.attribs.href;
+                        if (href && href.startsWith("/")) {
+                            el.attribs.href = host + href;
+                        }
+                    });
+
+                    doc("script").each((_i, el) => {
+                        const src = el.attribs.src;
+                        if (src && src.startsWith("/")) {
+                            el.attribs.src = host + src;
+                        }
+                    });
+
+                    const response: CloudFrontResponse & { body: string } = {
+                        body: doc.html(),
+                        status: "200",
+                        statusDescription: "ok",
+                        headers: {}
+                    };
+
+                    for (const header of Object.keys(res.headers)) {
+                        if (isHeaderBlacklisted(header)) {
+                            continue;
+                        }
+
+                        const value = res.headers[header];
+                        if (Array.isArray(value)) {
+                            response.headers[header] = value.map(h => ({
+                                key: header,
+                                value: h
+                            }));
+                        } else if (value) {
+                            response.headers[header] = [
+                                {
+                                    key: header,
+                                    value: value
+                                }
+                            ];
+                        }
+                    }
+
+                    resolve(response);
+                });
+            }
+        );
+
+        req.on("error", e => {
+            reject({
+                statusCode: 500,
+                body: e.message.substring(0, 100)
+            });
+        });
+    });
+}

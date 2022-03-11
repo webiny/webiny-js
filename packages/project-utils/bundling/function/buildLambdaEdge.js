@@ -4,6 +4,7 @@ const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require("@rollup/plugin-commonjs");
 const { babel } = require("@rollup/plugin-babel");
 const virtual = require("@rollup/plugin-virtual");
+const json = require("@rollup/plugin-json");
 
 module.exports = async function (fileContent) {
     const inputOptions = {
@@ -14,6 +15,7 @@ module.exports = async function (fileContent) {
             }),
             nodeResolve(),
             commonjs(),
+            json(),
             esbuild.default({
                 define: {
                     "process.env": JSON.stringify(process.env)
