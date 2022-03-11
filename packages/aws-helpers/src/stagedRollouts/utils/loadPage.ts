@@ -72,6 +72,8 @@ function parseHtml(html: string, domain: string) {
 
     doc("img").each((_i, el) => {
         prefixUrl(el, "src", host);
+
+        // TODO handle srcset
     });
 
     return doc.html();
