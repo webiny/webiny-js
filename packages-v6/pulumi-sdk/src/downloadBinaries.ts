@@ -1,10 +1,10 @@
-import os from "os";
-import tar from "tar";
-import fs from "fs";
-import download from "download";
-import path from "path";
-import decompress from "decompress";
-import semver from "semver";
+const os = require("os");
+const tar = require("tar");
+const fs = require("fs");
+const download = require("download");
+const path = require("path");
+const decompress = require("decompress");
+const semver = require("semver");
 
 // We gotta sanitize the package version, since on a few occasions, we've detected the Pulumi version
 // can look like the following: "2.25.2+dirty". We want to ensure only "2.25.2" is returned.
@@ -14,12 +14,10 @@ const getPulumiVersion = () => {
     return semver.clean(version);
 };
 
-type MaybeFunction = Function | undefined;
-
 export default async (
     downloadFolder: string,
-    beforeInstall: MaybeFunction,
-    afterInstall: MaybeFunction
+    beforeInstall?: () => void,
+    afterInstall?: () => void
 ) => {
     if (fs.existsSync(downloadFolder)) {
         return false;

@@ -1,3 +1,5 @@
+import { WebinyOptions } from "./types";
+
 export * from "./compose";
 export type {
     Webiny,
@@ -23,3 +25,7 @@ export type {
 export * from "./definePreset";
 export * from "./defineProject";
 export type { Preset, PresetFactory } from "./definePreset";
+
+export const initializeWebiny = (params: WebinyOptions) => {
+    return import(/* webpackIgnore: true */ "./webiny").then(m => m.initializeWebiny(params));
+};

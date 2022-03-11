@@ -21,19 +21,24 @@ export interface ProjectConfig {
     telemetry?: boolean;
 }
 
-interface BuildAdmin {
+interface BuildAdminParams {
     watch: boolean;
 }
 
-interface BuildApi {
+interface BuildApiParams {
     watch?: boolean;
+}
+
+interface BuildPackageParams {
+    directory: string;
 }
 
 export interface Webiny {
     // Build methods
-    buildApi(params: BuildApi): Promise<void>;
-    buildAdmin(params: BuildAdmin): Promise<void>;
+    buildApi(params: BuildApiParams): Promise<void>;
+    buildAdmin(params: BuildAdminParams): Promise<void>;
     buildWebsite(): Promise<void>;
+    buildPackage(params: BuildPackageParams): Promise<void>;
     // Deploy methods
     deployAll(): Promise<void>;
     deployApi(): Promise<void>;

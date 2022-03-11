@@ -5,7 +5,7 @@ const shared = {
 
 module.exports = {
     env: {
-        esmUnbundled: shared,
+        esm: shared,
         cjs: {
             ...shared,
             presets: [
@@ -16,7 +16,8 @@ module.exports = {
                     }
                 ],
                 ...sharedPresets
-            ]
+            ],
+            plugins: [["@babel/plugin-transform-runtime", { useESModules: false }]]
         }
     }
 };

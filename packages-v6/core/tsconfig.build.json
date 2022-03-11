@@ -5,10 +5,15 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "declarationMap": true,
-    "outDir": "dist",
     "rootDir": "./src",
-    "declarationDir": "./dist",
-    "baseUrl": "."
+    "outDir": "./lib/types",
+    "declarationDir": "./lib/types",
+    "baseUrl": ".",
+    "skipLibCheck": true
   },
-  "include": ["./src"]
+  "exclude": ["./src/artifacts/admin/template"],
+  "include": ["./src"],
+  "references": [
+    { "path": "../pulumi-sdk/tsconfig.build.json" }
+  ]
 }

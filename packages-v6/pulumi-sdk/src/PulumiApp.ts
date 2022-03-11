@@ -1,5 +1,8 @@
 import * as pulumi from "@pulumi/pulumi";
+
+import { ApplicationContext } from "./ApplicationConfig";
 import { ResourceArgs, ResourceConstructor, ResourceType } from "./PulumiResource";
+import { tagResources } from "./utils/tagResources";
 
 export interface CreateResourceParams<TCtor extends ResourceConstructor> {
     name: string;
@@ -9,21 +12,36 @@ export interface CreateResourceParams<TCtor extends ResourceConstructor> {
 
 export interface PulumiAppResource<T extends ResourceConstructor> {
     name: string;
-    readonly config: ResourceArgs<T>;
+    readonly config: ResourceConfigProxy<ResourceArgs<T>>;
     readonly opts: pulumi.CustomResourceOptions;
     readonly output: pulumi.Output<pulumi.Unwrap<ResourceType<T>>>;
 }
 
 export interface PulumiAppParams {
     name: string;
+    ctx: ApplicationContext;
 }
 
 export interface ResourceHandler {
     (resource: PulumiAppResource<ResourceConstructor>): void;
 }
 
+export type ResourceConfigProxy<T extends object> = {
+    readonly [K in keyof T]-?: ResourceConfigSetter<T[K]>;
+};
+
+export interface ResourceConfigSetter<T> {
+    (value: T): void;
+    (fcn: ResourceConfigModifier<T>): void;
+}
+
+export interface ResourceConfigModifier<T> {
+    (value: pulumi.Unwrap<T>): T | void;
+}
+
 export class PulumiApp {
-    public name: string;
+    public readonly name: string;
+    public readonly ctx: ApplicationContext;
     private readonly resourceHandlers: ResourceHandler[] = [];
     private readonly handlers: (() => void | Promise<void>)[] = [];
     private readonly outputs: Record<string, any> = {};
@@ -31,6 +49,7 @@ export class PulumiApp {
 
     constructor(params: PulumiAppParams) {
         this.name = params.name;
+        this.ctx = params.ctx;
     }
 
     public onResource(handler: ResourceHandler): void {
@@ -43,7 +62,7 @@ export class PulumiApp {
 
         const promise = new Promise<ResourceType<T>>(resolve => {
             this.handlers.push(() => {
-                this.resourceHandlers.forEach(handler => handler(resource));
+                this.resourceHandlers.forEach(handler => handler(resourceInstance));
                 const resourceInstance = new ctor(resource.name, config, opts);
                 resolve(resourceInstance);
             });
@@ -51,7 +70,7 @@ export class PulumiApp {
 
         const resource: PulumiAppResource<T> = {
             name: params.name,
-            config,
+            config: createConfigProxy(config),
             opts,
             output: pulumi.output(promise)
         };
@@ -76,7 +95,7 @@ export class PulumiApp {
         def: PulumiAppModuleDefinition<TModule, TConfig>,
         config?: TConfig
     ) {
-        const module = def.run(this, config);
+        const module = def.run(this, config as TConfig);
         this.modules.set(def.symbol, module);
 
         return module;
@@ -113,6 +132,11 @@ export class PulumiApp {
     }
 
     public async run() {
+        tagResources({
+            WbyProjectName: String(process.env.WEBINY_PROJECT_NAME),
+            WbyEnvironment: String(process.env.WEBINY_ENV)
+        });
+
         // TODO: run concurrently?
         for (const handler of this.handlers) {
             await handler();
@@ -123,12 +147,12 @@ export class PulumiApp {
 }
 
 export interface PulumiAppModuleCallback<TModule, TConfig> {
-    (this: void, app: PulumiApp, config?: TConfig): TModule;
+    (this: void, app: PulumiApp, config: TConfig): TModule;
 }
 
 export interface PulumiAppModuleParams<TModule, TConfig> {
     name: string;
-    run: PulumiAppModuleCallback<TModule, TConfig>;
+    config: PulumiAppModuleCallback<TModule, TConfig>;
 }
 
 export class PulumiAppModuleDefinition<TModule, TConfig> {
@@ -137,7 +161,7 @@ export class PulumiAppModuleDefinition<TModule, TConfig> {
     public readonly run: PulumiAppModuleCallback<TModule, TConfig>;
     constructor(params: PulumiAppModuleParams<TModule, TConfig>) {
         this.name = params.name;
-        this.run = params.run;
+        this.run = params.config;
     }
 }
 
@@ -147,21 +171,47 @@ export function defineAppModule<TModule, TConfig = void>(
     return new PulumiAppModuleDefinition(params);
 }
 
-export interface CreateAppParams<TOutput extends Record<string, unknown>> {
+export interface CreateAppParams<TOutput extends Record<string, unknown>, TConfig = void> {
     name: string;
-    config(app: PulumiApp): TOutput;
+    config(app: PulumiApp, config: TConfig): TOutput;
 }
 
-export function defineApp<TOutput extends Record<string, unknown>>(
-    params: CreateAppParams<TOutput>
+export function defineApp<TOutput extends Record<string, unknown>, TConfig = void>(
+    params: CreateAppParams<TOutput, TConfig>
 ) {
     const appDef = class App extends PulumiApp {
-        constructor() {
-            super({ name: params.name });
-            const output = params.config(this);
+        constructor(ctx: ApplicationContext, config: TConfig) {
+            super({ name: params.name, ctx: ctx });
+            const output = params.config(this, config);
             Object.assign(this, output);
         }
     };
 
-    return appDef as new () => PulumiApp & TOutput;
+    return appDef as new (ctx: ApplicationContext, config: TConfig) => PulumiApp & TOutput;
+}
+
+function createConfigProxy<T extends object>(obj: T) {
+    return new Proxy(obj, {
+        get(target, p: string) {
+            type V = T[keyof T];
+            const key = p as keyof T;
+            const setter: ResourceConfigSetter<V> = (value: V | ResourceConfigModifier<V>) => {
+                if (typeof value === "function") {
+                    const modifier = value as ResourceConfigModifier<V>;
+                    const currentValue = target[key];
+                    // Wrap a current config with a function.
+                    const newValue = pulumi.output(currentValue).apply(v => {
+                        const newValue = modifier(v);
+                        return pulumi.output(newValue);
+                    });
+
+                    target[key] = newValue as unknown as V;
+                } else {
+                    target[key] = value;
+                }
+            };
+
+            return setter;
+        }
+    }) as ResourceConfigProxy<T>;
 }

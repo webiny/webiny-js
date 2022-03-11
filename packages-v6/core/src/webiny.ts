@@ -72,6 +72,10 @@ export async function initializeWebiny(options: WebinyOptions) {
         buildWebsite(): Promise<void> {
             return Promise.resolve(undefined);
         },
+        async buildPackage(params) {
+            const { buildPackage } = await import("./packages/buildPackage");
+            return buildPackage(params);
+        },
         deployAdmin(): Promise<void> {
             return Promise.resolve(undefined);
         },

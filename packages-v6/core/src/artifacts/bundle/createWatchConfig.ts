@@ -1,11 +1,15 @@
 import fs from "fs";
 import webpack from "webpack";
 import WebpackDevServer from "webpack-dev-server";
+// @ts-ignore
 import { choosePort, createCompiler, prepareUrls } from "react-dev-utils/WebpackDevServerUtils";
 // @ts-ignore
 import chalk from "react-dev-utils/chalk";
+// @ts-ignore
 import clearConsole from "react-dev-utils/clearConsole";
+// @ts-ignore
 import checkRequiredFiles from "react-dev-utils/checkRequiredFiles";
+// @ts-ignore
 import openBrowserTab from "react-dev-utils/openBrowser";
 // We require that you explicitly set browsers and do not fall back to browsers list defaults.
 // @ts-ignore

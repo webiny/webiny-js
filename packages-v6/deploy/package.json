@@ -2,7 +2,9 @@
   "name": "@webiny/deploy",
   "version": "6.0.0",
   "sideEffects": false,
-  "main": "./src/index.ts",
+  "scripts": {
+    "build": "wby build package"
+  },
   "dependencies": {
     "@pulumi/pulumi": "^3.24.1",
     "@webiny/core": "6.0.0",

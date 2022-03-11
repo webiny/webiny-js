@@ -1,15 +1,11 @@
 {
   "name": "@webiny/core",
   "version": "6.0.0",
-  "main": "./src/index.ts",
+  "types": "./lib/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./src/index.ts",
-      "require": "./src/index.ts"
-    },
-    "./webiny": {
-      "import": "./src/webiny.ts",
-      "require": "./src/webiny.ts"
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
     }
   },
   "dependencies": {
@@ -24,14 +20,11 @@
     "@babel/runtime": "^7.17.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "6.1.1",
-    "@types/case-sensitive-paths-webpack-plugin": "^2.1.6",
-    "@types/react-dev-utils": "^9.0.10",
     "@types/read-json-sync": "^2.0.0",
     "@types/resolve": "^1.20.1",
     "@types/webpack": "5.28.0",
     "@types/webpack-dev-server": "^4.7.2",
     "@types/webpack-env": "1.16.3",
-    "@webiny/cli": "^5.23.1",
     "@webiny/global-config": "^5.23.1",
     "@webiny/pulumi-sdk-v6": "^6.0.0",
     "@webiny/telemetry": "^5.23.1",
@@ -46,6 +39,7 @@
     "eslint": "^8.4.1",
     "eslint-config-react-app": "^6.0.0",
     "eslint-webpack-plugin": "^3.1.1",
+    "execa": "^5.1.1",
     "file-loader": "6.2.0",
     "find-up": "5.0.0",
     "fork-ts-checker-webpack-plugin": "^6.5.0",
@@ -87,12 +81,20 @@
     "webpackbar": "5.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.0"
+    "@babel/cli": "^7.17.0",
+    "concurrently": "^7.0.0"
   },
   "scripts": {
-    "build:esm": "cross-env BABEL_ENV=esmUnbundled babel src --extensions '.ts,.tsx' --out-dir 'dist/esm' --source-maps",
-    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'dist/cjs' --source-maps",
+    "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts,.tsx' --out-dir 'lib/esm' --source-maps",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'lib/cjs' --source-maps",
     "build": "yarn build:cjs && yarn build:esm && yarn declarations",
-    "declarations": "tsc -p tsconfig.build.json"
+    "watch": "concurrently \"yarn build:cjs --watch\" \"yarn build:esm --watch\"",
+    "declarations": "ttsc -p tsconfig.build.json"
+  },
+  "webiny": {
+    "output": [
+      "cjs",
+      "esm"
+    ]
   }
 }

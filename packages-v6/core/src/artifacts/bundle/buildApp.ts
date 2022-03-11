@@ -2,9 +2,13 @@ import fs from "fs-extra";
 import webpack from "webpack";
 // @ts-ignore
 import chalk from "react-dev-utils/chalk";
+// @ts-ignore
 import checkRequiredFiles from "react-dev-utils/checkRequiredFiles";
+// @ts-ignore
 import formatWebpackMessages from "react-dev-utils/formatWebpackMessages";
+// @ts-ignore
 import FileSizeReporter from "react-dev-utils/FileSizeReporter";
+// @ts-ignore
 import printBuildError from "react-dev-utils/printBuildError";
 // @ts-ignore
 import { checkBrowsers } from "react-dev-utils/browsersHelper";

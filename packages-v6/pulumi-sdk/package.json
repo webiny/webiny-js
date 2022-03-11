@@ -1,7 +1,7 @@
 {
   "name": "@webiny/pulumi-sdk-v6",
   "version": "6.0.0",
-  "main": "./src/index.ts",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -9,19 +9,30 @@
   "description": "A simple Node.js Pulumi SDK.",
   "author": "Webiny Ltd",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "dependencies": {
     "@pulumi/aws": "^4.10.0",
-    "@pulumi/pulumi": "^3.24.1",
-    "@types/decompress": "^4.2.4",
-    "@types/download": "^8.0.1",
-    "@types/semver": "^7.3.9",
-    "@types/tar": "^6.1.1",
+    "@pulumi/pulumi": "^3.25.0",
     "decompress": "^4.2.1",
-    "download": "^8.0.0",
+    "download": "^5.0.3",
     "execa": "^4.0.3",
     "lodash": "^4.17.4",
     "semver": "^7.3.5",
-    "tar": "^6.0.5"
+    "tar": "^6.0.5",
+    "trim-newlines": "^3.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@types/lodash": "^4.14.178",
+    "@types/node": "^10.0.0",
+    "@webiny/cli": "^5.24.0",
+    "@webiny/project-utils": "^5.24.0",
+    "rimraf": "^3.0.2",
+    "typescript": "4.5.5"
   },
   "adio": {
     "ignore": {
@@ -30,5 +41,9 @@
         "@pulumi/aws"
       ]
     }
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
   }
 }

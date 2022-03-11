@@ -1,14 +1,18 @@
 import path from "path";
 import webpack from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+// @ts-ignore
 import CaseSensitivePathsPlugin from "case-sensitive-paths-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 // @ts-ignore
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import { WebpackManifestPlugin } from "webpack-manifest-plugin";
+// @ts-ignore
 import InlineChunkHtmlPlugin from "react-dev-utils/InlineChunkHtmlPlugin";
+// @ts-ignore
 import InterpolateHtmlPlugin from "react-dev-utils/InterpolateHtmlPlugin";
+// @ts-ignore
 import getCSSModuleLocalIdent from "react-dev-utils/getCSSModuleLocalIdent";
 // @ts-ignore
 import ModuleNotFoundPlugin from "react-dev-utils/ModuleNotFoundPlugin";
@@ -19,6 +23,7 @@ import WebpackBar from "webpackbar";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import { Paths } from "./paths";
 import getModules from "./modules";
+import { ModuleGraphPlugin } from "./ModuleGraphPlugin";
 
 const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 const sassIncludePaths = [
@@ -421,6 +426,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
             ]
         },
         plugins: [
+            new ModuleGraphPlugin(),
             new webpack.ProvidePlugin({
                 Buffer: ["buffer", "Buffer"]
             }),

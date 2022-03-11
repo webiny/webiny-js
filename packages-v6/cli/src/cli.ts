@@ -1,6 +1,6 @@
 import * as yargs from "yargs";
 import type { MiddlewareFunction, Options } from "yargs";
-import { initializeWebiny, Webiny } from "@webiny/core/webiny";
+import { initializeWebiny, Webiny } from "@webiny/core";
 
 interface ParsedOptions {
     // Even though `debug` has a default value, and will always be present, we have to mark it as optional
@@ -29,8 +29,18 @@ export const runCli = () => {
             global: true,
             type: "boolean"
         })
-        .command("build-admin", "Build admin app", { ...watchOption }, ({ watch }) => {
-            return webiny.buildAdmin({ watch: Boolean(watch) });
+        .command("build-admin", "Build admin app", {}, () => {
+            console.log("Build admin");
+            return webiny.buildAdmin({ watch: false });
+        })
+        .command("watch admin", "Watch admin app", {}, async () => {
+            // const { watchPackages } = await import("./watchPackages");
+            // await watchPackages();
+            return webiny.buildAdmin({ watch: true });
+        })
+        .command("build-package", "Build package", {}, async () => {
+            const { buildPackage } = await import("./buildPackage");
+            return buildPackage({ directory: process.cwd() });
         })
         .command("build-api", "Build API", { ...envOption, ...watchOption }, ({ watch }) => {
             return webiny.buildApi({ watch: Boolean(watch) });
@@ -39,8 +49,9 @@ export const runCli = () => {
             "deploy-api",
             "Deploy API",
             { ...envOption, preview: { type: "boolean", default: false } },
-            args => {
-                import("@webiny/deploy").then(m => m.default({ preview: args.preview }));
+            () => {
+                console.log("Deploy API");
+                // import("@webiny/deploy").then(m => m.default({ preview: args.preview }));
             }
         )
         .help()
