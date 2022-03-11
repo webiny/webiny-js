@@ -324,6 +324,7 @@ export interface CmsEditorContentEntry {
 
 export interface CmsLatestContentEntry {
     id: string;
+    entryId: string;
     status: "published" | "draft";
     title: string;
     model: Pick<CmsModel, "modelId" | "name">;

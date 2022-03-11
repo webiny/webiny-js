@@ -45,7 +45,14 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
         return (
             <NewRefEntryFormDialog
                 modelId={refModelId}
-                onChange={entry => onChange(entry, entry as any)}
+                onChange={entry => {
+                    /**
+                     * TODO @ts-refactor @ashutosh
+                     * Need to figure out correct types.
+                     */
+                    // @ts-ignore
+                    return onChange(entry, entry);
+                }}
             >
                 <AutoComplete
                     {...bind}

@@ -162,6 +162,10 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         }
 
         setLoading(true);
+        /**
+         * Query loads both latest and published entries.
+         * We do this in a single query because there might not be a published entry so we can use the latest one.
+         */
         client
             .query<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>({
                 query: GET_CONTENT_ENTRY,
@@ -169,13 +173,12 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                     entry: {
                         modelId: value.modelId,
                         id: value.id
-                    },
-                    latest: true
+                    }
                 }
             })
             .then(res => {
                 setLoading(false);
-                const dataEntry: DataEntry | null = res.data.content.data;
+                const dataEntry: DataEntry | null = res.data.published.data || res.data.latest.data;
                 if (!dataEntry) {
                     return;
                 }

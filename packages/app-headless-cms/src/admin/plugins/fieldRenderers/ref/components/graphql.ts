@@ -4,6 +4,7 @@ import { CmsErrorResponse, CmsLatestContentEntry } from "~/types";
 const fields = `
 data {
     id
+    entryId
     status
     title
     model {
@@ -55,18 +56,24 @@ export const SEARCH_CONTENT_ENTRIES = gql`
  */
 
 export interface CmsEntryGetListResponse {
-    content: {
+    latest: {
+        data: CmsLatestContentEntry[];
+        error?: CmsErrorResponse;
+    };
+    published: {
         data: CmsLatestContentEntry[];
         error?: CmsErrorResponse;
     };
 }
 export interface CmsEntryGetListVariables {
     entries: CmsEntryGetEntryVariable[];
-    latest?: boolean;
 }
 export const GET_CONTENT_ENTRIES = gql`
-    query CmsGetContentEntries($entries: [CmsModelEntryInput!]!, $latest: Boolean) {
-        content: getContentEntries(entries: $entries, latest: $latest) {
+    query CmsGetContentEntries($entries: [CmsModelEntryInput!]!) {
+        latest: getLatestContentEntries(entries: $entries) {
+            ${fields}
+        }
+        published: getPublishedContentEntries(entries: $entries) {
             ${fields}
         }
     }
@@ -77,19 +84,25 @@ export const GET_CONTENT_ENTRIES = gql`
  * Get Entry Query Response
  */
 export interface CmsEntryGetQueryResponse {
-    content: {
+    latest: {
+        data: CmsLatestContentEntry;
+        error?: CmsErrorResponse;
+    };
+    published: {
         data: CmsLatestContentEntry;
         error?: CmsErrorResponse;
     };
 }
 export interface CmsEntryGetQueryVariables {
     entry: CmsEntryGetEntryVariable;
-    latest?: boolean;
 }
 
 export const GET_CONTENT_ENTRY = gql`
-    query CmsGetContentEntry($entry: CmsModelEntryInput!, $latest: Boolean) {
-        content: getContentEntry(entry: $entry, latest: $latest) {
+    query CmsGetContentEntry($entry: CmsModelEntryInput!) {
+        latest: getLatestContentEntry(entry: $entry) {
+            ${fields}
+        }
+        published: getPublishedContentEntry(entry: $entry) {
             ${fields}
         }
     }

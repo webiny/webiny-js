@@ -108,11 +108,20 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
             })
             .then(res => {
                 setLoading(false);
-                const entries = res.data.content.data;
+
+                const latest = (res.data.latest.data || []).reduce((collection, item) => {
+                    collection[item.entryId] = item;
+                    return collection;
+                }, {} as Record<string, CmsLatestContentEntry>);
+
+                const entries = (res.data.published.data || []).reduce((collection, item) => {
+                    collection[item.entryId] = item;
+                    return collection;
+                }, latest);
 
                 // Calculate a couple of props for the Autocomplete component.
                 setValueEntries(
-                    entries.map(entry => ({
+                    Object.values(entries).map(entry => ({
                         id: entry.id,
                         modelId: entry.model.modelId,
                         modelName: entry.model.name,
