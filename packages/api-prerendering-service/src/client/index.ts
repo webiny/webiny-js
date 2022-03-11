@@ -6,7 +6,7 @@ import { HandlerArgs as RenderHandlerArgs } from "../render/types";
 import { HandlerArgs as FlushHandlerArgs } from "../flush/types";
 import { HandlerArgs as QueueHandlerArgs } from "../queue/add/types";
 
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 
 export default (configuration: PrerenderingServiceClientArgs) => {
     return [
@@ -14,7 +14,7 @@ export default (configuration: PrerenderingServiceClientArgs) => {
             type: "context",
             apply(context) {
                 if (!context.handlerClient) {
-                    throw new Error(
+                    throw new WebinyError(
                         `Prerendering service's client relies on the "context.handlerClient", defined by the "@webiny/handler-client" package. Please add it to your handler and try again.`
                     );
                 }
