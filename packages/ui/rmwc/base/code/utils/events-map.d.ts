@@ -1,4 +1,3 @@
-/* eslint-disable */
 export declare const eventsMap: {
     blur: string;
     cancel: string;

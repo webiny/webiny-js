@@ -11,7 +11,7 @@ import chalk from "chalk";
 import link from "terminal-link";
 import { formatCode, addWorkspaceToRootPackageJson } from "@webiny/cli-plugin-scaffold/utils";
 import execa from "execa";
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 
 import { TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
 
@@ -191,7 +191,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 await execa("yarn");
                 await execa("yarn", ["postinstall"]);
             } catch (err) {
-                throw new WebinyError(
+                throw new Error(
                     `Unable to install dependencies. Try running "yarn" in project root manually.`,
                     err.message
                 );

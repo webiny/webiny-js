@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use strict";
 var __extends =
     (this && this.__extends) ||

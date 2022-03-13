@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as RMWC from '@rmwc/types';
 import * as React from 'react';
 export interface WithThemeProps {

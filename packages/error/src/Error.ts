@@ -5,23 +5,19 @@ export interface ErrorOptions<TData = any> {
 }
 
 export default class WError<TData = any> extends Error {
+    public override readonly message: string = "";
     public readonly code: string | null = null;
-    public readonly data: TData | null = null;
+    public data: TData | null = null;
 
-    constructor(message: string, code?: string, data?: TData);
-    constructor(options: ErrorOptions<TData>);
-    constructor(messageOrOptions: string | ErrorOptions<TData>, code?: string, data?: TData) {
-        // TODO in TS 4.6 we can move that into if statements
-        super(typeof messageOrOptions === "string" ? messageOrOptions : messageOrOptions.message);
+    public constructor(message: string | ErrorOptions<TData>, code?: string, data?: TData) {
+        super();
 
-        if (typeof messageOrOptions === "string") {
-            // super(messageOrOptions); - use after TS 4.6
+        if (typeof message === "string") {
+            this.message = message;
             this.code = code || null;
             this.data = data || null;
         } else {
-            // super(messageOrOptions.message); - use after TS 4.6
-            this.code = messageOrOptions.code || null;
-            this.data = messageOrOptions.data || null;
+            Object.assign(this, message);
         }
     }
 

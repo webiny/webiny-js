@@ -1,5 +1,5 @@
 import { UpgradePlugin } from "~/types";
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 import { gt, lt, coerce } from "semver";
 
 export enum ErrorCode {
@@ -38,7 +38,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     const deployedVersion = semverResult?.version;
 
     if (upgradeToVersion !== deployedVersion) {
-        throw new WebinyError(
+        throw new Error(
             `The requested upgrade version does not match the deployed version.`,
             ErrorCode.UPGRADE_VERSION_MISMATCH,
             {
@@ -49,7 +49,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     }
 
     if (installedAppVersion === upgradeToVersion) {
-        throw new WebinyError(
+        throw new Error(
             `Version ${upgradeToVersion} is already installed!`,
             ErrorCode.VERSION_ALREADY_INSTALLED
         );
@@ -64,7 +64,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     });
 
     if (upgrades.length > 0) {
-        throw new WebinyError(
+        throw new Error(
             `Skipping of upgrades is not allowed: https://docs.webiny.com/docs/how-to-guides/upgrade-webiny`,
             ErrorCode.SKIPPING_UPGRADES_NOT_ALLOWED,
             {
@@ -78,7 +78,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     const upgrade = upgradePlugins.find(pl => pl.version === upgradeToVersion);
 
     if (!upgrade) {
-        throw new WebinyError(
+        throw new Error(
             `Upgrade to version ${upgradeToVersion} is not available.`,
             ErrorCode.UPGRADE_NOT_AVAILABLE
         );

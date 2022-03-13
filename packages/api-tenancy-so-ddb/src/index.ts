@@ -2,7 +2,7 @@ import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 import { createTable } from "~/definitions/table";
 import { createTenantEntity } from "~/definitions/tenantEntity";
 import { createSystemEntity } from "~/definitions/systemEntity";
@@ -26,7 +26,7 @@ const isReserved = (name: string): void => {
     if (reservedFields.includes(name) === false) {
         return;
     }
-    throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
+    throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
         name
     });
 };
@@ -105,7 +105,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 });
                 return data;
             } catch (err) {
-                throw WebinyError.from(err, {
+                throw Error.from(err, {
                     message: "Could not create system record.",
                     code: "CREATE_SYSTEM_ERROR",
                     data: { keys: systemKeys, data }
@@ -120,7 +120,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 }
                 return cleanupItem(entities.system, result.Item);
             } catch (err) {
-                throw WebinyError.from(err, {
+                throw Error.from(err, {
                     message: "Could not load system record.",
                     code: "GET_SYSTEM_ERROR",
                     data: { keys: systemKeys }
@@ -135,7 +135,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 });
                 return data;
             } catch (err) {
-                throw WebinyError.from(err, {
+                throw Error.from(err, {
                     message: "Could not update system record.",
                     code: "UPDATE_SYSTEM_ERROR",
                     data: { keys: systemKeys, data }
@@ -189,7 +189,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
                 return data as TTenant;
             } catch (err) {
-                throw WebinyError.from(err, {
+                throw Error.from(err, {
                     message: "Could not create tenant record.",
                     code: "CREATE_TENANT_ERROR",
                     data: { keys, data }
@@ -247,7 +247,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
                 return data as TTenant;
             } catch (err) {
-                throw WebinyError.from(err, {
+                throw Error.from(err, {
                     message: "Could not update tenant record.",
                     code: "CREATE_TENANT_ERROR",
                     data: { keys, data }

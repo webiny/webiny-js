@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use strict";
 var __read =
     (this && this.__read) ||

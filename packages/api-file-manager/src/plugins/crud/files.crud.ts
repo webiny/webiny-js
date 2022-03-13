@@ -5,6 +5,7 @@
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
+import Error from "@webiny/error";
 import {
     CreatedBy,
     File,
@@ -257,18 +258,18 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         },
         async createFilesInBatch(inputs) {
             if (!Array.isArray(inputs)) {
-                throw new WebinyError(`"data" must be an array.`, "CREATE_FILES_NON_ARRAY");
+                throw new Error(`"data" must be an array.`, "CREATE_FILES_NON_ARRAY");
             }
 
             if (inputs.length === 0) {
-                throw new WebinyError(
+                throw new Error(
                     `"data" argument must contain at least one file.`,
                     "CREATE_FILES_MIN_FILES"
                 );
             }
 
             if (inputs.length > BATCH_CREATE_MAX_FILES) {
-                throw new WebinyError(
+                throw new Error(
                     `"data" argument must not contain more than ${BATCH_CREATE_MAX_FILES} files.`,
                     "CREATE_FILES_MAX_FILES"
                 );

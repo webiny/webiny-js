@@ -11,7 +11,6 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     code: String
                     message: String
                     data: JSON
-                    stack: String
                 }
 
                 type PbSocialMedia {

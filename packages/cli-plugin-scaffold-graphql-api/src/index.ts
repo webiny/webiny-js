@@ -16,7 +16,7 @@ import {
     LAST_USED_GQL_API_PLUGINS_PATH
 } from "@webiny/cli-plugin-scaffold/utils";
 import execa from "execa";
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 import { TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
 
 interface Input {
@@ -257,7 +257,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 await execa("yarn");
                 await execa("yarn", ["postinstall"]);
             } catch (err) {
-                throw new WebinyError(
+                throw new Error(
                     `Unable to install dependencies. Try running "yarn" in project root manually.`,
                     err.message
                 );

@@ -1,4 +1,4 @@
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 import { CmsGroup, CmsModel } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -38,7 +38,7 @@ describe("Request review", () => {
         if (data) {
             contentModelGroup = data;
         } else if (error.code !== "SLUG_ALREADY_EXISTS") {
-            throw new WebinyError(error.message, error.code);
+            throw new Error(error.message, error.code);
         }
 
         // Create initial record

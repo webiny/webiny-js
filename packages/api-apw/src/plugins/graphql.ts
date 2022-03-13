@@ -45,7 +45,6 @@ const baseSchema = new GraphQLSchemaPlugin({
             code: String
             message: String
             data: JSON
-            stack: String
         }
         extend type Query {
             apw: ApwQuery

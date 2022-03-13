@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { WithThemeProps as _WithThemeProps } from './with-theme';
 import { FoundationProps as _FoundationProps } from './foundation-component';
 import { FocusTrap as _FocusTrap } from 'focus-trap';

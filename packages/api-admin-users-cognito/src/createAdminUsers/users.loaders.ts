@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import WebinyError from "@webiny/error";
+import Error from "@webiny/error";
 import flatten from "lodash/flatten";
 import { AdminUsersStorageOperations, AdminUser } from "~/types";
 
@@ -47,7 +47,7 @@ export const createUserLoaders = ({ storageOperations }: Config) => {
                 return user || (null as unknown as Error);
             });
         } catch (err) {
-            throw WebinyError.from(err, {
+            throw Error.from(err, {
                 message: "Could not execute batch read in getUser.",
                 code: "BATCH_READ_ERROR",
                 data: { ids }

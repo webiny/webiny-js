@@ -1,4 +1,3 @@
-/* eslint-disable */
 export declare type DeprecateT = {
     [oldPropName: string]: string | [string, (value: any) => void];
 };

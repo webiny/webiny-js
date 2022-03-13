@@ -61,7 +61,6 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 code: String
                 message: String
                 data: JSON
-                stack: String
             }
 
             type FileListResponse {
