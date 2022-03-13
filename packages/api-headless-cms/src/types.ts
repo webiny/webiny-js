@@ -949,7 +949,7 @@ export interface CmsModelFieldValidation {
     name: string;
     message: string;
     settings?: {
-        value?: string;
+        value?: string | number;
         values?: string[];
         preset?: string;
         [key: string]: any;

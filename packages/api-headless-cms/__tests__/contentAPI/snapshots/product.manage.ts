@@ -83,7 +83,7 @@ export default /* GraphQL */ `
         itemsInStock: Number
         availableOn: Date
         color: String!
-        availableSizes: [String]!
+        availableSizes: [String!]
         image: String!
         richText: JSON
         variant: Product_VariantInput

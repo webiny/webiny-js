@@ -280,11 +280,14 @@ describe("fieldValidations", () => {
                 }
             }
         });
-
+        /**
+         * This test is not eligible anymore because you cannot send null / undefined into the array.
+         */
+        /*
         const [requiredResponse] = await createFruit({
             data: {
                 ...defaultFruitData,
-                numbers: [5, 6, undefined, 15]
+                numbers: [5, 6, 15]
             }
         });
 
@@ -305,6 +308,7 @@ describe("fieldValidations", () => {
                 }
             }
         });
+        */
     });
 
     const emailPatternTestValues = [

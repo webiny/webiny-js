@@ -80,7 +80,7 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
  */
 const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<string | null> => {
     const { field, data } = args;
-    const values = data[field.fieldId];
+    const values = data[field.fieldId] || [];
     if (Array.isArray(values) === false) {
         return `Value of the field "${field.fieldId}" is not an array.`;
     }
