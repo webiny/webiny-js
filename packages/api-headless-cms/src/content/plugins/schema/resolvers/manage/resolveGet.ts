@@ -43,7 +43,7 @@ const getValuesFromArgs = (args?: ValuesFromArgsParams): ArgsValues => {
     }
     if (status && possibleTypes.includes(status) === false) {
         throw new WebinyError(
-            `Status cannot be anything other than ${possibleTypes.join(", ")}.`,
+            `Status can only be one of the following values: ${possibleTypes.join(" | ")}.`,
             "GRAPHQL_ARGS_ERROR",
             {
                 ...args
