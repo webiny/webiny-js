@@ -1,15 +1,33 @@
 const path = require("path");
 const fs = require("fs");
 
-let postTelemetryData;
-let localData;
-let handler;
+interface TelemetryDataLogs {
+    error: boolean;
+    executionDuration: number;
+    functionName: string;
+    createdOn: number;
+}
+interface TelemetryData {
+    apiKey: string;
+    version: string;
+    logs: TelemetryDataLogs[];
+}
+
+interface TelemetryDataResult {
+    message?: string;
+    error?: {
+        message: string;
+    };
+}
+let postTelemetryData: (data: TelemetryData) => Promise<TelemetryDataResult>;
+let localData: TelemetryData;
+let handler: () => Promise<any>;
 
 const pathToProjectUtilsRoot = path.join(__dirname, "../../../bundling/function");
 
 const handlerPath = pathToProjectUtilsRoot + "/_handler.js";
 
-function waitForMilliSeconds(ms) {
+function waitForMilliSeconds(ms: number): Promise<unknown> {
     return new Promise(resolve => {
         setTimeout(resolve, ms);
     });
@@ -40,7 +58,7 @@ describe.skip("Telemetry functions", () => {
         test("Can post telemetry data", async () => {
             const now = Date.now();
             const validApiKey = "beb3f14e-141f-427d-9923-755112e35eef";
-            const mockSchema = {
+            const mockSchema: TelemetryData = {
                 apiKey: validApiKey,
                 version: "5.20.0",
                 logs: [
@@ -76,7 +94,7 @@ describe.skip("Telemetry functions", () => {
 
             const result = await postTelemetryData(mockSchema);
 
-            const { message } = result.error;
+            const { message } = result.error || {};
             expect(message).toEqual('project.env "undefined" not found.');
         });
     });
