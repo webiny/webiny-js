@@ -14,7 +14,6 @@ import {
 import { NotAuthorizedError } from "@webiny/api-security";
 import { DefaultSettingsModel } from "~/utils/models";
 import mergeWith from "lodash/mergeWith";
-import Error from "@webiny/error";
 import WebinyError from "@webiny/error";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
@@ -255,7 +254,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
                     // Only throw if previously we had a page (p), and now all of a sudden
                     // we don't (!n). Allows updating settings without sending these.
                     if (p && !n) {
-                        throw new Error(
+                        throw new WebinyError(
                             `Cannot unset "${specialType}" page. Please provide a new page if you want to unset current one.`,
                             "CANNOT_UNSET_SPECIAL_PAGE"
                         );

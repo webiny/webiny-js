@@ -15,7 +15,7 @@ export interface PluginsContainer {
  * A simplified plugin interface, used specifically within the Webiny CLI.
  * Not in relation with "@webiny/plugins" package.
  */
-export interface Plugin<T = Record<string, any>> {
+export interface Plugin {
     type: string;
     name?: string;
     [key: string]: any;

@@ -39,6 +39,7 @@ export default [
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
         `,
         resolvers: {

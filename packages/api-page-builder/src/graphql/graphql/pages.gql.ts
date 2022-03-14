@@ -6,7 +6,7 @@ import {
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Page, PbContext, PageSecurityPermission } from "~/types";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import resolve from "./utils/resolve";
 import { createPageSettingsGraphQL } from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
@@ -417,7 +417,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         return resolve(() => {
                             const { from, category } = args;
                             if (!from && !category) {
-                                throw new Error(
+                                throw new WebinyError(
                                     `Cannot create page - you must provide either "from" or "category" input.`
                                 );
                             }

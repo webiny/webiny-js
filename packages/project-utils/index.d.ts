@@ -34,6 +34,11 @@ interface BuildFunctionConfig {
     cwd: string;
     logs?: boolean;
     debug?: boolean;
+    /** 
+     * Enables or disables source map generation for the function.
+     * By default is set to `true`
+     */
+    sourceMaps?: boolean;
     overrides?: {
         entry?: string;
         output?: {

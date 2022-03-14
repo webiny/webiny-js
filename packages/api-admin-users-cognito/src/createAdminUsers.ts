@@ -5,7 +5,7 @@
 import mdbid from "mdbid";
 import cloneDeep from "lodash/cloneDeep";
 import { createTopic } from "@webiny/pubsub";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -56,7 +56,7 @@ export const createAdminUsers = ({
             });
 
             if (exists) {
-                throw new Error({
+                throw new WebinyError({
                     message: "User with that email already exists.",
                     code: "USER_EXISTS",
                     data: { email }
@@ -102,7 +102,7 @@ export const createAdminUsers = ({
             try {
                 result = await storageOperations.createUser({ user });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create user.",
                     code: "CREATE_USER_ERROR",
                     data: { user: result || user }
@@ -133,7 +133,7 @@ export const createAdminUsers = ({
             }
 
             if (user.id === identity.id) {
-                throw new Error(`You can't delete your own user account.`);
+                throw new WebinyError(`You can't delete your own user account.`);
             }
 
             try {
@@ -142,7 +142,7 @@ export const createAdminUsers = ({
                 loaders.clearLoadersCache([{ tenant: getTenant(), id }]);
                 await this.onUserAfterDelete.publish({ user });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not delete user.",
                     code: "DELETE_USER_ERROR",
                     data: { user }
@@ -173,7 +173,7 @@ export const createAdminUsers = ({
                     sort: params.sort || ["createdOn_ASC"]
                 });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Cannot list users.",
                     code: "LIST_USERS_ERROR",
                     data: { tenant: getTenant(), ...params }
@@ -215,7 +215,7 @@ export const createAdminUsers = ({
 
                 return updatedUser;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Cannot update user.",
                     code: "UPDATE_USER_ERROR"
                 });
@@ -243,7 +243,7 @@ export const createAdminUsers = ({
                         system: { ...original, version }
                     });
                 } catch (err) {
-                    throw Error.from(err, {
+                    throw WebinyError.from(err, {
                         message: "Could not update existing system data.",
                         code: "UPDATE_SYSTEM_ERROR",
                         data: { original, system }
@@ -253,7 +253,7 @@ export const createAdminUsers = ({
             try {
                 return await storageOperations.createSystemData({ system });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create the system data.",
                     code: "CREATE_SYSTEM_ERROR",
                     data: { system }
@@ -263,7 +263,10 @@ export const createAdminUsers = ({
 
         async install(this: AdminUsers, data) {
             if (await this.getVersion()) {
-                throw new Error("Admin Users is already installed.", "ADMIN_USERS_INSTALL_ABORTED");
+                throw new WebinyError(
+                    "Admin Users is already installed.",
+                    "ADMIN_USERS_INSTALL_ABORTED"
+                );
             }
 
             const user = { ...data, id: mdbid() };
@@ -276,7 +279,7 @@ export const createAdminUsers = ({
             } catch (err) {
                 await this.onCleanup.publish({ error: err, tenant: getTenant(), user });
 
-                throw Error.from(err, { message: "ADMIN_USERS_INSTALL_ABORTED" });
+                throw WebinyError.from(err, { message: "ADMIN_USERS_INSTALL_ABORTED" });
             }
 
             // Store app version
