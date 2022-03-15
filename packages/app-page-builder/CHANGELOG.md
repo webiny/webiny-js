@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* **v5:** page builder ([#2275](https://github.com/webiny/webiny-js/issues/2275)) ([6fead56](https://github.com/webiny/webiny-js/commit/6fead5669bcc630851786b1095760c6e05933a4d))
+
+
+
+
+
 # [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
 
 
