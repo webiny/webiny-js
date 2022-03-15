@@ -56,6 +56,9 @@ const plugin = new StorageTransformPlugin<string, StorageValue>({
             const buf = await ungzip(convertToBuffer(value));
             return buf.toString(FROM_STORAGE_ENCODING);
         } catch (ex) {
+            if (process.env.DEBUG !== "true") {
+                return null;
+            }
             console.log("Error while decompressing long-text.");
             console.log(ex.message);
             return null;

@@ -59,6 +59,11 @@ type CmsEntry<T = Record<string, any>> = T & {
     };
 };
 
+interface FruitExpectancy {
+    id: string;
+    status: string;
+}
+
 describe("Content entries", () => {
     const manageOpts = { path: "manage/en-US" };
 
@@ -108,11 +113,24 @@ describe("Content entries", () => {
         return createFruits();
     };
 
-    const waitFruits = async (name: string) => {
+    const waitFruits = async (name: string, expectancy?: FruitExpectancy[]) => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listFruits({}).then(([data]) => data),
-            ({ data }: any) => data.listFruits.data.length === 3,
+            ({ data }: any) => {
+                const list: any[] = data.listFruits?.data || [];
+                if (list.length !== 3) {
+                    return false;
+                }
+                if (!expectancy) {
+                    return true;
+                }
+                return expectancy.every(item => {
+                    return list.some(ls => {
+                        return ls.id === item.id && ls.meta.status === item.status;
+                    });
+                });
+            },
             { name: `list all fruits - ${name}` }
         );
     };
@@ -178,7 +196,24 @@ describe("Content entries", () => {
         });
         const thirdBanana = thirdBananaResponse.data.createFruitFrom.data;
 
-        await waitFruits("should filter fruits by date and sort asc");
+        await waitFruits("should filter fruits by date and sort asc", [
+            {
+                id: apple.id,
+                status: "published"
+            },
+            {
+                id: thirdBanana.id,
+                status: "draft"
+            },
+            {
+                id: strawberry.id,
+                status: "published"
+            }
+        ]);
+
+        await new Promise(resolve => {
+            setTimeout(resolve, 5000);
+        });
         /**
          * Exact entries queries.
          */
