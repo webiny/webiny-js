@@ -84,8 +84,8 @@ export type PbElementDataTextType = {
     };
 };
 export interface PbElementDataImageType {
-    width?: string | number | null;
-    height?: string | number | null;
+    width?: string | number;
+    height?: string | number;
     file?: {
         id?: string;
         src?: string;
