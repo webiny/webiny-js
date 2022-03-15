@@ -15,6 +15,7 @@ import { PreviewTab } from "./PreviewTab";
 import Header from "./Header";
 import DragPreview from "../DragPreview";
 import { useContentModelEditor } from "./useContentModelEditor";
+import { CmsEditorField, CmsEditorFieldsLayout } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
 
@@ -57,13 +58,18 @@ const formTabs = css({
     }
 });
 
-export const Editor = () => {
+interface OnChangeParams {
+    fields: CmsEditorField[];
+    layout: CmsEditorFieldsLayout;
+}
+
+export const Editor: React.FC = () => {
     const { data, setData, isPristine } = useContentModelEditor();
 
-    const tabsRef = useRef(null);
-    const [activeTabIndex, setActiveTabIndex] = useState(0);
+    const tabsRef = useRef<Tabs | null>(null);
+    const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
-    const onChange = ({ fields, layout }) => {
+    const onChange = ({ fields, layout }: OnChangeParams) => {
         setData(data => ({ ...data, fields, layout }));
     };
 
@@ -85,9 +91,10 @@ export const Editor = () => {
                         <LeftBarFieldList>
                             <FieldsSidebar
                                 onFieldDragStart={() => {
-                                    if (tabsRef.current) {
-                                        tabsRef.current.switchTab(0);
+                                    if (!tabsRef.current) {
+                                        return;
                                     }
+                                    tabsRef.current.switchTab(0);
                                 }}
                             />
                         </LeftBarFieldList>
@@ -102,7 +109,7 @@ export const Editor = () => {
                                 <EditContainer>
                                     <FieldEditor
                                         fields={data.fields}
-                                        layout={data.layout}
+                                        layout={data.layout || []}
                                         onChange={onChange}
                                     />
                                 </EditContainer>

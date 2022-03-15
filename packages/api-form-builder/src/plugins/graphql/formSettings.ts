@@ -43,9 +43,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
         `,
         resolvers: {
             FbQuery: {
-                async getSettings(_, __, { formBuilder }) {
+                async getSettings(_, __, context) {
                     try {
-                        const settings = await formBuilder.getSettings({
+                        const settings = await context.formBuilder.getSettings({
                             throwOnNotFound: true
                         });
                         return new Response(settings);
@@ -55,9 +55,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             },
             FbMutation: {
-                updateSettings: async (_, args, { formBuilder }) => {
+                updateSettings: async (_, args: any, context) => {
                     try {
-                        const settings = await formBuilder.updateSettings(args.data);
+                        const settings = await context.formBuilder.updateSettings(args.data);
                         return new Response(settings);
                     } catch (err) {
                         return new ErrorResponse(err);

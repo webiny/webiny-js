@@ -26,6 +26,7 @@ import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import styled from "@emotion/styled";
+import { ApiKey } from "~/types";
 
 const t = i18n.ns("app-security-admin-users/admin/api-keys/form");
 
@@ -33,8 +34,11 @@ const ButtonWrapper = styled("div")({
     display: "flex",
     justifyContent: "space-between"
 });
-
-const ApiKeyForm = () => {
+export interface ApiKeyFormProps {
+    // TODO @ts-refactor delete and go up the tree and sort it out
+    [key: string]: any;
+}
+export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const newEntry = new URLSearchParams(location.search).get("new") === "true";
@@ -97,7 +101,7 @@ const ApiKeyForm = () => {
         [id]
     );
 
-    const data = get(getQuery, "data.security.apiKey.data", {});
+    const data: ApiKey[] = get(getQuery, "data.security.apiKey.data", {});
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content" selected view.
@@ -198,7 +202,9 @@ const ApiKeyForm = () => {
                                     onClick={() => history.push("/access-management/api-keys")}
                                 >{t`Cancel`}</ButtonDefault>
                                 <ButtonPrimary
-                                    onClick={form.submit}
+                                    onClick={ev => {
+                                        form.submit(ev);
+                                    }}
                                 >{t`Save API key`}</ButtonPrimary>
                             </ButtonWrapper>
                         </SimpleFormFooter>
@@ -208,5 +214,3 @@ const ApiKeyForm = () => {
         </Form>
     );
 };
-
-export default ApiKeyForm;

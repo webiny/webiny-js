@@ -6,6 +6,7 @@ import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
@@ -16,10 +17,17 @@ const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
-export const AdminUsersPermissions = ({ value, onChange }) => {
+export interface AdminUsersPermissionsProps {
+    value: SecurityPermission[];
+    onChange: (value: SecurityPermission[]) => void;
+}
+export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
+    value,
+    onChange
+}) => {
     const onFormChange = useCallback(
         data => {
-            let newValue = [];
+            let newValue: SecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `security*` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(ADMIN_USERS));

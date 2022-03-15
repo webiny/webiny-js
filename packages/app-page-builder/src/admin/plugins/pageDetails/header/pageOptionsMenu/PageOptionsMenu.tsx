@@ -15,6 +15,9 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { plugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "~/types";
+import { PbPageData, PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "~/types";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/react-hooks";
 import { SecureView } from "@webiny/app-security";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 
@@ -28,7 +31,10 @@ const menuStyles = css({
     }
 });
 
-const PageOptionsMenu = props => {
+interface PageOptionsMenuProps {
+    page: PbPageData;
+}
+const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
     const { page } = props;
     const { settings, isSpecialPage, getPageUrl, getWebsiteUrl, updateSettingsMutation } =
         usePageBuilderSettings();

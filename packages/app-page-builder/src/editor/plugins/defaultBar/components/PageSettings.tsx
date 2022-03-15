@@ -1,3 +1,7 @@
+/**
+ * TODO: @ts-refactor
+ * Verify that this file is used somewhere.
+ */
 import React, { useState } from "react";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
@@ -17,10 +21,10 @@ import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageS
 import { PbEditorPageSettingsPlugin } from "~/types";
 import { usePageSettings } from "~/editor/hooks/usePageSettings";
 
-type PageSettingsPropsType = {
+interface PageSettingsPropsType {
     [key: string]: any;
-};
-const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}) => {
+}
+const PageSettings: React.FC<PageSettingsPropsType> = (props = {}) => {
     const pluginsByType = plugins.byType<PbEditorPageSettingsPlugin>("pb-editor-page-settings");
     const [active, setActive] = useState(pluginsByType[0].name);
     const activePlugin = pluginsByType.find(pl => pl.name === active);
@@ -38,12 +42,12 @@ const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}
     );
 };
 
-type PageSettingsContentPropsType = {
+interface PageSettingsContentPropsType {
     pluginsByType: PbEditorPageSettingsPlugin[];
     setActive: (name: string) => void;
     activePlugin: PbEditorPageSettingsPlugin;
-};
-const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType> = ({
+}
+const PageSettingsContent: React.FC<PageSettingsContentPropsType> = ({
     pluginsByType,
     setActive,
     activePlugin
@@ -58,7 +62,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                             <ListItem
                                 key={pl.name}
                                 className={listItem}
-                                onClick={() => setActive(pl.name)}
+                                onClick={() => setActive(pl.name || "")}
                             >
                                 <ListItemGraphic>
                                     <Icon icon={pl.icon as any} />
@@ -80,7 +84,13 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                                     {activePlugin.render({ Bind, form, data, setValue } as any)}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
-                                    <ButtonPrimary onClick={submit}>Save settings</ButtonPrimary>
+                                    <ButtonPrimary
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
+                                    >
+                                        Save settings
+                                    </ButtonPrimary>
                                 </SimpleFormFooter>
                             </SimpleForm>
                         )}

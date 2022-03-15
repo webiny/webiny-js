@@ -1,3 +1,4 @@
+import { ApwReviewer, ApwWorkflowStepTypes } from "~/types";
 import { ApwWorkflowStepTypes } from "~/types";
 import { getNanoid } from "~/plugins/utils";
 
@@ -25,7 +26,7 @@ const createWorkflowStep = (params: CreateWorkflowStepParams) => ({
 export default {
     reviewerModelId: "apwReviewerModelDefinition",
     createWorkflowStep,
-    createWorkflow: (params: CreateWorkflowParams, reviewers) => ({
+    createWorkflow: (params: CreateWorkflowParams, reviewers:  ApwReviewer[]) => ({
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
@@ -41,7 +42,7 @@ export default {
         },
         ...params
     }),
-    createWorkflowWithThreeSteps: (params: CreateWorkflowParams, reviewers) => ({
+    createWorkflowWithThreeSteps: (params: CreateWorkflowParams, reviewers: ApwReviewer[]) => ({
         app: "pageBuilder",
         title: "Main workflow",
         steps: [

@@ -16,9 +16,16 @@ import {
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import prepareMenuItems from "./menus/prepareMenuItems";
 import WebinyError from "@webiny/error";
@@ -39,20 +46,14 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.menu";
 
-export interface Params {
+export interface CreateMenuCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
 }
-export const createMenuCrud = (params: Params): MenusCrud => {
-    const { context, storageOperations } = params;
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
-    const getLocaleCode = (): string => {
-        return context.i18nContent.getCurrentLocale().code;
-    };
+export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
+    const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
     const onBeforeMenuCreate = createTopic<OnBeforeMenuCreateTopicParams>();
     const onAfterMenuCreate = createTopic<OnAfterMenuCreateTopicParams>();
@@ -180,7 +181,7 @@ export const createMenuCrud = (params: Params): MenusCrud => {
                 }
             });
             if (existing) {
-                throw new Error(`Menu "${data.slug}" already exists.`);
+                throw new WebinyError(`Menu "${data.slug}" already exists.`);
             }
 
             const identity = context.security.getIdentity();

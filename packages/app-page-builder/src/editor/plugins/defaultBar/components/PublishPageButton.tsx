@@ -9,7 +9,7 @@ import usePermission from "~/hooks/usePermission";
 import { pageAtom } from "~/editor/recoil/modules";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 
-const PublishPageButton: React.FunctionComponent = () => {
+const PublishPageButton: React.FC = () => {
     const page = useRecoilValue(pageAtom);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -28,7 +28,7 @@ const PublishPageButton: React.FunctionComponent = () => {
         >
             {({ showConfirmation }) => (
                 <ButtonPrimary
-                    onClick={async () => {
+                    onClick={() => {
                         showConfirmation(async () => {
                             const response = await pageBuilder.publishPage(page as { id: string }, {
                                 client: pageBuilder.client
@@ -43,10 +43,13 @@ const PublishPageButton: React.FunctionComponent = () => {
 
                             const error = get(response, "error");
                             if (error) {
-                                return showSnackbar(error.message);
+                                showSnackbar(error.message);
+                                return;
                             }
 
-                            history.push(`/page-builder/pages?id=${encodeURIComponent(page.id)}`);
+                            history.push(
+                                `/page-builder/pages?id=${encodeURIComponent(page.id as string)}`
+                            );
 
                             // Let's wait a bit, because we are also redirecting the user.
                             setTimeout(() => {

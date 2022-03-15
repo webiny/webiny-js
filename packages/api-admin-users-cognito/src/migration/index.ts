@@ -1,5 +1,9 @@
+/**
+ * Not used anymore.
+ */
+// @ts-ignore
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { ApiKey, Group, SecurityContext } from "@webiny/api-security/types";
+import { ApiKey, Group } from "@webiny/api-security/types";
 import {
     createApiKeyEntity,
     createGroupEntity,
@@ -7,11 +11,8 @@ import {
     createLinkEntity
 } from "./entities";
 import { AdminUser, AdminUsersContext, CreateUserInput } from "~/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
-
-type Context = SecurityContext & TenancyContext & AdminUsersContext;
 
 interface OldLink {
     id: string;
@@ -20,20 +21,23 @@ interface OldLink {
     };
 }
 
-const userPoolId = process.env.COGNITO_USER_POOL_ID;
+const userPoolId = process.env.COGNITO_USER_POOL_ID as string;
 
 async function listAllCognitoUsers(cognito: CognitoIdentityServiceProvider) {
-    const users = [];
-    let paginationToken = null;
+    const users: CognitoIdentityServiceProvider.UserType[] = [];
+    let paginationToken: string | undefined = undefined;
     while (true) {
-        const { Users, PaginationToken } = await cognito
+        const { Users, PaginationToken } = (await cognito
             .listUsers({
                 UserPoolId: userPoolId,
                 AttributesToGet: ["sub", "email"],
                 PaginationToken: paginationToken
             })
-            .promise();
+            .promise()) as CognitoIdentityServiceProvider.Types.ListUsersResponse;
 
+        if (!Users) {
+            continue;
+        }
         Users.forEach(user => users.push(user));
 
         if (PaginationToken) {
@@ -46,7 +50,7 @@ async function listAllCognitoUsers(cognito: CognitoIdentityServiceProvider) {
     return users;
 }
 
-export const migration = (context: Context) => {
+export const migration = (context: AdminUsersContext) => {
     const { security, tenancy, adminUsers } = context;
 
     if (!tenancy.getCurrentTenant()) {
@@ -148,7 +152,7 @@ export const migration = (context: Context) => {
         });
 
         // Create a map of old user ids to group slug
-        const oldUser2group = oldLinks.reduce(
+        const oldUser2group: Record<string, string> = oldLinks.reduce(
             (acc, item) => ({ ...acc, [item.id]: item.group.slug }),
             {}
         );
@@ -166,26 +170,39 @@ export const migration = (context: Context) => {
         const cognitoUsers = await listAllCognitoUsers(cognito);
 
         // 4. Store users using the new `adminUsers` app
-        const newUsers: CreateUserInput[] = oldUsers.map(oldUser => {
-            const cognitoUser = cognitoUsers.find(cu => {
-                return !!cu.Attributes.find(
-                    attr => attr.Name === "email" && attr.Value === oldUser.id
-                );
-            });
-            const sub = cognitoUser.Attributes.find(attr => attr.Name === "sub").Value;
-            return {
-                id: sub,
-                email: oldUser.id,
-                avatar: oldUser.avatar,
-                firstName: oldUser.firstName,
-                lastName: oldUser.lastName,
-                group: newGroupsBySlug[oldUser2group[oldUser.id]].id,
-                createdBy: oldUser.createdBy,
-                createdOn: oldUser.createdOn,
-                // Set any password value to make TS happy. It will not be used anyway.
-                password: ""
-            };
-        });
+        const newUsers: CreateUserInput[] = oldUsers
+            .map(oldUser => {
+                const cognitoUser = cognitoUsers.find(cu => {
+                    if (!cu.Attributes) {
+                        return false;
+                    }
+                    return cu.Attributes.some(
+                        attr => attr.Name === "email" && attr.Value === oldUser.id
+                    );
+                });
+                if (!cognitoUser) {
+                    return null;
+                }
+                const subAttr = (cognitoUser.Attributes || []).find(attr => attr.Name === "sub");
+                /**
+                 * TODO @ts-refactor @pavel
+                 * What happens in case of subAttr not existing (or value is undefined/null):
+                 */
+                const sub = subAttr ? subAttr.Value : undefined;
+                return {
+                    id: sub,
+                    email: oldUser.id,
+                    avatar: oldUser.avatar,
+                    firstName: oldUser.firstName,
+                    lastName: oldUser.lastName,
+                    group: newGroupsBySlug[oldUser2group[oldUser.id]].id,
+                    createdBy: oldUser.createdBy,
+                    createdOn: oldUser.createdOn,
+                    // Set any password value to make TS happy. It will not be used anyway.
+                    password: ""
+                };
+            })
+            .filter(Boolean) as CreateUserInput[];
 
         // Cognito users already exist, and we should not abort user creation when Cognito throws an error.
         const originalPublish = adminUsers.onUserBeforeCreate.publish;

@@ -6,6 +6,7 @@ import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Switch } from "@webiny/ui/Switch";
 import {
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "~/types";
@@ -38,9 +39,13 @@ const classes = {
 
 const DATA_NAMESPACE = "data.settings.visibility";
 
-export const useVisibilitySetting = elementId => {
+interface UseVisibilitySettingResult {
+    element: PbEditorElement;
+    updateVisibility: (value: boolean) => void;
+}
+export const useVisibilitySetting = (elementId: string): UseVisibilitySettingResult => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId)) as PbEditorElement;
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE
@@ -57,20 +62,27 @@ export const useVisibilitySetting = elementId => {
     };
 };
 
-const VisibilitySettings: React.FunctionComponent<
+const VisibilitySettings: React.FC<
     PbEditorPageElementSettingsRenderComponentProps & {
         options: any;
     }
 > = ({ defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
-    const { element, updateVisibility } = useVisibilitySetting(activeElementId);
+    const { element, updateVisibility } = useVisibilitySetting(activeElementId as string);
 
-    const { config: activeDisplayModeConfig } = useMemo(() => {
+    const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
+
+    const { config: activeDisplayModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
 
     const fallbackValue = useMemo(
         () =>

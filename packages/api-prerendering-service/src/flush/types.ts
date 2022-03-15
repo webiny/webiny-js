@@ -1,23 +1,10 @@
 import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
-import { Render } from "~/types";
+import { Render, Args as BaseArgs, Configuration as BaseConfiguration } from "~/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
 
-export interface Configuration {
-    website?: {
-        url?: string;
-    };
-    db?: {
-        namespace?: string;
-    };
-    meta?: Record<string, any>;
-}
-
-export interface Args {
-    configuration?: Configuration;
-    url?: string;
-    path?: string;
-}
+export type Args = BaseArgs;
+export type Configuration = Omit<BaseConfiguration, "storage">;
 
 export type HandlerArgs = Args | Args[];
 export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
@@ -26,11 +13,11 @@ export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
 export type HookCallbackFunction = (args: {
-    log: any;
+    log: (...args: string[]) => void;
     context: HandlerContext;
     configuration: Configuration;
     args: Args;
-    render: Render;
+    render: Render | null;
 }) => void | Promise<void>;
 
 export interface FlushHookPlugin extends Plugin {

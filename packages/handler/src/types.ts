@@ -37,12 +37,19 @@ export interface Context {
      * @internal
      */
     getResult: () => void;
+    /**
+     * Wait for property to be defined on the object and then execute the callable.
+     * In case of multiple objects defined, wait for all of them.
+     */
+    waitFor: <T extends Context = Context>(
+        obj: string[] | string,
+        cb: (context: T) => void
+    ) => void;
 }
 
 /**
  * Left for backwards-compatibility.
  *
- * @internal
  * @deprecated
  */
 export type ContextPlugin<
@@ -63,7 +70,6 @@ export type ContextPlugin<
 /**
  * Left for backwards-compatibility.
  *
- * @internal
  * @deprecated
  */
 export type HandlerPlugin<
@@ -79,12 +85,14 @@ export type HandlerPlugin<
     C9 = Context
 > = Plugin & {
     type: "handler";
-    handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, next: Function): any;
+    handle(
+        context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9,
+        next: () => Promise<void>
+    ): any;
 };
 /**
  * Left for backwards-compatibility.
  *
- * @internal
  * @deprecated
  */
 export type HandlerResultPlugin<
@@ -105,7 +113,6 @@ export type HandlerResultPlugin<
 /**
  * Left for backwards-compatibility.
  *
- * @internal
  * @deprecated
  */
 export type HandlerErrorPlugin<

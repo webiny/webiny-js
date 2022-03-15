@@ -49,11 +49,13 @@ const createType = (): string => {
     return "cms.group";
 };
 
-export interface Params {
+export interface CreateGroupsStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createGroupsStorageOperations = (params: Params): CmsGroupStorageOperations => {
+export const createGroupsStorageOperations = (
+    params: CreateGroupsStorageOperationsParams
+): CmsGroupStorageOperations => {
     const { entity, plugins } = params;
 
     const filteringPlugins = plugins.byType<ValueFilterPlugin>(ValueFilterPlugin.type);
@@ -178,7 +180,7 @@ export const createGroupsStorageOperations = (params: Params): CmsGroupStorageOp
             );
         }
 
-        const where: CmsGroupStorageOperationsListParams["where"] = {
+        const where: Partial<CmsGroupStorageOperationsListParams["where"]> = {
             ...initialWhere
         };
         delete where["tenant"];

@@ -23,7 +23,7 @@ const ImageUploadWrapper = styled("div")({
     }
 });
 
-type SingleImageUploadProps = FormComponentProps & {
+export interface SingleImageUploadProps extends FormComponentProps {
     // Accept types
     accept?: string[];
 
@@ -50,7 +50,7 @@ type SingleImageUploadProps = FormComponentProps & {
     multipleMaxSize?: number | string;
 
     // onChange callback.
-    onChange?: Function;
+    onChange?: (value: any) => void;
 
     // Optional custom props, passed to the preview image.
     imagePreviewProps?: any;
@@ -60,14 +60,10 @@ type SingleImageUploadProps = FormComponentProps & {
 
     // Define the needed properties that are returned on file(s) selection.
     onChangePick?: string[];
-};
+}
 
 export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
-    static defaultProps = {
-        validation: { isValid: null }
-    };
-
-    render() {
+    public override render() {
         const {
             className,
             onChange,
@@ -83,6 +79,8 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
             imagePreviewProps,
             round
         } = this.props;
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <ImageUploadWrapper className={className}>
@@ -115,10 +113,10 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
                     )}
                 </FileManager>
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </ImageUploadWrapper>

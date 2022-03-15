@@ -4,11 +4,22 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { Input } from "@webiny/ui/Input";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { useSnackbar } from "../../../hooks/useSnackbar";
-import { UPDATE_FILE, LIST_FILES } from "./../graphql";
+import { useSnackbar } from "~/hooks/useSnackbar";
+import {
+    UPDATE_FILE,
+    LIST_FILES,
+    UpdateFileMutationResponse,
+    UpdateFileMutationVariables,
+    ListFilesQueryResponse
+} from "./../graphql";
 import { useFileManager } from "./../FileManagerContext";
+import { FileItem } from "../types";
 
-function Name({ file, canEdit }) {
+interface NameProps {
+    file: FileItem;
+    canEdit: (file: FileItem) => boolean;
+}
+const Name: React.FC<NameProps> = ({ file, canEdit }) => {
     const name = file.name || "";
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -27,26 +38,31 @@ function Name({ file, canEdit }) {
                         return;
                     }
                     // Update file.
-                    await client.mutate({
+                    await client.mutate<UpdateFileMutationResponse, UpdateFileMutationVariables>({
                         mutation: UPDATE_FILE,
                         variables: {
                             id: file.id,
                             data: { name }
                         },
                         update: (cache, updated) => {
-                            const newFileData = get(updated, "data.fileManager.updateFile.data");
-                            const data: any = cloneDeep(
-                                cache.readQuery({
+                            const newFileData: FileItem = get(
+                                updated,
+                                "data.fileManager.updateFile.data"
+                            );
+                            const data = cloneDeep(
+                                cache.readQuery<ListFilesQueryResponse>({
                                     query: LIST_FILES,
                                     variables: queryParams
                                 })
                             );
 
-                            data.fileManager.listFiles.data.forEach(item => {
-                                if (item.src === newFileData.src) {
-                                    item.name = newFileData.name;
-                                }
-                            });
+                            if (data) {
+                                data.fileManager.listFiles.data.forEach(item => {
+                                    if (item.src === newFileData.src) {
+                                        item.name = newFileData.name;
+                                    }
+                                });
+                            }
 
                             cache.writeQuery({
                                 query: LIST_FILES,
@@ -76,6 +92,6 @@ function Name({ file, canEdit }) {
     }, [name, file.name, canEdit]);
 
     return <li-content>{editContent}</li-content>;
-}
+};
 
 export default Name;

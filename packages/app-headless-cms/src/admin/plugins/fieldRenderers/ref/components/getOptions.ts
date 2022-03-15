@@ -1,4 +1,21 @@
-export const getOptions = (entries = [], extraOptions = null) => {
+import { CmsEditorContentEntry, CmsModel } from "~/types";
+
+interface CmsEntry extends Pick<CmsEditorContentEntry, "id" | "title" | "status"> {
+    model: Pick<CmsModel, "modelId" | "name">;
+}
+interface Options {
+    (item: CmsEntry): Record<string, string>;
+}
+
+export interface OptionItem {
+    id: string;
+    modelId: string;
+    modelName: string;
+    name: string;
+    published: boolean;
+}
+
+export const getOptions = (entries: CmsEntry[] = [], extraOptions?: Options): OptionItem[] => {
     return entries
         .map(item => {
             const name = item.title;
@@ -18,5 +35,5 @@ export const getOptions = (entries = [], extraOptions = null) => {
                 ...extraData
             };
         })
-        .filter(Boolean);
+        .filter(Boolean) as OptionItem[];
 };

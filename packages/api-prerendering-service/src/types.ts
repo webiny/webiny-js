@@ -1,8 +1,8 @@
 import { Args as QueueAddArgs, Tag } from "~/queue/add/types";
 
 export interface HandlerResponse<TData = Record<string, any>, TError = Record<string, any>> {
-    data: TData;
-    error: TError;
+    data: TData | null;
+    error: TError | null;
 }
 
 /**
@@ -16,7 +16,10 @@ export interface Render {
     files: {
         name: string;
         type: string;
-        meta: Record<string, any>;
+        meta: {
+            tags?: TagUrlLink[];
+            [key: string]: any;
+        };
     }[];
 }
 
@@ -95,7 +98,9 @@ export interface PrerenderingServiceStorageOperationsListTagUrlLinksParams {
 }
 
 export interface PrerenderingServiceRenderStorageOperations {
-    getRender: (params: PrerenderingServiceStorageOperationsGetRenderParams) => Promise<Render>;
+    getRender: (
+        params: PrerenderingServiceStorageOperationsGetRenderParams
+    ) => Promise<Render | null>;
     createRender: (
         params: PrerenderingServiceStorageOperationsCreateRenderParams
     ) => Promise<Render>;
@@ -133,4 +138,32 @@ export interface PrerenderingServiceStorageOperations
     extends PrerenderingServiceRenderStorageOperations,
         PrerenderingServiceQueueJobStorageOperations {
     //
+}
+
+export interface Configuration {
+    db?: {
+        namespace?: string;
+        folder?: {
+            namespace?: string;
+        };
+    };
+    storage?: {
+        folder?: string;
+        name?: string;
+    };
+    website?: {
+        url?: string;
+    };
+    meta?: {
+        notFoundPage?: string;
+        tenant?: string;
+        locale?: string;
+        [key: string]: string | undefined;
+    };
+}
+
+export interface Args {
+    url?: string;
+    path?: string;
+    configuration?: Configuration;
 }

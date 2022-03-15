@@ -3,6 +3,143 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* adio run ([7374289](https://github.com/webiny/webiny-js/commit/73742897e1710bb159a2a63fc587c68fc8cf164f))
+* eslint run ([a1ea3dc](https://github.com/webiny/webiny-js/commit/a1ea3dc4ff61f6cb69cf5ed10f3fef2f9fafc514))
+* prettier run ([4703a40](https://github.com/webiny/webiny-js/commit/4703a404f65fdad502b3222209ded71b6f5b85cc))
+* yarn adio ([601de41](https://github.com/webiny/webiny-js/commit/601de41833048b0f7d331c27e96929475cdda297))
+
+
+### Features
+
+* add types to api-prerendering-service ([a9cf24c](https://github.com/webiny/webiny-js/commit/a9cf24c9d5adf18a60d89d47c170cb4b675c63df))
+* prerendering service types ([3ad010b](https://github.com/webiny/webiny-js/commit/3ad010b57719d1d34e0876963a7d9f1eb334be60))
+* render as export default ([3193787](https://github.com/webiny/webiny-js/commit/319378708119d51b92052ca2781cd0fffcdfe1c5))
+
+
+
+
+
+## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+## [5.23.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.0...v5.23.1-beta.0) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.23.0](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.1...v5.23.0) (2022-02-15)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.23.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.0...v5.23.0-beta.1) (2022-02-14)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* **api-prerendering-service:** injectApolloState escapes "<" ([500ea0c](https://github.com/webiny/webiny-js/commit/500ea0ca8633612790bcbb88db5154065c496e92))
+* **handler:** export context params ([#2197](https://github.com/webiny/webiny-js/issues/2197)) ([fdda248](https://github.com/webiny/webiny-js/commit/fdda24823d6051d249d7f5e2512076f32cbea49a))
+* project tsconfig reference paths ([#2195](https://github.com/webiny/webiny-js/issues/2195)) ([1dc7f24](https://github.com/webiny/webiny-js/commit/1dc7f24fc1e23dec6b00ba6c526a00df59acfedd))
+
+
+
+
+
+## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+## [5.22.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.0...v5.22.1-beta.0) (2022-01-29)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.22.0](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.3...v5.22.0) (2022-01-24)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+
+### Features
+
+* enable okta integration in multi-tenant projects ([#2211](https://github.com/webiny/webiny-js/issues/2211)) ([50f3626](https://github.com/webiny/webiny-js/commit/50f3626b0fbfc684ad4c6f476dfb1b7f8b6db616))
+
+
+
+
+
+# [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.22.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.21.0...v5.22.0-beta.0) (2022-01-14)
+
+
+### Features
+
+* upgrade webpack to version 5 ([#2101](https://github.com/webiny/webiny-js/issues/2101)) ([d3bdfac](https://github.com/webiny/webiny-js/commit/d3bdfac4b08b453f6d2ff836d8e56e1f0073ae62))
+* **handler:** handler early response ([#2167](https://github.com/webiny/webiny-js/issues/2167)) ([7539743](https://github.com/webiny/webiny-js/commit/753974398c120255c03a33ea9584312e3e1b4e7f))
+
+
+
+
+
 # [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
 
 **Note:** Version bump only for package @webiny/api-prerendering-service

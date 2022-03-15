@@ -2,13 +2,28 @@ import * as React from "react";
 import { Image } from "@webiny/app/components/Image";
 import { MultiImageUpload as UiMultiImageUpload } from "@webiny/ui/ImageUpload";
 
-// TODO: @adrian define props type
-type Props = any;
-
-export default function MultiImageUpload({ imagePreviewProps, ...multiImageUploadProps }: Props) {
+/**
+ * TODO @ts-refactor
+ */
+interface MultiImageUploadProps {
+    imagePreviewProps: {
+        src: string;
+        [key: string]: any;
+    };
+    [key: string]: any;
+}
+const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
+    imagePreviewProps,
+    ...multiImageUploadProps
+}) => {
     return (
         <UiMultiImageUpload
-            renderImagePreview={(renderImageProps: Object) => {
+            /**
+             * TODO @ts-refactor
+             * It appers that renderImagePreview does not exist on  UiMultiImageUpload. So how did this work?
+             */
+            // @ts-ignore
+            renderImagePreview={(renderImageProps: Record<string, any>) => {
                 return (
                     <Image
                         transform={{ width: 300 }}
@@ -20,4 +35,5 @@ export default function MultiImageUpload({ imagePreviewProps, ...multiImageUploa
             {...multiImageUploadProps}
         />
     );
-}
+};
+export default MultiImageUpload;

@@ -8,13 +8,14 @@ import Field from "./Field";
 import { ReactComponent as HandleIcon } from "../../../../icons/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "../../Context";
-import { FieldLayoutPositionType } from "../../../../../types";
+import { FbFormModelField, FieldLayoutPositionType } from "~/types";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.namespace("FormsApp.Editor.EditTab");
 
-export const EditTab = () => {
+export const EditTab: React.FC = () => {
     const {
-        getFields,
+        getLayoutFields,
         insertField,
         updateField,
         deleteField,
@@ -23,51 +24,83 @@ export const EditTab = () => {
         moveRow,
         getFieldPlugin
     } = useFormEditor();
-    const [editingField, setEditingField] = useState(null);
-    const [dropTarget, setDropTarget]: [FieldLayoutPositionType, Function] = useState(null);
+    const [editingField, setEditingField] = useState<FbFormModelField | null>(null);
+    const [dropTarget, setDropTarget] = useState<FieldLayoutPositionType | null>(null);
 
-    const editField = useCallback(field => {
-        setEditingField(cloneDeep(field));
-    }, undefined);
-
-    const handleDropField = useCallback((source, dropTarget) => {
-        const { pos, name, ui } = source;
-
-        if (name === "custom") {
-            editField({});
-            setDropTarget(dropTarget);
+    const editField = useCallback((field: FbFormModelField | null) => {
+        if (!field) {
+            setEditingField(null);
             return;
         }
+        setEditingField(cloneDeep(field));
+    }, []);
 
-        if (ui === "row") {
-            // Reorder rows.
-            // Reorder logic is different depending on the source and target position.
-            return moveRow(pos.row, dropTarget.row);
-        }
+    // TODO @ts-refactor figure out source type
+    const handleDropField = useCallback(
+        (source: any, position: FieldLayoutPositionType): void => {
+            const { pos, name, ui } = source;
 
-        // If source pos is set, we are moving an existing field.
-        if (pos) {
-            const fieldId = data.layout[pos.row][pos.index];
-            return moveField({ field: fieldId, position: dropTarget });
-        }
+            if (name === "custom") {
+                /**
+                 * We can cast because field is empty in the start
+                 */
+                editField({} as FbFormModelField);
+                setDropTarget(position);
+                return;
+            }
 
-        // Find field plugin which handles the dropped field type "name".
-        const plugin = getFieldPlugin({ name });
-        insertField(plugin.field.createField(), dropTarget);
-    }, undefined);
+            if (ui === "row") {
+                // Reorder rows.
+                // Reorder logic is different depending on the source and target position.
+                moveRow(pos.row, position.row);
+                return;
+            }
 
-    const fields: Array<any> = getFields(true);
+            // If source pos is set, we are moving an existing field.
+            if (pos) {
+                if (pos.index === null) {
+                    console.log("Tried to move Form Field but its position index is null.");
+                    console.log(source);
+                    return;
+                }
+                const fieldId = data.layout[pos.row][pos.index];
+                moveField({
+                    field: fieldId,
+                    position
+                });
+                return;
+            }
+
+            // Find field plugin which handles the dropped field type "name".
+            const plugin = getFieldPlugin({ name });
+            if (!plugin) {
+                return;
+            }
+            insertField(plugin.field.createField(), position);
+        },
+        [data]
+    );
+
+    const fields = getLayoutFields();
 
     return (
         <EditContainer>
             {fields.length === 0 && (
-                <Center onDrop={item => handleDropField(item, { row: 0, index: 0 })}>
+                <Center
+                    onDrop={item => {
+                        handleDropField(item, {
+                            row: 0,
+                            index: 0
+                        });
+                        return undefined;
+                    }}
+                >
                     {t`Drop your first field here`}
                 </Center>
             )}
 
             {fields.map((row, index) => (
-                <Draggable beginDrag={{ ui: "row", pos: { row: index } }} key={index}>
+                <Draggable beginDrag={{ ui: "row", pos: { row: index } }} key={`row-${index}`}>
                     {(
                         {
                             drag,
@@ -79,13 +112,19 @@ export const EditTab = () => {
                                 <Icon icon={<HandleIcon />} />
                             </div>
                             <Horizontal
-                                onDrop={item => handleDropField(item, { row: index, index: null })}
+                                onDrop={item => {
+                                    handleDropField(item, {
+                                        row: index,
+                                        index: null
+                                    });
+                                    return undefined;
+                                }}
                             />
                             {/* Row start - includes field drop zones and fields */}
                             <Row>
                                 {row.map((field, fieldIndex) => (
                                     <Draggable
-                                        key={fieldIndex}
+                                        key={`field-${fieldIndex}`}
                                         beginDrag={{
                                             ui: "field",
                                             name: field.name,
@@ -98,12 +137,13 @@ export const EditTab = () => {
                                         {({ drag }) => (
                                             <div className={fieldContainer} ref={drag}>
                                                 <Vertical
-                                                    onDrop={item =>
+                                                    onDrop={item => {
                                                         handleDropField(item, {
                                                             row: index,
                                                             index: fieldIndex
-                                                        })
-                                                    }
+                                                        });
+                                                        return undefined;
+                                                    }}
                                                     isVisible={item =>
                                                         item.ui === "field" &&
                                                         (row.length < 4 || item?.pos?.row === index)
@@ -127,12 +167,13 @@ export const EditTab = () => {
                                                             (row.length < 4 ||
                                                                 item?.pos?.row === index)
                                                         }
-                                                        onDrop={item =>
+                                                        onDrop={item => {
                                                             handleDropField(item, {
                                                                 row: index,
                                                                 index: fieldIndex + 1
-                                                            })
-                                                        }
+                                                            });
+                                                            return undefined;
+                                                        }}
                                                     />
                                                 )}
                                             </div>
@@ -144,12 +185,13 @@ export const EditTab = () => {
                             {index === fields.length - 1 && (
                                 <Horizontal
                                     last
-                                    onDrop={item =>
+                                    onDrop={item => {
                                         handleDropField(item, {
                                             row: index + 1,
                                             index: null
-                                        })
-                                    }
+                                        });
+                                        return undefined;
+                                    }}
                                 />
                             )}
                         </RowContainer>
@@ -160,9 +202,13 @@ export const EditTab = () => {
             <EditFieldDialog
                 field={editingField}
                 onClose={editField}
-                onSubmit={data => {
+                onSubmit={initialData => {
+                    const data = initialData as unknown as FbFormModelField;
+
                     if (data._id) {
                         updateField(data);
+                    } else if (!dropTarget) {
+                        console.log("Missing drop target on EditFieldDialog submit.");
                     } else {
                         insertField(data, dropTarget);
                     }

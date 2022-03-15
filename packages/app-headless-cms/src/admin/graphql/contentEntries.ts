@@ -1,7 +1,13 @@
 import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
 import pluralize from "pluralize";
-import { CmsEditorContentModel } from "~/types";
+import {
+    CmsContentEntryRevision,
+    CmsEditorContentEntry,
+    CmsEditorContentModel,
+    CmsErrorResponse,
+    CmsMetaResponse
+} from "~/types";
 import { createFieldsList } from "./createFieldsList";
 
 const ERROR_FIELD = /* GraphQL */ `
@@ -19,8 +25,21 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
     locked
     status
 `;
+/**
+ * ############################################
+ * Get CMS Entry Query
+ */
+export interface CmsEntryGetQueryResponse {
+    content: {
+        data: CmsEditorContentEntry;
+        error: CmsErrorResponse | null;
+    };
+}
+export interface CmsEntryGetQueryVariables {
+    revision: string;
+}
 
-export const createReadQuery = model => {
+export const createReadQuery = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -42,8 +61,21 @@ export const createReadQuery = model => {
         }
     `;
 };
-
-export const createRevisionsQuery = model => {
+/**
+ * ############################################
+ * List CMS Entry Revisions Query
+ */
+export interface CmsEntriesListRevisionsQueryResponse {
+    revisions: {
+        data: CmsContentEntryRevision[];
+        error: CmsErrorResponse | null;
+        meta: CmsMetaResponse;
+    };
+}
+export interface CmsEntriesListRevisionsQueryVariables {
+    id: string;
+}
+export const createRevisionsQuery = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -68,6 +100,27 @@ const getModelTitleFieldId = (model: CmsEditorContentModel): string => {
     }
     return model.titleFieldId;
 };
+
+/**
+ * ############################################
+ * List CMS Entries Query
+ */
+export interface CmsEntriesListQueryResponse {
+    content: {
+        data: CmsEditorContentEntry[];
+        error: CmsErrorResponse | null;
+        meta: CmsMetaResponse;
+    };
+}
+export interface CmsEntriesListQueryVariables {
+    // TODO @ts-refactor better list types
+    where?: {
+        [key: string]: any;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string;
+}
 export const createListQuery = (model: CmsEditorContentModel) => {
     const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
     const ucFirstModelId = upperFirst(model.modelId);
@@ -98,8 +151,20 @@ export const createListQuery = (model: CmsEditorContentModel) => {
         }
     `;
 };
-
-export const createDeleteMutation = model => {
+/**
+ * ############################################
+ * Delete Mutation
+ */
+export interface CmsEntryDeleteMutationResponse {
+    content: {
+        data: CmsEditorContentEntry | null;
+        error: CmsErrorResponse | null;
+    };
+}
+export interface CmsEntryDeleteMutationVariables {
+    revision: string;
+}
+export const createDeleteMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -111,8 +176,23 @@ export const createDeleteMutation = model => {
         }
     `;
 };
-
-export const createCreateMutation = model => {
+/**
+ * ############################################
+ * Create Mutation
+ */
+export interface CmsEntryCreateMutationResponse {
+    content: {
+        data: CmsEditorContentEntry | null;
+        error: CmsErrorResponse | null;
+    };
+}
+export interface CmsEntryCreateMutationVariables {
+    /**
+     * We have any here because we do not know which fields does entry have
+     */
+    data: Record<string, any>;
+}
+export const createCreateMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -131,8 +211,24 @@ export const createCreateMutation = model => {
         }
     `;
 };
-
-export const createCreateFromMutation = model => {
+/**
+ * ############################################
+ * Create From Mutation
+ */
+export interface CmsEntryCreateFromMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryCreateFromMutationVariables {
+    revision: string;
+    /**
+     * We have any here because we do not know which fields does entry have
+     */
+    data?: Record<string, any>;
+}
+export const createCreateFromMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -150,8 +246,24 @@ export const createCreateFromMutation = model => {
             }
         }`;
 };
-
-export const createUpdateMutation = model => {
+/**
+ * ############################################
+ * Update Mutation
+ */
+export interface CmsEntryUpdateMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryUpdateMutationVariables {
+    revision: string;
+    /**
+     * We have any here because we do not know which fields does entry have
+     */
+    data: Record<string, any>;
+}
+export const createUpdateMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -170,8 +282,20 @@ export const createUpdateMutation = model => {
         }
     `;
 };
-
-export const createPublishMutation = model => {
+/**
+ * ############################################
+ * Publish Mutation
+ */
+export interface CmsEntryPublishMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryPublishMutationVariables {
+    revision: string;
+}
+export const createPublishMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -187,8 +311,20 @@ export const createPublishMutation = model => {
             }
         }`;
 };
-
-export const createUnpublishMutation = model => {
+/**
+ * ############################################
+ * Unpublish Mutation
+ */
+export interface CmsEntryUnpublishMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryUnpublishMutationVariables {
+    revision: string;
+}
+export const createUnpublishMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -204,8 +340,20 @@ export const createUnpublishMutation = model => {
             }
         }`;
 };
-
-export const createRequestReviewMutation = model => {
+/**
+ * ############################################
+ * Request Review Mutation
+ */
+export interface CmsEntryRequestReviewMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryRequestReviewMutationVariables {
+    revision: string;
+}
+export const createRequestReviewMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
@@ -222,7 +370,20 @@ export const createRequestReviewMutation = model => {
         }`;
 };
 
-export const createRequestChangesMutation = model => {
+/**
+ * ############################################
+ * Request Changes Mutation
+ */
+export interface CmsEntryRequestChangesMutationResponse {
+    content: {
+        data?: CmsEditorContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+export interface CmsEntryRequestChangesMutationVariables {
+    revision: string;
+}
+export const createRequestChangesMutation = (model: CmsEditorContentModel) => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`

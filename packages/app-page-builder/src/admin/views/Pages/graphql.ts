@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { PbErrorResponse, PbPageData } from "~/types";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -37,7 +38,21 @@ const DATA_FIELD = `
         savedOn
     }
 `;
-
+/**
+ * #####################
+ * Create Page From Mutation
+ */
+export interface CreatePageFromMutationResponse {
+    pageBuilder: {
+        createPage: {
+            data: PbPageData;
+            error?: PbErrorResponse;
+        };
+    };
+}
+export interface CreatePageFromMutationVariables {
+    from: string;
+}
 export const CREATE_PAGE_FROM = gql`
     mutation CreatePageFrom($from: ID) {
         pageBuilder {
@@ -48,7 +63,21 @@ export const CREATE_PAGE_FROM = gql`
         }
     }
 `;
-
+/**
+ * #####################
+ * Get Page Query Response
+ */
+export interface GetPageQueryResponse {
+    pageBuilder: {
+        getPage: {
+            data: PbPageData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface GetPageQueryVariables {
+    id: string;
+}
 export const GET_PAGE = gql`
     query PbGetPage($id: ID!) {
         pageBuilder {

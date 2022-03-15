@@ -1,15 +1,35 @@
 import { useCallback, useMemo } from "react";
 import get from "lodash/get";
 import { useSecurity } from "@webiny/app-security";
+import { PageBuilderSecurityPermission } from "~/types";
 
-const usePermission = () => {
-    const { identity } = useSecurity();
+interface CreatableItem {
+    createdBy: {
+        id: string;
+    };
+}
 
-    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
-    const hasFullAccess = useMemo(() => identity.getPermission("pb.*"), []);
+interface UsePermission {
+    canEdit: (item: CreatableItem) => boolean;
+    canDelete: (item: CreatableItem) => boolean;
+    canPublish: () => boolean;
+    canUnpublish: () => boolean;
+    canRequestReview: () => boolean;
+    canRequestChange: () => boolean;
+}
+
+const usePermission = (): UsePermission => {
+    const { identity, getPermission } = useSecurity();
+
+    const pbPagePermission = useMemo((): PageBuilderSecurityPermission | null => {
+        return getPermission("pb.page");
+    }, [identity]);
+    const hasFullAccess = useMemo((): PageBuilderSecurityPermission | null => {
+        return getPermission("pb.*");
+    }, [identity]);
 
     const canEdit = useCallback(
-        item => {
+        (item: CreatableItem): boolean => {
             if (hasFullAccess) {
                 return true;
             }
@@ -18,7 +38,7 @@ const usePermission = () => {
                 return false;
             }
             if (pbPagePermission.own && creatorId) {
-                return creatorId === identity.login;
+                return !!identity && creatorId === identity.login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("w");
@@ -29,7 +49,7 @@ const usePermission = () => {
     );
 
     const canDelete = useCallback(
-        item => {
+        (item: CreatableItem): boolean => {
             if (hasFullAccess) {
                 return true;
             }
@@ -37,7 +57,8 @@ const usePermission = () => {
                 return false;
             }
             if (pbPagePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+                const login = identity ? identity.login : null;
+                return get(item, "createdBy.id", undefined) === login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("d");
@@ -47,7 +68,7 @@ const usePermission = () => {
         [pbPagePermission, hasFullAccess]
     );
 
-    const canPublish = useCallback(() => {
+    const canPublish = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -60,7 +81,7 @@ const usePermission = () => {
         return false;
     }, [pbPagePermission, hasFullAccess]);
 
-    const canUnpublish = useCallback(() => {
+    const canUnpublish = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -73,7 +94,7 @@ const usePermission = () => {
         return false;
     }, [pbPagePermission, hasFullAccess]);
 
-    const canRequestReview = useCallback(() => {
+    const canRequestReview = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -86,7 +107,7 @@ const usePermission = () => {
         return false;
     }, [pbPagePermission, hasFullAccess]);
 
-    const canRequestChange = useCallback(() => {
+    const canRequestChange = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }

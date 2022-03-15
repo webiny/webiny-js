@@ -1,4 +1,4 @@
-export const categoryUrlValidator = (value: string) => {
+export const categoryUrlValidator = (value: string): boolean => {
     if (value.startsWith("/") && value.endsWith("/")) {
         return true;
     }

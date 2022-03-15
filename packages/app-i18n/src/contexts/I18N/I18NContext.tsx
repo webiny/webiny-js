@@ -1,6 +1,7 @@
 import React, { useState, memo, useMemo } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import { GetI18NInformationResponse, I18NCurrentLocaleItem, I18NLocaleItem } from "~/types";
 
 export const GET_I18N_INFORMATION = gql`
     query GetI18NInformation {
@@ -19,32 +20,41 @@ export const GET_I18N_INFORMATION = gql`
     }
 `;
 
-export const I18NContext = React.createContext(null);
-const defaultState = { currentLocales: [], locales: [] };
+export interface I18NContextState {
+    locales: I18NLocaleItem[];
+    currentLocales: I18NCurrentLocaleItem[];
+}
 
-type CurrentLocale = {
-    context: string;
-    locale: string;
-};
-
-type I18NContextState = {
-    locales: { code: string; default: boolean }[];
-    currentLocales: CurrentLocale[];
-};
-
-export type I18NContextValue = {
+export interface I18NContextValue {
     refetchLocales(variables?: Record<string, any>): Promise<any>;
-    updateLocaleStorage: (currentLocales: CurrentLocale[]) => void;
+    updateLocaleStorage: (currentLocales: I18NCurrentLocaleItem[]) => void;
     state: I18NContextState;
-    setState: typeof useState;
-};
+    setState: (state: Partial<I18NContextState>) => void;
+}
 
-export type I18NProviderProps = {
-    children?: React.ReactNode;
+export interface I18NProviderProps {
     loader?: React.ReactElement;
-};
+}
 
-const updateLocaleStorage = currentLocales => {
+export const I18NContext = React.createContext<I18NContextValue>({
+    state: {
+        locales: [],
+        currentLocales: []
+    },
+    setState: () => {
+        return void 0;
+    },
+    refetchLocales: async () => {
+        return null;
+    },
+    updateLocaleStorage: () => {
+        return void 0;
+    }
+});
+
+const defaultState: I18NContextState = { currentLocales: [], locales: [] };
+
+const updateLocaleStorage = (currentLocales: I18NCurrentLocaleItem[]) => {
     localStorage.setItem(
         "webiny_i18n_locale",
         currentLocales.reduce(
@@ -54,20 +64,20 @@ const updateLocaleStorage = currentLocales => {
     );
 };
 
-export const I18NProvider = memo(function I18NProvider(props: I18NProviderProps) {
+const I18NProviderComponent: React.FC<I18NProviderProps> = props => {
     const { children, loader } = props;
     const [state, setState] = useState<I18NContextState>(defaultState);
-    const { loading, refetch } = useQuery(GET_I18N_INFORMATION, {
+    const { loading, refetch } = useQuery<GetI18NInformationResponse>(GET_I18N_INFORMATION, {
         skip: state.locales.length > 0,
         onCompleted(data) {
             const { currentLocales: fetchedCurrentLocales, locales } =
                 data?.i18n?.getI18NInformation || {};
 
             // wby_i18n_locale: "default:en-US;content:en-US;"
-            const parsedLocales = {};
-            if (localStorage.getItem("webiny_i18n_locale")) {
-                localStorage
-                    .getItem("webiny_i18n_locale")
+            const parsedLocales: Record<string, string> = {};
+            const webinyI18NLocale = localStorage.getItem("webiny_i18n_locale");
+            if (webinyI18NLocale) {
+                webinyI18NLocale
                     .split(";")
                     .filter(Boolean)
                     .forEach(item => {
@@ -76,15 +86,12 @@ export const I18NProvider = memo(function I18NProvider(props: I18NProviderProps)
                     });
             }
 
-            const currentLocales = [];
-            for (let i = 0; i < fetchedCurrentLocales.length; i++) {
-                const item = fetchedCurrentLocales[i];
-                currentLocales.push({
+            const currentLocales: I18NCurrentLocaleItem[] = fetchedCurrentLocales.map(item => {
+                return {
                     context: item.context,
                     locale: parsedLocales[item.context] || item.locale
-                });
-            }
-
+                };
+            });
             updateLocaleStorage(currentLocales);
             setState({ locales, currentLocales });
         }
@@ -95,14 +102,23 @@ export const I18NProvider = memo(function I18NProvider(props: I18NProviderProps)
     }
 
     const value = useMemo(
-        () => ({
+        (): I18NContextValue => ({
             refetchLocales: refetch,
             updateLocaleStorage,
             state,
-            setState
+            setState: (newState: Partial<I18NContextState>) => {
+                return setState(prev => {
+                    return {
+                        ...prev,
+                        ...newState
+                    };
+                });
+            }
         }),
         [state]
     );
 
     return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
-});
+};
+
+export const I18NProvider: React.FC<I18NProviderProps> = memo(I18NProviderComponent);

@@ -34,7 +34,7 @@ export class FileManagerElementRenderer extends UIRenderer<
     FileManagerElement,
     FormFieldElementRenderProps
 > {
-    render({
+    public override render({
         element,
         props
     }: UIRenderParams<FileManagerElement, FormFieldElementRenderProps>): React.ReactNode {
@@ -53,8 +53,8 @@ export class FileManagerElementRenderer extends UIRenderer<
                 name={element.getName()}
                 validators={element.getValidators(props)}
                 defaultValue={element.getDefaultValue(props)}
-                beforeChange={(value, cb) => element.onBeforeChange(value, cb)}
-                afterChange={(value, form) => element.onAfterChange(value, form)}
+                beforeChange={(value: string, cb) => element.onBeforeChange(value, cb)}
+                afterChange={(value: string, form) => element.onAfterChange(value, form)}
             >
                 {({ value, onChange, validation }) => (
                     <ImageUploadWrapper>

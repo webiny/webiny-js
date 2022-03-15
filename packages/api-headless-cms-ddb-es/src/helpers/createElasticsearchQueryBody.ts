@@ -40,7 +40,7 @@ interface CreateElasticsearchSortParams {
     plugins: PluginsContainer;
     sort?: CmsEntryListSort;
     modelFields: ModelFields;
-    parentPath?: string;
+    parentPath?: string | null;
     model: CmsModel;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
 }
@@ -50,7 +50,7 @@ interface CreateElasticsearchQueryArgs {
     plugins: PluginsContainer;
     where: CmsEntryListWhere;
     modelFields: ModelFields;
-    parentPath?: string;
+    parentPath?: string | null;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
 }
 
@@ -61,12 +61,10 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
     const { sort, modelFields, parentPath, searchPlugins } = args;
 
     if (!sort || sort.length === 0) {
-        return undefined;
+        return [];
     }
 
-    const sortPlugins: Record<string, CmsEntryElasticsearchFieldPlugin> = Object.values(
-        modelFields
-    ).reduce((plugins, modelField) => {
+    const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
         const searchPlugin = searchPlugins[modelField.type];
 
         plugins[modelField.field.fieldId] = new CmsEntryElasticsearchFieldPlugin({
@@ -83,7 +81,7 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
             })
         });
         return plugins;
-    }, {});
+    }, {} as Record<string, CmsEntryElasticsearchFieldPlugin>);
 
     return createSort({
         fieldPlugins: sortPlugins,
@@ -98,7 +96,10 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
 const createInitialQueryValue = (
     args: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where } = args;
+    /**
+     * Cast as partial so we can remove unnecessary keys.
+     */
+    const where = args.where as Partial<CmsEntryListWhere>;
 
     const query: ElasticsearchBoolQueryConfig = {
         must: [],
@@ -109,7 +110,7 @@ const createInitialQueryValue = (
 
     // When ES index is shared between tenants, we need to filter records by tenant ID
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-    if (sharedIndex) {
+    if (sharedIndex && where.tenant) {
         query.must.push({ term: { "tenant.keyword": where.tenant } });
     }
     delete where["tenant"];
@@ -156,7 +157,7 @@ interface CreateFieldPathParams {
     modelField: ModelField;
     key: string;
     searchPlugin?: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
-    parentPath?: string;
+    parentPath?: string | null;
 }
 const createFieldPath = ({
     modelField,
@@ -164,7 +165,7 @@ const createFieldPath = ({
     parentPath,
     key
 }: CreateFieldPathParams): string => {
-    let path;
+    let path: string | null = null;
     if (searchPlugin && typeof searchPlugin.createPath === "function") {
         path = searchPlugin.createPath({
             field: modelField.field,
@@ -175,7 +176,10 @@ const createFieldPath = ({
         path = modelField.path(modelField.field.fieldId);
     }
     if (!path) {
-        path = modelField.path || modelField.field.fieldId || modelField.field.id;
+        /**
+         * We know that modelFieldPath is a string or undefined at this point.
+         */
+        path = (modelField.path as string) || modelField.field.fieldId || modelField.field.id;
     }
     return modelField.isSystemField || !parentPath || path.match(parentPath)
         ? path
@@ -253,7 +257,7 @@ interface FieldPathFactoryParams extends Omit<CreatePathCallableParams, "field">
     plugin?: CmsEntryElasticsearchQueryBuilderValueSearchPlugin;
     modelField: ModelField;
     key: string;
-    parentPath?: string;
+    parentPath?: string | null;
     keyword?: boolean;
 }
 const fieldPathFactory = (params: FieldPathFactoryParams): string => {
@@ -261,7 +265,7 @@ const fieldPathFactory = (params: FieldPathFactoryParams): string => {
 
     const field = modelField.field;
 
-    let fieldPath: string;
+    let fieldPath: string | null = null;
     if (plugin) {
         fieldPath = plugin.createPath({ field, value, key });
     }
@@ -288,7 +292,7 @@ interface ApplyFilteringParams {
     value: any;
     operatorPlugins: OperatorPlugins;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
-    parentPath: string;
+    parentPath?: string | null;
 }
 const applyFiltering = (params: ApplyFilteringParams) => {
     const {
@@ -483,7 +487,7 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
             }
         },
         sort,
-        size: limit + 1,
+        size: (limit || 0) + 1,
         // eslint-disable-next-line
         search_after: decodeCursor(after) as any,
         // eslint-disable-next-line

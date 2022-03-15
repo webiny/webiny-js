@@ -7,7 +7,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 import Draggable from "./Draggable";
-import { FbBuilderFieldPlugin, FbEditorFieldGroup } from "../../../types";
+import { FbBuilderFieldPlugin, FbEditorFieldGroup, FbFormModelField } from "~/types";
 
 const FieldContainer = styled("div")({
     padding: "10px 15px",
@@ -66,7 +66,11 @@ const accordionItem = css({
     }
 });
 
-const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
+interface FieldProps {
+    onFieldDragStart: () => void;
+    fieldType: Pick<FbFormModelField, "name" | "label">;
+}
+const Field: React.FC<FieldProps> = ({ onFieldDragStart, fieldType: { name, label } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", name }}>
             {({ drag }) => (
@@ -88,7 +92,10 @@ const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
     );
 };
 
-export const Fields = ({ onFieldDragStart }) => {
+interface FieldsProps {
+    onFieldDragStart: () => void;
+}
+export const Fields: React.FC<FieldsProps> = ({ onFieldDragStart }) => {
     const { getField } = useFormEditor();
 
     function getGroups() {
@@ -121,7 +128,6 @@ export const Fields = ({ onFieldDragStart }) => {
                     <AccordionItem
                         key={group.name}
                         title={group.title}
-                        icon={null}
                         className={accordionItem}
                         data-testid={group.name}
                     >

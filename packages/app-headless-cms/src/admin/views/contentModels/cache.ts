@@ -1,29 +1,42 @@
 import dotProp from "dot-prop-immutable";
-import * as GQL from "../../viewsGraphql";
+import { LIST_CONTENT_MODELS, LIST_MENU_CONTENT_GROUPS_MODELS } from "../../viewsGraphql";
 import { CmsEditorContentModel } from "~/types";
+import { DataProxy } from "apollo-cache";
+import { ListCmsModelsQueryResponse, ListMenuCmsGroupsQueryResponse } from "../../viewsGraphql";
 
-export const addModelToListCache = (cache, model: CmsEditorContentModel) => {
-    const { listContentModels } = cache.readQuery({ query: GQL.LIST_CONTENT_MODELS });
+export const addModelToListCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+    const response = cache.readQuery<ListCmsModelsQueryResponse>({
+        query: LIST_CONTENT_MODELS
+    });
+    if (!response || !response.listContentModels) {
+        return;
+    }
+    const { listContentModels } = response;
     const newModelIndex = listContentModels.data.length;
 
     cache.writeQuery({
-        query: GQL.LIST_CONTENT_MODELS,
+        query: LIST_CONTENT_MODELS,
         data: {
             listContentModels: dotProp.set(listContentModels, `data.${newModelIndex}`, model)
         }
     });
 };
 
-export const addModelToGroupCache = (cache, model: CmsEditorContentModel) => {
-    const { listContentModelGroups: groupsList } = cache.readQuery({
-        query: GQL.LIST_MENU_CONTENT_GROUPS_MODELS
+export const addModelToGroupCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+    const response = cache.readQuery<ListMenuCmsGroupsQueryResponse>({
+        query: LIST_MENU_CONTENT_GROUPS_MODELS
     });
+    if (!response || !response.listContentModelGroups) {
+        return;
+    }
+
+    const { listContentModelGroups: groupsList } = response;
 
     const groupIndex = groupsList.data.findIndex(g => g.id === model.group.id);
     const newGroupModelIndex = groupsList.data[groupIndex].contentModels.length;
 
     cache.writeQuery({
-        query: GQL.LIST_MENU_CONTENT_GROUPS_MODELS,
+        query: LIST_MENU_CONTENT_GROUPS_MODELS,
         data: {
             listContentModelGroups: dotProp.set(
                 groupsList,
@@ -34,30 +47,47 @@ export const addModelToGroupCache = (cache, model: CmsEditorContentModel) => {
     });
 };
 
-export const removeModelFromListCache = (cache, model: CmsEditorContentModel) => {
-    const { listContentModels } = cache.readQuery({ query: GQL.LIST_CONTENT_MODELS });
+export const removeModelFromListCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+    const response = cache.readQuery<ListCmsModelsQueryResponse>({
+        query: LIST_CONTENT_MODELS
+    });
+    if (!response || !response.listContentModels) {
+        return;
+    }
+    const { listContentModels } = response;
     const modelIndex = listContentModels.data.findIndex(m => m.modelId === model.modelId);
 
     cache.writeQuery({
-        query: GQL.LIST_CONTENT_MODELS,
+        query: LIST_CONTENT_MODELS,
         data: {
             listContentModels: dotProp.delete(listContentModels, `data.${modelIndex}`)
         }
     });
 };
 
-export const removeModelFromGroupCache = (cache, model: CmsEditorContentModel) => {
-    const { listContentModelGroups: groupsList } = cache.readQuery({
-        query: GQL.LIST_MENU_CONTENT_GROUPS_MODELS
+export const removeModelFromGroupCache = (cache: DataProxy, model: CmsEditorContentModel): void => {
+    const response = cache.readQuery<ListMenuCmsGroupsQueryResponse>({
+        query: LIST_MENU_CONTENT_GROUPS_MODELS
     });
+    if (!response || !response.listContentModelGroups) {
+        return;
+    }
+    const { listContentModelGroups: groupsList } = response;
 
     const groupIndex = groupsList.data.findIndex(g => g.id === model.group.id);
+    if (groupIndex < 0) {
+        return;
+    }
     const modelIndex = groupsList.data[groupIndex].contentModels.findIndex(
         m => m.modelId === model.modelId
     );
 
+    if (modelIndex < 0) {
+        return;
+    }
+
     cache.writeQuery({
-        query: GQL.LIST_MENU_CONTENT_GROUPS_MODELS,
+        query: LIST_MENU_CONTENT_GROUPS_MODELS,
         data: {
             listContentModelGroups: dotProp.delete(
                 groupsList,

@@ -1,5 +1,5 @@
 import React from "react";
-import { UIElement } from "./UIElement";
+import { UIElement, UIElementConfig } from "./UIElement";
 import { Plugin, plugins } from "@webiny/plugins";
 
 interface LayoutItem {
@@ -7,12 +7,12 @@ interface LayoutItem {
     width: number;
 }
 
-interface ElementGetter {
+interface UILayoutElementGetter {
     (elementId: string): UIElement<any>;
 }
 
-interface Sorter {
-    (elementA: UIElement, elementB: UIElement): number;
+export interface UILayoutSorter<T extends UIElementConfig = UIElementConfig> {
+    (elementA: UIElement<T>, elementB: UIElement<T>): number;
 }
 
 interface UILayoutRenderer {
@@ -20,39 +20,39 @@ interface UILayoutRenderer {
 }
 
 export class UILayout {
-    private _renderer: UILayoutRenderer;
+    private _renderer?: UILayoutRenderer;
     private _grid = true;
     private _layout: LayoutItem[][] = [];
-    private _getElement: ElementGetter;
+    private readonly _getElement: UILayoutElementGetter;
 
-    constructor(elementGetter: ElementGetter) {
+    public constructor(elementGetter: UILayoutElementGetter) {
         this._getElement = elementGetter;
 
         const layoutPlugins = plugins.byType<UILayoutPlugin<any>>(UILayoutPlugin.type);
         layoutPlugins.forEach(plugin => plugin.apply(this));
     }
 
-    setGrid(flag: boolean) {
+    public setGrid(flag: boolean) {
         this._grid = flag;
     }
 
-    getGrid() {
+    public getGrid() {
         return this._grid;
     }
 
-    getLayout() {
+    public getLayout() {
         return this._layout;
     }
 
-    setRenderer(renderer: UILayoutRenderer) {
+    public setRenderer(renderer: UILayoutRenderer) {
         this._renderer = renderer;
     }
 
-    getElement(id) {
+    public getElement(id: string): UIElement {
         return this._getElement(id);
     }
 
-    sort(sorter: Sorter) {
+    public sort<T extends UIElementConfig = UIElementConfig>(sorter: UILayoutSorter<T>) {
         if (this._grid) {
             return;
         }
@@ -65,7 +65,7 @@ export class UILayout {
         });
     }
 
-    removeElement(element: UIElement<any>) {
+    public removeElement(element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -79,7 +79,7 @@ export class UILayout {
         }
     }
 
-    insertElementAbove(lookFor: UIElement<any>, element: UIElement<any>) {
+    public insertElementAbove(lookFor: UIElement<any>, element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -92,7 +92,7 @@ export class UILayout {
         return this;
     }
 
-    insertElementBelow(lookFor: UIElement<any>, element: UIElement<any>) {
+    public insertElementBelow(lookFor: UIElement<any>, element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -105,7 +105,7 @@ export class UILayout {
         return this;
     }
 
-    insertElementAfter(lookFor: UIElement<any>, element: UIElement<any>) {
+    public insertElementAfter(lookFor: UIElement<any>, element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -122,7 +122,7 @@ export class UILayout {
         return this;
     }
 
-    insertElementBefore(lookFor: UIElement<any>, element: UIElement<any>) {
+    public insertElementBefore(lookFor: UIElement<any>, element: UIElement<any>) {
         for (let i = 0; i < this._layout.length; i++) {
             const row = this._layout[i];
             for (let j = 0; j < row.length; j++) {
@@ -139,17 +139,17 @@ export class UILayout {
         return this;
     }
 
-    insertElementAtTheBeginning(element: UIElement<any>) {
+    public insertElementAtTheBeginning(element: UIElement<any>) {
         this._layout.unshift([{ element: element.id, width: 12 }]);
         return this;
     }
 
-    insertElementAtTheEnd(element: UIElement<any>) {
+    public insertElementAtTheEnd(element: UIElement<any>) {
         this._layout.push([{ element: element.id, width: 12 }]);
         return this;
     }
 
-    render(props, hasParentGrid = false) {
+    public render(props: Record<string, any>, hasParentGrid = false) {
         if (!this._renderer) {
             throw Error(
                 `UILayout needs a renderer! Register a UILayoutPlugin to configure a renderer.`
@@ -165,8 +165,8 @@ interface ApplyFunction<TElement> {
 }
 
 export class UILayoutPlugin<TLayout extends UILayout = UILayout> extends Plugin {
-    public static readonly type: string = "UILayoutPlugin";
-    private _apply: ApplyFunction<TLayout>;
+    public static override readonly type: string = "UILayoutPlugin";
+    private readonly _apply: ApplyFunction<TLayout>;
 
     constructor(apply: ApplyFunction<TLayout>) {
         super();
@@ -174,7 +174,7 @@ export class UILayoutPlugin<TLayout extends UILayout = UILayout> extends Plugin 
         this._apply = apply;
     }
 
-    apply(element: TLayout) {
+    public apply(element: TLayout) {
         this._apply(element);
     }
 }

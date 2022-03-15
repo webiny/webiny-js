@@ -1,8 +1,9 @@
+import WebinyError from "@webiny/error";
 import { Converter } from "aws-sdk/clients/dynamodb";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
-import WebinyError from "@webiny/error";
 import { decompress } from "@webiny/api-elasticsearch/compression";
+import { ApiResponse } from "@webiny/api-elasticsearch/types";
 
 enum Operations {
     INSERT = "INSERT",
@@ -10,7 +11,21 @@ enum Operations {
     REMOVE = "REMOVE"
 }
 
-const getError = (item: any): string | null => {
+interface BulkOperationsResponseBodyItemIndexError {
+    reason?: string;
+}
+interface BulkOperationsResponseBodyItemIndex {
+    error?: BulkOperationsResponseBodyItemIndexError;
+}
+interface BulkOperationsResponseBodyItem {
+    index?: BulkOperationsResponseBodyItemIndex;
+    error?: string;
+}
+interface BulkOperationsResponseBody {
+    items: BulkOperationsResponseBodyItem[];
+}
+
+const getError = (item: BulkOperationsResponseBodyItem): string | null => {
     if (!item.index || !item.index.error || !item.index.error.reason) {
         return null;
     }
@@ -20,7 +35,8 @@ const getError = (item: any): string | null => {
     }
     return reason;
 };
-const checkErrors = (result: any) => {
+
+const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => {
     if (!result || !result.body || !result.body.items) {
         return;
     }
@@ -39,6 +55,17 @@ const checkErrors = (result: any) => {
     }
 };
 
+interface RecordDynamoDbImage {
+    data: Record<string, any>;
+    ignore?: boolean;
+    index: string;
+}
+
+interface RecordDynamoDbKeys {
+    PK: string;
+    SK: string;
+}
+
 export default (): HandlerPlugin<ElasticsearchContext> => ({
     type: "handler",
     async handle(context) {
@@ -46,14 +73,14 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
         const operations = [];
 
         for (const record of event.Records) {
-            const newImage = Converter.unmarshall(record.dynamodb.NewImage);
+            const newImage = Converter.unmarshall(record.dynamodb.NewImage) as RecordDynamoDbImage;
 
             if (newImage.ignore === true) {
                 continue;
             }
 
-            const oldImage = Converter.unmarshall(record.dynamodb.OldImage);
-            const keys = Converter.unmarshall(record.dynamodb.Keys);
+            const oldImage = Converter.unmarshall(record.dynamodb.OldImage) as RecordDynamoDbImage;
+            const keys = Converter.unmarshall(record.dynamodb.Keys) as RecordDynamoDbKeys;
             const _id = `${keys.PK}:${keys.SK}`;
             const operation = record.eventName;
 
@@ -96,11 +123,13 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
         }
 
         if (!operations.length) {
-            return;
+            return false;
         }
 
         try {
-            const res = await context.elasticsearch.bulk({ body: operations });
+            const res = await context.elasticsearch.bulk<BulkOperationsResponseBody>({
+                body: operations
+            });
             checkErrors(res);
             if (process.env.DEBUG === "true") {
                 console.log("Bulk response", JSON.stringify(res, null, 2));

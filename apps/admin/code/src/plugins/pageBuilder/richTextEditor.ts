@@ -1,12 +1,20 @@
+/**
+ * Package @editorjs/* is missing types.
+ */
+// @ts-ignore
 import Delimiter from "@editorjs/delimiter";
+// @ts-ignore
 import Quote from "@editorjs/quote";
+// @ts-ignore
 import List from "@editorjs/list";
+// @ts-ignore
 import Underline from "@editorjs/underline";
 import Image from "@webiny/app-admin/components/RichTextEditor/tools/image";
 import TextColor from "@webiny/app-admin/components/RichTextEditor/tools/textColor";
 import Header from "@webiny/app-admin/components/RichTextEditor/tools/header";
 import Paragraph from "@webiny/app-admin/components/RichTextEditor/tools/paragraph";
 import { plugins } from "@webiny/plugins";
+import { PbThemePlugin } from "@webiny/app-page-builder/types";
 
 /**
  * This file contains a RichTextEditor configuration used in Page Builder app.
@@ -23,8 +31,8 @@ export default {
                 class: Paragraph,
                 inlineToolbar: ["bold", "italic", "underline", "color", "link"],
                 config: () => {
-                    const [pbTheme] = plugins.byType("pb-theme");
-                    const typography = pbTheme.theme.typography;
+                    const [pbTheme] = plugins.byType<PbThemePlugin>("pb-theme");
+                    const typography = pbTheme.theme.typography || {};
                     // Use typography options only for "p" tag.
                     const typographyForParagraph = {
                         paragraph: typography.paragraph,
@@ -39,7 +47,7 @@ export default {
                 class: Header,
                 inlineToolbar: ["bold", "italic", "underline", "color", "link"],
                 config: () => {
-                    const [pbTheme] = plugins.byType("pb-theme");
+                    const [pbTheme] = plugins.byType<PbThemePlugin>("pb-theme");
                     const typography = pbTheme.theme.typography;
 
                     return {
@@ -64,7 +72,7 @@ export default {
                 class: TextColor,
                 shortcut: "CMD+M",
                 config: () => {
-                    const [pbTheme] = plugins.byType("pb-theme");
+                    const [pbTheme] = plugins.byType<PbThemePlugin>("pb-theme");
 
                     const themeColors = pbTheme
                         ? Object.values(pbTheme.theme.colors)

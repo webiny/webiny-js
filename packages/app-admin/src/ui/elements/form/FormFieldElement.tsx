@@ -2,11 +2,12 @@ import React from "react";
 import { FormRenderPropParams, FormAPI } from "@webiny/form";
 import { UIElement, UIElementConfig } from "~/ui/UIElement";
 import { FormElementRenderProps } from "~/ui/elements/form/FormElement";
+import { Validator } from "@webiny/validation/types";
 
 export interface FormFieldElementConfig<TRenderProps = FormRenderPropParams>
     extends UIElementConfig<TRenderProps> {
     name: string;
-    validators?: GetterWithProps<Function | Function[]>;
+    validators?: GetterWithProps<Validator | Validator[]>;
     beforeChange?: BeforeChange;
     afterChange?: AfterChange;
     defaultValue?: any | GetterWithProps<any>;
@@ -28,8 +29,8 @@ interface BeforeChangeCallback {
     (value: any): void;
 }
 
-interface AfterChange {
-    (value: any, form: FormAPI): void;
+interface AfterChange<T = any, D extends Record<string, any> = Record<string, any>> {
+    (value: T, form: FormAPI<D>): void;
 }
 
 interface GetterWithProps<T> {
@@ -42,7 +43,7 @@ export class FormFieldElement<
     private _beforeChange: BeforeChange[] = [];
     private _afterChange: AfterChange[] = [];
 
-    constructor(id: string, config: TConfig) {
+    public constructor(id: string, config: TConfig) {
         super(id, config);
 
         if (config.beforeChange) {
@@ -56,19 +57,19 @@ export class FormFieldElement<
         this.applyPlugins(FormFieldElement);
     }
 
-    getName() {
+    public getName(): string {
         return this.config.name;
     }
 
-    getValidators(props?: FormFieldElementRenderProps): Function | Function[] {
+    public getValidators(props?: FormFieldElementRenderProps): Validator | Validator[] {
         if (!this.config.validators || typeof this.config.validators !== "function") {
             return () => true;
         }
 
-        return this.config.validators(props);
+        return this.config.validators(props as FormFieldElementRenderProps);
     }
 
-    getDefaultValue(props?: FormFieldElementRenderProps): any {
+    public getDefaultValue(props?: FormFieldElementRenderProps): any {
         if (typeof this.config.defaultValue === "function") {
             return this.config.defaultValue(props);
         }
@@ -76,101 +77,109 @@ export class FormFieldElement<
         return this.config.defaultValue;
     }
 
-    getLabel(props?: FormFieldElementRenderProps): string {
+    public getLabel(props?: FormFieldElementRenderProps): string {
         if (typeof this.config.label === "function") {
-            return this.config.label(props);
+            return this.config.label(props as FormFieldElementRenderProps);
         }
 
-        return this.config.label;
+        return this.config.label as string;
     }
 
-    getDescription(props?: FormFieldElementRenderProps): string | React.ReactElement {
+    public getDescription(props?: FormFieldElementRenderProps): string | React.ReactElement {
         if (typeof this.config.description === "function") {
-            return this.config.description(props);
+            return this.config.description(props as FormFieldElementRenderProps);
         }
 
-        return this.config.description;
+        return this.config.description as string;
     }
 
-    getPlaceholder(props?: FormFieldElementRenderProps): string {
+    public getPlaceholder(props?: FormFieldElementRenderProps): string {
         if (typeof this.config.placeholder === "function") {
-            return this.config.placeholder(props);
+            return this.config.placeholder(props as FormFieldElementRenderProps);
         }
 
-        return this.config.placeholder;
+        return this.config.placeholder as string;
     }
 
-    setLabel(label: string | GetterWithProps<string>) {
+    public setLabel(label: string | GetterWithProps<string>): void {
         this.config.label = label;
     }
 
-    setDescription(
+    public setDescription(
         description: string | React.ReactElement | GetterWithProps<string | React.ReactElement>
-    ) {
+    ): void {
         this.config.description = description;
     }
 
-    setPlaceholder(placeholder: string | GetterWithProps<string>) {
+    public setPlaceholder(placeholder: string | GetterWithProps<string>): void {
         this.config.placeholder = placeholder;
     }
 
-    setDefaultValue(value: any | GetterWithProps<any>) {
+    public setDefaultValue(value: any | GetterWithProps<any>): void {
         this.config.defaultValue = value;
     }
 
-    getIsDisabled(props?: FormFieldElementRenderProps) {
+    public getIsDisabled(props?: FormFieldElementRenderProps): boolean {
         if (typeof this.config.isDisabled === "function") {
-            return this.config.isDisabled(props);
+            return this.config.isDisabled(props as FormFieldElementRenderProps);
         }
-        return this.config.isDisabled;
+        return this.config.isDisabled as boolean;
     }
 
-    setIsDisabled(isDisabled: boolean | GetterWithProps<boolean>) {
+    public setIsDisabled(isDisabled: boolean | GetterWithProps<boolean>): void {
         this.config.isDisabled = isDisabled;
     }
 
-    setValidators(validators: GetterWithProps<Function>) {
+    public setValidators(validators: GetterWithProps<Validator>): void {
         this.config.validators = validators;
     }
 
-    onBeforeChange(value, cb) {
+    public onBeforeChange(value: string, cb: (value: string) => void): void {
         const callbacks = [...this._beforeChange];
-        const next = value => {
-            if (!callbacks.length) {
-                cb(value);
+        const next = (val: string) => {
+            const callbackCallable = callbacks.pop();
+            if (!callbackCallable) {
+                cb(val);
                 return;
             }
-            callbacks.pop()(value, next);
+            callbackCallable(val, next);
         };
 
         next(value);
     }
 
-    onAfterChange(value, form) {
+    public onAfterChange(value: string, form: FormAPI): void {
         const callbacks = [...this._afterChange];
-        const next = value => {
-            if (!callbacks.length) {
+        const next = (val: string) => {
+            const callbackCallable = callbacks.pop();
+            if (!callbackCallable) {
                 return;
             }
-            callbacks.pop()(value, form);
+            callbackCallable(val, form);
         };
 
         next(value);
     }
 
-    addBeforeChange(cb: BeforeChange) {
+    public addBeforeChange(cb: BeforeChange): void {
         this._beforeChange.push(cb);
     }
 
-    addAfterChange(cb: AfterChange) {
+    public addAfterChange<T = any, D extends Record<string, any> = Record<string, any>>(
+        cb: AfterChange<T, D>
+    ): void {
+        /**
+         * TODO @ts-refactor possibly different subtype. Or so TS complains.
+         */
+        // @ts-ignore
         this._afterChange.push(cb);
     }
 
-    setBeforeChange(cb: BeforeChange) {
+    public setBeforeChange(cb: BeforeChange): void {
         this._beforeChange = [cb];
     }
 
-    setAfterChange(cb: AfterChange) {
+    public setAfterChange(cb: AfterChange): void {
         this._afterChange = [cb];
     }
 }

@@ -1,6 +1,7 @@
-import { FormComponentProps } from "./../types";
+import React from "react";
+import { FormComponentProps } from "~/types";
 
-export type AutoCompleteBaseProps = FormComponentProps & {
+export interface AutoCompleteBaseProps extends FormComponentProps {
     /**
      * Component label.
      */
@@ -24,7 +25,7 @@ export type AutoCompleteBaseProps = FormComponentProps & {
     /**
      * Description beneath the autoComplete.
      */
-    description?: string;
+    description?: React.ReactNode;
 
     /**
      * Placeholder text for the form control. Set to a blank string to create a non-floating placeholder label.
@@ -70,4 +71,4 @@ export type AutoCompleteBaseProps = FormComponentProps & {
      * Renders a single suggestion item.
      */
     renderItem: Function;
-};
+}

@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import gql from "graphql-tag";
 import { css } from "emotion";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
@@ -8,13 +9,20 @@ import { Select } from "@webiny/ui/Select";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
-import { useQuery, useMutation } from "../../hooks";
+import { useQuery, useMutation, useApolloClient } from "../../hooks";
 import { i18n } from "@webiny/app/i18n";
-import { ButtonDefault } from "@webiny/ui/Button";
+import { ButtonPrimary } from "@webiny/ui/Button";
 import * as UID from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
+import {
+    CreateCmsModelMutationResponse,
+    CreateCmsModelMutationVariables,
+    ListMenuCmsGroupsQueryResponse
+} from "../../viewsGraphql";
+import { CmsGroup } from "~/types";
+import { CmsGroupOption } from "./types";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -29,29 +37,61 @@ const noPadding = css({
     padding: "5px !important"
 });
 
-export type NewContentModelDialogProps = {
-    open: boolean;
-    onClose: UID.DialogOnClose;
-};
-
 /**
  * This list is to disallow creating models that might interfere with GraphQL schema creation.
  * Add more if required.
  */
 const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
 
+export interface NewContentModelDialogProps {
+    open: boolean;
+    onClose: UID.DialogOnClose;
+}
+
+const SCHEMA_TYPES = gql`
+    query ListSchemaTypes {
+        __schema {
+            types {
+                name
+            }
+        }
+    }
+`;
+
+interface SchemaTypes {
+    __schema: {
+        types: { name: string }[];
+    };
+}
+
+interface CmsModelData {
+    name: string;
+    description: string;
+    group: string;
+}
+
 const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
+    const client = useApolloClient();
 
-    const [createContentModel] = useMutation(GQL.CREATE_CONTENT_MODEL, {
+    const [createContentModel] = useMutation<
+        CreateCmsModelMutationResponse,
+        CreateCmsModelMutationVariables
+    >(GQL.CREATE_CONTENT_MODEL, {
         update(cache, { data }) {
+            if (!data) {
+                setLoading(false);
+                showSnackbar("Missing data on Create Content Model Mutation Response.");
+                return;
+            }
             const { data: model, error } = data.createContentModel;
 
             if (error) {
                 setLoading(false);
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return;
             }
 
             addModelToListCache(cache, model);
@@ -61,32 +101,65 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         }
     });
 
-    const { data } = useQuery(GQL.LIST_MENU_CONTENT_GROUPS_MODELS, {
-        skip: !open
-    });
-
-    const contentModelGroups = get(data, "listContentModelGroups.data", []).map(item => {
-        return { value: item.id, label: item.name };
-    });
-
-    const nameValidator = useCallback((name: string) => {
-        const target = (name || "").trim();
-        if (!target.charAt(0).match(/[a-zA-Z]/)) {
-            throw new Error("Value is not valid - must not start with a number.");
+    const listMenuGroupsQuery = useQuery<ListMenuCmsGroupsQueryResponse>(
+        GQL.LIST_MENU_CONTENT_GROUPS_MODELS,
+        {
+            skip: !open
         }
-        if (target.toLowerCase() === "id") {
-            throw new Error('Value is not valid - "id" is an auto-generated field.');
+    );
+
+    const contentModelGroups = get(listMenuGroupsQuery, "data.listContentModelGroups.data", []).map(
+        (item: CmsGroup): CmsGroupOption => {
+            return {
+                value: item.id,
+                label: item.name
+            };
         }
-        for (const ending of disallowedModelIdEndingList) {
-            const re = new RegExp(`${ending}$`, "i");
-            const matched = target.match(re);
-            if (matched === null) {
-                continue;
+    );
+
+    const nameValidator = useCallback(
+        async (name: string): Promise<boolean> => {
+            const target = (name || "").trim();
+            if (!target.charAt(0).match(/[a-zA-Z]/)) {
+                throw new Error("Model name can't start with a number.");
             }
-            throw new Error(`Model name that ends with "${ending}" is not allowed.`);
-        }
-        return true;
-    }, undefined);
+
+            for (const ending of disallowedModelIdEndingList) {
+                const re = new RegExp(`${ending}$`, "i");
+                const matched = target.match(re);
+                if (matched === null) {
+                    continue;
+                }
+                throw new Error(`Model must not end with "${ending}".`);
+            }
+
+            // Validate GraphQL Schema type
+            const { data } = await client.query<SchemaTypes>({
+                query: SCHEMA_TYPES,
+                fetchPolicy: "network-only"
+            });
+
+            const types = data.__schema.types.map(t => t.name);
+
+            if (types.includes(name)) {
+                throw new Error(
+                    `"${name}" type already exists in the GraphQL schema. Please pick a different name.`
+                );
+            }
+
+            return true;
+        },
+        [client]
+    );
+
+    const group = contentModelGroups?.length > 0 ? contentModelGroups[0].value : null;
+
+    const onSubmit = async (data: CmsModelData) => {
+        setLoading(true);
+        await createContentModel({
+            variables: { data }
+        });
+    };
 
     return (
         <UID.Dialog
@@ -97,19 +170,17 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         >
             {open && (
                 <Form
-                    data={{
-                        group: get(contentModelGroups, "0.value")
-                    }}
-                    onSubmit={async data => {
-                        setLoading(true);
-                        await createContentModel({
-                            variables: { data }
-                        });
+                    data={{ group }}
+                    onSubmit={data => {
+                        /**
+                         * We are positive that data is CmsModelData.
+                         */
+                        onSubmit(data as unknown as CmsModelData);
                     }}
                 >
                     {({ Bind, submit }) => (
                         <>
-                            {loading && <CircularProgress />}
+                            {loading && <CircularProgress label={"Creating content model..."} />}
                             <UID.DialogTitle>{t`New Content Model`}</UID.DialogTitle>
                             <UID.DialogContent>
                                 <Grid className={noPadding}>
@@ -123,7 +194,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                         >
                                             <Input
                                                 label={t`Name`}
-                                                description={t`The name of the content model`}
+                                                description={t`The name of the content model. Use the singular form, e.g. Person, not Persons.`}
                                             />
                                         </Bind>
                                     </Cell>
@@ -155,7 +226,13 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                 </Grid>
                             </UID.DialogContent>
                             <UID.DialogActions>
-                                <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
+                                <ButtonPrimary
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
+                                >
+                                    + {t`Create Model`}
+                                </ButtonPrimary>
                             </UID.DialogActions>
                         </>
                     )}

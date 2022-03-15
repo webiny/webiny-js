@@ -8,6 +8,7 @@ import {
     FileManagerFilesStorageOperationsGetParams,
     FileManagerFilesStorageOperationsListParams,
     FileManagerFilesStorageOperationsListResponse,
+    FileManagerFilesStorageOperationsListResponseMeta,
     FileManagerFilesStorageOperationsTagsParams,
     FileManagerFilesStorageOperationsTagsResponse,
     FileManagerFilesStorageOperationsUpdateParams
@@ -28,6 +29,7 @@ import { compress } from "@webiny/api-elasticsearch/compression";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
+import { ElasticsearchSearchResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
 interface FileItem extends File {
     PK: string;
@@ -53,12 +55,12 @@ interface CreatePartitionKeyParams {
 }
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly context: FileManagerContext;
+    private readonly context: FileManagerContext & Partial<ElasticsearchContext>;
     private readonly table: Table;
     private readonly esTable: Table;
     private readonly entity: Entity<any>;
     private readonly esEntity: Entity<any>;
-    private _esIndex: string;
+    private _esIndex?: string;
 
     private get esIndex(): string {
         if (!this._esIndex) {
@@ -71,7 +73,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private get esClient() {
-        const ctx = this.context as any;
+        const ctx = this.context;
         if (!ctx.elasticsearch) {
             throw new WebinyError(
                 "Missing Elasticsearch client on the context.",
@@ -307,7 +309,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             after
         });
 
-        let response;
+        let response: ElasticsearchSearchResponse<File>;
         try {
             response = await this.esClient.search({
                 ...configurations.es({
@@ -328,7 +330,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const plugins = this.getFileIndexTransformPlugins();
         const { hits, total } = response.body.hits;
 
-        const files = await Promise.all<File>(
+        const files = await Promise.all(
             hits.map(async item => {
                 return await transformFromIndex({
                     plugins,
@@ -346,7 +348,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const meta = {
             hasMoreItems,
             totalCount: total.value,
-            cursor: files.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null
+            cursor: files.length > 0 ? encodeCursor(hits[files.length - 1].sort) || null : null
         };
 
         return [files, meta];
@@ -364,22 +366,45 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             sort: []
         });
 
-        let response = undefined;
+        const esDefaults = configurations.es({
+            tenant: this.context.tenancy.getCurrentTenant().id
+        });
+
+        const must: any[] = [];
+        if (where.locale) {
+            must.push({ term: { "locale.keyword": where.locale } });
+        }
+
+        // When ES index is shared between tenants, we need to filter records by tenant ID
+        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+        if (sharedIndex) {
+            const tenant = this.context.tenancy.getCurrentTenant();
+            must.push({ term: { "tenant.keyword": tenant.id } });
+        }
+
+        const limit = createLimit(initialLimit);
+
+        const body = {
+            query: {
+                bool: {
+                    must
+                }
+            },
+            size: limit + 1,
+            aggs: {
+                listTags: {
+                    terms: { field: "tags.keyword" }
+                }
+            },
+            search_after: decodeCursor(null)
+        };
+
+        let response: ElasticsearchSearchResponse<string> | undefined = undefined;
 
         try {
             response = await this.esClient.search({
-                ...configurations.es({
-                    tenant: this.context.tenancy.getCurrentTenant().id
-                }),
-                body: {
-                    ...body,
-                    aggs: {
-                        listTags: {
-                            terms: { field: "tags.keyword" }
-                        }
-                    },
-                    search_after: decodeCursor(null)
-                }
+                ...esDefaults,
+                body
             });
         } catch (ex) {
             throw new WebinyError(
@@ -391,7 +416,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             );
         }
 
-        const tags = response.body.aggregations.listTags.buckets.map(item => item.key) || [];
+        const listTags = response.body.aggregations["listTags"] || { buckets: [] };
+
+        const tags = listTags.buckets.map(item => item.key) || [];
 
         let hasMoreItems = false;
         const totalCount = tags.length;
@@ -400,7 +427,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             hasMoreItems = true;
         }
 
-        const meta = {
+        const meta: FileManagerFilesStorageOperationsListResponseMeta = {
             hasMoreItems,
             totalCount,
             cursor: null //tags.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null

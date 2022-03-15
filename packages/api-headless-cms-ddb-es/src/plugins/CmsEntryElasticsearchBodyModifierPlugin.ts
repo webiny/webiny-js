@@ -9,7 +9,7 @@ export interface ModifyBodyParams extends BaseModifyBodyParams {
     model: CmsModel;
 }
 
-export interface Config {
+export interface CmsEntryElasticsearchBodyModifierPluginConfig {
     modifyBody: ModifyBodyCallable<ModifyBodyParams>;
     /**
      * If modelId is not passed, there is no filtering of plugins by it when plugin is applied during the runtime.
@@ -18,11 +18,11 @@ export interface Config {
 }
 
 export class CmsEntryElasticsearchBodyModifierPlugin extends ElasticsearchBodyModifierPlugin<ModifyBodyParams> {
-    public static readonly type: string = "cms.elasticsearch.modifier.body.entry";
+    public static override readonly type: string = "cms.elasticsearch.modifier.body.entry";
 
     public readonly modelId?: string;
 
-    public constructor(config: Config) {
+    public constructor(config: CmsEntryElasticsearchBodyModifierPluginConfig) {
         super(config.modifyBody);
 
         this.modelId = config.modelId;

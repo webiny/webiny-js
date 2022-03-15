@@ -1,3 +1,7 @@
+/**
+ * File not used or needed anymore
+ */
+// @ts-nocheck
 import { CmsModel } from "~/types";
 
 export const mockedGetModel = (modelId: string) => {
@@ -13,7 +17,8 @@ export const mockedGetModel = (modelId: string) => {
                 description: "Product category",
                 modelId: modelId,
                 group: {
-                    id: appleContentModelGroupId
+                    id: appleContentModelGroupId,
+                    name: "apple"
                 },
                 layout: null,
                 fields: null

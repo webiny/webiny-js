@@ -1,17 +1,21 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
-import cloneDeep from "lodash.clonedeep";
+import cloneDeep from "lodash/cloneDeep";
 import { createTopic } from "@webiny/pubsub";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { AdminUser, AdminUsers, AdminUsersStorageOperations, System } from "./types";
+import { AdminUser, AdminUsers, AdminUsersStorageOperations, CreatedBy, System } from "./types";
 import { createUserLoaders } from "./createAdminUsers/users.loaders";
 import { attachUserValidation } from "./createAdminUsers/users.validation";
 
 interface AdminUsersConfig {
     getIdentity(): SecurityIdentity;
-    getPermission(name: string): Promise<SecurityPermission>;
+    getPermission(name: string): Promise<SecurityPermission | null>;
     getTenant(): string;
     storageOperations: AdminUsersStorageOperations;
 }
@@ -52,13 +56,17 @@ export const createAdminUsers = ({
             });
 
             if (exists) {
-                throw new Error({
+                throw new WebinyError({
                     message: "User with that email already exists.",
                     code: "USER_EXISTS",
                     data: { email }
                 });
             }
         },
+        /**
+         * TODO @ts-refactor figure out better way to type this
+         */
+        // @ts-ignore
         async createUser(this: AdminUsers, data) {
             await checkPermission();
             const tenant = getTenant();
@@ -67,7 +75,7 @@ export const createAdminUsers = ({
 
             const identity = getIdentity();
 
-            let createdBy = null;
+            let createdBy: CreatedBy | null = null;
             if (identity) {
                 createdBy = {
                     id: identity.id,
@@ -82,7 +90,7 @@ export const createAdminUsers = ({
                 createdOn: new Date().toISOString(),
                 createdBy,
                 tenant,
-                webinyVersion: process.env.WEBINY_VERSION
+                webinyVersion: process.env.WEBINY_VERSION as string
             };
 
             let result;
@@ -90,11 +98,11 @@ export const createAdminUsers = ({
             /**
              * Always delete `password` from the user data!
              */
-            delete user["password"];
+            delete (user as any)["password"];
             try {
                 result = await storageOperations.createUser({ user });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create user.",
                     code: "CREATE_USER_ERROR",
                     data: { user: result || user }
@@ -103,6 +111,7 @@ export const createAdminUsers = ({
             try {
                 await this.onUserAfterCreate.publish({ user: result, inputData: data });
             } catch (err) {
+                console.log("@webiny/api-admin-users-cognito/src/createAdminUsers.ts");
                 // Not sure if we care about errors in `onAfterCreate`.
                 // Maybe add an `onCreateError` event for potential cleanup operations?
                 // For now, just log it.
@@ -124,7 +133,7 @@ export const createAdminUsers = ({
             }
 
             if (user.id === identity.id) {
-                throw new Error(`You can't delete your own user account.`);
+                throw new WebinyError(`You can't delete your own user account.`);
             }
 
             try {
@@ -133,7 +142,7 @@ export const createAdminUsers = ({
                 loaders.clearLoadersCache([{ tenant: getTenant(), id }]);
                 await this.onUserAfterDelete.publish({ user });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not delete user.",
                     code: "DELETE_USER_ERROR",
                     data: { user }
@@ -164,13 +173,17 @@ export const createAdminUsers = ({
                     sort: params.sort || ["createdOn_ASC"]
                 });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Cannot list users.",
                     code: "LIST_USERS_ERROR",
                     data: { tenant: getTenant(), ...params }
                 });
             }
         },
+        /**
+         * TODO @ts-refactor figure out better way to type this
+         */
+        // @ts-ignore
         async updateUser(this: AdminUsers, id, data) {
             await checkPermission();
 
@@ -202,7 +215,7 @@ export const createAdminUsers = ({
 
                 return updatedUser;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Cannot update user.",
                     code: "UPDATE_USER_ERROR"
                 });
@@ -215,11 +228,8 @@ export const createAdminUsers = ({
             }
 
             const system = await storageOperations.getSystemData({ tenant: tenantId });
-            if (system) {
-                return system.version;
-            }
 
-            return null;
+            return system ? system.version || null : null;
         },
 
         async setVersion(version) {
@@ -233,7 +243,7 @@ export const createAdminUsers = ({
                         system: { ...original, version }
                     });
                 } catch (err) {
-                    throw Error.from(err, {
+                    throw WebinyError.from(err, {
                         message: "Could not update existing system data.",
                         code: "UPDATE_SYSTEM_ERROR",
                         data: { original, system }
@@ -243,7 +253,7 @@ export const createAdminUsers = ({
             try {
                 return await storageOperations.createSystemData({ system });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create the system data.",
                     code: "CREATE_SYSTEM_ERROR",
                     data: { system }
@@ -253,7 +263,10 @@ export const createAdminUsers = ({
 
         async install(this: AdminUsers, data) {
             if (await this.getVersion()) {
-                throw new Error("Admin Users is already installed.", "ADMIN_USERS_INSTALL_ABORTED");
+                throw new WebinyError(
+                    "Admin Users is already installed.",
+                    "ADMIN_USERS_INSTALL_ABORTED"
+                );
             }
 
             const user = { ...data, id: mdbid() };
@@ -266,11 +279,11 @@ export const createAdminUsers = ({
             } catch (err) {
                 await this.onCleanup.publish({ error: err, tenant: getTenant(), user });
 
-                throw Error.from(err, { message: "ADMIN_USERS_INSTALL_ABORTED" });
+                throw WebinyError.from(err, { message: "ADMIN_USERS_INSTALL_ABORTED" });
             }
 
             // Store app version
-            await this.setVersion(process.env.WEBINY_VERSION);
+            await this.setVersion(process.env.WEBINY_VERSION as string);
         }
     };
 

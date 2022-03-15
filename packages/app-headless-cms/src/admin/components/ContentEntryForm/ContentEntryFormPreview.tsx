@@ -15,7 +15,7 @@ interface Props {
     contentModel: CmsEditorContentModel;
 }
 
-export const ContentEntryFormPreview = (props: Props) => {
+export const ContentEntryFormPreview: React.FC<Props> = props => {
     const { contentModel } = props;
 
     const formRenderer = plugins
@@ -25,17 +25,33 @@ export const ContentEntryFormPreview = (props: Props) => {
     const renderCustomLayout = useCallback(
         (formRenderProps: FormRenderPropParams) => {
             const fields = contentModel.fields.reduce((acc, field) => {
+                /**
+                 * TODO @ts-refactor
+                 * Figure out type for Bind.
+                 */
                 acc[field.fieldId] = (
                     <RenderFieldElement
                         field={field}
-                        Bind={formRenderProps.Bind}
+                        Bind={formRenderProps.Bind as any}
                         contentModel={contentModel}
                     />
                 );
 
                 return acc;
-            }, {});
-            return formRenderer.render({ ...formRenderProps, contentModel, fields });
+            }, {} as Record<string, React.ReactElement>);
+            if (!formRenderer) {
+                return <>{`Missing form renderer for modelId "${contentModel.modelId}".`}</>;
+            }
+            return formRenderer.render({
+                ...formRenderProps,
+                /**
+                 * TODO @ts-refactor
+                 * Figure out type for Bind.
+                 */
+                Bind: formRenderProps.Bind as any,
+                contentModel,
+                fields
+            });
         },
         [formRenderer, contentModel.fields]
     );
@@ -50,8 +66,9 @@ export const ContentEntryFormPreview = (props: Props) => {
                         <Fields
                             contentModel={contentModel}
                             fields={contentModel.fields}
-                            layout={contentModel.layout}
+                            layout={contentModel.layout || []}
                             {...formProps}
+                            Bind={formProps.Bind as any}
                         />
                     )}
                 </FormWrapper>

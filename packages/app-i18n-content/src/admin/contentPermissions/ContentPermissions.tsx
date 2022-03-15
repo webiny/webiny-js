@@ -5,20 +5,28 @@ import { Form } from "@webiny/form";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
+import { I18NSecurityPermission } from "@webiny/app-i18n/types";
 
 const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 
-export const ContentPermissions = ({ value, onChange }) => {
+interface ContentPermissionsProps {
+    value: I18NSecurityPermission[];
+    onChange: (value: I18NSecurityPermission[]) => void;
+}
+export const ContentPermissions: React.FC<ContentPermissionsProps> = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
-    const onFormChange = useCallback(formData => {
-        let newValue = [];
+    const onFormChange = useCallback((formData: I18NSecurityPermission) => {
+        let newValue: I18NSecurityPermission[] = [];
         if (Array.isArray(value)) {
             // Let's just filter out the `content*` permission objects, it's easier to build new ones from scratch.
             newValue = value.filter(item => !item.name.startsWith("content"));
         }
 
-        const permission = { name: "content.i18n", locales: undefined };
+        const permission: I18NSecurityPermission = {
+            name: "content.i18n",
+            locales: undefined
+        };
         if (formData.level === "locales") {
             permission.locales = Array.isArray(formData.locales) ? formData.locales : [];
         }
@@ -26,9 +34,12 @@ export const ContentPermissions = ({ value, onChange }) => {
         onChange(newValue);
     }, []);
 
-    const formData = useMemo(() => {
-        const defaultData = { level: undefined, locales: [] };
-        if (!Array.isArray(value)) {
+    const formData = useMemo((): Partial<I18NSecurityPermission> => {
+        const defaultData: Omit<I18NSecurityPermission, "name"> = {
+            level: undefined,
+            locales: []
+        };
+        if (Array.isArray(value) === false) {
             return defaultData;
         }
 
@@ -45,7 +56,15 @@ export const ContentPermissions = ({ value, onChange }) => {
     }, []);
 
     return (
-        <Form data={formData} onChange={onFormChange}>
+        <Form
+            data={formData}
+            onChange={data => {
+                /**
+                 * We are positive that data is I18NSecurityPermission.
+                 */
+                return onFormChange(data as unknown as I18NSecurityPermission);
+            }}
+        >
             {({ data, Bind }) => (
                 <Fragment>
                     <Grid style={{ padding: "0px !important" }}>

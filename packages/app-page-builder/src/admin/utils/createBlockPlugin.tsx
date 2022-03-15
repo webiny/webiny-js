@@ -2,9 +2,9 @@ import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { plugins } from "@webiny/plugins";
 import { Image } from "@webiny/ui/Image";
-import { PbEditorBlockPlugin } from "../../types";
+import { PbEditorBlockPlugin } from "~/types";
 
-type BlockElement = {
+export interface BlockElement {
     id: string;
     name: string;
     type: string;
@@ -18,28 +18,29 @@ type BlockElement = {
             aspectRatio: number;
         };
     };
-};
+}
 
-export default (el: BlockElement) => {
-    plugins.register({
-        id: el.id,
-        name: "pb-saved-block-" + el.id,
+export default (element: BlockElement): void => {
+    const plugin: PbEditorBlockPlugin = {
+        id: element.id,
+        name: "pb-saved-block-" + element.id,
         type: "pb-editor-block",
-        title: el.name,
-        category: el.category,
+        title: element.name,
+        category: element.category,
         tags: ["saved"],
-        image: el.preview,
+        image: element.preview,
         create() {
-            return cloneDeep({ ...el.content, source: el.id });
+            return cloneDeep({ ...element.content, source: element.id });
         },
         preview() {
             return (
                 <Image
-                    src={el.preview.src}
-                    alt={el.name}
+                    src={element.preview.src}
+                    alt={element.name}
                     style={{ width: "100%", height: "auto" }}
                 />
             );
         }
-    } as PbEditorBlockPlugin);
+    };
+    plugins.register(plugin);
 };

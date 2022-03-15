@@ -1,20 +1,19 @@
 import React, { useMemo } from "react";
-
 import { plugins } from "@webiny/plugins";
-import { PbElement, PbRenderElementPlugin, PbThemePlugin } from "~/types";
+import { PbElement, PbRenderElementPlugin, PbTheme, PbThemePlugin } from "~/types";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { Element as PeElement } from "@webiny/app-page-builder-elements/components/Element";
 import tryRenderingPlugin from "~/utils/tryRenderingPlugin";
 
-export type ElementProps = {
-    element: PbElement;
-};
+export interface ElementProps {
+    element: PbElement | null;
+}
 
-const Element = (props: ElementProps) => {
+const Element: React.FC<ElementProps> = props => {
     const { element } = props;
 
-    const theme = useMemo(
-        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+    const theme: PbTheme = useMemo(
+        () => Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
         []
     );
 
@@ -24,6 +23,11 @@ const Element = (props: ElementProps) => {
 
     const pageElements = usePageElements();
     if (pageElements) {
+        /**
+         * TODO @ts-refactor
+         * Write better types for PbElement and PeElement
+         */
+        // @ts-ignore
         return <PeElement element={element} />;
     }
 
@@ -35,8 +39,12 @@ const Element = (props: ElementProps) => {
         return null;
     }
 
-    const renderedPlugin = tryRenderingPlugin(() => plugin.render({ theme, element }));
-
+    const renderedPlugin = tryRenderingPlugin(() =>
+        plugin.render({
+            theme,
+            element: element
+        })
+    );
     return <>{renderedPlugin}</>;
 };
 

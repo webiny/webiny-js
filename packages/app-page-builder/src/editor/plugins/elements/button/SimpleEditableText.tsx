@@ -1,16 +1,16 @@
 import React, { useCallback, useRef } from "react";
 
-type SimpleTextPropsType = {
+interface SimpleTextPropsType {
     value?: string;
     onFocus?: () => void;
     onBlur?: () => void;
     onChange: (value: string) => void;
-    options?: Record<keyof HTMLElement, any>;
+    options?: Partial<Record<keyof HTMLElement, any>>;
     element?: string;
     className?: string;
     focusInput?: boolean;
-};
-const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
+}
+const SimpleEditableText: React.FC<SimpleTextPropsType> = ({
     value: defaultValue = "",
     onFocus,
     onBlur,
@@ -33,6 +33,7 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
                 return false;
             }
             value.current = elementValue;
+            return true;
         },
         [onChange]
     );
@@ -53,7 +54,7 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
     }, [onFocus]);
 
     return React.createElement(element || "div", {
-        className: className,
+        className: className || "",
         contentEditable: true,
         onInput: onChangeHandler,
         onBlur: onBlurHandler,

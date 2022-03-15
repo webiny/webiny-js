@@ -4,7 +4,7 @@ import { FormFieldElementRenderProps } from "~/ui/elements/form/FormFieldElement
 import { Input } from "@webiny/ui/Input";
 
 export class PasswordElement extends InputElement {
-    render(props: FormFieldElementRenderProps): React.ReactElement {
+    public override render(props: FormFieldElementRenderProps): React.ReactElement {
         if (!props.formProps) {
             throw Error(`PasswordElement must be placed inside of a FormElement.`);
         }
@@ -16,8 +16,8 @@ export class PasswordElement extends InputElement {
                 name={this.getName()}
                 validators={this.getValidators(props)}
                 defaultValue={this.getDefaultValue(props)}
-                beforeChange={(value, cb) => this.onBeforeChange(value, cb)}
-                afterChange={(value, form) => this.onAfterChange(value, form)}
+                beforeChange={(value: string, cb) => this.onBeforeChange(value, cb)}
+                afterChange={(value: string, form) => this.onAfterChange(value, form)}
             >
                 <Input
                     type={"password"}

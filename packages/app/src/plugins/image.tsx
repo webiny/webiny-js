@@ -1,6 +1,6 @@
 import React from "react";
 import { Image } from "@webiny/ui/Image";
-import { ImageComponentPlugin } from "../types";
+import { ImageComponentPlugin } from "~/types";
 
 const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
@@ -8,7 +8,7 @@ const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
  * Width of the image should not be just any random number. For optimization reasons,
  * we only allow the ones listed in SUPPORTED_IMAGE_RESIZE_WIDTHS list (Webiny Cloud supports only these).
  */
-const getSupportedImageResizeWidth = width => {
+const getSupportedImageResizeWidth = (width: number) => {
     let output = SUPPORTED_IMAGE_RESIZE_WIDTHS[0];
     let i = SUPPORTED_IMAGE_RESIZE_WIDTHS.length;
     while (i >= 0) {
@@ -32,41 +32,51 @@ const getSupportedImageResizeWidth = width => {
     return output;
 };
 
+interface SanitizeTransformArgsParams {
+    width?: string;
+}
+interface SanitizeTransformArgsResult {
+    width?: number;
+}
 /**
  * Currently we only allow "width" as a transform option.
  * @param args
  */
-const sanitizeTransformArgs = (args: { [key: string]: any }): Object => {
-    const output: { [key: string]: any } = {};
-    if (args) {
-        const width = parseInt(args.width);
-        if (width > 0) {
-            output.width = getSupportedImageResizeWidth(width);
-        }
+const sanitizeTransformArgs = (args?: SanitizeTransformArgsParams): SanitizeTransformArgsResult => {
+    const output: SanitizeTransformArgsResult = {};
+    if (!args || args.width === undefined || args.width === null) {
+        return output;
+    }
+    const width = parseInt(args.width);
+    if (width > 0) {
+        output.width = getSupportedImageResizeWidth(width);
     }
 
     return output;
 };
 
-const getSizes = (width: any): string | null => {
+const getSizes = (width?: string | number): string | undefined => {
+    if (typeof width !== "string") {
+        return undefined;
+    }
     // Check if width was set as percentage, with "%" in the value.
-    if (typeof width === "string" && width.endsWith("%")) {
+    if (width.endsWith("%")) {
         return `${parseInt(width)}vw`;
     }
     // Check if width was set as viewport width, with "vw" in the value.
-    if (typeof width === "string" && width.endsWith("vw")) {
+    if (width.endsWith("vw")) {
         return `${parseInt(width)}vw`;
     }
 
     // Check if width was set as relative, with "em" in the value.
-    if (typeof width === "string" && width.endsWith("em")) {
+    if (width.endsWith("em")) {
         return `${parseInt(width)}em`;
     }
 
-    return null;
+    return undefined;
 };
 
-const isFixedImageWidth = width => {
+const isFixedImageWidth = (width?: number | string) => {
     if (Number.isFinite(width)) {
         return true;
     }
@@ -77,7 +87,7 @@ const isFixedImageWidth = width => {
     return false;
 };
 
-const getSrcSetAutoSizes = (max: number | undefined) => {
+const getSrcSetAutoSizes = (max?: string | number) => {
     max = isFixedImageWidth(max) ? parseInt("" + max) : 2500;
     const maxWidth = getSupportedImageResizeWidth(max);
     return SUPPORTED_IMAGE_RESIZE_WIDTHS.filter((supportedWidth: number) => {
@@ -85,7 +95,7 @@ const getSrcSetAutoSizes = (max: number | undefined) => {
     });
 };
 
-const convertTransformToQueryParams = (transform: Object): string => {
+const convertTransformToQueryParams = (transform: Record<string, any>): string => {
     return Object.keys(transform)
         .map(key => `${key}=${transform[key]}`)
         .join("&");
@@ -98,7 +108,7 @@ export default () => {
         presets: {
             avatar: { width: 300 }
         },
-        getImageSrc: (props: { [key: string]: any }) => {
+        getImageSrc: (props?: Record<string, any>) => {
             if (!props) {
                 return "";
             }
@@ -112,14 +122,14 @@ export default () => {
                 return src;
             }
 
-            let params = sanitizeTransformArgs(transform);
-            params = convertTransformToQueryParams(params);
+            const sanitizedParams = sanitizeTransformArgs(transform);
+            const params = convertTransformToQueryParams(sanitizedParams);
             return src + "?" + params;
         },
-        render(props: { [key: string]: any }) {
+        render(props) {
             const { transform, srcSet: srcSetInitial, ...imageProps } = props;
-            let srcSet = srcSetInitial;
-            let sizes;
+            let srcSet: any = srcSetInitial;
+            let sizes: string | undefined;
             const src = imageProps.src;
             if (srcSet && srcSet === "auto") {
                 srcSet = {};

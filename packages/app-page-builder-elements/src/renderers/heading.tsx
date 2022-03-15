@@ -11,7 +11,9 @@ declare global {
     }
 }
 
-const defaultStyles = { display: "block" };
+const defaultStyles = {
+    display: "block"
+};
 
 const Heading: ElementRenderer = ({ element }) => {
     const { getClassNames, getElementClassNames, combineClassNames } = usePageElements();
@@ -25,7 +27,9 @@ const Heading: ElementRenderer = ({ element }) => {
     return (
         <pb-heading>
             {React.createElement(tag, {
-                dangerouslySetInnerHTML: { __html: element.data.text.data.text },
+                dangerouslySetInnerHTML: {
+                    __html: element.data.text.data.text
+                },
                 className: classNames
             })}
         </pb-heading>

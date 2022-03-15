@@ -21,7 +21,6 @@ module.exports = {
         "import/no-unresolved": 0, // [2, { commonjs: true, amd: true }],
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
-        "@typescript-eslint/camelcase": 0,
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/ban-types": "off",

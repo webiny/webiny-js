@@ -39,7 +39,7 @@ export default () => [
         },
         oembed: {
             onData(data) {
-                data.html = data.html.replace(/1000px/g, "100%").replace(/1000/g, "100%");
+                data["html"] = data["html"].replace(/1000px/g, "100%").replace(/1000/g, "100%");
                 return data;
             }
         }

@@ -11,7 +11,7 @@ type LinkPropsType = {
     };
     children: React.ReactElement;
 };
-const Link: React.FunctionComponent<LinkPropsType> = ({ link, children }) => {
+const Link: React.FC<LinkPropsType> = ({ link, children }) => {
     if (!link || !link.href) {
         return children;
     }
@@ -22,10 +22,10 @@ const Link: React.FunctionComponent<LinkPropsType> = ({ link, children }) => {
     );
 };
 
-type ImagePropsType = {
+interface ImagePropsType {
     element: PbElement;
-};
-const Image: React.FunctionComponent<ImagePropsType> = ({ element }) => {
+}
+const Image: React.FC<ImagePropsType> = ({ element }) => {
     const { image = {}, link = {} } = element.data || {};
     if (!image || !image.file) {
         return null;
@@ -46,7 +46,7 @@ const Image: React.FunctionComponent<ImagePropsType> = ({ element }) => {
                     title={title}
                     alt={title}
                     style={style}
-                    src={image.file.src}
+                    src={image.file.src || ""}
                     srcSet="auto"
                 />
             </Link>

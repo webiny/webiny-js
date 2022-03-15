@@ -1,11 +1,19 @@
-import * as React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import FileManagerView from "./FileManager/FileManagerView";
+import FileManagerView, { FileManagerViewProps } from "./FileManager/FileManagerView";
 import pick from "lodash/pick";
 import { FileManagerProvider } from "./FileManager/FileManagerContext";
+import { FileItem } from "./FileManager/types";
 
-type FileManagerProps = {
-    onChange?: Function;
+export interface ShowFileManagerCallable {
+    (onChange?: (file?: FileItem | FileItem[]) => void): void;
+}
+export interface FileManagerPropsChildren {
+    showFileManager: ShowFileManagerCallable;
+}
+
+export interface FileManagerProps {
+    onChange?: (files: FileItem[] | FileItem) => void;
     onChangePick?: string[];
     images?: boolean;
     multiple?: boolean;
@@ -13,21 +21,19 @@ type FileManagerProps = {
     tags?: Array<string>;
     scope?: string;
     own?: boolean;
-    children: ({ showFileManager: Function }) => React.ReactNode;
+    children: (params: FileManagerPropsChildren) => React.ReactNode;
     maxSize?: number | string;
     multipleMaxCount?: number;
     multipleMaxSize?: number | string;
     onClose?: Function;
-    onUploadCompletion?: Function;
-};
+    onUploadCompletion?: (files: FileItem[]) => void;
+}
 
-type FileManagerPortalProps = Omit<FileManagerProps, "children">;
-
-const { useState, useRef, useCallback, useEffect } = React;
+export type FileManagerPortalProps = Omit<FileManagerProps, "children">;
 
 class FileManagerPortal extends React.Component<FileManagerPortalProps> {
-    container: Element;
-    constructor(props) {
+    public container: HTMLElement | null = null;
+    constructor(props: FileManagerPortalProps) {
         super(props);
 
         if (!window) {
@@ -44,10 +50,14 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
         }
     }
 
-    render() {
+    public override render() {
         const {
-            onChange,
-            onClose,
+            onChange = () => {
+                return void 0;
+            },
+            onClose = () => {
+                return void 0;
+            },
             accept,
             onChangePick,
             multiple,
@@ -61,31 +71,43 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             own
         } = this.props;
 
-        const container = this.container;
+        const container = this.container as HTMLElement;
 
-        const handleFileOnChange = files => {
+        const handleFileOnChange = (files?: FileItem[] | FileItem) => {
+            if (!files || files.length === 0) {
+                return;
+            }
             const fields = Array.isArray(onChangePick)
                 ? onChangePick
                 : ["id", "name", "key", "src", "size", "type"];
-            if (Array.isArray(files)) {
-                onChange(files.map(file => pick(file, fields)));
-            } else {
-                onChange(pick(files, fields));
+
+            if (Array.isArray(files) === true) {
+                const items = (files as FileItem[]).map(file => pick(file, fields));
+                onChange(items as FileItem[]);
+                return;
             }
+            const file = pick(files as FileItem, fields);
+
+            onChange(file as FileItem);
         };
 
-        const props = {
-            onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
+        const props: FileManagerViewProps = {
+            onChange:
+                typeof onChange === "function"
+                    ? handleFileOnChange
+                    : () => {
+                          return void 0;
+                      },
             onClose,
-            accept,
-            multiple,
-            maxSize,
-            multipleMaxCount,
-            multipleMaxSize,
+            accept: accept as string[],
+            multiple: multiple as boolean,
+            maxSize: maxSize as string,
+            multipleMaxCount: multipleMaxCount as number,
+            multipleMaxSize: multipleMaxSize as number,
             onUploadCompletion,
-            tags,
-            scope,
-            own
+            tags: tags as string[],
+            scope: scope as string,
+            own: own as boolean
         };
 
         if (images) {
@@ -111,7 +133,7 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
     }
 }
 
-export function FileManager({ children, ...rest }: FileManagerProps) {
+export const FileManager: React.FC<FileManagerProps> = ({ children, ...rest }) => {
     const [show, setShow] = useState(false);
     const onChangeRef = useRef(rest.onChange);
 
@@ -138,4 +160,4 @@ export function FileManager({ children, ...rest }: FileManagerProps) {
             {children({ showFileManager })}
         </>
     );
-}
+};

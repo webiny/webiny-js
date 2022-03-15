@@ -1,15 +1,32 @@
 import * as React from "react";
-import { AdminGlobalSearchPlugin } from "../../types";
+import { AdminGlobalSearchPlugin } from "~/types";
 import classnames from "classnames";
 import { List, ListItem, ListItemGraphic, ListItemText, ListItemMeta } from "@webiny/ui/List";
 import { searchBarDropdown, iconSearchType } from "./styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Icon } from "@webiny/ui/Icon";
-
+import { Actions as DownshiftActions, DownshiftState, PropGetters } from "downshift";
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
+import { SearchBarState } from "~/plugins/globalSearch/SearchBar";
 
-export default class SearchBarDropdown extends React.Component<any> {
-    componentDidMount() {
+interface SearchBarDropdownPropsContextDownshiftCurrent
+    extends DownshiftActions<any>,
+        PropGetters<any> {
+    state: DownshiftState<any>;
+}
+interface SearchBarDropdownPropsContextDownshift {
+    current: SearchBarDropdownPropsContextDownshiftCurrent;
+}
+interface SearchBarDropdownPropsContext {
+    downshift: SearchBarDropdownPropsContextDownshift;
+    submitSearchTerm: (item: AdminGlobalSearchPlugin) => void;
+    state: SearchBarState;
+}
+interface SearchBarDropdownProps {
+    context: SearchBarDropdownPropsContext;
+}
+export default class SearchBarDropdown extends React.Component<SearchBarDropdownProps> {
+    public override componentDidMount() {
         const {
             context: {
                 downshift: { current: downshift },
@@ -18,11 +35,13 @@ export default class SearchBarDropdown extends React.Component<any> {
         } = this.props;
 
         downshift.selectItem(plugins.current);
-        downshift.setHighlightedIndex(plugins.list.indexOf(plugins.current));
+        downshift.setHighlightedIndex(
+            plugins.list.indexOf(plugins.current as AdminGlobalSearchPlugin)
+        );
         downshift.openMenu();
     }
 
-    render() {
+    public override render() {
         const {
             context: {
                 downshift: { current: downshift },

@@ -10,6 +10,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Link } from "@webiny/react-router";
 import {
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin,
     PbThemePlugin
@@ -58,11 +59,14 @@ const classes = {
 const TEXT_SETTINGS_COUNT = 4;
 const DATA_NAMESPACE = "data.text";
 
-const TextSettings: React.FunctionComponent<
-    PbEditorPageElementSettingsRenderComponentProps & {
-        options: any;
-    }
-> = ({ defaultAccordionValue, options }) => {
+interface TextSettingsPropsOptions {
+    useCustomTag?: boolean;
+    tags: string[];
+}
+interface TextSettingsProps extends PbEditorPageElementSettingsRenderComponentProps {
+    options: TextSettingsPropsOptions;
+}
+const TextSettings: React.FC<TextSettingsProps> = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
 
@@ -72,20 +76,34 @@ const TextSettings: React.FunctionComponent<
         peTheme = pageElements.theme;
     }
 
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as PbEditorElement;
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
-    const { config: activeDisplayModeConfig } = useMemo(() => {
+    const memoizedResponsiveModePlugin = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
+    const { config: activeDisplayModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
+
     const themeTypographyOptions = useMemo(() => {
-        const { types } = theme.elements[element.type] || { types: [] };
+        const { types = [] } = theme.elements[element.type];
         const peThemeTypography = Object.keys(peTheme.styles?.typography || {});
 
         return [
+            /**
+             * remove ts-ignore when determined types for the PbTheme.elements
+             * TODO @ts-refactor
+             */
+            // @ts-ignore
             ...types.map(el => (
                 <option value={el.className} key={el.label}>
                     {el.label}

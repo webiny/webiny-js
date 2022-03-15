@@ -17,7 +17,12 @@ export default /* GraphQL */ `
         category: RefField
         options: [Product_Variant_Options!]
     }
-    
+
+    type Product_FieldsObject {
+        text: String
+    }
+
+
     type Product {
         id: ID!
         entryId: String!
@@ -37,6 +42,7 @@ export default /* GraphQL */ `
         image: String
         richText: JSON
         variant: Product_Variant
+        fieldsObject: Product_FieldsObject
     }
 
     type ProductMeta {
@@ -64,6 +70,11 @@ export default /* GraphQL */ `
         options: [Product_Variant_OptionsInput!]
     }
 
+    input Product_FieldsObjectInput {
+        text: String!
+    }
+
+
     input ProductInput {
         title: String!
         category: RefFieldInput!
@@ -72,10 +83,11 @@ export default /* GraphQL */ `
         itemsInStock: Number
         availableOn: Date
         color: String!
-        availableSizes: [String]!
+        availableSizes: [String!]
         image: String!
         richText: JSON
         variant: Product_VariantInput
+        fieldsObject: Product_FieldsObjectInput
     }
 
     input ProductGetWhereInput {

@@ -1,35 +1,38 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins";
 
+interface ConfigRenderProps {
+    [key: string]: any;
+}
 interface Config {
     title: string;
     description: string;
-    icon: React.ReactElement<any>;
-    render(props: any): React.ReactElement<any>;
+    icon: React.ReactElement;
+    render(props: ConfigRenderProps): React.ReactElement;
 }
 
 export class PbEditorPageSettingsPlugin extends Plugin {
-    public static readonly type = "pb-editor-page-settings";
-    config: Config;
+    public static override readonly type: string = "pb-editor-page-settings";
+    private readonly config: Config;
 
-    constructor(config: Config) {
+    public constructor(config: Config) {
         super();
         this.config = config;
     }
 
-    get title() {
+    get title(): string {
         return this.config.title;
     }
 
-    get description() {
+    get description(): string {
         return this.config.description;
     }
 
-    get icon() {
+    get icon(): React.ReactElement {
         return this.config.icon;
     }
 
-    render(props) {
+    render(props: ConfigRenderProps) {
         return this.config.render(props);
     }
 }

@@ -13,6 +13,7 @@ export const createGraphQLPlugin = (): GraphQLSchemaPlugin => ({
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
 
             type CmsCursors {
@@ -54,6 +55,11 @@ export const createGraphQLPlugin = (): GraphQLSchemaPlugin => ({
 
             ${system.typeDefs}
         `,
+        /**
+         * TS is complaining about emptyResolver not receiving any arguments.
+         * It is not required, so ignore.
+         */
+        // @ts-ignore
         resolvers: merge(
             {
                 Query: {

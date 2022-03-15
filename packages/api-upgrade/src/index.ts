@@ -1,5 +1,5 @@
 import { UpgradePlugin } from "~/types";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { gt, lt, coerce } from "semver";
 
 export enum ErrorCode {
@@ -23,7 +23,7 @@ interface RunUpgradeArgs {
      * Note that this does not have to match the `deployedVersion`. The `installedAppVersion` will tell you which
      * version of Webiny was running at the time of installing/upgrading the app.
      */
-    installedAppVersion: string;
+    installedAppVersion: string | null;
     /**
      * A collection of upgrade plugins you want to check for an applicable plugin. Make sure you only pass plugins
      * that belong to the app you're upgrading. For example: if upgrading `file-manager`, make sure you exclude
@@ -33,10 +33,12 @@ interface RunUpgradeArgs {
 }
 export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     const { upgradePlugins, installedAppVersion, upgradeToVersion } = args;
-    const { version: deployedVersion } = coerce(args.deployedVersion);
+    const semverResult = coerce(args.deployedVersion);
+
+    const deployedVersion = semverResult?.version;
 
     if (upgradeToVersion !== deployedVersion) {
-        throw new Error(
+        throw new WebinyError(
             `The requested upgrade version does not match the deployed version.`,
             ErrorCode.UPGRADE_VERSION_MISMATCH,
             {
@@ -47,18 +49,22 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     }
 
     if (installedAppVersion === upgradeToVersion) {
-        throw new Error(
+        throw new WebinyError(
             `Version ${upgradeToVersion} is already installed!`,
             ErrorCode.VERSION_ALREADY_INSTALLED
         );
     }
 
     const upgrades = upgradePlugins.filter(pl => {
-        return lt(pl.version, deployedVersion) && gt(pl.version, installedAppVersion);
+        return (
+            installedAppVersion &&
+            lt(pl.version, deployedVersion) &&
+            gt(pl.version, installedAppVersion)
+        );
     });
 
     if (upgrades.length > 0) {
-        throw new Error(
+        throw new WebinyError(
             `Skipping of upgrades is not allowed: https://docs.webiny.com/docs/how-to-guides/upgrade-webiny`,
             ErrorCode.SKIPPING_UPGRADES_NOT_ALLOWED,
             {
@@ -72,7 +78,7 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     const upgrade = upgradePlugins.find(pl => pl.version === upgradeToVersion);
 
     if (!upgrade) {
-        throw new Error(
+        throw new WebinyError(
             `Upgrade to version ${upgradeToVersion} is not available.`,
             ErrorCode.UPGRADE_NOT_AVAILABLE
         );

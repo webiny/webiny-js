@@ -1,8 +1,12 @@
 import React from "react";
-import { ElementRoot } from "../../../../render/components/ElementRoot";
 import ButtonContainer from "./ButtonContainer";
+import { ElementRoot } from "~/render/components/ElementRoot";
+import { PbEditorElement } from "~/types";
 
-const Button = ({ element }) => {
+interface ButtonProps {
+    element: PbEditorElement;
+}
+const Button: React.FC<ButtonProps> = ({ element }) => {
     return (
         <ElementRoot className={"webiny-pb-base-page-element-style"} element={element}>
             {({ getAllClasses, elementStyle, elementAttributes }) => (

@@ -1,14 +1,11 @@
-import { FbFormModel } from "../../../../../types";
+import { FbFormModel } from "~/types";
 
-export default ({
-    data,
-    source,
-    destination
-}: {
+interface MoveRowParams {
     source: number;
     destination: number;
     data: FbFormModel;
-}) => {
+}
+export default ({ data, source, destination }: MoveRowParams): void => {
     data.layout =
         source < destination
             ? [

@@ -20,9 +20,15 @@ const defaultStyle = {
     willChange: "opacity, transform"
 };
 
-const transitionStyles = {
-    entering: { transform: "translateY(-20px)", opacity: 0 },
-    entered: { transform: "translateY(0px)", opacity: 1 }
+const transitionStyles: Record<string, any> = {
+    entering: {
+        transform: "translateY(-20px)",
+        opacity: 0
+    },
+    entered: {
+        transform: "translateY(0px)",
+        opacity: 1
+    }
 };
 
 const menuTitle = css({
@@ -46,29 +52,37 @@ const menuTitleActive = css({
 
 const LOCAL_STORAGE_KEY = "webiny_navigation_groups";
 
-function loadState() {
+function loadState(): string[] {
     return (localStorage.get(LOCAL_STORAGE_KEY) || "").split(",").filter(Boolean);
 }
 
-function storeState(state) {
+function storeState(state: string[]) {
     localStorage.set(LOCAL_STORAGE_KEY, state.join(","));
 }
 
-function getState(id: string) {
+function getState(id: string | null): boolean {
+    if (!id) {
+        return false;
+    }
     const state = loadState();
     return state.includes(id);
 }
 
-export const MenuGroupRenderer = PrevMenuItem => {
+export const MenuGroupRenderer = (PrevMenuItem: React.FC): React.FC => {
     return function MenuGroup() {
         const { setVisible } = useNavigation();
         const { menuItem, depth } = useMenuItem();
-        const shouldRender = depth === 0 && menuItem.children;
-        const [isExpanded, setExpanded] = useState(getState(menuItem.name));
+        const shouldRender = depth === 0 && menuItem && menuItem.children;
+        const [isExpanded, setExpanded] = useState<boolean>(
+            getState(menuItem ? menuItem.name : null)
+        );
 
         const hideMenu = useCallback(() => setVisible(false), []);
 
         const toggleElement = useCallback(() => {
+            if (!menuItem) {
+                return;
+            }
             const state = loadState();
             if (isExpanded && state.includes(menuItem.name)) {
                 state.splice(state.indexOf(menuItem.name), 1);
@@ -86,14 +100,14 @@ export const MenuGroupRenderer = PrevMenuItem => {
             return <PrevMenuItem />;
         }
 
-        if (!menuItem.children.length) {
+        if (!menuItem || !menuItem.children.length) {
             return null;
         }
 
-        const withLink = content => {
+        const withLink = (content: React.ReactNode): React.ReactElement => {
             return (
                 <Link
-                    to={menuItem.path}
+                    to={menuItem.path || ""}
                     data-testid={menuItem.testId}
                     onClick={menuItem.onClick || hideMenu}
                 >

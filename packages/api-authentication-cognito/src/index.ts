@@ -2,13 +2,38 @@ import { AuthenticationContext, Identity } from "@webiny/api-authentication/type
 import { ContextPlugin } from "@webiny/handler";
 import { createAuthenticator, Config as CognitoConfig } from "@webiny/api-cognito-authenticator";
 
+export type GetIdentity<TIdentity extends Identity = Identity> = (params: {
+    identityType: string;
+    token: { [key: string]: any };
+}) => TIdentity;
+
 export interface Config extends CognitoConfig {
     identityType: string;
-    getIdentity?<TIdentity extends Identity = Identity>(params: {
-        identityType: string;
-        token: { [key: string]: any };
-    }): TIdentity;
+    getIdentity?: GetIdentity;
 }
+
+export const getIdentity: GetIdentity = ({ identityType, token }) => {
+    // We ensure `undefined` doesn't end up in the `displayName` property.
+    // If first name and last name is not present, we end up with an empty string.
+    const {
+        given_name = null,
+        family_name = null,
+        sub: id = null,
+        email = null,
+        preferred_username = null
+    } = token;
+
+    const displayName = [given_name, family_name].filter(Boolean).join(" ").trim() || null;
+
+    return {
+        id,
+        type: identityType,
+        displayName,
+        email: preferred_username || email,
+        firstName: given_name,
+        lastName: family_name
+    };
+};
 
 export default (config: Config) => {
     const cognitoAuthenticator = createAuthenticator({
@@ -21,21 +46,14 @@ export default (config: Config) => {
             const tokenObj = await cognitoAuthenticator(token);
 
             if (!tokenObj) {
-                return;
+                return null;
             }
 
             if (typeof config.getIdentity === "function") {
                 return config.getIdentity({ identityType: config.identityType, token: tokenObj });
             }
 
-            return {
-                id: tokenObj.sub,
-                type: config.identityType,
-                displayName: `${tokenObj.given_name} ${tokenObj.family_name}`,
-                email: tokenObj.email,
-                firstName: tokenObj.given_name,
-                lastName: tokenObj.family_name
-            };
+            return getIdentity({ identityType: config.identityType, token: tokenObj });
         });
     });
 };

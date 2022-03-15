@@ -1,34 +1,58 @@
 import { useEffect, useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin } from "../../../../types";
+import {
+    PbEditorElement,
+    PbEditorPageElementPlugin,
+    PbEditorPageElementSettingsPlugin
+} from "~/types";
 import { useKeyHandler } from "../../../hooks/useKeyHandler";
 import { userElementSettingsPlugins } from "../../../helpers";
 import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 
-const getElementActions = plugin => {
+interface ElementAction {
+    plugin: PbEditorPageElementSettingsPlugin;
+    options: Record<string, any>;
+}
+const getElementActions = (plugin?: PbEditorPageElementPlugin): ElementAction[] => {
     if (!plugin || !plugin.settings) {
         return [];
     }
 
-    const pluginSettings = [...userElementSettingsPlugins(plugin.elementType), ...plugin.settings];
+    const pluginSettings: string[] = [
+        ...userElementSettingsPlugins(plugin.elementType),
+        ...(plugin.settings as string[])
+    ];
 
-    const actions = pluginSettings.map(pl => {
-        if (typeof pl === "string") {
-            return { plugin: plugins.byName(pl), options: {} };
-        }
+    const actions = pluginSettings
+        .map(pl => {
+            if (typeof pl === "string") {
+                return {
+                    plugin: plugins.byName<PbEditorPageElementSettingsPlugin>(pl),
+                    options: {}
+                };
+            }
 
-        if (Array.isArray(pl)) {
-            return { plugin: plugins.byName(pl[0]), options: pl[1] };
-        }
+            if (Array.isArray(pl)) {
+                return {
+                    plugin: plugins.byName<PbEditorPageElementSettingsPlugin>(pl[0]),
+                    options: pl[1]
+                };
+            }
 
-        return null;
-    });
+            return null;
+        })
+        .filter(Boolean) as ElementAction[];
 
     const elementActions = [
         ...actions,
-        { plugin: plugins.byName("pb-editor-page-element-settings-save"), options: {} }
-    ];
+        {
+            plugin: plugins.byName<PbEditorPageElementSettingsPlugin>(
+                "pb-editor-page-element-settings-save"
+            ),
+            options: {}
+        }
+    ] as ElementAction[];
 
     return (
         elementActions
@@ -43,9 +67,9 @@ const getElementActions = plugin => {
     );
 };
 
-const useElementSettings = () => {
+const useElementSettings = (): ElementAction[] => {
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElement));
+    const element = useRecoilValue(elementByIdSelector(activeElement as string)) as PbEditorElement;
     const elementType = element ? element.type : undefined;
 
     const deactivateElement = useCallback(() => {

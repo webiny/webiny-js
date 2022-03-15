@@ -29,15 +29,15 @@ export class TypographyElement extends UIElement<TypographyElementConfig> {
         this.applyPlugins(TypographyElement);
     }
 
-    getTypography() {
+    public getTypography(): TypographyT {
         return this.config.typography;
     }
 
-    setTypography(typography: TypographyT) {
+    public setTypography(typography: TypographyT): void {
         this.config.typography = typography;
     }
 
-    render(props: any): React.ReactNode {
+    public override render(props: any): React.ReactNode {
         return <Typography use={this.getTypography()}>{super.render(props)}</Typography>;
     }
 }

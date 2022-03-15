@@ -3,13 +3,10 @@ import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy"
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/handler";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { TenancyContext } from "@webiny/api-tenancy/types";
-import { Context as BaseContext } from "@webiny/handler/types";
-
-type Context = BaseContext<SecurityContext, TenancyContext>;
+import { TestContext } from "./types";
 
 // IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
 const documentClient = new DocumentClient({
@@ -22,9 +19,9 @@ const documentClient = new DocumentClient({
 });
 
 interface Config {
-    setupGraphQL: boolean;
+    setupGraphQL?: boolean;
     permissions: SecurityPermission[];
-    identity: SecurityIdentity;
+    identity?: SecurityIdentity | null;
 }
 
 export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }: Config) => {
@@ -32,7 +29,10 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
                 documentClient,
-                table: table => ({ ...table, name: process.env.DB_TABLE })
+                table: table => ({
+                    ...table,
+                    name: process.env.DB_TABLE as string
+                })
             })
         }),
         setupGraphQL ? createTenancyGraphQL() : null,
@@ -43,7 +43,7 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
             })
         }),
         setupGraphQL ? createSecurityGraphQL() : null,
-        new ContextPlugin<Context>(context => {
+        new ContextPlugin<TestContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
@@ -63,13 +63,13 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
             context.security.addAuthorizer(async () => {
                 const { headers = {} } = context.http.request || {};
                 if (headers["authorization"]) {
-                    return;
+                    return null;
                 }
 
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<Context>(context => {
+        new BeforeHandlerPlugin<TestContext>(context => {
             const { headers = {} } = context.http.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);

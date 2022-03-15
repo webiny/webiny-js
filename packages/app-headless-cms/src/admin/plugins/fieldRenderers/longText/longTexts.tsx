@@ -18,7 +18,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "long-text" &&
-                field.multipleValues &&
+                !!field.multipleValues &&
                 !get(field, "predefinedValues.enabled")
             );
         },

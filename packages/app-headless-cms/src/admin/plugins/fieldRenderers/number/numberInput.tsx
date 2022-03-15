@@ -25,7 +25,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    {bindProps => {
+                    {(bindProps: any) => {
                         return (
                             <Input
                                 {...bindProps}

@@ -10,27 +10,22 @@ import { useCurrentTenantId } from "./useCurrentTenantId";
 
 const t = i18n.ns("app-tenant-manager/tenants/data-list");
 
-const serializeSorters = data => {
-    if (!data) {
-        return data;
-    }
-    const [[key, value]] = Object.entries(data);
-    return `${key}:${value}`;
-};
-
-const deserializeSorters = (data: string): Record<string, "asc" | "desc" | boolean> => {
+type SortTypes = "asc" | "desc";
+export const deserializeSorters = (data: string): [string, SortTypes] => {
     if (typeof data !== "string") {
         return data;
     }
-
-    const [key, value] = data.split(":") as [string, "asc" | "desc" | boolean];
-    return {
-        [key]: value
-    };
+    const [field, orderBy] = data.split("_") as [string, SortTypes];
+    const order = String(orderBy).toLowerCase() === "asc" ? "asc" : "desc";
+    return [field, order];
 };
 
+interface Sorter {
+    label: string;
+    sorter: string;
+}
 interface Config {
-    sorters: { label: string; sorters: Record<string, string> }[];
+    sorters: Sorter[];
 }
 
 interface UseTenantsListHook {
@@ -43,22 +38,21 @@ interface UseTenantsListHook {
             parent: string;
             [key: string]: any;
         }>;
-        currentTenantId: string;
+        currentTenantId: string | null;
         createTenant: () => void;
         filter: string;
         setFilter: (filter: string) => void;
-        sort: string;
+        sort: string | null;
         setSort: (sort: string) => void;
-        serializeSorters: (data: Record<string, string>) => string;
         editTenant: (id: string) => void;
         deleteTenant: (id: string) => void;
     };
 }
 
 export const useTenantsList: UseTenantsListHook = (config: Config) => {
-    const defaultSorter = config.sorters.length ? config.sorters[0].sorters : null;
+    const defaultSorter = config.sorters.length ? config.sorters[0].sorter : null;
     const [filter, setFilter] = useState<string>("");
-    const [sort, setSort] = useState<string>(serializeSorters(defaultSorter));
+    const [sort, setSort] = useState<string | null>(defaultSorter);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_TENANTS);
@@ -83,7 +77,7 @@ export const useTenantsList: UseTenantsListHook = (config: Config) => {
             if (!sort) {
                 return tenants;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            const [key, value] = deserializeSorters(sort);
             return orderBy(tenants, [key], [value]);
         },
         [sort]
@@ -132,7 +126,6 @@ export const useTenantsList: UseTenantsListHook = (config: Config) => {
         setFilter,
         sort,
         setSort,
-        serializeSorters,
         editTenant,
         deleteTenant
     };

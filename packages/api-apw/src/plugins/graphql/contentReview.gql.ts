@@ -256,7 +256,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             }
         },
         ApwQuery: {
-            getContentReview: async (_, args, context) => {
+            getContentReview: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.get(args.id));
             },
             listContentReviews: async (_, args: ApwContentReviewListParams, context) => {
@@ -272,22 +272,22 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             }
         },
         ApwMutation: {
-            createContentReview: async (_, args, context) => {
+            createContentReview: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.create(args.data));
             },
-            deleteContentReview: async (_, args, context) => {
+            deleteContentReview: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.delete(args.id));
             },
-            provideSignOff: async (_, args, context) => {
+            provideSignOff: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.provideSignOff(args.id, args.step));
             },
-            retractSignOff: async (_, args, context) => {
+            retractSignOff: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.retractSignOff(args.id, args.step));
             },
-            publishContent: async (_, args, context) => {
+            publishContent: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.publishContent(args.id));
             },
-            unpublishContent: async (_, args, context) => {
+            unpublishContent: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.unpublishContent(args.id));
             }
         }

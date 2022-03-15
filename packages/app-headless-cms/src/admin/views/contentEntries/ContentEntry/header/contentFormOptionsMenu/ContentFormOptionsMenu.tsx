@@ -10,7 +10,11 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
-import { createDeleteMutation } from "~/admin/graphql/contentEntries";
+import {
+    CmsEntryDeleteMutationResponse,
+    CmsEntryDeleteMutationVariables,
+    createDeleteMutation
+} from "~/admin/graphql/contentEntries";
 import usePermission from "~/admin/hooks/usePermission";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
@@ -32,7 +36,7 @@ const menuStyles = css({
     }
 });
 
-const ContentFormOptionsMenu = () => {
+const ContentFormOptionsMenu: React.FC = () => {
     const { contentModel, entry, loading, setLoading, listQueryVariables } = useContentEntry();
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
@@ -43,7 +47,10 @@ const ContentFormOptionsMenu = () => {
         return createDeleteMutation(contentModel);
     }, [contentModel.modelId]);
 
-    const [deleteContentMutation] = useMutation(DELETE_CONTENT);
+    const [deleteContentMutation] = useMutation<
+        CmsEntryDeleteMutationResponse,
+        CmsEntryDeleteMutationVariables
+    >(DELETE_CONTENT);
 
     const title = get(entry, "meta.title");
 
@@ -61,16 +68,23 @@ const ContentFormOptionsMenu = () => {
         dataTestId: "cms.content-form.header.delete-dialog"
     });
 
-    const confirmDelete = useCallback(() => {
-        showConfirmation(async () => {
+    const confirmDelete = useCallback((): void => {
+        showConfirmation(async (): Promise<void> => {
             setLoading(true);
             const [uniqueId] = entry.id.split("#");
             await deleteContentMutation({
                 variables: { revision: uniqueId },
-                update(cache, { data }) {
-                    const { error } = data.content;
+                update(cache, response) {
+                    if (!response.data) {
+                        showDialog("Missing response data on Delete Entry Mutation.", {
+                            title: t`Could not delete content`
+                        });
+                        return;
+                    }
+                    const { error } = response.data.content;
                     if (error) {
-                        return showDialog(error.message, { title: t`Could not delete content` });
+                        showDialog(error.message, { title: t`Could not delete content` });
+                        return;
                     }
 
                     removeEntryFromListCache(contentModel, cache, entry, listQueryVariables);
@@ -84,7 +98,7 @@ const ContentFormOptionsMenu = () => {
 
             setLoading(false);
         });
-    }, null);
+    }, [entry]);
 
     if (!canDelete(entry, "cms.contentEntry")) {
         return null;

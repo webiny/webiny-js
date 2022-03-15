@@ -1,7 +1,7 @@
-import * as React from "react";
-import { FormComponentProps } from "./../types";
+import React from "react";
+import { FormComponentProps } from "~/types";
 import { webinyRadioTitle } from "./Radio.styles";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 
 interface RadioGroupRenderParams {
     onChange: (id: string | number) => () => void;
@@ -20,12 +20,10 @@ type Props = FormComponentProps & {
 };
 
 class RadioGroup extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
-    };
-
-    render() {
+    public override render() {
         const { description, label, validation } = this.props;
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <React.Fragment>
@@ -45,11 +43,11 @@ class RadioGroup extends React.Component<Props> {
                     getValue: id => this.props.value === id
                 })}
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>

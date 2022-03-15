@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import styled from "@emotion/styled";
 import { plugins } from "@webiny/plugins";
 import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "../../../types";
@@ -8,7 +8,7 @@ const DialogsContainer = styled("div")({
     zIndex: 5
 });
 
-const Dialogs = () => {
+const Dialogs: React.FC = () => {
     const actions = [
         ...plugins.byType<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top"),
         ...plugins.byType<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom")
@@ -18,7 +18,14 @@ const Dialogs = () => {
         <DialogsContainer data-type={"dialogs"}>
             {actions
                 .filter(plugin => typeof plugin.renderDialog === "function")
-                .map(plugin => React.cloneElement(plugin.renderDialog(), { key: plugin.name }))}
+                .map(plugin =>
+                    /**
+                     * We can safely cast because undefined ones were filtered
+                     */
+                    React.cloneElement((plugin.renderDialog as () => ReactElement)(), {
+                        key: plugin.name
+                    })
+                )}
         </DialogsContainer>
     );
 };

@@ -9,17 +9,26 @@ import React, {
 } from "react";
 import { nanoid } from "nanoid";
 import { makeComposable, Plugins } from "@webiny/app-admin-core";
-import { MenuData, MenuProps, AddMenu as Menu, Tags } from "~/index";
+import { MenuData, MenuProps, AddMenu as Menu, Tags, MenuUpdater, createEmptyMenu } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
+import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
 
 export interface NavigationContext {
     menuItems: MenuData[];
-    setMenu(id: string, props: MenuProps): void;
+    setMenu(id: string, update: MenuUpdater): void;
     removeMenu(id: string): void;
 }
 
-const NavigationContext = createContext<NavigationContext>(null);
+const NavigationContext = createContext<NavigationContext>({
+    menuItems: [],
+    setMenu: () => {
+        return void 0;
+    },
+    removeMenu: () => {
+        return void 0;
+    }
+});
 NavigationContext.displayName = "NavigationContext";
 
 export function useNavigation() {
@@ -29,17 +38,17 @@ export function useNavigation() {
 // IMPORTANT! The following component is for BACKWARDS COMPATIBILITY purposes only!
 // It is not a public component, and is not even exported from this file. We need it to take care of
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
-const LegacyMenu = props => {
+const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
     return (
-        <Menu {...props} name={props.name || nanoid()} label={props.label}>
+        <Menu {...props} name={(props as MenuProps).name || nanoid()} label={props.label as string}>
             {props.children}
         </Menu>
     );
 };
 
-const LegacyMenuPlugins = () => {
+const LegacyMenuPlugins: React.FC = () => {
     // IMPORTANT! The following piece of code is for BACKWARDS COMPATIBILITY purposes only!
-    const [menus, setMenus] = useState(null);
+    const [menus, setMenus] = useState<JSX.Element | null>(null);
 
     useEffect(() => {
         const menuPlugins = plugins.byType<AdminMenuPlugin>("admin-menu");
@@ -48,54 +57,43 @@ const LegacyMenuPlugins = () => {
         }
 
         const menuElements = menuPlugins.map(plugin => {
+            // TODO @ts-refactor figure out correct types or write a comment to leave as React.FC
             return (
                 <Plugins key={plugin.name}>
-                    {plugin.render({ Menu: LegacyMenu, Item: LegacyMenu, Section: LegacyMenu })}
+                    {plugin.render({
+                        Menu: LegacyMenu as React.FC,
+                        Item: LegacyMenu as React.FC,
+                        Section: LegacyMenu as React.FC
+                    })}
                 </Plugins>
             );
         });
-
-        setMenus(menuElements);
+        // TODO @ts-refactor
+        setMenus(menuElements as any);
     }, []);
 
     return menus;
 };
 
-export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
+export const NavigationProvider = (Component: React.ComponentType<unknown>): React.FC => {
     return function NavigationProvider({ children }) {
-        const [menuItems, setState] = useState([]);
+        const [menuItems, setState] = useState<MenuData[]>([]);
 
-        const mergeMenuItems = (item1: MenuData, item2: MenuData) => {
-            return {
-                ...item1,
-                label: item2.label ?? item1.label,
-                icon: item2.icon ?? item1.icon,
-                children: item2.children.reduce(
-                    (acc, menu) => {
-                        const index = acc.findIndex(i => i.name === menu.name);
-                        if (index > -1) {
-                            acc[index] = mergeMenuItems(acc[index], menu);
-                        } else {
-                            acc.push(menu);
-                        }
-                        return acc;
-                    },
-                    [...item1.children]
-                )
-            };
-        };
-
-        const setMenu = (id, menuItem) => {
+        const setMenu = (id: string, updater: MenuUpdater): void => {
             setState(state => {
                 const index = state.findIndex(m => m.name === id);
 
+                const newMenu = index > -1 ? updater(state[index]) : updater(createEmptyMenu(id));
+                if (!newMenu) {
+                    return [...state];
+                }
+                if (!newMenu.children) {
+                    newMenu.children = [];
+                }
+
                 return index > -1
-                    ? [
-                          ...state.slice(0, index),
-                          mergeMenuItems(state[index], menuItem),
-                          ...state.slice(index + 1)
-                      ]
-                    : [...state, menuItem];
+                    ? [...state.slice(0, index), newMenu, ...state.slice(index + 1)]
+                    : [...state, newMenu];
             });
         };
         const removeMenu = useCallback(
@@ -131,7 +129,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
     };
 };
 
-export const Navigation = () => {
+export const Navigation: React.FC = () => {
     return (
         <Tags tags={{ location: "navigation" }}>
             <NavigationRenderer />
@@ -142,11 +140,14 @@ export const Navigation = () => {
 export const NavigationRenderer = makeComposable("NavigationRenderer");
 
 interface MenuItemContext {
-    menuItem: MenuData;
+    menuItem?: MenuData;
     depth: number;
 }
 
-const MenuItemContext = React.createContext<MenuItemContext>(null);
+const MenuItemContext = React.createContext<MenuItemContext>({
+    menuItem: undefined,
+    depth: -1
+});
 MenuItemContext.displayName = "MenuItemContext";
 
 export function useMenuItem() {
@@ -176,7 +177,7 @@ export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItem
     );
 });
 
-export const MenuItem = () => {
+export const MenuItem: React.FC = () => {
     return <MenuItemRenderer />;
 };
 

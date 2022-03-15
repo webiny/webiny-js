@@ -78,7 +78,10 @@ const resizeCells = (elements: PbEditorElement[], cells: number[]): PbEditorElem
     });
 };
 
-const updateChildrenWithPreset = (target: PbEditorElement, pl: PbEditorGridPresetPluginType) => {
+const updateChildrenWithPreset = (
+    target: PbEditorElement,
+    pl: PbEditorGridPresetPluginType
+): PbEditorElement[] => {
     const cells = calculatePresetPluginCells(pl);
     const total = target.elements.length;
     const max = cells.length;
@@ -91,9 +94,9 @@ const updateChildrenWithPreset = (target: PbEditorElement, pl: PbEditorGridPrese
     return resizeCells(created, cells);
 };
 
-export const GridSettings: React.FunctionComponent<
-    PbEditorPageElementSettingsRenderComponentProps
-> = ({ defaultAccordionValue }) => {
+export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const handler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(

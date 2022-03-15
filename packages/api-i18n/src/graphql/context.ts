@@ -1,41 +1,65 @@
 import acceptLanguageParser from "accept-language-parser";
-import { ContextI18NGetLocales, I18NContext } from "~/types";
+import {
+    ContextI18NGetLocales,
+    I18NContext,
+    I18NContextObject,
+    I18NLocale,
+    LocaleKeys
+} from "~/types";
 import { ContextPlugin } from "@webiny/handler";
 import { I18NLocaleContextPlugin } from "~/plugins/I18NLocaleContextPlugin";
 import { createCrudContext } from "~/graphql/crud";
+import { HttpObject } from "@webiny/handler-http/types";
+
+interface Locales {
+    content: string;
+    default: string;
+}
+const headerCache: Record<string, Locales> = {};
 /**
  * Parses "x-i18n-locale" header value (e.g. "default:en-US;content:hr-HR;").
  */
-const parseXI18NLocaleHeader = value => {
-    if (parseXI18NLocaleHeader.cache[value]) {
-        return parseXI18NLocaleHeader.cache[value];
+const parseXI18NLocaleHeader = (value: string): Locales => {
+    if (headerCache[value]) {
+        return headerCache[value];
     }
 
     /**
      * Parsing x-i18n-locale value (e.g. "default:en-US;content:hr-HR;").
      */
-    parseXI18NLocaleHeader.cache[value] = value
+    headerCache[value] = value
         .split(";")
         .filter(Boolean)
-        .map(item => item.split(":"))
+        .map(item => {
+            return item.split(":") as [keyof Locales, string];
+        })
         .reduce((current, [context, locale]) => {
             current[context] = locale;
             return current;
-        }, {});
+        }, {} as Locales);
 
-    return parseXI18NLocaleHeader.cache[value];
+    return headerCache[value];
 };
 
-parseXI18NLocaleHeader.cache = {};
-
-const getLocaleFromHeaders = (http, localeContext = "default") => {
-    if (!http) {
-        return null;
+interface GetLocaleFromHeadersResult {
+    acceptLanguageHeader: string | null;
+    contextLocaleHeader: string | null;
+}
+const getLocaleFromHeaders = (
+    http: HttpObject,
+    localeContext: LocaleKeys = "default"
+): GetLocaleFromHeadersResult => {
+    let acceptLanguageHeader: string | null = null;
+    let contextLocaleHeader: string | null = null;
+    if (!http || !http.request || !http.request.headers) {
+        return {
+            acceptLanguageHeader,
+            contextLocaleHeader
+        };
     }
 
     const { headers = {} } = http.request;
 
-    let acceptLanguageHeader, contextLocaleHeader;
     for (const key in headers) {
         if (headers.hasOwnProperty(key) === false) {
             continue;
@@ -58,7 +82,7 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
 
 const createBaseContextPlugin = () => {
     return new ContextPlugin<I18NContext>(async context => {
-        let locales = [];
+        let locales: I18NLocale[] = [];
         if (context.tenancy.getCurrentTenant()) {
             const plugin = context.plugins.byName<ContextI18NGetLocales>(
                 "context-i18n-get-locales"
@@ -71,26 +95,37 @@ const createBaseContextPlugin = () => {
 
         const { http, plugins } = context;
 
-        const __i18n = {
-            acceptLanguage: null,
+        const __i18n: I18NContextObject["__i18n"] = {
+            acceptLanguage: "",
             defaultLocale: null,
             locale: {}, // Contains one or more locales - for multiple locale contexts.
             locales
         };
-        const getDefaultLocale = () => {
+        const getDefaultLocale = (): I18NLocale | null => {
             const allLocales = getLocales();
-            return allLocales.find(item => item.default === true);
+            const locale = allLocales.find(item => item.default === true);
+
+            if (locale) {
+                return locale;
+            }
+            const enLocale = allLocales.find(item => {
+                return item.code.match("en") !== null;
+            });
+            return enLocale || null;
         };
         const getCurrentLocales = () => {
             const localeContexts = plugins.byType<I18NLocaleContextPlugin>(
                 I18NLocaleContextPlugin.type
             );
-            return localeContexts.map(plugin => ({
-                context: plugin.context.name,
-                locale: getCurrentLocale(plugin.context.name)?.code
-            }));
+            return localeContexts.map(plugin => {
+                const currentLocale = getCurrentLocale(plugin.context.name);
+                return {
+                    context: plugin.context.name,
+                    locale: currentLocale ? currentLocale.code : null
+                };
+            });
         };
-        const getCurrentLocale = (localeContext = "default") => {
+        const getCurrentLocale = (localeContext: LocaleKeys = "default"): I18NLocale | null => {
             if (__i18n.locale[localeContext]) {
                 return __i18n.locale[localeContext];
             }
@@ -124,10 +159,10 @@ const createBaseContextPlugin = () => {
 
             return __i18n.locale[localeContext];
         };
-        const getLocales = () => {
+        const getLocales = (): I18NLocale[] => {
             return __i18n.locales;
         };
-        const getLocale = code => {
+        const getLocale = (code: string): I18NLocale | null => {
             const item = __i18n.locales.find(
                 locale => locale.code.toLowerCase() === code.toLowerCase()
             );

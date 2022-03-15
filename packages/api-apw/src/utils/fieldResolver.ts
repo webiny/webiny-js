@@ -1,27 +1,29 @@
 import pick from "lodash/pick";
-import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms/content/plugins/utils/entryStorage";
+import { ApwBaseFields } from "~/types";
 
 interface Transformer {
-    fieldId: string;
+    fieldId: keyof ApwBaseFields;
     model: any;
     field: any;
 }
 
 interface GetFieldValuesParams {
-    entry: Record<string, any>;
+    entry: CmsEntry;
     fields: string[];
-    transformers?: Array<Transformer>;
+    transformers?: Transformer[];
     context: CmsContext;
 }
 
-export const getFieldValues = async ({
-    entry,
-    context,
-    transformers,
-    fields
-}: GetFieldValuesParams) => {
-    const values = { ...pick(entry, fields), ...entry.values };
+export const getFieldValues = async <T extends ApwBaseFields>(
+    params: GetFieldValuesParams
+): Promise<T> => {
+    const { entry, context, transformers = [], fields } = params;
+    const values = {
+        ...pick(entry, fields),
+        ...entry.values
+    } as T;
     /**
      * Transform field value for each transformers.
      */
@@ -40,7 +42,7 @@ export const getFieldValues = async ({
 };
 
 export const getTransformer = (model: CmsModel, fieldId: string): Transformer => ({
-    fieldId,
+    fieldId: fieldId as unknown as keyof ApwBaseFields,
     model: model,
     field: model.fields.find(field => field.fieldId === fieldId)
 });

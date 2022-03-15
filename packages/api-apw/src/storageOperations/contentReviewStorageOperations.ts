@@ -4,12 +4,20 @@ import {
     CreateApwStorageOperationsParams,
     getFieldValues
 } from "~/storageOperations/index";
+import WebinyError from "@webiny/error";
 
 export const createContentReviewStorageOperations = ({
     cms
 }: Pick<CreateApwStorageOperationsParams, "cms">): ApwContentReviewStorageOperations => {
-    const getContentReviewModel = () => {
-        return cms.getModel("apwContentReviewModelDefinition");
+    const getContentReviewModel = async () => {
+        const model = await cms.getModel("apwContentReviewModelDefinition");
+        if (!model) {
+            throw new WebinyError(
+                "Could not find `apwContentReviewModelDefinition` model.",
+                "MODEL_NOT_FOUND_ERROR"
+            );
+        }
+        return model;
     };
     const getContentReview: ApwContentReviewStorageOperations["getContentReview"] = async ({
         id
@@ -23,7 +31,13 @@ export const createContentReviewStorageOperations = ({
         getContentReview,
         async listContentReviews(params) {
             const model = await getContentReviewModel();
-            const [entries, meta] = await cms.listLatestEntries(model, params);
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where,
+                    tenant: model.tenant
+                }
+            });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createContentReview(params) {

@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import React, { useEffect } from "react";
 import { plugins } from "@webiny/plugins";
 import { nanoid } from "nanoid";
 import { AddQuerySelectionPlugin } from "@webiny/app/plugins/AddQuerySelectionPlugin";
@@ -10,15 +10,16 @@ interface Props {
     addSelection: DocumentNode;
 }
 
-export const AddGraphQLQuerySelection: FC<Props> = props => {
+export const AddGraphQLQuerySelection: React.FC<Props> = props => {
     useEffect(() => {
         const plugin = new AddQuerySelectionPlugin(props);
 
-        plugin.name = nanoid();
+        const name = nanoid();
+        plugin.name = name;
         plugins.register(plugin);
 
         return () => {
-            plugins.unregister(plugin.name);
+            plugins.unregister(name);
         };
     }, []);
 

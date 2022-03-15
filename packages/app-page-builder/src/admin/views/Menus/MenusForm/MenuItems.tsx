@@ -13,6 +13,7 @@ import MenuItemForm from "./MenuItems/MenuItemForm";
 import findObject from "./MenuItems/findObject";
 import { PbMenuItemPlugin } from "~/types";
 import { Typography } from "@webiny/ui/Typography";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
 
 const leftPanel = css({
     padding: 25,
@@ -34,34 +35,34 @@ const AddMenu = styled("div")({
     margin: "25px auto 0 auto"
 });
 
-type Props = {
+interface MenuItemsProps {
     canSave: boolean;
-    onChange: Function;
-    value: any;
-};
+    onChange: (items: MenuTreeItem[]) => void;
+    value: MenuTreeItem[];
+}
 
-type State = {
-    currentMenuItem?: Object;
-};
+interface MenuItemsState {
+    currentMenuItem: MenuTreeItem | null;
+}
 
-class MenuItems extends React.Component<Props, State> {
-    form = React.createRef();
-    state = {
+class MenuItems extends React.Component<MenuItemsProps, MenuItemsState> {
+    public form = React.createRef();
+    public override state: MenuItemsState = {
         currentMenuItem: null
     };
 
-    addItem = (plugin: PbMenuItemPlugin) => {
+    private readonly addItem = (plugin: PbMenuItemPlugin): void => {
         const { onChange, value } = this.props;
-        const newItem = { type: plugin.menuItem.type, id: uniqid(), __new: true };
+        const newItem: MenuTreeItem = { type: plugin.menuItem.type, id: uniqid(), __new: true };
         onChange([...value, newItem]);
         this.editItem(newItem);
     };
 
-    editItem = data => {
+    private readonly editItem = (data: MenuTreeItem | null): void => {
         this.setState({ currentMenuItem: data });
     };
 
-    deleteItem = item => {
+    private readonly deleteItem = (item: MenuTreeItem): void => {
         const { value, onChange } = this.props;
         const target = findObject(value, item.id);
         target && target.source.splice(target.index, 1);
@@ -69,7 +70,7 @@ class MenuItems extends React.Component<Props, State> {
         this.editItem(null);
     };
 
-    render() {
+    public override render() {
         const { value: items, onChange, canSave } = this.props;
         const { currentMenuItem } = this.state;
         const pbMenuItemPlugins = plugins.byType<PbMenuItemPlugin>("pb-menu-item");

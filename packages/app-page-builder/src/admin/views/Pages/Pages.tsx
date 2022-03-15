@@ -7,6 +7,7 @@ import CategoriesDialog from "../Categories/CategoriesDialog";
 import { CircularProgress } from "@webiny/ui/Progress";
 import useImportPage from "./hooks/useImportPage";
 import useCreatePage from "./hooks/useCreatePage";
+import { PageBuilderSecurityPermission } from "~/types";
 
 enum LoadingLabel {
     CREATING_PAGE = "Creating page...",
@@ -18,7 +19,7 @@ enum Operation {
     IMPORT = "import"
 }
 
-const Pages = () => {
+const Pages: React.FC = () => {
     const [operation, setOperation] = useState<string>(Operation.CREATE);
     const [loadingLabel, setLoadingLabel] = useState<string | null>(null);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -50,10 +51,10 @@ const Pages = () => {
 
     const onSelect = operation === Operation.CREATE ? createPageMutation : showDialog;
 
-    const { identity } = useSecurity();
+    const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo(() => {
-        const permission = identity.getPermission("pb.page");
+        const permission = getPermission<PageBuilderSecurityPermission>("pb.page");
         if (!permission) {
             return false;
         }
@@ -63,7 +64,7 @@ const Pages = () => {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     return (
         <>

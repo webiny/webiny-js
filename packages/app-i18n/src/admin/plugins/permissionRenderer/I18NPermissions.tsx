@@ -4,6 +4,8 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
+import { SecurityPermission } from "@webiny/app-security/types";
+import { I18NSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 
@@ -13,10 +15,14 @@ const I18N_LOCALES = `${I18N}.locales`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 
-export const I18NPermissions = ({ value, onChange }) => {
+interface I18NPermissionsProps {
+    value: SecurityPermission[];
+    onChange: (value: SecurityPermission[]) => void;
+}
+export const I18NPermissions: React.FC<I18NPermissionsProps> = ({ value, onChange }) => {
     const onFormChange = useCallback(
-        data => {
-            let newValue = [];
+        (data: I18NSecurityPermission): void => {
+            let newValue: SecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `i18n*` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(I18N));
@@ -24,9 +30,13 @@ export const I18NPermissions = ({ value, onChange }) => {
 
             let permission;
             if (data.level === FULL_ACCESS) {
-                permission = { name: I18N_FULL_ACCESS };
+                permission = {
+                    name: I18N_FULL_ACCESS
+                };
             } else if (data.locales) {
-                permission = { name: I18N_LOCALES };
+                permission = {
+                    name: I18N_LOCALES
+                };
             }
 
             if (permission) {
@@ -54,10 +64,19 @@ export const I18NPermissions = ({ value, onChange }) => {
         if (!permission) {
             return { level: NO_ACCESS };
         }
+        return {};
     }, []);
 
     return (
-        <Form data={formData} onChange={onFormChange}>
+        <Form
+            data={formData}
+            onChange={data => {
+                /**
+                 * We are positive that data is I18NSecurityPermission.
+                 */
+                return onFormChange(data as I18NSecurityPermission);
+            }}
+        >
             {({ Bind }) => (
                 <Fragment>
                     <Grid className={gridNoPaddingClass}>

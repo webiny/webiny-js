@@ -8,7 +8,7 @@ import { usePbWebsiteSettings } from "./usePbWebsiteSettings";
 
 export const SettingsFields = makeComposable("SettingsFields", () => null);
 
-export const WebsiteSettingsView = () => {
+export const WebsiteSettingsView: React.FC = () => {
     const { fetching, saving, settings, saveSettings } = usePbWebsiteSettings();
 
     return (
@@ -20,7 +20,13 @@ export const WebsiteSettingsView = () => {
                         {saving && <CircularProgress label={"Saving settings..."} />}
                         <SettingsFields />
                         <SimpleFormFooter>
-                            <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    submit(ev);
+                                }}
+                            >
+                                Save
+                            </ButtonPrimary>
                         </SimpleFormFooter>
                     </SimpleForm>
                 )}

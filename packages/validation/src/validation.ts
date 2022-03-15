@@ -8,7 +8,11 @@ const entries = (validators: ParsedValidators): Array<[string, Array<string>]> =
 
 const invalidRules = "Validators must be specified as a string (eg. required,minLength:10,email).";
 
-const createdValidators = {
+interface CreatedValidators {
+    async: Record<string, Validator>;
+    sync: Record<string, Validator>;
+}
+const createdValidators: CreatedValidators = {
     async: {},
     sync: {}
 };
@@ -29,7 +33,9 @@ class Validation {
      * Contains a list of all set validators.
      * @private
      */
-    __validators: { [key: string]: Validator };
+    __validators: {
+        [key: string]: Validator;
+    };
 
     constructor() {
         this.__validators = {};
@@ -163,6 +169,9 @@ class Validation {
         validate.forEach((v: string) => {
             const params = _.trim(v).split(":");
             const vName = params.shift();
+            if (!vName) {
+                return;
+            }
             parsedValidators[vName] = params;
         });
         return parsedValidators;

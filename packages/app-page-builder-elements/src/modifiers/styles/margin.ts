@@ -1,12 +1,12 @@
 import { ElementStylesModifier } from "~/types";
 
 const margin: ElementStylesModifier = ({ element, theme }) => {
-    const { margin } = element.data.settings;
+    const { margin } = element.data.settings || {};
     if (!margin) {
-        return;
+        return null;
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!margin[breakpointName]) {
             return returnStyles;
         }
@@ -25,7 +25,9 @@ const margin: ElementStylesModifier = ({ element, theme }) => {
         } else {
             return {
                 ...returnStyles,
-                [breakpointName]: { margin: values.all }
+                [breakpointName]: {
+                    margin: values.all
+                }
             };
         }
     }, {});

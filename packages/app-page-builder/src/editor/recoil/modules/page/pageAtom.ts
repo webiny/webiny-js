@@ -1,15 +1,17 @@
 import { atom } from "recoil";
 
-type PageCategoryType = {
+interface PageCategoryType {
     slug: string;
     name: string;
     url: string;
-};
+}
 
-export type PageAtomType = {
+export interface PageAtomType {
     id?: string;
     title?: string;
+    pid?: string;
     path?: string;
+    status?: string;
     settings?: {
         general?: {
             layout?: string;
@@ -23,9 +25,9 @@ export type PageAtomType = {
     snippet: string | null;
     category?: PageCategoryType;
     createdBy: {
-        id: string;
+        id: string | null;
     };
-};
+}
 
 export const pageAtom = atom<PageAtomType>({
     key: "pageAtom",
@@ -36,6 +38,7 @@ export const pageAtom = atom<PageAtomType>({
         snippet: null,
         createdBy: {
             id: null
-        }
+        },
+        status: undefined
     }
 });

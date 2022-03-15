@@ -1,12 +1,17 @@
 import { TogglePluginActionArgsType } from "./types";
 import { plugins } from "@webiny/plugins";
-import { EventActionCallable } from "../../../../types";
+import { EventActionCallable } from "~/types";
 
 export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType> = (
     state,
     _,
     args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
     const { name, params = {}, closeOtherInGroup = false } = args;
     const plugin = plugins.byName(name);
     if (!plugin) {
@@ -31,6 +36,7 @@ export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType>
                 ...pluginsAtomValue,
                 [plugin.type]: newPluginsList
             }
-        }
+        },
+        actions: []
     };
 };

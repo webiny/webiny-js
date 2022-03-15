@@ -1,5 +1,9 @@
-import * as React from "react";
+import React from "react";
 import styled from "@emotion/styled";
+/**
+ * Package react-loading-skeleton does not have types.
+ */
+// @ts-ignore
 import Skeleton from "react-loading-skeleton";
 
 const LoaderUl = styled("ul")({
@@ -35,7 +39,7 @@ const LoaderUl = styled("ul")({
     }
 });
 
-const Loader = () => (
+const Loader: React.FC = () => (
     <LoaderUl data-testid={"default-data-list.loading"}>
         {[1, 2, 3, 4, 5].map(item => (
             <li key={"list-" + item}>

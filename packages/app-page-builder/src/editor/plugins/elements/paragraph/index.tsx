@@ -1,6 +1,11 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import { DisplayMode, PbEditorPageElementPlugin, PbEditorTextElementPluginsArgs } from "~/types";
+import {
+    DisplayMode,
+    PbEditorElement,
+    PbEditorPageElementPlugin,
+    PbEditorTextElementPluginsArgs
+} from "~/types";
 import Paragraph, { textClassName } from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
@@ -36,6 +41,11 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
         elementType: elementType,
+        /**
+         * TODO @ts-refactor @ashutosh
+         * Completely different types between method result and variable
+         */
+        // @ts-ignore
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
@@ -43,7 +53,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         create({ content = {}, ...options }) {
             const previewText = content.text || defaultText;
 
-            const defaultValue = {
+            const defaultValue: Partial<PbEditorElement> = {
                 type: this.elementType,
                 elements: [],
                 data: {

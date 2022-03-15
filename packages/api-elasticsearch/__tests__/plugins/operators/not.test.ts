@@ -5,8 +5,6 @@ import { ElasticsearchQueryBuilderOperatorNotPlugin } from "~/plugins/operator";
 describe("ElasticsearchQueryBuilderOperatorNotPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorNotPlugin();
 
-    const context: any = {};
-
     it("should apply not correctly", () => {
         const query = createBlankQuery();
 
@@ -14,7 +12,6 @@ describe("ElasticsearchQueryBuilderOperatorNotPlugin", () => {
             path: "name.keyword",
             basePath: "name",
             value: "John",
-            context,
             keyword: true
         });
         const expected: ElasticsearchBoolQueryConfig = {

@@ -9,7 +9,25 @@ import { PbContext } from "~/graphql/types";
 
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
-export default async ({ context }): Promise<Record<string, File>> => {
+/**
+ * Type comes from installation/files/data/pagesFilesData.json
+ */
+interface PageFilesData {
+    id: string;
+    name: string;
+    __physicalFileName: string;
+    key: string;
+    size: number;
+    type: string;
+    meta: {
+        private: boolean;
+    };
+}
+
+interface SavePageAssetsParams {
+    context: PbContext;
+}
+export default async ({ context }: SavePageAssetsParams): Promise<Record<string, File>> => {
     /**
      * This function contains logic of file download from S3.
      * Current we're not mocking zip file download from S3 in tests at the moment.
@@ -21,15 +39,21 @@ export default async ({ context }): Promise<Record<string, File>> => {
 
     const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
 
-    const pagesFilesData = await loadJson<Record<string, any>[]>(
+    const pagesFilesData = await loadJson<PageFilesData[]>(
         path.join(INSTALL_EXTRACT_DIR, "data/pagesFilesData.json")
     );
 
     try {
-        // Save uploaded file key against static id for later use.
-        const fileIdToFileMap = {};
+        //
+        /**
+         * Save uploaded file key against static id for later use.
+         *
+         * NOTE the variable is used for storing two different types. Validate that this is correct to return
+         */
+        // TODO @ts-refactor figure out the type.
+        const fileIdToFileMap: Record<string, any> = {};
         // Contains all parallel file saving chunks.
-        const chunksProcesses = [];
+        const chunksProcesses: Promise<any>[] = [];
 
         // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
         const filesChunks = chunk(pagesFilesData, FILES_COUNT_IN_EACH_BATCH);
@@ -37,7 +61,7 @@ export default async ({ context }): Promise<Record<string, File>> => {
         for (let i = 0; i < filesChunks.length; i++) {
             chunksProcesses.push(
                 // eslint-disable-next-line
-                new Promise(async (promise, reject) => {
+                new Promise(async (resolve, reject) => {
                     try {
                         const filesChunk = filesChunks[i];
 
@@ -83,8 +107,7 @@ export default async ({ context }): Promise<Record<string, File>> => {
                             fileIdToFileMap[filesChunk[index].id] = item;
                         });
 
-                        // @ts-ignore
-                        promise(fileUploadResults);
+                        resolve(fileUploadResults);
                     } catch (e) {
                         reject(e);
                     }
@@ -99,6 +122,7 @@ export default async ({ context }): Promise<Record<string, File>> => {
     } catch (e) {
         console.log(`[savePageAssets]: error occurred: ${e.stack}`);
     }
+    return {};
 };
 
 interface UploadPageAssetsParams {
@@ -130,7 +154,7 @@ export const uploadPageAssets = async ({
     }
     try {
         // Save uploaded file key against static id for later use.
-        const fileIdToKeyMap = {};
+        const fileIdToKeyMap: Record<string, string> = {};
         // Contains all parallel file saving chunks.
         const chunksProcesses = [];
 
@@ -201,6 +225,7 @@ export const uploadPageAssets = async ({
     } catch (e) {
         console.log(`[savePageAssets]: error occurred: ${e.stack}`);
     }
+    return {};
 };
 
 /**
@@ -209,9 +234,12 @@ export const uploadPageAssets = async ({
  * @param ext File extension.
  * @return filename of first file in the Directory that matches the provided extension.
  */
-export const getFileNameByExtension = (workingDir: string, ext: string): string => {
+/**
+ * TODO @ts-refactor @ashutosh check if this is still required? cant find any usages
+ */
+export const getFileNameByExtension = (workingDir: string, ext: string): string | null => {
     const dirContents = fs.readdirSync(workingDir);
-    return dirContents.find(a => a.endsWith(ext));
+    return dirContents.find(a => a.endsWith(ext)) || null;
 };
 
 function removeKeyPrefixFromName(name: string) {

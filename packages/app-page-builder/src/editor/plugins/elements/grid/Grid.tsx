@@ -21,7 +21,7 @@ type GridPropsType = {
     element: PbEditorElement;
     displayMode: DisplayMode;
 };
-const Grid: React.FunctionComponent<GridPropsType> = ({
+const Grid: React.FC<GridPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,
@@ -31,8 +31,13 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
 }) => {
     const containerStyle = elementStyle || {};
     // Use per-device style
-    const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
-    const gridStyles = {
+    const alignItems =
+        elementStyle[`--${kebabCase(displayMode)}-align-items` as unknown as keyof CSSProperties];
+    /**
+     * Figure out better types.
+     */
+    // TODO @ts-refactor
+    const gridStyles: any = {
         alignItems,
         /**
          * The "max-width" property is being assigned to "Grid" element from grid's width setting value,
@@ -53,7 +58,7 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
             {...elementAttributes}
             style={gridStyles}
         >
-            {element.elements.map((child: PbEditorElement) => {
+            {(element.elements as PbEditorElement[]).map(child => {
                 return (
                     <div
                         key={`cell-${child.id}`}

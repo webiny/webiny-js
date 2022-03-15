@@ -13,21 +13,17 @@ import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementS
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
 
-type TextElementProps = {
+interface TextElementProps {
     elementId: string;
-    mediumEditorOptions: CoreOptions;
+    mediumEditorOptions?: CoreOptions;
     rootClassName?: string;
-};
-const PbText: React.FunctionComponent<TextElementProps> = ({
-    elementId,
-    mediumEditorOptions,
-    rootClassName
-}) => {
-    const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+}
+const PbText: React.FC<TextElementProps> = ({ elementId, mediumEditorOptions, rootClassName }) => {
+    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const [{ displayMode }] = useRecoilState(uiAtom);
     const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const { getUpdateValue } = useUpdateHandlers({
-        element,
+        element: element as PbEditorElement,
         dataNamespace: DATA_NAMESPACE,
         debounce: false
     });

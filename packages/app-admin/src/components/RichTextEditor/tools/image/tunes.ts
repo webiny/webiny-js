@@ -1,16 +1,20 @@
 import { API } from "@editorjs/editorjs";
 import { make } from "./ui";
 import svgs from "./svgs";
+import { ImageToolData, Tune, TuneOnChangeCallable } from "./types";
 
-type Tune = { name: string; icon: string; title: string; action?: Function };
-
+interface TunesParams {
+    api: API;
+    actions: Tune[];
+    onChange: TuneOnChangeCallable;
+}
 /**
  * Working with Block Tunes
  */
 export default class Tunes {
     private api: API;
-    private actions: any;
-    private onChange: Function;
+    private readonly actions: Tune[];
+    private readonly onChange: TuneOnChangeCallable;
     private buttons: Array<HTMLElement>;
     /**
      * @param {object} tune - image tool Tunes managers
@@ -18,7 +22,7 @@ export default class Tunes {
      * @param {object} tune.actions - list of user defined tunes
      * @param {Function} tune.onChange - tune toggling callback
      */
-    constructor({ api, actions, onChange }) {
+    constructor({ api, actions, onChange }: TunesParams) {
         this.api = api;
         this.actions = actions;
         this.onChange = onChange;
@@ -60,7 +64,7 @@ export default class Tunes {
      * @param {ImageToolData} toolData - generate Elements of tunes
      * @returns {Element}
      */
-    render(toolData) {
+    render(toolData: ImageToolData): HTMLElement {
         const wrapper = make("div", this.CSS.wrapper);
 
         this.buttons = [];
@@ -78,8 +82,9 @@ export default class Tunes {
                 this.tuneClicked(tune.name, tune.action);
             });
 
-            el.dataset.tune = tune.name;
-            el.classList.toggle(this.CSS.buttonActive, toolData[tune.name]);
+            el.dataset["tune"] = tune.name;
+            const name = tune.name as keyof ImageToolData;
+            el.classList.toggle(this.CSS.buttonActive, !!toolData[name]);
 
             this.buttons.push(el);
 
@@ -99,20 +104,23 @@ export default class Tunes {
      * @param {string} tuneName - clicked tune name
      * @param {Function} customFunction - function to execute on click
      */
-    tuneClicked(tuneName, customFunction) {
+    tuneClicked(tuneName: string, customFunction?: TuneOnChangeCallable): boolean {
         if (typeof customFunction === "function") {
             if (!customFunction(tuneName)) {
                 return false;
             }
         }
 
-        const button = this.buttons.find(el => el.dataset.tune === tuneName);
+        const button = this.buttons.find(el => el.dataset["tune"] === tuneName);
 
-        button.classList.toggle(
-            this.CSS.buttonActive,
-            !button.classList.contains(this.CSS.buttonActive)
-        );
+        if (button) {
+            button.classList.toggle(
+                this.CSS.buttonActive,
+                !button.classList.contains(this.CSS.buttonActive)
+            );
+        }
 
         this.onChange(tuneName);
+        return true;
     }
 }

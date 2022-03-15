@@ -7,6 +7,11 @@ export const updatePageAction: EventActionCallable<UpdatePageRevisionActionArgsT
     _,
     args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
     const actions = [
         new SaveRevisionActionEvent({
             debounce: args.debounce,

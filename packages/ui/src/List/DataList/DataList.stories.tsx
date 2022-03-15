@@ -36,10 +36,10 @@ story.add(
             title: text("Title", "A list of all users", "Basic"),
             multiActions: boolean("Multi actions", false, "Basic"),
 
-            setNextPage: cursor => {
+            setNextPage: (cursor: string) => {
                 console.log(`Implement setNextPage method (selected ${cursor}).`);
             },
-            setPreviousPage: cursor => {
+            setPreviousPage: (cursor: string) => {
                 console.log(`Implement setPreviousPage method (selected ${cursor}).`);
             },
             perPageOptions: array(
@@ -48,10 +48,10 @@ story.add(
                 ",",
                 "Basic"
             ) as unknown as number[],
-            setPerPage: perPage => {
+            setPerPage: (perPage: string) => {
                 console.log(`Implement setPerPage method (selected ${perPage}).`);
             },
-            setSorters: sorter => {
+            setSorters: (sorter: any) => {
                 console.log(`Implement setSorters method (selected ${JSON.stringify(sorter)}).`);
             }
         };
@@ -132,7 +132,7 @@ story.add(
                             // @ts-ignore
                             sorters={sortersProp.list}
                         >
-                            {({ data }) => (
+                            {({ data }: { data: any[] }) => (
                                 <List>
                                     {data.map(item => (
                                         <ListItem key={item.id}>

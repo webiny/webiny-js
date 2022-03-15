@@ -2,17 +2,33 @@ import { useCallback, useReducer } from "react";
 import Auth from "@aws-amplify/auth";
 import { useAuthenticator } from "./useAuthenticator";
 
+interface SetPasswordParams {
+    username: string;
+}
+
+interface RequestCodeParams {
+    username: string;
+}
 export interface ForgotPassword {
     shouldRender: boolean;
-    requestCode(params: { username: string }): Promise<void>;
-    setPassword(params: { username: string }): Promise<void>;
-    codeSent: boolean;
-    error: Error;
+    requestCode(params: RequestCodeParams): Promise<void>;
+    setPassword(params: SetPasswordParams): Promise<void>;
+    codeSent: boolean | null;
+    error: string | null;
     loading: boolean;
 }
 
+interface State {
+    codeSent: boolean | null;
+    error: string | null;
+    loading: boolean;
+}
+interface Reducer {
+    (prev: State, next: Partial<State>): State;
+}
+
 export function useForgotPassword(): ForgotPassword {
-    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
+    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         codeSent: null,
         error: null,
         loading: false
@@ -20,7 +36,7 @@ export function useForgotPassword(): ForgotPassword {
 
     const { authState, changeState } = useAuthenticator();
 
-    const requestCode = useCallback(async data => {
+    const requestCode = useCallback(async (data: RequestCodeParams) => {
         setState({ loading: true });
         const { username } = data;
         try {
@@ -40,9 +56,12 @@ export function useForgotPassword(): ForgotPassword {
     }, []);
 
     const setPassword = useCallback(
-        async ({ username }) => {
-            setState({ codeSent: null, error: null });
-            changeState("setNewPassword", username);
+        async ({ username }: SetPasswordParams) => {
+            setState({
+                codeSent: null,
+                error: null
+            });
+            changeState("setNewPassword", { username });
         },
         [changeState]
     );

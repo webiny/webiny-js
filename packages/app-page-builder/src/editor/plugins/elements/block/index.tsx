@@ -13,7 +13,7 @@ import {
     PbEditorPageElementPlugin,
     PbEditorElement,
     PbEditorElementPluginArgs
-} from "../../../../types";
+} from "~/types";
 import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -42,7 +42,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         settings:
             typeof args.settings === "function" ? args.settings(elementSettings) : elementSettings,
         create(options = {}) {
-            const defaultValue = {
+            const defaultValue: Partial<PbEditorElement> = {
                 type: this.elementType,
                 elements: [],
                 data: {
@@ -91,7 +91,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
             return <Block {...props} />;
         },
         // This callback is executed when another element is dropped on the drop zones with type "block"
-        onReceived({ source, target, position = null, state, meta }) {
+        onReceived({ source, target, position, state, meta }) {
             const element = createDroppedElement(source as any, target);
 
             const block = addElementToParent(element, target, position);
@@ -121,7 +121,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
             result.actions.push(
                 new CreateElementActionEvent({
                     element,
-                    source: source as any
+                    source: source as PbEditorElement
                 })
             );
             return result;

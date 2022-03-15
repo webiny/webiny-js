@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import dot from "dot-prop-immutable";
 import shortid from "shortid";
-import cloneDeep from "lodash/cloneDeep";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import {
     CmsEditorField,
@@ -18,7 +17,7 @@ import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
 
 interface DropTarget {
     row: number;
-    index: number;
+    index: number | null;
 }
 
 interface Position {
@@ -28,51 +27,112 @@ interface Position {
 
 export interface DragSource extends DragObjectWithType {
     parent?: string;
-    pos: Partial<Position>;
+    pos?: Partial<Position>;
     type: "row" | "field" | "newField";
     fieldType?: string;
-    field?: CmsEditorField;
+    field?: CmsEditorField | null;
     fields?: CmsEditorField[];
 }
 
+/**
+ * Property in GetFieldParams can be any key from CmsEditorField, but TS does not allow union types
+ */
+interface GetFieldParams {
+    id?: string;
+    fieldId?: string;
+}
+interface InsertFieldParams {
+    field: CmsEditorField;
+    position: FieldLayoutPosition;
+}
+interface MoveFieldParams {
+    field: CmsEditorFieldId | CmsEditorField;
+    position: FieldLayoutPosition;
+}
+interface GetFieldsInLayoutCallable {
+    (): CmsEditorField[][];
+}
+interface GetFieldPluginCallable {
+    (type: string): CmsEditorFieldTypePlugin | undefined;
+}
+interface GetFieldCallable {
+    (query: GetFieldParams): CmsEditorField | undefined;
+}
+interface OnFieldDropCallable {
+    (source: Partial<DragSource>, target: DropTarget): void;
+}
+interface InsertFieldCallable {
+    (params: InsertFieldParams): void;
+}
+interface MoveFieldCallable {
+    (params: MoveFieldParams): void;
+}
+interface OnEndDragCallable {
+    (item: DragSource, monitor: DragSourceMonitor): void;
+}
+interface MoveRowCallable {
+    (source: number, destination: number): void;
+}
+interface UpdateFieldCallable {
+    (field: Pick<CmsEditorField, "id">): void;
+}
+interface DeleteFieldCallable {
+    (field: Pick<CmsEditorField, "id">): void;
+}
+interface IsVisibleCallable {
+    (item: DragSource): boolean;
+}
+interface NoConflictCallable {
+    (cb?: IsVisibleCallable): (item: DragSource) => boolean;
+}
 export interface FieldEditorContextValue {
     fields: CmsEditorField[][];
-    noConflict: Function;
+    noConflict: NoConflictCallable;
     layout: CmsEditorFieldsLayout;
     onChange?: (data: any) => void;
-    getFieldsInLayout: () => CmsEditorField[][];
-    getFieldPlugin: (type: string) => CmsEditorFieldTypePlugin;
-    getField: (query: Record<string, string>) => CmsEditorField;
-    editField: (field: CmsEditorField) => void;
-    field: CmsEditorField;
-    parent: CmsEditorField;
+    getFieldsInLayout: GetFieldsInLayoutCallable;
+    getFieldPlugin: GetFieldPluginCallable;
+    getField: GetFieldCallable;
+    editField: (field: CmsEditorField | null) => void;
+    field: CmsEditorField | null;
+    parent?: CmsEditorField;
     depth: number;
-    dropTarget?: DropTarget;
-    onFieldDrop: (source: Partial<DragSource>, target: DropTarget) => void;
-    onEndDrag: (item: DragSource, monitor: DragSourceMonitor) => void;
-    insertField: (params: { field: CmsEditorField; position: FieldLayoutPosition }) => void;
-    moveField: (params: {
-        field: CmsEditorFieldId | CmsEditorField;
-        position: FieldLayoutPosition;
-    }) => void;
-    moveRow: (source: number, destination: number) => void;
-    updateField: (field: CmsEditorField) => void;
-    deleteField: (field: CmsEditorField) => void;
+    dropTarget: DropTarget;
+    onFieldDrop: OnFieldDropCallable;
+    onEndDrag: OnEndDragCallable;
+    insertField: InsertFieldCallable;
+    moveField: MoveFieldCallable;
+    moveRow: MoveRowCallable;
+    updateField: UpdateFieldCallable;
+    deleteField: DeleteFieldCallable;
 }
 
 interface FieldEditorProviderProps extends FieldEditorProps {
     children: React.ReactElement;
 }
 
-export const FieldEditorContext = React.createContext<FieldEditorContextValue>(null);
+export const FieldEditorContext = React.createContext<FieldEditorContextValue>(
+    /**
+     * Safe to cast.
+     */
+    {
+        field: null
+    } as unknown as FieldEditorContextValue
+);
 
-export const FieldEditorProvider = ({
+interface State {
+    layout: CmsEditorFieldsLayout;
+    fields: CmsEditorField[];
+    field: CmsEditorField | null;
+    dropTarget: DropTarget;
+}
+export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
     parent,
     fields,
     layout,
     onChange,
     children
-}: FieldEditorProviderProps) => {
+}) => {
     // We need to determine depth of this provider so we can render drop zones with correct z-indexes.
     let depth = 0;
     try {
@@ -82,69 +142,87 @@ export const FieldEditorProvider = ({
         // There's no parent provider, so this is the top-level one.
     }
 
-    const [state, setState] = useState({
+    const [state, setState] = useState<State>({
         layout,
         fields,
         field: null,
-        dropTarget: null
+        dropTarget: {
+            row: -1,
+            index: null
+        }
     });
 
     useDeepCompareEffect(() => {
         onChange({ fields: state.fields, layout: state.layout });
     }, [state.fields, state.layout]);
 
-    const editField = useCallback(field => {
+    const editField = useCallback((field: CmsEditorField | null) => {
         setState(state => ({ ...state, field }));
     }, []);
 
-    const onDropTarget = { dropTarget: parent ? parent.fieldId : null };
+    const onDropTarget = {
+        dropTarget: parent ? parent.fieldId : null
+    };
 
-    const onFieldDrop = useCallback<FieldEditorContextValue["onFieldDrop"]>(
-        (source, dropTarget) => {
-            const { pos, type, fieldType, field, fields } = source;
+    const onFieldDrop = useCallback<OnFieldDropCallable>((source, dropTarget) => {
+        const { pos, type, fieldType, field, fields = [] } = source;
 
-            const parentId = parent ? parent.fieldId : null;
+        const parentId = parent ? parent.fieldId : null;
 
-            if (type === "row") {
-                if (parentId !== source.parent) {
-                    // We're dragging an existing row from another fieldset
-                    fields.forEach((field, index) => {
-                        insertField({
-                            field,
-                            position: {
-                                row: dropTarget.row,
-                                index: index === 0 ? null : index
-                            }
-                        });
+        if (type === "row") {
+            if (parentId !== source.parent) {
+                // We're dragging an existing row from another fieldset
+                fields.forEach((field, index) => {
+                    insertField({
+                        field,
+                        position: {
+                            row: dropTarget.row,
+                            index: index === 0 ? null : index
+                        }
                     });
-                } else {
-                    // We're dragging a row within the same fieldset
-                    moveRow(pos.row, dropTarget.row);
-                }
-
-                return onDropTarget;
+                });
+            } else if (pos && pos.row !== undefined) {
+                // We're dragging a row within the same fieldset
+                moveRow(pos.row, dropTarget.row);
             }
 
-            // If source pos is set, we are moving an existing field.
-            if (pos) {
-                if (parentId !== source.parent) {
-                    // We're dragging an existing field from another fieldset
-                    insertField({ field, position: dropTarget });
-                } else {
-                    // We're dragging a field within the same fieldset
-                    moveField({ field, position: dropTarget });
-                }
+            return onDropTarget;
+        }
+
+        // If source pos is set, we are moving an existing field.
+        if (pos) {
+            if (!field) {
                 return onDropTarget;
             }
+            if (parentId !== source.parent) {
+                // We're dragging an existing field from another fieldset
+                insertField({ field, position: dropTarget });
+            } else {
+                // We're dragging a field within the same fieldset
+                moveField({ field, position: dropTarget });
+            }
+            return onDropTarget;
+        }
 
-            const plugin = getFieldPlugin(fieldType);
-            editField(plugin.field.createField());
-            setState(state => ({ ...state, dropTarget }));
-        },
-        []
-    );
+        if (!fieldType) {
+            return null;
+        }
+        const plugin = getFieldPlugin(fieldType);
+        if (!plugin) {
+            return null;
+        }
+        /**
+         * TODO @ts-refactor figure out better type for this.
+         */
+        editField(plugin.field.createField() as CmsEditorField);
+        setState(state => ({
+            ...state,
+            dropTarget
+        }));
+        return null;
+    }, []);
 
-    const onEndDrag: FieldEditorContextValue["onEndDrag"] = ({ type, field, fields }, monitor) => {
+    const onEndDrag: OnEndDragCallable = ({ type, field, fields }, monitor) => {
         if (!monitor.didDrop()) {
             return;
         }
@@ -156,42 +234,48 @@ export const FieldEditorProvider = ({
             return;
         }
 
-        const removeFields = type === "row" ? fields : [field];
+        const removeFields = type === "row" ? fields || [] : field ? [field] : [];
         removeFields.forEach(field => deleteField(field));
     };
 
-    const getFieldsInLayout: FieldEditorContextValue["getFieldsInLayout"] = () => {
+    const getFieldsInLayout: GetFieldsInLayoutCallable = () => {
         // Replace every field ID with actual field object.
-        const fields = cloneDeep(state.layout.filter(arr => arr.length));
-        fields.forEach((row, rowIndex) => {
-            row.forEach((fieldId, fieldIndex) => {
-                fields[rowIndex][fieldIndex] = getField({ id: fieldId });
-            });
-        });
-        return fields;
+        return state.layout
+            .filter(arr => arr.length)
+            .map(row => {
+                return row
+                    .map(id => {
+                        return getField({ id });
+                    })
+                    .filter(Boolean);
+            })
+            .filter(row => {
+                return row.length > 0;
+            }) as CmsEditorField[][];
     };
 
     /**
      * Return field plugin.
      */
-    const getFieldPlugin: FieldEditorContextValue["getFieldPlugin"] = type => {
+    const getFieldPlugin: GetFieldPluginCallable = type => {
         return plugins
             .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
-            .find(({ field }) => field.type === type);
+            .find(plugin => plugin.field.type === type);
     };
 
     /**
      * Checks if field of given type already exists in the list of fields.
      */
-    const getField: FieldEditorContextValue["getField"] = query => {
+    const getField: GetFieldCallable = query => {
         return state.fields.find(field => {
             for (const key in query) {
                 if (!(key in field)) {
-                    return null;
+                    return false;
                 }
-
+                // TODO @ts-refactor figure if there is a way to fix this.
+                // @ts-ignore
                 if (field[key] !== query[key]) {
-                    return null;
+                    return false;
                 }
             }
 
@@ -202,7 +286,7 @@ export const FieldEditorProvider = ({
     /**
      * Inserts a new field into the target position.
      */
-    const insertField: FieldEditorContextValue["insertField"] = ({ field, position }) => {
+    const insertField: InsertFieldCallable = ({ field, position }) => {
         if (!field.id) {
             field.id = shortid.generate();
         }
@@ -216,32 +300,30 @@ export const FieldEditorProvider = ({
             throw new Error(`Invalid field "type".`);
         }
 
-        setState(data => {
-            data = dot.set(data, "fields", fields => {
-                if (Array.isArray(fields)) {
-                    return fields.concat(field);
-                }
-                return [field];
-            });
+        setState(prev => {
+            const next: State = {
+                ...prev,
+                fields: (prev.fields || []).concat(field)
+            };
 
             // Move field to position where it was dropped.
-            return utils.moveField({ field, position, data });
+            return utils.moveField({ field, position, data: next });
         });
     };
 
     /**
      * Moves field to the given target position.
      */
-    const moveField: FieldEditorContextValue["moveField"] = ({ field, position }) => {
+    const moveField: MoveFieldCallable = ({ field, position }) => {
         setState(data => {
-            return utils.moveField({ field, position, data });
+            return utils.moveField<State>({ field, position, data });
         });
     };
 
     /**
      * Moves row to a destination row.
      */
-    const moveRow: FieldEditorContextValue["moveRow"] = (source, destination) => {
+    const moveRow: MoveRowCallable = (source, destination) => {
         setState(data => {
             return utils.moveRow({ data, source, destination });
         });
@@ -250,34 +332,38 @@ export const FieldEditorProvider = ({
     /**
      * Updates field.
      */
-    const updateField: FieldEditorContextValue["updateField"] = field => {
+    const updateField: UpdateFieldCallable = field => {
         setState(data => {
             for (let i = 0; i < data.fields.length; i++) {
                 if (data.fields[i].id === field.id) {
                     return dot.set(data, `fields.${i}`, field);
                 }
             }
+            return data;
         });
     };
 
     /**
      * Deletes a field (both from the list of field and the layout).
      */
-    const deleteField: FieldEditorContextValue["deleteField"] = field => {
+    const deleteField: DeleteFieldCallable = field => {
         setState(data => {
             return utils.deleteField({ field, data });
         });
     };
 
-    const noConflict = useCallback(
-        isVisible => item => {
+    const noConflict: NoConflictCallable = useCallback(
+        (isVisible?: IsVisibleCallable) => item => {
             const sameParent = item.parent === onDropTarget.dropTarget;
-            const draggedFields = [];
+            const draggedFields: string[] = [];
             switch (item.type) {
                 case "row":
-                    item.fields.forEach(field => draggedFields.push(field.fieldId));
+                    (item.fields || []).forEach(field => draggedFields.push(field.fieldId));
                     break;
                 case "field":
+                    if (!item.field) {
+                        break;
+                    }
                     draggedFields.push(item.field.fieldId);
                     break;
                 default:

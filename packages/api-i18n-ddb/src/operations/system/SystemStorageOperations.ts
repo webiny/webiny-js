@@ -1,4 +1,10 @@
-import { I18NContext, I18NSystem, I18NSystemStorageOperations } from "@webiny/api-i18n/types";
+import {
+    I18NContext,
+    I18NSystem,
+    I18NSystemStorageOperations,
+    I18NSystemStorageOperationsCreate,
+    I18NSystemStorageOperationsUpdate
+} from "@webiny/api-i18n/types";
 import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineSystemEntity from "~/definitions/systemEntity";
@@ -54,7 +60,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
         }
     }
 
-    public async create({ system }): Promise<I18NSystem> {
+    public async create({ system }: I18NSystemStorageOperationsCreate): Promise<I18NSystem> {
         const keys = {
             PK: this.partitionKey,
             SK: SORT_KEY
@@ -74,7 +80,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
         }
     }
 
-    public async update({ system }): Promise<I18NSystem> {
+    public async update({ system }: I18NSystemStorageOperationsUpdate): Promise<I18NSystem> {
         const keys = {
             PK: this.partitionKey,
             SK: SORT_KEY

@@ -1,13 +1,21 @@
 import React, { useRef, useCallback, useMemo } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import Files from "react-butterfiles";
+import Files, { FilesRenderChildren } from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import File from "./File";
+import File, { FileProps } from "./File";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { FilesRules } from "react-butterfiles";
-import { LIST_FILES, CREATE_FILE, GET_FILE_SETTINGS } from "./graphql";
+import {
+    LIST_FILES,
+    CREATE_FILE,
+    GET_FILE_SETTINGS,
+    CreateFileMutationVariables,
+    CreateFileMutationResponse,
+    ListFilesQueryResponse,
+    ListFilesQueryVariables
+} from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
@@ -24,11 +32,19 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
+/**
+ * Package react-hotkeyz is missing types.
+ */
+// @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import { useFileManager } from "./FileManagerContext";
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
 import NoPermissionView from "./NoPermissionView";
+import { FileItem, FileManagerSecurityPermission } from "~/components/FileManager/types";
+import { MutationUpdaterFn } from "apollo-client/core/watchQueryOptions";
+import { SecurityPermission } from "@webiny/app-security/types";
+import { ObservableQueryFields } from "@apollo/react-common/lib/types/types";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -99,7 +115,7 @@ const FileList = styled("div")({
     marginBottom: 95
 });
 
-type FileManagerViewProps = {
+export interface FileManagerViewProps {
     onChange: Function;
     onClose: Function;
     files?: FilesRules;
@@ -109,29 +125,67 @@ type FileManagerViewProps = {
     multipleMaxCount: number;
     multipleMaxSize: number | string;
     onUploadCompletion?: Function;
-};
-
-function renderFile(props) {
-    const { file } = props;
-    const plugin = getFileTypePlugin(file);
-    return (
-        <File {...props} key={file.id}>
-            {plugin.render({ file })}
-        </File>
-    );
 }
 
-const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles, fmFilePermission }) => {
+interface RenderFileProps extends Omit<FileProps, "children"> {
+    file: FileItem;
+    children?: React.ReactNode;
+}
+const renderFile: React.FC<RenderFileProps> = props => {
+    const { file } = props;
+    const plugin = getFileTypePlugin(file);
+    if (!plugin) {
+        return null;
+    }
+    return (
+        <File {...props} key={file.id}>
+            {plugin.render({
+                /**
+                 * TODO @ts-refactor
+                 */
+                // @ts-ignore
+                file
+            })}
+        </File>
+    );
+};
+interface RenderEmptyProps {
+    hasPreviouslyUploadedFiles: boolean;
+    browseFiles: FilesRenderChildren["browseFiles"];
+    fmFilePermission: SecurityPermission | null;
+}
+const renderEmpty: React.FC<RenderEmptyProps> = ({
+    hasPreviouslyUploadedFiles,
+    browseFiles,
+    fmFilePermission
+}) => {
     if (!fmFilePermission) {
         return <NoPermissionView />;
     }
     if (hasPreviouslyUploadedFiles) {
         return <NoResults />;
     }
-    return <DropFilesHere empty onClick={browseFiles} />;
+    return <DropFilesHere empty onClick={() => browseFiles()} />;
 };
 
-function FileManagerView(props: FileManagerViewProps) {
+interface RefreshOnScrollParams {
+    fetchMore: ObservableQueryFields<ListFilesQueryResponse, ListFilesQueryVariables>["fetchMore"];
+    scrollFrame: {
+        top: number;
+    };
+}
+
+interface FileError {
+    file: FileItem;
+    e: Error;
+}
+
+interface GetFileDetailsFileParams {
+    src: string;
+    list: FileItem[];
+}
+
+const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const {
         onClose,
         onChange,
@@ -159,8 +213,10 @@ function FileManagerView(props: FileManagerViewProps) {
     } = useFileManager();
     const { showSnackbar } = useSnackbar();
 
-    const { identity } = useSecurity();
-    const fmFilePermission = useMemo(() => identity.getPermission("fm.file"), []);
+    const { identity, getPermission } = useSecurity();
+    const fmFilePermission = useMemo((): FileManagerSecurityPermission | null => {
+        return getPermission<FileManagerSecurityPermission>("fm.file");
+    }, [identity]);
     const canCreate = useMemo(() => {
         // Bail out early if no access
         if (!fmFilePermission) {
@@ -186,7 +242,7 @@ function FileManagerView(props: FileManagerViewProps) {
             const creatorId = get(item, "createdBy.id");
 
             if (fmFilePermission.own && creatorId) {
-                const identityId = identity.id || identity.login;
+                const identityId = identity ? identity.id || identity.login : null;
                 return creatorId === identityId;
             }
 
@@ -230,28 +286,34 @@ function FileManagerView(props: FileManagerViewProps) {
         return e.message;
     }, []);
 
-    const updateCacheAfterCreateFile = (cache, newFile) => {
+    const updateCacheAfterCreateFile: MutationUpdaterFn<CreateFileMutationResponse> = (
+        cache,
+        newFile
+    ) => {
         const newFileData = get(newFile, "data.fileManager.createFile.data");
 
-        const data = cache.readQuery({ query: LIST_FILES, variables: queryParams });
+        const data = cache.readQuery<ListFilesQueryResponse>({
+            query: LIST_FILES,
+            variables: queryParams
+        });
 
         cache.writeQuery({
             query: LIST_FILES,
             variables: queryParams,
             data: {
                 fileManager: {
-                    ...data.fileManager,
+                    ...(data?.fileManager || {}),
                     listFiles: {
-                        ...data.fileManager.listFiles,
-                        data: [newFileData, ...(data.fileManager.listFiles.data || [])]
+                        ...(data?.fileManager || {}).listFiles,
+                        data: [newFileData, ...((data?.fileManager?.listFiles || {}).data || [])]
                     }
                 }
             }
         });
     };
 
-    const getFileDetailsFile = useCallback(function getFileDetailsFile({ src, list }) {
-        return list.find(item => item.src === src);
+    const getFileDetailsFile = useCallback(({ src, list }: GetFileDetailsFileParams): FileItem => {
+        return list.find(item => item.src === src) as FileItem;
     }, []);
 
     useHotkeys({
@@ -261,11 +323,11 @@ function FileManagerView(props: FileManagerViewProps) {
         }
     });
 
-    const searchInput = useRef();
+    const searchInput = useRef<HTMLInputElement>(null);
 
     const apolloClient = useApolloClient();
 
-    const gqlQuery = useQuery(LIST_FILES, {
+    const gqlQuery = useQuery<ListFilesQueryResponse, ListFilesQueryVariables>(LIST_FILES, {
         variables: queryParams,
         onCompleted: response => {
             const list = get(response, "fileManager.listFiles.data") || [];
@@ -276,13 +338,17 @@ function FileManagerView(props: FileManagerViewProps) {
     });
 
     const refreshOnScroll = useCallback(
-        debounce(({ scrollFrame, fetchMore }) => {
+        debounce(({ scrollFrame, fetchMore }: RefreshOnScrollParams) => {
             if (scrollFrame.top > 0.9) {
                 const cursor = get(gqlQuery.data, "fileManager.listFiles.meta.cursor");
                 if (cursor) {
                     fetchMore({
                         variables: { after: cursor },
-                        updateQuery: (prev, { fetchMoreResult }) => {
+                        updateQuery: (
+                            prev: ListFilesQueryResponse,
+                            result: { fetchMoreResult?: ListFilesQueryResponse }
+                        ) => {
+                            const { fetchMoreResult } = result;
                             if (!fetchMoreResult) {
                                 return prev;
                             }
@@ -305,14 +371,19 @@ function FileManagerView(props: FileManagerViewProps) {
 
     const { data, fetchMore, loading } = gqlQuery;
 
-    const list = get(data, "fileManager.listFiles.data") || [];
-    const [createFile] = useMutation(CREATE_FILE, { update: updateCacheAfterCreateFile });
-    const uploadFile = async files => {
+    const list: FileItem[] = get(data, "fileManager.listFiles.data") || [];
+    const [createFile] = useMutation<CreateFileMutationResponse, CreateFileMutationVariables>(
+        CREATE_FILE,
+        {
+            update: updateCacheAfterCreateFile
+        }
+    );
+    const uploadFile = async (files: FileItem[] | FileItem): Promise<number | null> => {
         setUploading(true);
-        const list = Array.isArray(files) ? files : [files];
+        const list: FileItem[] = Array.isArray(files) ? files : [files];
 
-        const errors = [];
-        const uploadedFiles = [];
+        const errors: FileError[] = [];
+        const uploadedFiles: FileItem[] = [];
         await Promise.all(
             list.map(async file => {
                 try {
@@ -357,18 +428,21 @@ function FileManagerView(props: FileManagerViewProps) {
                         </ol>
                     </>
                 );
-            }, 750);
+                // TODO @ts-refactor
+            }, 750) as unknown as number;
         }
 
         // We wait 750ms, just for everything to settle down a bit.
         setTimeout(() => showSnackbar(t`File upload complete.`), 750);
         if (typeof onUploadCompletion === "function") {
             // We wait 750ms, just for everything to settle down a bit.
-            setTimeout(() => {
+            return setTimeout(() => {
                 onUploadCompletion(uploadedFiles);
                 onClose();
-            }, 750);
+                // TODO @ts-refactor
+            }, 750) as unknown as number;
         }
+        return null;
     };
 
     const renderUploadFileAction = useCallback(
@@ -395,8 +469,15 @@ function FileManagerView(props: FileManagerViewProps) {
             multipleMaxSize={multipleMaxSize}
             multipleMaxCount={multipleMaxCount}
             accept={accept}
-            onSuccess={files => uploadFile(files.map(file => file.src.file))}
+            onSuccess={files => {
+                uploadFile(files.map(file => file.src.file as FileItem).filter(Boolean));
+            }}
             onError={errors => {
+                /**
+                 * TODO @ts-refactor
+                 * Figure out if incoming errors var is wrong or the one in the outputFileSelectionError
+                 */
+                // @ts-ignore
                 const message = outputFileSelectionError(errors);
                 showSnackbar(message);
             }}
@@ -423,10 +504,12 @@ function FileManagerView(props: FileManagerViewProps) {
                         selected.length > 0 ? (
                             <ButtonPrimary
                                 disabled={uploading}
-                                onClick={async () => {
-                                    await onChange(multiple ? selected : selected[0]);
+                                onClick={() => {
+                                    (async () => {
+                                        await onChange(multiple ? selected : selected[0]);
 
-                                    onClose();
+                                        onClose();
+                                    })();
                                 }}
                             >
                                 {t`Select`} {multiple && `(${selected.length})`}
@@ -484,11 +567,14 @@ function FileManagerView(props: FileManagerViewProps) {
                                                   file,
                                                   showFileDetails: () => showFileDetails(file.src),
                                                   selected: selected.find(
-                                                      current => current.src === file.src
+                                                      (current: FileItem) =>
+                                                          current.src === file.src
                                                   ),
                                                   onSelect:
                                                       typeof onChange === "undefined"
-                                                          ? undefined
+                                                          ? () => {
+                                                                return void 0;
+                                                            }
                                                           : async () => {
                                                                 if (multiple) {
                                                                     toggleSelected(file);
@@ -514,7 +600,7 @@ function FileManagerView(props: FileManagerViewProps) {
             )}
         </Files>
     );
-}
+};
 
 FileManagerView.defaultProps = {
     multiple: false,

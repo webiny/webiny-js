@@ -7,6 +7,7 @@ import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "./debugPlugins";
 import processRequestBody from "./processRequestBody";
 import { getWebinyVersionHeaders } from "@webiny/utils";
+import { GraphQLSchema } from "graphql";
 
 const DEFAULT_HEADERS = {
     "Content-Type": "application/json",
@@ -19,7 +20,7 @@ const DEFAULT_HEADERS = {
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
 export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
-    let schema;
+    let schema: GraphQLSchema | undefined = undefined;
 
     const debug = boolean(options.debug);
 

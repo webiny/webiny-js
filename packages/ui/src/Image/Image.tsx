@@ -1,13 +1,17 @@
-import * as React from "react";
+import React from "react";
 
 // Accepts all props that a normal <img> element would accept.
-type Props = { [key: string]: any };
+interface Props
+    extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> {
+    [key: string]: any;
+}
 
-const Image = ({ ...rest }: Props) => {
+const Image: React.FC<Props> = ({ ...rest }) => {
     const finalProps = { ...rest };
-    if (finalProps.srcSet && typeof finalProps.srcSet === "object") {
-        finalProps.srcSet = Object.keys(finalProps.srcSet)
-            .map(key => `${finalProps.srcSet[key]} ${key}`)
+    const srcSet = finalProps.srcSet;
+    if (srcSet && typeof srcSet === "object") {
+        finalProps.srcSet = Object.keys(srcSet)
+            .map(key => `${srcSet[key]} ${key}`)
             .join(", ");
     }
 

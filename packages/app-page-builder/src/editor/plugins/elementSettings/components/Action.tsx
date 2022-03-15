@@ -16,7 +16,7 @@ const activeStyle = css({
     }
 });
 
-type ActionProps = {
+interface ActionProps {
     plugin?: string;
     icon?: ReactElement;
     tooltip?: string;
@@ -24,9 +24,9 @@ type ActionProps = {
     shortcut?: string[];
     // For testing purposes.
     "data-testid"?: string;
-};
+}
 
-const Action: React.FunctionComponent<ActionProps> = ({
+const Action: React.FC<ActionProps> = ({
     plugin,
     icon,
     tooltip,
@@ -35,25 +35,25 @@ const Action: React.FunctionComponent<ActionProps> = ({
     ...props
 }) => {
     const eventActionHandler = useEventActionHandler();
-    const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin));
+    const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin as string));
     const settingsActive =
         useRecoilValue(activePluginsByTypeTotalSelector(editorPageElementSettingsPluginType)) > 0;
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
-    const clickHandler = useCallback(() => {
+    const clickHandler = useCallback((): void => {
         if (typeof onClick === "function") {
             return onClick();
         }
         eventActionHandler.trigger(
             new TogglePluginActionEvent({
-                name: plugin,
+                name: plugin || "unknown",
                 closeOtherInGroup: true
             })
         );
     }, [plugin, onClick]);
 
-    useEffect(() => {
+    useEffect((): (() => void) => {
         shortcut.map(short => {
             addKeyHandler(short, e => {
                 if (settingsActive) {
@@ -61,6 +61,9 @@ const Action: React.FunctionComponent<ActionProps> = ({
                 }
 
                 e.preventDefault();
+                if (!onClick) {
+                    return;
+                }
                 onClick();
             });
         });
@@ -81,7 +84,7 @@ const Action: React.FunctionComponent<ActionProps> = ({
             <IconButton
                 icon={icon}
                 onClick={clickHandler}
-                className={isPluginActive && activeStyle}
+                className={isPluginActive ? activeStyle : ""}
                 data-testid={props["data-testid"]}
             />
         </Tooltip>

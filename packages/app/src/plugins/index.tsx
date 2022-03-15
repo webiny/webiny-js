@@ -1,4 +1,4 @@
-import React, { ReactNode, FunctionComponentElement } from "react";
+import React, { ReactNode } from "react";
 import warning from "warning";
 import { plugins } from "@webiny/plugins";
 import { Plugin } from "@webiny/plugins/types";
@@ -25,10 +25,22 @@ interface RenderPlugins {
         | ReactNode[];
 }
 
-const PluginComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> =>
-    props.children;
-const PluginsComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> =>
-    props.children;
+interface PluginComponentProps {
+    name: string;
+    params: Record<string, any>;
+    fn: string;
+}
+const PluginComponent: React.FC<PluginComponentProps> = props => {
+    return props.children as React.ReactElement;
+};
+interface PluginsComponentProps {
+    type: string;
+    params: Record<string, any>;
+    fn: string;
+}
+const PluginsComponent: React.FC<PluginsComponentProps> = props => {
+    return props.children as React.ReactElement;
+};
 
 export const renderPlugin: RenderPlugin = (name, params = {}, options = {}) => {
     const { wrapper = true, fn = "render" } = options;
@@ -58,8 +70,17 @@ export const renderPlugins: RenderPlugins = (type, params = {}, options = {}) =>
 
     const content = plugins
         .byType(type)
-        .filter(filter)
-        .map(plugin => renderPlugin(plugin.name, params, { wrapper, fn }))
+        .filter(pl => {
+            /**
+             * TODO @ts-refactor Problem with possibility of a different subtype.
+             */
+            // @ts-ignore
+            return filter(pl);
+        })
+        /**
+         * We cast as string because renderPlugin checks for the plugin.name
+         */
+        .map(plugin => renderPlugin(plugin.name as string, params, { wrapper, fn }))
         .filter(Boolean);
 
     if (reverse) {

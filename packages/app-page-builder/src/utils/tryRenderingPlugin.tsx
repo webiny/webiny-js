@@ -1,6 +1,6 @@
 import React from "react";
 
-const tryRenderingPlugin = fn => {
+const tryRenderingPlugin = (fn: () => React.ReactNode): React.ReactNode => {
     try {
         return fn();
     } catch (err) {

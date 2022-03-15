@@ -1,6 +1,6 @@
-import _ from "lodash";
 import React from "react";
-import { Processor } from "@webiny/i18n/types";
+import lodashTrim from "lodash/trim";
+import { I18NDataValues, Modifier, Processor } from "@webiny/i18n/types";
 
 declare global {
     // eslint-disable-next-line
@@ -11,25 +11,29 @@ declare global {
             };
 
             "i18n-text-part": {
-                key?: any;
+                key?: string;
                 children?: React.ReactNode;
             };
         }
     }
 }
 
-const processTextPart = (part: string, values: any, modifiers): any => {
-    if (!_.startsWith(part, "{")) {
+const processTextPart = (
+    part: string,
+    values: I18NDataValues,
+    modifiers: Record<string, Modifier>
+): string => {
+    if (part.startsWith("{") === false) {
         return part;
     }
 
-    part = _.trim(part, "{}");
+    part = lodashTrim(part, "{}");
 
-    const parts = part.split("|");
+    const parts: string[] = part.split("|");
 
     const [variable, modifier] = parts;
 
-    if (!_.has(values, variable)) {
+    if (!values[variable]) {
         return variable;
     }
 
@@ -37,6 +41,9 @@ const processTextPart = (part: string, values: any, modifiers): any => {
     if (modifier) {
         const parameters = modifier.split(":");
         const name = parameters.shift();
+        if (!name) {
+            return value;
+        }
         if (modifiers[name]) {
             const modifier = modifiers[name];
             value = modifier.execute(value, parameters);
@@ -46,7 +53,7 @@ const processTextPart = (part: string, values: any, modifiers): any => {
     return value;
 };
 
-export default {
+const processor: Processor = {
     name: "react",
     canExecute(data) {
         for (const key in data.values) {
@@ -60,15 +67,15 @@ export default {
     },
     execute(data) {
         const parts = data.translation.split(/({.*?})/);
-        // @ts-ignore
         return (
             <i18n-text>
                 {parts.map((part, index) => (
-                    <i18n-text-part key={index}>
+                    <i18n-text-part key={String(index)}>
                         {processTextPart(part, data.values, data.i18n.modifiers)}
                     </i18n-text-part>
                 ))}
             </i18n-text>
         );
     }
-} as Processor;
+};
+export default processor;

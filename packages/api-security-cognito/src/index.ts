@@ -21,11 +21,14 @@ export default (config: Config) => {
             const tokenObj = await cognitoAuthenticator(token);
 
             if (!tokenObj) {
-                return;
+                return null;
             }
 
             if (typeof config.getIdentity === "function") {
-                return config.getIdentity({ identityType: config.identityType, token: tokenObj });
+                return config.getIdentity({
+                    identityType: config.identityType,
+                    token: tokenObj
+                });
             }
 
             return {

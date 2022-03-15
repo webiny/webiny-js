@@ -24,16 +24,20 @@ const getAvailableTransformerPlugins = (): AvailableFieldTransformers => {
                 transformers[fieldType] = pl;
             }
             return transformers;
-        }, {});
+        }, {} as Record<string, CmsFieldValueTransformer>);
 };
 
+interface TransformerCallable {
+    (value: any): any;
+}
 const createTransformers = (fields: CmsEditorField[]): FieldTransformers => {
     const transformerPlugins = getAvailableTransformerPlugins();
-    const transformers = {};
+    const transformers: Record<string, TransformerCallable> = {};
     for (const field of fields) {
         if (!transformerPlugins[field.type]) {
             continue;
         }
+        // TODO @ts-refactor figure out if possible to put some type instead of any
         transformers[field.fieldId] = (value: any) => {
             return transformerPlugins[field.type].transform(value, field);
         };

@@ -1,24 +1,28 @@
-import { API } from "@editorjs/editorjs";
+import { API, HTMLPasteEvent } from "@editorjs/editorjs";
 import { ALIGNMENTS, ALIGNMENT_ICONS, TextAlign, Alignment } from "../utils";
 
-type Typography = {
+interface Typography {
     [key: string]: {
         label: string;
         component: string;
         className: string;
     };
-};
+}
 
-type HeaderData = {
+export interface HeaderData {
     text: string;
-    level: any;
-    textAlign: TextAlign;
-};
+    level: number;
+    textAlign?: TextAlign;
+    alignment?: Alignment;
+    className?: string;
+}
 
-type HeaderConfig = {
+interface HeaderConfig {
     levels: number[];
     typography: Typography;
-};
+    placeholder?: string;
+    defaultLevel?: number;
+}
 
 interface HeaderArgs {
     data: HeaderData;
@@ -28,15 +32,15 @@ interface HeaderArgs {
 }
 
 class Header {
-    api: API;
-    readOnly: boolean;
-    settingsButtons: any[];
-    _CSS: any;
-    _settings: any;
-    _data: any;
-    _element: any;
-    alignments: Alignment[];
-    typography: Typography;
+    private readonly api: API;
+    private readonly readOnly: boolean;
+    private readonly settingsButtons: any[];
+    private readonly _CSS: any;
+    private readonly _settings: HeaderConfig;
+    private _data: HeaderData;
+    private _element: any;
+    private readonly alignments: Alignment[];
+    private readonly typography: Typography;
     /**
      * Render plugin`s main Element and fill it with saved data
      *
@@ -108,18 +112,18 @@ class Header {
      * @returns {HeaderData}
      * @private
      */
-    normalizeData(data) {
-        const newData: any = {};
+    normalizeData(data: Partial<HeaderData>): HeaderData {
+        const newData: Partial<HeaderData> = {};
 
         if (typeof data !== "object") {
             data = {};
         }
 
         newData.text = data.text || "";
-        newData.level = parseInt(data.level) || this.defaultLevel.number;
+        newData.level = parseInt(data.level as unknown as string) || this.defaultLevel.number;
         newData.textAlign = data.textAlign || TextAlign.START;
 
-        return newData;
+        return newData as HeaderData;
     }
 
     /**
@@ -166,7 +170,7 @@ class Header {
             /**
              * Save level to its button
              */
-            selectTypeButton.dataset.level = level.number + "";
+            selectTypeButton.dataset["level"] = level.number + "";
 
             /**
              * Set up click handler
@@ -209,7 +213,7 @@ class Header {
             /**
              * Save alignment to its button
              */
-            selectTypeButton.dataset.textAlign = alignment.name;
+            selectTypeButton.dataset["textAlign"] = alignment.name;
 
             /**
              * Set up click handler
@@ -237,7 +241,7 @@ class Header {
      *
      * @param {number} level - level to set
      */
-    setLevel(level) {
+    setLevel(level: number): void {
         this.data = {
             level: level,
             text: this.data.text
@@ -259,7 +263,7 @@ class Header {
      *
      * @param {number} alignment - level to set
      */
-    setAlignment(alignment) {
+    setAlignment(alignment: Alignment) {
         this.data = {
             textAlign: alignment.name,
             text: this.data.text,
@@ -284,14 +288,12 @@ class Header {
      * @param {HeaderData} data - saved data to merger with current block
      * @public
      */
-    merge(data) {
-        const newData = {
+    merge(data: HeaderData): void {
+        this.data = {
             text: this.data.text + data.text,
             level: this.data.level,
             alignment: this.data.alignment
         };
-
-        this.data = newData;
     }
 
     /**
@@ -302,7 +304,7 @@ class Header {
      * @returns {boolean} false if saved data is not correct, otherwise true
      * @public
      */
-    validate(blockData) {
+    validate(blockData: HeaderData): boolean {
         return blockData.text.trim() !== "";
     }
 
@@ -313,7 +315,7 @@ class Header {
      * @returns {HeaderData} - saved data
      * @public
      */
-    save(toolsContent) {
+    save(toolsContent: HTMLHeadingElement): HeaderData {
         return {
             text: toolsContent.innerHTML,
             level: this.currentLevel.number,
@@ -328,7 +330,7 @@ class Header {
      * @param {string} className - heading element className
      * @returns {TextAlign} textAlign
      */
-    getTextAlign(className) {
+    getTextAlign(className: string): TextAlign {
         let textAlign = TextAlign.START;
         // Match className with alignment
         this.alignments.forEach(alignment => {
@@ -374,7 +376,7 @@ class Header {
      * @returns {HeaderData} Current data
      * @private
      */
-    get data() {
+    get data(): HeaderData {
         this._data.text = this._element.innerHTML;
         this._data.level = this.currentLevel.number;
         this._data.textAlign = this.currentAlignment.name;
@@ -390,7 +392,7 @@ class Header {
      * @param {HeaderData} data — data to set
      * @private
      */
-    set data(data) {
+    set data(data: HeaderData) {
         this._data = this.normalizeData(data);
 
         /**
@@ -483,7 +485,7 @@ class Header {
         /**
          * Add Placeholder
          */
-        tag.dataset.placeholder = this.api.i18n.t(this._settings.placeholder || "");
+        tag.dataset["placeholder"] = this.api.i18n.t(this._settings.placeholder || "");
 
         return tag;
     }
@@ -603,9 +605,9 @@ class Header {
     /**
      * Handle H1-H6 tags on paste to substitute it with header Tool
      *
-     * @param {PasteEvent} event - event with pasted content
+     * @param {HTMLPasteEvent} event - event with pasted content
      */
-    onPaste(event) {
+    onPaste(event: HTMLPasteEvent) {
         const content = event.detail.data;
 
         /**

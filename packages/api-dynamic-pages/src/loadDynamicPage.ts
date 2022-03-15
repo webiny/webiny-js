@@ -2,7 +2,13 @@ import { PbContext } from "@webiny/api-page-builder/types";
 import { loadDataSources } from "./loadDataSources";
 import { DynamicPage } from "~/types";
 
-export const loadDynamicPage = async (args, context: PbContext) => {
+interface Args {
+    path: string;
+}
+export const loadDynamicPage = async (
+    args: Args,
+    context: PbContext
+): Promise<DynamicPage | null> => {
     // Find all pages that have a pattern instead of an exact slug
     const [pages] = await context.pageBuilder.listPublishedPages<DynamicPage>({
         where: { dynamic: true },
@@ -27,7 +33,7 @@ export const loadDynamicPage = async (args, context: PbContext) => {
                 });
                 // Load data sources
                 const dataSources = await loadDataSources(
-                    fullPage.settings.dataSources,
+                    fullPage.settings.dataSources || [],
                     { path: match.groups },
                     context
                 );
@@ -39,6 +45,7 @@ export const loadDynamicPage = async (args, context: PbContext) => {
                 return fullPage;
             }
         }
+        return null;
     } catch (err) {
         console.log("Error loading dynamic page", err.message);
         throw err;

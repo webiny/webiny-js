@@ -2,17 +2,18 @@ import React from "react";
 import Cell from "./Cell";
 import DropZone from "../../../components/DropZone";
 import styled from "@emotion/styled";
-import { ElementRoot } from "../../../../render/components/ElementRoot";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
-import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
-import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil/actions";
-import { elementByIdSelector } from "../../../recoil/modules";
 import { IconButton } from "@webiny/ui/Button";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { elementByIdSelector } from "~/editor/recoil/modules";
+import { DropElementActionEvent, TogglePluginActionEvent } from "~/editor/recoil/actions";
+import { DragObjectWithTypeWithTarget } from "~/editor/components/Droppable";
+import { ElementRoot } from "~/render/components/ElementRoot";
+import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
+import { PbEditorElement } from "~/types";
 
-const CellContainerStyle = styled<"div", { active }>("div")(({ active }) => ({
+const CellContainerStyle = styled<"div", { active: boolean }>("div")(({ active }) => ({
     position: "relative",
     color: "#666",
     boxSizing: "border-box",
@@ -44,14 +45,14 @@ const addIcon = css({
     }
 });
 
-type CellPropsType = {
+interface CellPropsType {
     elementId: string;
     isActive: boolean;
-};
-const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId, isActive }) => {
+}
+const CellContainer: React.FC<CellPropsType> = ({ elementId, isActive }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
-    const { isHighlighted } = element;
+    const { isHighlighted } = element as PbEditorElement;
     // TODO remove when state is fully switched to use content instead of flat elements
     if (!element) {
         return null;

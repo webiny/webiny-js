@@ -1,7 +1,9 @@
 import { createModelField } from "./utils";
 import { stepTitleField, stepTypeField, stepIdField, stepReviewersField } from "./workflow.model";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
+import { WorkflowModelDefinition } from "~/types";
 
-const contentField = fields =>
+const contentField = (fields: CmsModelField[]) =>
     createModelField({
         label: "Content",
         parent: "contentReview",
@@ -88,7 +90,7 @@ const contentTypeField = () =>
         validation: [{ name: "required", message: "Value is required." }]
     });
 
-const contentSettingsField = fields =>
+const contentSettingsField = (fields: CmsModelField[]) =>
     createModelField({
         label: "Settings",
         parent: "contentReview Content",
@@ -104,7 +106,7 @@ const contentSettingsModelIdField = () =>
         type: "text"
     });
 
-const stepStatusField = () => ({
+const stepStatusField = (): CmsModelField => ({
     multipleValues: false,
     listValidation: [],
     renderer: {
@@ -179,7 +181,7 @@ const stepSignOffProvidedOn = () =>
         parent: "contentReview Step"
     });
 
-const stepSignOffProvidedBy = fields =>
+const stepSignOffProvidedBy = (fields: CmsModelField[]) =>
     createModelField({
         label: "Sign off provided By",
         type: "object",
@@ -202,7 +204,7 @@ const stepSignOffProvidedByDisplayName = () =>
         parent: "contentReview Step"
     });
 
-const stepsField = fields => ({
+const stepsField = (fields: CmsModelField[]): CmsModelField => ({
     id: "contentReview_steps",
     label: "Steps",
     type: "object",
@@ -220,7 +222,11 @@ const stepsField = fields => ({
     }
 });
 
-export const createContentReviewModelDefinition = ({ reviewerModelId }) => ({
+interface CreateContentReviewModelDefinitionParams {
+    reviewerModelId: string;
+}
+
+export const createContentReviewModelDefinition = ({ reviewerModelId }: CreateContentReviewModelDefinitionParams) => ({
     name: "APW - Content Review",
     modelId: "apwContentReviewModelDefinition",
     titleFieldId: "content",

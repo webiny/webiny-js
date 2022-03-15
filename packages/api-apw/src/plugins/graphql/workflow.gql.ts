@@ -158,12 +158,17 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             }
         },
         ApwQuery: {
-            getWorkflow: async (_, args, context) => {
+            getWorkflow: async (_, args: any, context) => {
                 return resolve(() => context.apw.workflow.get(args.id));
             },
-            listWorkflows: async (_, args: ListWorkflowsParams, context) => {
+            listWorkflows: async (_, args: any, context) => {
                 try {
-                    const [entries, meta] = await context.apw.workflow.list(args);
+                    /**
+                     * We know that args is ListWorkflowsParams.
+                     */
+                    const [entries, meta] = await context.apw.workflow.list(
+                        args as unknown as ListWorkflowsParams
+                    );
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -171,13 +176,13 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             }
         },
         ApwMutation: {
-            createWorkflow: async (_, args, context) => {
+            createWorkflow: async (_, args: any, context) => {
                 return resolve(() => context.apw.workflow.create(args.data));
             },
-            updateWorkflow: async (_, args, context) => {
+            updateWorkflow: async (_, args: any, context) => {
                 return resolve(() => context.apw.workflow.update(args.id, args.data));
             },
-            deleteWorkflow: async (_, args, context) => {
+            deleteWorkflow: async (_, args: any, context) => {
                 return resolve(() => context.apw.workflow.delete(args.id));
             }
         }

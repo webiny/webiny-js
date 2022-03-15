@@ -3,15 +3,19 @@ import classNames from "classnames";
 import { TabBar } from "@rmwc/tabs";
 import { Tab, TabProps } from "./Tab";
 
-export type TabsRenderProps = {
+export interface TabsRenderProps {
     switchTab(tabIndex: number): void;
-};
+}
 
-export type TabsProps = {
+export interface TabsPropsChildrenCallable {
+    (props: TabsRenderProps): ReactNode;
+}
+type TabsPropsChildren = TabsPropsChildrenCallable | ReactNode;
+export interface TabsProps {
     /**
      * A collection of tabs that needs to be rendered.
      */
-    children: ((props: TabsRenderProps) => ReactNode) | ReactNode;
+    children: TabsPropsChildren;
 
     /**
      * Append a class name.
@@ -32,46 +36,60 @@ export type TabsProps = {
      * Function to change active tab.
      */
     updateValue?: (index: number) => void;
-};
+    /**
+     * Tab ID for the testing.
+     */
+    "data-testid"?: string;
+}
 
-type State = {
+interface TabsState {
     activeTabIndex: number;
-};
+}
 
-const disabledStyles = {
+const disabledStyles: Record<string, string | number> = {
     opacity: 0.5,
     pointerEvents: "none"
+};
+
+const getTabsChildren = (children: React.ReactNode): TabProps[] => {
+    const filteredTabs = React.Children.toArray(children).filter(
+        c => c !== null
+        /**
+         * TODO @ts-refactor
+         * Need to cast because TS is complaining due to differences between types that can be in ReactNode
+         */
+    ) as React.ReactElement<TabProps>[];
+
+    return filteredTabs.map(child => {
+        return {
+            label: child.props.label,
+            children: child.props.children,
+            icon: child.props.icon,
+            disabled: child.props.disabled,
+            style: child.props.style,
+            "data-testid": child.props["data-testid"]
+        };
+    });
 };
 
 /**
  * Use Tabs component to display a list of choices, once the handler is triggered.
  */
-export class Tabs extends React.Component<TabsProps, State> {
-    state = {
+export class Tabs extends React.Component<TabsProps, TabsState> {
+    public override state: TabsState = {
         activeTabIndex: 0
     };
 
-    switchTab(activeTabIndex) {
+    public switchTab(activeTabIndex: number): void {
         if (typeof this.props.updateValue === "function") {
             this.props.updateValue(activeTabIndex);
-        } else {
-            this.setState({ activeTabIndex });
+            return;
         }
+        this.setState({ activeTabIndex });
     }
 
-    renderChildren(children, activeIndex) {
-        const tabs = React.Children.toArray(children)
-            .filter(c => c !== null)
-            .map((child: React.ReactElement<TabProps>) => {
-                return {
-                    label: child.props.label,
-                    children: child.props.children,
-                    icon: child.props.icon,
-                    disabled: child.props.disabled,
-                    style: child.props.style,
-                    "data-testid": child.props["data-testid"]
-                };
-            });
+    public renderChildren(children: React.ReactNode, activeIndex: number) {
+        const tabs = getTabsChildren(children);
 
         const tabBar = (
             <TabBar
@@ -128,14 +146,14 @@ export class Tabs extends React.Component<TabsProps, State> {
         );
     }
 
-    render() {
+    public override render() {
         const activeIndex =
             this.props.value !== undefined ? this.props.value : this.state.activeTabIndex;
 
         let children = this.props.children;
         if (typeof this.props.children === "function") {
-            // @ts-ignore
-            children = this.props.children({ switchTab: this.switchTab.bind(this) });
+            const childrenCallable = this.props.children as TabsPropsChildrenCallable;
+            children = childrenCallable({ switchTab: this.switchTab.bind(this) });
         }
 
         return this.renderChildren(children, activeIndex);

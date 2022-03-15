@@ -1,3 +1,4 @@
+import S3 from "aws-sdk/clients/s3";
 import { getObjectParams, getEnvironment } from "~/handlers/utils";
 import {
     SUPPORTED_IMAGES,
@@ -8,42 +9,53 @@ import {
     getOptimizedTransformedImageKeyPrefix
 } from "../utils";
 
+export interface ImageManagerCanProcessParams {
+    key: string;
+    extension: string;
+}
+export interface ImageManagerProcessParams {
+    s3: S3;
+    key: string;
+    extension: string;
+}
 export default {
-    canProcess: opts => {
-        const { key, extension } = opts;
-        if (!SUPPORTED_IMAGES.includes(extension)) {
+    canProcess: (params: ImageManagerCanProcessParams) => {
+        const { key, extension } = params;
+        if (SUPPORTED_IMAGES.includes(extension) === false) {
             return false;
         }
 
-        if (
-            key.startsWith(
-                OPTIMIZED_IMAGE_PREFIX || key.startsWith(OPTIMIZED_TRANSFORMED_IMAGE_PREFIX)
-            )
-        ) {
-            return false;
-        }
-
-        return true;
+        return (
+            key.startsWith(OPTIMIZED_IMAGE_PREFIX) ||
+            key.startsWith(OPTIMIZED_TRANSFORMED_IMAGE_PREFIX)
+        );
     },
-    async process({ s3, key, extension }) {
+    async process({ s3, key, extension }: ImageManagerProcessParams) {
         // 1. Get optimized image's key.
 
         await s3.deleteObject(getObjectParams(getImageKey({ key }))).promise();
 
         // 2. Search for all transformed images and delete those too.
-        if (SUPPORTED_TRANSFORMABLE_IMAGES.includes(extension)) {
-            const env = getEnvironment();
-            const imagesList = await s3
-                .listObjects({
-                    Bucket: env.bucket,
-                    Prefix: getOptimizedTransformedImageKeyPrefix(key)
-                })
-                .promise();
+        if (SUPPORTED_TRANSFORMABLE_IMAGES.includes(extension) === false) {
+            return;
+        }
+        const env = getEnvironment();
+        const imagesList = await s3
+            .listObjects({
+                Bucket: env.bucket,
+                Prefix: getOptimizedTransformedImageKeyPrefix(key)
+            })
+            .promise();
 
-            for (let i = 0; i < imagesList.Contents.length; i++) {
-                const imageObject = imagesList.Contents[i];
-                await s3.deleteObject(getObjectParams(imageObject.Key)).promise();
+        if (!imagesList.Contents) {
+            return;
+        }
+
+        for (const imageObject of imagesList.Contents) {
+            if (!imageObject.Key) {
+                continue;
             }
+            await s3.deleteObject(getObjectParams(imageObject.Key)).promise();
         }
     }
 };

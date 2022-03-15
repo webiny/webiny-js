@@ -83,15 +83,20 @@ const classes = {
     })
 };
 
-type AccordionProps = {
+interface AccordionProps {
     title: string;
-    children: ReactElement;
-    action?: ReactElement;
+    action?: ReactElement | null;
     icon?: ReactElement;
     defaultValue?: boolean;
-};
+}
 
-const Accordion = ({ title, children, action, icon, defaultValue = false }: AccordionProps) => {
+const Accordion: React.FC<AccordionProps> = ({
+    title,
+    children,
+    action,
+    icon,
+    defaultValue = false
+}) => {
     const [isOpen, setOpen] = useState(defaultValue);
     const toggleOpen = useCallback(() => setOpen(!isOpen), [isOpen]);
 
@@ -107,7 +112,7 @@ const Accordion = ({ title, children, action, icon, defaultValue = false }: Acco
                     </div>
                 </div>
                 <div className="accordion-header--right">
-                    <div className={"action-container"}>{action}</div>
+                    {action && <div className={"action-container"}>{action}</div>}
                     <div className={"icon-container"}>{icon}</div>
                 </div>
             </div>
@@ -117,5 +122,5 @@ const Accordion = ({ title, children, action, icon, defaultValue = false }: Acco
         </div>
     );
 };
-
-export default React.memo(Accordion);
+const MemoizedAccordion: React.FC<AccordionProps> = React.memo(Accordion);
+export default MemoizedAccordion;

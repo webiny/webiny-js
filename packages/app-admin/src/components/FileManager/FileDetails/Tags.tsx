@@ -15,6 +15,7 @@ import { getWhere, useFileManager } from "./../FileManagerContext";
 import { UPDATE_FILE, LIST_FILES, LIST_TAGS } from "./../graphql";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { ReactComponent as LabelIcon } from "./../icons/round-label-24px.svg";
+import { FileItem } from "../types";
 
 const SCOPE_SEPARATOR = ":";
 
@@ -59,7 +60,11 @@ const actionWrapperStyle = css({
     }
 });
 
-function Tags({ file, canEdit }) {
+interface TagsProps {
+    file: FileItem;
+    canEdit: (file: FileItem) => boolean;
+}
+const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
     const client = useApolloClient();
 
     const [editing, setEdit] = useState(false);
@@ -77,7 +82,7 @@ function Tags({ file, canEdit }) {
     const isEditingAllowed = canEdit(file);
 
     const renderHeaderContent = useCallback(
-        ({ data }) => {
+        ({ data }: { data: { tags: { name: string }[] } }) => {
             if (editing) {
                 return null;
             }
@@ -139,21 +144,26 @@ function Tags({ file, canEdit }) {
                             data: { tags }
                         },
                         update: (cache, updated) => {
-                            const newFileData = get(updated, "data.fileManager.updateFile.data");
+                            const newFileData: FileItem = get(
+                                updated,
+                                "data.fileManager.updateFile.data"
+                            );
 
                             // 1. Update files list cache
-                            const data: any = cloneDeep(
-                                cache.readQuery({
+                            const data = cloneDeep(
+                                cache.readQuery<ListFilesQueryResponse>({
                                     query: LIST_FILES,
                                     variables: queryParams
                                 })
                             );
 
-                            data.fileManager.listFiles.data.forEach(item => {
-                                if (item.key === newFileData.key) {
-                                    item.tags = newFileData.tags;
-                                }
-                            });
+                            if (data) {
+                                data.fileManager.listFiles.data.forEach(item => {
+                                    if (item.key === newFileData.key) {
+                                        item.tags = newFileData.tags;
+                                    }
+                                });
+                            }
 
                             cache.writeQuery({
                                 query: LIST_FILES,
@@ -163,12 +173,15 @@ function Tags({ file, canEdit }) {
                             // 2. Update "LIST_TAGS" cache
                             if (Array.isArray(newFileData.tags)) {
                                 // Get list tags data
-                                const listTagsData: any = cloneDeep(
-                                    cache.readQuery({
+                                const listTagsData = cloneDeep(
+                                    cache.readQuery<ListFileTagsQueryResponse>({
                                         query: LIST_TAGS,
                                         variables: { where: getWhere(queryParams.scope) }
                                     })
                                 );
+                                if (!listTagsData) {
+                                    return;
+                                }
                                 // Add new tag in list
                                 const updatedTagsList = [...newFileData.tags];
 
@@ -202,13 +215,20 @@ function Tags({ file, canEdit }) {
                 <React.Fragment>
                     <li-title>
                         <Icon className={"list-item__icon"} icon={<LabelIcon />} />
-                        {renderHeaderContent({ data })}
+                        {renderHeaderContent({
+                            // TODO @ts-refactor
+                            // @ts-ignore
+                            data
+                        })}
                     </li-title>
                     {editing && (
                         <li-content>
                             <Bind
                                 name={"tags"}
-                                beforeChange={(tags, baseOnChange) => {
+                                beforeChange={(
+                                    tags: string[],
+                                    baseOnChange: (tags: string[]) => void
+                                ) => {
                                     const formattedTags = tags.map(tag => {
                                         const tagInLowerCase = tag.toLowerCase();
                                         /**
@@ -242,7 +262,9 @@ function Tags({ file, canEdit }) {
                             <div className={actionWrapperStyle}>
                                 <ButtonPrimary
                                     small
-                                    onClick={submit}
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
                                     data-testid={"fm.tags.submit"}
                                 >
                                     Submit
@@ -263,6 +285,6 @@ function Tags({ file, canEdit }) {
             )}
         </Form>
     );
-}
+};
 
 export default Tags;

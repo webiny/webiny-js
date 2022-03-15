@@ -29,6 +29,9 @@ describe("predefined values", () => {
         overrides: Record<string, any> = {}
     ): Promise<CmsModel> => {
         const model = models.find(m => m.modelId === "bug");
+        if (!model) {
+            throw new Error(`Could not find model "bug".`);
+        }
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -371,6 +374,9 @@ describe("predefined values", () => {
         for (const field of fields) {
             if (field.fieldId !== "bugType") {
                 continue;
+            }
+            if (!field.settings) {
+                field.settings = {};
             }
             field.settings.defaultValue = "when-you-have-time";
         }

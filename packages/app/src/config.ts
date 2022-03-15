@@ -6,7 +6,7 @@ interface AppConfig {
     getKey<T = string>(key: string, defaultValue: T): T;
 }
 
-const deepFreeze = obj => {
+const deepFreeze = (obj: Record<string, any>): Record<string, any> => {
     Object.keys(obj).forEach(prop => {
         if (typeof obj[prop] === "object" && !Object.isFrozen(obj[prop])) {
             deepFreeze(obj[prop]);
@@ -16,7 +16,7 @@ const deepFreeze = obj => {
 };
 
 function createConfig(): AppConfig {
-    let _config = {};
+    let _config: Record<string, any> = {};
 
     return {
         set(config: Config) {

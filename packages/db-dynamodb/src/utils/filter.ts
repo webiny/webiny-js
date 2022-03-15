@@ -17,31 +17,39 @@ export interface Params<T = any> {
     fields: FieldPlugin[];
 }
 
-interface MappedPluginParams {
+interface MappedPluginParams<T extends Plugin = Plugin> {
     plugins: PluginsContainer;
     type: string;
-    property: string;
+    property: keyof T;
 }
 
 interface Filter {
     compareValue: any;
     filterPlugin: ValueFilterPlugin;
-    transformValue: TransformValue;
+    transformValue?: TransformValue;
     paths: string[];
     negate: boolean;
 }
 
-const getMappedPlugins = <T extends Plugin>(params: MappedPluginParams): Record<string, T> => {
+const getMappedPlugins = <T extends Plugin>(params: MappedPluginParams<T>): Record<string, T> => {
     return params.plugins.byType<T>(params.type).reduce((plugins, plugin) => {
-        const op = plugin[params.property];
+        /**
+         * We expect op to be a string, that is why we cast.
+         */
+        const op = plugin[params.property] as unknown as string;
         plugins[op] = plugin;
         return plugins;
-    }, {});
+    }, {} as Record<string, T>);
 };
 
-const extractWhereArgs = (key: string) => {
+interface ExtractWhereArgsResult {
+    field: string;
+    operation: string;
+    negate: boolean;
+}
+const extractWhereArgs = (key: string): ExtractWhereArgsResult => {
     const result = key.split("_");
-    const field = result.shift();
+    const field = result.shift() as string;
     const rawOp = result.length === 0 ? "eq" : result.join("_");
     /**
      * When rawOp is not, it means it is equal negated so just return that.
@@ -55,7 +63,11 @@ const extractWhereArgs = (key: string) => {
     }
     const negate = rawOp.match("not_") !== null;
     const operation = rawOp.replace("not_", "");
-    return { field, operation, negate };
+    return {
+        field,
+        operation,
+        negate
+    };
 };
 
 const findFilterPlugin = (
@@ -98,7 +110,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
          */
         if (multiSearchFieldOperations.includes(key) === true) {
             const data: DynamoDbContainsFilter = compareValue;
-            let transformValue: TransformValue = undefined;
+            let transformValue: TransformValue | undefined = undefined;
             const paths = data.fields.map(field => {
                 const fieldPlugin = fields.find(plugin => plugin.getField() === field);
                 if (fieldPlugin) {
@@ -125,7 +137,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
 
         const fieldPlugin = fields.find(plugin => plugin.getField() === field);
         let path: string = field;
-        let transformValue: TransformValue = undefined;
+        let transformValue: TransformValue | undefined = undefined;
         if (fieldPlugin) {
             transformValue = (value: any) => {
                 return fieldPlugin.transformValue(value);

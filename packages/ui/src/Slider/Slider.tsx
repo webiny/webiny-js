@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { Slider as RmwcSlider } from "@rmwc/slider";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import styled from "@emotion/styled";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 
 type Props = FormComponentProps & {
     // Component label.
@@ -45,8 +45,6 @@ const Wrapper = styled("div")({
  * Slider component lets users choose a value from given range.
  */
 class Slider extends React.Component<Props> {
-    static defaultProps = { validation: { isValid: null } };
-
     onChange = (e: { detail: { value: number } }) => {
         this.props.onChange && this.props.onChange(e.detail.value);
     };
@@ -55,13 +53,15 @@ class Slider extends React.Component<Props> {
         this.props.onInput && this.props.onInput(e.detail.value);
     };
 
-    render() {
+    public override render() {
         const { value, label, description, validation } = this.props;
 
         let sliderValue = value;
         if (value === null || typeof value === "undefined") {
             sliderValue = this.props.min || 0;
         }
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <React.Fragment>
@@ -80,11 +80,11 @@ class Slider extends React.Component<Props> {
                     />
                 </Wrapper>
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>

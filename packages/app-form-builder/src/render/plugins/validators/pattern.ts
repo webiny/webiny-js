@@ -1,12 +1,12 @@
 import { plugins } from "@webiny/plugins";
-import { FbFormFieldPatternValidatorPlugin } from "~/types";
+import { FbFormFieldPatternValidatorPlugin, FbFormFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: FbFormFieldValidatorPlugin = {
     type: "fb-form-field-validator",
     name: "fb-form-field-validator-pattern",
     validator: {
         name: "pattern",
-        validate: (value, validator) => {
+        validate: async (value, validator) => {
             if (!value) {
                 return true;
             }
@@ -33,3 +33,4 @@ export default {
         }
     }
 };
+export default plugin;

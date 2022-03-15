@@ -1,17 +1,17 @@
-import * as React from "react";
-import Downshift from "downshift";
+import React from "react";
+import Downshift, { ControllerStateAndHelpers, PropGetters } from "downshift";
 import MaterialSpinner from "react-spinner-material";
-import { Input } from "../Input";
+import { Input } from "~/Input";
 import { Chips, Chip } from "../Chips";
 import { getOptionValue, getOptionText, findInAliases } from "./utils";
 import { List, ListItem, ListItemMeta } from "~/List";
 import { IconButton } from "~/Button";
 import classNames from "classnames";
-import { Elevation } from "../Elevation";
-import { Typography } from "../Typography";
+import { Elevation } from "~/Elevation";
+import { Typography } from "~/Typography";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as PrevIcon } from "./icons/navigate_before-24px.svg";
@@ -22,8 +22,8 @@ import { ReactComponent as DeleteIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 
 import { css } from "emotion";
-import { ListItemGraphic } from "../List";
-
+import { ListItemGraphic } from "~/List";
+import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
 const style = {
     pagination: {
         bar: css({
@@ -62,7 +62,12 @@ const listStyles = css({
     }
 });
 
-export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
+interface SelectionItem {
+    name: string;
+}
+type MultiAutoCompletePropsValue = SelectionItem[];
+
+export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "value"> {
     /**
      * Prevents adding the same item to the list twice.
      */
@@ -87,7 +92,14 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
      * Render list item when `useMultipleSelectionList` is used.
      */
     renderListItemLabel?: Function;
-};
+
+    /* A component that renders supporting UI in case of no result found. */
+    noResultFound?: React.ReactNode;
+    /**
+     * Value is an array of strings. But can be undefined.
+     */
+    value?: MultiAutoCompletePropsValue;
+}
 
 type State = {
     inputValue: string;
@@ -104,7 +116,7 @@ function Spinner() {
 const DEFAULT_PER_PAGE = 10;
 
 function paginateMultipleSelection(
-    multipleSelection: Record<string, any> | Record<string, any>[],
+    multipleSelection: MultiAutoCompletePropsValue,
     limit: number,
     page: number,
     search: string,
@@ -152,23 +164,61 @@ function paginateMultipleSelection(
     return { data, meta };
 }
 
+interface RenderOptionsParams
+    extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
+    options: AutoCompleteProps["options"];
+    unique: boolean;
+}
+
+interface OptionsListProps {
+    getMenuProps: PropGetters<Record<string, any>>["getMenuProps"];
+}
+
+interface AssignedValueAfterClearing {
+    set: boolean;
+    selection: string | null;
+}
+
+const OptionsList: React.FC<OptionsListProps> = ({ getMenuProps, children }) => {
+    return (
+        <Elevation z={1}>
+            <ul
+                className={classNames("multi-autocomplete__options-list", listStyles)}
+                {...getMenuProps()}
+            >
+                {children}
+            </ul>
+        </Elevation>
+    );
+};
+
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
-    static defaultProps = {
+    static defaultProps: Partial<MultiAutoCompleteProps> = {
         valueProp: "id",
         textProp: "name",
         unique: true,
         options: [],
         useSimpleValues: false,
         useMultipleSelectionList: false,
+        /**
+         * We cast this as MultiAutoComplete because renderItem() is executed via .call() where this is MultiAutoComplete instance.
+         */
         renderItem(item: any) {
-            return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
+            return (
+                <Typography use={"body2"}>
+                    {getOptionText(item, (this as unknown as MultiAutoComplete).props)}
+                </Typography>
+            );
         },
+        /**
+         * We cast this as MultiAutoComplete because renderListItemLabel() is executed via .call() where this is MultiAutoComplete instance.
+         */
         renderListItemLabel(item: any) {
-            return getOptionText(item, this.props);
+            return getOptionText(item, (this as unknown as MultiAutoComplete).props);
         }
     };
 
-    state = {
+    public override state: State = {
         inputValue: "",
         multipleSelectionPage: 0,
         multipleSelectionSearch: "",
@@ -179,18 +229,18 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
     /**
      * Helps us trigger some of the downshift's methods (eg. clearSelection) and helps us to avoid adding state.
      */
-    downshift: any = React.createRef();
+    private downshift = React.createRef<any>();
 
-    assignedValueAfterClearing = {
+    private assignedValueAfterClearing: AssignedValueAfterClearing = {
         set: false,
         selection: null
     };
 
-    setMultipleSelectionPage = multipleSelectionPage => {
+    setMultipleSelectionPage = (multipleSelectionPage: number): void => {
         this.setState({ multipleSelectionPage });
     };
 
-    setMultipleSelectionSearch = multipleSelectionSearch => {
+    setMultipleSelectionSearch = (multipleSelectionSearch: string): void => {
         this.setState({ multipleSelectionSearch });
     };
 
@@ -251,17 +301,24 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
 
     /**
      * Renders options - based on user's input. It will try to match input text with available options.
-     * @param options
-     * @param isOpen
-     * @param highlightedIndex
-     * @param selectedItem
-     * @param getMenuProps
-     * @param getItemProps
-     * @returns {*}
      */
-    renderOptions({ options, isOpen, highlightedIndex, getMenuProps, getItemProps }: any) {
+    private renderOptions(params: RenderOptionsParams) {
+        const { options, isOpen, highlightedIndex, getMenuProps, getItemProps } = params;
         if (!isOpen) {
             return null;
+        }
+
+        /**
+         * Suggest user to start typing when there are no options available to choose from.
+         */
+        if (!this.state.inputValue && !options.length) {
+            return (
+                <OptionsList getMenuProps={getMenuProps}>
+                    <li>
+                        <Typography use={"body2"}>Start typing to find entry</Typography>
+                    </li>
+                </OptionsList>
+            );
         }
 
         if (!options.length) {
@@ -273,6 +330,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                     >
                         <li>
                             <Typography use={"body2"}>No results.</Typography>
+                            {this.props.noResultFound}
                         </li>
                     </ul>
                 </Elevation>
@@ -318,9 +376,8 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
     /**
      * Once added, items can also be removed by clicking on the ✕ icon. This is the method that is responsible for
      * rendering selected items (we are using already existing "Chips" component).
-     * @returns {*}
      */
-    renderMultipleSelection() {
+    public renderMultipleSelection() {
         const {
             value,
             onChange,
@@ -333,7 +390,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
 
         if (useMultipleSelectionList) {
             const { data, meta } = paginateMultipleSelection(
-                value,
+                value as SelectionItem[],
                 DEFAULT_PER_PAGE,
                 this.state.multipleSelectionPage,
                 this.state.multipleSelectionSearch,
@@ -404,14 +461,18 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
 
                                                     if (key === "Enter") {
                                                         // Reorder the item.
-                                                        const newValue = [...value];
+                                                        const newValue = [
+                                                            ...(value as SelectionItem[])
+                                                        ];
                                                         newValue.splice(
                                                             e.target.value - 1,
                                                             0,
                                                             newValue.splice(item.index, 1)[0]
                                                         );
 
-                                                        onChange(newValue);
+                                                        if (onChange) {
+                                                            onChange(newValue);
+                                                        }
                                                     }
 
                                                     this.setState({
@@ -455,15 +516,20 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                         >
                                             {item.index + 1}.
                                         </div>{" "}
-                                        {renderListItemLabel.call(this, item)}
+                                        {(renderListItemLabel as Function).call(this, item)}
                                         <ListItemMeta>
                                             <IconButton
                                                 icon={<DeleteIcon />}
                                                 onClick={() => {
                                                     if (onChange) {
                                                         onChange([
-                                                            ...value.slice(0, item.index),
-                                                            ...value.slice(item.index + 1)
+                                                            ...(value as SelectionItem[]).slice(
+                                                                0,
+                                                                item.index
+                                                            ),
+                                                            ...(value as SelectionItem[]).slice(
+                                                                item.index + 1
+                                                            )
                                                         ]);
                                                     }
                                                 }}
@@ -494,15 +560,19 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
 
         return (
             <Chips disabled={disabled}>
-                {value.map((item, index) => (
+                {(value as SelectionItem[]).map((item, index) => (
                     <Chip
                         label={getOptionText(item, this.props)}
                         key={`${getOptionValue(item, this.props)}-${index}`}
                         trailingIcon={<BaselineCloseIcon />}
                         onRemove={() => {
-                            if (onChange) {
-                                onChange([...value.slice(0, index), ...value.slice(index + 1)]);
+                            if (!onChange) {
+                                return;
                             }
+                            onChange([
+                                ...(value as SelectionItem[]).slice(0, index),
+                                ...(value as SelectionItem[]).slice(index + 1)
+                            ]);
                         }}
                     />
                 ))}
@@ -510,20 +580,20 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         );
     }
 
-    render() {
+    public override render() {
         const {
             props,
             props: {
-                options: rawOptions, // eslint-disable-line
-                allowFreeInput, // eslint-disable-line
-                useSimpleValues, // eslint-disable-line
+                // options: rawOptions,
+                // allowFreeInput,
+                // useSimpleValues,
                 unique,
                 value,
                 onChange,
-                valueProp, // eslint-disable-line
-                textProp, // eslint-disable-line
+                // valueProp,
+                // textProp,
                 onInput,
-                validation = { isValid: null },
+                validation = { isValid: null, message: null },
                 useMultipleSelectionList,
                 description,
                 ...otherInputProps
@@ -536,7 +606,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
             <div className={classNames(autoCompleteStyle, props.className)}>
                 <Downshift
                     defaultSelectedItem={null}
-                    // @ts-ignore
+                    // @ts-ignore there is no className on Downshift
                     className={autoCompleteStyle}
                     itemToString={item => item && getOptionText(item, props)}
                     ref={this.downshift}

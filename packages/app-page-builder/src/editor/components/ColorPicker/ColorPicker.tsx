@@ -171,15 +171,20 @@ const styles = {
     })
 };
 
-type ColorPickerProps = {
+interface ColorPickerProps {
     value: string;
     onChange: Function;
     onChangeComplete: Function;
     compact?: boolean;
     handlerClassName?: string;
-};
+}
 
-const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: ColorPickerProps) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({
+    value,
+    onChange,
+    onChangeComplete,
+    compact = false
+}) => {
     const [showPicker, setShowPicker] = useState(false);
 
     const getColorValue = useCallback(rgb => {
@@ -219,7 +224,9 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: Col
         peTheme = pageElements.theme;
     }
 
-    const themeColors = { ...theme.colors, ...peTheme.styles?.colors };
+    const colors = theme ? theme.colors : {};
+
+    const themeColors = { ...colors, ...peTheme.styles?.colors };
 
     let themeColor = false;
 
@@ -233,7 +240,7 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: Col
                 return (
                     <ColorBox key={index}>
                         <Color
-                            className={color === value ? styles.selectedColor : null}
+                            className={color === value ? styles.selectedColor : ""}
                             style={{ backgroundColor: color }}
                             onClick={() => {
                                 hidePicker();
@@ -258,7 +265,7 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: Col
 
             <ColorBox>
                 <Color
-                    className={value && !themeColor ? styles.selectedColor : null}
+                    className={value && !themeColor ? styles.selectedColor : ""}
                     style={{ backgroundColor: themeColor ? "#fff" : value }}
                     onClick={togglePicker}
                 >

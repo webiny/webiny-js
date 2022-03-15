@@ -11,6 +11,7 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     code: String
                     message: String
                     data: JSON
+                    stack: String
                 }
 
                 type PbSocialMedia {
@@ -165,7 +166,7 @@ export const createSettingsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    updateSettings: async (_, args, context) => {
+                    updateSettings: async (_, args: any, context) => {
                         try {
                             return new Response(
                                 await context.pageBuilder.updateSettings(args.data)

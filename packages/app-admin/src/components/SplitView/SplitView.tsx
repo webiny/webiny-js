@@ -43,12 +43,12 @@ export const leftPanel = css({
     }
 });
 
-type SplitViewProps = {
+interface SplitViewProps {
     children: React.ReactElement<any> | React.ReactElement<any>[];
     className?: string;
-};
+}
 
-const SplitView = (props: SplitViewProps) => {
+const SplitView: React.FC<SplitViewProps> = props => {
     return (
         <Grid className={classSet(grid, props.className, "webiny-split-view")}>
             <GridInner className={gridInner + " webiny-split-view__inner"}>
@@ -58,7 +58,7 @@ const SplitView = (props: SplitViewProps) => {
     );
 };
 
-const LeftPanel = (props: CellProps) => {
+const LeftPanel: React.FC<CellProps> = props => {
     const propList = clone(props);
     if (!propList.hasOwnProperty("span")) {
         propList.span = 5;
@@ -76,7 +76,7 @@ const LeftPanel = (props: CellProps) => {
     );
 };
 
-const RightPanel = (props: CellProps) => {
+const RightPanel: React.FC<CellProps> = props => {
     const propList = clone(props);
     if (!propList.hasOwnProperty("span")) {
         propList.span = 7;

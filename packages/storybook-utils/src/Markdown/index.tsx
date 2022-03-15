@@ -1,18 +1,22 @@
 import * as React from "react";
+/**
+ * Package react-remarkable does not have types.
+ */
+// @ts-ignore
 import Remarkable from "react-remarkable";
 import hljs from "highlight.js";
 
-type Props = {
+interface Props {
     source: React.ReactNode;
-};
+}
 
 export default class Markdown extends React.Component<Props> {
-    render() {
+    public override render(): React.ReactNode {
         const options = {
             html: true,
             linkTarget: "_parent",
             langPrefix: "lang-",
-            highlight(code, lang) {
+            highlight(code: string, lang: string) {
                 return hljs.highlight(lang, code).value;
             }
         };

@@ -22,10 +22,19 @@ import {
 import { useSecurity } from "@webiny/app-security";
 import { View } from "@webiny/app/components/View";
 import { CenteredView, useSnackbar } from "@webiny/app-admin";
+import { SecurityIdentity } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
-const UserAccountForm = () => {
+interface UserAccountFormData {
+    firstName: string;
+    lastName: string;
+    avatar: {
+        src?: string;
+    };
+}
+
+const UserAccountForm: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const { setIdentity } = useSecurity();
@@ -33,7 +42,7 @@ const UserAccountForm = () => {
     const currentUser = useQuery(GET_CURRENT_USER);
     const [updateUser] = useMutation(UPDATE_CURRENT_USER);
 
-    const onSubmit = async formData => {
+    const onSubmit = async (formData: UserAccountFormData) => {
         setLoading(true);
         const { data: response } = await updateUser({
             variables: { data: omit(formData, ["id"]) }
@@ -50,10 +59,10 @@ const UserAccountForm = () => {
 
         setIdentity(identity => {
             return {
-                ...identity,
+                ...(identity || ({} as SecurityIdentity)),
                 displayName: `${formData.firstName} ${formData.lastName}`,
                 profile: {
-                    ...identity.profile,
+                    ...(identity?.profile || {}),
                     firstName: formData.firstName,
                     lastName: formData.lastName,
                     avatar: formData.avatar
@@ -73,7 +82,15 @@ const UserAccountForm = () => {
 
     return (
         <CenteredView maxWidth={600}>
-            <Form data={user} onSubmit={onSubmit}>
+            <Form
+                data={user}
+                onSubmit={data => {
+                    /**
+                     * We are positive that data is UserAccountFormData.
+                     */
+                    onSubmit(data as unknown as UserAccountFormData);
+                }}
+            >
                 {({ data, form, Bind }) => (
                     <SimpleForm>
                         {loading && <CircularProgress style={{ zIndex: 3 }} />}
@@ -124,7 +141,11 @@ const UserAccountForm = () => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormFooter>
-                            <ButtonPrimary onClick={form.submit}>{t`Update account`}</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >{t`Update account`}</ButtonPrimary>
                         </SimpleFormFooter>
                     </SimpleForm>
                 )}

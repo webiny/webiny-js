@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { FormComponentProps } from "./../types";
 import { webinyCheckboxTitle } from "./Checkbox.styles";
 import { FormElementMessage } from "../FormElementMessage";
@@ -20,7 +20,7 @@ type Props = FormComponentProps & {
 };
 
 class CheckboxGroup extends React.Component<Props> {
-    render() {
+    public override render() {
         const { description, label, validation = { isValid: null, message: null } } = this.props;
 
         return (

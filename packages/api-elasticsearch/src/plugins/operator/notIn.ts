@@ -2,7 +2,7 @@ import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/El
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderOperatorNotInPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
-    public name = "elasticsearch.queryBuilder.operator.notIn.default";
+    public override name = "elasticsearch.queryBuilder.operator.notIn.default";
 
     public getOperator(): string {
         return "not_in";
@@ -20,7 +20,9 @@ export class ElasticsearchQueryBuilderOperatorNotInPlugin extends ElasticsearchQ
             );
         }
 
-        const useBasePath = values.some(value => typeof value !== "string");
+        const useBasePath = values.some(
+            (value: string | number | boolean | null | undefined) => typeof value !== "string"
+        );
 
         query.must_not.push({
             terms: {

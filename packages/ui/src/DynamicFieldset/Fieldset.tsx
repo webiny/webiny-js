@@ -1,22 +1,39 @@
-import * as React from "react";
+import React from "react";
 import dotProp from "dot-prop-immutable";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 import styled from "@emotion/styled";
 
-interface ChildrenRenderProp {
-    actions: { add: Function; remove: Function };
-    header: Function;
-    row: Function;
-    empty: Function;
+interface ChildrenRenderPropRowCallableParams {
+    index: number;
+    data: any;
+}
+interface ChildrenRenderPropRowCallable {
+    (params: ChildrenRenderPropRowCallableParams): React.ReactNode;
 }
 
-type FieldsetProps = {
-    value?: Array<Object>;
+interface ChildrenRenderPropHeaderCallable {
+    (): React.ReactNode;
+}
+interface ChildrenRenderPropEmptyCallable {
+    (): React.ReactNode;
+}
+interface ChildrenRenderProp {
+    actions: {
+        add: Function;
+        remove: Function;
+    };
+    header: (cb: ChildrenRenderPropHeaderCallable) => React.ReactNode;
+    row: (cb: ChildrenRenderPropRowCallable) => React.ReactNode;
+    empty: (cb: ChildrenRenderPropEmptyCallable) => React.ReactNode;
+}
+
+interface FieldsetProps {
+    value?: any[];
     description?: string;
     validation?: { isValid: null | boolean; message?: string };
-    onChange?: Function;
+    onChange: Function;
     children: (props: ChildrenRenderProp) => React.ReactNode;
-};
+}
 
 const DynamicFieldsetRow = styled("div")({
     paddingBottom: 10,
@@ -26,9 +43,8 @@ const DynamicFieldsetRow = styled("div")({
 });
 
 class Fieldset extends React.Component<FieldsetProps> {
-    static defaultProps = {
-        value: [],
-        description: null
+    static defaultProps: Partial<FieldsetProps> = {
+        value: []
     };
 
     header: React.ReactNode = null;
@@ -52,7 +68,11 @@ class Fieldset extends React.Component<FieldsetProps> {
     };
 
     addData = (index = -1) => {
-        const { value, onChange } = this.props;
+        const { onChange } = this.props;
+        let value = this.props.value;
+        if (!value) {
+            value = [];
+        }
         if (index < 0) {
             onChange([...value, {}]);
         } else {
@@ -60,24 +80,30 @@ class Fieldset extends React.Component<FieldsetProps> {
         }
     };
 
-    renderHeader = (cb: () => React.ReactNode) => {
+    renderHeader = (cb: () => React.ReactNode): React.ReactNode => {
         this.header = cb();
+        return null;
     };
 
-    renderRow = (cb: (params: Object) => React.ReactNode) => {
+    renderRow = (cb: ChildrenRenderPropRowCallable): React.ReactNode => {
         const { value } = this.props;
+        if (!value) {
+            return null;
+        }
         this.rows = value.map((record, index) => {
             return (
                 <DynamicFieldsetRow key={index}>{cb({ data: record, index })}</DynamicFieldsetRow>
             );
         });
+        return null;
     };
 
-    renderEmpty = (cb: () => React.ReactNode) => {
+    renderEmpty = (cb: () => React.ReactNode): React.ReactNode => {
         this.empty = cb();
+        return null;
     };
 
-    renderComponent() {
+    public renderComponent(): React.ReactNode {
         const { value } = this.props;
         const { children } = this.props;
 
@@ -88,19 +114,19 @@ class Fieldset extends React.Component<FieldsetProps> {
             empty: this.renderEmpty
         });
 
-        if (value.length) {
-            return (
-                <React.Fragment>
-                    {this.header}
-                    {this.rows}
-                </React.Fragment>
-            );
+        if (!value || value.length === 0) {
+            return this.empty;
         }
 
-        return this.empty;
+        return (
+            <React.Fragment>
+                {this.header}
+                {this.rows}
+            </React.Fragment>
+        );
     }
 
-    render() {
+    public override render() {
         const { description, validation = { isValid: null } } = this.props;
 
         return (

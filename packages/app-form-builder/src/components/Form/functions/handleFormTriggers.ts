@@ -2,15 +2,15 @@ import {
     FbFormRenderComponentProps,
     FbFormTriggerHandlerPlugin,
     FormSubmitResponseType
-} from "../../../types";
+} from "~/types";
 import { plugins } from "@webiny/plugins";
-import { get } from "lodash";
+import get from "lodash/get";
 
-type HandleFormTriggersArgs = {
+interface HandleFormTriggersArgs {
     props: FbFormRenderComponentProps;
     data: any;
     formSubmission: FormSubmitResponseType;
-};
+}
 
 export default async (args: HandleFormTriggersArgs) => {
     if (args.props.preview) {
@@ -26,7 +26,7 @@ export default async (args: HandleFormTriggersArgs) => {
         await plugin.trigger.handle({
             trigger: get(props.data, `triggers.${plugin.trigger.id}`) || {},
             data,
-            form: props.data
+            form: props.data || {}
         });
     }
 };

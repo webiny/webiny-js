@@ -2,10 +2,15 @@ import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { PbEditorElement } from "../../../../types";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { uiAtom } from "../../../recoil/modules";
+import {
+    DisplayMode,
+    PbEditorElement,
+    PbElementDataImageType,
+    PbElementDataSettingsType
+} from "~/types";
+import { uiAtom } from "~/editor/recoil/modules";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 
 const AlignImage = styled("div")((props: any) => ({
     img: {
@@ -13,21 +18,33 @@ const AlignImage = styled("div")((props: any) => ({
     }
 }));
 
-type ImageContainerType = {
-    element: PbEditorElement;
+const getHorizontalAlignFlexAlign = (
+    element: PbEditorElement | null,
+    displayMode: DisplayMode
+): PbElementDataSettingsType["horizontalAlignFlex"] => {
+    if (!element || !element.data || !element.data.settings) {
+        return "center";
+    }
+    return (element.data.settings.horizontalAlignFlex as any)[displayMode] || "center";
 };
-const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }) => {
+
+interface ImageContainerType {
+    element: PbEditorElement;
+}
+const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
-    const {
-        id,
-        data: { image = {}, settings = {} }
-    } = element || {};
-    const { horizontalAlignFlex } = settings;
-    // Use per-device style
-    const align = horizontalAlignFlex[displayMode] || "center";
 
-    const imgStyle = { width: null, height: null };
+    const id = element?.id;
+    const image = element?.data?.image || {};
+
+    // Use per-device style
+    const align = getHorizontalAlignFlexAlign(element, displayMode);
+
+    const imgStyle: PbElementDataImageType = {
+        width: 0,
+        height: 0
+    };
     if (image.width) {
         const { width } = image;
         imgStyle.width = width;

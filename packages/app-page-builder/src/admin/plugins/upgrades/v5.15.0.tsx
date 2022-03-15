@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useState } from "react";
 import gql from "graphql-tag";
 import { i18n } from "@webiny/app/i18n";
@@ -30,8 +31,10 @@ const UPGRADE = gql`
         }
     }
 `;
-
-const Upgrade = ({ onInstalled }) => {
+interface UpgradeProps {
+    onInstalled: () => void;
+}
+const Upgrade: React.FC<UpgradeProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);

@@ -15,24 +15,28 @@ const defaultStyles = {
     height: "auto"
 };
 
-const defaultValidation = {
-    isValid: null,
-    message: null
+interface ValidationStatus {
+    isValid?: boolean;
+    message?: string;
+}
+const defaultValidation: ValidationStatus = {
+    isValid: undefined,
+    message: undefined
 };
 
-export interface Props {
+export interface FileProps {
     url: string;
-    onRemove: Function;
-    placeholder: string;
+    onRemove: () => void;
+    placeholder?: string;
     styles?: Record<string, any>;
-    showFileManager?: Function;
+    showFileManager?: () => void;
     validation?: {
         isValid?: boolean;
         message?: string;
     };
     description?: string;
 }
-const File: React.FunctionComponent<Props> = props => {
+const File: React.FC<FileProps> = props => {
     const { url, onRemove, placeholder, showFileManager, description } = props;
 
     const styles = props.styles || defaultStyles;
@@ -49,11 +53,12 @@ const File: React.FunctionComponent<Props> = props => {
         return fileIcon;
     }, []);
 
-    const defaultRenderImagePreview = renderImageProps => (
+    // TODO @ts-refactor figure out correct type
+    const defaultRenderImagePreview = (renderImageProps: any) => (
         <Image {...renderImageProps} {...imagePreviewProps} />
     );
 
-    const renderImagePreview = url => {
+    const renderImagePreview = (url: string) => {
         if (url && !isImage(url)) {
             return createRenderImagePreview({ value: url, imagePreviewProps });
         }
@@ -67,7 +72,12 @@ const File: React.FunctionComponent<Props> = props => {
                 renderImagePreview={renderImagePreview(url)}
                 style={styles}
                 value={url ? { src: getImageSrc(url) } : null}
-                uploadImage={showFileManager}
+                uploadImage={() => {
+                    if (!showFileManager) {
+                        return;
+                    }
+                    showFileManager();
+                }}
                 removeImage={onRemove}
                 placeholder={placeholder}
                 containerStyle={{ height: "auto" }}

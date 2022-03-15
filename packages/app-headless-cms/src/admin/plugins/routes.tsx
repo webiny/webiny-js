@@ -9,8 +9,10 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
-const Loader = ({ children, ...props }) => (
-    <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
+const Loader: React.FC = ({ children, ...props }) => (
+    <Suspense fallback={<CircularProgress />}>
+        {React.cloneElement(children as unknown as React.ReactElement, props)}
+    </Suspense>
 );
 
 const ContentModelEditor = lazy(() => import("../views/contentModels/ContentModelEditor"));

@@ -29,7 +29,7 @@ describe("Workflow crud test", () => {
 
         await until(
             () => reviewerGQL.listReviewersQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listReviewers.data;
                 return list.length >= 1;
             },
@@ -93,7 +93,7 @@ describe("Workflow crud test", () => {
 
         await until(
             () => getWorkflowQuery({ id: workflow.id }).then(([data]) => data),
-            response => response.data.apw.getWorkflow.data !== null,
+            (response: any) => response.data.apw.getWorkflow.data !== null,
             {
                 name: "Wait for getWorkflow query"
             }
@@ -215,7 +215,7 @@ describe("Workflow crud test", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const [updatedEntry] = response.data.apw.listWorkflows.data;
                 return updatedEntry && workflow.savedOn !== updatedEntry.savedOn;
             },
@@ -276,7 +276,7 @@ describe("Workflow crud test", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listWorkflows.data;
                 return list.length === 0;
             },
@@ -323,7 +323,7 @@ describe("Workflow crud test", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listWorkflows.data;
                 return list.length === 5;
             },

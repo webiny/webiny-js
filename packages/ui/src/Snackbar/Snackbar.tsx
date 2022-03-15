@@ -1,18 +1,15 @@
-import * as React from "react";
+import React from "react";
 import { Snackbar as RmwcSnackbar, SnackbarAction, SnackbarProps } from "@rmwc/snackbar";
 
 type Props = SnackbarProps;
 
 /**
  * Use Snackbar component to display an informative or alert message and allow users to act upon it.
- * @param props
- * @returns {*}
- * @constructor
  */
 class Snackbar extends React.Component<Props> {
-    container?: Element;
+    public readonly container: HTMLElement | null = null;
 
-    constructor(props) {
+    public constructor(props: Props) {
         super(props);
 
         this.container = document.getElementById("snackbar-container");
@@ -20,12 +17,12 @@ class Snackbar extends React.Component<Props> {
         if (!this.container) {
             this.container = document.createElement("div");
             this.container.setAttribute("id", "snackbar-container");
-            const container: Element = this.container;
+            const container: HTMLElement = this.container;
             document.body && document.body.appendChild(container);
         }
     }
 
-    render() {
+    public override render(): React.ReactElement {
         return <RmwcSnackbar {...this.props} />;
     }
 }

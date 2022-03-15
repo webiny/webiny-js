@@ -2,20 +2,20 @@ import React from "react";
 import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import { ImageEditorTool } from "./types";
 import { Slider } from "../../Slider";
-import { Tooltip } from "../../Tooltip";
-import { IconButton } from "../../Button";
+import { Tooltip } from "~/Tooltip";
+import { IconButton } from "~/Button";
 
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
-let cropper: Cropper = null;
+let cropper: Cropper;
 
 class RenderForm extends React.Component<any, any> {
-    state = {
+    public override state = {
         rangeInput: 0
     };
 
-    render() {
+    public override render() {
         return (
             <div style={{ width: "500px", margin: "0 auto" }}>
                 <Slider
@@ -26,7 +26,7 @@ class RenderForm extends React.Component<any, any> {
                     step={10}
                     discrete={true}
                     displayMarkers={true}
-                    onInput={value => {
+                    onInput={(value: string) => {
                         this.setState({ rangeInput: value }, async () => {
                             if (cropper) {
                                 cropper.rotateTo(parseInt(value, 10));
@@ -44,7 +44,7 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Rotate"}>
-                <IconButton icon={<RotateRight />} onClick={activateTool} />
+                <IconButton icon={<RotateRight />} onClick={() => activateTool("rotate")} />
             </Tooltip>
         );
     },
@@ -52,7 +52,10 @@ const tool: ImageEditorTool = {
         return <RenderForm {...props} />;
     },
     onActivate: ({ canvas }) => {
-        cropper = new Cropper(canvas.current, {
+        /**
+         * We can safely cast canvas.current as HTMLCanvasElement
+         */
+        cropper = new Cropper(canvas.current as HTMLCanvasElement, {
             background: false,
             modal: false,
             guides: false,
@@ -73,7 +76,7 @@ const tool: ImageEditorTool = {
             const src = cropper.getCroppedCanvas().toDataURL();
             if (current) {
                 const image = new window.Image();
-                const ctx = current.getContext("2d");
+                const ctx = current.getContext("2d") as CanvasRenderingContext2D;
                 image.onload = () => {
                     ctx.drawImage(image, 0, 0);
                     current.width = image.width;

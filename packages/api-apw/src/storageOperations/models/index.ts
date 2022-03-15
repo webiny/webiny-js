@@ -1,12 +1,14 @@
-import { CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugins/CmsGroupPlugin";
 import contentModelPluginFactory from "./contentModelPluginFactory";
+import WebinyError from "@webiny/error";
+import { CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugins/CmsGroupPlugin";
 import { createWorkflowModelDefinition } from "./workflow.model";
 import { createContentReviewModelDefinition } from "./contentReview.model";
 import { createReviewerModelDefinition } from "./reviewer.model";
 import { createCommentModelDefinition } from "./comment.model";
 import { createChangeRequestModelDefinition } from "./changeRequest.model";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 
-export const createApwModels = context => {
+export const createApwModels = (context: CmsContext) => {
     /**
      * This should never happen in the actual project.
      * It is to make sure that we load setup context before the CRUD init in our internal code.
@@ -16,6 +18,14 @@ export const createApwModels = context => {
         return;
     }
     context.security.disableAuthorization();
+
+    const locale = context.i18nContent.locale;
+    if (!locale) {
+        throw new WebinyError(
+            "Missing context.i18nContent.locale in api-apw/storageOperations/index.ts",
+            "LOCALE_ERROR"
+        );
+    }
     /**
      * TODO:@ashutosh
      * We need to move these plugin in an installation plugin
@@ -59,7 +69,7 @@ export const createApwModels = context => {
         const cmsModelPlugin = contentModelPluginFactory({
             group: cmsGroupPlugin.contentModelGroup,
             tenant: context.tenancy.getCurrentTenant().id,
-            locale: context.i18nContent.locale.code,
+            locale: locale.code,
             modelDefinition
         });
         /**

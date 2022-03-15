@@ -6,12 +6,12 @@ import { toSlug } from "~/utils";
 import WebinyError from "@webiny/error";
 import shortid from "shortid";
 
-export interface Params {
+interface AssignBeforeGroupCreateParams {
     onBeforeCreate: Topic<BeforeGroupCreateTopicParams>;
     plugins: PluginsContainer;
     storageOperations: HeadlessCmsStorageOperations;
 }
-export const assignBeforeGroupCreate = (params: Params) => {
+export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) => {
     const { onBeforeCreate, plugins, storageOperations } = params;
 
     onBeforeCreate.subscribe(async params => {
@@ -48,9 +48,9 @@ export const assignBeforeGroupCreate = (params: Params) => {
             }
         }
 
-        const groupPlugin: CmsGroupPlugin = plugins
+        const groupPlugin = plugins
             .byType<CmsGroupPlugin>(CmsGroupPlugin.type)
-            .find((item: CmsGroupPlugin) => item.contentModelGroup.slug === group.slug);
+            .find(item => item.contentModelGroup.slug === group.slug);
 
         if (groupPlugin) {
             throw new Error(

@@ -7,17 +7,36 @@ import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { Note } from "./StyledComponents";
+import { BindComponent } from "@webiny/form/types";
+import { CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const pwOptions = [
+interface PermissionOption {
+    id: string;
+    name: string;
+}
+const pwOptions: PermissionOption[] = [
     { id: "p", name: t`Publish` },
     { id: "u", name: t`Unpublish` },
     { id: "r", name: t`Request review` },
     { id: "c", name: t`Request changes` }
 ];
 
-export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) => {
+interface ContentEntryPermissionProps {
+    Bind: BindComponent;
+    data: CmsSecurityPermission;
+    entity: string;
+    setValue: (name: string, value: string) => void;
+    title: string;
+}
+export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
+    Bind,
+    data,
+    entity,
+    setValue,
+    title
+}) => {
     // Set "cms.contentEntry" access scope to "own" if "cms.contentModel" === "own".
     useEffect(() => {
         if (
@@ -28,9 +47,11 @@ export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) 
         }
     }, [data]);
 
+    const endpoints = data.endpoints || [];
+
     const disabledPrimaryActions =
         [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
-        !data.endpoints.includes("manage");
+        !endpoints.includes("manage");
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -56,11 +77,11 @@ export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) 
                                     disabled={data[`contentModelAccessScope`] === "own"}
                                 >
                                     <option value={"full"}>{t`All entries`}</option>
-                                    {data.endpoints.includes("manage") && (
+                                    {(endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only entries created by the user`}</option>
-                                    )}
+                                    )) || <></>}
                                 </Select>
                             </Bind>
                             {data[`contentModelAccessScope`] === "own" && (
@@ -81,16 +102,20 @@ export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) 
                                     disabled={disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
-                                    {data.endpoints.includes("manage") ? (
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rw"}>{t`Read, write`}</option>
-                                    ) : null}
-                                    {data.endpoints.includes("manage") ? (
+                                    ) : (
+                                        <></>
+                                    )}
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rwd"}>{t`Read, write, delete`}</option>
-                                    ) : null}
+                                    ) : (
+                                        <></>
+                                    )}
                                 </Select>
                             </Bind>
                         </Cell>
-                        {data.endpoints.includes("manage") ? (
+                        {endpoints.includes("manage") ? (
                             <Cell span={12}>
                                 <Bind name={`${entity}PW`}>
                                     <CheckboxGroup

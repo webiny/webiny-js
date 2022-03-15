@@ -1,18 +1,19 @@
+// TODO @ts-refactor @pavel
 // @ts-nocheck
 import { AuthenticationPlugin } from "@webiny/api-security/plugins/AuthenticationPlugin";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { CmsContext } from "~/types";
 
 export class InternalAuthenticationPlugin extends AuthenticationPlugin {
-    private _identityType: string;
+    private readonly _identityType: string;
 
-    constructor(identityType: string) {
+    public constructor(identityType: string) {
         super();
 
         this._identityType = identityType;
     }
 
-    async authenticate(context: CmsContext): Promise<undefined | SecurityIdentity> {
+    public async authenticate(context: CmsContext): Promise<undefined | SecurityIdentity> {
         const { headers } = context.http.request;
         const header = headers["Authorization"] || headers["authorization"];
         const apiKey = header ? header.split(" ").pop() : null;

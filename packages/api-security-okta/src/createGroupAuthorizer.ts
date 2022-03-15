@@ -18,13 +18,19 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
             const identity = security.getIdentity();
             const tenant = context.tenancy.getCurrentTenant();
 
+            if (!identity) {
+                return null;
+            }
+
             // If `identityType` is specified, we'll only execute this authorizer for a matching identity.
             if (config.identityType && identity.type !== config.identityType) {
-                return;
+                return null;
             }
 
             const groupSlug = config.getGroupSlug(context);
-            let group = await security.getGroup({ where: { slug: groupSlug } });
+            let group = await security
+                .getStorageOperations()
+                .getGroup({ where: { slug: groupSlug, tenant: tenant.id } });
 
             if (group) {
                 return group.permissions;
@@ -41,10 +47,10 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
                     where: { slug: groupSlug, tenant: tenant.parent }
                 });
 
-                return group ? group.permissions : undefined;
+                return group ? group.permissions : null;
             }
 
-            return undefined;
+            return null;
         });
     });
 };

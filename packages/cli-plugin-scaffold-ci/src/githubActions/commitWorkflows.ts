@@ -3,18 +3,19 @@ import fs from "fs";
 import { Octokit } from "octokit";
 const { Base64 } = require("js-base64");
 
-export default async (args: {
+interface Params {
     octokit: Octokit;
     owner: string;
     repo: string;
     branch: string;
     author: { name: string; email: string };
-}) => {
+}
+export default async (args: Params): Promise<void> => {
     const { octokit, owner, repo, branch, author } = args;
 
     const cwd = path.join(__dirname, "files", "workflows");
 
-    const filesPaths = [];
+    const filesPaths: string[] = [];
     readDirectory(cwd, filesPaths);
 
     for (let i = 0; i < filesPaths.length; i++) {
@@ -34,11 +35,9 @@ export default async (args: {
             author
         });
     }
-
-    return;
 };
 
-function readDirectory(dir, files) {
+function readDirectory(dir: string, files: string[]) {
     fs.readdirSync(dir).forEach(File => {
         const absolute = path.join(dir, File);
         if (fs.statSync(absolute).isDirectory()) {

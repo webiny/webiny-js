@@ -4,11 +4,7 @@ import kebabCase from "lodash/kebabCase";
 import GridContainer from "./GridContainer";
 import { ReactComponent as GridIcon } from "../../../assets/icons/view_quilt.svg";
 import { createElement } from "../../../helpers";
-import {
-    PbEditorPageElementPlugin,
-    DisplayMode,
-    PbEditorElementPluginArgs
-} from "../../../../types";
+import { PbEditorPageElementPlugin, DisplayMode, PbEditorElementPluginArgs } from "~/types";
 import { getDefaultPresetCellsTypePluginType, calculatePresetCells } from "../../gridPresets";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -71,6 +67,10 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         type: "pb-editor-page-element",
         name: `pb-editor-page-element-${elementType}`,
         elementType: elementType,
+        /**
+         * TODO @ts-refactor @ashutosh
+         */
+        // @ts-ignore
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
@@ -81,8 +81,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         },
         create: (options = {}) => {
             const { elements, data = {} } = options;
-            const defaultCellsType = getDefaultPresetCellsTypePluginType();
-            const cellsType = data.settings?.cellsType || defaultCellsType;
+            const cellsType = data.settings?.cellsType || getDefaultPresetCellsTypePluginType();
 
             const defaultValue = {
                 type: elementType,

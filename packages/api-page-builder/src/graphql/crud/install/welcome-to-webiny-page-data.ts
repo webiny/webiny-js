@@ -30,7 +30,14 @@ interface PreparePageDataParams {
     fileIdToFileMap: Record<string, File>;
 }
 
-export const preparePageData = ({ srcPrefix, fileIdToFileMap }: PreparePageDataParams) => {
+/**
+ * Too complex to handle atm.
+ */
+// TODO @ts-refactor figure type for the content
+export const preparePageData = ({
+    srcPrefix,
+    fileIdToFileMap
+}: PreparePageDataParams): Record<string, any> => {
     /**
      * By default the "srcPrefix" always ends with forward slash.
      * But, string concatenation looks ugly without forward slash,

@@ -6,7 +6,6 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevision";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import usePermission from "~/admin/hooks/usePermission";
-import { CmsEditorContentEntry } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
@@ -14,7 +13,7 @@ const buttonStyles = css({
     marginLeft: 16
 });
 
-const SaveAndPublishButton = () => {
+const SaveAndPublishButton: React.FC = () => {
     const { form, loading, entry } = useContentEntry();
     const { publishRevision } = useRevision({ revision: entry });
 
@@ -35,9 +34,9 @@ const SaveAndPublishButton = () => {
     return (
         <ButtonPrimary
             className={buttonStyles}
-            onClick={() => {
+            onClick={ev => {
                 showConfirmation(async () => {
-                    const entry = (await form.current.submit()) as CmsEditorContentEntry;
+                    const entry = await form.current.submit(ev);
                     if (!entry) {
                         return;
                     }

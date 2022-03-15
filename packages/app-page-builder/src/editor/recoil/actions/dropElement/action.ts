@@ -5,7 +5,7 @@ import {
     EventActionCallable,
     EventActionHandlerCallableState,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { plugins } from "@webiny/plugins";
 import { DropElementActionArgsType } from "./types";
 
@@ -36,6 +36,11 @@ export const dropElementAction: EventActionCallable<DropElementActionArgsType> =
     meta,
     args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
     const { source, target } = args;
     const { id, type, position } = target;
     const targetElement = await state.getElementById(id);

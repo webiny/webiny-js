@@ -19,7 +19,7 @@ interface ValidateArgs {
     model: CmsModel;
     data: InputData;
     context: CmsContext;
-    entry: CmsEntry;
+    entry?: CmsEntry;
 }
 
 const validateValue = async (
@@ -68,7 +68,6 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
         return "Missing predefined values to validate against.";
     }
     for (const predefinedValue of predefinedValues) {
-        // console.log(field.fieldId, predefinedValue.value, value, predefinedValue.value == value);
         if (predefinedValue.value == value) {
             return null;
         }
@@ -81,7 +80,7 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
  */
 const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<string | null> => {
     const { field, data } = args;
-    const values = data[field.fieldId];
+    const values = data[field.fieldId] || [];
     if (Array.isArray(values) === false) {
         return `Value of the field "${field.fieldId}" is not an array.`;
     }
@@ -107,7 +106,7 @@ const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<st
 const runFieldValueValidations = async (args: ValidateArgs): Promise<string | null> => {
     const { data, field } = args;
     const value = data[field.fieldId];
-    const error = await validateValue(args, field.validation, value);
+    const error = await validateValue(args, field.validation || [], value);
     if (error) {
         return error;
     }
@@ -121,13 +120,13 @@ const execValidation = async (args: ValidateArgs): Promise<string | null> => {
     return await runFieldValueValidations(args);
 };
 
-export interface Params {
+export interface ValidateModelEntryDataParams {
     context: CmsContext;
     model: CmsModel;
     data: InputData;
     entry?: CmsEntry;
 }
-export const validateModelEntryData = async (params: Params) => {
+export const validateModelEntryData = async (params: ValidateModelEntryDataParams) => {
     const { context, model, entry, data } = params;
     /**
      * To later simplify searching for the validations we map them to a name.

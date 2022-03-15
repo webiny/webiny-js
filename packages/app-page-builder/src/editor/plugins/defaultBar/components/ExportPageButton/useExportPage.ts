@@ -7,7 +7,7 @@ import { EXPORT_PAGES } from "~/admin/graphql/pageImportExport.gql";
 import useExportPageDialog from "./useExportPageDialog";
 
 const useExportPage = () => {
-    const [taskId, setTaskId] = useState<string>(null);
+    const [taskId, setTaskId] = useState<string | null>(null);
     const { showSnackbar } = useSnackbar();
     const { showExportPageLoadingDialog } = useExportPageDialog();
     const { hideDialog } = useDialog();
@@ -17,7 +17,8 @@ const useExportPage = () => {
             const { error, data } = get(response, "pageBuilder.exportPages", {});
             if (error) {
                 hideDialog();
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return;
             }
             setTaskId(data.task.id);
         }

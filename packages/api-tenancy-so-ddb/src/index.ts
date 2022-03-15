@@ -2,26 +2,37 @@ import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
 import { createTenantEntity } from "~/definitions/tenantEntity";
 import { createSystemEntity } from "~/definitions/systemEntity";
 import { createDomainEntity } from "~/definitions/domainEntity";
 import { CreateTenancyStorageOperations, ENTITIES } from "~/types";
-import { System, Tenant, TenantDomain } from "@webiny/api-tenancy/types";
+import { ListTenantsParams, System, Tenant, TenantDomain } from "@webiny/api-tenancy/types";
+
+interface TenantDomainRecord {
+    PK: string;
+    SK: string;
+    GSI1_PK: string;
+    GSI1_SK: string;
+    tenant: string;
+    fqdn: string;
+    webinyVersion: string;
+}
 
 const reservedFields = ["PK", "SK", "index", "data"];
 
-const isReserved = name => {
-    if (reservedFields.includes(name)) {
-        throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
-            name
-        });
+const isReserved = (name: string): void => {
+    if (reservedFields.includes(name) === false) {
+        return;
     }
+    throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
+        name
+    });
 };
 
 export const createStorageOperations: CreateTenancyStorageOperations = params => {
-    const { table, documentClient, attributes = {} } = params;
+    const { table, documentClient, attributes } = params;
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -35,17 +46,17 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         tenants: createTenantEntity({
             entityName: ENTITIES.TENANT,
             table: tableInstance,
-            attributes: attributes[ENTITIES.TENANT]
+            attributes: attributes ? attributes[ENTITIES.TENANT] : {}
         }),
         domains: createDomainEntity({
             entityName: ENTITIES.DOMAIN,
             table: tableInstance,
-            attributes: attributes[ENTITIES.DOMAIN]
+            attributes: attributes ? attributes[ENTITIES.DOMAIN] : {}
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table: tableInstance,
-            attributes: attributes[ENTITIES.SYSTEM]
+            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
         })
     };
 
@@ -54,12 +65,15 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         SK: "TENANCY"
     };
 
-    const createNewDomainsRecords = (tenant: Tenant, existingDomains: TenantDomain[] = []) => {
+    const createNewDomainsRecords = (
+        tenant: Tenant,
+        existingDomains: TenantDomain[] = []
+    ): TenantDomainRecord[] => {
         return tenant.settings.domains
-            .map(({ fqdn }) => {
+            .map(({ fqdn }): TenantDomainRecord | null => {
                 // If domain is already in the DB, skip it.
                 if (existingDomains.find(d => d.fqdn === fqdn)) {
-                    return;
+                    return null;
                 }
 
                 // Add a new domain.
@@ -70,10 +84,10 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                     GSI1_SK: `T#${tenant.id}#${fqdn}`,
                     tenant: tenant.id,
                     fqdn,
-                    webinyVersion: tenant.webinyVersion
+                    webinyVersion: tenant.webinyVersion as string
                 };
             })
-            .filter(Boolean);
+            .filter(Boolean) as TenantDomainRecord[];
     };
 
     return {
@@ -91,14 +105,14 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 });
                 return data;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create system record.",
                     code: "CREATE_SYSTEM_ERROR",
                     data: { keys: systemKeys, data }
                 });
             }
         },
-        async getSystemData(): Promise<System> {
+        async getSystemData(): Promise<System | null> {
             try {
                 const result = await entities.system.get(systemKeys);
                 if (!result || !result.Item) {
@@ -106,7 +120,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 }
                 return cleanupItem(entities.system, result.Item);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not load system record.",
                     code: "GET_SYSTEM_ERROR",
                     data: { keys: systemKeys }
@@ -121,7 +135,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 });
                 return data;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not update system record.",
                     code: "UPDATE_SYSTEM_ERROR",
                     data: { keys: systemKeys, data }
@@ -137,7 +151,9 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             return cleanupItems(entities.tenants, tenants);
         },
 
-        async listTenants<TTenant extends Tenant = Tenant>({ parent }): Promise<TTenant[]> {
+        async listTenants<TTenant extends Tenant = Tenant>({
+            parent
+        }: ListTenantsParams): Promise<TTenant[]> {
             const tenants = await queryAll<TTenant>({
                 entity: entities.tenants,
                 partitionKey: `T#${parent}`,
@@ -173,7 +189,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
                 return data as TTenant;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create tenant record.",
                     code: "CREATE_TENANT_ERROR",
                     data: { keys, data }
@@ -231,7 +247,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
                 return data as TTenant;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not update tenant record.",
                     code: "CREATE_TENANT_ERROR",
                     data: { keys, data }

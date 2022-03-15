@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import lodashSortBy from "lodash.sortby";
+import lodashSortBy from "lodash/sortBy";
 import dotProp from "dot-prop";
 import {
     CmsEntry,
@@ -14,7 +14,7 @@ import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/Value
 import { PluginsContainer } from "@webiny/plugins";
 import {
     CmsEntryFieldFilterPathPlugin,
-    Params as CmsEntryFieldFilterPathPluginParams,
+    CmsEntryFieldFilterPathPluginParams,
     CreatePathCallable as CmsEntryFieldFieldCreatePathCallable
 } from "~/plugins/CmsEntryFieldFilterPathPlugin";
 
@@ -31,7 +31,7 @@ type MappedPlugins<T extends Plugin> = Record<string, T>;
 
 interface CreateFiltersParams {
     plugins: PluginsContainer;
-    where: CmsEntryListWhere;
+    where: Partial<CmsEntryListWhere>;
     fields: ModelFieldRecords;
 }
 
@@ -45,11 +45,11 @@ interface ItemFilter {
 }
 
 export interface FilterItemFromStorage {
-    (field: CmsModelField, value: any): Promise<any>;
+    <T = any>(field: CmsModelField, value: any): Promise<T>;
 }
 interface FilterItemsParams {
     items: CmsEntry[];
-    where: CmsEntryListWhere;
+    where: Partial<CmsEntryListWhere>;
     plugins: PluginsContainer;
     fields: ModelFieldRecords;
     fromStorage: FilterItemFromStorage;
@@ -66,14 +66,18 @@ const extractWhereParams = (key: string) => {
      */
     if (rawOp === "not") {
         return {
-            fieldId,
+            fieldId: fieldId as string,
             operation: "eq",
             negate: true
         };
     }
     const negate = rawOp.match("not_") !== null;
     const operation = rawOp.replace("not_", "");
-    return { fieldId, operation, negate };
+    return {
+        fieldId: fieldId as string,
+        operation,
+        negate
+    };
 };
 
 const transformValue = (value: any, transform: (value: any) => any): any => {
@@ -265,15 +269,15 @@ const getFilterValuePath = (filter: ItemFilter): string => {
         return filter.path;
     }
     const paths = filter.path.split(".%s.");
-    return paths.shift();
+    return paths.shift() as string;
 };
 
-const getFilterValuePropertyPath = (filter: ItemFilter): string => {
+const getFilterValuePropertyPath = (filter: ItemFilter): string | null => {
     if (filter.path.includes(".%s.") === false) {
         return null;
     }
     const paths = filter.path.split(".%s.");
-    return paths.pop();
+    return paths.pop() || null;
 };
 
 interface ExecFilterParams {
@@ -303,7 +307,7 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
         fields
     });
 
-    const promises: Promise<CmsEntry>[] = records.map(async record => {
+    const promises: Promise<CmsEntry | null>[] = records.map(async record => {
         /**
          * We need to go through all the filters and apply them to the given record.
          */
@@ -325,7 +329,10 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
                     continue;
                 }
 
-                const plainValue = await fromStorage(fields[filter.fieldId].def, rawValue);
+                const plainValue = await fromStorage<Record<string, string>[]>(
+                    fields[filter.fieldId].def,
+                    rawValue
+                );
                 /**
                  * We cannot go through the value because it is not array. Log the error and continue.
                  */
@@ -374,11 +381,11 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
     /**
      * We run filtering as promises so it is a bit faster than in for ... of loop.
      */
-    const results: CmsEntry[] = await Promise.all(promises);
+    const results: (CmsEntry | null)[] = await Promise.all(promises);
     /**
      * And filter out the null values which are returned when filter is not satisfied.
      */
-    return results.filter(Boolean);
+    return results.filter(Boolean) as CmsEntry[];
 };
 
 const extractSort = (
@@ -421,7 +428,7 @@ const extractSort = (
 
 interface SortEntryItemsArgs {
     items: CmsEntry[];
-    sort: string[];
+    sort?: string[];
     fields: ModelFieldRecords;
 }
 
@@ -500,7 +507,7 @@ const getMappedPlugins = <T extends Plugin>(params: {
         }
         collection[key] = plugin;
         return collection;
-    }, {});
+    }, {} as MappedPlugins<T>);
 };
 
 export const buildModelFields = ({

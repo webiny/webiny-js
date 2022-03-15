@@ -15,13 +15,13 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { createTopic } from "@webiny/pubsub";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
-export interface Params {
+interface CreateSystemCrudParams {
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
     context: FormBuilderContext;
 }
 
-export const createSystemCrud = (params: Params): SystemCRUD => {
+export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => {
     const { getTenant, getIdentity, context } = params;
 
     const onBeforeInstall = createTopic<BeforeInstallTopic>();
@@ -44,7 +44,7 @@ export const createSystemCrud = (params: Params): SystemCRUD => {
         },
         async getSystemVersion(this: FormBuilder) {
             const system = await this.getSystem();
-            return system ? system.version : null;
+            return system ? system.version || null : null;
         },
         async setSystemVersion(this: FormBuilder, version: string) {
             const original = await this.getSystem();

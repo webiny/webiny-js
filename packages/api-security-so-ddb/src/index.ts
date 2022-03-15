@@ -2,11 +2,13 @@ import { ENTITIES, SecurityStorageParams } from "~/types";
 import {
     ApiKey,
     Group,
+    ListTenantLinksByTypeParams,
     SecurityStorageOperations,
+    StorageOperationsGetTenantLinkByIdentityParams,
     System,
     TenantLink
 } from "@webiny/api-security/types";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
 import {
     createApiKeyEntity,
@@ -19,20 +21,21 @@ import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/qu
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 
-const reservedFields = ["PK", "SK", "index", "data"];
+const reservedFields: string[] = ["PK", "SK", "index", "data"];
 
-const isReserved = name => {
-    if (reservedFields.includes(name)) {
-        throw new Error(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
-            name
-        });
+const isReserved = (name: string): void => {
+    if (reservedFields.includes(name) === false) {
+        return;
     }
+    throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
+        name
+    });
 };
 
 export const createStorageOperations = (
     params: SecurityStorageParams
 ): SecurityStorageOperations => {
-    const { table: tableName, documentClient, attributes = {} } = params;
+    const { table: tableName, documentClient, attributes } = params;
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
             Object.keys(attrs).forEach(isReserved);
@@ -42,10 +45,13 @@ export const createStorageOperations = (
     const table = createTable({ table: tableName, documentClient });
 
     const entities = {
-        apiKeys: createApiKeyEntity(table, attributes[ENTITIES.API_KEY]),
-        system: createSystemEntity(table, attributes[ENTITIES.SYSTEM]),
-        groups: createGroupEntity(table, attributes[ENTITIES.GROUP]),
-        tenantLinks: createTenantLinkEntity(table, attributes[ENTITIES.TENANT_LINK])
+        apiKeys: createApiKeyEntity(table, attributes ? attributes[ENTITIES.API_KEY] : {}),
+        system: createSystemEntity(table, attributes ? attributes[ENTITIES.SYSTEM] : {}),
+        groups: createGroupEntity(table, attributes ? attributes[ENTITIES.GROUP] : {}),
+        tenantLinks: createTenantLinkEntity(
+            table,
+            attributes ? attributes[ENTITIES.TENANT_LINK] : {}
+        )
     };
 
     const createApiKeyKeys = ({ id, tenant }: Pick<ApiKey, "id" | "tenant">) => ({
@@ -63,7 +69,7 @@ export const createStorageOperations = (
         GSI1_SK: group.slug
     });
 
-    const createSystemKeys = tenant => ({
+    const createSystemKeys = (tenant: string) => ({
         PK: `T#${tenant}#SYSTEM`,
         SK: "SECURITY"
     });
@@ -84,7 +90,7 @@ export const createStorageOperations = (
                 });
                 return apiKey;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create api key.",
                     code: "CREATE_API_KEY_ERROR",
                     data: { keys }
@@ -105,7 +111,7 @@ export const createStorageOperations = (
                 });
                 return group;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create group.",
                     code: "CREATE_GROUP_ERROR",
                     data: { keys }
@@ -121,7 +127,7 @@ export const createStorageOperations = (
                 });
                 return system;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not create system.",
                     code: "CREATE_SYSTEM_ERROR",
                     data: { keys, system }
@@ -147,7 +153,7 @@ export const createStorageOperations = (
             try {
                 await entities.apiKeys.delete(keys);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not update api key.",
                     code: "UPDATE_API_KEY_ERROR",
                     data: { keys }
@@ -160,7 +166,7 @@ export const createStorageOperations = (
             try {
                 await entities.groups.delete(keys);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not delete group.",
                     code: "CREATE_DELETE_ERROR",
                     data: { keys, group }
@@ -187,7 +193,7 @@ export const createStorageOperations = (
                 }
                 return cleanupItem(entities.apiKeys, result.Item);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not load api key.",
                     code: "GET_API_KEY_ERROR",
                     data: { id, keys }
@@ -208,7 +214,7 @@ export const createStorageOperations = (
                 const result = await queryOne<ApiKey>(queryParams);
                 return cleanupItem(entities.apiKeys, result);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not load api key by token.",
                     code: "GET_BY_TOKEN_API_KEY_ERROR",
                     data: { partitionKey: queryParams.partitionKey, options: queryParams.options }
@@ -236,14 +242,14 @@ export const createStorageOperations = (
 
                 return cleanupItem(entities.groups, result);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not load group.",
                     code: "GET_GROUP_ERROR",
                     data: { id, slug }
                 });
             }
         },
-        async getSystemData({ tenant }): Promise<System> {
+        async getSystemData({ tenant }): Promise<System | null> {
             const keys = createSystemKeys(tenant);
             try {
                 const result = await entities.system.get(keys);
@@ -252,7 +258,7 @@ export const createStorageOperations = (
                 }
                 return cleanupItem(entities.system, result.Item);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not load system.",
                     code: "GET_SYSTEM_ERROR",
                     data: { keys }
@@ -262,7 +268,7 @@ export const createStorageOperations = (
         async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>({
             tenant,
             identity
-        }): Promise<TLink> {
+        }: StorageOperationsGetTenantLinkByIdentityParams): Promise<TLink | null> {
             try {
                 const result = await queryOne<TLink>({
                     entity: entities.tenantLinks,
@@ -274,7 +280,7 @@ export const createStorageOperations = (
 
                 return cleanupItem(entities.tenantLinks, result);
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not get tenant link for identity.",
                     code: "GET_TENANT_LINK_BY_IDENTITY",
                     data: { tenant, identity }
@@ -293,7 +299,7 @@ export const createStorageOperations = (
                     }
                 });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not list api keys.",
                     code: "LIST_API_KEY_ERROR"
                 });
@@ -304,7 +310,9 @@ export const createStorageOperations = (
                 sort,
                 fields: []
             });
-            return sortedItems.map(item => cleanupItem(entities.apiKeys, item));
+            return sortedItems
+                .map(item => cleanupItem(entities.apiKeys, item))
+                .filter(Boolean) as ApiKey[];
         },
         async listGroups({ where: { tenant }, sort }): Promise<Group[]> {
             let items: Group[];
@@ -318,7 +326,7 @@ export const createStorageOperations = (
                     }
                 });
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not list groups.",
                     code: "LIST_GROUP_ERROR"
                 });
@@ -351,7 +359,10 @@ export const createStorageOperations = (
 
             return cleanupItems(entities.tenantLinks, links);
         },
-        async listTenantLinksByType<TLink = TenantLink>({ type, tenant }): Promise<TLink[]> {
+        async listTenantLinksByType<TLink = TenantLink>({
+            type,
+            tenant
+        }: ListTenantLinksByTypeParams): Promise<TLink[]> {
             const links = await queryAll<TLink>({
                 entity: entities.tenantLinks,
                 partitionKey: `T#${tenant}`,
@@ -361,7 +372,11 @@ export const createStorageOperations = (
             return cleanupItems(entities.tenantLinks, links);
         },
         async updateApiKey({ apiKey }): Promise<ApiKey> {
-            const keys = createApiKeyKeys(apiKey);
+            const keys = {
+                ...createApiKeyKeys(apiKey),
+                GSI1_PK: `T#${apiKey.tenant}#API_KEYS`,
+                GSI1_SK: apiKey.token
+            };
 
             try {
                 await entities.apiKeys.put({
@@ -371,7 +386,7 @@ export const createStorageOperations = (
                 });
                 return apiKey;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not update api key.",
                     code: "UPDATE_API_KEY_ERROR",
                     data: { keys }
@@ -389,7 +404,7 @@ export const createStorageOperations = (
                 });
                 return group;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not update group.",
                     code: "UPDATE_GROUP_ERROR",
                     data: { keys, group }
@@ -405,7 +420,7 @@ export const createStorageOperations = (
                 });
                 return system;
             } catch (err) {
-                throw Error.from(err, {
+                throw WebinyError.from(err, {
                     message: "Could not update system.",
                     code: "UPDATE_SYSTEM_ERROR",
                     data: { keys, system, original }

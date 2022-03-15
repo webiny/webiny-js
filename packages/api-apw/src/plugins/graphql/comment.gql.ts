@@ -116,7 +116,7 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     `,
     resolvers: {
         ApwQuery: {
-            getComment: async (_, args, context) => {
+            getComment: async (_, args: any, context) => {
                 return resolve(() => context.apw.comment.get(args.id));
             },
             listComments: async (_, args: ApwCommentListParams, context) => {
@@ -129,13 +129,13 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             }
         },
         ApwMutation: {
-            createComment: async (_, args, context) => {
+            createComment: async (_, args: any, context) => {
                 return resolve(() => context.apw.comment.create(args.data));
             },
-            updateComment: async (_, args, context) => {
+            updateComment: async (_, args: any, context) => {
                 return resolve(() => context.apw.comment.update(args.id, args.data));
             },
-            deleteComment: async (_, args, context) => {
+            deleteComment: async (_, args: any, context) => {
                 return resolve(() => context.apw.comment.delete(args.id));
             }
         }

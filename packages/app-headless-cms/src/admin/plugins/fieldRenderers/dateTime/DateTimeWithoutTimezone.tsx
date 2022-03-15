@@ -8,6 +8,7 @@ import {
 } from "./utils";
 import { Input } from "./Input";
 import { CmsEditorField } from "~/types";
+import { BindComponentRenderProp } from "@webiny/form";
 
 interface State {
     date: string;
@@ -43,12 +44,12 @@ const parseDateTime = (value?: string): State => {
     };
 };
 
-export interface Props {
-    bind: any;
+export interface DateTimeWithoutTimezoneProps {
+    bind: BindComponentRenderProp;
     trailingIcon?: any;
     field: CmsEditorField;
 }
-export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
+export const DateTimeWithoutTimezone: React.FC<DateTimeWithoutTimezoneProps> = ({
     field,
     bind,
     trailingIcon
@@ -79,7 +80,7 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
                     bind={{
                         ...bind,
                         value: date,
-                        onChange: value => {
+                        onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
                                     return;
@@ -101,7 +102,7 @@ export const DateTimeWithoutTimezone: React.FunctionComponent<Props> = ({
                     bind={{
                         ...bind,
                         value: time,
-                        onChange: value => {
+                        onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
                                     return;

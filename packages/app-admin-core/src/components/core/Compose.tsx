@@ -2,11 +2,14 @@ import React, { useEffect } from "react";
 import { HigherOrderComponent, useAdmin } from "~/admin";
 
 export interface ComposeProps {
-    component: React.ComponentType<unknown> & { original: React.ComponentType<unknown> };
+    component: React.FC<unknown> & {
+        original: React.FC<unknown>;
+        originalName?: string;
+    };
     with: HigherOrderComponent | HigherOrderComponent[];
 }
 
-export const Compose = (props: ComposeProps) => {
+export const Compose: React.FC<ComposeProps> = props => {
     const { addComponentWrappers } = useAdmin();
 
     useEffect(() => {

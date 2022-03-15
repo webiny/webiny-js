@@ -1,33 +1,21 @@
 import { CmsFieldValueTransformer } from "~/types";
 import WebinyError from "@webiny/error";
 
-interface ThrowTransformErrorParams {
-    ex: WebinyError;
-    type: string;
-    value: string;
+interface TransformerCallable<T> {
+    (value?: T): string | null;
 }
-const throwTransformError = (params: ThrowTransformErrorParams): void => {
-    const { type, value, ex: error } = params;
-    throw new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
-        error,
-        type,
-        value
-    });
-};
-
-const dateOnly = (value?: string): string => {
+const dateOnly: TransformerCallable<string> = value => {
     if (!value) {
         return null;
-        // return new Date().toISOString().substr(0, 10);
     }
     try {
         const date = new Date(value).toISOString();
         return date.substr(0, 10);
-    } catch (ex) {
-        throwTransformError({
-            ex,
-            value,
-            type: "date"
+    } catch (error) {
+        throw new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
+            error,
+            type: "date",
+            value
         });
     }
 };
@@ -53,7 +41,7 @@ const extractTimeZone = (value?: string): [string, string] => {
     return result as [string, string];
 };
 
-const extractTime = (value?: string): string => {
+const extractTime = (value?: string, def: string | null = null): string | null => {
     if (!value) {
         return null;
     } else if (value.includes(":") === false) {
@@ -67,9 +55,10 @@ const extractTime = (value?: string): string => {
     } else if (result.length === 2) {
         return `${value}:00`;
     }
+    return def;
 };
 
-const dateTimeWithTimezone = (value?: string): string => {
+const dateTimeWithTimezone: TransformerCallable<string> = value => {
     if (!value) {
         return null;
     } else if (value.includes("T") === false) {
@@ -96,12 +85,12 @@ const dateTimeWithTimezone = (value?: string): string => {
     }
     const [initialTime] = extractTimeZone(initialTimeZone);
 
-    const time = extractTime(initialTime);
+    const time = extractTime(initialTime, "00:00:00") as string;
 
     return value.replace(initialDate, date).replace(initialTime, time);
 };
 
-const dateTimeWithoutTimezone = (value?: string): string => {
+const dateTimeWithoutTimezone: TransformerCallable<string> = (value): string | null => {
     if (!value) {
         return null;
     } else if (value.includes(" ") === false) {
@@ -109,23 +98,23 @@ const dateTimeWithoutTimezone = (value?: string): string => {
     }
     try {
         return new Date(`${value.replace(" ", "T")}.000Z`).toISOString();
-    } catch (ex) {
-        throwTransformError({
-            ex,
-            value,
-            type: "dateTimeWithoutTimezone"
+    } catch (error) {
+        throw new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
+            error,
+            type: "dateTimeWithoutTimezone",
+            value
         });
     }
 };
 
-const time = (value?: string) => {
+const time: TransformerCallable<string> = value => {
     if (!value) {
         return null;
     }
     return extractTime(value);
 };
 
-const transformers = {
+const transformers: Record<string, TransformerCallable<string>> = {
     time,
     date: dateOnly,
     dateTimeWithoutTimezone,
@@ -136,9 +125,12 @@ export default (): CmsFieldValueTransformer => ({
     type: "cms-field-value-transformer",
     name: "cms-field-value-transformer-date",
     fieldType: "datetime",
-    transform: (value, field) => {
+    transform: (value: any, field) => {
         // check types in packages/app-headless-cms/src/admin/plugins/fieldRenderers/dateTime/dateTimeField.tsx
-        const type = field.settings.type;
+        const type = field.settings && field.settings.type ? String(field.settings.type) : null;
+        if (!type) {
+            return value;
+        }
         const transform = transformers[type];
 
         if (!transform) {

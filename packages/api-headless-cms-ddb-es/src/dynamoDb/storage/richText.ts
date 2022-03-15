@@ -14,7 +14,8 @@ export interface StorageValue {
  * https://github.com/rgcl/jsonpack/pull/25/files
  * NOTE 2021-07-28: it seems PR is not going to be merged so keep this.
  */
-const transformArray = (value: Record<string, any> | any[]) => {
+// TODO @ts-refactor figure better type
+const transformArray = (value: any) => {
     if (!value) {
         return value;
     }
@@ -72,7 +73,9 @@ const plugin = new StorageTransformPlugin({
         }
         try {
             return jsonpack.unpack(value);
-        } catch {
+        } catch (ex) {
+            console.log("Error while decompressing rich-text.");
+            console.log(ex.message);
             return null;
         }
     },
@@ -85,9 +88,17 @@ const plugin = new StorageTransformPlugin({
             return value as any;
         }
         value = transformArray(value);
+
+        let jsonValue: string | null = null;
+        try {
+            jsonValue = jsonpack.pack(value);
+        } catch (ex) {
+            console.log("Error while compressing rich-text.");
+            console.log(ex.message);
+        }
         return {
             compression: "jsonpack",
-            value: value ? jsonpack.pack(value) : value
+            value: jsonValue
         };
     }
 });

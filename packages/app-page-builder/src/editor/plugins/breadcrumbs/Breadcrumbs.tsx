@@ -1,27 +1,32 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useRecoilCallback, useRecoilSnapshot, useRecoilState, useRecoilValue } from "recoil";
-import { PbEditorElement } from "../../../types";
-import {
-    activeElementAtom,
-    elementByIdSelector,
-    elementsAtom,
-    highlightElementAtom
-} from "../../recoil/modules";
+import { useRecoilCallback, useRecoilSnapshot } from "recoil";
+import { PbEditorElement } from "~/types";
 import { breadcrumbs } from "./styles";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useHighlightElement } from "~/editor/hooks/useHighlightElement";
+import { elementByIdSelector, elementsAtom, ElementsAtomType } from "~/editor/recoil/modules";
+import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
-const Breadcrumbs: React.FunctionComponent = () => {
-    const [items, setItems] = useState([]);
-    const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElement));
-    const [highlightElementAtomValue, setHighlightElementAtomValue] =
-        useRecoilState(highlightElementAtom);
+type ItemsState = Pick<ElementsAtomType, "id" | "type">;
+
+const Breadcrumbs: React.FC = () => {
+    const [items, setItems] = useState<ItemsState[]>([]);
+    const [, setActiveElementId] = useActiveElementId();
+    const element = useActiveElement();
+    const [highlightedElement, setHighlightElement] = useHighlightElement();
     const snapshot = useRecoilSnapshot();
     const lazyHighlight = useRecoilCallback(
         ({ set }) =>
             async (id: string) => {
-                if (highlightElementAtomValue) {
-                    // Update the element that is currently highlighted
-                    set(elementsAtom(highlightElementAtomValue), prevValue => {
+                if (highlightedElement) {
+                    /**
+                     * Update the element that is currently highlighted.
+                     * We are positive that this value is not null.
+                     */
+                    set(elementsAtom(highlightedElement.id), prevValue => {
+                        if (!prevValue) {
+                            return null;
+                        }
                         return {
                             ...prevValue,
                             isHighlighted: false
@@ -30,17 +35,23 @@ const Breadcrumbs: React.FunctionComponent = () => {
                 }
 
                 // Set the new highlighted element
-                setHighlightElementAtomValue(id);
+                setHighlightElement(id);
 
-                // Update the element that is about to be highlighted
+                /**
+                 * Update the element that is about to be highlighted
+                 * We are positive that this value is not null.
+                 */
                 set(elementsAtom(id), prevValue => {
+                    if (!prevValue) {
+                        return null;
+                    }
                     return {
                         ...prevValue,
                         isHighlighted: true
                     };
                 });
             },
-        [highlightElementAtomValue]
+        [highlightedElement]
     );
 
     const highlightElement = useCallback(
@@ -51,11 +62,11 @@ const Breadcrumbs: React.FunctionComponent = () => {
     );
 
     const activateElement = useCallback((id: string) => {
-        setActiveElementAtomValue(id);
+        setActiveElementId(id);
     }, []);
 
-    const createBreadCrumbs = async (activeElement: PbEditorElement) => {
-        const list = [];
+    const createBreadCrumbs = useCallback(async (activeElement: PbEditorElement) => {
+        const list: ItemsState[] = [];
         let element = activeElement;
         while (element.parent) {
             list.push({
@@ -67,15 +78,18 @@ const Breadcrumbs: React.FunctionComponent = () => {
                 break;
             }
 
-            element = await snapshot.getPromise(elementByIdSelector(element.parent));
+            element = (await snapshot.getPromise(
+                elementByIdSelector(element.parent)
+            )) as PbEditorElement;
         }
         setItems(list.reverse());
-    };
+    }, []);
 
     useEffect(() => {
-        if (element) {
-            createBreadCrumbs(element);
+        if (!element) {
+            return;
         }
+        createBreadCrumbs(element);
     }, [element]);
 
     if (!element) {

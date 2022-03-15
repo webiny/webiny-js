@@ -15,6 +15,7 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
 
+export type ApiEndpoint = "manage" | "preview" | "read";
 export interface HeadlessCms
     extends CmsSettingsContext,
         CmsSystemContext,
@@ -24,7 +25,7 @@ export interface HeadlessCms
     /**
      * API type
      */
-    type: "manage" | "preview" | "read" | string;
+    type: ApiEndpoint;
     /**
      * Requested locale
      */
@@ -130,11 +131,11 @@ export interface CmsModelField {
     /**
      * Text below the field to clarify what is it meant to be in the field value
      */
-    helpText?: string;
+    helpText?: string | null;
     /**
      * Text to be displayed in the field
      */
-    placeholderText?: string;
+    placeholderText?: string | null;
     /**
      * Are predefined values enabled? And list of them
      */
@@ -169,9 +170,22 @@ export interface CmsModelField {
      */
     settings?: {
         /**
+         * Predefined values (text, number)
          * The default value for the field in case it is not predefined values field.
          */
         defaultValue?: string | number | null | undefined;
+        /**
+         * Object field.
+         */
+        fields?: CmsModelField[];
+        /**
+         * Ref field.
+         */
+        models?: Pick<CmsModel, "modelId">[];
+        /**
+         * Date field.
+         */
+        type?: string;
         /**
          * There are a lot of other settings that are possible to add so we keep the type opened.
          */
@@ -344,7 +358,7 @@ export interface CmsModel {
     /**
      * Description for the content model.
      */
-    description?: string;
+    description?: string | null;
     /**
      * Date created
      */
@@ -399,16 +413,17 @@ export interface CmsModelFieldDefinition {
     typeDefs?: string;
 }
 
+interface CmsModelFieldToGraphQLCreateResolverParams {
+    models: CmsModel[];
+    model: CmsModel;
+    graphQLType: string;
+    field: CmsModelField;
+    createFieldResolvers: any;
+}
 export interface CmsModelFieldToGraphQLCreateResolver {
-    (params: {
-        models: CmsModel[];
-        model: CmsModel;
-        graphQLType: string;
-        field: CmsModelField;
-        createFieldResolvers: any;
-    }):
+    (params: CmsModelFieldToGraphQLCreateResolverParams):
         | GraphQLFieldResolver
-        | { resolver: GraphQLFieldResolver; typeResolvers: Resolvers<CmsContext> }
+        | { resolver: GraphQLFieldResolver | null; typeResolvers: Resolvers<CmsContext> }
         | false;
 }
 
@@ -533,10 +548,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createSchema?: (params: {
-            models: CmsModel[];
-            model: CmsModel;
-        }) => GraphQLSchemaDefinition<CmsContext>;
+        createSchema?: (params: { models: CmsModel[] }) => GraphQLSchemaDefinition<CmsContext>;
     };
     manage: {
         /**
@@ -573,10 +585,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          *     }
          * ```
          */
-        createSchema?: (params: {
-            models: CmsModel[];
-            model: CmsModel;
-        }) => GraphQLSchemaDefinition<CmsContext>;
+        createSchema?: (params: { models: CmsModel[] }) => GraphQLSchemaDefinition<CmsContext>;
         /**
          * Definition of the field type for GraphQL - be aware if multiple values is selected. Probably same as `read.createTypeField`.
          *
@@ -616,7 +625,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
             model: CmsModel;
             field: CmsModelField;
             fieldTypePlugins: CmsFieldTypePlugins;
-        }) => CmsModelFieldDefinition | string;
+        }) => CmsModelFieldDefinition | string | null;
         /**
          * Definition for field resolver.
          * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
@@ -681,7 +690,7 @@ export interface CreatedBy {
     /**
      * Full name of the user.
      */
-    displayName: string;
+    displayName: string | null;
     /**
      * Type of the user (admin, user)
      */
@@ -737,9 +746,9 @@ export interface AfterInstallTopicParams {
 }
 
 export type CmsSystemContext = {
-    getSystemVersion: () => Promise<string>;
+    getSystemVersion: () => Promise<string | null>;
     setSystemVersion: (version: string) => Promise<void>;
-    getReadAPIKey(): Promise<string>;
+    getReadAPIKey(): Promise<string | null>;
     installSystem: () => Promise<void>;
     upgradeSystem: (version: string) => Promise<boolean>;
     /**
@@ -939,7 +948,12 @@ export interface CmsGroupContext {
 export interface CmsModelFieldValidation {
     name: string;
     message: string;
-    settings?: Record<string, any>;
+    settings?: {
+        value?: string | number;
+        values?: string[];
+        preset?: string;
+        [key: string]: any;
+    };
 }
 
 /**
@@ -1225,11 +1239,11 @@ export interface CmsModelManager {
     /**
      * Create a entry.
      */
-    create: (data: Record<string, any>) => Promise<CmsEntry>;
+    create: (data: CreateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Update a entry.
      */
-    update: (id: string, data: Record<string, any>) => Promise<CmsEntry>;
+    update: (id: string, data: UpdateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Delete a entry.
      */
@@ -1421,6 +1435,15 @@ export interface CmsEntryListWhere {
      */
     latest?: boolean;
     /**
+     * Search for exact locale.
+     * This will most likely be populated, but leave it as optional.
+     */
+    locale?: string;
+    /**
+     * Exact tenant. No multi-tenancy search.
+     */
+    tenant: string;
+    /**
      * Can be reference field or, actually, anything else.
      */
     [key: string]: any | CmsEntryListWhereRef;
@@ -1455,7 +1478,7 @@ export interface CmsEntryListParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 /**
@@ -1468,7 +1491,7 @@ export interface CmsEntryMeta {
     /**
      * A cursor for pagination.
      */
-    cursor: string;
+    cursor: string | null;
     /**
      * Is there more items to load?
      */
@@ -1629,7 +1652,7 @@ export interface CmsEntryContext {
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
-    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[] | null>;
+    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[]>;
     /**
      * Get the entry for a model by a given ID.
      */
@@ -1678,7 +1701,7 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: (model: CmsModel, id: string, input?: UpdateCmsEntryInput) => Promise<CmsEntry>;
+    updateEntry: (model: CmsModel, id: string, input: UpdateCmsEntryInput) => Promise<CmsEntry>;
     /**
      * Method that republishes entry with given identifier.
      * @internal
@@ -1763,15 +1786,23 @@ export type CmsEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsCo
  * @category SecurityPermission
  */
 export interface CmsSettingsPermission extends SecurityPermission {} // eslint-disable-line
+
+/**
+ * A base security permission for CMS.
+ *
+ * @category SecurityPermission
+ */
+export interface BaseCmsSecurityPermission extends SecurityPermission {
+    own?: boolean;
+    rwd: string | number;
+}
 /**
  * A security permission for content model.
  *
  * @category SecurityPermission
  * @category CmsModel
  */
-export interface CmsModelPermission extends SecurityPermission {
-    own: boolean;
-    rwd: string;
+export interface CmsModelPermission extends BaseCmsSecurityPermission {
     /**
      * A object representing `key: model.modelId` values where key is locale code.
      */
@@ -1792,9 +1823,7 @@ export interface CmsModelPermission extends SecurityPermission {
  * @category SecurityPermission
  * @category CmsGroup
  */
-export interface CmsGroupPermission extends SecurityPermission {
-    own: boolean;
-    rwd: string;
+export interface CmsGroupPermission extends BaseCmsSecurityPermission {
     /**
      * A object representing `key: group.id` values where key is locale code.
      */
@@ -1809,10 +1838,8 @@ export interface CmsGroupPermission extends SecurityPermission {
  * @category SecurityPermission
  * @category CmsEntry
  */
-export interface CmsEntryPermission extends SecurityPermission {
-    own: boolean;
-    rwd: string;
-    pw: string;
+export interface CmsEntryPermission extends BaseCmsSecurityPermission {
+    pw?: string;
     /**
      * A object representing `key: model.modelId` values where key is locale code.
      */
@@ -1955,7 +1982,7 @@ export interface CmsEntryStorageOperationsListParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 export interface CmsEntryStorageOperationsCreateParams<
@@ -1989,11 +2016,11 @@ export interface CmsEntryStorageOperationsCreateRevisionFromParams<
     /**
      * Latest entry, used to calculate the new version.
      */
-    latestEntry: CmsEntry;
+    latestEntry: CmsEntry | null;
     /**
      * Latest entry, used to calculate the new version, directly from storage, with transformations.
      */
-    latestStorageEntry: T;
+    latestStorageEntry: T | null;
     /**
      * Real entry, with no transformations on it.
      */
@@ -2043,11 +2070,11 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
     /**
      * Entry that was set as latest.
      */
-    entryToSetAsLatest?: CmsEntry;
+    entryToSetAsLatest: CmsEntry | null;
     /**
      * Entry that was set as latest, directly from storage, with transformations.
      */
-    storageEntryToSetAsLatest?: T;
+    storageEntryToSetAsLatest: T | null;
 }
 
 export interface CmsEntryStorageOperationsDeleteParams<

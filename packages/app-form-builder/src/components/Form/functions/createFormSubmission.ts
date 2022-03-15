@@ -1,30 +1,41 @@
-import { FbFormRenderComponentProps, FormSubmitResponseType } from "../../../types";
+import { FbFormRenderComponentProps, FormSubmitResponseType } from "~/types";
 
-import { CREATE_FORM_SUBMISSION } from "./graphql";
+import {
+    CREATE_FORM_SUBMISSION,
+    CreateFormSubmissionMutationResponse,
+    CreateFormSubmissionMutationVariables
+} from "./graphql";
 import getClientIp from "./getClientIp";
 import { ApolloClient } from "apollo-client";
 
-type Args = {
+interface CreateFormSubmissionParams {
     client: ApolloClient<any>;
     props: FbFormRenderComponentProps;
     data: any;
     reCaptchaResponseToken: string;
-};
+}
 
 export default async ({
     client,
     props: { data: form, preview },
     data: rawData,
     reCaptchaResponseToken
-}: Args): Promise<FormSubmitResponseType> => {
+}: CreateFormSubmissionParams): Promise<FormSubmitResponseType> => {
     if (preview) {
-        return { preview: true, error: null, data: null };
+        return {
+            preview: true,
+            error: null,
+            data: null
+        };
     }
 
-    const data = {};
+    const data: Record<string, string> = {};
     if (!form) {
         return {
-            error: { message: "Form data is missing.", code: "FORM_DATA_MISSING" },
+            error: {
+                message: "Form data is missing.",
+                code: "FORM_DATA_MISSING"
+            },
             data: null,
             preview: false
         };
@@ -36,7 +47,10 @@ export default async ({
         }
     });
 
-    let response: any = await client.mutate({
+    let response: any = await client.mutate<
+        CreateFormSubmissionMutationResponse,
+        CreateFormSubmissionMutationVariables
+    >({
         mutation: CREATE_FORM_SUBMISSION,
         variables: {
             revision: form.id,

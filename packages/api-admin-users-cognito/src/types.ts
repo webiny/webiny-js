@@ -1,12 +1,14 @@
 import { Topic } from "@webiny/pubsub/types";
+import { SecurityContext } from "@webiny/api-security/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
-export interface AdminUsersContext {
+export interface AdminUsersContext extends SecurityContext, TenancyContext {
     adminUsers: AdminUsers;
 }
 
 export interface CreatedBy {
     id: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -31,7 +33,7 @@ export interface AdminUser extends BaseUserAttributes {
     group?: string;
     avatar?: Record<string, any>;
     createdOn: string;
-    createdBy: CreatedBy;
+    createdBy: CreatedBy | null | undefined;
     webinyVersion: string;
 }
 
@@ -151,13 +153,13 @@ export interface AdminUsers {
         data: UpdateUserInput
     ): Promise<TUser>;
     deleteUser(id: string): Promise<void>;
-    getVersion(): Promise<string>;
+    getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<System>;
     install(params: InstallParams): Promise<void>;
 }
 
 /* Storage Operations */
-interface StorageOperationsListUsersParams extends ListUsersParams {
+export interface StorageOperationsListUsersParams extends ListUsersParams {
     where: ListUsersParams["where"] & {
         tenant: string;
     };

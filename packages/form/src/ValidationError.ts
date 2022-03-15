@@ -1,17 +1,17 @@
 class ValidationError extends Error {
-    value: any;
+    public value: unknown | null;
 
-    constructor(message, value = null) {
+    constructor(message: string, value: unknown | null = null) {
         super();
         this.message = message;
         this.value = value;
     }
 
-    getMessage() {
+    public getMessage() {
         return this.message;
     }
 
-    getValue() {
+    public getValue() {
         return this.value;
     }
 }

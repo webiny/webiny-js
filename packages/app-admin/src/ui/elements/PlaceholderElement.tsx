@@ -1,11 +1,11 @@
 import { UIElement } from "../UIElement";
 
 export class PlaceholderElement extends UIElement {
-    render() {
+    public override render(): React.ReactNode {
         return null;
     }
 
-    remove() {
+    public override remove(): void {
         return;
     }
 }

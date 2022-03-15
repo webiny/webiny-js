@@ -22,11 +22,18 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
                 return;
             }
 
+            const locale = context.i18nContent.getCurrentLocale();
+
+            if (!locale || !locale.code) {
+                console.log("Missing current locale on context.i18nContent.getCurrentLocale().");
+                return;
+            }
+
             const currentPrerenderingMeta = lodashGet(current, "prerendering.meta");
 
             const meta = merge(currentPrerenderingMeta || {}, {
                 tenant: context.tenancy.getCurrentTenant().id,
-                locale: context.i18nContent.getCurrentLocale().code
+                locale: locale.code
             });
 
             const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;

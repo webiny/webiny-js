@@ -4,7 +4,7 @@ import { HttpContext } from "~/types";
 
 describe("handler response", () => {
     it("should have http object attached to context", async () => {
-        const ctx = {
+        const ctx: any = {
             value: null
         };
         const contextPlugin = new ContextPlugin<HttpContext>(async context => {

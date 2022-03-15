@@ -58,6 +58,9 @@ describe("READ - resolvers - api key", () => {
         contentModelGroup = createCMG.data.createContentModelGroup.data;
 
         const category = models.find(m => m.modelId === "category");
+        if (!category) {
+            throw new Error(`Could not find model "category".`);
+        }
 
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -123,7 +126,7 @@ describe("READ - resolvers - api key", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => getCategory(queryArgs, headers).then(([data]) => data),
-            ({ data }) => data.getCategory.data.id === categoryId
+            ({ data }: any) => data.getCategory.data.id === categoryId
         );
 
         const [result] = await getCategory(queryArgs, headers);
@@ -181,7 +184,7 @@ describe("READ - resolvers - api key", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories(queryArgs, headers).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === categoryId
+            ({ data }: any) => data.listCategories.data[0].id === categoryId
         );
 
         const [result] = await listCategories(queryArgs, headers);
@@ -246,7 +249,7 @@ describe("READ - resolvers - api key", () => {
                 getCategoryViaManager({
                     revision: categoryId
                 }).then(([data]) => data),
-            ({ data }) => data.getCategory.data.id === categoryId
+            ({ data }: any) => data.getCategory.data.id === categoryId
         );
 
         const [result] = await getCategory(queryArgs, headers);
@@ -304,7 +307,7 @@ describe("READ - resolvers - api key", () => {
                 getCategoryViaManager({
                     revision: categoryId
                 }).then(([data]) => data),
-            ({ data }) => data.getCategory.data.id === categoryId
+            ({ data }: any) => data.getCategory.data.id === categoryId
         );
 
         const [result] = await listCategories(queryArgs, headers);
@@ -370,7 +373,7 @@ describe("READ - resolvers - api key", () => {
                 getCategoryViaManager({
                     revision: categoryId
                 }).then(([data]) => data),
-            ({ data }) => data.getCategory.data.id === categoryId
+            ({ data }: any) => data.getCategory.data.id === categoryId
         );
 
         const [result] = await getCategory(queryArgs, headers);
@@ -435,7 +438,7 @@ describe("READ - resolvers - api key", () => {
                     getCategoryViaManager({
                         revision: categoryId
                     }).then(([data]) => data),
-                ({ data }) => data.getCategory.data.id === categoryId
+                ({ data }: any) => data.getCategory.data.id === categoryId
             );
 
             const [result] = await listCategories(queryArgs, headers);

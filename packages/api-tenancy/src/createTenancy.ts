@@ -8,7 +8,7 @@ export interface TenancyConfig {
     multiTenancy?: boolean;
 }
 
-const withToString = tenant => {
+const withToString = (tenant: Tenant) => {
     return {
         ...tenant,
         toString() {
@@ -22,7 +22,7 @@ export async function createTenancy({
     storageOperations,
     multiTenancy = false
 }: TenancyConfig): Promise<Tenancy> {
-    let currentTenant;
+    let currentTenant: Tenant | null = null;
 
     const tenancy: Tenancy = {
         getStorageOperations() {

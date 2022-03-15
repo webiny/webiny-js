@@ -6,10 +6,8 @@ import fetch from "node-fetch";
 const streamPipeline = promisify(pipeline);
 /**
  * Download a remote file and save it onto disk.
- * @param {String} URL
- * @param {String} path
  */
-export default async function download(URL: string, path: string) {
+export default async function download(URL: string, path: string): Promise<void> {
     try {
         const response = await fetch(URL);
         if (!response.ok) {

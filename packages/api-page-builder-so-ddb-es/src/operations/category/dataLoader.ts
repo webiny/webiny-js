@@ -9,14 +9,10 @@ interface Params {
     entity: Entity<any>;
 }
 
-interface DataLoaderGetItem {
-    slug: string;
-    tenant: string;
-    locale: string;
-}
+type DataLoaderGetItem = Pick<Category, "slug" | "tenant" | "locale">;
 
 export class CategoryDataLoader {
-    private _getDataLoader: DataLoader<any, any>;
+    private _getDataLoader: DataLoader<any, any> | undefined = undefined;
 
     private readonly entity: Entity<any>;
 
@@ -36,13 +32,13 @@ export class CategoryDataLoader {
         this.getDataLoader().clearAll();
     }
 
-    private getDataLoader() {
+    private getDataLoader(): DataLoader<any, any> {
         if (!this._getDataLoader) {
             const cacheKeyFn = (key: DataLoaderGetItem) => {
                 return `T#${key.tenant}#L#${key.locale}#${key.slug}`;
             };
             this._getDataLoader = new DataLoader(
-                async (items: DataLoaderGetItem[]) => {
+                async items => {
                     const batched = items.map(item => {
                         return this.entity.getBatch({
                             PK: createPartitionKey(item),
@@ -55,17 +51,14 @@ export class CategoryDataLoader {
                         items: batched
                     });
 
-                    const results = records.reduce(
-                        (collection, result: Category & DataLoaderGetItem) => {
-                            if (!result) {
-                                return collection;
-                            }
-                            const key = cacheKeyFn(result);
-                            collection[key] = cleanupItem(this.entity, result);
+                    const results = records.reduce((collection, result) => {
+                        if (!result) {
                             return collection;
-                        },
-                        {} as Record<string, Category>
-                    );
+                        }
+                        const key = cacheKeyFn(result);
+                        collection[key] = cleanupItem(this.entity, result) as Category;
+                        return collection;
+                    }, {} as Record<string, Category>);
                     return items.map(item => {
                         const key = cacheKeyFn(item);
                         return results[key] || null;

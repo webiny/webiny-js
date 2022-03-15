@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CmsEditorContentEntry, CmsEditorContentModel } from "~/types";
 import { ApolloClient } from "apollo-client";
 import { createListEntriesQuery } from "~/admin/plugins/upgrades/5.19.0/createListEntriesQuery";
@@ -37,11 +38,11 @@ const fetchEntries = async (params: FetchEntriesParams): Promise<FetchEntriesRes
     };
 };
 
-export interface Params {
+export interface FetchModelEntriesParams {
     model: CmsEditorContentModel;
     client: ApolloClient<any>;
 }
-export const fetchModelEntries = async (params: Params): Promise<string[]> => {
+export const fetchModelEntries = async (params: FetchModelEntriesParams): Promise<string[]> => {
     const { model, client } = params;
     const items: string[] = [];
 

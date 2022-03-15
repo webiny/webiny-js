@@ -2,12 +2,24 @@ import { HttpContext } from "@webiny/handler-http/types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 
-const lowercaseKeys = obj => {
+const lowercaseKeys = (obj: Record<string, string>) => {
     return Object.keys(obj).reduce((acc, key) => {
         acc[key.toLowerCase()] = obj[key];
         return acc;
-    }, {});
+    }, {} as Record<string, string>);
 };
+
+interface InputArgs {
+    httpMethod: string;
+    isBase64Encoded?: boolean;
+    rawPath: string;
+    pathParameters: {
+        [key: string]: any;
+    };
+    queryStringParameters: {
+        [key: string]: any;
+    };
+}
 
 export default {
     type: "context",
@@ -49,4 +61,4 @@ export default {
             );
         }
     }
-} as ContextPlugin<HttpContext & ArgsContext>;
+} as ContextPlugin<HttpContext & ArgsContext<InputArgs>>;

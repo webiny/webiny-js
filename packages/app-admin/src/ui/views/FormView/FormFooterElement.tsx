@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { UIElement } from "~/ui/UIElement";
+import { UIElement, UiElementRenderProps } from "~/ui/UIElement";
 
 const ButtonWrapper = styled("div")({
     display: "flex",
@@ -15,13 +15,13 @@ const ButtonWrapper = styled("div")({
 });
 
 export class FormFooterElement extends UIElement {
-    constructor(id) {
+    public constructor(id: string) {
         super(id);
 
         this.useGrid(false);
     }
 
-    render(props) {
+    public override render(props: UiElementRenderProps) {
         return <ButtonWrapper>{super.render(props)}</ButtonWrapper>;
     }
 }

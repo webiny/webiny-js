@@ -1,11 +1,11 @@
-import * as React from "react";
-import * as R from "@rmwc/button";
+import React from "react";
+import * as RmwcButton from "@rmwc/button";
 import { Fab, FabProps } from "@rmwc/fab";
 import { Icon, IconProps } from "../Icon/Icon";
 import classNames from "classnames";
 import { SyntheticEvent } from "react";
 
-export type ButtonProps = {
+export interface ButtonProps {
     // Make button flat (only applicable to Primary button).
     flat?: boolean;
 
@@ -29,19 +29,16 @@ export type ButtonProps = {
 
     // For testing purposes.
     "data-testid"?: string;
-};
+}
 
 /**
  * Shows a default button, used typically when action is not of high priority.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const ButtonDefault = (props: ButtonProps) => {
+export const ButtonDefault: React.FC<ButtonProps> = props => {
     const { disabled, onClick, children, small, ripple = true, className = "", style } = props;
 
     return (
-        <R.Button
+        <RmwcButton.Button
             style={style}
             disabled={disabled}
             dense={small}
@@ -51,17 +48,14 @@ export const ButtonDefault = (props: ButtonProps) => {
             data-testid={props["data-testid"]}
         >
             {children}
-        </R.Button>
+        </RmwcButton.Button>
     );
 };
 
 /**
  * Shows primary button, eg. for submitting forms.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const ButtonPrimary = (props: ButtonProps) => {
+export const ButtonPrimary: React.FC<ButtonProps> = props => {
     const {
         disabled,
         onClick,
@@ -69,11 +63,11 @@ export const ButtonPrimary = (props: ButtonProps) => {
         small = false,
         flat = false,
         ripple = true,
-        style = null,
+        style = {},
         className = null
     } = props;
     return (
-        <R.Button
+        <RmwcButton.Button
             raised={!flat}
             dense={small}
             disabled={disabled}
@@ -85,17 +79,14 @@ export const ButtonPrimary = (props: ButtonProps) => {
             data-testid={props["data-testid"]}
         >
             {children}
-        </R.Button>
+        </RmwcButton.Button>
     );
 };
 
 /**
  * Shows a secondary button - eg. for doing a reset on a form.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const ButtonSecondary = (props: ButtonProps) => {
+export const ButtonSecondary: React.FC<ButtonProps> = props => {
     const {
         disabled,
         onClick,
@@ -103,11 +94,11 @@ export const ButtonSecondary = (props: ButtonProps) => {
         small = false,
         ripple = true,
         className = null,
-        style = null
+        style = {}
     } = props;
 
     return (
-        <R.Button
+        <RmwcButton.Button
             disabled={disabled}
             outlined
             dense={small}
@@ -118,7 +109,7 @@ export const ButtonSecondary = (props: ButtonProps) => {
             data-testid={props["data-testid"]}
         >
             {children}
-        </R.Button>
+        </RmwcButton.Button>
     );
 };
 
@@ -132,11 +123,8 @@ export type ButtonFloatingProps = ButtonProps &
 
 /**
  * A floating button, shown on the side of the screen, typically used for creating new content or accessing settings.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const ButtonFloating = (props: ButtonFloatingProps) => {
+export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
     const {
         disabled,
         icon,
@@ -164,8 +152,5 @@ export const ButtonFloating = (props: ButtonFloatingProps) => {
 
 /**
  * Shows an icon, suitable to be shown inside of a button.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const ButtonIcon = (props: IconProps) => <Icon {...props} />;
+export const ButtonIcon: React.FC<IconProps> = props => <Icon {...props} />;

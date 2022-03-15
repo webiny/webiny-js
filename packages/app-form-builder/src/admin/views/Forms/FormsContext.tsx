@@ -2,21 +2,65 @@ import React, { useMemo } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { QueryResult } from "@apollo/react-common";
 import { useSecurity } from "@webiny/app-security";
-import { LIST_FORMS } from "../../graphql";
+import { LIST_FORMS, ListFormsQueryResponse } from "../../graphql";
+import { NetworkStatus } from "apollo-client";
+import { FormBuilderSecurityPermission } from "~/types";
 
 export interface FormsContextValue {
     canCreate: boolean;
-    listQuery: QueryResult<any, any>;
+    listQuery: QueryResult<ListFormsQueryResponse>;
 }
 
-export const FormsContext = React.createContext<FormsContextValue>(null);
+export const FormsContext = React.createContext<FormsContextValue>({
+    canCreate: false,
+    listQuery: {
+        loading: false,
+        variables: {},
+        called: false,
+        client: null as any,
+        data: {
+            formBuilder: {
+                listForms: {
+                    data: [],
+                    error: null
+                }
+            }
+        },
+        error: undefined,
+        fetchMore: async () => {
+            return {} as any;
+        },
+        networkStatus: NetworkStatus.ready,
+        refetch: async () => {
+            return {} as any;
+        },
+        startPolling: () => {
+            return void 0;
+        },
+        updateQuery: () => {
+            return void 0;
+        },
+        stopPolling: () => {
+            return void 0;
+        },
+        subscribeToMore: () => {
+            return () => {
+                return void 0;
+            };
+        }
+    }
+});
 
-export const FormsProvider = ({ children }) => {
-    const { identity } = useSecurity();
-    const listQuery = useQuery(LIST_FORMS);
+export interface FormContextProvider {
+    canCreate: boolean;
+    listQuery: QueryResult<ListFormsQueryResponse>;
+}
+export const FormsProvider: React.FC = ({ children }) => {
+    const { identity, getPermission } = useSecurity();
+    const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS);
 
-    const canCreate = useMemo(() => {
-        const permission = identity.getPermission("fb.form");
+    const canCreate = useMemo((): boolean => {
+        const permission = getPermission<FormBuilderSecurityPermission>("fb.form");
         if (!permission) {
             return false;
         }
@@ -26,9 +70,9 @@ export const FormsProvider = ({ children }) => {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
-    const value = {
+    const value: FormContextProvider = {
         canCreate,
         listQuery
     };

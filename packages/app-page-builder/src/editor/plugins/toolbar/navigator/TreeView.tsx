@@ -11,6 +11,7 @@ import CollapsableList from "./CollapsableList";
 import DragBlockIndicator from "./DragBlockIndicator";
 import { BLOCK, useMoveBlock, useSortableList } from "./navigatorHooks";
 import { NavigatorContext } from "./Navigator";
+import { PbEditorElement } from "~/types";
 
 const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
     const { updateVisibility } = useVisibilitySetting(elementId);
@@ -23,8 +24,16 @@ const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
         />
     );
 };
-
-const getHighlightItemProps = ({ dropItemAbove, isOver, elementType }) => {
+interface GetHighlightItemPropsParams {
+    dropItemAbove?: boolean;
+    isOver?: boolean;
+    elementType: string;
+}
+const getHighlightItemProps = ({
+    dropItemAbove,
+    isOver,
+    elementType
+}: GetHighlightItemPropsParams) => {
     if (!isOver || elementType !== BLOCK) {
         return {
             top: false,
@@ -43,7 +52,12 @@ const getHighlightItemProps = ({ dropItemAbove, isOver, elementType }) => {
     };
 };
 
-const TreeViewItem = ({ element, level, children, index }) => {
+interface TreeViewItemProps {
+    element: PbEditorElement;
+    level: number;
+    index: number;
+}
+const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, index }) => {
     const elementId = element.id;
     const { displayMode } = useRecoilValue(uiAtom);
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
@@ -68,7 +82,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
     // Set active element path in context.
     useEffect(() => {
         if (activeElement === elementId) {
-            setActiveElementPath(element.path);
+            setActiveElementPath(element.path || []);
         }
     }, [activeElement, elementId]);
 
@@ -78,6 +92,11 @@ const TreeViewItem = ({ element, level, children, index }) => {
                 return;
             }
             ev.stopPropagation();
+            /**
+             * TODO @ts-refactor @ashutosh
+             * We do not have, or expect, isHighlighted to be on the element. Or?
+             */
+            // @ts-ignore
             if (elementAtomValue && elementAtomValue.isHighlighted) {
                 return;
             }
@@ -138,17 +157,21 @@ const TreeViewItem = ({ element, level, children, index }) => {
             inActivePath={activeElementPath.includes(elementId)}
             style={contentStyle}
         >
-            {children}
+            {children as unknown as React.ReactElement}
         </CollapsableList>
     );
 };
 
-type TreeViewProps = {
-    element: { id: string; type: string; elements: any[] };
+interface TreeViewProps {
+    element: {
+        id: string;
+        type: string;
+        elements: any[];
+    };
     level: number;
-};
+}
 
-export const TreeView = ({ element, level }: TreeViewProps) => {
+export const TreeView: React.FC<TreeViewProps> = ({ element, level }) => {
     if (!element.id || element.elements.length === 0) {
         return null;
     }

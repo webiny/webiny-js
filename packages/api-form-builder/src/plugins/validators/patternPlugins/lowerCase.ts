@@ -1,6 +1,6 @@
 import { FbFormFieldPatternValidatorPlugin } from "~/types";
 
-export default {
+const plugin: FbFormFieldPatternValidatorPlugin = {
     type: "fb-form-field-validator-pattern",
     name: "form-field-validator-pattern-lower-case",
     pattern: {
@@ -8,4 +8,5 @@ export default {
         regex: `^([a-z]*)$`,
         flags: ""
     }
-} as FbFormFieldPatternValidatorPlugin;
+};
+export default plugin;

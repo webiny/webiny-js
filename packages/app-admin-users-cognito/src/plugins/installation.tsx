@@ -16,6 +16,7 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 import { View } from "@webiny/app/components/View";
+import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 
 const IS_INSTALLED = gql`
     query IsAdminUsersInstalled {
@@ -38,11 +39,13 @@ const INSTALL = gql`
         }
     }
 `;
-
-const Install = ({ onInstalled }) => {
+export interface InstallProps {
+    onInstalled: () => void;
+}
+const Install: React.FC<InstallProps> = ({ onInstalled }) => {
     const client = useApolloClient();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
     const onSubmit = useCallback(async ({ subscribed, ...form }) => {
         setLoading(true);
@@ -90,7 +93,7 @@ const Install = ({ onInstalled }) => {
                             {error && (
                                 <Cell span={12}>
                                     <Alert title={"Something went wrong"} type={"danger"}>
-                                        {error.message}
+                                        {error}
                                     </Alert>
                                 </Cell>
                             )}
@@ -140,7 +143,12 @@ const Install = ({ onInstalled }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary data-testid="install-security-button" onClick={submit}>
+                        <ButtonPrimary
+                            data-testid="install-security-button"
+                            onClick={ev => {
+                                submit(ev);
+                            }}
+                        >
                             Create Admin User
                         </ButtonPrimary>
                     </SimpleFormFooter>
@@ -150,19 +158,19 @@ const Install = ({ onInstalled }) => {
     );
 };
 
-export default [
-    {
-        name: "admin-installation-admin-users",
-        type: "admin-installation",
-        dependencies: ["admin-installation-security"],
-        secure: false,
-        title: "Admin User",
-        async getInstalledVersion({ client }) {
-            const { data } = await client.query({ query: IS_INSTALLED });
-            return data.adminUsers.version;
-        },
-        render({ onInstalled }) {
-            return <Install onInstalled={onInstalled} />;
-        }
+const installationPlugin: AdminInstallationPlugin = {
+    name: "admin-installation-admin-users",
+    type: "admin-installation",
+    dependencies: ["admin-installation-security"],
+    secure: false,
+    title: "Admin User",
+    async getInstalledVersion({ client }) {
+        const { data } = await client.query({ query: IS_INSTALLED });
+        return data.adminUsers.version;
+    },
+    render({ onInstalled }) {
+        return <Install onInstalled={onInstalled} />;
     }
-];
+};
+
+export default [installationPlugin];

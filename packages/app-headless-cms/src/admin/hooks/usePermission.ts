@@ -2,46 +2,52 @@ import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { CmsCreatedBy, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
 
-export type ContentModelGroup = { id: string; [key: string]: any };
-export type ContentModel = { modelId: string; [key: string]: any };
+interface CreatableItem {
+    createdBy: Pick<CmsCreatedBy, "id">;
+}
 
-const usePermission = () => {
-    const { identity } = useSecurity();
+interface CanReadEntriesCallableParams {
+    contentModelGroup: CmsGroup;
+    contentModel: CmsModel;
+}
+
+export const usePermission = () => {
+    const { identity, getPermission } = useSecurity();
     const { getCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale("content");
 
-    const hasFullAccess = useMemo(() => identity.getPermission("cms.*"), []);
+    const hasFullAccess = useMemo((): CmsSecurityPermission | null => {
+        return getPermission("cms.*");
+    }, [identity]);
 
-    const canRead = useCallback((permissionName: string) => {
-        const permission = identity.getPermission(permissionName);
-        if (!permission) {
-            return false;
-        }
+    const canRead = useCallback(
+        (permissionName: string): boolean => {
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
+            if (!permission) {
+                return false;
+            }
 
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
+            if (typeof permission.rwd !== "string") {
+                return true;
+            }
 
-        return permission.rwd.includes("r");
-    }, []);
+            return permission.rwd.includes("r");
+        },
+        [identity]
+    );
 
     const canReadEntries = useCallback(
-        ({
-            contentModelGroup,
-            contentModel
-        }: {
-            contentModelGroup: ContentModelGroup;
-            contentModel: ContentModel;
-        }) => {
+        ({ contentModelGroup, contentModel }: CanReadEntriesCallableParams): boolean => {
             if (hasFullAccess) {
                 return true;
             }
 
-            const permission = identity.getPermission("cms.contentEntry");
-            const contentModelPermission = identity.getPermission("cms.contentModel");
-            const contentModelGroupPermission = identity.getPermission("cms.contentModelGroup");
+            const permission = getPermission<CmsSecurityPermission>("cms.contentEntry");
+            const contentModelPermission = getPermission("cms.contentModel");
+            const contentModelGroupPermission = getPermission("cms.contentModelGroup");
 
             if (!permission) {
                 return false;
@@ -68,10 +74,10 @@ const usePermission = () => {
     );
 
     const canEdit = useCallback(
-        (item, permissionName) => {
-            const permission = identity.getPermission(permissionName);
+        (item: CreatableItem, permissionName: string): boolean => {
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
-            if (!permission) {
+            if (!permission || !identity) {
                 return false;
             }
             if (permission.own) {
@@ -96,28 +102,31 @@ const usePermission = () => {
      * without talking the "own" property in account.
      * @param {string} permissionName
      * */
-    const canCreate = useCallback(permissionName => {
-        const permission = identity.getPermission(permissionName);
-        if (!permission) {
-            return false;
-        }
+    const canCreate = useCallback(
+        (permissionName: string): boolean => {
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
+            if (!permission) {
+                return false;
+            }
 
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
+            if (typeof permission.rwd !== "string") {
+                return true;
+            }
 
-        return permission.rwd.includes("w");
-    }, []);
+            return permission.rwd.includes("w");
+        },
+        [identity]
+    );
 
     const canDelete = useCallback(
-        (item, permissionName) => {
-            const permission = identity.getPermission(permissionName);
+        (item: CreatableItem, permissionName: string): boolean => {
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
             }
             if (permission.own) {
-                return get(item, "createdBy.id") === identity.login;
+                return get(item, "createdBy.id") === (identity ? identity.login : null);
             }
             if (typeof permission.rwd === "string") {
                 return permission.rwd.includes("d");
@@ -128,11 +137,11 @@ const usePermission = () => {
     );
 
     const canPublish = useCallback(
-        permissionName => {
+        (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
@@ -147,11 +156,11 @@ const usePermission = () => {
     );
 
     const canUnpublish = useCallback(
-        permissionName => {
+        (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
@@ -166,11 +175,11 @@ const usePermission = () => {
     );
 
     const canRequestReview = useCallback(
-        permissionName => {
+        (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
@@ -185,11 +194,11 @@ const usePermission = () => {
     );
 
     const canRequestChange = useCallback(
-        permissionName => {
+        (permissionName: string): boolean => {
             if (hasFullAccess) {
                 return true;
             }
-            const permission = identity.getPermission(permissionName);
+            const permission = getPermission<CmsSecurityPermission>(permissionName);
 
             if (!permission) {
                 return false;
@@ -208,7 +217,7 @@ const usePermission = () => {
     const canCreateContentModels = canCreate("cms.contentModel");
     const canCreateContentModelGroups = canCreate("cms.contentModelGroup");
     const canAccessManageEndpoint = useMemo(() => {
-        return identity.getPermission("cms.endpoint.manage") !== undefined;
+        return getPermission("cms.endpoint.manage") !== undefined;
     }, [identity]);
 
     return {
@@ -227,5 +236,8 @@ const usePermission = () => {
         canAccessManageEndpoint
     };
 };
-
+/**
+ * Default export is deprecated, use the named one.
+ * @deprecated
+ */
 export default usePermission;

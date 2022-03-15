@@ -1,24 +1,37 @@
 import * as React from "react";
-import { BindComponent } from "@webiny/form";
 import OEmbed, { OEmbedProps } from "../../../../components/OEmbed";
 import {
     PbEditorElement,
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin,
     DisplayMode
-} from "../../../../../types";
+} from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../../elementSettings/elementSettingsUtils";
 
-type EmbedPluginConfig = {
+interface EmbedPluginConfigRenderCallableParams {
+    element: PbEditorElement;
+}
+interface EmbedPluginConfigRenderCallable {
+    (params: EmbedPluginConfigRenderCallableParams): React.ReactNode;
+}
+interface EmbedPluginConfigRenderElementPreviewCallableParams {
+    element: PbEditorElement;
+    width: number;
+    height: number;
+}
+interface EmbedPluginConfigRenderElementPreviewCallable {
+    (params: EmbedPluginConfigRenderElementPreviewCallableParams): React.ReactElement;
+}
+interface EmbedPluginConfig {
     type: string;
     toolbar?: {
         title?: string;
         group?: string;
         preview?: () => React.ReactNode;
     };
-    render?: ({ element }) => React.ReactNode;
+    render?: EmbedPluginConfigRenderCallable;
     oembed?: {
-        global?: string;
+        global?: keyof Window;
         sdk?: string;
         // onData?: Function;
         onData?: (data: { [key: string]: any }) => { [key: string]: any };
@@ -29,12 +42,8 @@ type EmbedPluginConfig = {
     create?: Function;
     target?: Array<string>;
     onCreate?: string;
-    renderElementPreview?: (params: {
-        element: PbEditorElement;
-        width: number;
-        height: number;
-    }) => React.ReactElement;
-};
+    renderElementPreview?: EmbedPluginConfigRenderElementPreviewCallable;
+}
 
 export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElementPlugin => {
     const defaultSettings = ["pb-editor-page-element-settings-delete"];
@@ -51,7 +60,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
         target: config.target || ["cell", "block", "list-item"],
         // eslint-disable-next-line
         create({ content = {}, ...options }) {
-            const defaultValue = {
+            const defaultValue: Partial<PbEditorElement> = {
                 type: config.type,
                 elements: [],
                 data: {
@@ -85,7 +94,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
 
 type EmbedPluginSidebarConfig = {
     type: string;
-    render(params?: { Bind: BindComponent; submit: () => void }): React.ReactElement;
+    render: PbEditorPageElementAdvancedSettingsPlugin["render"];
 };
 
 export const createEmbedSettingsPlugin = ({

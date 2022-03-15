@@ -1,3 +1,6 @@
+import ValidationError from "~/validationError";
+
+type ValidatorResult = boolean | ValidationError | void | Promise<boolean | ValidationError | void>;
 /**
  * @typedef Validator
  * @name Validator
@@ -6,7 +9,7 @@
  * @param {Array<string>} parameters (Optional) This represents an array validator parameters.
  * @throws {ValidationError}
  */
-export type Validator = (value: any, params: Array<string>) => void;
+export type Validator = (value: any, params?: string[]) => ValidatorResult;
 
 /**
  * @typedef ValidateOptions
@@ -14,9 +17,9 @@ export type Validator = (value: any, params: Array<string>) => void;
  * @description This is an object containing validation options.
  * @property {boolean} throw Should validation throw on failure? Default: true.
  */
-export type ValidateOptions = {
+export interface ValidateOptions {
     throw?: boolean;
-};
+}
 
 /**
  * @private
@@ -24,4 +27,6 @@ export type ValidateOptions = {
  * @name ParsedValidators
  * @description An object containing validators with parameters: `{ [string]: Array<string> }`.
  */
-export type ParsedValidators = { [key: string]: Array<string> };
+export interface ParsedValidators {
+    [key: string]: Array<string>;
+}

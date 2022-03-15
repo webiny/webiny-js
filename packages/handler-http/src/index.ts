@@ -1,8 +1,9 @@
 import { HttpContext, HandlerHttpOptions } from "./types";
-import { HandlerErrorPlugin } from "@webiny/handler/types";
+import { HandlerErrorPlugin } from "@webiny/handler";
 import { boolean } from "boolean";
 import { getWebinyVersionHeaders } from "@webiny/utils";
 import { ContextPlugin } from "@webiny/handler";
+import { Plugin } from "@webiny/plugins";
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Cache-Control": "no-store",
@@ -20,14 +21,14 @@ const OPTIONS_HEADERS: Record<string, string> = {
 
 const OPTION_STATUS_CODE = 204;
 
-const lowercaseKeys = obj => {
+const lowercaseKeys = (obj: Record<string, string>) => {
     return Object.keys(obj).reduce((acc, key) => {
         acc[key.toLowerCase()] = obj[key];
         return acc;
-    }, {});
+    }, {} as Record<string, string>);
 };
 
-export default (options: HandlerHttpOptions = {}) => [
+export default (options: HandlerHttpOptions = {}): Plugin[] => [
     new ContextPlugin<HttpContext>(async context => {
         const { invocationArgs } = context;
         if (!invocationArgs || !invocationArgs.method) {
@@ -46,7 +47,11 @@ export default (options: HandlerHttpOptions = {}) => [
             return;
         }
 
-        const path = invocationArgs.path ?? {};
+        const path = invocationArgs.path ?? {
+            base: "",
+            parameters: {},
+            query: ""
+        };
 
         const request = {
             method: invocationArgs.method,
@@ -71,38 +76,35 @@ export default (options: HandlerHttpOptions = {}) => [
             }
         };
     }),
-    {
-        type: "handler-error",
-        handle: (context, error) => {
-            if (!context.http || typeof context.http.response !== "function") {
-                return error;
-            }
-            const debug = boolean(options.debug);
+    new HandlerErrorPlugin<HttpContext>(async (context, error) => {
+        if (!context.http || typeof context.http.response !== "function") {
+            return error;
+        }
+        const debug = boolean(options.debug);
 
-            if (debug) {
-                return context.http.response({
-                    statusCode: 500,
-                    body: JSON.stringify({
-                        error: {
-                            name: error.constructor.name,
-                            message: error.message,
-                            stack: error.stack
-                        }
-                    }),
-                    headers: DEFAULT_HEADERS
-                });
-            }
-
+        if (debug) {
             return context.http.response({
                 statusCode: 500,
                 body: JSON.stringify({
                     error: {
-                        name: "Error",
-                        message: "Internal Server Error"
+                        name: error.constructor.name,
+                        message: error.message,
+                        stack: error.stack
                     }
                 }),
                 headers: DEFAULT_HEADERS
             });
         }
-    } as HandlerErrorPlugin<HttpContext>
+
+        return context.http.response({
+            statusCode: 500,
+            body: JSON.stringify({
+                error: {
+                    name: "Error",
+                    message: "Internal Server Error"
+                }
+            }),
+            headers: DEFAULT_HEADERS
+        });
+    })
 ];

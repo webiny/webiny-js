@@ -7,6 +7,8 @@ import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
+import { SecurityPermission } from "@webiny/app-security/types";
+import { FormBuilderSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-form-builder/admin/plugins/permissionRenderer");
 
@@ -26,10 +28,26 @@ const pwOptions = [
     // { id: "c", name: t`Request changes` }
 ];
 
-export const FormBuilderPermissions = ({ value, onChange }) => {
+interface FormPermissionsData {
+    accessLevel: string;
+    formAccessLevel: string;
+    formRWD: string;
+    formPW: string;
+    submissionPermissions: string;
+    settingsAccessLevel: string;
+}
+
+interface FormBuilderPermissionsProps {
+    value: string;
+    onChange: (value: SecurityPermission[]) => void;
+}
+export const FormBuilderPermissions: React.FC<FormBuilderPermissionsProps> = ({
+    value,
+    onChange
+}) => {
     const onFormChange = useCallback(
         data => {
-            let newValue = [];
+            let newValue: FormBuilderSecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `fb` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(FB));
@@ -48,7 +66,7 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
 
             // Handling custom access level.
             if (data.formAccessLevel && data.formAccessLevel !== NO_ACCESS) {
-                const permission = {
+                const permission: FormBuilderSecurityPermission = {
                     name: FB_ACCESS_FORM,
                     own: false,
                     rwd: undefined,
@@ -84,7 +102,7 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
         [value]
     );
 
-    const formData = useMemo(() => {
+    const formData = useMemo((): Partial<FormPermissionsData> => {
         if (!Array.isArray(value)) {
             return { accessLevel: NO_ACCESS };
         }
@@ -101,11 +119,11 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "forms" and "submissions".
-        const data = {
+        const data: FormPermissionsData = {
             accessLevel: CUSTOM_ACCESS,
             formAccessLevel: NO_ACCESS,
-            formRWD: undefined,
-            formPW: undefined,
+            formRWD: "",
+            formPW: "",
             submissionPermissions: NO_ACCESS,
             settingsAccessLevel: NO_ACCESS
         };

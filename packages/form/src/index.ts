@@ -1,5 +1,4 @@
-export * from "./FormNew";
-export * from "./BindNew";
-// export * from "./Form";
-export * from "./linkState";
-export * from "./types";
+export * from "~/FormNew";
+export * from "~/BindNew";
+export * from "~/linkState";
+export * from "~/types";

@@ -6,28 +6,42 @@ import { linkState } from "./linkState";
 import { BindComponent } from "./Bind";
 import ValidationError from "./ValidationError";
 
-export type FormRenderPropParamsSubmit = (event?: React.SyntheticEvent<any, any>) => Promise<void>;
+export interface FormRenderPropParamsSubmit {
+    (event?: React.SyntheticEvent<any, any>): Promise<void>;
+}
 
-export type FormSetValue = (name: string, value: any) => void;
+export interface FormSetValue {
+    (name: string, value: any): void;
+}
 
-export type FormRenderPropParams = {
-    data: { [key: string]: any };
+export interface FormRenderPropParams {
+    data: {
+        [key: string]: any;
+    };
     form: Form;
     submit: FormRenderPropParamsSubmit;
     Bind: BindComponent;
     setValue: FormSetValue;
-};
+}
 
 export type FormRenderProp = (params: FormRenderPropParams) => React.ReactElement;
 
-export type FormData = { [key: string]: any };
+export interface FormData {
+    [key: string]: any;
+}
 
-export type Validation = { [key: string]: any };
+export interface Validation {
+    [key: string]: any;
+}
 
-export type FormOnSubmit = (data: FormData, form?: Form) => void;
+interface FormOnSubmit {
+    (data: FormData, form?: Form): void;
+}
 
-export type FormProps = {
-    invalidFields?: { [key: string]: any };
+export interface FormProps {
+    invalidFields?: {
+        [key: string]: any;
+    };
     data?: FormData;
     disabled?: boolean | Function;
     validateOnFirstSubmit?: boolean;
@@ -36,7 +50,7 @@ export type FormProps = {
     onInvalid?: () => void;
     onChange?: FormOnSubmit;
     children: FormRenderProp;
-};
+}
 
 /**
  * Use when creating standalone form components which receives props from the parent Bind component.
@@ -61,33 +75,35 @@ export interface FormComponentProps {
     onChange?: (value: any) => void;
 }
 
-type State = {
+interface State {
     data: FormData;
     originalData: FormData;
     wasSubmitted: boolean;
     validation: Validation;
-};
+}
 
 export class Form extends React.Component<FormProps, State> {
-    static defaultProps = {
+    static defaultProps: Partial<FormProps> = {
         data: {},
         disabled: false,
         validateOnFirstSubmit: false,
-        onSubmit: null
+        onSubmit: () => {
+            return void 0;
+        }
     };
 
-    state = {
+    public override state: State = {
         data: this.props.data || {},
         originalData: this.props.data || {},
         wasSubmitted: false,
         validation: {}
     };
 
-    isValid = null;
-    inputs = {};
-    lastRender = [];
-    validateFns = {};
-    onChangeFns = {};
+    public isValid: boolean | null = null;
+    public inputs: Record<string, any> = {};
+    public lastRender: any[] = [];
+    public validateFns: Record<string, any> = {};
+    public onChangeFns: Record<string, any> = {};
     Bind = createBind(this);
 
     static getDerivedStateFromProps({ data, invalidFields = {} }: FormProps, state: State) {
@@ -125,7 +141,7 @@ export class Form extends React.Component<FormProps, State> {
     ): Promise<any> => {
         validators = Array.isArray(validators) ? [...validators] : [validators];
 
-        const results = {};
+        const results: Record<string, any> = {};
         for (let i = 0; i < validators.length; i++) {
             const validator = validators[i];
             try {
@@ -147,7 +163,7 @@ export class Form extends React.Component<FormProps, State> {
         return results;
     };
 
-    componentDidUpdate() {
+    public override componentDidUpdate() {
         Object.keys(this.inputs).forEach(name => {
             if (!this.lastRender.includes(name)) {
                 delete this.inputs[name];
@@ -160,7 +176,7 @@ export class Form extends React.Component<FormProps, State> {
         });
     }
 
-    onInvalid = () => {
+    public readonly onInvalid = () => {
         if (typeof this.props.onInvalid === "function") {
             this.props.onInvalid();
         }
@@ -169,7 +185,7 @@ export class Form extends React.Component<FormProps, State> {
     /**
      * MAIN FORM ACTION METHODS
      */
-    submit = (event?: React.SyntheticEvent<any, any>): Promise<any> => {
+    public readonly submit = (event?: React.SyntheticEvent<any, any>): Promise<any> => {
         // If event is present - prevent default behaviour
         if (event && event.preventDefault) {
             event.preventDefault();
@@ -199,7 +215,7 @@ export class Form extends React.Component<FormProps, State> {
         });
     };
 
-    validate = async () => {
+    public readonly validate = async () => {
         const { data = {}, validation = {} } = this.state;
         const promises = Object.keys(this.inputs).map(async (name): Promise<boolean> => {
             const { validators } = this.inputs[name];
@@ -227,7 +243,7 @@ export class Form extends React.Component<FormProps, State> {
         return results.every(value => value === true);
     };
 
-    validateInput = async (name: string) => {
+    public readonly validateInput = async (name: string) => {
         // Want to know why this nonsense is here?
         // When you have a <Tabs> component which has an <Input>, and you try to switch tabs
         // while your input is focused, Tabs end up in an eternal switching loop.
@@ -296,7 +312,7 @@ export class Form extends React.Component<FormProps, State> {
             });
     };
 
-    getOnChangeFn = ({
+    public readonly getOnChangeFn = ({
         name,
         beforeChange,
         afterChange
@@ -308,7 +324,7 @@ export class Form extends React.Component<FormProps, State> {
         if (!this.onChangeFns[name]) {
             const linkStateChange = linkState(this, `data.${name}`);
 
-            const baseOnChange = (newValue, cb) => {
+            const baseOnChange = (newValue: string, cb: (value: string) => void) => {
                 // When linkState is done processing the value change...
                 return linkStateChange(newValue, cb).then(value => {
                     // call the Form onChange with updated data
@@ -324,7 +340,7 @@ export class Form extends React.Component<FormProps, State> {
             };
 
             const onChange = beforeChange
-                ? newValue => beforeChange(newValue, baseOnChange)
+                ? (newValue: string) => beforeChange(newValue, baseOnChange)
                 : baseOnChange;
 
             this.onChangeFns[name] = onChange;
@@ -333,7 +349,7 @@ export class Form extends React.Component<FormProps, State> {
         return this.onChangeFns[name];
     };
 
-    getValidateFn = (name: string) => {
+    public readonly getValidateFn = (name: string) => {
         if (!this.validateFns[name]) {
             this.validateFns[name] = () => this.validateInput(name);
         }
@@ -341,15 +357,15 @@ export class Form extends React.Component<FormProps, State> {
         return this.validateFns[name];
     };
 
-    setValue = (name: string, value: any) => {
+    public readonly setValue = (name: string, value: any) => {
         this.onChangeFns[name](value);
     };
 
-    reset = () => {
+    public readonly reset = () => {
         this.setState({ data: _.cloneDeep(this.state.originalData) });
     };
 
-    __onKeyDown = (e: React.KeyboardEvent<any>) => {
+    private readonly __onKeyDown = (e: React.KeyboardEvent<any>) => {
         const { submitOnEnter = false } = this.props;
         if (
             (submitOnEnter || e.metaKey || e.ctrlKey) &&
@@ -367,7 +383,7 @@ export class Form extends React.Component<FormProps, State> {
         }
     };
 
-    render() {
+    public override render(): React.ReactNode {
         const children = this.props.children;
         if (!_.isFunction(children)) {
             throw new Error("Form must have a function as its only child!");

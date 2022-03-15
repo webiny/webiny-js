@@ -15,7 +15,7 @@ export interface PluginsContainer {
  * A simplified plugin interface, used specifically within the Webiny CLI.
  * Not in relation with "@webiny/plugins" package.
  */
-export interface Plugin<T = Record<string, any>> {
+export interface Plugin {
     type: string;
     name?: string;
     [key: string]: any;
@@ -40,9 +40,9 @@ interface Project {
  * A type that represents the logging method.
  */
 interface Log {
-    (...args): string;
-    hl: (...args) => string;
-    highlight: (...args) => string;
+    (...args: any): string;
+    hl: (...args: any) => string;
+    highlight: (...args: any) => string;
 }
 
 /**
@@ -100,7 +100,7 @@ export interface CliContext {
     /**
      * Resolve given dir or dirs against project root path.
      */
-    resolve: (dir) => string;
+    resolve: (dir: string) => string;
 
     /**
      * Provides a way to store some meta data in the project's local ".webiny/cli.json" file.

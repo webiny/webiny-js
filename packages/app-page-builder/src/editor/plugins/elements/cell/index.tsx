@@ -1,24 +1,26 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import CellContainer from "./CellContainer";
-import { executeAction } from "../../../recoil/eventActions";
-import { UpdateElementActionArgsType } from "../../../recoil/actions/updateElement/types";
-import {
-    CreateElementActionEvent,
-    DeleteElementActionEvent,
-    updateElementAction
-} from "../../../recoil/actions";
-import { addElementToParent, createDroppedElement, createElement } from "../../../helpers";
 import {
     DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
     PbEditorElement,
     PbEditorElementPluginArgs
-} from "../../../../types";
+} from "~/types";
 import { Plugin } from "@webiny/plugins/types";
-import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
-import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
+import { createInitialPerDeviceSettingValue } from "~/editor/plugins/elementSettings/elementSettingsUtils";
+import { addElementToParent, createDroppedElement, createElement } from "~/editor/helpers";
+import { executeAction } from "~/editor/recoil/eventActions";
+import { UpdateElementActionArgsType } from "~/editor/recoil/actions/updateElement/types";
+import {
+    CreateElementActionEvent,
+    DeleteElementActionEvent,
+    updateElementAction
+} from "~/editor/recoil/actions";
+import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
+
+import lodashGet from "lodash/get";
 
 const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const defaultSettings = [
@@ -32,7 +34,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
 
     const elementType = kebabCase(args.elementType || "cell");
 
-    return {
+    const plugin: PbEditorPageElementPlugin = {
         type: "pb-editor-page-element",
         name: `pb-editor-page-element-${elementType}`,
         elementType,
@@ -41,8 +43,8 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         canDelete: () => {
             return false;
         },
-        create: (options = {}) => {
-            const defaultValue = {
+        create: options => {
+            const defaultValue: Partial<PbEditorElement> = {
                 type: elementType,
                 elements: [],
                 data: {
@@ -64,7 +66,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
                             DisplayMode.DESKTOP
                         ),
                         grid: {
-                            size: options.data?.settings?.grid?.size || 1
+                            size: lodashGet(options, "data.settings.grid.size", 1)
                         }
                     }
                 }
@@ -111,6 +113,8 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
             return <CellContainer {...props} elementId={props.element.id} />;
         }
     };
+
+    return plugin;
 };
 // this is required because when saving cell element it cannot be without grid element
 const saveActionPlugin = {

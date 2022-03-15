@@ -8,9 +8,8 @@ export type BaseI18NContentContext = I18NContentContext;
 
 export interface I18NContentContext extends SecurityContext, I18NContext {
     i18nContent: {
-        locale: I18NLocale;
-        // getLocale: () => I18NLocale;
-        getCurrentLocale: () => I18NLocale;
+        locale: I18NLocale | null;
+        getCurrentLocale: () => I18NLocale | null;
         hasI18NContentPermission: () => Promise<boolean>;
         checkI18NContentPermission: () => void;
     };

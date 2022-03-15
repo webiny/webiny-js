@@ -2,23 +2,50 @@ import { API } from "@editorjs/editorjs";
 import Ui from "./ui";
 import Tunes from "./tunes";
 import svgs from "./svgs";
+import { Tune } from "./types";
 
-const defaultGetFileSrc = file => {
+interface File {
+    src: string;
+}
+interface GetFileSourceCallable {
+    (file: File | string): string;
+}
+const defaultGetFileSrc: GetFileSourceCallable = file => {
     if (typeof file === "string") {
         return file;
     }
 
     return file.src;
 };
-
-const defaultOnSelectFile = file => {
+interface OnSelectFileCallable {
+    (file: File): string;
+}
+const defaultOnSelectFile: OnSelectFileCallable = file => {
     return file.src;
 };
 
+interface ImageToolData {
+    caption: string;
+    file: string;
+}
+interface ImageToolParams {
+    data: ImageToolData;
+    config: Config;
+    api: API;
+    readOnly: boolean;
+}
+interface Config {
+    getFileSrc: GetFileSourceCallable;
+    onSelectFile: OnSelectFileCallable;
+    actions: Tune[];
+    context: {
+        showFileManager: (cb: (file: File) => void) => void;
+    };
+}
 export default class ImageTool {
     private readonly api: API;
     private readonly readOnly: boolean;
-    private readonly config: any;
+    private readonly config: Config;
     private readonly tunes: Tunes;
     private readonly ui: Ui;
     private readonly _data: any;
@@ -46,7 +73,7 @@ export default class ImageTool {
         };
     }
 
-    constructor({ data, config, api, readOnly }) {
+    constructor({ data, config, api, readOnly }: ImageToolParams) {
         this.api = api;
         this.readOnly = readOnly;
 
@@ -64,7 +91,7 @@ export default class ImageTool {
             api,
             config: this.config,
             onSelectFile: () => {
-                this.config.context.showFileManager(file => {
+                this.config.context.showFileManager((file: File) => {
                     this.image = this.config.onSelectFile(file);
                 });
             },
@@ -77,7 +104,7 @@ export default class ImageTool {
         this.tunes = new Tunes({
             api,
             actions: this.config.actions,
-            onChange: tuneName => this.tuneToggled(tuneName)
+            onChange: (tuneName: string) => this.tuneToggled(tuneName)
         });
 
         /**
@@ -137,11 +164,12 @@ export default class ImageTool {
         this._data.caption = data.caption || "";
         this.ui.fillCaption(this._data.caption);
 
-        Tunes.tunes.forEach(({ name: tune }) => {
-            const value =
-                typeof data[tune] !== "undefined"
-                    ? data[tune] === true || data[tune] === "true"
-                    : false;
+        Tunes.tunes.forEach(({ name }) => {
+            const tune = name as keyof ImageToolData;
+
+            const initialValue = data[tune] as unknown as string | boolean;
+
+            const value = initialValue === true || initialValue === "true";
 
             this.setTune(tune, value);
         });
@@ -154,7 +182,7 @@ export default class ImageTool {
      *
      * @returns {ImageToolData}
      */
-    get data() {
+    get data(): ImageToolData {
         return this._data;
     }
 
@@ -165,7 +193,7 @@ export default class ImageTool {
      *
      * @param {object} file - uploaded file data
      */
-    set image(file) {
+    set image(file: File | string) {
         this._data.file = file || {};
 
         if (file) {
@@ -181,7 +209,7 @@ export default class ImageTool {
      * @param {string} tuneName - tune that has been clicked
      * @returns {void}
      */
-    tuneToggled(tuneName) {
+    public tuneToggled(tuneName: string): void {
         // inverse tune state
         this.setTune(tuneName, !this._data[tuneName]);
     }
@@ -193,7 +221,7 @@ export default class ImageTool {
      * @param {boolean} value - tune state
      * @returns {void}
      */
-    setTune(tuneName, value) {
+    public setTune(tuneName: string, value: boolean): void {
         this._data[tuneName] = value;
 
         this.ui.applyTune(tuneName, value);

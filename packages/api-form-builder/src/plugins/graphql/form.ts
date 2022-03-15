@@ -327,7 +327,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             },
             FbQuery: {
-                getForm: async (_, args, { formBuilder }) => {
+                getForm: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.getForm(args.revision);
 
@@ -336,7 +336,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                getFormRevisions: async (_, args, { formBuilder }) => {
+                getFormRevisions: async (_, args: any, { formBuilder }) => {
                     try {
                         const revisions = await formBuilder.getFormRevisions(args.id);
 
@@ -354,11 +354,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                getPublishedForm: async (
-                    _,
-                    args: { revision: string; parent: string },
-                    { formBuilder }
-                ) => {
+                getPublishedForm: async (_, args: any, { formBuilder }) => {
                     if (!args.revision && !args.parent) {
                         return new NotFoundResponse("Revision ID or Form ID missing.");
                     }
@@ -383,16 +379,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                     return new Response(form);
                 },
-                listFormSubmissions: async (
-                    _,
-                    args: {
-                        form: string;
-                        sort?: string[];
-                        limit?: number;
-                        after?: string;
-                    },
-                    { formBuilder }
-                ) => {
+                listFormSubmissions: async (_, args: any, { formBuilder }) => {
                     try {
                         const { form, ...options } = args;
                         const [submissions, meta] = await formBuilder.listFormSubmissions(
@@ -409,7 +396,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 /**
                  * Creates a new form
                  */
-                createForm: async (_, args, { formBuilder }) => {
+                createForm: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.createForm(args.data);
 
@@ -421,7 +408,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 /**
                  * Deletes the entire form with all of its revisions
                  */
-                deleteForm: async (_, args, { formBuilder }) => {
+                deleteForm: async (_, args: any, { formBuilder }) => {
                     try {
                         await formBuilder.deleteForm(args.id);
 
@@ -433,7 +420,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 /**
                  * Creates a revision from the given revision
                  */
-                createRevisionFrom: async (_, args, { formBuilder }) => {
+                createRevisionFrom: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.createFormRevision(args.revision);
 
@@ -445,7 +432,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 /**
                  * Updates revision
                  */
-                updateRevision: async (_, args, { formBuilder }) => {
+                updateRevision: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.updateForm(args.revision, args.data);
 
@@ -466,7 +453,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                unpublishRevision: async (_, args, { formBuilder }) => {
+                unpublishRevision: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.unpublishForm(args.revision);
 
@@ -478,7 +465,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 /**
                  * Delete a revision
                  */
-                deleteRevision: async (_, args, { formBuilder }) => {
+                deleteRevision: async (_, args: any, { formBuilder }) => {
                     try {
                         await formBuilder.deleteFormRevision(args.revision);
 
@@ -487,7 +474,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                saveFormView: async (_, args, { formBuilder }) => {
+                saveFormView: async (_, args: any, { formBuilder }) => {
                     try {
                         const form = await formBuilder.incrementFormViews(args.revision);
 
@@ -496,7 +483,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                createFormSubmission: async (_: any, args, { formBuilder }) => {
+                createFormSubmission: async (_: any, args: any, { formBuilder }) => {
                     const { revision, data, reCaptchaResponseToken, meta = {} } = args;
 
                     try {
@@ -512,7 +499,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                exportFormSubmissions: async (_: any, args, { formBuilder, fileManager }) => {
+                exportFormSubmissions: async (_: any, args: any, { formBuilder, fileManager }) => {
                     const { form } = args;
 
                     try {
@@ -530,8 +517,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         const revisions = await formBuilder.getFormRevisions(form);
                         const publishedRevisions = revisions.filter(r => r.published);
 
-                        const rows = [];
-                        const fields = {};
+                        const rows: Record<string, string>[] = [];
+                        const fields: Record<string, string> = {};
 
                         /**
                          * First extract all distinct fields across all form submissions.
@@ -551,7 +538,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                          */
                         for (let i = 0; i < submissions.length; i++) {
                             const submissionData = submissions[i].data;
-                            const row = {};
+                            const row: Record<string, string> = {};
                             Object.keys(fields).map(fieldId => {
                                 if (fieldId in submissionData) {
                                     row[fields[fieldId]] = submissionData[fieldId];
@@ -580,7 +567,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                         const result = {
                             key,
-                            src: settings.srcPrefix + key
+                            src: (settings?.srcPrefix || "") + key
                         };
 
                         return new Response(result);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy } from "react";
+import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -7,6 +7,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { SimpleForm, SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
 import styled from "@emotion/styled";
 import { AdminInstallationPlugin } from "@webiny/app-admin/types";
+import { CmsErrorResponse } from "~/types";
 
 const SimpleFormPlaceholder = styled.div({
     minHeight: 300,
@@ -14,7 +15,15 @@ const SimpleFormPlaceholder = styled.div({
 });
 
 const t = i18n.ns("app-headless-cms/admin/installation");
-
+/**
+ * ########################
+ * Is Installed Query
+ */
+export interface CmsIsInstalledQueryResponse {
+    cms: {
+        version: string | null;
+    };
+}
 const IS_INSTALLED = gql`
     query IsCMSInstalled {
         cms {
@@ -22,7 +31,18 @@ const IS_INSTALLED = gql`
         }
     }
 `;
-
+/**
+ * ########################
+ * Install Mutation
+ */
+export interface CmsInstallMutationResponse {
+    cms: {
+        install: {
+            data: boolean;
+            error?: CmsErrorResponse;
+        };
+    };
+}
 const INSTALL = gql`
     mutation InstallCms {
         cms {
@@ -37,21 +57,27 @@ const INSTALL = gql`
         }
     }
 `;
-
-const CMSInstaller = ({ onInstalled }) => {
+interface CMSInstallerProps {
+    onInstalled: () => void;
+}
+const CMSInstaller: React.FC<CMSInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         // Temporary fix for the ES index creation failure.
         // Let's try waiting a bit before running the installation.
         setTimeout(() => {
             client
-                .mutate({
+                .mutate<CmsInstallMutationResponse>({
                     mutation: INSTALL
                 })
-                .then(({ data }) => {
-                    const { error } = data.cms.install;
+                .then(result => {
+                    if (!result || !result.data) {
+                        setError("Missing Install Mutation response data.");
+                        return;
+                    }
+                    const { error } = result.data.cms.install;
                     if (error) {
                         setError(error.message);
                         return;
@@ -92,37 +118,37 @@ const plugin: AdminInstallationPlugin = {
     ],
     secure: true,
     async getInstalledVersion({ client }) {
-        const { data } = await client.query({ query: IS_INSTALLED });
+        const { data } = await client.query<CmsIsInstalledQueryResponse>({ query: IS_INSTALLED });
         return data.cms.version;
     },
     render({ onInstalled }) {
         return <CMSInstaller onInstalled={onInstalled} />;
     },
     upgrades: [
-        {
-            version: "5.0.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.0.0"));
-            }
-        },
-        {
-            version: "5.5.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.5.0"));
-            }
-        },
-        {
-            version: "5.8.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.8.0"));
-            }
-        },
-        {
-            version: "5.19.0",
-            getComponent() {
-                return lazy(() => import("./upgrades/v5.19.0"));
-            }
-        }
+        // {
+        //     version: "5.0.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.0.0"));
+        //     }
+        // },
+        // {
+        //     version: "5.5.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.5.0"));
+        //     }
+        // },
+        // {
+        //     version: "5.8.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.8.0"));
+        //     }
+        // },
+        // {
+        //     version: "5.19.0",
+        //     getComponent() {
+        //         return lazy(() => import("./upgrades/v5.19.0"));
+        //     }
+        // }
     ]
 };
 

@@ -124,7 +124,7 @@ describe("Comment crud test", () => {
 
         await until(
             () => getCommentQuery({ id: comment.id }).then(([data]) => data),
-            response => response.data.apw.getComment.data !== null,
+            (response: any) => response.data.apw.getComment.data !== null,
             {
                 name: "Wait for getComment query"
             }
@@ -210,7 +210,7 @@ describe("Comment crud test", () => {
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const [updatedItem] = response.data.apw.listComments.data;
                 return updatedItem && comment.savedOn !== updatedItem.savedOn;
             },
@@ -270,7 +270,7 @@ describe("Comment crud test", () => {
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listComments.data;
                 return list.length === 0;
             },

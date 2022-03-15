@@ -1,13 +1,14 @@
-import * as React from "react";
-import { Input } from "../Input";
+import React from "react";
+import { Input, InputProps } from "~/Input";
 import { Chips, Chip } from "../Chips";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "~/types";
 import { css } from "emotion";
 import keycode from "keycode";
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
+import { SyntheticEvent } from "react";
 
-type Props = FormComponentProps & {
+type TagsProps = FormComponentProps & {
     /**
      * Component label.
      */
@@ -54,9 +55,9 @@ type Props = FormComponentProps & {
     autoFocus?: boolean;
 };
 
-type State = {
+interface TagsState {
     inputValue: string;
-};
+}
 
 const tagsStyle = css({
     position: "relative",
@@ -80,34 +81,32 @@ const tagsStyle = css({
     }
 });
 
-export class Tags extends React.Component<Props, State> {
-    state = {
+export class Tags extends React.Component<TagsProps, TagsState> {
+    public override state = {
         inputValue: ""
     };
 
-    static defaultProps = {
-        validation: { isValid: null }
-    };
-
-    render() {
+    public override render() {
         const { validation, value, disabled, onChange, description, ...otherInputProps } =
             this.props;
 
-        const inputProps = {
+        const inputProps: InputProps = {
             ...otherInputProps,
             value: this.state.inputValue,
-            onChange: inputValue => {
+            onChange: (inputValue: string) => {
                 this.setState({ inputValue });
             },
-            onKeyDown: e => {
+            onKeyDown: (ev: SyntheticEvent) => {
                 if (!onChange) {
                     return;
                 }
 
                 const newValue = Array.isArray(value) ? [...value] : [];
                 const inputValue = this.state.inputValue || "";
-
-                switch (keycode(e)) {
+                /**
+                 * We must cast as keycode only works with Event | string type.
+                 */
+                switch (keycode(ev as unknown as Event)) {
                     case "enter":
                         if (inputValue) {
                             newValue.push(inputValue);
@@ -125,15 +124,17 @@ export class Tags extends React.Component<Props, State> {
             }
         };
 
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
         return (
             <div className={tagsStyle}>
                 <div>
                     <Input {...inputProps} />
 
-                    {validation.isValid === false && (
-                        <FormElementMessage error>{validation.message}</FormElementMessage>
+                    {validationIsValid === false && (
+                        <FormElementMessage error>{validationMessage}</FormElementMessage>
                     )}
-                    {validation.isValid !== false && description && (
+                    {validationIsValid !== false && description && (
                         <FormElementMessage>{description}</FormElementMessage>
                     )}
 

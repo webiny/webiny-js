@@ -10,7 +10,7 @@ interface TagsProps {
     children: React.ReactNode;
 }
 
-export const Tags = ({ tags, children }: TagsProps) => {
+export const Tags: React.FC<TagsProps> = ({ tags, children }) => {
     return <TagsContext.Provider value={tags}>{children}</TagsContext.Provider>;
 };
 

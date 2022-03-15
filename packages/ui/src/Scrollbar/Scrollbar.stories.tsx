@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { storiesOf } from "@storybook/react";
 import { Story, StoryReadme, StorySandbox } from "@webiny/storybook-utils/Story";
 import readme from "./../Scrollbar/README.md";

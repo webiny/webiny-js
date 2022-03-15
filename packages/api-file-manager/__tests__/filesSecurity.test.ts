@@ -3,24 +3,41 @@ import { SecurityPermission, SecurityIdentity } from "@webiny/api-security/types
 
 jest.setTimeout(10000);
 
-function Mock(prefix) {
-    this.key = `${prefix}key`;
-    this.type = `${prefix}type`;
-    this.size = 4096;
-    this.name = `${prefix}name`;
-    this.tags = [`${prefix}tag`];
+class Mock {
+    public readonly key: string;
+    public readonly type: string;
+    public readonly size: number;
+    public readonly name: string;
+    public readonly tags: string[];
+
+    public constructor(prefix = "") {
+        this.key = `${prefix}key`;
+        this.type = `${prefix}type`;
+        this.size = 4096;
+        this.name = `${prefix}name`;
+        this.tags = [`${prefix}tag`];
+    }
 }
 
-function MockResponse({ prefix, id }) {
-    this.id = id;
-    this.key = `${prefix}key`;
-    this.type = `${prefix}type`;
-    this.size = 4096;
-    this.name = `${prefix}name`;
-    this.tags = [`${prefix}tag`];
+class MockResponse {
+    public readonly id: string;
+    public readonly key: string;
+    public readonly type: string;
+    public readonly size: number;
+    public readonly name: string;
+    public readonly tags: string[];
+
+    public constructor({ prefix, id }: { prefix: string; id: string }) {
+        this.id = id;
+        this.key = `${prefix}key`;
+        this.type = `${prefix}type`;
+        this.size = 4096;
+        this.name = `${prefix}name`;
+        this.tags = [`${prefix}tag`];
+    }
 }
 
-const NOT_AUTHORIZED_RESPONSE = operation => ({
+const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
     data: {
         fileManager: {
             [operation]: {
@@ -47,7 +64,7 @@ const identityB: SecurityIdentity = {
     displayName: "Bb"
 };
 
-type IdentityPermissions = Array<[SecurityPermission[], SecurityIdentity]>;
+type IdentityPermissions = Array<[SecurityPermission[], SecurityIdentity | null]>;
 
 describe("Files Security Test", () => {
     const { createFile, createFiles, until } = useGqlHandler({
@@ -117,7 +134,7 @@ describe("Files Security Test", () => {
                     listFiles({
                         limit: 1000
                     }).then(([data]) => data),
-                ({ data }) => {
+                ({ data }: any) => {
                     return !!data.fileManager.listFiles.data.length;
                 },
                 { name: "sufficientPermissionsAll list all files", tries: 10 }

@@ -1,5 +1,12 @@
 import bytes from "bytes";
-export default errors => {
+import { FileError as BaseFileError } from "react-butterfiles";
+
+interface FileError extends BaseFileError {
+    multipleMaxCount: number;
+    multipleMaxSize: number;
+}
+
+export default (errors: FileError[]): string | null => {
     if (errors.length > 1) {
         let error = errors.find(error => error.type === "multipleMaxCountExceeded");
         if (error) {
@@ -25,5 +32,7 @@ export default errors => {
             return "Multiple max size exceeded.";
         case "multipleNotAllowed":
             return "Only one file allowed.";
+        default:
+            return null;
     }
 };

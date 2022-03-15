@@ -26,10 +26,15 @@ const classes = {
     })
 };
 
-type LinkSettingsPropsType = {
+interface LinkSettingsFormData {
+    newTab?: boolean;
+    href?: string;
+}
+
+interface LinkSettingsPropsType {
     element: PbEditorElement;
-};
-const LinkSettingsComponent: React.FunctionComponent<
+}
+const LinkSettingsComponent: React.FC<
     LinkSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = ({ element, defaultAccordionValue }) => {
     const handler = useEventActionHandler();
@@ -45,7 +50,7 @@ const LinkSettingsComponent: React.FunctionComponent<
         );
     };
 
-    const updateSettings = data => {
+    const updateSettings = (data: LinkSettingsFormData) => {
         // Skip update if nothing is change.
         if (data.newTab === newTab && data.href === href) {
             return;
@@ -68,10 +73,10 @@ const LinkSettingsComponent: React.FunctionComponent<
                                 <DelayedOnChange>
                                     {props => (
                                         <InputField
+                                            {...props}
                                             value={props.value || ""}
                                             onChange={props.onChange}
                                             placeholder={"https://webiny.com/blog"}
-                                            {...props}
                                         />
                                     )}
                                 </DelayedOnChange>

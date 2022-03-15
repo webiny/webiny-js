@@ -3,6 +3,144 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* admin and website ([d1006ed](https://github.com/webiny/webiny-js/commit/d1006ed659d5dff910795d61687bff9528a19129))
+* ui and form ([bb12676](https://github.com/webiny/webiny-js/commit/bb1267630e13142af681685ec27e2eaa958b6cc7))
+
+
+### Features
+
+* add types to app-headless-cms wip ([1eb07a1](https://github.com/webiny/webiny-js/commit/1eb07a14083d76b7195a684920cf6efb81895edf))
+* add types to app-page-builder ([e65ce21](https://github.com/webiny/webiny-js/commit/e65ce216d9019657964ddd89194be63544ef2bad))
+* add types to form ([615ec06](https://github.com/webiny/webiny-js/commit/615ec066ecd0b1cdd5c12b6638d93f657d37dfa7))
+* add types wip ([f223859](https://github.com/webiny/webiny-js/commit/f223859444a87a50c0b413918282acd6e016c35a))
+* any types in app-form-builder wip ([c9f8378](https://github.com/webiny/webiny-js/commit/c9f8378cc9249a35d4d24ca9f9d3927eee58d22c))
+* any types in app-form-builder wip 2 ([2034a50](https://github.com/webiny/webiny-js/commit/2034a50c166e7f842eeece0b6ac1acbd06fb45ce))
+* any types in app-headless-cms wip ([79c2c7f](https://github.com/webiny/webiny-js/commit/79c2c7f21d489cddc690556e3f5012fff75176d1))
+
+
+
+
+
+## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+## [5.23.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.0...v5.23.1-beta.0) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.23.0](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.1...v5.23.0) (2022-02-15)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.23.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.0...v5.23.0-beta.1) (2022-02-14)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+## [5.22.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.0...v5.22.1-beta.0) (2022-01-29)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.22.0](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.3...v5.22.0) (2022-01-24)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+
+### Features
+
+* enable okta integration in multi-tenant projects ([#2211](https://github.com/webiny/webiny-js/issues/2211)) ([50f3626](https://github.com/webiny/webiny-js/commit/50f3626b0fbfc684ad4c6f476dfb1b7f8b6db616))
+
+
+
+
+
+# [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
+
+**Note:** Version bump only for package @webiny/form
+
+
+
+
+
+# [5.22.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.21.0...v5.22.0-beta.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* revert react to v16 due to Material incompatibility with v17 ([f073521](https://github.com/webiny/webiny-js/commit/f073521af9327d95535296d4275b42968888bb77))
+
+
+### Features
+
+* upgrade webpack to version 5 ([#2101](https://github.com/webiny/webiny-js/issues/2101)) ([d3bdfac](https://github.com/webiny/webiny-js/commit/d3bdfac4b08b453f6d2ff836d8e56e1f0073ae62))
+
+
+
+
+
 # [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
 
 **Note:** Version bump only for package @webiny/form

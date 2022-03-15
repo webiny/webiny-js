@@ -1,7 +1,11 @@
 import React, { useEffect, useCallback, useState } from "react";
+/**
+ * Package dataurl-to-blob does not have types.
+ */
+// @ts-ignore
 import dataURLtoBlob from "dataurl-to-blob";
 import SaveDialog from "./SaveDialog";
-import pick from "lodash.pick";
+import pick from "lodash/pick";
 import get from "lodash/get";
 import createElementPlugin from "../../../../admin/utils/createElementPlugin";
 import createBlockPlugin from "../../../../admin/utils/createBlockPlugin";
@@ -10,21 +14,25 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useKeyHandler } from "../../../hooks/useKeyHandler";
-import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "../../../../admin/graphql/pages";
+import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "~/admin/graphql/pages";
 import { useRecoilValue } from "recoil";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import { FileUploaderPlugin } from "@webiny/app/types";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
+    PbEditorElement as BasePbEditorElement,
+    PbElement,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 
-const removeIds = el => {
+const removeIds = (el: PbElement): PbElement => {
+    // @ts-ignore
     delete el.id;
 
     el.elements = el.elements.map(el => {
+        // @ts-ignore
         delete el.id;
         if (el.elements && el.elements.length) {
             el = removeIds(el);
@@ -36,10 +44,10 @@ const removeIds = el => {
     return el;
 };
 
-type ImageDimensionsType = {
+interface ImageDimensionsType {
     width: number;
     height: number;
-};
+}
 function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType> {
     return new Promise(resolve => {
         const image = new window.Image();
@@ -50,7 +58,16 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
-const pluginOnSave = (element: PbEditorElement): PbEditorElement => {
+interface PbDocumentElement extends BasePbEditorElement {
+    preview: string;
+    overwrite?: boolean;
+}
+
+interface RecoilPbEditorElement extends PbEditorElement {
+    source: string;
+}
+
+const pluginOnSave = (element: BasePbEditorElement): BasePbEditorElement => {
     const plugin = plugins
         .byType<PbEditorPageElementSaveActionPlugin>("pb-editor-page-element-save-action")
         .find(pl => pl.elementType === element.type);
@@ -60,23 +77,31 @@ const pluginOnSave = (element: PbEditorElement): PbEditorElement => {
     return plugin.onSave(element);
 };
 
-const SaveAction: React.FunctionComponent = ({ children }) => {
+const SaveAction: React.FC = ({ children }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementByIdSelector(activeElementId as string)
+    ) as RecoilPbEditorElement;
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { getElementTree } = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const [isDialogOpened, setOpenDialog] = useState<boolean>(false);
     const client = useApolloClient();
 
-    const onSubmit = async formData => {
-        formData.content = pluginOnSave(removeIds(await getElementTree(element)));
+    const onSubmit = async (formData: PbDocumentElement) => {
+        formData.content = pluginOnSave(removeIds((await getElementTree(element)) as PbElement));
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);
         blob.name = "pb-editor-page-element-" + element.id + ".png";
 
         const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("app-file-manager-storage");
+        /**
+         * We break the method because it would break if there is no fileUploaderPlugin.
+         */
+        if (!fileUploaderPlugin) {
+            return;
+        }
         const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: client });
         previewImage.meta = meta;
         previewImage.meta.private = true;
@@ -90,9 +115,11 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
 
         const createdImage = get(createdImageResponse, "data.fileManager.createFile", {});
         if (createdImage.error) {
-            return showSnackbar("Image could not be saved.");
+            showSnackbar("Image could not be saved.");
+            return;
         } else if (!createdImage.data.id) {
-            return showSnackbar("Missing saved image id.");
+            showSnackbar("Missing saved image id.");
+            return;
         }
 
         formData.preview = createdImage.data;
@@ -152,10 +179,17 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
                 element={element}
                 open={isDialogOpened}
                 onClose={hideDialog}
-                onSubmit={onSubmit}
+                onSubmit={data => {
+                    /**
+                     * We are positive that data is PbEditorElement.
+                     */
+                    onSubmit(data as PbDocumentElement);
+                }}
                 type={element.type === "block" ? "block" : "element"}
             />
-            {React.cloneElement(children as React.ReactElement, { onClick: showDialog })}
+            {React.cloneElement(children as unknown as React.ReactElement, {
+                onClick: showDialog
+            })}
         </>
     );
 };

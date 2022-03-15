@@ -47,7 +47,7 @@ export interface File {
 
 export interface CreatedBy {
     id: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -57,7 +57,7 @@ export interface FileInput {
     size: number;
     type: string;
     meta: Record<string, any>;
-    tags: [string];
+    tags: string[];
 }
 
 export interface FileListWhereParams {
@@ -82,8 +82,9 @@ export interface FilesListOpts {
 }
 
 export interface FileListMeta {
-    cursor: string;
+    cursor: string | null;
     totalCount: number;
+    hasMoreItems: boolean;
 }
 
 interface FilesCrudListTagsWhere {
@@ -110,7 +111,7 @@ export interface FilesCRUD {
 }
 
 export interface SystemCRUD {
-    getVersion(): Promise<string>;
+    getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<void>;
     install(args: { srcPrefix: string }): Promise<boolean>;
     upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
@@ -129,7 +130,7 @@ export interface FileManagerSystem {
 }
 
 export type SettingsCRUD = {
-    getSettings(): Promise<FileManagerSettings>;
+    getSettings(): Promise<FileManagerSettings | null>;
     createSettings(data?: Partial<FileManagerSettings>): Promise<FileManagerSettings>;
     updateSettings(data: Partial<FileManagerSettings>): Promise<FileManagerSettings>;
     deleteSettings(): Promise<boolean>;
@@ -322,10 +323,10 @@ export interface FileManagerFilesStorageOperationsListParams {
  * @category FilesStorageOperations
  * @category FilesStorageOperationsParams
  */
-interface FileManagerFilesStorageOperationsListResponseMeta {
+export interface FileManagerFilesStorageOperationsListResponseMeta {
     hasMoreItems: boolean;
     totalCount: number;
-    cursor: string;
+    cursor: string | null;
 }
 export type FileManagerFilesStorageOperationsListResponse = [
     File[],
@@ -363,11 +364,11 @@ export interface FileManagerFilesStorageOperations {
     /**
      * Insert the file data into the database.
      */
-    create: (params: FileManagerFilesStorageOperationsCreateParams) => Promise<File | null>;
+    create: (params: FileManagerFilesStorageOperationsCreateParams) => Promise<File>;
     /**
      * Update the file data in the database.
      */
-    update: (params: FileManagerFilesStorageOperationsUpdateParams) => Promise<File | null>;
+    update: (params: FileManagerFilesStorageOperationsUpdateParams) => Promise<File>;
     /**
      * Delete the file from the database.
      */

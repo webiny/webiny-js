@@ -53,7 +53,18 @@ const Tag = styled("div")({
     }
 });
 
-function LeftSidebar({ toggleTag, queryParams: { tags, scope } }) {
+interface LeftSidebarProps {
+    toggleTag: (item: string) => void;
+    queryParams: {
+        tags: string[];
+        scope: string;
+    };
+}
+const LeftSidebar: React.FC<LeftSidebarProps> = props => {
+    const {
+        toggleTag,
+        queryParams: { tags, scope }
+    } = props;
     const activeTags = Array.isArray(tags) ? tags : [];
 
     const { data } = useQuery(LIST_TAGS, { variables: { where: getWhere(scope) } });
@@ -77,18 +88,21 @@ function LeftSidebar({ toggleTag, queryParams: { tags, scope } }) {
             <TagList data-testid={"fm.left-drawer.tag-list"}>
                 {tagList
                     .filter(tag => tag !== scope)
-                    .map((item, index) => (
-                        <Tag
-                            className={activeTags.includes(item) && "active"}
-                            key={item + index}
-                            onClick={() => toggleTag(item)}
-                        >
-                            <Icon icon={<TagIcon />} /> {formatTagAsLabel(item, scope)}
-                        </Tag>
-                    ))}
+                    .map((item, index) => {
+                        const className = activeTags.includes(item) ? "active" : "";
+                        return (
+                            <Tag
+                                className={className}
+                                key={item + index}
+                                onClick={() => toggleTag(item)}
+                            >
+                                <Icon icon={<TagIcon />} /> {formatTagAsLabel(item, scope)}
+                            </Tag>
+                        )
+                    })}
             </TagList>
         </div>
     );
-}
+};
 
 export default LeftSidebar;

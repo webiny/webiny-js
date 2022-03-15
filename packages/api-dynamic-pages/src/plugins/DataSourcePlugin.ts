@@ -26,7 +26,7 @@ export abstract class DataSource<TLoadData = any, TContext = any> {
 }
 
 export class DataSourcePlugin extends Plugin {
-    public static readonly type = "dp.data-source";
+    public static override readonly type: string = "dp.data-source";
 
     private _config: Config;
 

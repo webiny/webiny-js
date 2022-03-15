@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import get from "lodash/get";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
+import {
+    PbEditorElement,
+    PbEditorPageElementSettingsRenderComponentProps
+} from "../../../../types";
 import ElementAnimation from "../../../../render/components/ElementAnimation";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
@@ -16,6 +17,7 @@ import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
 // Icon
 import { ReactComponent as TimerIcon } from "./icons/round-av_timer-24px.svg";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
 
 const classes = {
     grid: css({
@@ -43,11 +45,10 @@ const DATA_NAMESPACE = "data.settings.animation";
 type SettingsPropsType = {
     animation: any;
 };
-const Settings: React.FunctionComponent<
-    SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
-> = ({ defaultAccordionValue }) => {
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+const Settings: React.FC<SettingsPropsType & PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
+    const element = useActiveElement() as PbEditorElement;
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
@@ -178,7 +179,7 @@ type AnimationSettingsPropsType = {
     title?: string;
     styleAttribute?: string;
 };
-const AnimationSettings: React.FunctionComponent<
+const AnimationSettings: React.FC<
     AnimationSettingsPropsType & PbEditorPageElementSettingsRenderComponentProps
 > = props => {
     return (

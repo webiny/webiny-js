@@ -1,26 +1,14 @@
 import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
+import {
+    Args as BaseHandlerArgs,
+    Args as BaseArgs,
+    Configuration as BaseConfiguration
+} from "~/types";
 
-export interface Configuration {
-    website?: {
-        url?: string;
-    };
-    db?: {
-        namespace?: string;
-    };
-    storage?: {
-        name?: string;
-        folder?: string;
-    };
-    meta?: Record<string, any>;
-}
-
-export interface Args {
-    configuration?: Configuration;
-    url?: string;
-    path?: string;
-}
+export type Configuration = BaseConfiguration;
+export type Args = BaseArgs;
 
 export type HandlerArgs = Args | Args[];
 export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
@@ -38,4 +26,45 @@ export interface RenderHookPlugin extends Plugin {
     type: "ps-render-hook";
     beforeRender?: HookCallbackFunction;
     afterRender?: HookCallbackFunction;
+}
+
+export interface RenderApolloState {
+    [key: string]: string;
+}
+/**
+ * @internal
+ */
+export interface RenderResult {
+    content: string;
+    meta: {
+        apolloState: RenderApolloState;
+        gqlCache: {
+            [key: string]: any;
+        };
+        [key: string]: any;
+    };
+}
+/**
+ * @internal
+ */
+export interface RenderUrlCallableParams {
+    context: HandlerContext;
+    args: BaseHandlerArgs;
+    configuration: Configuration;
+}
+/**
+ * @internal
+ */
+export interface RenderUrlParams extends RenderUrlCallableParams {
+    renderUrlFunction?: (url: string, params: RenderUrlCallableParams) => Promise<RenderResult>;
+}
+/**
+ * @internal
+ */
+export interface RenderUrlPostHtmlParams {
+    render: RenderResult;
+    args: RenderUrlParams;
+    url: string;
+    id: string;
+    ts: number;
 }

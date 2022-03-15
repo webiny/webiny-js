@@ -5,15 +5,16 @@ import merge from "lodash/merge";
 import set from "lodash/set";
 import get from "lodash/get";
 import { Form } from "@webiny/form";
+import { FormAPI } from "@webiny/form/types";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin,
     PbEditorElement
-} from "../../../../types";
+} from "~/types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import {
     activeElementAtom,
     elementWithChildrenByIdSelector,
@@ -25,6 +26,7 @@ import Wrapper from "../components/Wrapper";
 import SpacingPicker from "../components/SpacingPicker";
 import { classes } from "../components/StyledComponents";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
+import { Validator } from "@webiny/validation/types";
 
 const rightCellStyle = css({
     justifySelf: "end"
@@ -68,9 +70,9 @@ enum WidthUnits {
     auto = "auto"
 }
 
-const validateWidth = (value: string | undefined) => {
+const validateWidth: Validator = (value: string | undefined) => {
     if (!value) {
-        return null;
+        return true;
     }
     const parsedValue = parseInt(value);
 
@@ -97,7 +99,7 @@ const validateWidth = (value: string | undefined) => {
 
 const DATA_NAMESPACE = "data.settings.width";
 
-const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+const Settings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
@@ -105,10 +107,10 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
 
     const handler = useEventActionHandler();
-    const updateSettings = async (data, form) => {
+    const updateSettings = async (data: Record<string, any>, form: FormAPI) => {
         const valid = await form.validate();
         if (!valid) {
-            return;
+            return null;
         }
 
         const newElement: PbEditorElement = merge(
@@ -125,11 +127,18 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
         );
     };
 
-    const { config: activeDisplayModeConfig } = React.useMemo(() => {
+    const memoizedResponsiveModePlugin = React.useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
+
+    const { config: activeDisplayModeConfig } = memoizedResponsiveModePlugin || {
+        config: {
+            displayMode: null,
+            icon: null
+        }
+    };
 
     const settings = React.useMemo(() => {
         const fallbackValue = applyFallbackDisplayMode(displayMode, mode =>
@@ -149,7 +158,15 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
                 </Tooltip>
             }
         >
-            <Form data={settings} onChange={updateSettings}>
+            <Form
+                data={settings}
+                onChange={(data, form) => {
+                    if (!form) {
+                        return;
+                    }
+                    return updateSettings(data, form);
+                }}
+            >
                 {({ Bind }) => (
                     <Wrapper
                         label={"Width"}

@@ -1,12 +1,13 @@
 import React from "react";
 import dotProp from "dot-prop-immutable";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, GridInner } from "@webiny/ui/Grid";
 import { imageWrapperStyles } from "./utils";
 import { FileManager } from "@webiny/app-admin/components";
 import styled from "@emotion/styled";
 import File from "./File";
+import { GetBindCallable } from "~/admin/components/ContentEntryForm/useBind";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -21,7 +22,12 @@ const FileUploadWrapper = styled("div")({
     }
 });
 
-function FieldRenderer({ getBind, Label, field }) {
+interface FieldRendererProps {
+    getBind: GetBindCallable;
+    Label: React.FC;
+    field: CmsEditorField;
+}
+const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) => {
     const Bind = getBind();
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
@@ -35,10 +41,13 @@ function FieldRenderer({ getBind, Label, field }) {
                         <FileManager multiple={true} images={imagesOnly}>
                             {({ showFileManager }) => {
                                 const selectFiles = (index = -1) => {
-                                    showFileManager(files => {
-                                        if (!files) {
+                                    showFileManager(initialFiles => {
+                                        if (!initialFiles || initialFiles.length === 0) {
                                             return;
                                         }
+                                        const files = Array.isArray(initialFiles)
+                                            ? initialFiles
+                                            : [initialFiles];
 
                                         const urls = files.map(f => f.src);
                                         if (index === -1) {
@@ -58,7 +67,7 @@ function FieldRenderer({ getBind, Label, field }) {
                                             <Label>{field.label}</Label>
                                         </Cell>
 
-                                        {value.map((url, index) => (
+                                        {value.map((url: string, index: number) => (
                                             <Cell span={3} key={url}>
                                                 <File
                                                     url={url}
@@ -73,6 +82,10 @@ function FieldRenderer({ getBind, Label, field }) {
 
                                         <Cell span={3}>
                                             <File
+                                                url={""}
+                                                onRemove={() => {
+                                                    return void 0;
+                                                }}
                                                 {...bind}
                                                 showFileManager={() => selectFiles()}
                                                 placeholder={t`Select a file"`}
@@ -87,12 +100,15 @@ function FieldRenderer({ getBind, Label, field }) {
             }}
         </Bind>
     );
-}
-
+};
+/**
+ * Not used?
+ */
+// TODO @ts-refactor
 FieldRenderer.defaultProps = {
     validation: { isValid: null },
     styles: { width: "100%", height: "auto" }
-};
+} as Partial<FieldRendererProps>;
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -102,7 +118,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`File Inputs`,
         description: t`Enables selecting multiple files via File Manager.`,
         canUse({ field }) {
-            return field.type === "file" && field.multipleValues;
+            return field.type === "file" && !!field.multipleValues;
         },
         render({ field, getBind, Label }) {
             return <FieldRenderer field={field} getBind={getBind} Label={Label} />;

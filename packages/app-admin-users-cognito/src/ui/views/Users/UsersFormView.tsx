@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { UIView } from "@webiny/app-admin/ui/UIView";
-import { FormAPI } from "@webiny/form";
+import { FormAPI, FormData } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { GenericElement } from "@webiny/app-admin/ui/elements/GenericElement";
 import {
@@ -27,7 +27,7 @@ const AvatarWrapper = styled("div")({
 });
 
 export class UsersFormView extends UIView {
-    constructor() {
+    public constructor() {
         super("UsersFormView");
 
         this.useGrid(false);
@@ -40,26 +40,26 @@ export class UsersFormView extends UIView {
         this.applyPlugins(UsersFormView);
     }
 
-    getUserFormHook(): UseUserForm {
+    public getUserFormHook(): UseUserForm {
         return this.getHook("userForm");
     }
 
-    submit(data: FormData, form?: FormAPI) {
+    public submit(data: FormData, form?: FormAPI): void {
         this.dispatchEvent("onSubmit", { data, form });
         this.getUserFormHook().onSubmit(data);
     }
 
-    onSubmit(cb: (data: any, form: FormAPI) => void) {
+    public onSubmit(cb: (data: any, form: FormAPI) => void): void {
         this.addEventListener("onSubmit", cb);
     }
 
-    private addElements() {
+    private addElements(): void {
         const simpleForm = this.addElement<FormView>(
             new FormView("UsersForm", {
                 isLoading: () => {
                     return this.getUserFormHook().loading;
                 },
-                onSubmit: (data: FormData, form: FormAPI) => {
+                onSubmit: (data, form) => {
                     this.submit(data, form);
                 },
                 getTitle: () => {
@@ -149,13 +149,15 @@ export class UsersFormView extends UIView {
         );
 
         const groupAccordion = accordion.getElement<AccordionItemElement>("groups");
-        groupAccordion.addElement(
-            new GroupAutocompleteElement("group", {
-                name: "group",
-                label: "Group",
-                validators: () => validation.create("required")
-            })
-        );
+        if (groupAccordion) {
+            groupAccordion.addElement(
+                new GroupAutocompleteElement("group", {
+                    name: "group",
+                    label: "Group",
+                    validators: () => validation.create("required")
+                })
+            );
+        }
 
         this.wrapWith(({ children }) => <FormWrapper>{children}</FormWrapper>);
     }

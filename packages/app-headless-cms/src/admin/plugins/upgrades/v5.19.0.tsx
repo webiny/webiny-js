@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useEffect, useState } from "react";
 import { i18n } from "@webiny/app/i18n";
 import {

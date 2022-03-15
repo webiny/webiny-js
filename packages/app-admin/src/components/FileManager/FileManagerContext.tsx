@@ -1,4 +1,5 @@
 import React from "react";
+import { FileItem } from "./types";
 import { useSecurity } from "@webiny/app-security";
 
 enum ListFilesSort {
@@ -21,7 +22,30 @@ export const getWhere = (scope: string | undefined) => {
     };
 };
 
-function init({ accept, tags, scope, own, identity }) {
+interface InitParams {
+    accept: string[];
+    tags: string[];
+    scope: string;
+    own: boolean;
+    identity: any;
+}
+interface StateQueryParams {
+    types: string[];
+    limit: number;
+    sort: number;
+    tags: string[];
+    scope: string;
+    where: Record<string, any>;
+}
+interface State {
+    showingFileDetails: string | null;
+    selected: FileItem[];
+    hasPreviouslyUploadedFiles: boolean | null;
+    queryParams: StateQueryParams;
+    dragging: boolean;
+    uploading: boolean;
+}
+const init = ({ accept, tags, scope, own, identity }: InitParams): State => {
     const initialWhere = own ? { createdBy: identity.id } : {};
     return {
         showingFileDetails: null,
@@ -34,12 +58,34 @@ function init({ accept, tags, scope, own, identity }) {
             limit: 50,
             sort: ListFilesSort.CREATED_ON_DESC,
             where: { ...initialWhere, ...getWhere(scope) }
-        }
+        },
+        dragging: false,
+        uploading: false
     };
+};
+
+interface Action {
+    type:
+        | "toggleSelected"
+        | "queryParams"
+        | "showFileDetails"
+        | "dragging"
+        | "hasPreviouslyUploadedFiles"
+        | "uploading";
+    file: FileItem;
+    queryParams: StateQueryParams;
+    src: string;
+    state: boolean;
+    hasPreviouslyUploadedFiles: boolean;
+}
+interface Reducer {
+    (prev: State, action: Action): State;
 }
 
-function fileManagerReducer(state, action) {
-    const next = { ...state };
+const fileManagerReducer: Reducer = (state: State, action) => {
+    const next: State = {
+        ...state
+    };
     switch (action.type) {
         case "toggleSelected": {
             const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
@@ -80,17 +126,18 @@ function fileManagerReducer(state, action) {
     }
 
     return next;
-}
+};
 
 const FileManagerContext = React.createContext({});
 
-function FileManagerProvider({ children, ...props }) {
+const FileManagerProvider: React.FC = ({ children, ...props }) => {
     const { identity } = useSecurity();
-    const initialArgs = {
-        ...props,
-        identity
-    };
-    const [state, dispatch] = React.useReducer(fileManagerReducer, initialArgs, init);
+    /**
+     * TODO @ts-refactor
+     * Figure out how to type the rest of the types.
+     */
+    // @ts-ignore
+    const [state, dispatch] = React.useReducer(fileManagerReducer, {...props, identity}, init);
 
     const value = React.useMemo(() => {
         return {
@@ -104,7 +151,7 @@ function FileManagerProvider({ children, ...props }) {
             {children}
         </FileManagerContext.Provider>
     );
-}
+};
 
 function useFileManager() {
     const context: any = React.useContext(FileManagerContext);
@@ -115,18 +162,18 @@ function useFileManager() {
     const { state, dispatch } = context;
     return {
         selected: state.selected,
-        toggleSelected(file) {
+        toggleSelected(file: FileItem) {
             dispatch({
                 type: "toggleSelected",
                 file
             });
         },
         hasPreviouslyUploadedFiles: state.hasPreviouslyUploadedFiles,
-        setHasPreviouslyUploadedFiles(hasPreviouslyUploadedFiles) {
+        setHasPreviouslyUploadedFiles(hasPreviouslyUploadedFiles: boolean) {
             dispatch({ type: "hasPreviouslyUploadedFiles", hasPreviouslyUploadedFiles });
         },
         queryParams: state.queryParams,
-        setQueryParams(queryParams) {
+        setQueryParams(queryParams: StateQueryParams) {
             dispatch({ type: "queryParams", queryParams });
         },
         setDragging(state = true) {
@@ -143,7 +190,7 @@ function useFileManager() {
             });
         },
         uploading: state.uploading,
-        showFileDetails(src) {
+        showFileDetails(src: string) {
             dispatch({ type: "showFileDetails", src });
         },
         hideFileDetails() {

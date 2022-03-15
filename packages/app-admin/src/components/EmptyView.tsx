@@ -34,12 +34,12 @@ const EmptyViewWrapper = styled("div")({
         }
     }
 });
-export type EmptyViewProps = {
+export interface EmptyViewProps {
     icon?: ReactElement;
     title: string;
-    action: ReactElement;
-};
-const EmptyView = ({ icon = <TouchIcon />, title, action }: EmptyViewProps) => {
+    action: ReactElement | null;
+}
+const EmptyView: React.FC<EmptyViewProps> = ({ icon = <TouchIcon />, title, action }) => {
     return (
         <EmptyViewWrapper>
             <div className={"media"}>{icon}</div>

@@ -40,7 +40,7 @@ export type PageImportExportTaskCrud = {
      */
     storageOperations: PageImportExportTaskStorageOperations;
 
-    getTask(id: string): Promise<PageImportExportTask>;
+    getTask(id: string): Promise<PageImportExportTask | null>;
     listTasks(
         params?: PageImportExportTaskStorageOperationsListParams
     ): Promise<PageImportExportTask[]>;
@@ -57,7 +57,7 @@ export type PageImportExportTaskCrud = {
         }
     ): Promise<PageImportExportTask>;
     deleteTask(id: string): Promise<PageImportExportTask>;
-    getSubTask(id: string, subtaskId: string): Promise<PageImportExportTask>;
+    getSubTask(id: string, subtaskId: string): Promise<PageImportExportTask | null>;
     listSubTasks(
         id: string,
         status: PageImportExportTaskStatus,

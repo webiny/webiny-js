@@ -48,7 +48,7 @@ export interface ExportPagesDialogProps {
     ids?: string[];
     where?: Record<string, any>;
     sort?: string;
-    search?: { query: string };
+    search: { query: string };
 }
 
 const ExportPageLoadingDialogMessage: React.FC<ExportPagesDialogProps> = props => {
@@ -79,7 +79,7 @@ interface ExportPageDialogProps {
     exportUrl: string;
 }
 
-const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = ({ exportUrl }) => {
+const ExportPageDialogMessage: React.FC<ExportPageDialogProps> = ({ exportUrl }) => {
     const { showSnackbar } = useSnackbar();
 
     return (
@@ -123,11 +123,17 @@ const ExportPageDialogMessage: React.FunctionComponent<ExportPageDialogProps> = 
     );
 };
 
-const useExportPageDialog = () => {
+interface UseExportPageDialog {
+    showExportPageContentDialog: (props: ExportPageDialogProps) => void;
+    showExportPageLoadingDialog: (taskId: string) => void;
+    showExportPageInitializeDialog: (props: ExportPagesDialogProps) => void;
+    hideDialog: () => void;
+}
+const useExportPageDialog = (): UseExportPageDialog => {
     const { showDialog, hideDialog } = useDialog();
 
     return {
-        showExportPageContentDialog: (props: ExportPageDialogProps) => {
+        showExportPageContentDialog: props => {
             showDialog(<ExportPageDialogMessage {...props} />, {
                 title: t`Your export is now ready!`,
                 actions: {

@@ -15,13 +15,17 @@ const iconWrapper = css({
     color: "var(--mdc-theme-on-surface)"
 });
 
-export const MenuSectionRenderer = PrevMenuItem => {
+export const MenuSectionRenderer = (PrevMenuItem: React.FC): React.FC => {
     return function MenuSection() {
         const { menuItem, depth } = useMenuItem();
 
-        const shouldRender = depth === 1 && menuItem.children.length > 0;
+        const shouldRender = depth === 1 && menuItem && menuItem.children.length > 0;
 
         if (!shouldRender) {
+            return <PrevMenuItem />;
+        } else if (!menuItem) {
+            // TODO @ts-refactor check if to return component or null @pavel
+            console.log("MenuSectionRenderer returning PrevMenuItem because no menuItem variable.");
             return <PrevMenuItem />;
         }
 

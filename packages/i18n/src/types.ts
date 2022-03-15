@@ -1,55 +1,64 @@
 import I18N from "./I18n";
 import { ReactElement } from "react";
 
-export type I18NData = {
+export interface I18NDataValues {
+    [key: string]: any;
+}
+export interface I18NData {
     translation: string;
     base: string;
     namespace: string;
-    values: { [key: string]: any };
+    values: I18NDataValues;
     i18n: I18N;
-};
+}
 
+export interface ModifierOptions {
+    i18n: I18N;
+}
 /**
- * @name Modifier
  * @description I18N Modifier - used for modifying text dynamically.
  */
-export type Modifier = {
+export interface Modifier {
     name: string;
     execute: (...args: any[]) => string;
-};
+}
 
+export type ProcessorResult = string | ReactElement;
 /**
- * @name Processor
  * @description I18N Processor - used for outputting text.
  */
-export type Processor = {
+export interface Processor {
     name: string;
-    canExecute?: (data: I18NData) => boolean;
-    execute: (data: I18NData) => string | ReactElement;
-};
+    canExecute: (data: I18NData) => boolean;
+    execute: (data: I18NData) => ProcessorResult;
+}
 
-export type NumberFormat = {
+export interface NumberFormat {
     decimal: string;
     thousand: string;
     precision: number;
-};
+}
 
-export type PriceFormat = {
+export interface PriceFormat {
     symbol: string;
     format: string;
     decimal: string;
     thousand: string;
     precision: number;
-};
+}
 
-export type Formats = {
+export interface Formats {
     date: string;
     time: string;
     datetime: string;
     price: PriceFormat;
     number: NumberFormat;
-};
+}
 
-export type Translator = (base: any) => any;
+export interface Translator {
+    (base: any): any;
+}
 
-export type Translations = { [key: string]: string };
+export interface Translations {
+    [key: string]: string;
+}

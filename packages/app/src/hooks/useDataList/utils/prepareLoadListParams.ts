@@ -1,5 +1,16 @@
-export default location => {
-    const params: { [key: string]: any } = {};
+interface Params {
+    after?: string;
+    before?: string;
+    limit?: number;
+    sort?: string;
+    where?: Record<string, any>;
+    search?: string;
+}
+
+const keys: (keyof Params)[] = ["sort", "where", "search"];
+
+export default (location: Location): Params => {
+    const params: Params = {};
 
     if (location) {
         const query = new URLSearchParams(location.search);
@@ -20,16 +31,18 @@ export default location => {
             params.limit = parseInt(limit);
         }
 
-        ["sort", "where", "search"].forEach(key => {
-            if (typeof query.get(key) === "string") {
-                try {
-                    params[key] = JSON.parse(query.get(key));
-                } catch (e) {
-                    params[key] = query.get(key);
-                }
+        keys.forEach(key => {
+            const value = query.get(key);
+            if (typeof value !== "string") {
+                return;
+            }
+            try {
+                params[key] = JSON.parse(value);
+            } catch (e) {
+                params[key] = value as any;
             }
         });
     }
 
-    return params;
+    return params as Params;
 };

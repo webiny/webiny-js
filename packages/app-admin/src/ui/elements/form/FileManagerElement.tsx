@@ -26,9 +26,9 @@ export interface FileManagerElementConfig extends FormFieldElementConfig {
 }
 
 export class FileManagerElement extends FormFieldElement<FileManagerElementConfig> {
-    private _emptyStateElement: UIElement;
+    private readonly _emptyStateElement: UIElement;
 
-    constructor(id: string, config: FileManagerElementConfig) {
+    public constructor(id: string, config: FileManagerElementConfig) {
         super(id, config);
 
         this.addRenderer(new FileManagerElementRenderer());
@@ -38,47 +38,47 @@ export class FileManagerElement extends FormFieldElement<FileManagerElementConfi
         this.applyPlugins(FileManagerElement);
     }
 
-    getEmptyStateElement() {
+    public getEmptyStateElement() {
         return this._emptyStateElement;
     }
 
-    getAccept() {
+    public getAccept() {
         return this.config.accept;
     }
 
-    setAccept(accept: string[]) {
+    public setAccept(accept: string[]) {
         this.config.accept = accept;
     }
 
-    getMaxSize() {
+    public getMaxSize() {
         return this.config.maxSize;
     }
 
-    setMaxSize(maxSize: number | string) {
+    public setMaxSize(maxSize: number | string) {
         this.config.maxSize = maxSize;
     }
 
-    getMultipleMaxCount() {
+    public getMultipleMaxCount() {
         return this.config.multipleMaxCount;
     }
 
-    setMultipleMaxCount(multipleMaxCount: number) {
+    public setMultipleMaxCount(multipleMaxCount: number) {
         this.config.multipleMaxCount = multipleMaxCount;
     }
 
-    getMultipleMaxSize() {
+    public getMultipleMaxSize() {
         return this.config.multipleMaxSize;
     }
 
-    setMultipleMaxSize(multipleMaxSize: number | string) {
+    public setMultipleMaxSize(multipleMaxSize: number | string) {
         this.config.multipleMaxSize = multipleMaxSize;
     }
 
-    getOnChangePickAttributes() {
+    public getOnChangePickAttributes() {
         return this.config.onChangePickAttributes;
     }
 
-    setOnChangePickAttributes(attributes: string[]) {
+    public setOnChangePickAttributes(attributes: string[]) {
         this.config.onChangePickAttributes = attributes;
     }
 }

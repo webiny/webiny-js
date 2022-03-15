@@ -8,8 +8,10 @@ class S3Stream {
     bucket: string;
 
     constructor() {
-        this.s3 = new S3({ region: process.env.AWS_REGION });
-        this.bucket = process.env.S3_BUCKET;
+        this.s3 = new S3({
+            region: process.env.AWS_REGION as string
+        });
+        this.bucket = process.env.S3_BUCKET as string;
     }
 
     /**

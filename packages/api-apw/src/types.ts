@@ -1,3 +1,5 @@
+import { Page, OnBeforePageCreateFromTopicParams } from "@webiny/api-page-builder/types";
+import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import {
     Page,
     OnBeforePageCreateTopicParams,
@@ -43,14 +45,14 @@ export interface ListParams {
     where: ListWhere;
     sort?: string[];
     limit?: number;
-    after?: string;
+    after?: string | null;
 }
 
 export interface ListMeta {
     /**
      * A cursor for pagination.
      */
-    cursor: string;
+    cursor: string | null;
     /**
      * Is there more items to load?
      */
@@ -117,35 +119,35 @@ export interface CreatedBy {
     /**
      * Full name of the user.
      */
-    displayName: string;
+    displayName: string | null;
     /**
      * Type of the user (admin, user)
      */
     type: string;
 }
 
-interface BaseFields {
+export interface ApwBaseFields {
     id: string;
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;
 }
 
-export interface ApwReviewer extends BaseFields {
+export interface ApwReviewer extends ApwBaseFields {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
-export interface ApwComment extends BaseFields {
-    body: JSON;
+export interface ApwComment extends ApwBaseFields {
+    body: Record<string, any>;
     changeRequest: string;
     step: string;
     media: ApwFile;
 }
 
-export interface ApwChangeRequest extends BaseFields {
-    body: JSON;
+export interface ApwChangeRequest extends ApwBaseFields {
+    body: Record<string, any>;
     title: string;
     resolved: boolean;
     step: string;
@@ -160,11 +162,11 @@ export interface ApwContentReviewStep {
     status: ApwContentReviewStepStatus;
     pendingChangeRequests: number;
     totalComments: number;
-    signOffProvidedOn: string;
-    signOffProvidedBy: CreatedBy;
+    signOffProvidedOn: string | null;
+    signOffProvidedBy: CreatedBy | null;
 }
 
-export interface ApwContentReview extends BaseFields {
+export interface ApwContentReview extends ApwBaseFields {
     title: string;
     status: ApwContentReviewStatus;
     content: ApwContentReviewContent;
@@ -172,7 +174,7 @@ export interface ApwContentReview extends BaseFields {
     latestCommentId: string | null;
 }
 
-export interface ApwWorkflow extends BaseFields {
+export interface ApwWorkflow extends ApwBaseFields {
     title: string;
     steps: ApwWorkflowStep[];
     scope: ApwWorkflowScope;
@@ -234,7 +236,7 @@ export interface ListWorkflowsParams extends ListParams {
 
 interface CreateReviewerParams {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -252,16 +254,16 @@ interface UpdateApwCommentParams {
 interface CreateApwChangeRequestParams {
     title: string;
     step: string;
-    body: JSON;
+    body: Record<string, any>;;
     resolved: boolean;
-    media: JSON;
+    media: Record<string, any>;
 }
 
 interface UpdateApwChangeRequestParams {
     title: string;
-    body: JSON;
+    body: Record<string, any>;
     resolved: boolean;
-    media: JSON;
+    media: Record<string, any>;
 }
 
 export interface ApwContentReviewContent {
@@ -438,7 +440,7 @@ export interface ApwContext extends Context, CmsContext {
 
 export interface LifeCycleHookCallbackParams {
     apw: ApwContext["apw"];
-    security?: ApwContext["security"];
+    security: ApwContext["security"];
     cms?: ApwContext["cms"];
 }
 
@@ -446,7 +448,7 @@ export interface CreateApwParams {
     getLocale: () => I18NLocale;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    getPermission: (name: string) => Promise<SecurityPermission>;
+    getPermission: (name: string) => Promise<SecurityPermission | null>;
     storageOperations: ApwStorageOperations;
 }
 
@@ -458,13 +460,13 @@ type StorageOperationsListReviewersParams = ApwReviewerListParams;
 
 interface CreateApwReviewerData {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
 interface UpdateApwReviewerData {
     identityId: string;
-    displayName: string;
+    displayName: string | null;
     type: string;
 }
 
@@ -876,3 +878,8 @@ export interface OnBeforeWorkflowDeleteTopicParams {
 export interface OnAfterWorkflowDeleteTopicParams {
     workflow: ApwWorkflow;
 }
+
+export type WorkflowModelDefinition = Pick<
+    CmsModel,
+    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields"
+>;

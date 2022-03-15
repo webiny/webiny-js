@@ -32,10 +32,10 @@ const SidebarActionsWrapper = styled("div")({
     justifyContent: "center"
 });
 
-type ElementSettingsTabContentProps = {
-    element: PbEditorElement;
-};
-const ElementSettingsTabContent = ({ element }: ElementSettingsTabContentProps) => {
+interface ElementSettingsTabContentProps {
+    element: PbEditorElement | null;
+}
+const ElementSettingsTabContent: React.FC<ElementSettingsTabContentProps> = ({ element }) => {
     const elementSettings = useElementSettings();
 
     if (!element) {

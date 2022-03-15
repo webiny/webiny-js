@@ -24,7 +24,7 @@ export const createGroupAuthorizer =
             tenant: tenant.id
         });
 
-        if (!tenantLink || !tenantLink.data.permissions) {
+        if (!tenantLink || !tenantLink.data || !tenantLink.data.permissions) {
             return null;
         }
 

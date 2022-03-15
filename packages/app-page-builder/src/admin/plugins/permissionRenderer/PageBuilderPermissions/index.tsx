@@ -7,7 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
-export default {
+const plugin: AdminAppPermissionRendererPlugin = {
     type: "admin-app-permissions-renderer",
     name: "admin-app-permissions-renderer-page-builder",
     render(props) {
@@ -22,4 +22,5 @@ export default {
             </AccordionItem>
         );
     }
-} as AdminAppPermissionRendererPlugin;
+};
+export default plugin;

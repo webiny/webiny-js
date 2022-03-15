@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TopAppBar, TopAppBarProps } from "./TopAppBar";
 
 export type TopAppBarPrimaryProps = TopAppBarProps;

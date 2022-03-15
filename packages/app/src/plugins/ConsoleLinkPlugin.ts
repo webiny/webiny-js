@@ -1,15 +1,28 @@
-import { ApolloLink } from "apollo-link";
+import { ApolloLink, FetchResult as BaseFetchResult } from "apollo-link";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin";
+import { OperationDefinitionNode } from "graphql/language/ast";
+
+interface Log {
+    args: any[];
+    method: "error" | "info" | "log" | "warn";
+}
+
+interface FetchResult extends BaseFetchResult {
+    extensions?: {
+        console?: Log[];
+    };
+}
 
 /**
  * This link checks for presence of `extensions.console` in the response and logs all items to browser console.
  */
 export class ConsoleLinkPlugin extends ApolloLinkPlugin {
-    createLink() {
+    public override createLink() {
         return new ApolloLink((operation, forward) => {
-            const isQuery = operation.query.definitions[0]["operation"] === "query";
+            const firstDefinition = operation.query.definitions[0] as OperationDefinitionNode;
+            const isQuery = firstDefinition["operation"] === "query";
 
-            return forward(operation).map(data => {
+            return forward(operation).map((data: FetchResult) => {
                 if (
                     data.extensions &&
                     Array.isArray(data.extensions.console) &&
@@ -26,7 +39,7 @@ export class ConsoleLinkPlugin extends ApolloLinkPlugin {
                         "color: #6b6b6b",
                         "color: black"
                     );
-                    data.extensions.console.forEach(log => {
+                    data.extensions.console.forEach((log: Log) => {
                         console[log.method](...log.args);
                     });
                     console.groupEnd();

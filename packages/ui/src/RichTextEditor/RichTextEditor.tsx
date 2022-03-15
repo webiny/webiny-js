@@ -27,14 +27,17 @@ const classes = {
     })
 };
 
-type EditorJSType = {
+interface EditorJSType {
     destroy?: () => void;
     save: () => Promise<any>;
-};
+}
 
-export type OnReadyParams = { editor: any; initialData: OutputData };
+export interface OnReadyParams {
+    editor: any;
+    initialData: OutputData;
+}
 
-export type RichTextEditorProps = {
+export interface RichTextEditorProps {
     autofocus?: boolean;
     context?: { [key: string]: any };
     logLevel?: string;
@@ -44,7 +47,9 @@ export type RichTextEditorProps = {
     placeholder?: string;
     readOnly?: boolean;
     sanitizer?: SanitizerConfig;
-    tools?: { [toolName: string]: ToolSettings };
+    tools?: {
+        [toolName: string]: ToolSettings;
+    };
     value?: OutputBlockData[];
     label?: string;
     description?: string;
@@ -52,7 +57,7 @@ export type RichTextEditorProps = {
     validation?: FormComponentProps["validation"];
 };
 
-export const RichTextEditor = (props: RichTextEditorProps) => {
+export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     const elementId = useRef("rte-" + shortid.generate());
     const editorRef = useRef<EditorJSType>();
 
@@ -66,7 +71,13 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
             logLevel: "ERROR" as LogLevels.ERROR,
             data: initialData,
             onChange: async () => {
+                if (!editorRef.current) {
+                    return;
+                }
                 const { blocks: data } = await editorRef.current.save();
+                if (!props.onChange) {
+                    return;
+                }
                 props.onChange(data);
             },
             onReady() {
@@ -76,7 +87,10 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                 onReady({ editor: editorRef.current, initialData });
             },
             tools: Object.keys(props.tools || {}).reduce((tools, name) => {
-                const tool = props.tools[name];
+                const tool = props.tools ? props.tools[name] : null;
+                if (!tool) {
+                    return tools;
+                }
                 tools[name] = tool;
                 if (!tool.config) {
                     tool.config = { context };
@@ -86,7 +100,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                     tool.config = { ...tool.config, context };
                 }
                 return tools;
-            }, {})
+            }, {} as Record<string, ToolSettings>)
         });
 
         return () => {

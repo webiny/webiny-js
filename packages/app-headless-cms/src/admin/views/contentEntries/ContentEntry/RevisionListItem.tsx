@@ -1,5 +1,9 @@
 import React from "react";
 import { css } from "emotion";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import {
     ListItem,
@@ -65,11 +69,11 @@ const getIcon = (rev: CmsEditorContentEntry) => {
     }
 };
 
-type Props = {
+interface RevisionListItemProps {
     revision: CmsEditorContentEntry;
-};
+}
 
-const RevisionListItem = ({ revision }: Props) => {
+const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
     const { createRevision, deleteRevision, publishRevision, unpublishRevision, editRevision } =
         useRevision({
             revision
@@ -116,7 +120,7 @@ const RevisionListItem = ({ revision }: Props) => {
                         >
                             {canEdit(entry, "cms.contentEntry") && (
                                 <MenuItem
-                                    onClick={createRevision}
+                                    onClick={() => createRevision(revision.id)}
                                     data-testid={"cms.revision.create-revision"}
                                 >
                                     <ListItemGraphic>
@@ -130,9 +134,10 @@ const RevisionListItem = ({ revision }: Props) => {
                                 <MenuItem
                                     onClick={() => {
                                         editRevision();
-                                        if (tabs.current) {
-                                            tabs.current.switchTab(0);
+                                        if (!tabs.current) {
+                                            return;
                                         }
+                                        tabs.current.switchTab(0);
                                     }}
                                 >
                                     <ListItemGraphic>
@@ -155,7 +160,7 @@ const RevisionListItem = ({ revision }: Props) => {
                             {revision.meta.status === "published" &&
                                 canUnpublish("cms.contentEntry") && (
                                     <MenuItem
-                                        onClick={unpublishRevision}
+                                        onClick={() => unpublishRevision(revision.id)}
                                         data-testid={"cms.revision.unpublish"}
                                     >
                                         <ListItemGraphic>

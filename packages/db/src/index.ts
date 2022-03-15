@@ -1,7 +1,23 @@
-export type Key = { primary?: boolean; unique?: boolean; name: string; fields: { name: string }[] };
+/**
+ * TODO Remove when moved all packages to standalone storage opts.
+ */
+interface KeyField {
+    name: string;
+}
 
-export type Args = {
-    __batch?: { instance: Batch; operation: Operation };
+export interface Key {
+    primary?: boolean;
+    unique?: boolean;
+    name: string;
+    fields: KeyField[];
+}
+
+export interface ArgsBatch {
+    instance: Batch;
+    operation: Operation;
+}
+export interface Args {
+    __batch?: ArgsBatch;
     table?: string;
     meta?: boolean;
     limit?: number;
@@ -9,7 +25,7 @@ export type Args = {
     data?: Record<string, any>;
     query?: Record<string, any>;
     keys?: Key[];
-};
+}
 
 export type Result<T = any> = [T, Record<string, any>];
 
@@ -46,68 +62,85 @@ const shortId = () => {
     return `${time}.${uniqueId}`;
 };
 
+interface LogDataBatch {
+    id: string;
+    type: string;
+}
+interface LogData
+    extends Pick<Args, "table" | "meta" | "limit" | "sort" | "data" | "query" | "keys"> {
+    batch: LogDataBatch | null;
+}
+
 // Picks necessary data from received args, ready to be stored in the log table.
-const getCreateLogData = (args: Args) => {
+const getCreateLogData = (args: Args): LogData => {
     const { table, meta, limit, sort, data, query, keys } = args;
 
-    const logData = { table, meta, limit, sort, data, query, keys, batch: null };
-    if (args.__batch) {
-        logData.batch = {
-            id: args.__batch.instance.id,
-            type: args.__batch.instance.type
-        };
-    }
-
-    return logData;
+    return {
+        table,
+        meta,
+        limit,
+        sort,
+        data,
+        query,
+        keys,
+        batch: args.__batch
+            ? {
+                  id: args.__batch.instance.id,
+                  type: args.__batch.instance.type
+              }
+            : null
+    };
 };
 
 class Db {
-    driver: DbDriver;
-    table: string;
-    logTable?: string;
+    public driver: DbDriver;
+    public table: string;
+    public logTable?: string;
+
     constructor({ driver, table, logTable }: ConstructorArgs) {
         this.driver = driver;
+        // @ts-ignore
         this.table = table;
         this.logTable = logTable;
     }
 
-    async create(args: Args): Promise<Result<true>> {
+    public async create(args: Args): Promise<Result<true>> {
         const createArgs = { ...args, table: args.table || this.table };
         await this.createLog("create", createArgs);
         return this.driver.create(createArgs);
     }
 
-    async read<T = Record<string, any>>(args: Args): Promise<Result<T[]>> {
+    public async read<T = Record<string, any>>(args: Args): Promise<Result<T[]>> {
         const readArgs = { ...args, table: args.table || this.table };
         await this.createLog("read", readArgs);
         return this.driver.read(readArgs);
     }
 
-    async update(args: Args): Promise<Result<true>> {
+    public async update(args: Args): Promise<Result<true>> {
         const updateArgs = { ...args, table: args.table || this.table };
         await this.createLog("update", updateArgs);
         return this.driver.update(updateArgs);
     }
 
-    async delete(args: Args): Promise<Result<true>> {
+    public async delete(args: Args): Promise<Result<true>> {
         const deleteArgs = { ...args, table: args.table || this.table };
         await this.createLog("delete", deleteArgs);
         return this.driver.delete(deleteArgs);
     }
 
     // Logging functions.
-    async createLog(operation, args: Args): Promise<Result<true>> {
+    public async createLog(operation: string, args: Args): Promise<Result<true> | null> {
         if (!this.logTable) {
-            return;
+            return null;
         }
 
         const data = getCreateLogData(args);
         return this.driver.createLog({ operation, data, table: this.logTable, id: shortId() });
     }
 
-    async readLogs<T = Record<string, any>>(): Promise<Result<T[]>> {
+    public async readLogs<T = Record<string, any>>(): Promise<Result<T[]> | null> {
         if (!this.logTable) {
-            return;
+            return null;
         }
 
         return this.driver.readLogs({
@@ -115,7 +148,7 @@ class Db {
         });
     }
 
-    batch<
+    public batch<
         T0 = any,
         T1 = any,
         T2 = any,
@@ -126,7 +159,7 @@ class Db {
         T7 = any,
         T8 = any,
         T9 = any
-    >() {
+    >(): Batch {
         return new Batch<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(this);
     }
 }
@@ -148,7 +181,8 @@ class Batch<
     id: string;
     meta: Record<string, any>;
     operations: Operation[];
-    constructor(db) {
+
+    constructor(db: Db) {
         this.db = db;
         this.type = "batch";
         this.id = shortId();
@@ -194,7 +228,10 @@ class Batch<
     }
 
     async execute(): Promise<[T0?, T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?]> {
-        const promises = [];
+        /**
+         * TODO: figure out which exact type to use instead of any.
+         */
+        const promises: Promise<any>[] = [];
         for (let i = 0; i < this.operations.length; i++) {
             const [operation, args] = this.operations[i];
             promises.push(

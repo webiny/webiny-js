@@ -1,10 +1,16 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { BindComponent, FormRenderPropParams, FormAPI } from "@webiny/form/types";
+import {
+    FormRenderPropParams,
+    FormAPI,
+    BindComponentRenderProp as BaseBindComponentRenderProp,
+    BindComponentProps as BaseBindComponentProps
+} from "@webiny/form/types";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/components/ContentEntryForm/Label";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 interface QueryFieldParams {
     field: CmsEditorField;
@@ -104,7 +110,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * })
          * ```
          */
-        createField: () => CmsEditorField;
+        createField: () => Pick<CmsEditorField, "type" | "validation" | "renderer" | "settings">;
         /**
          * A ReactNode that you can add in the section below the help text when creating/editing field.
          *
@@ -231,7 +237,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
         render(props: {
             field: CmsEditorField;
             Label: typeof Label;
-            getBind: (index?: number, key?: string) => any;
+            getBind: (index?: number, key?: string) => BindComponent;
             contentModel: CmsEditorContentModel;
         }): React.ReactNode;
     };
@@ -249,9 +255,9 @@ export interface CmsEditorFieldPredefinedValues {
 }
 
 export type CmsEditorField<T = unknown> = T & {
-    id?: string;
+    id: string;
     type: string;
-    fieldId?: CmsEditorFieldId;
+    fieldId: CmsEditorFieldId;
     label?: string;
     helpText?: string;
     placeholderText?: string;
@@ -261,6 +267,12 @@ export type CmsEditorField<T = unknown> = T & {
     predefinedValues?: CmsEditorFieldPredefinedValues;
     settings?: {
         defaultValue?: string | null | undefined;
+        defaultSetValue?: string;
+        type?: string;
+        fields?: CmsEditorField<any>[];
+        layout?: string[][];
+        models?: Pick<CmsModel, "modelId" | "name">[];
+        imagesOnly?: boolean;
         [key: string]: any;
     };
     renderer: {
@@ -272,11 +284,8 @@ export type CmsEditorFieldId = string;
 export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
 
 export interface CmsEditorContentModel {
-    id: CmsEditorFieldId;
-    group: {
-        id: string;
-        name: string;
-    };
+    id: string;
+    group: Pick<CmsGroup, "id" | "name">;
     description?: string;
     version: number;
     layout?: CmsEditorFieldsLayout;
@@ -285,16 +294,24 @@ export interface CmsEditorContentModel {
     name: string;
     modelId: string;
     titleFieldId: string;
-    settings: any;
+    settings: {
+        [key: string]: any;
+    };
     status: string;
     savedOn: string;
     meta: any;
+    createdBy: CmsCreatedBy;
+    /**
+     * If model is a plugin one (it cannot be changed/deleted)
+     */
+    plugin?: boolean;
 }
 
 export interface CmsEditorContentEntry {
     id: string;
     savedOn: string;
-    [key: string]: any;
+    modelId: string;
+    createdBy: CmsCreatedBy;
     meta: {
         title: string;
         publishedOn: string;
@@ -302,11 +319,21 @@ export interface CmsEditorContentEntry {
         status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
         version: number;
     };
+    [key: string]: any;
+}
+
+export interface CmsLatestContentEntry {
+    id: string;
+    status: "published" | "draft";
+    title: string;
+    model: Pick<CmsModel, "modelId" | "name">;
 }
 
 export interface CmsContentEntryRevision {
     id: string;
     savedOn: string;
+    modelId: string;
+    createdBy: CmsCreatedBy;
     meta: {
         title: string;
         publishedOn: string;
@@ -322,25 +349,26 @@ export interface CmsEditorFieldValidator {
     settings: any;
 }
 
+export interface CmsEditorFieldValidatorPluginValidator {
+    name: string;
+    label: string;
+    description: string;
+    defaultMessage: string;
+    defaultSettings?: Record<string, any>;
+    renderSettings?: (props: {
+        field: CmsEditorField;
+        Bind: BindComponent;
+        setValue: (name: string, value: any) => void;
+        setMessage: (message: string) => void;
+        data: CmsEditorFieldValidator;
+    }) => React.ReactElement;
+}
 export interface CmsEditorFieldValidatorPlugin extends Plugin {
     type: "cms-editor-field-validator";
-    validator: {
-        name: string;
-        label: string;
-        description: string;
-        defaultMessage: string;
-        defaultSettings?: Record<string, any>;
-        renderSettings?: (props: {
-            field: CmsEditorField;
-            Bind: BindComponent;
-            setValue: (name: string, value: any) => void;
-            setMessage: (message: string) => void;
-            data: CmsEditorFieldValidator;
-        }) => React.ReactElement;
-    };
+    validator: CmsEditorFieldValidatorPluginValidator;
 }
 
-export type CmsEditorContentTab = React.FunctionComponent<{ activeTab: boolean }>;
+export type CmsEditorContentTab = React.FC<{ activeTab: boolean }>;
 
 // ------------------------------------------------------------------------------------------------------------
 export interface CmsEditorFieldOptionPlugin extends Plugin {
@@ -372,11 +400,11 @@ export interface CmsFieldValidator {
     settings: any;
 }
 
-export interface CmsModelFieldValidatorPlugin extends Plugin {
+export interface CmsModelFieldValidatorPlugin<T = any> extends Plugin {
     type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: any, validator: CmsFieldValidator | any) => Promise<any>;
+        validate: (value: T, validator: CmsFieldValidator) => Promise<any>;
     };
 }
 
@@ -411,7 +439,7 @@ export interface CmsModelFieldValidatorPatternPlugin extends Plugin {
 
 export interface FieldLayoutPosition {
     row: number;
-    index: number;
+    index: number | null;
 }
 
 export interface CmsEditorFormSettingsPlugin extends Plugin {
@@ -505,3 +533,82 @@ export interface CmsContentFormRendererPlugin extends Plugin {
         fields: Record<string, React.ReactElement>;
     }): React.ReactNode;
 }
+/**
+ * #########################
+ * Data types
+ * #########################
+ */
+export interface CmsSecurityPermission extends SecurityPermission {
+    accessLevel?: "full" | "no" | "custom";
+    models?: Record<string, string>;
+    groups?: Record<string, string>;
+    endpoints?: string[];
+    locales?: string[];
+    rwd?: string;
+    own?: boolean;
+    pw?: string;
+}
+export interface CmsCreatedBy {
+    id: string;
+    displayName: string;
+    type: string;
+}
+/**
+ * @category GraphQL
+ * @category Model
+ */
+export type CmsModel = CmsEditorContentModel;
+/**
+ * @category GraphQL
+ * @category Group
+ */
+export interface CmsGroup {
+    id: string;
+    name: string;
+    slug: string;
+    icon?: string;
+    description?: string;
+    contentModels: CmsModel[];
+    createdBy: CmsCreatedBy;
+    /**
+     * Tells if this group is a plugin one (cannot be changed/deleted)
+     */
+    plugin?: boolean;
+}
+/**
+ * @category GraphQL
+ * @category Error
+ */
+export interface CmsErrorResponse {
+    message: string;
+    code: string;
+    data: Record<string, any> | Record<string, any>[];
+}
+/**
+ * @category GraphQL
+ * @category Meta
+ */
+export interface CmsMetaResponse {
+    totalCount: number;
+    cursor: string | null;
+    hasMoreItems: boolean;
+}
+
+/***
+ * ###### FORM ########
+ */
+interface BindComponentRenderProp extends BaseBindComponentRenderProp {
+    parentName: string;
+    appendValue: (value: any) => void;
+    prependValue: (value: any) => void;
+    appendValues: (values: any[]) => void;
+    removeValue: (index: number) => void;
+}
+interface BindComponentProps extends Omit<BaseBindComponentProps, "children" | "name"> {
+    name?: string;
+    children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
+}
+
+export type BindComponent = React.FC<BindComponentProps> & {
+    parentName?: string;
+};

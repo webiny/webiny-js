@@ -3,11 +3,26 @@ import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FormOnSubmit } from "@webiny/form";
-import * as GQL from "~/admin/graphql/contentEntries";
+import {
+    createCreateFromMutation,
+    createCreateMutation,
+    createUpdateMutation,
+    CmsEntryCreateMutationResponse,
+    CmsEntryCreateMutationVariables,
+    CmsEntryUpdateMutationResponse,
+    CmsEntryUpdateMutationVariables,
+    CmsEntryCreateFromMutationResponse,
+    CmsEntryCreateFromMutationVariables
+} from "~/admin/graphql/contentEntries";
 import { useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsEditorContentModel, CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
+import {
+    CmsEditorContentEntry,
+    CmsEditorContentModel,
+    CmsEditorField,
+    CmsEditorFieldRendererPlugin
+} from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 
@@ -25,6 +40,11 @@ const convertDefaultValue = (field: CmsEditorField, value: any): string | number
     }
 };
 
+interface InvalidFieldError {
+    fieldId: string;
+    error: string;
+}
+
 interface UseContentEntryForm {
     data: Record<string, any>;
     loading: boolean;
@@ -37,9 +57,10 @@ interface UseContentEntryForm {
 
 export interface UseContentEntryFormParams {
     contentModel: CmsEditorContentModel;
-    entry?: { [key: string]: any };
+    entry: Partial<CmsEditorContentEntry>;
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
+    addEntryToListCache: boolean;
 }
 
 export function useContentEntryForm(params: UseContentEntryFormParams): UseContentEntryForm {
@@ -61,26 +82,38 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
         return {
-            LIST_CONTENT: GQL.createListQuery(contentModel),
-            CREATE_CONTENT: GQL.createCreateMutation(contentModel),
-            UPDATE_CONTENT: GQL.createUpdateMutation(contentModel),
-            CREATE_CONTENT_FROM: GQL.createCreateFromMutation(contentModel)
+            // LIST_CONTENT: createListQuery(contentModel),
+            CREATE_CONTENT: createCreateMutation(contentModel),
+            UPDATE_CONTENT: createUpdateMutation(contentModel),
+            CREATE_CONTENT_FROM: createCreateFromMutation(contentModel)
         };
     }, [contentModel.modelId]);
 
-    const [createMutation] = useMutation(CREATE_CONTENT);
-    const [updateMutation] = useMutation(UPDATE_CONTENT);
-    const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
+    const [createMutation] = useMutation<
+        CmsEntryCreateMutationResponse,
+        CmsEntryCreateMutationVariables
+    >(CREATE_CONTENT);
+    const [updateMutation] = useMutation<
+        CmsEntryUpdateMutationResponse,
+        CmsEntryUpdateMutationVariables
+    >(UPDATE_CONTENT);
+    const [createFromMutation] = useMutation<
+        CmsEntryCreateFromMutationResponse,
+        CmsEntryCreateFromMutationVariables
+    >(CREATE_CONTENT_FROM);
 
-    const setInvalidFieldValues = errors => {
+    /**
+     * Note that when passing error.data variable we cast as InvalidFieldError[] because we know it is so.
+     */
+    const setInvalidFieldValues = (errors?: InvalidFieldError[]): void => {
         const values = (errors || []).reduce((acc, er) => {
             acc[er.fieldId] = er.error;
             return acc;
-        }, {});
+        }, {} as Record<string, string>);
         setInvalidFields(() => values);
     };
 
-    const resetInvalidFieldValues = () => {
+    const resetInvalidFieldValues = (): void => {
         setInvalidFields(() => ({}));
     };
 
@@ -89,31 +122,55 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
             setLoading(true);
             const response = await createMutation({
                 variables: { data },
-                update(cache, { data }) {
-                    const { data: entry, error } = data.content;
+                update(cache, response) {
+                    if (!response.data) {
+                        showSnackbar("Missing response data in Create Entry.");
+                        return;
+                    }
+                    const { data } = response;
+                    const { data: entry, error } = data.content || {};
                     if (error) {
                         showSnackbar(error.message);
-                        setInvalidFieldValues(error.data);
+                        setInvalidFieldValues(error.data as InvalidFieldError[]);
+                        return;
+                    } else if (!entry) {
+                        showSnackbar(
+                            "Missing entry data in update callback on Create Entry Response."
+                        );
                         return;
                     }
                     resetInvalidFieldValues();
-                    GQLCache.addEntryToListCache(contentModel, cache, entry, listQueryVariables);
+                    if (params.addEntryToListCache) {
+                        GQLCache.addEntryToListCache(
+                            contentModel,
+                            cache,
+                            entry,
+                            listQueryVariables
+                        );
+                    }
                 }
             });
             setLoading(false);
 
-            const { error, data: entry } = response.data.content;
+            const { error, data: entry } = response.data?.content || {};
             if (error) {
                 showSnackbar(error.message);
-                setInvalidFieldValues(error.data);
+                setInvalidFieldValues(error.data as InvalidFieldError[]);
+                return null;
+            } else if (!entry) {
+                showSnackbar("Missing entry data in Create Entry Response.");
                 return null;
             }
             resetInvalidFieldValues();
             showSnackbar(`${contentModel.name} entry created successfully!`);
-            goToRevision(entry.id);
+            if (typeof params.onSubmit === "function") {
+                params.onSubmit(entry);
+            } else {
+                goToRevision(entry.id);
+            }
             return entry;
         },
-        [contentModel.modelId, listQueryVariables]
+        [contentModel.modelId, listQueryVariables, params.onSubmit, params.addEntryToListCache]
     );
 
     const updateContent = useCallback(
@@ -123,11 +180,15 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                 variables: { revision, data }
             });
             setLoading(false);
+            if (!response.data) {
+                showSnackbar("Missing response data on Update Entry Response.");
+                return;
+            }
 
             const { error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
-                setInvalidFieldValues(error.data);
+                setInvalidFieldValues(error.data as InvalidFieldError[]);
                 return null;
             }
 
@@ -140,15 +201,24 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     );
 
     const createContentFrom = useCallback(
-        async (revision, formData) => {
+        async (revision: string, formData: Record<string, any>) => {
             setLoading(true);
             const response = await createFromMutation({
                 variables: { revision, data: formData },
-                update(cache, { data }) {
-                    const { data: newRevision, error } = data.content;
+                update(cache, response) {
+                    if (!response.data) {
+                        showSnackbar(
+                            "Missing data in update callback on Create From Entry Response."
+                        );
+                        return;
+                    }
+                    const { data: newRevision, error } = response.data.content;
                     if (error) {
                         showSnackbar(error.message);
-                        setInvalidFieldValues(error.data);
+                        setInvalidFieldValues(error.data as InvalidFieldError[]);
+                        return;
+                    } else if (!newRevision) {
+                        showSnackbar("Missing entry data in update callback on Create From Entry.");
                         return;
                     }
                     resetInvalidFieldValues();
@@ -161,20 +231,20 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
 
                     showSnackbar("A new revision was created!");
-
-                    history.push(
-                        `/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(
-                            newRevision.id
-                        )}`
-                    );
+                    goToRevision(newRevision.id);
                 }
             });
             setLoading(false);
 
+            if (!response.data) {
+                showSnackbar("Missing response data on Create From Entry Mutation.");
+                return;
+            }
+
             const { data, error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
-                setInvalidFieldValues(error.data);
+                setInvalidFieldValues(error.data as InvalidFieldError[]);
                 return null;
             }
             resetInvalidFieldValues();
@@ -184,7 +254,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         [contentModel.modelId, listQueryVariables]
     );
 
-    const onSubmit = async data => {
+    const onSubmit = async (data: Record<string, any>) => {
         const fieldsIds = contentModel.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
 
@@ -256,7 +326,6 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         }
         return { ...values, ...overrides };
     };
-
     return {
         /**
          * If entry is not set or entry.id does not exist, it means that form is for the new entry, so fetch default values.
@@ -264,7 +333,11 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         data: entry && entry.id ? entry : getDefaultValues(),
         loading,
         setLoading,
-        onChange: params.onChange,
+        onChange:
+            params.onChange ||
+            (() => {
+                return void 0;
+            }),
         onSubmit,
         invalidFields,
         renderPlugins

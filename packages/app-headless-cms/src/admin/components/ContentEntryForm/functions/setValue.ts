@@ -1,4 +1,14 @@
-export const setValue = ({ value, bind, field, index }) => {
+import { CmsEditorField } from "~/types";
+import { BindComponentRenderProp } from "@webiny/form";
+
+interface setValueParams {
+    value: string[];
+    bind: BindComponentRenderProp;
+    field: Pick<CmsEditorField, "multipleValues">;
+    index: number;
+}
+export const setValue = (params: setValueParams): void => {
+    const { value, bind, field, index } = params;
     let newValue = field.multipleValues ? [...(bind.value || [])] : bind.value;
 
     if (field.multipleValues) {

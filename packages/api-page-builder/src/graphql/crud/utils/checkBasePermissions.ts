@@ -2,10 +2,14 @@ import { PbContext, PbSecurityPermission } from "../../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./hasRwd";
 
+interface Check {
+    rwd?: string;
+    pw?: string;
+}
 export default async <TPermission extends PbSecurityPermission = PbSecurityPermission>(
     context: PbContext,
     name: string,
-    check: { rwd?: string; pw?: string }
+    check: Check
 ): Promise<TPermission> => {
     await context.i18nContent.checkI18NContentPermission();
     const pbPagePermission = await context.security.getPermission<TPermission>(name);
@@ -25,7 +29,10 @@ export default async <TPermission extends PbSecurityPermission = PbSecurityPermi
 };
 
 // Has publishing workflow permissions?
-const hasPw = <TPermission = Record<string, any>>(permission: TPermission, pw: string) => {
+const hasPw = <TPermission extends PbSecurityPermission = PbSecurityPermission>(
+    permission: TPermission,
+    pw: string
+): boolean => {
     const isCustom = Object.keys(permission).length > 1; // "name" key is always present
 
     if (!isCustom) {

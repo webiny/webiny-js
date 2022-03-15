@@ -33,7 +33,9 @@ const updatePendingChangeRequests = async ({
     });
 };
 
-export const updatePendingChangeRequestsCount = ({ apw }: LifeCycleHookCallbackParams) => {
+export const updatePendingChangeRequestsCount = ({
+    apw
+}: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
         /**
          * If the deleted changeRequest was marked as resolved. We don't need to do anything here,

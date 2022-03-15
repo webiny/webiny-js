@@ -16,11 +16,11 @@ import { useContentModelEditor } from "~/admin/components/ContentModelEditor/use
 
 const t = i18n.namespace("FormsApp.Editor.FormSettings");
 
-type FormSettingsProps = {
+interface FormSettingsProps {
     onExited: () => void;
-};
+}
 
-const FormSettings = ({ onExited }: FormSettingsProps) => {
+const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
     const cmsEditorFormSettingsPlugins = plugins.byType<CmsEditorFormSettingsPlugin>(
         "cms-editor-form-settings"
     );
@@ -64,16 +64,34 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
                             <SF.SimpleForm>
                                 <SF.SimpleFormHeader title={activePlugin.title}>
                                     {typeof activePlugin.renderHeaderActions === "function" &&
-                                        activePlugin.renderHeaderActions({ Bind, form, formData })}
+                                        activePlugin.renderHeaderActions({
+                                            /**
+                                             * TODO @ts-refactor
+                                             * Figure out type for Bind
+                                             */
+                                            Bind: Bind as any,
+                                            form,
+                                            formData
+                                        })}
                                 </SF.SimpleFormHeader>
                                 <SF.SimpleFormContent>
                                     {activePlugin
-                                        ? activePlugin.render({ Bind, form, formData })
+                                        ? activePlugin.render({
+                                              /**
+                                               * TODO @ts-refactor
+                                               * Figure out type for Bind
+                                               */
+                                              Bind: Bind as any,
+                                              form,
+                                              formData
+                                          })
                                         : null}
                                 </SF.SimpleFormContent>
                                 <SF.SimpleFormFooter>
                                     <ButtonPrimary
-                                        onClick={submit}
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
                                     >{t`Save settings`}</ButtonPrimary>
                                 </SF.SimpleFormFooter>
                             </SF.SimpleForm>

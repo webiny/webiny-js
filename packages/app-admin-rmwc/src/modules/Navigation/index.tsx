@@ -27,10 +27,15 @@ interface NavigationContext {
     setVisible(visible: boolean): void;
 }
 
-const NavigationContext = React.createContext<NavigationContext>(null);
+const NavigationContext = React.createContext<NavigationContext>({
+    visible: false,
+    setVisible: () => {
+        return void 0;
+    }
+});
 NavigationContext.displayName = "NavigationContext";
 
-export function useNavigation() {
+export function useNavigation(): NavigationContext {
     return useContext(NavigationContext);
 }
 
@@ -44,9 +49,10 @@ const BrandImpl: HigherOrderComponent = Brand => {
         );
     };
 };
-
-const NavigationProvider = Component => {
-    return function NavigationProvider(props: unknown) {
+// TODO @ts-refactor
+const NavigationProvider = (Component: React.FC<any>): React.FC => {
+    // TODO @ts-refactor
+    return function NavigationProvider(props: any) {
         const [visible, setVisible] = useState(false);
 
         const context = useMemo(() => ({ visible, setVisible }), [visible]);
@@ -59,7 +65,7 @@ const NavigationProvider = Component => {
     };
 };
 
-export const NavigationImpl = () => {
+export const NavigationImpl = (): React.FC => {
     return function Navigation() {
         const { menuItems } = useAdminNavigation();
         const { visible, setVisible } = useNavigation();
@@ -69,12 +75,12 @@ export const NavigationImpl = () => {
         }, []);
 
         const mainMenu = useMemo(
-            () => menuItems.filter(m => !m.tags.includes("footer")),
+            () => menuItems.filter(m => !(m.tags || []).includes("footer")),
             [menuItems]
         );
 
         const footerMenu = useMemo(
-            () => menuItems.filter(m => m.tags.includes("footer")),
+            () => menuItems.filter(m => (m.tags || []).includes("footer")),
             [menuItems]
         );
 
@@ -103,9 +109,9 @@ export const NavigationImpl = () => {
     };
 };
 
-const menuSorter = (a: MenuData, b: MenuData) => {
+const menuSorter = (a: MenuData, b: MenuData): number => {
     if (a.pin === b.pin) {
-        return a.label.localeCompare(b.label);
+        return (a.label || "").localeCompare(b.label || "");
     }
 
     if (a.pin) {
@@ -116,7 +122,7 @@ const menuSorter = (a: MenuData, b: MenuData) => {
         return b.pin === "first" ? 1 : -1;
     }
 
-    return a.label.localeCompare(b.label);
+    return (a.label || "").localeCompare(b.label || "");
 };
 
 const SortedMenuItems: HigherOrderComponent<MenuItemsProps> = MenuItems => {
@@ -124,13 +130,16 @@ const SortedMenuItems: HigherOrderComponent<MenuItemsProps> = MenuItems => {
         return <MenuItems menuItems={[...menuItems].sort(menuSorter)} />;
     };
 };
-
-export const Navigation = () => {
+/**
+ * TODO @ts-refactor @pavel
+ * Remove all any and see what happens.
+ */
+export const Navigation: React.FC = () => {
     return (
         <Fragment>
             <Provider hoc={NavigationProvider} />
             <Compose component={NavigationSpec} with={NavigationImpl} />
-            <Compose component={MenuItems} with={SortedMenuItems} />
+            <Compose component={MenuItems as any} with={SortedMenuItems as any} />
             <Compose component={BrandSpec} with={BrandImpl} />
             <Compose
                 component={MenuItemRenderer}

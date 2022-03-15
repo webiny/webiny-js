@@ -14,9 +14,9 @@ import { CmsEditorField, CmsEditorFieldsLayout } from "~/types";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
-const fieldTypes = ["field", "newField"];
+const fieldTypes: string[] = ["field", "newField"];
 
-const Editor = () => {
+const Editor: React.FC = () => {
     const {
         parent,
         depth,
@@ -36,7 +36,12 @@ const Editor = () => {
         <Fragment>
             {fields.length === 0 && (
                 <Center
-                    onDrop={item => onFieldDrop(item, { row: 0, index: 0 })}
+                    onDrop={item =>
+                        onFieldDrop(item, {
+                            row: 0,
+                            index: 0
+                        })
+                    }
                     style={{ padding: "5px 0 15px 0" }}
                 >
                     {t`Drop your first field here`}
@@ -157,13 +162,15 @@ const Editor = () => {
 
             <EditFieldDialog
                 field={field}
-                onClose={editField}
+                onClose={() => editField(null)}
                 onSubmit={field => {
                     if (field.id) {
                         updateField(field);
-                    } else {
-                        insertField({ field, position: dropTarget });
+                        editField(null);
+                        return;
                     }
+                    insertField({ field, position: dropTarget });
+
                     editField(null);
                 }}
             />
@@ -178,7 +185,7 @@ export interface FieldEditorProps {
     onChange: (params: { fields: CmsEditorField[]; layout: CmsEditorFieldsLayout }) => void;
 }
 
-export const FieldEditor = (props: FieldEditorProps) => {
+export const FieldEditor: React.FC<FieldEditorProps> = props => {
     return (
         <FieldEditorProvider {...props}>
             <Editor />

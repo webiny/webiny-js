@@ -1,4 +1,6 @@
 import { createModelField } from "./utils";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
+import { WorkflowModelDefinition } from "~/types";
 
 const titleField = () =>
     createModelField({
@@ -13,7 +15,7 @@ const titleField = () =>
         ]
     });
 
-const stepsField = fields =>
+const stepsField = (fields: CmsModelField[]) =>
     createModelField({
         label: "Steps",
         type: "object",
@@ -80,7 +82,7 @@ export const stepIdField = () =>
         ]
     });
 
-export const stepReviewersField = reviewerModelId =>
+export const stepReviewersField = (reviewerModelId: string) =>
     createModelField({
         label: "Reviewers",
         type: "ref",
@@ -104,7 +106,7 @@ export const stepReviewersField = reviewerModelId =>
         ]
     });
 
-const scopeField = fields =>
+const scopeField = (fields: CmsModelField[]) =>
     createModelField({
         type: "object",
         label: "Scope",
@@ -144,7 +146,7 @@ const scopeTypeField = () =>
         }
     });
 
-const scopeDataField = fields =>
+const scopeDataField = (fields: CmsModelField[]) =>
     createModelField({
         label: "Data",
         parent: "workflow scope",
@@ -203,7 +205,11 @@ const applicationField = () =>
         }
     });
 
-export const createWorkflowModelDefinition = ({ reviewerModelId }) => ({
+interface CreateWorkflowModelDefinitionParams {
+    reviewerModelId: string;
+}
+
+export const createWorkflowModelDefinition = ({ reviewerModelId }: CreateWorkflowModelDefinitionParams): WorkflowModelDefinition => ({
     name: "APW - Workflow",
     /**
      * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.

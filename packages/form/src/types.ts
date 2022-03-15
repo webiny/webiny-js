@@ -1,62 +1,89 @@
-export type BindComponentRenderPropValidation = {
+import React from "react";
+import { Validator } from "@webiny/validation/types";
+
+export interface BindComponentRenderPropValidation {
     isValid: boolean;
     message: string;
-    results?: { [key: string]: any };
-};
+    results?: {
+        [key: string]: any;
+    };
+}
 
-export type BindComponentRenderPropOnChange = (value: any) => Promise<void>;
+export interface BindComponentRenderPropOnChange<T = any> {
+    (value: T): Promise<void>;
+}
 
-export interface FormAPI {
-    data: { [key: string]: any };
-    submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
+export interface FormAPI<T = Record<string, any>> {
+    data: T;
+    submit: (event: React.SyntheticEvent<any, any>) => Promise<void>;
     setValue: FormSetValue;
-    validate: () => void;
+    validate: () => Promise<boolean>;
     validateInput: (name: string) => Promise<boolean | any>;
 }
 
-export type BindComponentRenderProp = {
-    form: FormAPI;
+export interface BindComponentRenderProp<T = any, F = Record<string, any>> {
+    form: FormAPI<F>;
     onChange: BindComponentRenderPropOnChange;
-    value: any;
+    value: T;
     validate: () => Promise<boolean | any>;
     validation: BindComponentRenderPropValidation;
-};
+}
 
-export type BindComponentProps = {
+export interface BindComponentProps {
     name: string;
-    beforeChange?: Function;
-    afterChange?: Function;
+    beforeChange?: (value: any, cb: (value: string | string[]) => void) => void;
+    afterChange?: (value: any, form: FormAPI) => void;
     defaultValue?: any;
-    validators?: Function | Array<Function>;
+    validators?: Validator | Validator[];
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
     validate?: Function;
-};
+}
 
-export type BindComponent = (props: BindComponentProps) => React.ReactElement;
+export interface BindComponent {
+    (props: BindComponentProps): React.ReactElement | null;
+}
 
-export type FormRenderPropParamsSubmit = (event?: React.SyntheticEvent<any, any>) => Promise<void>;
+export interface FormRenderPropParamsSubmit {
+    (event?: React.SyntheticEvent<any, any>): Promise<void>;
+}
 
-export type FormSetValue = (name: string, value: any) => void;
+export interface FormSetValue<T = any> {
+    (name: string, value: T): void;
+}
 
-export type FormRenderPropParams = {
+/**
+ * TODO @ts-refactor
+ * Remove any so it is required to send the generic value.
+ */
+export interface FormRenderPropParams<T = any> {
     form: FormAPI;
     Bind: BindComponent;
-    data: { [key: string]: any };
+    data: T;
     submit: FormRenderPropParamsSubmit;
     setValue: FormSetValue;
-};
+}
 
-export type FormRenderProp = (params: FormRenderPropParams) => React.ReactElement;
+export interface FormRenderProp {
+    (params: FormRenderPropParams): React.ReactElement;
+}
 
-export type FormData = { [key: string]: any };
+export interface FormData {
+    [key: string]: any;
+}
 
-export type Validation = { [key: string]: any };
+export interface Validation {
+    isValid?: boolean;
+    message?: string;
+    [key: string]: any;
+}
 
-export type FormOnSubmit = (data: FormData, form?: any) => void;
+export interface FormOnSubmit<T = FormData> {
+    (data: T, form?: FormAPI): void;
+}
 
-export type FormProps = {
+export interface FormProps<T extends Record<string, any> = Record<string, any>> {
     invalidFields?: { [key: string]: any };
-    data?: FormData;
+    data?: FormData & T;
     disabled?: boolean | Function;
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
@@ -64,7 +91,8 @@ export type FormProps = {
     onInvalid?: () => void;
     onChange?: FormOnSubmit;
     children: FormRenderProp;
-};
+    ref: React.MutableRefObject<any>;
+}
 
 /**
  * Use when creating standalone form components which receives props from the parent Bind component.

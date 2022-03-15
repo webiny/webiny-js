@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import testFiles from "./data";
+import { File } from "~/types";
 
 const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
 const fileAData = {
@@ -109,8 +110,10 @@ describe("Files CRUD test", () => {
 
         await until(
             () => listFiles().then(([data]) => data),
-            ({ data }) => {
-                const file = data.fileManager.listFiles.data.find(f => f.id === fileAId);
+            ({ data }: any) => {
+                const file = (data.fileManager.listFiles.data as File[]).find(
+                    f => f.id === fileAId
+                );
                 if (!file) {
                     return false;
                 }
@@ -157,7 +160,7 @@ describe("Files CRUD test", () => {
 
         await until(
             () => listFiles({}).then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.fileManager.listFiles.data.length === 2;
             },
             { name: "list all files" }
@@ -210,7 +213,7 @@ describe("Files CRUD test", () => {
                 listFiles({
                     limit: 1000
                 }).then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.fileManager.listFiles.data.length === testFiles.length;
             },
             { name: "bulk list all files", tries: 10 }
@@ -257,7 +260,7 @@ describe("Files CRUD test", () => {
         });
         await until(
             () => listFiles().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.fileManager.listFiles.data.length === 4;
             },
             { name: "bulk list files", tries: 10 }
@@ -338,7 +341,7 @@ describe("Files CRUD test", () => {
 
         await until(
             () => listTags({ where: { tag_not_startsWith: "scope:apw" } }).then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.fileManager.listTags.length === tags.length;
             },
             { name: "bulk list all tags", tries: 10 }
@@ -371,7 +374,7 @@ describe("Files CRUD test", () => {
         });
         await until(
             () => listFiles().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.fileManager.listFiles.data.length === 4;
             },
             { name: "list all files" }
@@ -484,7 +487,7 @@ describe("Files CRUD test", () => {
         });
         await until(
             () => listFiles().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.fileManager.listFiles.data.length === 3;
             },
             { name: "bulk list tags", tries: 10 }
@@ -532,7 +535,7 @@ describe("Files CRUD test", () => {
         });
         await until(
             () => listFiles().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.fileManager.listFiles.data.length === 3;
             },
             { name: "bulk list tags", tries: 10 }
@@ -618,7 +621,7 @@ describe("Files CRUD test", () => {
         });
         await until(
             () => listFiles().then(([data]) => data),
-            ({ data }) => {
+            ({ data }: any) => {
                 return data.fileManager.listFiles.data.length === 3;
             },
             {

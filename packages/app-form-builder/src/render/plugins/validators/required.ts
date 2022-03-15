@@ -1,13 +1,14 @@
 import { validation } from "@webiny/validation";
-import { FbFormFieldValidatorPlugin } from "../../../types";
+import { FbFormFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: FbFormFieldValidatorPlugin = {
     type: "fb-form-field-validator",
     name: "form-field-validator-required",
     validator: {
         name: "required",
-        validate: value => {
+        validate: async value => {
             return validation.validate(value, "required");
         }
     }
-} as FbFormFieldValidatorPlugin;
+};
+export default plugin;

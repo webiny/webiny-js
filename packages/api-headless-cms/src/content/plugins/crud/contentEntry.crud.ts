@@ -1,3 +1,7 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
@@ -31,7 +35,8 @@ import {
     CmsEntryListWhere,
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
-    CmsModelField
+    CmsModelField,
+    CreatedBy
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -106,7 +111,7 @@ const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsE
          */
         acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
         return acc;
-    }, {});
+    }, {} as CreateCmsEntryInput);
 };
 /**
  * Cleans the update input entry data.
@@ -124,7 +129,7 @@ const cleanUpdatedInputData = (
         }
         acc[field.fieldId] = input[field.fieldId];
         return acc;
-    }, {});
+    }, {} as CreateCmsEntryInput);
 };
 
 interface DeleteEntryParams {
@@ -181,13 +186,13 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
     };
 };
 
-export interface Params {
+export interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 
-export const createContentEntryCrud = (params: Params): CmsEntryContext => {
+export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { storageOperations, context, getIdentity } = params;
 
     const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();
@@ -306,14 +311,15 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
          * Get a single entry by revision ID from the database.
          */
         getEntryById: async (model, id) => {
-            const where = {
-                id
+            const where: CmsEntryListWhere = {
+                id,
+                tenant: model.tenant
             };
             await onBeforeEntryGet.publish({
                 where,
                 model
             });
-            const [entry] = await getEntriesByIds(model, [where.id]);
+            const [entry] = await getEntriesByIds(model, [where.id as string]);
             if (!entry) {
                 throw new NotFoundError(`Entry by ID "${id}" not found.`);
             }
@@ -446,7 +452,10 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             return [items, meta];
         },
         listLatestEntries: async function (model, params) {
-            const where = params ? params.where : {};
+            const where = params?.where || ({} as CmsEntryListWhere);
+            if (!where.tenant) {
+                where.tenant = model.tenant;
+            }
 
             return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],
@@ -458,7 +467,10 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             });
         },
         listPublishedEntries: async function (model, params) {
-            const where = params ? params.where : {};
+            const where = params?.where || ({} as CmsEntryListWhere);
+            if (!where.tenant) {
+                where.tenant = model.tenant;
+            }
 
             return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],
@@ -494,7 +506,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             const identity = context.security.getIdentity();
             const locale = context.cms.getLocale();
 
-            const owner = {
+            const owner: CreatedBy = {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type
@@ -519,7 +531,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 values: input
             };
 
-            let storageEntry: CmsStorageEntry = null;
+            let storageEntry: CmsStorageEntry | null = null;
             try {
                 await onBeforeEntryCreate.publish({
                     entry,
@@ -615,7 +627,9 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
 
             utils.checkOwnership(context, permission, originalEntry);
 
-            const latestEntry = await entryFromStorageTransform(context, model, latestStorageEntry);
+            const latestEntry = latestStorageEntry
+                ? await entryFromStorageTransform(context, model, latestStorageEntry)
+                : null;
 
             const identity = context.security.getIdentity();
 
@@ -634,12 +648,12 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                     type: identity.type
                 },
                 locked: false,
-                publishedOn: null,
+                publishedOn: undefined,
                 status: STATUS_DRAFT,
                 values
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryCreateRevision.publish({
@@ -751,7 +765,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 values
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryUpdate.publish({
@@ -899,7 +913,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 model,
                 {
                     entryId,
-                    version
+                    version: version as number
                 }
             );
 
@@ -930,9 +944,9 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
             /**
              * If targeted record is latest entry revision, set the previous one as the new latest
              */
-            let entryToSetAsLatest: CmsEntry = null;
-            let storageEntryToSetAsLatest: CmsStorageEntry = null;
-            if (entryToDelete.id === latestEntryRevisionId) {
+            let entryToSetAsLatest: CmsEntry | null = null;
+            let storageEntryToSetAsLatest: CmsStorageEntry | null = null;
+            if (entryToDelete.id === latestEntryRevisionId && previousStorageEntry) {
                 entryToSetAsLatest = await entryFromStorageTransform(
                     context,
                     model,
@@ -1021,7 +1035,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 publishedOn: currentDate
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryPublish.publish({
@@ -1096,7 +1110,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 status: STATUS_CHANGES_REQUESTED
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryRequestChanges.publish({
@@ -1175,7 +1189,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 status: STATUS_REVIEW_REQUESTED
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryRequestReview.publish({
@@ -1243,7 +1257,7 @@ export const createContentEntryCrud = (params: Params): CmsEntryContext => {
                 status: STATUS_UNPUBLISHED
             };
 
-            let storageEntry: CmsStorageEntry = undefined;
+            let storageEntry: CmsStorageEntry | null = null;
 
             try {
                 await onBeforeEntryUnpublish.publish({

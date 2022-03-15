@@ -1,8 +1,8 @@
 import WebinyError from "@webiny/error";
-import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin } from "~/types";
+import { CmsEntry, CmsModel, CmsContext, CmsModelLockedFieldPlugin, LockedField } from "~/types";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
-export interface MarkLockedFieldsParams {
+interface MarkLockedFieldsParams {
     model: CmsModel;
     entry: CmsEntry;
     context: CmsContext;
@@ -21,7 +21,7 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
         context.plugins.byType<CmsModelLockedFieldPlugin>("cms-model-locked-field");
 
     const existingLockedFields = model.lockedFields || [];
-    const lockedFields = [];
+    const lockedFields: LockedField[] = [];
     for (const field of model.fields) {
         const alreadyLocked = existingLockedFields.some(
             lockedField => lockedField.fieldId === field.fieldId
@@ -45,7 +45,7 @@ export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<
 
         lockedFields.push({
             fieldId: field.fieldId,
-            multipleValues: field.multipleValues,
+            multipleValues: !!field.multipleValues,
             type: field.type,
             ...lockedFieldData
         });

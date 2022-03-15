@@ -8,13 +8,16 @@ import FormsSettings from "./admin/views/Settings/FormsSettings";
 const FormEditor = lazy(() => import("./admin/views/Editor"));
 const Forms = lazy(() => import("./admin/views/Forms/Forms"));
 
-const Loader = ({ children, label, ...props }) => (
+interface LoaderProps {
+    label: string;
+}
+const Loader: React.FC<LoaderProps> = ({ children, label, ...props }) => (
     <Suspense fallback={<CircularProgress label={label} />}>
-        {React.cloneElement(children, props)}
+        {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>
 );
 
-export const FormBuilder = () => {
+export const FormBuilder: React.FC = () => {
     return (
         <Plugins>
             <HasPermission name={"fb.form"}>

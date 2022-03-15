@@ -1,7 +1,7 @@
 /**
  * Encode a received cursor value into something that can be passed on to the user.
  */
-export const encodeCursor = (cursor?: string | string[]): string | undefined => {
+export const encodeCursor = (cursor?: string | string[] | null): string | undefined => {
     if (!cursor) {
         return undefined;
     }
@@ -19,7 +19,7 @@ export const encodeCursor = (cursor?: string | string[]): string | undefined => 
  * Decode a received value into a Elasticsearch cursor.
  * If no value is received or is not decodable, return undefined.
  */
-export const decodeCursor = (cursor?: string): string[] | string | undefined => {
+export const decodeCursor = (cursor?: string | null): string[] | string | undefined => {
     if (!cursor) {
         return undefined;
     }

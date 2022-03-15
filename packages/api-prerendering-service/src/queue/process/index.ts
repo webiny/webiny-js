@@ -7,7 +7,7 @@ import { HandlerResponse } from "~/types";
 import { get as dotPropGet } from "dot-prop";
 
 const IS_TEST = process.env.NODE_ENV === "test";
-const log = (...args) => {
+const log = (...args: string[]) => {
     if (IS_TEST) {
         return;
     }
@@ -215,7 +215,9 @@ export default (params: Configuration): HandlerPlugin => {
                                  * Future feature - ability to search by prefix, e.g. "/en/*" or "/categories/books/*".
                                  */
                             } else {
-                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] = {
+                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][
+                                    url as string
+                                ] = {
                                     path,
                                     configuration
                                 };

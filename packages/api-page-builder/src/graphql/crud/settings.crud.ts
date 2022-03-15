@@ -14,7 +14,6 @@ import {
 import { NotAuthorizedError } from "@webiny/api-security";
 import { DefaultSettingsModel } from "~/utils/models";
 import mergeWith from "lodash/mergeWith";
-import Error from "@webiny/error";
 import WebinyError from "@webiny/error";
 import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
@@ -27,7 +26,8 @@ interface SettingsParams {
 }
 
 interface SettingsParamsInput extends SettingsParams {
-    context: PbContext;
+    getLocaleCode: () => string;
+    getTenantId: () => string;
 }
 /**
  * Possible types of settings.
@@ -46,16 +46,18 @@ const checkBasePermissions = async (context: PbContext) => {
 };
 
 const createSettingsParams = (params: SettingsParamsInput): SettingsParams => {
-    const { tenant: initialTenant, locale: initialLocale, type, context } = params;
+    const {
+        tenant: initialTenant,
+        locale: initialLocale,
+        type,
+        getLocaleCode,
+        getTenantId
+    } = params;
     /**
      * If tenant or locale are false, it means we want global settings.
      */
-    const tenant =
-        initialTenant === false ? false : initialTenant || context.tenancy.getCurrentTenant().id;
-    const locale =
-        initialLocale === false
-            ? false
-            : initialLocale || context.i18nContent.getCurrentLocale().code;
+    const tenant = initialTenant === false ? false : initialTenant || getTenantId();
+    const locale = initialLocale === false ? false : initialLocale || getLocaleCode();
     return {
         type,
         tenant,
@@ -63,20 +65,23 @@ const createSettingsParams = (params: SettingsParamsInput): SettingsParams => {
     };
 };
 
-export interface Params {
+export interface CreateSettingsCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
 }
-export const createSettingsCrud = (params: Params): SettingsCrud => {
-    const { context, storageOperations } = params;
+export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCrud => {
+    const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const settingsDataLoader = new DataLoader<SettingsParams, Settings, string>(
+    const settingsDataLoader = new DataLoader<SettingsParams, Settings | null, string>(
         async keys => {
             const promises = keys.map(key => {
                 const params: SettingsStorageOperationsGetParams = {
                     where: createSettingsParams({
                         ...key,
-                        context
+                        getLocaleCode,
+                        getTenantId
                     })
                 };
                 return storageOperations.settings.get(params);
@@ -89,14 +94,6 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
             }
         }
     );
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
-    const getLocaleCode = (): string => {
-        return context.i18nContent.getCurrentLocale().code;
-    };
 
     const onBeforeSettingsUpdate = createTopic<OnBeforeSettingsUpdateTopicParams>();
     const onAfterSettingsUpdate = createTopic<OnAfterSettingsUpdateTopicParams>();
@@ -149,7 +146,8 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                 locale,
                 tenant,
                 type: SETTINGS_TYPE.DEFAULT,
-                context
+                getLocaleCode,
+                getTenantId
             });
             const key = {
                 tenant: params.tenant,
@@ -199,7 +197,8 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                 tenant: options.tenant,
                 locale: options.locale,
                 type: SETTINGS_TYPE.DEFAULT,
-                context
+                getLocaleCode,
+                getTenantId
             });
 
             let original = (await this.getSettings(options)) as Settings;
@@ -255,7 +254,7 @@ export const createSettingsCrud = (params: Params): SettingsCrud => {
                     // Only throw if previously we had a page (p), and now all of a sudden
                     // we don't (!n). Allows updating settings without sending these.
                     if (p && !n) {
-                        throw new Error(
+                        throw new WebinyError(
                             `Cannot unset "${specialType}" page. Please provide a new page if you want to unset current one.`,
                             "CANNOT_UNSET_SPECIAL_PAGE"
                         );

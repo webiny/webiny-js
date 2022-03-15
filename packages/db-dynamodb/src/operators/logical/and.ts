@@ -1,7 +1,16 @@
-import { Operator } from "../../types";
+import {
+    Operator,
+    ProcessStatementArgsParam,
+    ProcessStatementCallable,
+    ProcessStatementQueryParam
+} from "~/types";
 
-const processQuery = (query, andArgs, processStatement) => {
-    const args = {
+const processQuery = (
+    query: ProcessStatementQueryParam,
+    andArgs: ProcessStatementArgsParam,
+    processStatement: ProcessStatementCallable
+) => {
+    const args: ProcessStatementArgsParam = {
         expression: "",
         attributeNames: {},
         attributeValues: {}

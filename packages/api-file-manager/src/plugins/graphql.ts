@@ -1,10 +1,18 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { FileInput, FileManagerContext, FilesListOpts, FileManagerSettings } from "~/types";
+import { FileManagerContext, FilesListOpts } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
 
-const resolve = async fn => {
+/**
+ * Use any because it really can be any.
+ * TODO @ts-refactor maybe use generics at some point?
+ */
+interface ResolveCallable {
+    (): Promise<any>;
+}
+
+const resolve = async (fn: ResolveCallable) => {
     try {
         return new Response(await fn());
     } catch (e) {
@@ -53,6 +61,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
 
             type FileListResponse {
@@ -92,11 +101,13 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             type FileManagerSettings {
                 uploadMinFileSize: Number
                 uploadMaxFileSize: Number
+                srcPrefix: String
             }
 
             input FileManagerSettingsInput {
                 uploadMinFileSize: Number
                 uploadMaxFileSize: Number
+                srcPrefix: String
             }
 
             type FileManagerSettingsResponse {
@@ -179,7 +190,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             File: {
                 async src(file, _, context: FileManagerContext) {
                     const settings = await context.fileManager.settings.getSettings();
-                    return settings.srcPrefix + file.key;
+                    return (settings?.srcPrefix || "") + file.key;
                 }
             },
             Query: {
@@ -189,7 +200,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 fileManager: emptyResolver
             },
             FmQuery: {
-                getFile(_, args: { id: string }, context) {
+                getFile(_, args: any, context) {
                     return resolve(() => context.fileManager.files.getFile(args.id));
                 },
                 async listFiles(_, args: FilesListOpts, context) {
@@ -200,7 +211,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         return new ErrorResponse(e);
                     }
                 },
-                async listTags(_, args, context) {
+                async listTags(_, args: any, context) {
                     try {
                         return await context.fileManager.files.listTags(args || {});
                     } catch (error) {
@@ -220,16 +231,16 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 }
             },
             FmMutation: {
-                async createFile(_, args: { data: FileInput }, context) {
+                async createFile(_, args: any, context) {
                     return resolve(() => context.fileManager.files.createFile(args.data));
                 },
-                async updateFile(_, args, context) {
+                async updateFile(_, args: any, context) {
                     return resolve(() => context.fileManager.files.updateFile(args.id, args.data));
                 },
-                async createFiles(_, args, context) {
+                async createFiles(_, args: any, context) {
                     return resolve(() => context.fileManager.files.createFilesInBatch(args.data));
                 },
-                async deleteFile(_, args, context) {
+                async deleteFile(_, args: any, context) {
                     return resolve(async () => {
                         const file = await context.fileManager.files.getFile(args.id);
                         return await context.fileManager.storage.delete({
@@ -238,15 +249,15 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         });
                     });
                 },
-                async install(_, args, context) {
+                async install(_, args: any, context) {
                     return resolve(() =>
                         context.fileManager.system.install({ srcPrefix: args.srcPrefix })
                     );
                 },
-                async upgrade(_, args, context) {
+                async upgrade(_, args: any, context) {
                     return resolve(() => context.fileManager.system.upgrade(args.version));
                 },
-                async updateSettings(_, args: { data: Partial<FileManagerSettings> }, context) {
+                async updateSettings(_, args: any, context) {
                     return resolve(() => context.fileManager.settings.updateSettings(args.data));
                 }
             }

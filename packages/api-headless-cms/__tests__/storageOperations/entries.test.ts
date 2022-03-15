@@ -21,12 +21,12 @@ const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void>
                 limit: 10000
             });
         },
-        ({ items }) => {
+        ({ items }: any) => {
             /**
              * There must be item for each result last revision id.
              */
             return Object.values(records).every(record => {
-                return items.some(item => item.id === record.last.id);
+                return items.some((item: any) => item.id === record.last.id);
             });
         },
         {

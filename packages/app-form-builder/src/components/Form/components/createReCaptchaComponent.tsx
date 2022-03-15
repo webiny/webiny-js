@@ -1,7 +1,7 @@
 import * as React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { reCaptchaEnabled } from "./../functions";
-import { FbFormModel, FbFormRenderComponentProps } from "../../../types";
+import { FbFormModel, FbFormRenderComponentProps } from "~/types";
 
 type CreateReCaptchaComponentArgs = {
     props: FbFormRenderComponentProps;
@@ -9,7 +9,9 @@ type CreateReCaptchaComponentArgs = {
     setResponseToken: (value: string) => void;
 };
 
-type ChildrenFunction = ({ errorMessage: I18NStringValue }) => React.ReactNode;
+interface ChildrenFunction {
+    ({ errorMessage }: { errorMessage: string }): React.ReactNode;
+}
 
 export type ReCaptchaProps = {
     children?: React.ReactNode | ChildrenFunction;
@@ -45,8 +47,9 @@ const createReCaptchaComponent = ({
                 {...props}
                 sitekey={settings.reCaptcha.settings.siteKey}
                 onChange={response => {
-                    setResponseToken(response);
-                    typeof props.onChange === "function" && props.onChange(response);
+                    setResponseToken(response as unknown as string);
+                    typeof props.onChange === "function" &&
+                        props.onChange(response as unknown as string);
                 }}
                 onErrored={(...args) => {
                     setResponseToken("");

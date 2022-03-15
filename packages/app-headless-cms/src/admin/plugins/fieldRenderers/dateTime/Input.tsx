@@ -8,7 +8,7 @@ export interface TrailingIcon {
     onClick: any;
 }
 
-export interface Props {
+export interface InputProps {
     step?: number;
     type?: string;
     bind: BindComponentRenderProp;
@@ -16,7 +16,7 @@ export interface Props {
     trailingIcon?: TrailingIcon;
 }
 
-export const Input: React.FC<Props> = ({ bind, ...props }) => {
+export const Input: React.FC<InputProps> = ({ bind, ...props }) => {
     return (
         <UiInput
             {...props}

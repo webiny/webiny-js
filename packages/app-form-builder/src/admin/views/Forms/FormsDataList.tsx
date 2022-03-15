@@ -1,4 +1,8 @@
 import React, { useRef, useCallback, useState, useMemo } from "react";
+/**
+ * Package timeago-react does not have types
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
 import orderBy from "lodash/orderBy";
@@ -7,7 +11,12 @@ import { useRouter } from "@webiny/react-router";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { DELETE_FORM, CREATE_REVISION_FROM } from "../../graphql";
+import {
+    DELETE_FORM,
+    CREATE_REVISION_FROM,
+    CreateRevisionFromMutationResponse,
+    CreateRevisionFromMutationVariables
+} from "../../graphql";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import {
@@ -29,9 +38,10 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import usePermission from "../../../hooks/usePermission";
+import { usePermission } from "~/hooks/usePermission";
 import { useForms } from "./useForms";
-import { deserializeSorters, serializeSorters } from "../utils";
+import { deserializeSorters } from "../utils";
+import { FbFormModel, FbRevisionModel } from "~/types";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 const rightAlign = css({
@@ -46,29 +56,38 @@ export type FormsDataListProps = {
     onCreateForm: () => void;
 };
 
-const SORTERS = [
+interface Sorter {
+    label: string;
+    sorter: string;
+}
+
+const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
-        sorters: { savedOn: "desc" }
+        sorter: "savedOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { savedOn: "asc" }
+        sorter: "savedOn_ASC"
     },
     {
         label: t`Name A-Z`,
-        sorters: { name: "asc" }
+        sorter: "name_ASC"
     },
     {
         label: t`Name Z-A`,
-        sorters: { name: "desc" }
+        sorter: "name_DESC"
     }
 ];
 
-const FormsDataList = (props: FormsDataListProps) => {
-    const editHandlers = useRef({});
-    const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters({ savedOn: "desc" }));
+interface HandlerCallable {
+    (): Promise<void>;
+}
+
+const FormsDataList: React.FC<FormsDataListProps> = props => {
+    const editHandlers = useRef<Record<string, HandlerCallable>>({});
+    const [filter, setFilter] = useState<string>("");
+    const [sort, setSort] = useState<string>(SORTERS[0].sorter);
 
     const { listQuery, canCreate } = useForms();
 
@@ -104,30 +123,45 @@ const FormsDataList = (props: FormsDataListProps) => {
         [location]
     );
 
-    const editRecord = useCallback(form => {
+    const editRecord = useCallback((form: FbRevisionModel) => {
         // Note: form id is remains the same after publish.
         const handlerKey = form.id + form.status;
         if (!editHandlers.current[handlerKey]) {
             editHandlers.current[handlerKey] = async () => {
-                if (form.published) {
-                    const { data: res } = await client.mutate({
-                        mutation: CREATE_REVISION_FROM,
-                        variables: { revision: form.id },
-                        update(cache, { data }) {
-                            updateLatestRevisionInListCache(cache, data.formBuilder.revision.data);
-                        }
-                    });
-
-                    const { data, error } = res.formBuilder.revision;
-
-                    if (error) {
-                        return showSnackbar(error.message);
-                    }
-
-                    history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
-                } else {
+                if (!form.published) {
                     history.push(`/form-builder/forms/${encodeURIComponent(form.id)}`);
                 }
+
+                const { data: res } = await client.mutate<
+                    CreateRevisionFromMutationResponse,
+                    CreateRevisionFromMutationVariables
+                >({
+                    mutation: CREATE_REVISION_FROM,
+                    variables: { revision: form.id },
+                    update(cache, result) {
+                        if (!result.data) {
+                            return;
+                        }
+                        updateLatestRevisionInListCache(
+                            cache,
+                            result.data.formBuilder.revision.data
+                        );
+                    }
+                });
+
+                if (!res) {
+                    showSnackbar("Missing response data on Create Revision From Mutation.");
+                    return;
+                }
+                const { data, error } = res.formBuilder.revision;
+
+                if (error) {
+                    showSnackbar(error.message);
+                    return;
+                }
+
+                history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
+                return;
             };
         }
 
@@ -142,11 +176,11 @@ const FormsDataList = (props: FormsDataListProps) => {
     );
 
     const sortData = useCallback(
-        list => {
+        (list: FbFormModel[]) => {
             if (!sort) {
                 return list;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            const [key, value] = deserializeSorters(sort);
             return orderBy(list, [key], [value]);
         },
         [sort]
@@ -161,11 +195,11 @@ const FormsDataList = (props: FormsDataListProps) => {
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort forms by"}
                         >
-                            {SORTERS.map(({ label, sorters }) => {
+                            {SORTERS.map(({ label, sorter }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorter}>
                                         {label}
                                     </option>
                                 );
@@ -180,7 +214,8 @@ const FormsDataList = (props: FormsDataListProps) => {
 
     const query = new URLSearchParams(location.search);
 
-    const listFormsData = listQuery.loading ? [] : listQuery.data.formBuilder.listForms.data;
+    const listFormsData =
+        listQuery.loading || !listQuery.data ? [] : listQuery.data.formBuilder.listForms.data;
 
     const filteredData = filter === "" ? listFormsData : listFormsData.filter(filterData);
     const forms = sortData(filteredData);
@@ -203,10 +238,10 @@ const FormsDataList = (props: FormsDataListProps) => {
             modalOverlay={formsDataListModalOverlay}
             modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
-            {({ data = [] }) => (
+            {({ data = [] }: { data: FbFormModel[] }) => (
                 <List data-testid="default-data-list">
                     {data.map(form => {
-                        const name = form.createdBy.firstName || form.createdBy.displayName;
+                        const name = form.createdBy.displayName;
                         return (
                             <ListItem key={form.id} className={listItemMinHeight}>
                                 <ListItemText

@@ -30,29 +30,32 @@ interface Domain {
     fqdn: string;
 }
 
-type DomainsProps = {
+interface DomainsProps {
     value?: Domain[];
     onChange?: (value: any) => void;
     title: string;
     inputLabel: string;
     addButtonLabel: string;
-};
+}
 
 const FQDN_REGEX = /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,63}$)/;
 
-export const DomainsFieldset = (props: DomainsProps) => {
+export const DomainsFieldset: React.FC<DomainsProps> = props => {
     const { onChange, value } = props;
 
     const addDomain = () => {
         const newValue = Array.isArray(value) ? [...value] : [];
         newValue.push({ fqdn: "" });
+        if (!onChange) {
+            return;
+        }
         onChange(newValue);
     };
 
     const fqdnValidator = useMemo(() => {
         return [
             validation.create("required"),
-            value => {
+            (value: string) => {
                 if (!FQDN_REGEX.test(value)) {
                     throw new Error("Value must be a valid FQDN.");
                 }
@@ -111,7 +114,7 @@ export const DomainsFieldset = (props: DomainsProps) => {
     );
 };
 
-export const Domains = () => {
+export const Domains: React.FC = () => {
     return (
         <Grid>
             <Cell span={12}>

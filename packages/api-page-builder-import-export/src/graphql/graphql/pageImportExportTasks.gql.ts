@@ -1,7 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import resolve from "./utils/resolve";
 import { PbPageImportExportContext } from "../types";
-import { PageImportExportTaskStatus } from "~/types";
 
 const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
     type: "graphql-schema",
@@ -54,16 +53,12 @@ const plugin: GraphQLSchemaPlugin<PbPageImportExportContext> = {
         `,
         resolvers: {
             PbQuery: {
-                getPageImportExportTask: async (_, args: { id: string }, context) => {
+                getPageImportExportTask: async (_, args: any, context) => {
                     return resolve(() => {
                         return context.pageBuilder.pageImportExportTask.getTask(args.id);
                     });
                 },
-                listPageImportExportSubTask: async (
-                    _,
-                    args: { id: string; status: PageImportExportTaskStatus; limit: number },
-                    context
-                ) => {
+                listPageImportExportSubTask: async (_, args: any, context) => {
                     return resolve(() => {
                         return context.pageBuilder.pageImportExportTask.listSubTasks(
                             args.id,

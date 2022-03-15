@@ -1,3 +1,6 @@
-export const useCurrentTenantId = () => {
-    return new URLSearchParams(location.search).get("id");
+export const useCurrentTenantId = (): string | null => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+
+    return id || null;
 };

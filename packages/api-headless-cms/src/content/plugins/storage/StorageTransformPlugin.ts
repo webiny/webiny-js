@@ -18,20 +18,20 @@ export interface FromStorageParams<T> {
     plugins: PluginsContainer;
 }
 
-export interface Params<T, R> {
+export interface StorageTransformPluginParams<T, R> {
     fieldType: string;
     toStorage: (params: ToStorageParams<T>) => Promise<R>;
     fromStorage: (params: FromStorageParams<R>) => Promise<T>;
 }
 export class StorageTransformPlugin<T = any, R = any> extends Plugin {
-    public static readonly type: string = "cms.storage.transform.plugin";
+    public static override readonly type: string = "cms.storage.transform.plugin";
     public get fieldType(): string {
         return this.config.fieldType;
     }
 
-    private readonly config: Params<T, R>;
+    private readonly config: StorageTransformPluginParams<T, R>;
 
-    public constructor(config: Params<T, R>) {
+    public constructor(config: StorageTransformPluginParams<T, R>) {
         super();
         this.config = config;
     }

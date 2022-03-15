@@ -1,3 +1,7 @@
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import { FileManagerContext, FileManagerSettings } from "~/types";
@@ -5,12 +9,13 @@ import { SettingsStorageOperationsProviderPlugin } from "~/plugins/definitions/S
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
 
+// TODO @ts-refactor verify that this is not used and remove it
 export const SETTINGS_KEY = "file-manager";
 
 const CreateDataModel = withFields({
     uploadMinFileSize: number({ value: 0, validation: validation.create("gte:0") }),
     uploadMaxFileSize: number({ value: 26214401 }),
-    srcPrefix: onSet(value => {
+    srcPrefix: onSet((value?: string) => {
         // Make sure srcPrefix always ends with forward slash.
         if (typeof value === "string") {
             return value.endsWith("/") ? value : value + "/";
@@ -24,7 +29,7 @@ const UpdateDataModel = withFields({
         validation: validation.create("gte:0")
     }),
     uploadMaxFileSize: number(),
-    srcPrefix: onSet(value => {
+    srcPrefix: onSet((value?: string) => {
         // Make sure srcPrefix always ends with forward slash.
         if (typeof value === "string") {
             return value.endsWith("/") ? value : value + "/";
@@ -72,7 +77,7 @@ const settingsCrudContextPlugin = new ContextPlugin<FileManagerContext>(async co
             const updatedValue = new UpdateDataModel().populate(data);
             await updatedValue.validate();
 
-            const existingSettings = await storageOperations.get();
+            const existingSettings = (await storageOperations.get()) as FileManagerSettings;
 
             const updatedSettings: Partial<FileManagerSettings> = await updatedValue.toJSON({
                 onlyDirty: true

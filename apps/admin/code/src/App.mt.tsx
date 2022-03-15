@@ -10,15 +10,10 @@ const themes = [
         name: "theme-1",
         label: "Theme 1",
         load: () => import(/* webpackChunkName: 'theme-1' */ "theme").then(m => m.default)
-    },
-    {
-        name: "theme-2",
-        label: "Theme 2",
-        load: () => import(/* webpackChunkName: 'theme-2' */ "theme-1").then(m => m.default)
     }
 ];
 
-export const App = () => {
+export const App: React.FC = () => {
     return (
         <Admin>
             <Cognito />

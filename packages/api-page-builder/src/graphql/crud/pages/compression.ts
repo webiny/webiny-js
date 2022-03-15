@@ -8,11 +8,11 @@ export interface CreateCompressionParams {
 }
 
 export interface CompressContentCallable {
-    (page: Page): Promise<CompressedValue>;
+    (page: Page): Promise<CompressedValue | null>;
 }
 
 export interface DecompressContentCallable {
-    (page: Page): Promise<Record<string, any>>;
+    (page: Page): Promise<Record<string, any> | null>;
 }
 
 export interface CreateCompressionResult {
@@ -23,10 +23,10 @@ export interface CreateCompressionResult {
 const createCompressContent = (plugins: ContentCompressionPlugin[]): CompressContentCallable => {
     const [plugin] = plugins;
 
-    return async (page: Page): Promise<CompressedValue> => {
-        const value = page.content as Record<string, any>;
+    return async (page: Page) => {
+        const value = page.content;
 
-        if (value && value.compression) {
+        if (value && (value as any).compression) {
             return value as CompressedValue;
         }
         try {
@@ -41,7 +41,7 @@ const createCompressContent = (plugins: ContentCompressionPlugin[]): CompressCon
 const createDecompressContent = (
     plugins: ContentCompressionPlugin[]
 ): DecompressContentCallable => {
-    return async (page: Page): Promise<Record<string, any>> => {
+    return async (page: Page) => {
         const value = page.content as CompressedValue;
         /**
          * Possibly no compression on the content so lets return what ever is inside the content.

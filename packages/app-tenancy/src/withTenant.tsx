@@ -1,6 +1,7 @@
 import React from "react";
 import { gql } from "graphql-tag";
 import { useTenancy } from "~/hooks/useTenancy";
+import ApolloClient from "apollo-client";
 
 export const GET_DEFAULT_TENANT = gql`
     query GetDefaultTenant {
@@ -20,11 +21,18 @@ export const GET_DEFAULT_TENANT = gql`
     }
 `;
 
-export const withTenant = Component => {
-    const WithTenant = ({ getIdentityData, children }) => {
+interface GetIdentityWithTenantParams {
+    client: ApolloClient<any>;
+}
+interface WithTenantProps {
+    getIdentityData: (params: GetIdentityWithTenantParams) => Promise<Record<string, string>>;
+    children: React.ReactNode;
+}
+export const withTenant = (Component: React.FC<WithTenantProps>): React.FC<WithTenantProps> => {
+    return function WithTenant({ getIdentityData, children }) {
         const { tenant, setTenant, isMultiTenant } = useTenancy();
 
-        const getIdentityWithTenant = async params => {
+        const getIdentityWithTenant = async (params: GetIdentityWithTenantParams) => {
             if (tenant || !isMultiTenant) {
                 return getIdentityData(params);
             }
@@ -44,6 +52,4 @@ export const withTenant = Component => {
 
         return <Component getIdentityData={getIdentityWithTenant}>{children}</Component>;
     };
-
-    return WithTenant;
 };

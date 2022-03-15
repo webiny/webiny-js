@@ -36,7 +36,7 @@ interface NothingToShowElementConfig extends UIElementConfig {
 }
 
 export class NothingToShowElement extends NavigationMenuElement {
-    constructor(id, config: NothingToShowElementConfig) {
+    constructor(id: string, config: NothingToShowElementConfig) {
         super(id, config);
 
         this.addRenderer(new NothingToShowRenderer());
@@ -44,11 +44,11 @@ export class NothingToShowElement extends NavigationMenuElement {
 }
 
 export class NothingToShowRenderer extends UIRenderer<NavigationMenuElement> {
-    canRender(element: NavigationMenuElement): boolean {
+    public override canRender(element: NavigationMenuElement): boolean {
         return element instanceof NothingToShowElement;
     }
 
-    render({ element }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
+    public render({ element }: UIRenderParams<NavigationMenuElement>): React.ReactNode {
         return (
             <List className={submenuList} style={{ opacity: 0.4 }}>
                 <ListItem className={submenuItems} ripple={false} disabled>

@@ -9,10 +9,19 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useI18N } from "~/hooks/useI18N";
 import { GET_LOCALE, CREATE_LOCALE, UPDATE_LOCALE, LIST_LOCALES } from "./graphql";
 import { useCurrentLocale } from "./useCurrentLocale";
+import { I18NLocaleItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/form");
 
-export const useLocaleForm = () => {
+interface UseLocaleForm {
+    loading: boolean;
+    showEmptyView: boolean;
+    createLocale: () => void;
+    cancelEditing: () => void;
+    locale: I18NLocaleItem;
+    onSubmit: (item: I18NLocaleItem) => Promise<void>;
+}
+export const useLocaleForm = (): UseLocaleForm => {
     const { refetchLocales } = useI18N();
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -41,7 +50,7 @@ export const useLocaleForm = () => {
     const loading = [getQuery, createMutation, updateMutation].some(item => item.loading);
 
     const onSubmit = useCallback(
-        async data => {
+        async (data: I18NLocaleItem) => {
             const isUpdate = data.createdOn;
             const [operation, args] = isUpdate
                 ? [update, { variables: { code: data.code, data: pick(data, "default") } }]

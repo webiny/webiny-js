@@ -10,7 +10,7 @@ import {
     DialogActions,
     DialogButton
 } from "@webiny/ui/Dialog";
-import { Form } from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import { plugins } from "@webiny/plugins";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
@@ -37,41 +37,47 @@ const FbFormModelFieldList = styled("div")({
     backgroundColor: "var(--mdc-theme-background) !important"
 });
 
-type EditFieldDialogProps = {
-    field: FbFormModelField;
+interface EditFieldDialogProps {
+    field: FbFormModelField | null;
     onClose: Function;
-    onSubmit: (data: any) => void;
-};
+    onSubmit: FormOnSubmit;
+}
 
-const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
-    const [current, setCurrent] = useState(null);
+const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...props }) => {
+    const [current, setCurrent] = useState<FbFormModelField | null>(null);
     const [isNewField, setIsNewField] = useState<boolean>(false);
     const [screen, setScreen] = useState<string>();
 
     const { getFieldPlugin } = useFormEditor();
 
     useEffect(() => {
-        setCurrent(cloneDeep(field));
-        if (field) {
-            setIsNewField(!field._id);
-            setScreen(field.type ? "fieldOptions" : "fieldType");
+        if (!field) {
+            setCurrent(null);
+            return;
         }
+        setCurrent(cloneDeep(field));
+        setIsNewField(!field._id);
+        setScreen(field.type ? "fieldOptions" : "fieldType");
     }, [field]);
 
     const onClose = useCallback(() => {
         setCurrent(null);
         props.onClose();
-    }, undefined);
+    }, []);
 
     let render = null;
     let headerTitle = t`Field Settings`;
 
     if (current) {
-        const fieldPlugin = getFieldPlugin({ name: current.name });
+        const fieldPlugin = getFieldPlugin({
+            name: current.name
+        });
+        let fieldPluginFieldValidators: string[] = [];
         if (fieldPlugin) {
             headerTitle = t`Field Settings - {fieldTypeLabel}`({
                 fieldTypeLabel: fieldPlugin.field.label
             });
+            fieldPluginFieldValidators = fieldPlugin.field.validators || [];
         }
 
         switch (screen) {
@@ -85,12 +91,11 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         <Tab label={t`General`}>
                                             <GeneralTab form={form} field={current} />
                                         </Tab>
-                                        {Array.isArray(fieldPlugin.field.validators) &&
-                                            fieldPlugin.field.validators.length > 0 && (
-                                                <Tab label={"Validators"}>
-                                                    <ValidatorsTab form={form} field={current} />
-                                                </Tab>
-                                            )}
+                                        {fieldPluginFieldValidators.length > 0 && (
+                                            <Tab label={"Validators"}>
+                                                <ValidatorsTab form={form} field={current} />
+                                            </Tab>
+                                        )}
                                     </Tabs>
                                 </DialogContent>
                                 <DialogActions

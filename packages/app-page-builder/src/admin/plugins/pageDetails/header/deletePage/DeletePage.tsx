@@ -10,10 +10,14 @@ import { i18n } from "@webiny/app/i18n";
 import usePermission from "~/hooks/usePermission";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
+import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
 
-const DeletePage = props => {
+interface DeletePageProps {
+    page: PbPageData;
+}
+const DeletePage: React.FC<DeletePageProps> = props => {
     const { page } = props;
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
@@ -62,7 +66,8 @@ const DeletePage = props => {
                 if (response) {
                     const { error } = response;
                     if (error) {
-                        return showDialog(error.message, { title: t`Could not delete page.` });
+                        showDialog(error.message, { title: t`Could not delete page.` });
+                        return;
                     }
 
                     showSnackbar(
@@ -85,6 +90,7 @@ const DeletePage = props => {
     );
 
     if (!canDelete(page)) {
+        console.log("Does not have permission to delete page.");
         return null;
     }
 

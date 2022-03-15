@@ -38,12 +38,12 @@ const SearchWrapper = styled("div")({
     }
 });
 
-export type SearchProps = {
+export interface SearchProps {
     value: string;
     onChange: (value: string) => void;
     inputPlaceholder?: string;
-};
-const Search = ({ value, onChange, inputPlaceholder = "Search..." }: SearchProps) => {
+}
+const Search: React.FC<SearchProps> = ({ value, onChange, inputPlaceholder = "Search..." }) => {
     return (
         <SearchWrapper data-testid={"default-data-list.search"}>
             <div className="search__icon">

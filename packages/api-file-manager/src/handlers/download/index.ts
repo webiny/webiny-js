@@ -2,18 +2,21 @@ import { HandlerPlugin } from "@webiny/handler/types";
 import S3 from "aws-sdk/clients/s3";
 import sanitizeFilename from "sanitize-filename";
 import pathLib from "path";
-import { createHandler, getEnvironment, getObjectParams } from "../utils";
+import { createHandler, getEnvironment, getObjectParams, EventHandlerCallable } from "../utils";
 import loaders from "../transform/loaders";
 import { ArgsContext } from "@webiny/handler-args/types";
+import { DownloadHandlerEventArgs } from "~/handlers/types";
+import { ClientContext } from "@webiny/handler-client/types";
 
 const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
+interface Context extends ClientContext, ArgsContext<DownloadHandlerEventArgs> {}
 /**
  * Based on given path, extracts file key and additional options sent via query params.
  * @param event
  */
-const extractFilenameOptions = event => {
+const extractFilenameOptions = (event: DownloadHandlerEventArgs) => {
     const path = sanitizeFilename(event.pathParameters.path);
     return {
         filename: decodeURI(path),
@@ -22,11 +25,10 @@ const extractFilenameOptions = event => {
     };
 };
 
-const getS3Object = async (event, s3, context) => {
+const getS3Object = async (event: DownloadHandlerEventArgs, s3: S3, context: Context) => {
     const { options, filename, extension } = extractFilenameOptions(event);
 
-    for (let i = 0; i < loaders.length; i++) {
-        const loader = loaders[i];
+    for (const loader of loaders) {
         const canProcess = loader.canProcess({
             context,
             s3,
@@ -37,17 +39,18 @@ const getS3Object = async (event, s3, context) => {
             }
         });
 
-        if (canProcess) {
-            return loader.process({
-                context,
-                s3,
-                options,
-                file: {
-                    name: filename,
-                    extension
-                }
-            });
+        if (!canProcess) {
+            continue;
         }
+        return loader.process({
+            context,
+            s3,
+            options,
+            file: {
+                name: filename,
+                extension
+            }
+        });
     }
 
     // If no processors handled the file request, just return the S3 object by default.
@@ -58,21 +61,23 @@ const getS3Object = async (event, s3, context) => {
     };
 };
 
-export default (): HandlerPlugin<ArgsContext> => ({
+export default (): HandlerPlugin<Context> => ({
     type: "handler",
     name: "handler-download-file",
     async handle(context) {
-        const event = context.invocationArgs;
-
-        const handler = createHandler(async event => {
+        const eventHandler: EventHandlerCallable<DownloadHandlerEventArgs> = async event => {
             const { region } = getEnvironment();
             const s3 = new S3({ region });
 
             const { params, object } = await getS3Object(event, s3, context);
 
-            if (object.ContentLength < MAX_RETURN_CONTENT_LENGTH) {
+            const contentLength = object.ContentLength === undefined ? 0 : object.ContentLength;
+            if (contentLength < MAX_RETURN_CONTENT_LENGTH) {
                 return {
-                    data: object.Body,
+                    /**
+                     * It is safe to cast as buffer or unknown
+                     */
+                    data: object.Body || null,
                     headers: {
                         "Content-Type": object.ContentType,
                         "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
@@ -91,13 +96,15 @@ export default (): HandlerPlugin<ArgsContext> => ({
                 .promise();
 
             return {
+                data: null,
                 statusCode: 301,
                 headers: {
                     Location: `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`
                 }
             };
-        });
+        };
+        const handler = createHandler(eventHandler);
 
-        return await handler(event);
+        return await handler(context.invocationArgs);
     }
 });

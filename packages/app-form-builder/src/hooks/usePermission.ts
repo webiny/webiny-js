@@ -1,21 +1,32 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
+import { FormBuilderSecurityPermission } from "~/types";
 
-const usePermission = () => {
-    const { identity } = useSecurity();
+interface CreatableItem {
+    createdBy?: {
+        id?: string;
+    };
+}
 
-    const fbFormPermission = useMemo(() => identity.getPermission("fb.form"), []);
-    const hasFullAccess = useMemo(() => identity.getPermission("fb.*"), []);
+export const usePermission = () => {
+    const { identity, getPermission } = useSecurity();
+
+    const fbFormPermission = useMemo((): FormBuilderSecurityPermission | null => {
+        return getPermission("fb.form");
+    }, [identity]);
+    const hasFullAccess = useMemo((): FormBuilderSecurityPermission | null => {
+        return getPermission("fb.*");
+    }, [identity]);
 
     const canEdit = useCallback(
-        item => {
-            const creatorId = get(item, "createdBy.id");
+        (item): boolean => {
+            const creatorId: string = get(item, "createdBy.id");
             if (!fbFormPermission) {
                 return false;
             }
             if (fbFormPermission.own && creatorId) {
-                return creatorId === identity.login;
+                return creatorId === (identity && identity.login);
             }
             if (typeof fbFormPermission.rwd === "string") {
                 return fbFormPermission.rwd.includes("w");
@@ -26,12 +37,12 @@ const usePermission = () => {
     );
 
     const canDelete = useCallback(
-        item => {
+        (item: CreatableItem): boolean => {
             if (!fbFormPermission) {
                 return false;
             }
             if (fbFormPermission.own) {
-                return item.createdBy.id === identity.login;
+                return item.createdBy?.id === (identity && identity.login);
             }
             if (typeof fbFormPermission.rwd === "string") {
                 return fbFormPermission.rwd.includes("d");
@@ -41,7 +52,7 @@ const usePermission = () => {
         [fbFormPermission]
     );
 
-    const canPublish = useCallback(() => {
+    const canPublish = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -51,10 +62,10 @@ const usePermission = () => {
         if (typeof fbFormPermission.pw === "string") {
             return fbFormPermission.pw.includes("p");
         }
-        return fbFormPermission.pw;
+        return fbFormPermission.pw || false;
     }, [fbFormPermission, hasFullAccess]);
 
-    const canUnpublish = useCallback(() => {
+    const canUnpublish = useCallback((): boolean => {
         if (hasFullAccess) {
             return true;
         }
@@ -64,7 +75,7 @@ const usePermission = () => {
         if (typeof fbFormPermission.pw === "string") {
             return fbFormPermission.pw.includes("u");
         }
-        return fbFormPermission.pw;
+        return fbFormPermission.pw || false;
     }, [fbFormPermission, hasFullAccess]);
 
     return {
@@ -74,5 +85,3 @@ const usePermission = () => {
         canUnpublish
     };
 };
-
-export default usePermission;

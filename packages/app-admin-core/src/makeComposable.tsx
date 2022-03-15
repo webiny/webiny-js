@@ -1,11 +1,11 @@
-import React, { createContext, FC, useContext, useEffect, useMemo } from "react";
+import React, { createContext, useContext, useEffect, useMemo } from "react";
 import debounce from "lodash.debounce";
 import { useAdmin } from "./admin";
 import { ComponentType } from "react";
 
-const useComponent = Component => {
+const useComponent = (Component: ComponentType<any>): ComponentType<any> => {
     const { wrappers } = useAdmin();
-    const recipe = wrappers.get(Component);
+    const recipe = wrappers.get(Component) as { component: ComponentType };
 
     if (!recipe) {
         return Component;
@@ -14,7 +14,7 @@ const useComponent = Component => {
     return recipe.component;
 };
 
-const ComposableContext = createContext([]);
+const ComposableContext = createContext<string[]>([]);
 ComposableContext.displayName = "ComposableContext";
 
 function useComposableParents() {
@@ -26,8 +26,8 @@ function useComposableParents() {
     return context;
 }
 
-const createEmptyRenderer = (name: string) => {
-    return function EmptyRenderer() {
+const createEmptyRenderer = (name: string): React.FC => {
+    return function EmptyRenderer(): null {
         useEffect(() => {
             // We need to debounce the log, as it sometimes only requires a single tick to get the new
             // composed component to render, and we don't want to scare developers for no reason.
@@ -46,18 +46,18 @@ const createEmptyRenderer = (name: string) => {
     };
 };
 
-type ComposableFC<TProps> = FC<TProps> & {
-    original: ComponentType<TProps>;
+export interface ComposableFC<TProps> extends React.FC<TProps> {
+    original: React.FC<TProps>;
     originalName: string;
-};
+}
 
-export function makeComposable<TProps>(name, Component?: ComponentType<TProps>) {
+export function makeComposable<TProps>(name: string, Component?: React.FC<TProps>) {
     if (!Component) {
         Component = createEmptyRenderer(name);
     }
     const Composable: ComposableFC<TProps> = props => {
         const parents = useComposableParents();
-        const WrappedComponent = useComponent(Component);
+        const WrappedComponent = useComponent(Component as React.FC<TProps>);
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 

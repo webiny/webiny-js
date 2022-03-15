@@ -3,12 +3,12 @@ import { FbFormModelField } from "@webiny/app-form-builder/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import HelperMessage from "../components/HelperMessage";
 
-type Props = {
+interface TextareaProps {
     bind: BindComponentRenderProp;
     field: FbFormModelField;
-};
+}
 
-const Textarea = (props: Props) => {
+const Textarea: React.FC<TextareaProps> = props => {
     const { onChange, value, validation } = props.bind;
 
     return (

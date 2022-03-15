@@ -46,11 +46,11 @@ const getStartedStyle = css({
     marginTop: 20
 });
 
-type Props = {
+interface Slide1Props {
     nextSlide: (e: SyntheticEvent) => void;
-};
+}
 
-const Slide1 = (props: Props) => {
+const Slide1: React.FC<Slide1Props> = props => {
     return (
         <SlideContainer>
             <Logo>

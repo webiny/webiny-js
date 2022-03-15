@@ -1,5 +1,7 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 import workflowMocks from "../graphql/mocks/workflows";
+import { Category } from "@webiny/api-page-builder/types";
+import { ApwWorkflow } from "~/types";
 
 export { until } from "@webiny/project-utils/testing/helpers/until";
 export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
@@ -22,7 +24,7 @@ const getSecurityIdentity = () => {
     return identity;
 };
 
-export const createPermissions = (permissions: PermissionsArg[]): PermissionsArg[] => {
+export const createPermissions = (permissions?: PermissionsArg[]): PermissionsArg[] => {
     if (permissions) {
         return permissions;
     }
@@ -66,7 +68,12 @@ export const createIdentity = (identity?: SecurityIdentity) => {
     return identity;
 };
 
-export const setupCategory = async ({ getCategory, createCategory }) => {
+interface SetupCategoryParams {
+    getCategory: ({ slug }: { slug: string }) => Promise<any>;
+    createCategory: ({ data }: { data: Partial<Category> }) => Promise<any>;
+}
+
+export const setupCategory = async ({ getCategory, createCategory }: SetupCategoryParams) => {
     const [getCategoryResponse] = await getCategory({ slug: "static" });
     const category = getCategoryResponse.data.pageBuilder.getCategory.data;
     if (category) {
@@ -88,7 +95,7 @@ const setupReviewer = async gqlHandler => {
 
     await gqlHandler.until(
         () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]) => data),
-        response => response.data.apw.listReviewers.data.length === 1,
+        (response: any) => response.data.apw.listReviewers.data.length === 1,
         {
             name: "Wait for listReviewer query"
         }
@@ -109,7 +116,7 @@ const setupPage = async gqlHandler => {
     return createPageResponse.data.pageBuilder.createPage.data;
 };
 
-const setupWorkflow = async gqlHandler => {
+const setupWorkflow = async (gqlHandler: any): Promise<ApwWorkflow> => {
     const reviewer = await setupReviewer(gqlHandler);
     const [createWorkflowResponse] = await gqlHandler.createWorkflowMutation({
         data: workflowMocks.createWorkflowWithThreeSteps({}, [reviewer])
@@ -121,8 +128,8 @@ export const createSetupForContentReview = async gqlHandler => {
     const workflow = await setupWorkflow(gqlHandler);
 
     await gqlHandler.until(
-        () => gqlHandler.listWorkflowsQuery({}).then(([data]) => data),
-        response => {
+        () => gqlHandler.listWorkflowsQuery({}).then(([data]: any) => data),
+        (response: any) => {
             const list = response.data.apw.listWorkflows.data;
             return list.length === 1;
         },

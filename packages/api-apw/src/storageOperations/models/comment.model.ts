@@ -1,4 +1,5 @@
 import { createModelField } from "./utils";
+import { WorkflowModelDefinition } from "~/types";
 
 const commentBody = () =>
     createModelField({
@@ -7,7 +8,7 @@ const commentBody = () =>
         parent: "comment"
     });
 
-const changeRequestRef = modelId =>
+const changeRequestRef = (modelId: string) =>
     createModelField({
         label: "Change Request",
         type: "ref",
@@ -41,10 +42,16 @@ const mediaField = () =>
         parent: "comment"
     });
 
-export const createCommentModelDefinition = ({ modelId }) => ({
-    name: "APW - Comment",
-    modelId: "apwCommentModelDefinition",
-    titleFieldId: "displayName",
-    layout: [["comment_body"], ["comment_displayName"]],
-    fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()]
-});
+interface CreateCommentModelDefinitionParams {
+    modelId: string;
+}
+
+export const createCommentModelDefinition = ({ modelId }: CreateCommentModelDefinitionParams) => {
+    return {
+        name: "APW - Comment",
+        modelId: "apwCommentModelDefinition",
+        titleFieldId: "displayName",
+        layout: [["comment_body"], ["comment_displayName"]],
+        fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()]
+    }
+};

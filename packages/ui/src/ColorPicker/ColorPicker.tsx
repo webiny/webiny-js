@@ -1,8 +1,8 @@
-import * as React from "react";
-import { SketchPicker } from "react-color";
+import React from "react";
+import { SketchPicker, ColorResult } from "react-color";
 import { css } from "emotion";
-import { FormComponentProps } from "./../types";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormComponentProps } from "~/types";
+import { FormElementMessage } from "~/FormElementMessage";
 import classNames from "classnames";
 
 const classes = {
@@ -40,7 +40,11 @@ const classes = {
     })
 };
 
-type Props = FormComponentProps & {
+interface ColorPickerState {
+    showColorPicker: boolean;
+}
+
+interface ColorPickerProps extends FormComponentProps {
     // Component label.
     label?: string;
 
@@ -49,18 +53,14 @@ type Props = FormComponentProps & {
 
     // Description beneath the color picker.
     description?: string;
-};
+}
 
 /**
  * Use ColorPicker component to display a list of choices, once the handler is triggered.
  */
-class ColorPicker extends React.Component<Props> {
-    state = {
+class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
+    public override state = {
         showColorPicker: false
-    };
-
-    static defaultProps = {
-        validation: { isValid: null }
     };
 
     handleClick = () => {
@@ -71,20 +71,22 @@ class ColorPicker extends React.Component<Props> {
         this.setState({ showColorPicker: false });
     };
 
-    handleChange = color => {
+    handleChange = (color: ColorResult) => {
         const { onChange } = this.props;
         onChange && onChange(color.hex);
     };
 
-    render() {
+    public override render() {
         const { value, label, disable, description, validation } = this.props;
 
-        let backgroundColorStyle = null;
+        let backgroundColorStyle = {};
         if (value) {
             backgroundColorStyle = {
                 background: `${value}`
             };
         }
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <div className={classNames({ [classes.disable]: disable })}>
@@ -111,11 +113,11 @@ class ColorPicker extends React.Component<Props> {
                     ) : null}
                 </div>
 
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </div>

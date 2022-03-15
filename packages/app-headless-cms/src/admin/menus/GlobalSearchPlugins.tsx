@@ -4,7 +4,11 @@ import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 import { plugins } from "@webiny/plugins";
 import { useQuery } from "~/admin/hooks";
-import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
+import {
+    LIST_MENU_CONTENT_GROUPS_MODELS,
+    ListMenuCmsGroupsQueryResponse
+} from "~/admin/viewsGraphql";
+import { CmsGroup } from "~/types";
 
 /**
  * DISCLAIMER!
@@ -12,18 +16,19 @@ import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
  * Even if we keep a dedicated `AdminGlobalSearchPlugin`, it needs to be converted to a proper class.
  * This can be a "good first issue" for community to solve.
  */
-const GlobalSearchPlugins = () => {
+const GlobalSearchPlugins: React.FC = () => {
     const { getCurrentLocale } = useI18N();
-    const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
+    const response = useQuery<ListMenuCmsGroupsQueryResponse>(LIST_MENU_CONTENT_GROUPS_MODELS);
 
     const locale = getCurrentLocale("content");
 
-    const contentModelGroups = get(response, "data.listContentModelGroups.data", []) || [];
+    const contentModelGroups: CmsGroup[] =
+        get(response, "data.listContentModelGroups.data", []) || [];
 
-    const cmgHash = contentModelGroups.reduce((returnValue, currentValue) => {
+    const cmgHash = contentModelGroups.reduce((returnValue: string, currentValue) => {
         return (
             returnValue +
-            currentValue.contentModels.reduce((returnValue, currentValue) => {
+            currentValue.contentModels.reduce((returnValue: string, currentValue) => {
                 return returnValue + currentValue.modelId;
             }, "")
         );
@@ -34,8 +39,8 @@ const GlobalSearchPlugins = () => {
         // 1. Unregister all previously registered plugins.
         plugins
             .byType<AdminGlobalSearchPlugin>("admin-global-search")
-            .filter(item => item.name.startsWith("admin-global-search-headless-cms"))
-            .forEach(item => plugins.unregister(item.name));
+            .filter(item => item.name && item.name.startsWith("admin-global-search-headless-cms"))
+            .forEach(item => plugins.unregister(item.name as string));
 
         // 2. Register a new set of plugins via the latest list of content models.
         contentModelGroups.forEach(group => {

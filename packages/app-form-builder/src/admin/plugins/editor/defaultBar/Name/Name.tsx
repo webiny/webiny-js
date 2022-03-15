@@ -2,7 +2,11 @@ import React, { useCallback, useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { useFormEditor } from "../../../../components/FormEditor/Context";
+import { useFormEditor } from "~/admin/components/FormEditor";
+/**
+ * Package react-hotkeyz does not have types.
+ */
+// @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import {
     FormMeta,
@@ -21,25 +25,25 @@ declare global {
     }
 }
 
-export const Name = () => {
+export const Name: React.FC = () => {
     const { state, setData } = useFormEditor();
-    const [localName, setLocalName] = useState(null);
-    const [editingEnabled, setEditing] = useState(false);
+    const [localName, setLocalName] = useState<string | null>(null);
+    const [editingEnabled, setEditing] = useState<boolean>(false);
 
-    function cancelChanges() {
+    const cancelChanges = useCallback(() => {
         setEditing(false);
-    }
+    }, []);
 
-    function startEditing() {
+    const startEditing = useCallback(() => {
         setLocalName(state.data.name);
         setEditing(true);
-    }
+    }, [state.data]);
 
     const saveTitle = useCallback(
-        e => {
-            e.preventDefault();
+        (event: React.SyntheticEvent) => {
+            event.preventDefault();
             setData(data => {
-                data.name = localName;
+                data.name = localName || "";
                 return data;
             });
             setEditing(false);
@@ -58,8 +62,8 @@ export const Name = () => {
         zIndex: 101,
         disabled: !editingEnabled,
         keys: {
-            esc: e => {
-                e.preventDefault();
+            esc: (event: React.KeyboardEvent) => {
+                event.preventDefault();
                 cancelChanges();
             },
             enter: saveTitle
@@ -70,17 +74,21 @@ export const Name = () => {
     // on the page title when doing Cypress testing. Not sure if this is RMWC or Cypress related issue.
     const autoFocus = !window.Cypress;
 
-    return editingEnabled ? (
-        <NameInputWrapper>
-            <Input
-                autoFocus={autoFocus}
-                fullwidth
-                value={localName}
-                onChange={setLocalName}
-                onBlur={saveTitle}
-            />
-        </NameInputWrapper>
-    ) : (
+    if (editingEnabled) {
+        return (
+            <NameInputWrapper>
+                <Input
+                    autoFocus={autoFocus}
+                    fullwidth
+                    value={localName}
+                    onChange={setLocalName}
+                    onBlur={saveTitle}
+                />
+            </NameInputWrapper>
+        );
+    }
+
+    return (
         <NameWrapper>
             <FormMeta>
                 <Typography use={"overline"}>{`status: ${
@@ -93,7 +101,12 @@ export const Name = () => {
                     placement={"bottom"}
                     content={<span>{t`rename`}</span>}
                 >
-                    <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
+                    <FormName
+                        data-testid="fb-editor-form-title"
+                        onClick={() => {
+                            startEditing();
+                        }}
+                    >
                         {state.data.name}
                     </FormName>
                 </Tooltip>

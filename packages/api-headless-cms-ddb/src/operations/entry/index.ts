@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsEntry,
+    CmsEntryListWhere,
     CmsEntryStorageOperations,
     CmsEntryStorageOperationsCreateParams,
     CmsEntryStorageOperationsCreateRevisionFromParams,
@@ -57,11 +58,13 @@ const createPublishedType = (): string => {
     return `${createType()}.p`;
 };
 
-export interface Params {
+export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createEntriesStorageOperations = (params: Params): CmsEntryStorageOperations => {
+export const createEntriesStorageOperations = (
+    params: CreateEntriesStorageOperationsParams
+): CmsEntryStorageOperations => {
     const { entity, plugins } = params;
 
     const dataLoaders = new DataLoadersHandler({
@@ -378,10 +381,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
     const getPublishedRevisionByEntryId = async (
         model: CmsModel,
@@ -391,10 +391,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
 
     const getRevisionById = async (
@@ -405,10 +402,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
 
     const getRevisions = async (
@@ -531,7 +525,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
                 items: []
             };
         }
-        const where: CmsEntryStorageOperationsListParams["where"] = {
+        const where: Partial<CmsEntryListWhere> = {
             ...originalWhere
         };
         delete where["published"];
@@ -569,7 +563,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             fields: modelFields
         });
 
-        const start = decodeCursor(after) || 0;
+        const start = parseInt(decodeCursor(after) || "0") || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const slicedItems = sortedItems.slice(start, end);
@@ -577,7 +571,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
          * Although we do not need a cursor here, we will use it as such to keep it standardized.
          * Number is simply encoded.
          */
-        const cursor = totalCount > start + limit ? encodeCursor(start + limit) : null;
+        const cursor = totalCount > start + limit ? encodeCursor(`${start + limit}`) : null;
         return {
             hasMoreItems,
             totalCount,
@@ -591,10 +585,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             ...params,
             limit: 1
         });
-        if (items.length === 0) {
-            return null;
-        }
-        return items.shift();
+        return items.shift() || null;
     };
 
     const requestChanges = async (
@@ -626,7 +617,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
          */
         const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
 
-        if (latestStorageEntry.id === entry.id) {
+        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
             items.push(
                 entity.putBatch({
                     ...storageEntry,
@@ -688,7 +679,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
          */
         const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
 
-        if (latestStorageEntry.id === entry.id) {
+        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
             items.push(
                 entity.putBatch({
                     ...storageEntry,
@@ -758,7 +749,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
                 GSI1_SK: createGSISortKey(entry)
             })
         ];
-        if (entry.id === latestStorageEntry.id) {
+        if (latestStorageEntry && entry.id === latestStorageEntry.id) {
             items.push(
                 entity.putBatch({
                     ...storageEntry,
@@ -836,7 +827,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
          */
         const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
 
-        if (entry.id === latestStorageEntry.id) {
+        if (latestStorageEntry && entry.id === latestStorageEntry.id) {
             items.push(
                 entity.putBatch({
                     ...storageEntry,

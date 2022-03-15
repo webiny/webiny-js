@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { UIElement, UIElementConfig } from "~/ui/UIElement";
+import { UIElement, UIElementConfig, UiElementRenderProps } from "~/ui/UIElement";
 
 const FormContainerWrapper = styled("div")({
     position: "relative",
@@ -16,12 +16,12 @@ interface FormContainerConfig extends UIElementConfig {
 }
 
 export class FormContainerElement extends UIElement<FormContainerConfig> {
-    constructor(id: string, config: FormContainerConfig) {
+    public constructor(id: string, config: FormContainerConfig) {
         super(id, config);
         this.useGrid(false);
     }
 
-    render(props) {
+    public override render(props: UiElementRenderProps) {
         const children = super.render(props);
 
         return (

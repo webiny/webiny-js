@@ -1,4 +1,4 @@
-import { EventActionHandlerMutationActionCallable } from "../../../../../types";
+import { EventActionHandlerMutationActionCallable } from "~/types";
 import { PagePreviewDimension, UiAtomType } from "../uiAtom";
 
 export const setPagePreviewDimensionMutation: EventActionHandlerMutationActionCallable<

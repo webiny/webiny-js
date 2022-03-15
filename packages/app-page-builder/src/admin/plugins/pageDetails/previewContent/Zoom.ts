@@ -5,18 +5,18 @@ store.addPlugin(observe);
 
 const LOCAL_STORAGE_KEY = "webiny_pb_page_zoom";
 
-type ZoomProps = {
+interface ZoomProps {
     children(params: { zoom: number; setZoom(zoom: number): void }): React.ReactElement;
-};
+}
 
-type State = {
+interface ZoomState {
     zoom: number;
-};
+}
 
-class Zoom extends React.Component<ZoomProps, State> {
-    watchId: any;
+class Zoom extends React.Component<ZoomProps, ZoomState> {
+    private watchId: any;
 
-    constructor(props) {
+    constructor(props: ZoomProps) {
         super(props);
 
         this.state = {
@@ -24,22 +24,30 @@ class Zoom extends React.Component<ZoomProps, State> {
         };
     }
 
-    componentDidMount() {
+    public override componentDidMount() {
+        /**
+         * Missing store.observe type.
+         */
+        // @ts-ignore
         this.watchId = store.observe(LOCAL_STORAGE_KEY, async (zoom: string) => {
             this.setState({ zoom: parseFloat(zoom) });
         });
     }
 
-    componentWillUnmount() {
+    public override componentWillUnmount() {
+        /**
+         * Missing store.unobserve type.
+         */
+        // @ts-ignore
         store.unobserve(this.watchId);
     }
 
-    setZoomLevel = (zoom: number) => {
+    private readonly setZoomLevel = (zoom: number): void => {
         store.set(LOCAL_STORAGE_KEY, zoom);
     };
 
-    getZoomLevel = () => {
-        const zoom = store.get(LOCAL_STORAGE_KEY);
+    private readonly getZoomLevel = (): number => {
+        const zoom = store.get(LOCAL_STORAGE_KEY) as number;
         if (!zoom) {
             switch (true) {
                 case window.innerWidth < 1600:
@@ -54,7 +62,7 @@ class Zoom extends React.Component<ZoomProps, State> {
         return zoom;
     };
 
-    render() {
+    public override render() {
         const { children } = this.props;
         return children({ zoom: this.state.zoom, setZoom: this.setZoomLevel });
     }

@@ -33,15 +33,21 @@ const submenuList = css({
     }
 });
 
-export const MenuSectionItemRenderer = PrevMenuItem => {
+export const MenuSectionItemRenderer = (PrevMenuItem: React.FC): React.FC => {
     return function MenuSectionItem() {
         const { setVisible } = useNavigation();
         const { menuItem, depth } = useMenuItem();
 
         const hideMenu = useCallback(() => setVisible(false), []);
-        const shouldRender = depth > 0 && Boolean(menuItem.path);
+        const shouldRender = depth > 0 && Boolean(menuItem ? menuItem.path : false);
 
         if (!shouldRender) {
+            return <PrevMenuItem />;
+        } else if (!menuItem) {
+            // TODO @ts-refactor check if to return component or null @pavel
+            console.log(
+                "MenuSectionItemRenderer returning PrevMenuItem because no menuItem variable."
+            );
             return <PrevMenuItem />;
         }
 
@@ -57,7 +63,15 @@ export const MenuSectionItemRenderer = PrevMenuItem => {
                             {menuItem.label}
                         </Link>
                     ) : (
-                        <span onClick={menuItem.onClick || null} className={linkStyle}>
+                        <span
+                            onClick={() => {
+                                if (!menuItem.onClick) {
+                                    return;
+                                }
+                                menuItem.onClick();
+                            }}
+                            className={linkStyle}
+                        >
                             {menuItem.label}
                         </span>
                     )}

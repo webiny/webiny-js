@@ -1,5 +1,13 @@
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import {
     CmsGroupContext,
@@ -41,14 +49,14 @@ const UpdateContentModelGroupModel = withFields({
     icon: string({ validation: validation.create("maxLength:255") })
 })();
 
-export interface Params {
+export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
-export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
+export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
 
     const getGroupsAsPlugins = (): CmsGroup[] => {
@@ -87,7 +95,7 @@ export const createModelGroupsCrud = (params: Params): CmsGroupContext => {
     };
 
     const groupsGet = async (id: string) => {
-        const groupPlugin: CmsGroup = getGroupsAsPlugins().find(group => group.id === id);
+        const groupPlugin = getGroupsAsPlugins().find(group => group.id === id);
 
         if (groupPlugin) {
             return groupPlugin;

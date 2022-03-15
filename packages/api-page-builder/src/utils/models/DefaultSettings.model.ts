@@ -1,12 +1,20 @@
+/**
+ * Package @commodo/fields has no types.
+ */
+// @ts-ignore
 import { withFields, string, fields, onSet } from "@commodo/fields";
+/**
+ * Package commodo-fields-object has no types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import trimEnd from "lodash/trimEnd";
 
 // We don't want trailing slashes in Page Builder app's important URLs (website URL, website preview URL, app URL).
-const trimTrailingSlashes = value => trimEnd(value, "/");
+const trimTrailingSlashes = (value: string): string => trimEnd(value, "/");
 
 // `pid` (page ID) is an ID consisting only of the unique page ID, without the version suffix (e.g. #0002).
-const extractPid = (value: string): string => {
+const extractPid = (value: string): string | null => {
     if (typeof value !== "string") {
         return null;
     }

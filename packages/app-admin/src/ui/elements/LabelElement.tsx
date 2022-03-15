@@ -11,21 +11,21 @@ export interface LabelElementConfig extends UIElementConfig {
  * See example in ButtonElement: packages/app-admin/src/ui/elements/ButtonElement.tsx
  */
 export class LabelElement extends UIElement<LabelElementConfig> {
-    constructor(id: string, config: LabelElementConfig) {
+    public constructor(id: string, config: LabelElementConfig) {
         super(id, config);
 
         this.applyPlugins(LabelElement);
     }
 
-    getText() {
+    public getText(): string {
         return this.config.text;
     }
 
-    setText(text: string) {
+    public setText(text: string): void {
         this.config.text = text;
     }
 
-    render(): React.ReactNode {
+    public override render(): React.ReactNode {
         return this.config.text;
     }
 }

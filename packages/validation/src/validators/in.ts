@@ -1,8 +1,8 @@
-import ValidationError from "./../validationError";
+import ValidationError from "~/validationError";
 
 // In array validator. This validator checks if the given value is allowed to.
-export default (value: any, params: string[]) => {
-    if (!value) {
+export default (value: any, params?: string[]) => {
+    if (!value || !params) {
         return;
     }
     value = value + "";

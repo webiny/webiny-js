@@ -1,10 +1,18 @@
+/**
+ * There is no slick slider imported anywhere. How?
+ */
+// TODO @ts-refactor
 // TODO remove
 // @ts-nocheck
 /* eslint-disable */
 
 import * as React from "react";
+import { Image } from "react-images";
 
-const Slider = ({ data }) => {
+interface SliderProps {
+    data: Image[];
+}
+const Slider: React.FC<SliderProps> = ({ data }) => {
     if (Array.isArray(data)) {
         const settings = {
             dots: true,

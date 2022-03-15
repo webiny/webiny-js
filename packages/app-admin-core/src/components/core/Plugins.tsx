@@ -1,26 +1,23 @@
-import React, {
-    Fragment,
-    Children,
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    memo
-} from "react";
+import React, { Fragment, Children, createContext, useContext, useEffect, memo } from "react";
 import { useAdmin } from "~/admin";
 
-export const PluginsContext = createContext(null);
+export const PluginsContext = createContext<boolean>(false);
 PluginsContext.displayName = "PluginsContext";
 
-export const PluginsProvider = memo(function PluginsProvider({ children }) {
+interface PluginsProviderComponentProps {
+    children: JSX.Element[];
+}
+const PluginsProviderComponent: React.FC<PluginsProviderComponentProps> = ({ children }) => {
     /**
      * This context only serves as a safeguard. We need to warn users when they mount a plugin without using
      * the <Plugins> component. In that case, the context will not be available, and we can log warnings.
      */
     return <PluginsContext.Provider value={true}>{children}</PluginsContext.Provider>;
-});
+};
 
-export const Plugins = ({ children }: { children: ReactNode }) => {
+export const PluginsProvider = memo(PluginsProviderComponent);
+
+export const Plugins: React.FC = ({ children }) => {
     const { addPlugin } = useAdmin();
     const hasParentPlugin = useContext(PluginsContext);
 

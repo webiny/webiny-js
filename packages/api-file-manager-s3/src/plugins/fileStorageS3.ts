@@ -1,14 +1,26 @@
 import S3 from "aws-sdk/clients/s3";
 import getPresignedPostPayload from "../utils/getPresignedPostPayload";
 import uploadFileToS3 from "../utils/uploadFileToS3";
-import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePhysicalStoragePlugin";
+import {
+    FilePhysicalStoragePlugin,
+    FilePhysicalStoragePluginUploadParams
+} from "@webiny/api-file-manager/plugins/definitions/FilePhysicalStoragePlugin";
+import { PresignedPostPayloadData } from "~/types";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 
+export interface S3FilePhysicalStoragePluginUploadParams
+    extends FilePhysicalStoragePluginUploadParams,
+        PresignedPostPayloadData {}
+
 export default (): FilePhysicalStoragePlugin => {
-    return new FilePhysicalStoragePlugin({
-        upload: async args => {
-            const { settings, buffer, ...data } = args;
+    /**
+     * We need to extends the type for FilePhysicalStoragePlugin.
+     * Otherwise the getPresignedPostPayload does not know it has all required values in params.
+     */
+    return new FilePhysicalStoragePlugin<S3FilePhysicalStoragePluginUploadParams>({
+        upload: async params => {
+            const { settings, buffer, ...data } = params;
 
             const { data: preSignedPostPayload, file } = await getPresignedPostPayload(
                 data,
@@ -25,9 +37,13 @@ export default (): FilePhysicalStoragePlugin => {
                 file
             };
         },
-        delete: async args => {
-            const { key } = args;
+        delete: async params => {
+            const { key } = params;
             const s3 = new S3();
+
+            if (!key || !S3_BUCKET) {
+                return;
+            }
 
             await s3
                 .deleteObject({

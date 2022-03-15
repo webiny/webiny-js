@@ -1,8 +1,19 @@
-const OG_IMAGE_DIMENSIONS_PROPERTIES = ["og:image:width", "og:image:height"];
-import { get } from "lodash";
+import {
+    PageBuilderFormDataFileItem,
+    PageBuilderFormDataSettings,
+    PageBuilderFormDataSettingsSocialMeta
+} from "~/types";
 
-export default async ({ data, value, setValue }) => {
-    let meta = [];
+const OG_IMAGE_DIMENSIONS_PROPERTIES = ["og:image:width", "og:image:height"];
+import get from "lodash/get";
+
+interface Params {
+    data: PageBuilderFormDataSettings;
+    value?: PageBuilderFormDataFileItem;
+    setValue: (value: string, meta: PageBuilderFormDataSettingsSocialMeta[]) => void;
+}
+const appendOgImageDimensions = async ({ data, value, setValue }: Params) => {
+    let meta: PageBuilderFormDataSettingsSocialMeta[] = [];
     if (Array.isArray(get(data, "settings.social.meta"))) {
         meta = [...data.settings.social.meta];
         meta = data.settings.social.meta.filter(item => {
@@ -14,7 +25,7 @@ export default async ({ data, value, setValue }) => {
         return;
     }
 
-    const image: any = await new Promise(function (resolve, reject) {
+    const image = await new Promise<HTMLImageElement>(function (resolve, reject) {
         const image = new window.Image();
         image.onload = function () {
             resolve(image);
@@ -36,3 +47,5 @@ export default async ({ data, value, setValue }) => {
 
     setValue("settings.social.meta", meta);
 };
+
+export default appendOgImageDimensions;

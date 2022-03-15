@@ -8,7 +8,7 @@ import { replaceInPath } from "replace-in-path";
 import loadJsonFile from "load-json-file";
 import writeJsonFile from "write-json-file";
 import chalk from "chalk";
-import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
+import { CliCommandScaffoldTemplate, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import findUp from "find-up";
 import execa from "execa";
 import link from "terminal-link";
@@ -27,6 +27,12 @@ interface Input {
     dataModelName: string;
     showConfirmation?: boolean;
 }
+
+type DependenciesUpdates = [
+    "devDependencies" | "dependencies" | "peerDependencies",
+    string,
+    string
+];
 
 const SCAFFOLD_DOCS_LINK =
     "https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api";
@@ -50,7 +56,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             `api/code/graphql/src/plugins`
                         );
                     },
-                    validate: pluginsFolderPath => {
+                    validate: (pluginsFolderPath: string) => {
                         if (pluginsFolderPath.length < 2) {
                             return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
                         }
@@ -62,7 +68,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "dataModelName",
                     message: "Enter initial entity name:",
                     default: "Todo",
-                    validate: (dataModelName, answers) => {
+                    validate: (dataModelName: string, answers: Input) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
                             return "A valid name must consist of letters only.";
                         }
@@ -105,13 +111,13 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const newCodePath = path.join(scaffoldsPath, Case.camel(dataModelName.plural));
             const packageJsonPath = path.relative(
                 context.project.root,
-                findUp.sync("package.json", { cwd: input.pluginsFolderPath })
+                findUp.sync("package.json", { cwd: input.pluginsFolderPath }) as string
             );
             const templateFolderPath = path.join(__dirname, "template");
 
             // Get needed dependencies updates.
-            const dependenciesUpdates = [];
-            const packageJson = await loadJsonFile<Record<string, any>>(packageJsonPath);
+            const dependenciesUpdates: DependenciesUpdates[] = [];
+            const packageJson = await loadJsonFile<PackageJson>(packageJsonPath);
             if (!packageJson?.devDependencies?.["graphql-request"]) {
                 dependenciesUpdates.push(["devDependencies", "graphql-request", "^3.4.0"]);
             }

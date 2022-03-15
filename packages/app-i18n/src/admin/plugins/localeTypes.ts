@@ -1,4 +1,4 @@
-import { I18NLocaleContextPlugin } from "../../types";
+import { I18NLocaleContextPlugin } from "~/types";
 
 export default [
     {

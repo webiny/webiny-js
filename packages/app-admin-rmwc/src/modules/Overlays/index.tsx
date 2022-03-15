@@ -8,7 +8,7 @@ import { DialogContainer } from "./Dialog";
  * any other views that are constructed by developers. We need these 2 containers to always be
  * present, even if there is no <Layout> mounted.
  */
-const OverlaysHOC = Component => {
+const OverlaysHOC = (Component: React.FC): React.FC => {
     return function Overlays({ children }) {
         return (
             <Component>
@@ -22,6 +22,10 @@ const OverlaysHOC = Component => {
     };
 };
 
-export const Overlays = () => {
+export const Overlays: React.FC = () => {
+    /**
+     * TODO @ts-refactor @pavel
+     */
+    // @ts-ignore
     return <Provider hoc={OverlaysHOC} />;
 };

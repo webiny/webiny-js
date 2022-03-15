@@ -1,12 +1,12 @@
 import { ElementStylesModifier } from "~/types";
 
 const border: ElementStylesModifier = ({ element, theme }) => {
-    const { border } = element.data.settings;
+    const { border } = element.data.settings || {};
     if (!border) {
         return {};
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!border[breakpointName]) {
             return returnStyles;
         }
@@ -30,7 +30,7 @@ const border: ElementStylesModifier = ({ element, theme }) => {
                 });
             } else {
                 Object.assign(styles, {
-                    borderWidth: parseInt(width.all)
+                    borderWidth: parseInt(width.all || "0")
                 });
             }
         }
@@ -45,7 +45,7 @@ const border: ElementStylesModifier = ({ element, theme }) => {
                     borderRadiusLeft: radius.left && parseInt(radius.left)
                 });
             } else {
-                Object.assign(styles, { borderRadius: parseInt(radius.all) });
+                Object.assign(styles, { borderRadius: parseInt(radius.all || "0") });
             }
         }
 

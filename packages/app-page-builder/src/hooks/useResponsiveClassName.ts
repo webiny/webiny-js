@@ -1,14 +1,19 @@
 import React from "react";
 import { plugins } from "@webiny/plugins";
 import kebabCase from "lodash/kebabCase";
-import { PbRenderResponsiveModePlugin } from "../types";
-import { PageBuilderContext, PageBuilderContextValue } from "../contexts/PageBuilder";
+import { PbRenderResponsiveModePlugin } from "~/types";
+import { PageBuilderContext } from "~/contexts/PageBuilder";
 
-const useResponsiveClassName = () => {
+interface UseResponsiveClassName {
+    pageElementRef: (node: HTMLElement | null) => void;
+    responsiveClassName: string;
+}
+const useResponsiveClassName = (): UseResponsiveClassName => {
     const {
         responsiveDisplayMode: { displayMode, setDisplayMode }
-    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
-    const ref = React.useRef();
+    } = React.useContext(PageBuilderContext);
+    const ref = React.useRef<HTMLElement>();
+
     // Get "responsive-mode" plugins
     const responsiveModeConfigs = React.useMemo(() => {
         return plugins
@@ -17,7 +22,7 @@ const useResponsiveClassName = () => {
     }, []);
     // Create resize observer
     const resizeObserver = React.useMemo(() => {
-        return new ResizeObserver(entries => {
+        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
                 handlerResize({ width, height });
@@ -25,22 +30,23 @@ const useResponsiveClassName = () => {
         });
     }, []);
 
-    const pageElementRef = React.useCallback(node => {
+    const pageElementRef = React.useCallback((node: HTMLElement | null): void => {
         if (ref.current) {
             // Make sure to cleanup any events/references added to the last instance
             resizeObserver.disconnect();
         }
-        if (node) {
-            // Add resize observer
-            resizeObserver.observe(node);
-            // Save a reference to the node
-            ref.current = node;
+        if (!node) {
+            return;
         }
+        // Add resize observer
+        resizeObserver.observe(node);
+        // Save a reference to the node
+        ref.current = node;
     }, []);
 
     // Handle document resize
     const handlerResize = React.useCallback(
-        ({ width }) => {
+        ({ width }: { width: number; height: number }): void => {
             let mode = "desktop";
             responsiveModeConfigs.forEach(config => {
                 if (width <= config.minWidth) {

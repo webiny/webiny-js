@@ -14,16 +14,21 @@ export interface UserMenuContext {
     addMenuItem(item: UserMenuItemData): void;
 }
 
-const UserMenuContext = React.createContext<UserMenuContext>(null);
+const UserMenuContext = React.createContext<UserMenuContext>({
+    addMenuItem: () => {
+        return void 0;
+    },
+    menuItems: []
+});
 UserMenuContext.displayName = "UserMenuContext";
 
 export function useUserMenu() {
     return React.useContext(UserMenuContext);
 }
 
-export const UserMenuProvider = Component => {
+export const UserMenuProvider = (Component: React.FC): React.FC => {
     return function UserMenuProvider({ children, ...props }) {
-        const [menuItems, setItems] = useState([]);
+        const [menuItems, setItems] = useState<UserMenuItemData[]>([]);
 
         const addMenuItem = useCallback<UserMenuContext["addMenuItem"]>(
             item => {
@@ -82,7 +87,7 @@ export const UserMenuItem = makeComposable<UserMenuItemProps>("UserMenuItem", ({
 
 export const UserMenuItemRenderer = makeComposable("UserMenuItemRenderer");
 
-export const AddUserMenuItem = (props: UserMenuItemProps["menuItem"]) => {
+export const AddUserMenuItem: React.FC<UserMenuItemProps["menuItem"]> = props => {
     const { addMenuItem } = useUserMenu();
 
     useEffect(() => {
@@ -94,7 +99,15 @@ export const AddUserMenuItem = (props: UserMenuItemProps["menuItem"]) => {
 
 export type UserMenuItemContext = UserMenuItemData;
 
-const UserMenuItemContext = React.createContext<UserMenuItemContext>(null);
+const UserMenuItemContext = React.createContext<UserMenuItemContext>({
+    element: undefined,
+    icon: undefined,
+    label: undefined,
+    onClick: () => {
+        return void 0;
+    },
+    path: undefined
+});
 UserMenuItemContext.displayName = "UserMenuItemContext";
 
 export function useUserMenuItem() {

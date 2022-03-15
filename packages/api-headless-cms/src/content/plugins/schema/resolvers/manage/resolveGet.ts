@@ -1,9 +1,15 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
 
-export const resolveGet: ResolverFactory =
+interface ResolveGetArgs {
+    revision: string;
+}
+
+type ResolveGet = ResolverFactory<any, ResolveGetArgs>;
+
+export const resolveGet: ResolveGet =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const entry = await context.cms.getEntryById(model, args.revision);
             return new Response(entry);

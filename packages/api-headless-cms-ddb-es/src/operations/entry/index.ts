@@ -29,8 +29,8 @@ import {
 } from "~/helpers";
 import configurations from "~/configurations";
 import WebinyError from "@webiny/error";
-import lodashCloneDeep from "lodash.clonedeep";
-import lodashOmit from "lodash.omit";
+import lodashCloneDeep from "lodash/cloneDeep";
+import lodashOmit from "lodash/omit";
 import { Entity } from "dynamodb-toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
@@ -49,6 +49,7 @@ import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";
 import { zeroPad } from "@webiny/utils";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
+import { ElasticsearchSearchResponse } from "@webiny/api-elasticsearch/types";
 
 const createType = (): string => {
     return "cms.entry";
@@ -86,13 +87,20 @@ const getESPublishedEntryData = async (plugins: PluginsContainer, entry: CmsEntr
     });
 };
 
-export interface Params {
+interface ElasticsearchDbRecord {
+    index: string;
+    data: Record<string, string>;
+}
+
+export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;
     esEntity: Entity<any>;
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
-export const createEntriesStorageOperations = (params: Params): CmsEntryStorageOperations => {
+export const createEntriesStorageOperations = (
+    params: CreateEntriesStorageOperationsParams
+): CmsEntryStorageOperations => {
     const { entity, esEntity, elasticsearch, plugins } = params;
 
     const dataLoaders = new DataLoadersHandler({
@@ -484,7 +492,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
                 })
             );
         }
-        if (entryToSetAsLatest) {
+        if (entryToSetAsLatest && storageEntryToSetAsLatest) {
             const esEntry = prepareEntryToIndex({
                 plugins,
                 model,
@@ -599,7 +607,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             parentPath: "values"
         });
 
-        let response;
+        let response: ElasticsearchSearchResponse;
         try {
             response = await elasticsearch.search({
                 index,
@@ -631,7 +639,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
          * Cursor is the `sort` value of the last item in the array.
          * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
          */
-        const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null;
+        const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null;
         return {
             hasMoreItems,
             totalCount: total.value,
@@ -645,10 +653,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             ...params,
             limit: 1
         });
-        if (items.length === 0) {
-            return null;
-        }
-        return items.shift();
+        return items.shift() || null;
     };
 
     const publish = async (model: CmsModel, params: CmsEntryStorageOperationsPublishParams) => {
@@ -675,9 +680,9 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             SK: createPublishedSortKey()
         };
 
-        let latestEsEntry = null;
+        let latestEsEntry: ElasticsearchDbRecord | null = null;
         try {
-            latestEsEntry = await getRecord({
+            latestEsEntry = await getRecord<ElasticsearchDbRecord>({
                 entity: esEntity,
                 keys: latestKeys
             });
@@ -755,7 +760,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
         /**
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
          */
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
+        if (latestEsEntry && latestStorageEntry && latestStorageEntry.id === entry.id) {
             /**
              * Need to decompress the data from Elasticsearch DynamoDB table.
              */
@@ -1138,10 +1143,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
     const getPublishedRevisionByEntryId = async (
         model: CmsModel,
@@ -1151,10 +1153,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
 
     const getRevisionById = async (
@@ -1165,10 +1164,7 @@ export const createEntriesStorageOperations = (params: Params): CmsEntryStorageO
             model,
             ids: [params.id]
         });
-        if (result.length === 0) {
-            return null;
-        }
-        return result.shift();
+        return result.shift() || null;
     };
 
     const getRevisions = async (

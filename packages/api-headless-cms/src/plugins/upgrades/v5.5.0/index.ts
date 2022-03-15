@@ -1,3 +1,7 @@
+/**
+ * Not used anymore so ignore.
+ */
+// @ts-nocheck
 import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { CmsContext } from "~/types";
@@ -115,6 +119,7 @@ const plugin: UpgradePlugin<CmsContext> = {
             // Indicate completion
             console.log("Finish CMS permissions migration for API keys.");
         } catch (e) {
+            console.log("Upgrade v5.5.0");
             console.log(e);
             throw new WebinyError("[API keys] CMS permissions migration failed!");
         }

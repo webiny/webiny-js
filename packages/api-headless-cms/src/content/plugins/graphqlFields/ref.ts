@@ -1,7 +1,13 @@
-import { CmsEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "~/types";
+import {
+    CmsEntry,
+    CmsContext,
+    CmsModelFieldToGraphQLPlugin,
+    CmsModel,
+    CmsModelField
+} from "~/types";
 import { createReadTypeName } from "~/content/plugins/utils/createTypeName";
 import { parseIdentifier } from "@webiny/utils";
-import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
+import { createGraphQLInputField } from "./helpers";
 
 interface RefFieldValue {
     id?: string;
@@ -9,11 +15,20 @@ interface RefFieldValue {
     modelId: string;
 }
 
-const createUnionTypeName = (model, field) => {
+interface UnionField {
+    model: CmsModel;
+    field: CmsModelField;
+    typeName: string;
+}
+
+const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
     return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
 };
 
-const createListFilters = ({ field }) => {
+interface CreateListFilterParams {
+    field: CmsModelField;
+}
+const createListFilters = ({ field }: CreateListFilterParams) => {
     return `
         ${field.fieldId}: RefFieldWhereInput
     `;
@@ -42,12 +57,18 @@ const appendTypename = (entries: CmsEntry[], typename: string): CmsEntry[] => {
         };
     });
 };
+/**
+ * We cast settings.models as object to have modelId because internally we know that it is so.
+ * Internal stuff so we are sure that settings.models contains what we require.
+ */
+const getFieldModels = (field: CmsModelField): Pick<CmsModel, "modelId">[] => {
+    if (!field.settings || Array.isArray(field.settings.models) === false) {
+        return [];
+    }
+    return field.settings.models as Pick<CmsModel, "modelId">[];
+};
 
 const modelIdToTypeName = new Map();
-
-interface EntriesByModel {
-    [key: string]: string[];
-}
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
@@ -57,16 +78,24 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     isSearchable: true,
     read: {
         createTypeField({ model, field }) {
+            const models = field.settings?.models || [];
             const gqlType =
-                field.settings.models.length > 1
+                models.length > 1
                     ? createUnionTypeName(model, field)
-                    : createReadTypeName(field.settings.models[0].modelId);
+                    : createReadTypeName(models[0].modelId);
 
             return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
-        createResolver({ field }) {
+        /**
+         * TS is complaining about mixed types for createResolver.
+         * TODO @ts-refactor @pavel Maybe we should have a single createResolver method?
+         */
+        // @ts-ignore
+        createResolver(params) {
+            const { field } = params;
             // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
-            for (const item of field.settings.models) {
+            const models = field.settings?.models || [];
+            for (const item of models) {
                 modelIdToTypeName.set(item.modelId, createReadTypeName(item.modelId));
             }
 
@@ -74,18 +103,23 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 const { cms } = context;
 
                 // Get field value for this entry
-                const value = parent[field.fieldId];
+                const initialValue = parent[field.fieldId] as RefFieldValue | RefFieldValue[];
 
-                if (!value) {
+                if (!initialValue) {
                     return null;
                 }
 
                 if (field.multipleValues) {
-                    if (!value.length) {
+                    /**
+                     * We cast because value really can be array and single value.
+                     * At this point, we are 99% sure that it is an array (+ we check for it)
+                     */
+                    const value = initialValue as RefFieldValue[];
+                    if (Array.isArray(value) === false || value.length === 0) {
                         return [];
                     }
 
-                    const entriesByModel: EntriesByModel = value.reduce((collection, ref) => {
+                    const entriesByModel = value.reduce((collection, ref) => {
                         if (!collection[ref.modelId]) {
                             collection[ref.modelId] = [];
                         } else if (collection[ref.modelId].includes(ref.entryId) === true) {
@@ -95,7 +129,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         collection[ref.modelId].push(ref.entryId);
 
                         return collection;
-                    }, {});
+                    }, {} as Record<string, string[]>);
 
                     const getters = Object.keys(entriesByModel).map(async modelId => {
                         const idList = entriesByModel[modelId];
@@ -120,6 +154,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     );
                 }
 
+                const value = initialValue as RefFieldValue;
+
                 // Get model manager, to get access to CRUD methods
                 const model = await cms.getModelManager(value.modelId);
 
@@ -139,15 +175,20 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 if (!revisions || revisions.length === 0) {
                     return null;
                 }
-                return { ...revisions[0], __typename: modelIdToTypeName.get(value.modelId) };
+                return {
+                    ...revisions[0],
+                    __typename: modelIdToTypeName.get(value.modelId)
+                };
             };
         },
         createSchema({ models }) {
-            const unionFields = [];
+            const unionFields: UnionField[] = [];
             for (const model of models) {
                 // Generate a dedicated union type for every `ref` field which has more than 1 content model assigned.
                 model.fields
-                    .filter(field => field.type === "ref" && field.settings.models.length > 1)
+                    .filter(
+                        field => field.type === "ref" && (field.settings?.models || []).length > 1
+                    )
                     .forEach(field =>
                         unionFields.push({
                             model,
@@ -159,7 +200,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             const unionFieldsTypeDef = unionFields
                 .map(
                     ({ field, typeName }) =>
-                        `union ${typeName} = ${field.settings.models
+                        `union ${typeName} = ${getFieldModels(field)
                             .map(({ modelId }) => createReadTypeName(modelId))
                             .join(" | ")}`
                 )
@@ -215,15 +256,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             if (field.multipleValues) {
                 return `${field.fieldId}: [RefField!]`;
             }
-
             return `${field.fieldId}: RefField`;
         },
         createInputField({ field }) {
-            if (field.multipleValues) {
-                return attachRequiredFieldValue(field.fieldId + ": [RefFieldInput!]", field);
-            }
-
-            return attachRequiredFieldValue(field.fieldId + ": RefFieldInput", field);
+            return createGraphQLInputField(field, "RefFieldInput");
         },
         createListFilters
     }

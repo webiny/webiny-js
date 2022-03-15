@@ -5,9 +5,9 @@ import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
 import { IconButton, ButtonDefault } from "../../Button";
-import { Tooltip } from "../../Tooltip";
+import { Tooltip } from "~/Tooltip";
 
-let cropper: Cropper = null;
+let cropper: Cropper;
 
 const flipped = { x: 1, y: 1 };
 
@@ -47,14 +47,14 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Flip"}>
-                <IconButton icon={<FlipIcon />} onClick={activateTool} />
+                <IconButton icon={<FlipIcon />} onClick={() => activateTool("flip")} />
             </Tooltip>
         );
     },
     renderForm,
     cancel: () => cropper && cropper.destroy(),
     onActivate: ({ canvas }) => {
-        cropper = new Cropper(canvas.current, {
+        cropper = new Cropper(canvas.current as HTMLCanvasElement, {
             background: false,
             modal: false,
             guides: false,
@@ -74,7 +74,7 @@ const tool: ImageEditorTool = {
             const src = cropper.getCroppedCanvas().toDataURL();
             if (current) {
                 const image = new window.Image();
-                const ctx = current.getContext("2d");
+                const ctx = current.getContext("2d") as CanvasRenderingContext2D;
                 image.onload = () => {
                     ctx.drawImage(image, 0, 0);
                     current.width = image.width;

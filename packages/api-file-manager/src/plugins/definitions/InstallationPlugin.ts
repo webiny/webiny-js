@@ -1,38 +1,41 @@
 import { FileManagerContext } from "~/types";
 import { Plugin } from "@webiny/plugins";
 
-export type CallbackFunction<TParams> = (params: TParams) => Promise<void>;
-
-export interface Params {
+export interface InstallationPluginParams {
     context: FileManagerContext;
 }
+export type CallbackFunction<TParams> = (params: TParams) => Promise<void>;
 
-interface Config {
-    beforeInstall?: CallbackFunction<Params>;
-    afterInstall?: CallbackFunction<Params>;
+interface InstallationPluginConfig {
+    beforeInstall?: CallbackFunction<InstallationPluginParams>;
+    afterInstall?: CallbackFunction<InstallationPluginParams>;
 }
 
 export abstract class InstallationPlugin extends Plugin {
-    public static readonly type = "fm.install";
-    private readonly _config: Partial<Config>;
+    public static override readonly type: string = "fm.install";
+    private readonly _config: Partial<InstallationPluginConfig>;
 
-    constructor(config?: Partial<Config>) {
+    constructor(config?: Partial<InstallationPluginConfig>) {
         super();
         this._config = config || {};
     }
 
-    public async beforeInstall(params: Params): Promise<void> {
+    public async beforeInstall(params: InstallationPluginParams): Promise<void> {
         return this._execute("beforeInstall", params);
     }
 
-    public async afterInstall(params: Params): Promise<void> {
+    public async afterInstall(params: InstallationPluginParams): Promise<void> {
         return this._execute("afterInstall", params);
     }
 
-    private async _execute(callback, params): Promise<void> {
-        if (typeof this._config[callback] !== "function") {
+    private async _execute(
+        callback: keyof InstallationPluginConfig,
+        params: InstallationPluginParams
+    ): Promise<void> {
+        const cb = this._config[callback];
+        if (!cb) {
             return;
         }
-        return this._config[callback](params);
+        return cb(params);
     }
 }

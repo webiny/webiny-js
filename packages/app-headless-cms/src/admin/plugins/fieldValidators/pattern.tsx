@@ -6,7 +6,7 @@ import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import { CmsEditorFieldValidatorPlugin, CmsEditorFieldValidatorPatternPlugin } from "~/types";
 
-export default {
+const plugin: CmsEditorFieldValidatorPlugin = {
     type: "cms-editor-field-validator",
     name: "cms-editor-field-validator-pattern",
     validator: {
@@ -47,6 +47,10 @@ export default {
                                 const selectedPatternPlugin = presetPlugins.find(
                                     item => item.pattern.name === value
                                 );
+                                if (!selectedPatternPlugin) {
+                                    setMessage(`Missing pattern plugin "${value}".`);
+                                    return;
+                                }
 
                                 setMessage(selectedPatternPlugin.pattern.message);
                             }}
@@ -79,4 +83,5 @@ export default {
             );
         }
     }
-} as CmsEditorFieldValidatorPlugin;
+};
+export default plugin;

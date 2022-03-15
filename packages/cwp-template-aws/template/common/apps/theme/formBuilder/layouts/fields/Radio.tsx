@@ -3,12 +3,12 @@ import { FbFormModelField } from "@webiny/app-form-builder/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import HelperMessage from "../components/HelperMessage";
 
-type Props = {
+interface RadioProps {
     bind: BindComponentRenderProp;
     field: FbFormModelField;
-};
+}
 
-const Radio = (props: Props) => {
+const Radio: React.FC<RadioProps> = props => {
     const { onChange, value, validation } = props.bind;
 
     const fieldId = props.field.fieldId;
@@ -19,7 +19,7 @@ const Radio = (props: Props) => {
                 {props.field.label}
             </label>
             <div className="webiny-fb-form-field__radio-group">
-                {props.field.options.map(option => {
+                {(props.field.options || []).map(option => {
                     return (
                         <div className="webiny-fb-form-field__radio" key={option.value}>
                             <input

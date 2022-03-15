@@ -33,7 +33,7 @@ const findUpgradingModel = (locales: UpgradeItems["locales"]): UpgradingModelRes
 interface UpgradeItemsInfoProps {
     upgradeItems: UpgradeItems | null;
 }
-export const UpgradeItemsInfo: React.FunctionComponent<UpgradeItemsInfoProps> = props => {
+export const UpgradeItemsInfo: React.FC<UpgradeItemsInfoProps> = props => {
     const { upgradeItems } = props;
     if (!upgradeItems || upgradeItems.loadedModels !== true || !upgradeItems.locales) {
         return null;

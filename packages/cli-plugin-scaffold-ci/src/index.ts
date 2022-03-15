@@ -2,29 +2,34 @@ import {
     CliCommandScaffoldCallableArgs,
     CliCommandScaffoldTemplate
 } from "@webiny/cli-plugin-scaffold/types";
-import githubActions from "./githubActions";
-import { CliPluginsScaffoldCi } from "./types";
+import githubActions, { GithubActionsInput } from "~/githubActions";
+import { CliPluginsScaffoldCi } from "~/types";
 import link from "terminal-link";
 
-interface Input {
-    provider: string;
-    [key: string]: any;
-}
-
-const runHookCallback = async (hookName: string, args: CliCommandScaffoldCallableArgs<Input>[]) => {
+const runHookCallback = async (
+    hookName: string,
+    args: CliCommandScaffoldCallableArgs<GithubActionsInput>[]
+): Promise<void> => {
     const [{ input, context }] = args;
     const plugin = context.plugins
-        .byType<CliPluginsScaffoldCi<Input>>("cli-plugin-scaffold-ci")
+        .byType<CliPluginsScaffoldCi<GithubActionsInput>>("cli-plugin-scaffold-ci")
         .find(item => item.provider === input.provider);
 
-    if (typeof plugin[hookName] === "function") {
-        await plugin[hookName](...args);
+    if (!plugin) {
+        return;
+    } else if (typeof plugin[hookName] !== "function") {
+        return;
     }
+
+    await plugin[hookName](...args);
 };
 
 const SCAFFOLD_DOCS_LINK = "https://www.webiny.com/docs/how-to-guides/scaffolding/ci-cd";
 
-export default (): [CliCommandScaffoldTemplate<Input>, CliPluginsScaffoldCi<Input>] => [
+export default (): [
+    CliCommandScaffoldTemplate<GithubActionsInput>,
+    CliPluginsScaffoldCi<GithubActionsInput>
+] => [
     {
         name: "cli-plugin-scaffold-template-ci",
         type: "cli-plugin-scaffold-template",

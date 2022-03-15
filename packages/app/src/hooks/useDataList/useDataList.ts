@@ -8,7 +8,7 @@ import { getData, getError, getMeta } from "./functions";
 import { DocumentNode } from "graphql";
 import { ApolloClient } from "apollo-client";
 
-export type UseDataListParams = {
+export interface UseDataListParams {
     useRouter?: boolean;
     variables?: ((params: UseDataListParams) => any) | object;
     client?: ApolloClient<any>;
@@ -16,9 +16,9 @@ export type UseDataListParams = {
     getData?: (data: any) => any;
     getMeta?: (data: any) => any;
     getError?: (data: any) => any;
-};
+}
 
-export type DataListProps = {
+export interface DataListProps {
     __loadParams: any;
     refresh: (params?: any) => void;
     data: any[];
@@ -40,13 +40,16 @@ export type DataListProps = {
     setNextPage: (cursor: string) => void;
     multiSelect: (items: string | string[], value?: boolean) => void;
     init: () => void;
-};
+}
 
 const useDataList = (params: UseDataListParams) => {
-    const [multiSelectedItems, multiSelect] = useState([]);
+    const [multiSelectedItems, multiSelect] = useState<string[]>([]);
 
     let history = null;
-    let location = null;
+    /**
+     * TODO: figure out the location type.
+     */
+    let location: any = null;
     const routerHook = useRouter();
 
     if (params.useRouter !== false) {
@@ -67,7 +70,7 @@ const useDataList = (params: UseDataListParams) => {
                 ...prepareLoadListParams(location)
             }
         };
-    }, undefined);
+    }, []);
 
     const queryData = useQuery(params.query, getQueryOptions());
     const prevLoadParamsRef = useRef({});

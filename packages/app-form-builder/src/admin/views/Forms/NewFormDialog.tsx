@@ -4,7 +4,11 @@ import { useRouter } from "@webiny/react-router";
 import { useMutation } from "@apollo/react-hooks";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
-import { CREATE_FORM } from "../../graphql";
+import {
+    CREATE_FORM,
+    CreateFormMutationResponse,
+    CreateFormMutationVariables
+} from "../../graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 
@@ -28,17 +32,19 @@ const narrowDialog = css({
     }
 });
 
-export type NewFormDialogProps = {
+export interface NewFormDialogProps {
     open: boolean;
     onClose: DialogOnClose;
-};
+}
 
 const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const [create] = useMutation(CREATE_FORM);
+    const [create] = useMutation<CreateFormMutationResponse, CreateFormMutationVariables>(
+        CREATE_FORM
+    );
 
     return (
         <Dialog
@@ -48,17 +54,28 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
             data-testid="fb-new-form-modal"
         >
             <Form
-                onSubmit={async formData => {
+                onSubmit={formData => {
                     setLoading(true);
 
-                    await create({
-                        variables: formData,
-                        update(cache, { data }) {
+                    create({
+                        /**
+                         * We know that formData is CreateFormMutationVariables.
+                         */
+                        variables: formData as unknown as CreateFormMutationVariables,
+                        update(cache, result) {
+                            if (!result.data) {
+                                return;
+                            }
+                            const { data } = result;
                             const { data: revision, error } = data.formBuilder.form;
 
+                            setLoading(false);
                             if (error) {
-                                setLoading(false);
-                                return showSnackbar(error.message);
+                                showSnackbar(error.message);
+                                return;
+                            } else if (!revision) {
+                                showSnackbar(`Missing revision data in Create Form Mutation.`);
+                                return;
                             }
 
                             addFormToListCache(cache, revision);
@@ -78,7 +95,13 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
                             </Bind>
                         </DialogContent>
                         <DialogActions>
-                            <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
+                            <ButtonDefault
+                                onClick={ev => {
+                                    submit(ev);
+                                }}
+                            >
+                                + {t`Create`}
+                            </ButtonDefault>
                         </DialogActions>
                     </>
                 )}

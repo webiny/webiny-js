@@ -9,7 +9,7 @@ declare global {
 }
 
 export default (): ReactRouterOnLinkPlugin => {
-    const preloadedPaths = [];
+    const preloadedPaths: string[] = [];
 
     return {
         name: "react-router-on-link-pb",

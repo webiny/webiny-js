@@ -1,4 +1,4 @@
-import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
+import { CliCommandScaffoldTemplate, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import fs from "fs";
 import path from "path";
 import util from "util";
@@ -42,7 +42,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "graphqlPluginsFolderPath",
                     message: "Enter GraphQL API plugins folder path:",
                     default: `api/code/graphql/src/plugins`,
-                    validate: location => {
+                    validate: (location: string) => {
                         if (location.length < 2) {
                             return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
                         }
@@ -54,7 +54,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "adminPluginsFolderPath",
                     message: "Enter Admin Area plugins folder path:",
                     default: `apps/admin/code/src/plugins`,
-                    validate: location => {
+                    validate: (location: string) => {
                         if (location.length < 2) {
                             return `Please enter Admin Area ${chalk.cyan("plugins")} folder path.`;
                         }
@@ -66,7 +66,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "dataModelName",
                     message: "Enter initial entity name:",
                     default: "Todo",
-                    validate: (dataModelName, answers) => {
+                    validate: (dataModelName: string, answers: Input) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
                             return "A valid name must consist of letters only.";
                         }
@@ -133,7 +133,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             const adminPackageJsonPath = path.relative(
                 context.project.root,
-                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath })
+                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath }) as string
             );
 
             const adminDependenciesUpdates = [];
@@ -147,12 +147,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             const graphqlPackageJsonPath = path.relative(
                 context.project.root,
-                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath })
+                findUp.sync("package.json", { cwd: input.graphqlPluginsFolderPath }) as string
             );
 
             // Get needed dependencies updates.
             const graphqlDependenciesUpdates = [];
-            const packageJson = await loadJsonFile<Record<string, any>>(graphqlPackageJsonPath);
+            const packageJson = await loadJsonFile<PackageJson>(graphqlPackageJsonPath);
             if (!packageJson?.devDependencies?.["graphql-request"]) {
                 graphqlDependenciesUpdates.push(["devDependencies", "graphql-request", "^3.4.0"]);
             }

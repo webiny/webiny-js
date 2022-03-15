@@ -10,26 +10,29 @@ import {
     PageAtomType
 } from "./recoil/modules";
 import { flattenElements } from "./helpers";
-import { PbEditorElement } from "../types";
+import { PbEditorElement } from "~/types";
 
-type EditorPropsType = {
+interface EditorPropsType {
     page: PageAtomType & PbEditorElement;
     revisions: RevisionsAtomType;
-};
+}
 
-export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisions }) => {
+export const Editor: React.FC<EditorPropsType> = ({ page, revisions }) => {
     return (
         <RecoilRoot
             initializeState={({ set }) => {
                 /* Here we initialize elementsAtom and rootElement if it exists */
-                set(rootElementAtom, page.content.id);
+                set(rootElementAtom, page.content?.id || "");
 
                 const elements = flattenElements(page.content);
                 Object.keys(elements).forEach(key => {
                     set(elementsAtom(key), elements[key]);
                 });
-
-                const pageData = { ...page, content: undefined };
+                /**
+                 * We always unset the content because we are not using it via the page atom.
+                 */
+                const pageData = { ...page };
+                delete pageData.content;
                 set(pageAtom, pageData);
             }}
         >

@@ -5,6 +5,7 @@ import omit from "lodash/omit";
 import { Typography } from "@webiny/ui/Typography";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { COLORS } from "./StyledComponents";
+import { Validation } from "@webiny/form";
 
 const inputStyle = css({
     boxSizing: "border-box",
@@ -48,29 +49,44 @@ const labelStyle = css({
     }
 });
 
-const getValue = ({ value, defaultValue, type }) => {
+interface GetValueCallableParams {
+    value: string | number;
+    type: string;
+    defaultValue: string | number;
+}
+interface GetValueCallable {
+    (params: GetValueCallableParams): string | number;
+}
+const getValue: GetValueCallable = ({ value, defaultValue, type }) => {
     if (type === "number") {
-        return isNaN(value) ? defaultValue : value;
+        return isNaN(value as number) ? defaultValue : value;
     }
     return value || defaultValue;
 };
 
-type InputBoxProps = {
+interface InputBoxProps {
     value?: string | number;
-    onChange?: (value: any) => void;
+    onChange?: (value: string) => void;
     defaultValue?: string | number;
+    description?: string;
+    label?: string;
+    className?: string;
+    validation?: Validation;
+    type?: "string" | "number";
     [key: string]: any;
-};
-const InputField = ({
+}
+const InputField: React.FC<InputBoxProps> = ({
     className,
     value,
     onChange,
     label,
     description,
-    validation = { isValid: true },
+    validation = {
+        isValid: true
+    },
     defaultValue = "",
     ...props
-}: InputBoxProps) => {
+}) => {
     return (
         <React.Fragment>
             {label && (
@@ -80,8 +96,15 @@ const InputField = ({
             )}
             <input
                 className={classNames(inputStyle, className)}
-                value={getValue({ value, type: props.type, defaultValue })}
+                value={getValue({
+                    value: value as string,
+                    type: props.type || "string",
+                    defaultValue
+                })}
                 onChange={({ target: { value } }) => {
+                    if (!onChange) {
+                        return;
+                    }
                     onChange(value);
                 }}
                 {...omit(props, "validate")}

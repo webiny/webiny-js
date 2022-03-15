@@ -9,7 +9,16 @@ import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/ty
 import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
 
-import { Category, Menu, Page, PageElement, PageSpecialType, Settings, System } from "~/types";
+import {
+    Category,
+    Menu,
+    Page,
+    PageElement,
+    PageSettings,
+    PageSpecialType,
+    Settings,
+    System
+} from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
@@ -32,7 +41,7 @@ export interface ListMeta {
     /**
      * A cursor for pagination.
      */
-    cursor: string;
+    cursor: string | null;
     /**
      * Is there more items to load?
      */
@@ -101,15 +110,15 @@ export interface OnAfterPageCreateFromTopicParams<TPage extends Page = Page> {
 export interface OnBeforePageDeleteTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
-    publishedPage: TPage;
+    publishedPage: TPage | null;
 }
 /**
  * @category Lifecycle events
  */
 export interface OnAfterPageDeleteTopicParams<TPage extends Page = Page> {
     page: TPage;
-    latestPage: TPage;
-    publishedPage: TPage;
+    latestPage: TPage | null;
+    publishedPage: TPage | null;
 }
 /**
  * @category Lifecycle events
@@ -117,7 +126,7 @@ export interface OnAfterPageDeleteTopicParams<TPage extends Page = Page> {
 export interface OnBeforePagePublishTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
-    publishedPage?: TPage;
+    publishedPage: TPage | null;
 }
 /**
  * @category Lifecycle events
@@ -125,7 +134,7 @@ export interface OnBeforePagePublishTopicParams<TPage extends Page = Page> {
 export interface OnAfterPagePublishTopicParams<TPage extends Page = Page> {
     page: TPage;
     latestPage: TPage;
-    publishedPage?: TPage;
+    publishedPage: TPage | null;
 }
 /**
  * @category Lifecycle events
@@ -191,7 +200,7 @@ export interface PagesCrud {
     listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
     createPage<TPage extends Page = Page>(category: string): Promise<TPage>;
     createPageFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
-    updatePage<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
+    updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
     unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
@@ -269,7 +278,7 @@ export interface OnAfterPageElementDeleteTopicParams {
  * @category PageElements
  */
 export interface PageElementsCrud {
-    getPageElement(id: string): Promise<PageElement>;
+    getPageElement(id: string): Promise<PageElement | null>;
     listPageElements(params?: ListPageElementsParams): Promise<PageElement[]>;
     createPageElement(data: Record<string, any>): Promise<PageElement>;
     updatePageElement(id: string, data: Record<string, any>): Promise<PageElement>;
@@ -328,10 +337,10 @@ export interface OnAfterCategoryDeleteTopicParams {
  * @category Categories
  */
 export interface CategoriesCrud {
-    getCategory(slug: string, options?: { auth: boolean }): Promise<Category>;
+    getCategory(slug: string, options?: { auth: boolean }): Promise<Category | null>;
     listCategories(): Promise<Category[]>;
-    createCategory(data: Record<string, any>): Promise<Category>;
-    updateCategory(slug: string, data: Record<string, any>): Promise<Category>;
+    createCategory(data: PbCategoryInput): Promise<Category>;
+    updateCategory(slug: string, data: PbCategoryInput): Promise<Category>;
     deleteCategory(slug: string): Promise<Category>;
     /**
      * Lifecycle events
@@ -397,7 +406,7 @@ export interface OnAfterMenuDeleteTopicParams {
  * @category Menu
  */
 export interface MenusCrud {
-    getMenu(slug: string, options?: MenuGetOptions): Promise<Menu>;
+    getMenu(slug: string, options?: MenuGetOptions): Promise<Menu | null>;
     getPublicMenu(slug: string): Promise<Menu>;
     listMenus(params?: ListMenuParams): Promise<Menu[]>;
     createMenu(data: Record<string, any>): Promise<Menu>;
@@ -418,7 +427,7 @@ export interface MenusCrud {
  * The options passed into the crud methods
  */
 export interface DefaultSettingsCrudOptions {
-    tenant: string | false;
+    tenant: string | false | undefined;
     locale: string | false;
 }
 
@@ -449,8 +458,10 @@ export interface OnAfterSettingsUpdateTopicParams {
  */
 export interface SettingsCrud {
     getCurrentSettings: () => Promise<Settings>;
-    getSettings: (options?: DefaultSettingsCrudOptions) => Promise<Settings>;
-    getDefaultSettings: (options?: Pick<DefaultSettingsCrudOptions, "tenant">) => Promise<Settings>;
+    getSettings: (options?: DefaultSettingsCrudOptions) => Promise<Settings | null>;
+    getDefaultSettings: (
+        options?: Pick<DefaultSettingsCrudOptions, "tenant">
+    ) => Promise<Settings | null>;
     updateSettings: (
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
@@ -479,8 +490,8 @@ export interface OnAfterInstallTopicParams {
  * @category System
  */
 export interface SystemCrud {
-    getSystem: () => Promise<System>;
-    getSystemVersion(): Promise<string>;
+    getSystem: () => Promise<System | null>;
+    getSystemVersion(): Promise<string | null>;
     setSystemVersion(version: string): Promise<void>;
     installSystem(args: { name: string; insertDemoData: boolean }): Promise<void>;
     upgradeSystem(version: string, data?: Record<string, any>): Promise<boolean>;
@@ -628,4 +639,30 @@ export interface FlushParams {
 export interface PrerenderingHandlers {
     render(args: RenderParams): Promise<void>;
     flush(args: FlushParams): Promise<void>;
+}
+
+export interface PbCategoryInput {
+    name: string;
+    slug: string;
+    url: string;
+    layout: string;
+}
+
+interface PbPageVisibilitySettingsInput {
+    published: boolean;
+    latest: boolean;
+}
+
+interface PbPageVisibilityInput {
+    get: PbPageVisibilitySettingsInput;
+    list: PbPageVisibilitySettingsInput;
+}
+
+export interface PbUpdatePageInput {
+    title?: string;
+    category?: string;
+    path?: string;
+    visibility?: PbPageVisibilityInput;
+    settings?: PageSettings;
+    content?: Record<string, any> | null;
 }

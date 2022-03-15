@@ -22,14 +22,14 @@ const createType = (): string => {
     return "pb.category";
 };
 
-export interface Params {
+export interface CreateCategoryStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
 export const createCategoryStorageOperations = ({
     entity,
     plugins
-}: Params): CategoryStorageOperations => {
+}: CreateCategoryStorageOperationsParams): CategoryStorageOperations => {
     const dataLoader = new CategoryDataLoader({
         entity
     });

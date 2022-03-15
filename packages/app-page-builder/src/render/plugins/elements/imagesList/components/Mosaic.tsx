@@ -1,10 +1,18 @@
 import * as React from "react";
 import { Mosaic as UiMosaic } from "@webiny/ui/Mosaic";
-import Lightbox from "react-images";
+import Lightbox, { Image } from "react-images";
 
 const { useReducer } = React;
 
-const reducer = (state, action) => {
+interface State {
+    open: boolean;
+    currentIndex: number;
+}
+interface Action {
+    type: "open" | "close" | "next" | "prev";
+    index?: number;
+}
+const reducer = (state: State, action: Action) => {
     const next = { ...state };
     switch (action.type) {
         case "open":
@@ -27,20 +35,23 @@ const reducer = (state, action) => {
 const useLightbox = () => {
     const [state, dispatch] = useReducer(reducer, {
         open: false,
-        currentIndex: null
+        currentIndex: 0
     });
 
     return {
         opened: state.open,
         currentIndex: state.currentIndex,
-        open: index => dispatch({ type: "open", index }),
+        open: (index: number) => dispatch({ type: "open", index }),
         close: () => dispatch({ type: "close" }),
         next: () => dispatch({ type: "next" }),
         prev: () => dispatch({ type: "prev" })
     };
 };
 
-export default function Mosaic(props) {
+export interface MosaicProps {
+    data: Image[];
+}
+const MosaicComponent: React.FC<MosaicProps> = props => {
     const { data } = props;
     const { opened, open, close, next, prev, currentIndex } = useLightbox();
 
@@ -71,4 +82,6 @@ export default function Mosaic(props) {
     }
 
     return <span>No images to display.</span>;
-}
+};
+
+export const Mosaic: React.FC<MosaicProps> = React.memo(MosaicComponent);

@@ -403,7 +403,7 @@ describe("content model plugins", () => {
 
         await until(
             () => invoke({ body: { query: LIST_PRODUCTS } }),
-            ([response]) => response.data.listProducts.data.length === 3,
+            ([response]: any) => response.data.listProducts.data.length === 3,
             {
                 name: "list after create products"
             }
@@ -469,7 +469,7 @@ describe("content model plugins", () => {
             }
         });
 
-        const productsIds = listProductsResponse.data.listProducts.data.map(p => p.id);
+        const productsIds = listProductsResponse.data.listProducts.data.map((p: any) => p.id);
 
         // Let's try to publish all three entries.
         for (const id of productsIds) {
@@ -495,8 +495,10 @@ describe("content model plugins", () => {
 
         await until(
             () => invoke({ body: { query: LIST_PRODUCTS } }),
-            ([response]) => {
-                return response.data.listProducts.data.every(p => p.meta.status === "published");
+            ([response]: any) => {
+                return response.data.listProducts.data.every(
+                    (p: any) => p.meta.status === "published"
+                );
             },
             {
                 name: "list products after published"

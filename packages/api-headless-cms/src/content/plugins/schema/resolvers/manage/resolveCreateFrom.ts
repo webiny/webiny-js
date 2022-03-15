@@ -1,13 +1,17 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
+import { CmsEntryResolverFactory as ResolverFactory, CreateFromCmsEntryInput } from "~/types";
 
-type ResolveCreateFrom = ResolverFactory<any, { revision: string; data: Record<string, any> }>;
+interface ResolveCreateFromArgs {
+    revision: string;
+    data: CreateFromCmsEntryInput;
+}
+type ResolveCreateFrom = ResolverFactory<any, ResolveCreateFromArgs>;
 
 export const resolveCreateFrom: ResolveCreateFrom =
     ({ model }) =>
-    async (_, args, { cms }) => {
+    async (_, args: any, context) => {
         try {
-            const newRevision = await cms.createEntryRevisionFrom(
+            const newRevision = await context.cms.createEntryRevisionFrom(
                 model,
                 args.revision,
                 args.data || {}

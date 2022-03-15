@@ -13,7 +13,7 @@ const menuStyles = css({
     }
 });
 
-export default function PageOptionsMenu() {
+const PageOptionsMenu: React.FC = () => {
     const pageOptionPlugins = plugins.byType<PbEditorDefaultBarRightPageOptionsPlugin>(
         "pb-editor-default-bar-right-page-options"
     );
@@ -26,4 +26,6 @@ export default function PageOptionsMenu() {
             {pageOptionPlugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
         </Menu>
     );
-}
+};
+
+export default PageOptionsMenu;

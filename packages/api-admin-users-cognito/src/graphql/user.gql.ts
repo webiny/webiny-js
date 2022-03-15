@@ -1,3 +1,7 @@
+/**
+ * Package md5 does not have types.
+ */
+// @ts-ignore
 import md5 from "md5";
 import {
     Response,
@@ -6,13 +10,12 @@ import {
     ListResponse,
     ListErrorResponse
 } from "@webiny/handler-graphql/responses";
-import { AdminUser, AdminUsersContext, CreateUserInput, UpdateUserInput } from "~/types";
+import { AdminUser, AdminUsersContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
-export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & TenancyContext>({
+export default new GraphQLSchemaPlugin<AdminUsersContext>({
     typeDefs: /* GraphQL */ `
         type AdminUserIdentity implements SecurityIdentity {
             id: ID!
@@ -104,7 +107,11 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
     resolvers: {
         AdminUserIdentity: {
             async profile(identity, _, context) {
-                const profile = await context.adminUsers.getUser({ where: { id: identity.id } });
+                const profile = await context.adminUsers.getUser({
+                    where: {
+                        id: identity.id
+                    }
+                });
 
                 if (profile) {
                     return profile;
@@ -115,7 +122,16 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
                 const tenant = context.tenancy.getCurrentTenant();
 
                 return await context.adminUsers.getUser({
-                    where: { id: identity.id, tenant: tenant.parent }
+                    where: {
+                        id: identity.id,
+                        /**
+                         * TODO @ts-refactor @pavel
+                         * What happens if tenant has no parent?
+                         * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
+                         */
+                        // @ts-ignore
+                        tenant: tenant.parent
+                    }
                 });
             },
             __isTypeOf(obj: SecurityIdentity) {
@@ -131,7 +147,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
             }
         },
         AdminUsersQuery: {
-            getUser: async (_, { where }, context) => {
+            getUser: async (_, { where }: any, context) => {
                 try {
                     const user = await context.adminUsers.getUser({ where });
                     if (!user) {
@@ -169,7 +185,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
             }
         },
         AdminUsersMutation: {
-            updateCurrentUser: async (_, args: { data: UpdateUserInput }, context) => {
+            updateCurrentUser: async (_, args: any, context) => {
                 const { security, adminUsers } = context;
                 const identity = security.getIdentity();
                 if (!identity) {
@@ -191,7 +207,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
                     return new ErrorResponse(e);
                 }
             },
-            createUser: async (_, { data }: { data: CreateUserInput }, context) => {
+            createUser: async (_, { data }: any, context) => {
                 try {
                     const user = await context.adminUsers.createUser(data);
 
@@ -200,11 +216,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
                     return new ErrorResponse(e);
                 }
             },
-            updateUser: async (
-                _,
-                { data, id }: { id: string; data: UpdateUserInput },
-                { adminUsers }
-            ) => {
+            updateUser: async (_, { data, id }: any, { adminUsers }) => {
                 try {
                     const user = await adminUsers.updateUser(id, data);
 
@@ -213,7 +225,7 @@ export default new GraphQLSchemaPlugin<AdminUsersContext & SecurityContext & Ten
                     return new ErrorResponse(e);
                 }
             },
-            deleteUser: async (_, { id }: { id: string }, context) => {
+            deleteUser: async (_, { id }: any, context) => {
                 try {
                     await context.adminUsers.deleteUser(id);
 

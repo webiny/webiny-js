@@ -4,10 +4,12 @@ import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
 import { PluginsAtomType } from "./editor/recoil/modules";
 import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
-import { BindComponent } from "@webiny/form/Bind";
+import { BindComponent } from "@webiny/form";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import { Form, FormSetValue } from "@webiny/form/Form";
+import { FormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -79,14 +81,17 @@ export type PbElementDataSettingsBorderType = {
 };
 export type PbElementDataTextType = {
     color?: string;
-    alignment: string;
-    typography: string;
-    tag: string;
-    data: {
+    alignment?: string;
+    typography?: string;
+    tag?: string;
+    data?: {
         text: string;
     };
+    desktop?: {
+        tag?: string;
+    };
 };
-export type PbElementDataImageType = {
+export interface PbElementDataImageType {
     width?: string | number;
     height?: string | number;
     file?: {
@@ -94,7 +99,7 @@ export type PbElementDataImageType = {
         src?: string;
     };
     title?: string;
-};
+}
 export type PbElementDataIconType = {
     id?: [string, string];
     width?: number;
@@ -114,7 +119,7 @@ export enum AlignmentTypesEnum {
     VERTICAL_CENTER = "verticalCenter",
     VERTICAL_BOTTOM = "verticalBottom"
 }
-export type PbElementDataSettingsType = {
+export interface PbElementDataSettingsType {
     alignment?: AlignmentTypesEnum;
     horizontalAlign?: "left" | "center" | "right" | "justify";
     horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
@@ -137,10 +142,23 @@ export type PbElementDataSettingsType = {
         value?: string;
     };
     className?: string;
+    cellsType?: string;
     form?: PbElementDataSettingsFormType;
     [key: string]: any;
-};
+}
+
+export interface PbElementDataTypeSource {
+    url?: string;
+    size?: string;
+}
 export type PbElementDataType = {
+    action?: {
+        href: string;
+        newTab: boolean;
+        clickHandler: string;
+        actionType: string;
+        variables: PbButtonElementClickHandlerVariable[];
+    };
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
     text?: PbElementDataTextType;
@@ -152,9 +170,7 @@ export type PbElementDataType = {
     };
     type?: string;
     icon?: PbElementDataIconType;
-    source?: {
-        url?: string;
-    };
+    source?: PbElementDataTypeSource;
     oembed?: {
         source?: {
             url?: string;
@@ -165,25 +181,56 @@ export type PbElementDataType = {
     [key: string]: any;
 };
 
-export type PbEditorElement = {
+export interface PbEditorElement {
     id: string;
     type: string;
     data: PbElementDataType;
     parent?: string;
     elements: (string | PbEditorElement)[];
+    content?: PbEditorElement;
+    path?: string[];
+    source?: string;
     [key: string]: any;
-};
+}
 
-export type PbElement = {
+export interface PbElement {
     id: string;
     type: string;
     data: PbElementDataType;
     elements: PbElement[];
-};
+    content?: PbElement;
+    text?: string;
+}
 
-export type PbTheme = {
-    colors: { [key: string]: string };
-    elements: { [key: string]: any };
+/**
+ * Determine types for elements
+ */
+export interface PbTheme {
+    colors: {
+        background?: string;
+        [key: string]: string | undefined;
+    };
+    // TODO @ts-refactor
+    elements: {
+        button?: {
+            types: {
+                className: string;
+                label: string;
+                name?: string;
+            }[];
+        };
+        [key: string]: any;
+    };
+    typography?: {
+        paragraph?: string;
+        description?: string;
+    };
+    [key: string]: any;
+}
+
+export type PbPluginsLoader = Plugin & {
+    loadEditorPlugins?: () => Promise<any>;
+    loadRenderPlugins?: () => Promise<any>;
 };
 
 export type PbThemePlugin = Plugin & {
@@ -200,45 +247,76 @@ export type PbPageLayoutPlugin = Plugin & {
     layout: PbPageLayout;
 };
 
-export type PbPageData = {
-    id: string;
-    path: string;
-    title?: string;
-    content: any;
-    settings?: {
-        general?: {
-            layout?: string;
-        };
-        seo?: {
-            title: string;
-            description: string;
-            meta: { name: string; content: string }[];
-        };
-        social?: {
-            title: string;
-            description: string;
-            meta: { property: string; content: string }[];
-            image: {
-                src: string;
-            };
-        };
-    };
-};
+export interface PbErrorResponse {
+    message: string;
+    data: Record<string, any>;
+    code: string;
+}
 
-export type PbPageRevision = {
+export interface PbPageDataSettingsGeneral {
+    layout?: string;
+}
+export interface PbPageDataSettingsSeo {
+    title: string;
+    description: string;
+    meta: {
+        name: string;
+        content: string;
+    }[];
+}
+export interface PbPageDataSettingsSocial {
+    title: string;
+    description: string;
+    meta: {
+        property: string;
+        content: string;
+    }[];
+    image?: { src: string } | null;
+}
+export interface PbPageDataSettings {
+    general?: PbPageDataSettingsGeneral;
+    seo?: PbPageDataSettingsSeo;
+    social?: PbPageDataSettingsSocial;
+}
+export interface PbPageData {
     id: string;
+    pid: string;
+    path: string;
+    title: string;
+    editor: string;
+    createdFrom?: string;
+    content: any;
+    locked: boolean;
+    version?: number;
+    category: PbCategory;
+    status: string | "draft" | "published" | "unpublished";
+    settings?: PbPageDataSettings;
+    createdOn: string;
+    savedOn: string;
+    publishedOn: string;
+    createdBy: PbIdentity;
+    revisions: PbPageRevision[];
+}
+
+export interface PbPageRevision {
+    id: string;
+    pid: string;
+    version: number;
+    title: string;
+    status: string;
     locked: boolean;
     savedOn: string;
-    status: string;
-    title: string;
-    version: number;
-};
+}
 
+export interface PbRenderElementPluginRenderParams {
+    theme: PbTheme;
+    element: PbElement;
+}
 export type PbRenderElementPlugin = Plugin & {
     type: "pb-render-page-element";
     // Name of the pb-element plugin this render plugin is handling.
     elementType: string;
-    render: (params: { theme: PbTheme; element: PbElement }) => React.ReactNode;
+    render: (params: PbRenderElementPluginRenderParams) => React.ReactNode;
 };
 
 export type PbPageSettingsFieldsPlugin = Plugin & {
@@ -259,11 +337,11 @@ export type PbRenderElementAttributesPlugin = Plugin & {
     }) => { [key: string]: string };
 };
 
-export type PbButtonElementClickHandlerVariable = {
+export interface PbButtonElementClickHandlerVariable {
     name: string;
     label: string;
     defaultValue: any;
-};
+}
 
 export interface PbButtonElementClickHandlerPlugin<TVariables = Record<string, any>>
     extends Plugin {
@@ -292,15 +370,19 @@ export type PbAddonRenderPlugin = Plugin & {
     component: ReactElement;
 };
 
+export interface PbDocumentElementPluginRenderProps {
+    [key: string]: any;
+}
+// TODO @ts-refactor verify and delete if not used
 export type PbDocumentElementPlugin = Plugin & {
     elementType: "document";
     create(options?: any): PbElement;
-    render(props): ReactElement;
+    render(props: PbDocumentElementPluginRenderProps): ReactElement;
 };
 
 export type PbPageDetailsRevisionContentPlugin = Plugin & {
     type: "pb-page-details-revision-content";
-    render(params: { page: Record<string, any>; getPageQuery: any }): ReactElement;
+    render(params: { page: PbPageData; getPageQuery: any }): ReactElement;
 };
 
 export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
@@ -310,7 +392,7 @@ export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
 
 export type PbPageDetailsRevisionContentPreviewPlugin = Plugin & {
     type: "pb-page-details-revision-content-preview";
-    render(params: { page: Record<string, any>; getPageQuery: any }): ReactElement;
+    render(params: { page: PbPageData; getPageQuery: any }): ReactElement;
 };
 
 export type PbMenuItemPlugin = Plugin & {
@@ -326,9 +408,9 @@ export type PbMenuItemPlugin = Plugin & {
         canHaveChildren: boolean;
         /* Render function for menu item form */
         renderForm: (params: {
-            data: { [key: string]: any };
-            onSubmit: Function;
-            onCancel: Function;
+            data: MenuTreeItem;
+            onSubmit: FormOnSubmit;
+            onCancel: () => void;
         }) => ReactElement;
     };
 };
@@ -347,39 +429,38 @@ export type PbEditorPageElementGroupPlugin = Plugin & {
 
 export type PbEditorPageElementTitle = (params: { refresh: () => void }) => ReactNode;
 
+export interface PbEditorPageElementPluginToolbar {
+    // Element title in the toolbar.
+    title?: string | PbEditorPageElementTitle;
+    // Element group this element belongs to.
+    group?: string;
+    // A function to render an element preview in the toolbar.
+    preview?: (params?: { theme: PbTheme }) => ReactNode;
+}
+export type PbEditorPageElementPluginSettings = string[] | Record<string, any>;
 export type PbEditorPageElementPlugin = Plugin & {
     type: "pb-editor-page-element";
     elementType: string;
-    toolbar?: {
-        // Element title in the toolbar.
-        title?: string | PbEditorPageElementTitle;
-        // Element group this element belongs to.
-        group?: string;
-        // A function to render an element preview in the toolbar.
-        preview?: ({ theme: PbTheme }) => ReactNode;
-    };
+    toolbar?: PbEditorPageElementPluginToolbar;
     // Help link
     help?: string;
     // Whitelist elements that can accept this element (for drag&drop interaction)
     target?: string[];
     // Array of element settings plugin names.
-    settings?: Array<string | Array<string | any>>;
+    settings?: PbEditorPageElementPluginSettings;
     // A function to create an element data structure.
-    create: (
-        options: { [key: string]: any },
-        parent?: PbEditorElement
-    ) => Omit<PbEditorElement, "id">;
+    create: (options: Partial<PbElement>, parent?: PbEditorElement) => Omit<PbEditorElement, "id">;
     // A function to render an element in the editor.
     render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
     // A function to check if an element can be deleted.
     canDelete?: (params: { element: PbEditorElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
-        state?: EventActionHandlerCallableState;
+        state: EventActionHandlerCallableState;
         meta: EventActionHandlerMeta;
         source: PbEditorElement | DragObjectWithTypeWithTarget;
         target: PbEditorElement;
-        position: number | null;
+        position: number;
     }) => EventActionHandlerActionCallableResponse;
     // Executed when an immediate child element is deleted
     onChildDeleted?: (params: {
@@ -403,7 +484,7 @@ export type PbEditorPageElementActionPlugin = Plugin & {
 };
 
 export type PbPageDetailsPlugin = Plugin & {
-    render: (params: { page: Record<string, any>; [key: string]: any }) => ReactNode;
+    render: (params: { page: PbPageData; [key: string]: any }) => ReactNode;
 };
 
 export type PbEditorPageSettingsPlugin = Plugin & {
@@ -418,7 +499,7 @@ export type PbEditorPageSettingsPlugin = Plugin & {
     render: (params: {
         data: Record<string, any>;
         setValue: FormSetValue;
-        form: Form;
+        form: FormAPI;
         Bind: BindComponent;
     }) => ReactNode;
 };
@@ -501,6 +582,7 @@ export type PbEditorToolbarBottomPlugin = Plugin & {
 };
 
 export type PbEditorBlockPlugin = Plugin & {
+    id?: string;
     type: "pb-editor-block";
     title: string;
     category: string;
@@ -540,7 +622,7 @@ export type PbEditorPageElementStyleSettingsPlugin = Plugin & {
 export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
-    render(params?: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
+    render(params: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
     onSave?: (data: FormData) => FormData;
 };
 
@@ -561,7 +643,7 @@ export type PbEditorGridPresetPluginType = Plugin & {
     name: string;
     type: "pb-editor-grid-preset";
     cellsType: string;
-    icon: React.FunctionComponent;
+    icon: React.FC;
 };
 // this will run when saving the element for later use
 export type PbEditorPageElementSaveActionPlugin = Plugin & {
@@ -614,9 +696,11 @@ export type PbRenderResponsiveModePlugin = Plugin & {
 };
 
 export type PbEditorElementPluginArgs = {
-    create?: (defaultValue) => Record<string, any>;
-    settings?: (defaultValue) => Array<string | Array<string | any>>;
-    toolbar?: (defaultValue) => Record<string, any>;
+    create?: (defaultValue: Partial<PbEditorElement>) => PbEditorElement;
+    settings?: (
+        defaultValue: PbEditorPageElementPluginSettings
+    ) => Array<string | Array<string | any>>;
+    toolbar?: (defaultValue: PbEditorPageElementPluginToolbar) => React.ReactNode;
     elementType?: string;
 };
 
@@ -655,7 +739,7 @@ export interface EventActionHandler {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
-    getElementTree: (element?: PbEditorElement) => Promise<any>;
+    getElementTree: (element?: PbEditorElement) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
@@ -676,11 +760,11 @@ export interface EventActionHandlerConfig {
 
 export interface EventActionHandlerActionCallableResponse {
     state?: Partial<EventActionHandlerCallableState>;
-    actions?: BaseEventAction[];
+    actions: BaseEventAction[];
 }
 
-export interface EventActionHandlerMutationActionCallable<T, A = any> {
-    (state: T, args?: A): T;
+export interface EventActionHandlerMutationActionCallable<T, A = void> {
+    (state: T, args: A): T;
 }
 
 export interface EventActionHandlerCallableArgs {
@@ -691,4 +775,125 @@ export interface EventActionCallable<T extends EventActionHandlerCallableArgs = 
     (state: EventActionHandlerCallableState, meta: EventActionHandlerMeta, args?: T):
         | EventActionHandlerActionCallableResponse
         | Promise<EventActionHandlerActionCallableResponse>;
+}
+
+/**
+ * Data types
+ */
+export interface PbIdentity {
+    id: string;
+    type: string;
+    displayName: string;
+}
+export interface PbCategory {
+    name: string;
+    slug: string;
+    url: string;
+    layout: string;
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+export interface PbMenu {
+    id: string;
+    name: string;
+    title: string;
+    url: string;
+    slug: string;
+    description: string;
+}
+/**
+ * TODO: have types for both API and app in the same package?
+ * GraphQL response types
+ */
+export interface PageBuilderListCategoriesResponse {
+    pageBuilder: {
+        listCategories: {
+            data?: PbCategory[];
+            error?: PbErrorResponse;
+        };
+    };
+}
+export interface PageBuilderImportExportSubTask {
+    id: string;
+    createdOn: Date;
+    createdBy: {
+        id: string;
+        displayName: string;
+        type: string;
+    };
+    status: "pending" | "processing" | "completed" | "failed";
+    data: {
+        page: PbPageData;
+        [key: string]: any;
+    };
+    stats: {
+        pending: number;
+        processing: number;
+        completed: number;
+        failed: number;
+        total: number;
+    };
+    error: Record<string, string>;
+}
+
+export interface PageBuilderGetPageDataResponse {
+    data?: PbPageData;
+    error?: PbErrorResponse;
+}
+export interface PageBuilderGetPageResponse {
+    pageBuilder: {
+        getPage: PageBuilderGetPageDataResponse;
+    };
+}
+
+export interface PageBuilderListDataResponse {
+    data?: PbPageData[];
+    error?: PbErrorResponse;
+}
+export interface PageBuilderListResponse {
+    pageBuilder: {
+        listPages: PageBuilderListDataResponse;
+    };
+}
+/**
+ * Form data
+ */
+export interface PageBuilderFormDataFileItem {
+    id: string;
+    src: string;
+}
+
+export interface PageBuilderFormDataSettingsSocialMeta {
+    property: string;
+    content: string | number;
+}
+export interface PageBuilderFormDataSettings {
+    settings: {
+        general: {
+            snippet: string;
+            image: PageBuilderFormDataFileItem;
+            tags: string[];
+            layout: string;
+        };
+        social: {
+            title: string;
+            description: string;
+            image: PageBuilderFormDataFileItem;
+            meta: PageBuilderFormDataSettingsSocialMeta[];
+        };
+        seo: {
+            title: string;
+            description: string;
+            meta: {
+                name: string;
+                content: string;
+            };
+        };
+    };
+}
+
+export interface PageBuilderSecurityPermission extends SecurityPermission {
+    own?: boolean;
+    rwd?: string;
+    pw?: string | boolean;
 }

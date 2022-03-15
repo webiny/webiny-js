@@ -6,14 +6,15 @@ import {
     FormFieldElementRenderProps
 } from "~/ui/elements/form/FormFieldElement";
 
+export type InputElementRenderProps = FormFieldElementRenderProps;
 export class InputElement extends FormFieldElement {
-    constructor(id: string, config: FormFieldElementConfig) {
+    public constructor(id: string, config: FormFieldElementConfig) {
         super(id, config);
 
         this.applyPlugins(InputElement);
     }
 
-    render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`InputElement must be placed inside of a FormElement.`);
         }
@@ -25,8 +26,8 @@ export class InputElement extends FormFieldElement {
                 name={this.getName()}
                 validators={this.getValidators(props)}
                 defaultValue={this.getDefaultValue(props)}
-                beforeChange={(value, cb) => this.onBeforeChange(value, cb)}
-                afterChange={(value, form) => this.onAfterChange(value, form)}
+                beforeChange={(value: string, cb) => this.onBeforeChange(value, cb)}
+                afterChange={(value: string, form) => this.onAfterChange(value, form)}
             >
                 <Input
                     label={this.getLabel(props)}

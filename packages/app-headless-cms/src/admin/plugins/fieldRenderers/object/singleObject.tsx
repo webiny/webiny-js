@@ -22,6 +22,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render({ field, getBind, contentModel }) {
             const Bind = getBind();
 
+            const settings = field.settings || {};
+
             return (
                 <Grid>
                     <Cell span={12}>
@@ -34,8 +36,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <Fields
                             Bind={Bind}
                             contentModel={contentModel}
-                            fields={field.settings.fields}
-                            layout={field.settings.layout}
+                            fields={settings.fields || []}
+                            layout={settings.layout || []}
                         />
                     </Cell>
                 </Grid>

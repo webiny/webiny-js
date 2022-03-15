@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { UIElement } from "~/ui/UIElement";
+import { UIElement, UiElementRenderProps } from "~/ui/UIElement";
 
 const ContentWrapper = styled("div")({
     width: "100%",
@@ -13,7 +13,7 @@ export class ContentElement extends UIElement {
         this.useGrid(false);
     }
 
-    render(props): React.ReactNode {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         return <ContentWrapper>{super.render(props)}</ContentWrapper>;
     }
 }

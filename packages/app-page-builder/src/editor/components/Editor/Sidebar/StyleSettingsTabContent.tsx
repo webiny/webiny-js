@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { PbEditorElement } from "../../../../types";
+import { PbEditorElement } from "~/types";
 import useElementStyleSettings from "../../../plugins/elementSettings/hooks/useElementStyleSettings";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
@@ -22,11 +22,11 @@ const RootElement = styled("div")({
     }
 });
 
-type StyleSettingsTabContentProps = { element: PbEditorElement };
+interface StyleSettingsTabContentProps {
+    element: PbEditorElement | null;
+}
 
-const StyleSettingsTabContent: React.FunctionComponent<StyleSettingsTabContentProps> = ({
-    element
-}) => {
+const StyleSettingsTabContent: React.FC<StyleSettingsTabContentProps> = ({ element }) => {
     const elementStyleSettings = useElementStyleSettings();
 
     if (!element) {

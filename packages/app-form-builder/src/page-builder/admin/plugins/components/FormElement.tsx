@@ -24,12 +24,12 @@ const renderContent = (form: PbElementDataSettingsFormType): JSX.Element => {
     return <FormsForm {...props} />;
 };
 
-export type FormElementPropsType = {
+export interface FormElementPropsType {
     element: PbEditorElement;
     isActive: boolean;
-};
+}
 
-const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element, isActive }) => {
+const FormElement: React.FC<FormElementPropsType> = ({ element, isActive }) => {
     const { form = {} } = element.data?.settings || {};
 
     const renderEmpty = useRenderEmptyEmbed(element);
@@ -42,7 +42,7 @@ const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element, i
                 element={element}
                 className={"webiny-pb-element-form"}
             >
-                {form.revision ? renderContent(form) : renderEmpty()}
+                {form.revision ? renderContent(form) : renderEmpty() || <></>}
             </ElementRoot>
         </>
     );

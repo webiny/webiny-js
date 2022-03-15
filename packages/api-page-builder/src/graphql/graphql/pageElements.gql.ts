@@ -51,7 +51,7 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
             `,
             resolvers: {
                 PbQuery: {
-                    getPageElement: async (_, args: { id: string }, context) => {
+                    getPageElement: async (_, args: any, context) => {
                         return resolve(() => {
                             return context.pageBuilder.getPageElement(args.id);
                         });
@@ -63,21 +63,17 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    createPageElement: async (_, args: { data: Record<string, any> }, context) => {
+                    createPageElement: async (_, args: any, context) => {
                         return resolve(() => {
                             return context.pageBuilder.createPageElement(args.data);
                         });
                     },
-                    updatePageElement: async (
-                        _,
-                        args: { id: string; data: Record<string, any> },
-                        context
-                    ) => {
+                    updatePageElement: async (_, args: any, context) => {
                         return resolve(() => {
                             return context.pageBuilder.updatePageElement(args.id, args.data);
                         });
                     },
-                    deletePageElement: async (_, args: { id: string }, context) => {
+                    deletePageElement: async (_, args: any, context) => {
                         return resolve(() => {
                             return context.pageBuilder.deletePageElement(args.id);
                         });

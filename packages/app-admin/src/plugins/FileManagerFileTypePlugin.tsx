@@ -27,23 +27,26 @@ interface Config {
 }
 
 export class FileManagerFileTypePlugin extends Plugin {
-    public static readonly type = "admin-file-manager-file-type";
-    private config: Partial<Config>;
+    public static override readonly type: string = "admin-file-manager-file-type";
+    private readonly config: Partial<Config>;
 
-    constructor(config?: Config) {
+    public constructor(config?: Config) {
         super();
         this.config = config || {};
     }
 
-    get types() {
+    get types(): string[] {
         return this.config.types || [];
     }
 
-    get actions() {
+    get actions(): React.ComponentType[] {
         return this.config.actions || [];
     }
 
-    render(params: RenderParams): React.ReactNode {
+    public render(params: RenderParams): React.ReactNode {
+        if (!this.config.render) {
+            return null;
+        }
         return this.config.render(params);
     }
 }

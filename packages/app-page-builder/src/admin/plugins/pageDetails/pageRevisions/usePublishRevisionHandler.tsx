@@ -4,13 +4,17 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { UNPUBLISH_PAGE, GET_PAGE } from "~/admin/graphql/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
+import { PbPageData } from "~/types";
 
-export function usePublishRevisionHandler({ page }) {
+interface UsePublishRevisionHandlerParams {
+    page: PbPageData;
+}
+export function usePublishRevisionHandler({ page }: UsePublishRevisionHandlerParams) {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
 
-    const publishRevision = async revision => {
+    const publishRevision = async (revision: Pick<PbPageData, "id" | "version">) => {
         const response = await pageBuilder.publishPage(revision, {
             client: pageBuilder.client
         });
@@ -28,7 +32,9 @@ export function usePublishRevisionHandler({ page }) {
         }
     };
 
-    const unpublishRevision = async revision => {
+    const unpublishRevision = async (
+        revision: Pick<PbPageData, "id" | "version">
+    ): Promise<void> => {
         const { data: res } = await client.mutate({
             mutation: UNPUBLISH_PAGE,
             variables: { id: revision.id },

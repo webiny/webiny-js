@@ -1,11 +1,22 @@
+import React from "react";
 import { omit, omitBy, isNull } from "lodash";
 import uniqid from "uniqid";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { plugins } from "@webiny/plugins";
 import findObject from "./findObject";
-import { PbMenuItemPlugin } from "../../../../../types";
+import { PbMenuItemPlugin } from "~/types";
+import { MenuTreeItem } from "~/admin/views/Menus/types";
 
-const MenuItemForm = props => {
+interface MenuItemFormProps {
+    currentMenuItem: MenuTreeItem;
+    onChange: (items: MenuTreeItem[]) => void;
+    editItem: (item: MenuTreeItem) => void;
+    deleteItem: (item: MenuTreeItem) => void;
+    items: MenuTreeItem[];
+}
+
+type MenuItemFormData = Partial<MenuTreeItem>;
+const MenuItemForm: React.FC<MenuItemFormProps> = props => {
     const { onCancel, onSubmit } = useHandlers(props, {
         onCancel:
             ({ editItem, currentMenuItem, deleteItem }) =>
@@ -18,8 +29,8 @@ const MenuItemForm = props => {
             },
         onSubmit:
             ({ items, onChange, editItem }) =>
-            data => {
-                const item = omit(omitBy(data, isNull), ["__new"]);
+            (data: MenuItemFormData) => {
+                const item = omit(omitBy(data, isNull), ["__new"]) as MenuItemFormData;
                 if (item.id) {
                     const target = findObject(items, item.id);
                     if (target) {
@@ -41,7 +52,11 @@ const MenuItemForm = props => {
     if (!plugin) {
         return null;
     }
-    return plugin.menuItem.renderForm({ onSubmit, onCancel, data: currentMenuItem });
+    return plugin.menuItem.renderForm({
+        onSubmit,
+        onCancel,
+        data: currentMenuItem
+    });
 };
 
 export default MenuItemForm;

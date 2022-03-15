@@ -17,7 +17,7 @@ import SignedIn from "~/views/SignedIn";
 import { useSecurity } from "@webiny/app-security";
 import { config as appConfig } from "@webiny/app/config";
 
-const createApolloLinkPlugin = () => {
+const createApolloLinkPlugin = (): ApolloLinkPlugin => {
     return new ApolloLinkPlugin(() => {
         return setContext(async (_, { headers }) => {
             const user = await Auth.currentSession();
@@ -51,11 +51,11 @@ const defaultOptions = {
     )
 };
 
-export interface Props {
+export interface AuthenticationProps {
     children: React.ReactNode;
 }
 
-export interface Config extends AuthOptions {
+export interface AuthenticationFactoryConfig extends AuthOptions {
     onError?(error: Error): void;
     getIdentityData(params: {
         client: ApolloClient<any>;
@@ -63,11 +63,22 @@ export interface Config extends AuthOptions {
     }): Promise<{ [key: string]: any }>;
 }
 
-export const createAuthentication = ({ getIdentityData, onError, ...config }: Config) => {
+interface AuthenticationFactory {
+    (params: AuthenticationFactoryConfig): React.FC<AuthenticationProps>;
+}
+export const createAuthentication: AuthenticationFactory = ({
+    getIdentityData,
+    onError,
+    ...config
+}) => {
+    /**
+     * TODO @ts-refactor
+     */
+    // @ts-ignore
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
     Auth.configure({ ...defaultOptions, ...config });
 
-    const Authentication = (props: Props) => {
+    const Authentication: React.FC<AuthenticationProps> = props => {
         const { children } = props;
         const { setIdentity } = useSecurity();
         const client = useApolloClient();
@@ -87,7 +98,11 @@ export const createAuthentication = ({ getIdentityData, onError, ...config }: Co
                     type,
                     permissions,
                     ...data,
-                    logout
+                    logout:
+                        logout ||
+                        (() => {
+                            return void 0;
+                        })
                 });
             } catch (err) {
                 console.log("ERROR", err);

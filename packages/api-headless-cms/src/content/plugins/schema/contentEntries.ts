@@ -7,10 +7,12 @@ import { getEntryTitle } from "~/content/plugins/utils/getEntryTitle";
 interface EntriesByModel {
     [key: string]: string[];
 }
-
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
-        return null;
+        return new GraphQLSchemaPlugin({
+            typeDefs: "",
+            resolvers: {}
+        });
     }
 
     return new GraphQLSchemaPlugin<CmsContext>({
@@ -59,7 +61,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         `,
         resolvers: {
             Query: {
-                async searchContentEntries(_, args, context) {
+                async searchContentEntries(_, args: any, context) {
                     const { modelIds, query, limit = 10 } = args;
                     const models = await context.cms.listModels();
 
@@ -68,7 +70,9 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         .map(async model => {
                             const latest = query === "__latest__";
                             const modelManager = await context.cms.getModelManager(model.modelId);
-                            const where: CmsEntryListWhere = {};
+                            const where: CmsEntryListWhere = {
+                                tenant: model.tenant
+                            };
                             if (!latest) {
                                 where[`${model.titleFieldId}_contains`] = query;
                             }
@@ -100,7 +104,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                             .slice(0, limit)
                     );
                 },
-                async getContentEntry(_, args, context) {
+                async getContentEntry(_, args: any, context) {
                     const { modelId, id } = args.entry;
                     const models = await context.cms.listModels();
                     const model = models.find(m => m.modelId === modelId);
@@ -109,7 +113,9 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new NotAuthorizedResponse({ data: { modelId } });
                     }
 
-                    const [entry] = await context.cms.getEntriesByIds(model, [id]);
+                    const result = await context.cms.getEntriesByIds(model, [id]);
+
+                    const [entry] = result;
 
                     return new Response({
                         id: entry.id,
@@ -121,29 +127,25 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         title: getEntryTitle(model, entry)
                     });
                 },
-                async getContentEntries(_, args, context) {
+                async getContentEntries(_, args: any, context) {
                     const models = await context.cms.listModels();
 
-                    const modelsMap: Record<string, CmsModel> = models.reduce(
-                        (collection, model) => {
-                            collection[model.modelId] = model;
-                            return collection;
-                        },
-                        {}
-                    );
+                    const modelsMap = models.reduce((collection, model) => {
+                        collection[model.modelId] = model;
+                        return collection;
+                    }, {} as Record<string, CmsModel>);
 
-                    const entriesByModel: EntriesByModel = args.entries.reduce(
-                        (collection, ref) => {
-                            if (!collection[ref.modelId]) {
-                                collection[ref.modelId] = [];
-                            } else if (collection[ref.modelId].includes(ref.id) === true) {
-                                return collection;
-                            }
-                            collection[ref.modelId].push(ref.id);
+                    const argsEntries = args.entries as Pick<CmsEntry, "id" | "modelId">[];
+
+                    const entriesByModel = argsEntries.reduce((collection, ref) => {
+                        if (!collection[ref.modelId]) {
+                            collection[ref.modelId] = [];
+                        } else if (collection[ref.modelId].includes(ref.id)) {
                             return collection;
-                        },
-                        {} as EntriesByModel
-                    );
+                        }
+                        collection[ref.modelId].push(ref.id);
+                        return collection;
+                    }, {} as EntriesByModel);
 
                     const getters: Promise<CmsEntry[]>[] = Object.keys(entriesByModel).map(
                         async modelId => {

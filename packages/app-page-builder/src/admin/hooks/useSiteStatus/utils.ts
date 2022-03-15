@@ -1,8 +1,13 @@
 const MINUTE = 60 * 1000;
+interface CacheValue {
+    active?: boolean;
+    cacheTimer?: number;
+    [key: string]: any;
+}
 // Plain in-memory store for fetch response
-const CACHE = {};
+const CACHE: Record<string, CacheValue> = {};
 
-function getCacheTimer(time) {
+function getCacheTimer(time: number): number {
     let cacheTimer = 0;
     const now = new Date().getTime();
     if (cacheTimer < now + time) {
@@ -10,13 +15,19 @@ function getCacheTimer(time) {
     }
     return cacheTimer;
 }
-
-export async function fetchWithCache(params: { url: string; time?: number; ignoreCache: boolean }) {
+interface FetchWithCacheParams {
+    url: string;
+    time?: number;
+    ignoreCache: boolean;
+}
+export async function fetchWithCache(params: FetchWithCacheParams): Promise<CacheValue> {
     const { url, time = 5 * MINUTE, ignoreCache } = params;
 
     const now = new Date().getTime();
 
-    if (!CACHE[url] || CACHE[url].cacheTimer < now || ignoreCache) {
+    const cacheItem = CACHE[url];
+
+    if (!cacheItem || (cacheItem.cacheTimer || 0) < now || ignoreCache) {
         try {
             const response = await fetch(url, {
                 method: "GET",
@@ -24,23 +35,33 @@ export async function fetchWithCache(params: { url: string; time?: number; ignor
             });
             // Update cache with response
             if (response) {
-                CACHE[url] = { ...response, active: true };
-                CACHE[url].cacheTimer = getCacheTimer(time);
+                CACHE[url] = {
+                    ...response,
+                    active: true,
+                    cacheTimer: getCacheTimer(time)
+                };
             }
         } catch (e) {
-            CACHE[url] = { active: false };
+            CACHE[url] = {
+                active: false
+            };
         }
     }
 
     return CACHE[url];
 }
 
-export const pingSite = async (params: { url: string; cb: any; ignoreCache: boolean }) => {
+interface PingSiteParams {
+    url: string;
+    cb: (value: boolean) => void;
+    ignoreCache: boolean;
+}
+export const pingSite = async (params: PingSiteParams): Promise<void> => {
     const { url, cb, ignoreCache } = params;
     try {
         const response = await fetchWithCache({ url, ignoreCache });
 
-        cb(response && response.active);
+        cb(response ? response.active || false : false);
     } catch (e) {
         console.error(e);
         cb(false);

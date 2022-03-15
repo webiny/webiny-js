@@ -4,7 +4,7 @@ import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
 
 interface Info {
     sorters: string[];
-    orders: string[];
+    orders: (boolean | "asc" | "desc")[];
 }
 
 interface Response {
@@ -55,7 +55,7 @@ interface Params<T> {
     /**
      * Sort options. For example: ["id_ASC"]
      */
-    sort: string[];
+    sort?: string[];
     /**
      * Fields we can sort by.
      */

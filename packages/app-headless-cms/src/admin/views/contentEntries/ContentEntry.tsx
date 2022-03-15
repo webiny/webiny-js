@@ -48,7 +48,7 @@ declare global {
     }
 }
 
-const ContentEntry = () => {
+export const ContentEntry: React.FC = () => {
     const {
         contentModel,
         loading,
@@ -81,7 +81,7 @@ const ContentEntry = () => {
     return (
         <DetailsContainer>
             <test-id data-testid="cms-content-details">
-                <Tabs ref={tabs => setTabsRef(tabs)}>
+                <Tabs ref={tabs => setTabsRef(tabs as Tabs)}>
                     <Tab
                         label={"Content"}
                         disabled={loading}
@@ -95,6 +95,7 @@ const ContentEntry = () => {
                                     contentModel={contentModel}
                                     entry={entry}
                                     onForm={form => setFormRef(form)}
+                                    addEntryToListCache={true}
                                 />
                             </Elevation>
                         </RenderBlock>
@@ -111,5 +112,3 @@ const ContentEntry = () => {
         </DetailsContainer>
     );
 };
-
-export default ContentEntry;

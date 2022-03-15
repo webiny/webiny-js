@@ -2,11 +2,11 @@ import React from "react";
 import { Element as ElementType } from "~/types";
 import { Element } from "./Element";
 
-export interface Props {
+export interface ElementsProps {
     element: ElementType;
 }
 
-export const Elements: React.FC<Props> = props => {
+export const Elements: React.FC<ElementsProps> = props => {
     return (
         <>
             {props.element.elements.map(element => (

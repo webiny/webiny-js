@@ -1,26 +1,31 @@
-interface ErrorOptions<TData> {
+export interface ErrorOptions<TData = any> {
     message?: string;
     code?: string;
     data?: TData;
 }
 
 export default class WError<TData = any> extends Error {
-    message: string;
-    code?: string;
-    data?: TData;
-    constructor(message: string | ErrorOptions<TData>, code: string = null, data: TData = null) {
-        super();
+    public readonly code: string | null = null;
+    public readonly data: TData | null = null;
 
-        if (typeof message === "string") {
-            this.message = message;
-            this.code = code;
-            this.data = data;
+    constructor(message: string, code?: string, data?: TData);
+    constructor(options: ErrorOptions<TData>);
+    constructor(messageOrOptions: string | ErrorOptions<TData>, code?: string, data?: TData) {
+        // TODO in TS 4.6 we can move that into if statements
+        super(typeof messageOrOptions === "string" ? messageOrOptions : messageOrOptions.message);
+
+        if (typeof messageOrOptions === "string") {
+            // super(messageOrOptions); - use after TS 4.6
+            this.code = code || null;
+            this.data = data || null;
         } else {
-            Object.assign(this, message);
+            // super(messageOrOptions.message); - use after TS 4.6
+            this.code = messageOrOptions.code || null;
+            this.data = messageOrOptions.data || null;
         }
     }
 
-    static from<TData = any>(err: any, options: ErrorOptions<TData> = {}) {
+    public static from<TData = any>(err: Partial<WError>, options: ErrorOptions<TData> = {}) {
         return new WError({
             message: err.message || options.message,
             code: err.code || options.code,

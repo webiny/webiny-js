@@ -2,7 +2,6 @@ import React, { useMemo, useCallback, Fragment, useState } from "react";
 import { default as localStorage } from "store";
 import { plugins } from "@webiny/plugins";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
-export const TenancyContext = React.createContext(null);
 import { config as appConfig } from "@webiny/app/config";
 
 export interface Tenant {
@@ -10,33 +9,41 @@ export interface Tenant {
     name: string;
 }
 
-export type TenancyContextValue = {
+export interface TenancyContextValue {
     tenant: string | null;
-    setTenant(tenant: string): void;
+    setTenant(tenant: string | null): void;
     isMultiTenant: boolean;
-};
+}
+
+export const TenancyContext = React.createContext<TenancyContextValue>({
+    tenant: null,
+    setTenant: () => {
+        return void 0;
+    },
+    isMultiTenant: false
+});
 
 const LOCAL_STORAGE_KEY = "webiny_tenant";
 
-function loadState() {
+function loadState(): string | null {
     return localStorage.get(LOCAL_STORAGE_KEY) || null;
 }
 
-function storeState(state) {
+function storeState(state: string) {
     localStorage.set(LOCAL_STORAGE_KEY, state);
 }
 
-const getInitialTenant = () => {
+const getInitialTenant = (): string | null => {
     const currentTenant = loadState();
     plugins.register(new TenantHeaderLinkPlugin(currentTenant || "root"));
     return currentTenant;
 };
 
-export const TenancyProvider = props => {
+export const TenancyProvider: React.FC = props => {
     const [currentTenant, setTenant] = useState(getInitialTenant);
 
     const changeTenant = useCallback(
-        (tenant: string) => {
+        (tenant: string): void => {
             if (!tenant) {
                 localStorage.remove(LOCAL_STORAGE_KEY);
 

@@ -1,31 +1,36 @@
 import upperFirst from "lodash/upperFirst";
-import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
+import {
+    ApiEndpoint,
+    CmsFieldTypePlugins,
+    CmsModel,
+    CmsModelField,
+    CmsModelFieldToGraphQLPlugin
+} from "~/types";
 import { renderField } from "~/content/plugins/utils/renderFields";
 import { renderInputField } from "~/content/plugins/utils/renderInputFields";
 import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
-import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
+import { attachRequiredFieldValue } from "./helpers";
 
+interface TypeFromFieldParams {
+    typeOfType: string;
+    model: CmsModel;
+    type: ApiEndpoint;
+    field: CmsModelField;
+    fieldTypePlugins: CmsFieldTypePlugins;
+}
 interface TypeFromFieldResponse {
     fieldType: string;
     typeDefs: string;
 }
-const typeFromField = ({
-    typeOfType,
-    model,
-    type,
-    field,
-    fieldTypePlugins
-}): TypeFromFieldResponse | null => {
+const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | null => {
+    const { typeOfType, model, type, field, fieldTypePlugins } = params;
     const typeSuffix = typeOfType === "input" ? "Input" : "";
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
 
     // `field` is an "object" field
-    const fields = field.settings.fields as CmsModelField[];
+    const fields: CmsModelField[] = field.settings?.fields || [];
 
-    if (!fields || fields.length === 0) {
-        return null;
-    }
     const fieldTypeName = `${mTypeName}_${upperFirst(field.fieldId)}`;
 
     const typeFields = [];
@@ -39,10 +44,16 @@ const typeFromField = ({
     const replace = new RegExp(`${mTypeName}_`, "g");
 
     for (const f of fields) {
-        const { fields, typeDefs } =
+        const result =
             typeOfType === "type"
                 ? renderField({ field: f, type, model, fieldTypePlugins })
                 : renderInputField({ field: f, model, fieldTypePlugins });
+
+        if (!result) {
+            continue;
+        }
+
+        const { fields, typeDefs } = result;
 
         typeFields.push(fields.replace(replace, `${fieldTypeName}_`));
         if (typeDefs) {
@@ -89,7 +100,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createResolver({ field, createFieldResolvers, graphQLType }) {
-            if (!field.settings.fields || field.settings.fields.length === 0) {
+            if (!field.settings?.fields || field.settings.fields.length === 0) {
                 return false;
             }
 
@@ -147,7 +158,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createResolver({ graphQLType, field, createFieldResolvers }) {
-            if (!field.settings.fields || field.settings.fields.length === 0) {
+            if (!field.settings?.fields || field.settings.fields.length === 0) {
                 return false;
             }
             const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;

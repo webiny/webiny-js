@@ -6,13 +6,13 @@ import { createPageElementsCrud } from "./crud/pageElements.crud";
 import { createSettingsCrud } from "./crud/settings.crud";
 import { createSystemCrud } from "./crud/system.crud";
 import { ContextPlugin } from "@webiny/handler";
-import { PbContext } from "~/graphql/types";
-import WebinyError from "@webiny/error";
+import { PbContext, PrerenderingHandlers } from "~/graphql/types";
 import { JsonpackContentCompressionPlugin } from "~/plugins/JsonpackContentCompressionPlugin";
 import { createTopic } from "@webiny/pubsub";
 import { PageBuilderStorageOperations } from "~/types";
+import WebinyError from "@webiny/error";
 
-export interface Params {
+export interface CreateCrudParams {
     storageOperations: PageBuilderStorageOperations;
 }
 
@@ -21,7 +21,7 @@ export interface Params {
 // Ultimately, this `createPageBuilder` factory function should be located in package root.
 // So, for example: `packages/api-page-builder/src/createPageBuilder.ts`.
 const createPageBuilder = () => {
-    let prerenderingHandlers = {
+    let prerenderingHandlers: PrerenderingHandlers = {
         render: async () => {
             // empty
         },
@@ -35,47 +35,71 @@ const createPageBuilder = () => {
         onPageAfterRender: createTopic("pageBuilder.onAfterRenderPage"),
         onPageBeforeFlush: createTopic("pageBuilder.onBeforeFlushPage"),
         onPageAfterFlush: createTopic("pageBuilder.onAfterFlushPage"),
-        setPrerenderingHandlers: handlers => {
+        setPrerenderingHandlers: (handlers: PrerenderingHandlers) => {
             prerenderingHandlers = handlers;
         },
         getPrerenderingHandlers: () => prerenderingHandlers
     };
 };
 
-const setup = (params: Params) => {
+const setup = (params: CreateCrudParams) => {
     const { storageOperations } = params;
     return new ContextPlugin<PbContext>(async context => {
         if (context.pageBuilder) {
             throw new WebinyError("PbContext setup must be first loaded.", "CONTEXT_SETUP_ERROR");
         }
+
+        const getTenantId = (): string => {
+            return context.tenancy.getCurrentTenant().id;
+        };
+
+        const getLocaleCode = (): string => {
+            const locale = context.i18nContent.getCurrentLocale();
+            if (!locale) {
+                throw new WebinyError("Missing context.i18nContent locale in API Page Builder.");
+            }
+            return locale.code;
+        };
+
         const system = await createSystemCrud({
             context,
-            storageOperations
+            storageOperations,
+            getTenantId
         });
 
         const settings = createSettingsCrud({
             context,
-            storageOperations
+            storageOperations,
+            getTenantId,
+            getLocaleCode
         });
 
         const menus = createMenuCrud({
             context,
-            storageOperations
+            storageOperations,
+            getTenantId,
+            getLocaleCode
         });
 
         const categories = createCategoriesCrud({
             context,
-            storageOperations
+            storageOperations,
+            getTenantId,
+            getLocaleCode
         });
 
         const pageElements = createPageElementsCrud({
             context,
-            storageOperations
+            storageOperations,
+            getTenantId,
+            getLocaleCode
         });
 
         const pages = createPageCrud({
             context,
-            storageOperations
+            storageOperations,
+            getTenantId,
+            getLocaleCode
         });
 
         context.pageBuilder = {
@@ -90,7 +114,7 @@ const setup = (params: Params) => {
     });
 };
 
-export const createCrud = (params: Params) => {
+export const createCrud = (params: CreateCrudParams) => {
     return [
         new JsonpackContentCompressionPlugin(),
         setup(params),

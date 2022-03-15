@@ -9,12 +9,15 @@ import Wrapper from "../components/Wrapper";
 import { BaseColorPickerComponent } from "../components/ColorPicker";
 import { ContentWrapper, classes } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
+import { PbEditorElement } from "~/types";
 
 const DATA_NAMESPACE = "data.settings.shadow";
 
-const Settings: React.FunctionComponent = () => {
+const Settings: React.FC = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as PbEditorElement;
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE
@@ -25,7 +28,8 @@ const Settings: React.FunctionComponent = () => {
             <ContentWrapper direction={"column"}>
                 <Wrapper label={"Color"} containerClassName={classes.simpleGrid}>
                     <BaseColorPickerComponent
-                        label={"Color"}
+                        // @ts-refactor label does not exist on BaseColorPicker nor are props passed on
+                        // label={"Color"}
                         valueKey={DATA_NAMESPACE + ".color"}
                         updateValue={getUpdateValue("color")}
                         updatePreview={getUpdatePreview("color")}

@@ -26,14 +26,16 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render({ field, getBind }) {
             const Bind = getBind();
 
+            const fieldSettingsType = field.settings ? field.settings.type : null;
+
             return (
                 <Bind>
                     {bind => {
-                        if (field.settings.type === "dateTimeWithoutTimezone") {
+                        if (fieldSettingsType === "dateTimeWithoutTimezone") {
                             return <DateTimeWithoutTimezone field={field} bind={bind} />;
-                        } else if (field.settings.type === "dateTimeWithTimezone") {
+                        } else if (fieldSettingsType === "dateTimeWithTimezone") {
                             return <DateTimeWithTimezone field={field} bind={bind} />;
-                        } else if (field.settings.type === "time") {
+                        } else if (fieldSettingsType === "time") {
                             return <Time field={field} bind={bind} />;
                         }
                         return <DateOnly bind={bind} field={field} />;

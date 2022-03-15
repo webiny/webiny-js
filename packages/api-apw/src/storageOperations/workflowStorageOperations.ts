@@ -5,6 +5,7 @@ import {
     CreateApwStorageOperationsParams,
     getFieldValues
 } from "~/storageOperations/index";
+import WebinyError from "@webiny/error";
 
 type ReviewersRefInput = CreateApwWorkflowParams<{ modelId: string; id: string }>;
 
@@ -27,8 +28,15 @@ const formatReviewersForRefInput = (
 export const createWorkflowStorageOperations = ({
     cms
 }: Pick<CreateApwStorageOperationsParams, "cms">): ApwWorkflowStorageOperations => {
-    const getWorkflowModel = () => {
-        return cms.getModel("apwWorkflowModelDefinition");
+    const getWorkflowModel = async () => {
+        const model = await cms.getModel("apwWorkflowModelDefinition");
+        if (!model) {
+            throw new WebinyError(
+                "Could not find `apwWorkflowModelDefinition` model.",
+                "MODEL_NOT_FOUND_ERROR"
+            );
+        }
+        return model;
     };
     const getWorkflow: ApwWorkflowStorageOperations["getWorkflow"] = async ({ id }) => {
         const model = await getWorkflowModel();
@@ -40,7 +48,13 @@ export const createWorkflowStorageOperations = ({
         getWorkflow,
         async listWorkflows(params) {
             const model = await getWorkflowModel();
-            const [entries, meta] = await cms.listLatestEntries(model, params);
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where,
+                    tenant: model.tenant
+                }
+            });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createWorkflow(this: ApwStorageOperations, params) {

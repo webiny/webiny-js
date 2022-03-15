@@ -7,8 +7,8 @@ function getElementKey(element: UIElement) {
     return `${element.constructor.name}:${element.id}`;
 }
 
-const ElementID = ({ children }) => {
-    return children;
+const ElementID: React.FC = ({ children }) => {
+    return children as unknown as React.ReactElement;
 };
 
 export default new UILayoutPlugin(layout => {

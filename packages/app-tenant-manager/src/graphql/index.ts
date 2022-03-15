@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { TenantItem } from "~/types";
 
 const fields = /* GraphQL */ `
     {
@@ -9,6 +10,11 @@ const fields = /* GraphQL */ `
     }
 `;
 
+export interface TenantErrorResponse {
+    code: string;
+    message: string;
+    data: Record<string, any>;
+}
 const ERROR_FIELD = /* GraphQL */ `
     {
         code
@@ -16,7 +22,26 @@ const ERROR_FIELD = /* GraphQL */ `
         data
     }
 `;
-
+/**
+ * ###################
+ */
+interface CreateTenantInputSettingsDomain {
+    fqdn: string;
+}
+interface CreateTenantInputSettings {
+    domains: CreateTenantInputSettingsDomain[];
+}
+interface CreateTenantInput {
+    name: string;
+    description: string;
+    settings: CreateTenantInputSettings;
+}
+export interface CreateTenantMutationResponse {
+    data: TenantItem;
+}
+export interface CreateTenantMutationVariables {
+    data: CreateTenantInput;
+}
 export const CREATE_TENANT = gql`
     mutation CreateTenant($data: CreateTenantInput!) {
         tenancy {
@@ -27,7 +52,17 @@ export const CREATE_TENANT = gql`
         }
     }
 `;
-
+/**
+ * ####################
+ */
+export interface ListTenantsQueryResponse {
+    tenancy: {
+        listTenants: {
+            data: TenantItem[];
+            error: TenantErrorResponse | null;
+        };
+    };
+}
 export const LIST_TENANTS = gql`
     query ListTenants {
         tenancy {
@@ -38,7 +73,20 @@ export const LIST_TENANTS = gql`
         }
     }
 `;
-
+/**
+ * ##################
+ */
+export interface GetTenantQueryResponse {
+    tenancy: {
+        getTenant: {
+            data: TenantItem;
+            error: TenantErrorResponse | null;
+        };
+    };
+}
+export interface GetTenantQueryVariables {
+    id: string;
+}
 export const GET_TENANT = gql`
     query GetTenant($id: ID!) {
         tenancy {
@@ -50,6 +98,27 @@ export const GET_TENANT = gql`
     }
 `;
 
+/**
+ * ###################
+ */
+interface UpdateTenantInputSettingsDomain {
+    fqdn: string;
+}
+interface UpdateTenantInputSettings {
+    domains: UpdateTenantInputSettingsDomain[];
+}
+interface UpdateTenantInput {
+    name: string;
+    description: string;
+    settings: UpdateTenantInputSettings;
+}
+export interface UpdateTenantMutationResponse {
+    data: TenantItem;
+}
+export interface UpdateTenantMutationVariables {
+    id: string;
+    data: UpdateTenantInput;
+}
 export const UPDATE_TENANT = gql`
     mutation UpdateTenant($id: ID!, $data: UpdateTenantInput!) {
         tenancy {

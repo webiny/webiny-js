@@ -16,6 +16,10 @@ export default /* GraphQL */ `
         options: [Product_Variant_Options!]
     }
 
+    type Product_FieldsObject {
+        text: String
+    }
+
     type Product {
         id: ID!
         entryId: String!
@@ -34,6 +38,7 @@ export default /* GraphQL */ `
         image: String
         richText: JSON
         variant: Product_Variant
+        fieldsObject: Product_FieldsObject
     }
 
     input ProductGetWhereInput {

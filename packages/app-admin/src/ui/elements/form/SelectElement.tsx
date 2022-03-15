@@ -16,21 +16,21 @@ export interface SelectElementConfig extends FormFieldElementConfig {
 }
 
 export class SelectElement extends FormFieldElement<SelectElementConfig> {
-    constructor(id: string, config: SelectElementConfig) {
+    public constructor(id: string, config: SelectElementConfig) {
         super(id, config);
 
         this.applyPlugins(SelectElement);
     }
 
-    setOptions(options: SelectElementOption[]) {
+    public setOptions(options: SelectElementOption[]): void {
         this.config.options = options;
     }
 
-    getOptions() {
+    public getOptions(): SelectElementOption[] | undefined {
         return this.config.options;
     }
 
-    render(props: FormFieldElementRenderProps): React.ReactNode {
+    public override render(props: FormFieldElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`SelectElement must be placed inside of a FormElement.`);
         }
@@ -42,15 +42,15 @@ export class SelectElement extends FormFieldElement<SelectElementConfig> {
                 name={this.getName()}
                 validators={this.getValidators(props)}
                 defaultValue={this.getDefaultValue(props)}
-                beforeChange={(value, cb) => this.onBeforeChange(value, cb)}
-                afterChange={(value, form) => this.onAfterChange(value, form)}
+                beforeChange={(value: string, cb) => this.onBeforeChange(value, cb)}
+                afterChange={(value: string, form) => this.onAfterChange(value, form)}
             >
                 <Select
                     label={this.getLabel(props)}
                     disabled={this.getIsDisabled(props)}
                     description={this.getDefaultValue(props)}
                 >
-                    {this.getOptions().map(({ value, label }) => (
+                    {(this.getOptions() || []).map(({ value, label }) => (
                         <option key={value} value={value}>
                             {label}
                         </option>

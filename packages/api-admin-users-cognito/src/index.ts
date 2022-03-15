@@ -1,6 +1,4 @@
 import { ContextPlugin } from "@webiny/handler";
-import { SecurityContext } from "@webiny/api-security/types";
-import { TenancyContext } from "@webiny/api-tenancy/types";
 import { createAdminUsers } from "./createAdminUsers";
 import { AdminUsersContext, AdminUsersStorageOperations } from "./types";
 import base from "./graphql/base.gql";
@@ -8,8 +6,7 @@ import install from "./graphql/install.gql";
 import user from "./graphql/user.gql";
 import { subscribeToEvents } from "~/subscribeToEvents";
 import { applyMultiTenancyPlugins } from "~/enterprise/multiTenancy";
-
-type Context = SecurityContext & TenancyContext & AdminUsersContext;
+import { SecurityPermission } from "@webiny/api-security/types";
 
 export interface Config {
     storageOperations: AdminUsersStorageOperations;
@@ -17,15 +14,22 @@ export interface Config {
 
 export default ({ storageOperations }: Config) => {
     return [
-        new ContextPlugin<Context>(async context => {
+        new ContextPlugin<AdminUsersContext>(async context => {
             const { security, tenancy } = context;
 
-            const getTenant = () => {
+            const getTenant = (): string => {
                 const tenant = tenancy.getCurrentTenant();
+                /**
+                 * TODO @ts-refactor @pavel
+                 * When creating users, is it possible there is no tenant defined?
+                 */
+                // @ts-ignore
                 return tenant ? tenant.id : undefined;
             };
 
-            const getPermission = (name: string) => security.getPermission(name);
+            const getPermission = async (name: string): Promise<SecurityPermission | null> => {
+                return security.getPermission(name);
+            };
             const getIdentity = () => security.getIdentity();
 
             context.adminUsers = await createAdminUsers({

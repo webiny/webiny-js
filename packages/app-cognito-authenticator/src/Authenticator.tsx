@@ -17,7 +17,8 @@ export type AuthState =
     | "forgotPassword";
 
 export interface AuthData {
-    [key: string]: any;
+    username?: string;
+    [key: string]: string | null | boolean | undefined;
 }
 
 export interface AuthMessage {
@@ -27,15 +28,15 @@ export interface AuthMessage {
 }
 
 export interface AuthChangeState {
-    (state: AuthState, data?: AuthData, message?: AuthMessage): Promise<void>;
+    (state: AuthState, data?: AuthData | null, message?: AuthMessage | null): Promise<void>;
 }
 
 export interface AuthContextValue {
     authState: AuthState;
-    authData: AuthData;
+    authData: AuthData | null;
     changeState: AuthChangeState;
     checkingUser?: boolean;
-    message: AuthMessage;
+    message: AuthMessage | null;
 }
 
 export interface AuthenticatorProps extends AuthOptions {
@@ -45,8 +46,23 @@ export interface AuthenticatorProps extends AuthOptions {
 
 export const AuthenticatorContext = React.createContext<AuthContextValue>({} as any);
 
-export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
-    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
+interface State {
+    authState: AuthState;
+    authData: AuthData | null;
+    message: AuthMessage | null;
+    checkingUser: boolean;
+}
+interface Reducer {
+    (prev: State, next: Partial<State>): State;
+}
+
+interface QueryData {
+    state?: AuthState;
+    [key: string]: string | undefined;
+}
+
+export const Authenticator: React.FC<AuthenticatorProps> = ({ onToken, children }) => {
+    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
         authData: null,
         message: null,
@@ -55,7 +71,7 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
 
     const checkUrl = async () => {
         const query = new URLSearchParams(window.location.search);
-        const queryData: any = {};
+        const queryData: QueryData = {};
         query.forEach((value, key) => (queryData[key] = value));
         const { state, ...params } = queryData;
 
@@ -87,15 +103,21 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
         }
     };
 
-    const onChangeState = async (state, data = null, message: AuthMessage = null) => {
-        setState({ message });
+    const onChangeState = async (
+        authState: State["authState"],
+        data: AuthData | null = null,
+        message: AuthMessage | null = null
+    ) => {
+        setState({
+            message: message || null
+        });
 
-        if (state === state.authState) {
+        if (authState === state.authState) {
             return;
         }
 
         // Cognito states call this state with user data.
-        if (state === "signedIn") {
+        if (authState === "signedIn") {
             const user = await Auth.currentSession();
             const idToken = user.getIdToken();
 
@@ -109,7 +131,10 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
             });
         }
 
-        setState({ authState: state, authData: data });
+        setState({
+            authState,
+            authData: data || null
+        });
     };
 
     const value = useMemo(() => {

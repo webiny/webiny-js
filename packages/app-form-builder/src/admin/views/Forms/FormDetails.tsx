@@ -3,7 +3,14 @@ import { useQuery } from "@apollo/react-hooks";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
-import { GET_FORM, GET_FORM_REVISIONS } from "../../graphql";
+import {
+    GET_FORM,
+    GET_FORM_REVISIONS,
+    GetFormRevisionQueryResponse,
+    GetFormRevisionQueryVariables,
+    GetFormRevisionsQueryResponse,
+    GetFormRevisionsQueryVariables
+} from "../../graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Tabs } from "@webiny/ui/Tabs";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -25,11 +32,11 @@ const DetailsContainer = styled("div")({
     }
 });
 
-type EmptyFormDetailsProps = {
+interface EmptyFormDetailsProps {
     onCreateForm: () => void;
     canCreate: boolean;
-};
-const EmptyFormDetails = ({ canCreate, onCreateForm }: EmptyFormDetailsProps) => {
+}
+const EmptyFormDetails: React.FC<EmptyFormDetailsProps> = ({ canCreate, onCreateForm }) => {
     return (
         <EmptyView
             title={t`Click on the left side list to display form details {message}`({
@@ -46,11 +53,11 @@ const EmptyFormDetails = ({ canCreate, onCreateForm }: EmptyFormDetailsProps) =>
     );
 };
 
-export type FormDetailsProps = {
+export interface FormDetailsProps {
     onCreateForm: () => void;
-};
+}
 
-const FormDetails = ({ onCreateForm }: FormDetailsProps) => {
+const FormDetails: React.FC<FormDetailsProps> = ({ onCreateForm }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const security = useSecurity();
@@ -61,43 +68,52 @@ const FormDetails = ({ onCreateForm }: FormDetailsProps) => {
 
     const refreshForms = listQuery.refetch;
 
-    const getForm = useQuery(GET_FORM, {
-        variables: {
-            revision: formId
-        },
-        skip: !formId,
-        onCompleted: data => {
-            if (!data) {
-                return;
-            }
+    const getForm = useQuery<GetFormRevisionQueryResponse, GetFormRevisionQueryVariables>(
+        GET_FORM,
+        {
+            variables: {
+                revision: formId as string
+            },
+            skip: !formId,
+            onCompleted: data => {
+                if (!data) {
+                    return;
+                }
 
-            const { error, data: formData } = data.formBuilder.form;
-            if (error) {
-                query.delete("id");
-                history.push({ search: query.toString() });
-                showSnackbar(error.message);
-            }
-            if (!formData) {
-                query.delete("id");
-                history.push({ search: query.toString() });
-                showSnackbar(t`Could not load form with given ID.`);
+                const { error, data: formData } = data.formBuilder.form;
+                if (error) {
+                    query.delete("id");
+                    history.push({ search: query.toString() });
+                    showSnackbar(error.message);
+                }
+                if (!formData) {
+                    query.delete("id");
+                    history.push({ search: query.toString() });
+                    showSnackbar(t`Could not load form with given ID.`);
+                }
             }
         }
-    });
+    );
 
-    const getRevisions = useQuery(GET_FORM_REVISIONS, {
-        variables: {
-            id: formId ? formId.split("#")[0] : null
-        },
-        skip: !formId
-    });
+    const getRevisions = useQuery<GetFormRevisionsQueryResponse, GetFormRevisionsQueryVariables>(
+        GET_FORM_REVISIONS,
+        {
+            variables: {
+                id: (formId || "").split("#")[0]
+            },
+            skip: !formId
+        }
+    );
 
     if (!formId) {
         return <EmptyFormDetails canCreate={canCreate} onCreateForm={onCreateForm} />;
     }
 
-    const form = getForm.loading ? null : getForm.data.formBuilder.form.data;
-    const revisions = getRevisions.loading ? [] : getRevisions.data.formBuilder.revisions.data;
+    const form = getForm.loading || !getForm.data ? null : getForm.data.formBuilder.form.data;
+    const revisions =
+        getRevisions.loading || !getRevisions.data
+            ? []
+            : getRevisions.data.formBuilder.revisions.data;
 
     return (
         <DetailsContainer>

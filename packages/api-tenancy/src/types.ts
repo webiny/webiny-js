@@ -32,12 +32,12 @@ export interface Tenancy {
     getStorageOperations(): TenancyStorageOperations;
     getCurrentTenant<TTenant extends Tenant = Tenant>(): TTenant;
     setCurrentTenant(tenant: Tenant): void;
-    getVersion(): Promise<string>;
+    getVersion(): Promise<string | null>;
     setVersion(version: string): Promise<void>;
     install(): Promise<void>;
     getRootTenant(): Promise<Tenant>;
     getTenantById<TTenant extends Tenant = Tenant>(id: string): Promise<TTenant>;
-    listTenants<TTenant extends Tenant = Tenant>({ parent }): Promise<TTenant[]>;
+    listTenants<TTenant extends Tenant = Tenant>(params: ListTenantsParams): Promise<TTenant[]>;
     createTenant<TTenant extends Tenant = Tenant>(data: CreateTenantInput): Promise<TTenant>;
     updateTenant<TTenant extends Tenant = Tenant>(
         id: string,
@@ -55,11 +55,8 @@ export interface CreateTenantInput {
     name: string;
     description: string;
     status?: string;
-    settings?: {
-        domains: TenantDomain[];
-        // themes: string[];
-    };
-    parent?: string | null;
+    settings?: TenantSettings;
+    parent: string;
 }
 
 export interface ListTenantsParams {
@@ -67,7 +64,7 @@ export interface ListTenantsParams {
 }
 
 export interface TenancyStorageOperations {
-    getTenantsByIds<TTenant extends Tenant = Tenant>(ids: string[]): Promise<TTenant[]>;
+    getTenantsByIds<TTenant extends Tenant = Tenant>(ids: readonly string[]): Promise<TTenant[]>;
     listTenants<TTenant extends Tenant = Tenant>(params: ListTenantsParams): Promise<TTenant[]>;
     createTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant>;
     updateTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant>;

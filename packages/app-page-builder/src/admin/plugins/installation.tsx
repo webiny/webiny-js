@@ -16,6 +16,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("api-page-builder/admin/installation");
 
@@ -41,18 +42,18 @@ const INSTALL = gql`
     }
 `;
 
-/* eslint-disable */
-// @ts-ignore
-const installationSteps = {
-    1: t`Creating page categories...`,
-    2: t`Creating page blocks...`,
-    3: t`Creating pages...`,
-    4: t`Creating menus...`,
-    5: t`Finalizing...`
-};
-/* eslint-enable */
+// const installationSteps: Record<number, string> = {
+//     1: t`Creating page categories...`,
+//     2: t`Creating page blocks...`,
+//     3: t`Creating pages...`,
+//     4: t`Creating menus...`,
+//     5: t`Finalizing...`
+// };
 
-const PBInstaller = ({ onInstalled }) => {
+interface PbInstallerProps {
+    onInstalled: () => void;
+}
+const PBInstaller: React.FC<PbInstallerProps> = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -107,7 +108,9 @@ const PBInstaller = ({ onInstalled }) => {
                     <SimpleFormFooter>
                         <ButtonPrimary
                             data-testid="install-pb-button"
-                            onClick={submit}
+                            onClick={ev => {
+                                submit(ev);
+                            }}
                         >{t`Install Page Builder`}</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
@@ -116,7 +119,7 @@ const PBInstaller = ({ onInstalled }) => {
     );
 };
 
-export default {
+const adminInstallationPlugin: AdminInstallationPlugin = {
     name: "admin-installation-pb",
     type: "admin-installation",
     title: t`Page Builder`,
@@ -148,3 +151,5 @@ export default {
         }
     ]
 };
+
+export default adminInstallationPlugin;

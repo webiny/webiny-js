@@ -3,6 +3,174 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.24.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.1...v5.24.0-beta.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** fix pristine state and UI ([842a048](https://github.com/webiny/webiny-js/commit/842a0483fe39d5344351fc5b7c81ee31b48c5733))
+* adio run ([7374289](https://github.com/webiny/webiny-js/commit/73742897e1710bb159a2a63fc587c68fc8cf164f))
+* admin and website ([d1006ed](https://github.com/webiny/webiny-js/commit/d1006ed659d5dff910795d61687bff9528a19129))
+* entries in app-headless-cms ([7a74068](https://github.com/webiny/webiny-js/commit/7a740689f091a6668622329512c40ae60b529c8a))
+* eslint run ([a1ea3dc](https://github.com/webiny/webiny-js/commit/a1ea3dc4ff61f6cb69cf5ed10f3fef2f9fafc514))
+* prettier run ([4703a40](https://github.com/webiny/webiny-js/commit/4703a404f65fdad502b3222209ded71b6f5b85cc))
+* sorters ([2ac422e](https://github.com/webiny/webiny-js/commit/2ac422ec316b2ea286b0f897abd3018b72dd8d6b))
+* ui and form ([bb12676](https://github.com/webiny/webiny-js/commit/bb1267630e13142af681685ec27e2eaa958b6cc7))
+* yarn adio ([601de41](https://github.com/webiny/webiny-js/commit/601de41833048b0f7d331c27e96929475cdda297))
+
+
+### Features
+
+* add types to app-headless-cms wip ([1eb07a1](https://github.com/webiny/webiny-js/commit/1eb07a14083d76b7195a684920cf6efb81895edf))
+* add types to app-page-builder ([e65ce21](https://github.com/webiny/webiny-js/commit/e65ce216d9019657964ddd89194be63544ef2bad))
+* add types wip ([f223859](https://github.com/webiny/webiny-js/commit/f223859444a87a50c0b413918282acd6e016c35a))
+* any types in app-form-builder wip ([c9f8378](https://github.com/webiny/webiny-js/commit/c9f8378cc9249a35d4d24ca9f9d3927eee58d22c))
+* any types in app-headless-cms wip ([79c2c7f](https://github.com/webiny/webiny-js/commit/79c2c7f21d489cddc690556e3f5012fff75176d1))
+
+
+
+
+
+## [5.23.1](https://github.com/webiny/webiny-js/compare/v5.23.1-beta.0...v5.23.1) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.23.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.23.0...v5.23.1-beta.0) (2022-02-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.23.0](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.1...v5.23.0) (2022-02-15)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.23.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.23.0-beta.0...v5.23.0-beta.1) (2022-02-14)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.23.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.1...v5.23.0-beta.0) (2022-02-13)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add addEntryToListCache prop in UseContentEntryFormParams ([1cadcd9](https://github.com/webiny/webiny-js/commit/1cadcd9b7d6c95ae8df16881b98c3ec3dc6668d4))
+* **app-headless-cms:** add meta info for AutoComplete ([91f3b4a](https://github.com/webiny/webiny-js/commit/91f3b4a4e00c51bd6c62c96313126e64be2390e0))
+* **app-headless-cms:** typo in referenceMultipleModelsLabel ([001339c](https://github.com/webiny/webiny-js/commit/001339c7143a32f44e8fd17d1a7f52af9fbe2ac9))
+* **app-headless-cms:** update fetchPolicy for latest entries query ([d0a6b0f](https://github.com/webiny/webiny-js/commit/d0a6b0f6d1e4892a6baa84852711f20b21f5927a))
+* **app-headless-cms:** use newRevision id ([f4c4347](https://github.com/webiny/webiny-js/commit/f4c43477d4d8e3cd685f34d66cb7e962e7c408fa))
+* project tsconfig reference paths ([#2195](https://github.com/webiny/webiny-js/issues/2195)) ([1dc7f24](https://github.com/webiny/webiny-js/commit/1dc7f24fc1e23dec6b00ba6c526a00df59acfedd))
+
+
+### Features
+
+* **app-headless-cms:** add ability to create ref field value within the form ([b5fa10c](https://github.com/webiny/webiny-js/commit/b5fa10c7d1e2c3d4d64be889de935bc2a9495d21))
+* upgrade to tsconfig compilerOptions ([#2209](https://github.com/webiny/webiny-js/issues/2209)) ([31fd79d](https://github.com/webiny/webiny-js/commit/31fd79dd51eb35e65b47d1096caae2cec8e50789))
+
+
+
+
+
+## [5.22.1](https://github.com/webiny/webiny-js/compare/v5.22.1-beta.0...v5.22.1) (2022-01-29)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.22.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.22.0...v5.22.1-beta.0) (2022-01-29)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.22.0](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.3...v5.22.0) (2022-01-24)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.22.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.2...v5.22.0-beta.3) (2022-01-21)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.22.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.1...v5.22.0-beta.2) (2022-01-21)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** temporarily disable new ref field ([d89f0d8](https://github.com/webiny/webiny-js/commit/d89f0d8978323a14cae45c565027ab51c43980ec))
+* **app-headless-cms:** use the correct revision id ([ad3b16d](https://github.com/webiny/webiny-js/commit/ad3b16d45f0d4621a0dce667d6410652959bfc0a))
+
+
+### Features
+
+* enable okta integration in multi-tenant projects ([#2211](https://github.com/webiny/webiny-js/issues/2211)) ([50f3626](https://github.com/webiny/webiny-js/commit/50f3626b0fbfc684ad4c6f476dfb1b7f8b6db616))
+
+
+
+
+
+# [5.22.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.22.0-beta.0...v5.22.0-beta.1) (2022-01-19)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.22.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.21.0...v5.22.0-beta.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* remove react hot-loader and fix TS types ([#2193](https://github.com/webiny/webiny-js/issues/2193)) ([986fce5](https://github.com/webiny/webiny-js/commit/986fce5029dd392fcfdd60bceb2f0bc63ce8805a))
+* revert react to v16 due to Material incompatibility with v17 ([f073521](https://github.com/webiny/webiny-js/commit/f073521af9327d95535296d4275b42968888bb77))
+* **app-headless-cms:** date time field crashes on clear ([#2185](https://github.com/webiny/webiny-js/issues/2185)) ([864164b](https://github.com/webiny/webiny-js/commit/864164ba4338d534dbd20a716b629489fdcd14fa))
+* **app-headless-cms:** types in default entry values ([c4f1539](https://github.com/webiny/webiny-js/commit/c4f15398c731ad5632287f7137fd7d1e6717dca5))
+
+
+### Features
+
+* upgrade webpack to version 5 ([#2101](https://github.com/webiny/webiny-js/issues/2101)) ([d3bdfac](https://github.com/webiny/webiny-js/commit/d3bdfac4b08b453f6d2ff836d8e56e1f0073ae62))
+* **app-headless-cms:** default field values ([1f1e9da](https://github.com/webiny/webiny-js/commit/1f1e9dadcbb5007202a23e3032871c80b10bd118))
+* add unique validator to headless cms ([#2166](https://github.com/webiny/webiny-js/issues/2166)) ([084f68d](https://github.com/webiny/webiny-js/commit/084f68df39a95226e97481cd47e9de6acdd024d0))
+
+
+
+
+
 # [5.21.0](https://github.com/webiny/webiny-js/compare/v5.21.0-beta.0...v5.21.0) (2022-01-04)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

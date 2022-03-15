@@ -1,8 +1,12 @@
-import { ValueTransformPlugin, Params, TransformParams } from "./ValueTransformPlugin";
+import {
+    ValueTransformPlugin,
+    ValueTransformPluginParams,
+    ValueTransformPluginParamsTransformParams
+} from "./ValueTransformPlugin";
 import WebinyError from "@webiny/error";
 import { parseISO } from "date-fns";
 
-const transformDateTime = (params: TransformParams): number | null => {
+const transformDateTime = (params: ValueTransformPluginParamsTransformParams): number | null => {
     const { value } = params;
     if (value === null) {
         return null;
@@ -13,7 +17,7 @@ const transformDateTime = (params: TransformParams): number | null => {
          */
         return (value as Date).getTime();
     }
-    const parsedDateTime = parseISO(value as any).getTime();
+    const parsedDateTime = parseISO(value).getTime();
     if (isNaN(parsedDateTime) === false) {
         return parsedDateTime;
     }
@@ -23,7 +27,7 @@ const transformDateTime = (params: TransformParams): number | null => {
 };
 
 export class DateTimeTransformPlugin extends ValueTransformPlugin {
-    public constructor(params: Omit<Params, "transform">) {
+    public constructor(params: Omit<ValueTransformPluginParams, "transform">) {
         super({
             transform: transformDateTime,
             ...params

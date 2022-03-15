@@ -28,19 +28,31 @@ const menuStyles = css({
     }
 });
 
-const RevisionSelector = () => {
+interface CmsEntryRevision extends Pick<CmsContentEntryRevision, "id"> {
+    meta: Pick<CmsContentEntryRevision["meta"], "version" | "status">;
+}
+
+const defaultRevisions: CmsEntryRevision[] = [
+    {
+        id: "new",
+        meta: {
+            version: 1,
+            status: "draft"
+        }
+    }
+];
+
+const RevisionSelector: React.FC = () => {
     const { entry, revisions, loading } = useContentEntry();
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
     const currentRevision = {
-        version: get(entry, "meta.version", 1),
-        status: get(entry, "meta.status", "draft")
+        version: get(entry, "meta.version", 1) as number,
+        status: get(entry, "meta.status", "draft") as CmsContentEntryRevision["meta"]["status"]
     };
 
-    const allRevisions: Partial<CmsContentEntryRevision>[] = revisions.length
-        ? revisions
-        : ([{ id: "new", meta: { version: 1, status: "draft" } }] as any);
+    const allRevisions = revisions.length ? revisions : defaultRevisions;
 
     return (
         <Menu

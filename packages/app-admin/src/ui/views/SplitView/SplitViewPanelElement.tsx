@@ -1,25 +1,25 @@
 import React from "react";
 import classNames from "classnames";
-import { UIElement } from "~/ui/UIElement";
+import { UIElement, UiElementRenderProps } from "~/ui/UIElement";
 import { Cell } from "@webiny/ui/Grid";
 
 export class SplitViewPanelElement extends UIElement<any> {
     private _width = 12;
-    private _classNames = new Set();
+    private _classNames: Set<string> = new Set();
 
-    setWidth(width: number) {
+    public setWidth(width: number): void {
         this._width = width;
     }
 
-    addClassName(className: string) {
+    public addClassName(className: string): void {
         this._classNames.add(className);
     }
 
-    removeClassName(className: string) {
+    public removeClassName(className: string): void {
         this._classNames.delete(className);
     }
 
-    setContentElement(element: UIElement) {
+    public setContentElement(element: UIElement): void {
         // Remove previous content
         this.getChildren().forEach(el => el.remove());
 
@@ -27,7 +27,7 @@ export class SplitViewPanelElement extends UIElement<any> {
         this.addElement(element);
     }
 
-    render(props: any) {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         return (
             <Cell span={this._width} className={classNames(Array.from(this._classNames.values()))}>
                 {super.render(props)}

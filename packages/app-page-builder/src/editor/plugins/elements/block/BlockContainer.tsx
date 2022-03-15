@@ -11,6 +11,7 @@ import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil
 import { elementByIdSelector, uiAtom, highlightElementAtom } from "../../../recoil/modules";
 import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
 import BlockContainerInnerWrapper from "./BlockContainerInnerWrapper";
+import { PbEditorElement } from "~/types";
 
 const addIcon = css({
     color: "var(--mdc-theme-secondary)",
@@ -23,14 +24,14 @@ const addIcon = css({
     }
 });
 
-type BlockContainerPropsType = {
+interface BlockContainerPropsType {
     combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     customClasses: string[];
     elementId: string;
-};
-const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
+}
+const BlockContainer: React.FC<BlockContainerPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,
@@ -39,19 +40,27 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
-    const element = useRecoilValue(elementByIdSelector(elementId));
+    const element = useRecoilValue(elementByIdSelector(elementId)) as PbEditorElement;
     const highlightedElement = useRecoilValue(highlightElementAtom);
     const { id, path, type, elements } = element;
-
-    const containerStyle = elementStyle;
+    /**
+     * We cast because we have TS problems down the line.
+     * TODO @ts-refactor figure out correct types.
+     */
+    const containerStyle = elementStyle as any;
     // Use per-device style
-    const width = elementStyle[`--${kebabCase(displayMode)}-width`];
+    const width =
+        elementStyle[`--${kebabCase(displayMode)}-width` as unknown as keyof CSSProperties];
     /**
      * We're swapping "justifyContent" & "alignItems" value here because
      * ".webiny-pb-layout-block" has "flex-direction: column"
      */
-    const alignItems = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
-    const justifyContent = elementStyle[`--${kebabCase(displayMode)}-align-items`];
+    const alignItems =
+        elementStyle[
+            `--${kebabCase(displayMode)}-justify-content` as unknown as keyof CSSProperties
+        ];
+    const justifyContent =
+        elementStyle[`--${kebabCase(displayMode)}-align-items` as unknown as keyof CSSProperties];
 
     const onAddClick = () => {
         handler.trigger(
@@ -74,22 +83,24 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
             })
         );
     };
+    /**
+     * Figure out better types.
+     */
+    // TODO @ts-refactor
+    const style: CSSProperties = {
+        width,
+        justifyContent: justifyContent as any,
+        alignItems: alignItems as any
+    };
 
     const totalElements = elements.length;
     return (
         <div
             style={{ width: "100%", display: "flex" }}
-            className={"webiny-pb-layout-block-container " + css(containerStyle as any)}
+            className={"webiny-pb-layout-block-container " + css(containerStyle)}
             {...elementAttributes}
         >
-            <div
-                style={{
-                    width,
-                    justifyContent,
-                    alignItems
-                }}
-                className={combineClassNames(...customClasses)}
-            >
+            <div style={style} className={combineClassNames(...customClasses)}>
                 {totalElements === 0 && (
                     <DropZone.Center
                         id={id}
@@ -104,7 +115,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
                         />
                     </DropZone.Center>
                 )}
-                {elements.map((childId: string, index) => (
+                {(elements as string[]).map((childId, index) => (
                     <BlockContainerInnerWrapper
                         key={childId}
                         elementId={childId}

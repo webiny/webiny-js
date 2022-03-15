@@ -12,6 +12,7 @@ import {
     DateTimeZScalar
 } from "@webiny/handler-graphql/builtInTypes";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { GraphQLScalarType } from "graphql";
 
 const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
     const scalars = context.plugins
@@ -41,6 +42,7 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
 
             type CmsListMeta {
@@ -75,7 +77,7 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
             ...scalars.reduce((acc, s) => {
                 acc[s.name] = s;
                 return acc;
-            }, {}),
+            }, {} as Record<string, GraphQLScalarType>),
             JSON: JsonScalar,
             Long: LongScalar,
             RefInput,

@@ -1,17 +1,22 @@
 import { ElementStylesModifier } from "~/types";
 
 const width: ElementStylesModifier = ({ theme, element }) => {
-    const { width } = element.data.settings;
+    const { width } = element.data.settings || {};
     if (!width) {
         return {};
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!width[breakpointName]) {
             return returnStyles;
         }
 
-        return { ...returnStyles, [breakpointName]: { width: width[breakpointName].value } };
+        return {
+            ...returnStyles,
+            [breakpointName]: {
+                width: width[breakpointName].value
+            }
+        };
     }, {});
 };
 

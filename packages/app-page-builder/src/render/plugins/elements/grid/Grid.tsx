@@ -1,13 +1,13 @@
 import Element from "../../../components/Element";
 import ElementAnimation from "../../../components/ElementAnimation";
 import { ElementRoot } from "../../../components/ElementRoot";
-import { PbElement } from "../../../../types";
+import { PbElement } from "~/types";
 import React from "react";
 
-type GridPropsType = {
+interface GridPropsType {
     element: PbElement;
-};
-const Grid: React.FunctionComponent<GridPropsType> = ({ element }) => {
+}
+const Grid: React.FC<GridPropsType> = ({ element }) => {
     return (
         <ElementAnimation>
             <ElementRoot

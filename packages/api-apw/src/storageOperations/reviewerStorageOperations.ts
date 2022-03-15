@@ -4,12 +4,20 @@ import {
     CreateApwStorageOperationsParams,
     getFieldValues
 } from "~/storageOperations/index";
+import WebinyError from "@webiny/error";
 
 export const createReviewerStorageOperations = ({
     cms
 }: Pick<CreateApwStorageOperationsParams, "cms">): ApwReviewerStorageOperations => {
-    const getReviewerModel = () => {
-        return cms.getModel("apwReviewerModelDefinition");
+    const getReviewerModel = async () => {
+        const model = await cms.getModel("apwReviewerModelDefinition");
+        if (!model) {
+            throw new WebinyError(
+                "Could not find `apwReviewerModelDefinition` model.",
+                "MODEL_NOT_FOUND_ERROR"
+            );
+        }
+        return model;
     };
     const getReviewer: ApwReviewerStorageOperations["getReviewer"] = async ({ id }) => {
         const model = await getReviewerModel();
@@ -21,7 +29,13 @@ export const createReviewerStorageOperations = ({
         getReviewer,
         async listReviewers(params) {
             const model = await getReviewerModel();
-            const [entries, meta] = await cms.listLatestEntries(model, params);
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where,
+                    tenant: model.tenant
+                }
+            });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createReviewer(params) {

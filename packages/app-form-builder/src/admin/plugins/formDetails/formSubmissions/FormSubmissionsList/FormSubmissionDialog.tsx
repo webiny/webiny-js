@@ -2,9 +2,9 @@ import React from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Dialog, DialogContent, DialogTitle, DialogCancel, DialogActions } from "@webiny/ui/Dialog";
-
 import { i18n } from "@webiny/app/i18n";
-import { FbFormSubmissionData } from "../../../../../types";
+import { FbFormModelField, FbFormSubmissionData } from "~/types";
+
 const t = i18n.namespace("FormEditor.FormSubmissionDialog");
 
 const dialogBody = css({
@@ -17,14 +17,15 @@ const dialogBody = css({
     }
 });
 
-type Props = {
-    formSubmission: FbFormSubmissionData;
+interface FormSubmissionDialogProps {
+    formSubmission: FbFormSubmissionData | null;
     onClose: () => void;
-};
+}
 
-const getFieldValueLabel = (field, value) => {
-    if (field.options.length > 0) {
-        const selectedOption = field.options.find(option => option.value === value);
+const getFieldValueLabel = (field: FbFormModelField, value: string): string => {
+    const options = field.options || [];
+    if (options.length > 0) {
+        const selectedOption = options.find(option => option.value === value);
         if (selectedOption) {
             return selectedOption.label;
         }
@@ -33,7 +34,7 @@ const getFieldValueLabel = (field, value) => {
     return value;
 };
 
-const renderFieldValueLabel = (field, value) => {
+const renderFieldValueLabel = (field: FbFormModelField, value: string): string => {
     if (Array.isArray(value)) {
         return value.map(v => getFieldValueLabel(field, v)).join(", ");
     }
@@ -41,7 +42,7 @@ const renderFieldValueLabel = (field, value) => {
     return getFieldValueLabel(field, value);
 };
 
-const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
+const FormSubmissionDialog: React.FC<FormSubmissionDialogProps> = ({ formSubmission, onClose }) => {
     return (
         <Dialog open={!!formSubmission} onClose={onClose}>
             {formSubmission && (
@@ -55,6 +56,9 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                                     const field = formSubmission.form.fields.find(
                                         field => field._id === id
                                     );
+                                    if (!field) {
+                                        return null;
+                                    }
 
                                     return (
                                         <div

@@ -1,10 +1,21 @@
-import * as React from "react";
-import * as toolbar from "./toolbar";
-import { ImageEditorTool } from "./toolbar/types";
+import React from "react";
+import { flip, filter, crop, rotate } from "./toolbar";
+import { ImageEditorTool, ToolbarTool } from "./toolbar/types";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import { ButtonSecondary, ButtonPrimary } from "../Button";
+/**
+ * Package load-script does not have types.
+ */
+// @ts-ignore
 import loadScript from "load-script";
+
+const toolbar = {
+    flip,
+    filter,
+    crop,
+    rotate
+};
 
 const Toolbar = styled("div")({
     display: "flex",
@@ -35,7 +46,7 @@ const ApplyCancelActions = styled("div")({
     textAlign: "center"
 });
 
-const initScripts = () => {
+const initScripts = (): Promise<string> => {
     return new Promise((resolve: any) => {
         // @ts-ignore
         if (window.Caman) {
@@ -48,71 +59,80 @@ const initScripts = () => {
     });
 };
 
-export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
-
-type RenderPropArgs = {
+interface RenderPropArgs {
     render: Function;
     getCanvasDataUrl: () => string;
-    activeTool?: ImageEditorTool;
-    applyActiveTool: Function;
-    cancelActiveTool: Function;
-};
+    activeTool: ImageEditorTool | null;
+    applyActiveTool: () => Promise<void>;
+    cancelActiveTool: () => Promise<void>;
+}
 
-type Props = {
+interface ImageEditorPropsPropsOptions {
+    autoEnable: boolean;
+}
+
+interface ImageEditorProps {
     src: string;
     tools: ToolbarTool[];
-    options?: { [key: string]: any };
+    options?: {
+        flip: ImageEditorPropsPropsOptions;
+        filter: ImageEditorPropsPropsOptions;
+        crop: ImageEditorPropsPropsOptions;
+        rotate: ImageEditorPropsPropsOptions;
+    };
     onToolActivate?: Function;
     onToolDeactivate?: Function;
     children?: (props: RenderPropArgs) => React.ReactNode;
-};
+}
 
-type State = {
-    tool?: { [key: string]: any };
+interface ImageEditorState {
+    tool: ImageEditorTool | null;
     src: string;
-};
+}
 
-class ImageEditor extends React.Component<Props, State> {
-    static defaultProps = {
+class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
+    static defaultProps: Partial<ImageEditorProps> = {
         tools: ["crop", "flip", "rotate", "filter"]
     };
 
-    state = {
+    public override state: ImageEditorState = {
         tool: null,
         src: ""
     };
 
-    canvas = React.createRef();
-    image = null;
+    public canvas = React.createRef<HTMLCanvasElement>();
+    public image?: HTMLImageElement;
 
-    componentDidMount() {
+    public override componentDidMount() {
         initScripts().then(() => {
             this.updateCanvas();
             setTimeout(() => {
                 const { options } = this.props;
-                if (typeof options === "object" && options) {
-                    for (const key in options) {
-                        if (options[key].autoEnable === true) {
-                            const tool: ImageEditorTool | null = toolbar[key];
-                            tool && this.activateTool(tool);
-                            break;
-                        }
+                if (!options || typeof options !== "object") {
+                    return;
+                }
+                for (const key in options) {
+                    const option = options[key as ToolbarTool];
+                    if (option.autoEnable === true) {
+                        const tool: ImageEditorTool | null = toolbar[key as ToolbarTool];
+                        tool && this.activateTool(tool);
+                        break;
                     }
                 }
             }, 250);
         });
     }
 
-    updateCanvas = () => {
+    private readonly updateCanvas = (): void => {
         const { src } = this.props;
         this.image = new window.Image();
-        const canvas = this.canvas.current as HTMLCanvasElement;
+        const canvas = this.canvas.current;
         if (canvas) {
             this.image.onload = () => {
                 if (this.image) {
                     canvas.width = this.image.width;
                     canvas.height = this.image.height;
-                    const ctx = canvas.getContext("2d");
+                    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
                     ctx.drawImage(this.image, 0, 0);
                 }
             };
@@ -121,9 +141,9 @@ class ImageEditor extends React.Component<Props, State> {
         }
     };
 
-    activateTool = (tool: string | ImageEditorTool) => {
+    private readonly activateTool = (tool: ToolbarTool | ImageEditorTool): void => {
         if (typeof tool === "string") {
-            tool = toolbar[tool] as ImageEditorTool;
+            tool = toolbar[tool];
         }
 
         this.setState({ tool }, () => {
@@ -133,11 +153,13 @@ class ImageEditor extends React.Component<Props, State> {
         });
     };
 
-    deactivateTool = () => {
-        this.setState({ tool: null });
+    private readonly deactivateTool = (): void => {
+        this.setState({
+            tool: null
+        });
     };
 
-    getCanvasDataUrl = () => {
+    public readonly getCanvasDataUrl = (): string => {
         const canvas = this.canvas.current as HTMLCanvasElement;
         if (canvas) {
             const { src } = this.props;
@@ -151,42 +173,46 @@ class ImageEditor extends React.Component<Props, State> {
         return "";
     };
 
-    applyActiveTool = async () => {
+    private readonly applyActiveTool = async (): Promise<void> => {
         const { tool } = this.state;
         if (!tool) {
             return;
         }
 
-        tool.apply &&
-            (await tool.apply({
+        if (tool.apply) {
+            await tool.apply({
                 canvas: this.canvas
-            }));
+            });
+        }
         this.deactivateTool();
     };
 
-    cancelActiveTool = async () => {
+    private readonly cancelActiveTool = async (): Promise<void> => {
         const { tool } = this.state;
         if (!tool) {
             return;
         }
 
-        tool.cancel &&
-            (await tool.cancel({
+        if (tool.cancel) {
+            await tool.cancel({
                 canvas: this.canvas
-            }));
+            });
+        }
         this.deactivateTool();
     };
 
-    getToolOptions = (tool: ImageEditorTool) => {
+    private readonly getToolOptions = (
+        tool: ImageEditorTool
+    ): Partial<ImageEditorPropsPropsOptions> => {
         const { options } = this.props;
         if (!options || typeof options !== "object") {
             return {};
         }
 
-        return options[tool.name] || {};
+        return options[tool.name as ToolbarTool] || {};
     };
 
-    render() {
+    public override render(): React.ReactNode {
         const { src, tools, children } = this.props;
         const { tool } = this.state;
         const editor = (
@@ -213,17 +239,27 @@ class ImageEditor extends React.Component<Props, State> {
                         <>
                             {typeof tool.renderForm === "function" &&
                                 tool.renderForm({
-                                    options: this.getToolOptions(tool),
-                                    image: this.image,
+                                    options: this.getToolOptions(tool as ImageEditorTool),
+                                    image: this.image as HTMLImageElement,
                                     canvas: this.canvas
                                 })}
 
                             <ApplyCancelActions>
-                                <ButtonSecondary onClick={this.cancelActiveTool}>
+                                <ButtonSecondary
+                                    onClick={() => {
+                                        this.cancelActiveTool();
+                                    }}
+                                >
                                     Cancel
                                 </ButtonSecondary>
                                 &nbsp;
-                                <ButtonPrimary onClick={this.applyActiveTool}>Apply</ButtonPrimary>
+                                <ButtonPrimary
+                                    onClick={() => {
+                                        this.applyActiveTool();
+                                    }}
+                                >
+                                    Apply
+                                </ButtonPrimary>
                             </ApplyCancelActions>
                         </>
                     ) : (

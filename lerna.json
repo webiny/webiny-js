@@ -1,8 +1,9 @@
 {
   "packages": [
-    "packages/*"
+    "packages/*",
+    "packages-v6/*"
   ],
-  "version": "5.21.0",
+  "version": "5.24.0",
   "npmClient": "yarn",
   "command": {
     "version": {

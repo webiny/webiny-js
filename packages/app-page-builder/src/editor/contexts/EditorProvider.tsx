@@ -3,7 +3,7 @@ import { EventActionHandlerProvider } from "./EventActionHandlerProvider";
 
 const EditorContext = createContext(null);
 
-export const EditorProvider: React.FunctionComponent<any> = props => {
+export const EditorProvider: React.FC<any> = props => {
     return (
         <EventActionHandlerProvider>
             <EditorContext.Provider {...props}>{props.children}</EditorContext.Provider>

@@ -9,13 +9,13 @@ const BUTTONS = {
 };
 
 export class SmallButtonElement<TRenderProps = any> extends ButtonElement<TRenderProps> {
-    constructor(id: string, config: ButtonElementConfig<TRenderProps>) {
+    public constructor(id: string, config: ButtonElementConfig<TRenderProps>) {
         super(id, config);
 
         this.applyPlugins(SmallButtonElement);
     }
 
-    render(props): React.ReactElement {
+    public override render(props: TRenderProps): React.ReactElement {
         const Component = BUTTONS[this.getType()];
         const onClick = this.getOnClick();
 

@@ -14,6 +14,10 @@ import Name from "./FileDetails/Name";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
+/**
+ * Package react-hotkeyz has no types.
+ */
+// @ts-ignore
 import { useHotkeys } from "react-hotkeyz";
 import { ReactComponent as CopyContentIcon } from "./icons/content_copy-black-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
@@ -26,9 +30,19 @@ import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "~/hooks/useSnackbar";
 import { useSecurity } from "@webiny/app-security";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
+import {
+    DELETE_FILE,
+    DeleteFileMutationResponse,
+    DeleteFileMutationVariables,
+    LIST_FILES,
+    LIST_TAGS,
+    ListFilesQueryResponse,
+    ListFileTagsQueryResponse
+} from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 import mime from "mime";
+import { FileItem, FileManagerSecurityPermission } from "./types";
+import { FilesRenderChildren } from "react-butterfiles";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
 
@@ -140,16 +154,15 @@ const style: any = {
         }
     })
 };
-type FileDetailsProps = {
+interface FileDetailsProps {
     canEdit: (item: any) => boolean;
-    file: {
-        name: string;
-        [key: string]: any;
-    };
+    file: FileItem;
+    uploadFile: (files: FileItem[] | FileItem) => Promise<number | null>;
+    validateFiles: FilesRenderChildren["validateFiles"];
     [key: string]: any;
-};
+}
 
-const isImage = file => {
+const isImage = (file: FileItem) => {
     const fileType = mime.getType(file && file.name);
 
     if (fileType && typeof fileType === "string") {
@@ -159,17 +172,20 @@ const isImage = file => {
     return false;
 };
 
-export default function FileDetails(props: FileDetailsProps) {
+const FileDetails: React.FC<FileDetailsProps> = props => {
     const { file, uploadFile, validateFiles } = props;
 
     const filePlugin = getFileTypePlugin(file);
-    const actions = get(filePlugin, "fileDetails.actions") || get(filePlugin, "actions") || [];
+    const actions: React.FC[] =
+        get(filePlugin, "fileDetails.actions") || get(filePlugin, "actions") || [];
 
     const { hideFileDetails, queryParams } = useFileManager();
     const [darkImageBackground, setDarkImageBackground] = useState(false);
 
-    const { identity } = useSecurity();
-    const fmFilePermission = useMemo(() => identity.getPermission("fm.file"), []);
+    const { identity, getPermission } = useSecurity();
+    const fmFilePermission = useMemo((): FileManagerSecurityPermission | null => {
+        return getPermission("fm.file");
+    }, [identity]);
     const canDelete = useCallback(
         item => {
             // Bail out early if no access
@@ -177,7 +193,10 @@ export default function FileDetails(props: FileDetailsProps) {
                 return false;
             }
             if (fmFilePermission.own) {
-                const identityId = identity.id || identity.login;
+                const identityId = identity ? identity.id || identity.login : null;
+                if (!identityId) {
+                    return false;
+                }
                 return get(item, "createdBy.id") === identityId;
             }
             if (typeof fmFilePermission.rwd === "string") {
@@ -196,30 +215,51 @@ export default function FileDetails(props: FileDetailsProps) {
         }
     });
 
-    const [deleteFile] = useMutation(DELETE_FILE, {
-        update: cache => {
-            // 1. Update files list cache
-            const data: any = cloneDeep(
-                cache.readQuery({
-                    query: LIST_FILES,
-                    variables: queryParams
-                })
-            );
-            const filteredList = data.fileManager.listFiles.data.filter(
-                item => item.id !== file.id
-            );
-            const selectedFile = data.fileManager.listFiles.data.find(item => item.id === file.id);
+    const [deleteFile] = useMutation<DeleteFileMutationResponse, DeleteFileMutationVariables>(
+        DELETE_FILE,
+        {
+            update: cache => {
+                // 1. Update files list cache
+                let data = cloneDeep(
+                    cache.readQuery<ListFilesQueryResponse>({
+                        query: LIST_FILES,
+                        variables: queryParams
+                    })
+                );
+                if (!data) {
+                    data = {
+                        fileManager: {
+                            listFiles: {
+                                data: [],
+                                error: null,
+                                meta: {
+                                    hasMoreItems: false,
+                                    cursor: null,
+                                    totalItem: 0
+                                }
+                            }
+                        }
+                    };
+                }
+                const filteredList = data.fileManager.listFiles.data.filter(
+                    (item: FileItem) => item.id !== file.id
+                );
+                const selectedFile = data.fileManager.listFiles.data.find(
+                    (item: FileItem) => item.id === file.id
+                );
 
-            cache.writeQuery({
-                query: LIST_FILES,
-                variables: queryParams,
-                data: set(data, "fileManager.listFiles.data", filteredList)
-            });
-            // 2. Update "ListTags" cache
-            if (Array.isArray(selectedFile.tags)) {
-                const tagCountMap = {};
+                cache.writeQuery({
+                    query: LIST_FILES,
+                    variables: queryParams,
+                    data: set(data, "fileManager.listFiles.data", filteredList)
+                });
+                // 2. Update "ListTags" cache
+                if (!selectedFile || Array.isArray(selectedFile.tags) === false) {
+                    return;
+                }
+                const tagCountMap: Record<string, number> = {};
                 // Prepare "tag" count map
-                data.fileManager.listFiles.data.forEach(file => {
+                data.fileManager.listFiles.data.forEach((file: FileItem) => {
                     if (!Array.isArray(file.tags)) {
                         return;
                     }
@@ -233,19 +273,21 @@ export default function FileDetails(props: FileDetailsProps) {
                 });
 
                 // Get tags from cache
-                const listTagsData: any = cloneDeep(
-                    cache.readQuery({
+                const listTagsData = cloneDeep(
+                    cache.readQuery<ListFileTagsQueryResponse>({
                         query: LIST_TAGS,
                         variables: { where: getWhere(queryParams.scope) }
                     })
                 );
                 // Remove selected file tags from list.
-                const filteredTags = listTagsData.fileManager.listTags.filter(tag => {
-                    if (!selectedFile.tags.includes(tag)) {
-                        return true;
+                const filteredTags = (listTagsData?.fileManager?.listTags || []).filter(
+                    (tag: string) => {
+                        if (!selectedFile.tags.includes(tag)) {
+                            return true;
+                        }
+                        return tagCountMap[tag] > 1;
                     }
-                    return tagCountMap[tag] > 1;
-                });
+                );
 
                 // Write it to cache
                 cache.writeQuery({
@@ -255,7 +297,7 @@ export default function FileDetails(props: FileDetailsProps) {
                 });
             }
         }
-    });
+    );
     const { showSnackbar } = useSnackbar();
 
     const renderDeleteImageAction = useCallback(file => {
@@ -282,7 +324,7 @@ export default function FileDetails(props: FileDetailsProps) {
                     return (
                         <Tooltip
                             content={
-                                isImage ? (
+                                isImage(file) ? (
                                     <span>{t`Delete image`}</span>
                                 ) : (
                                     <span>{t`Delete file`}</span>
@@ -337,7 +379,17 @@ export default function FileDetails(props: FileDetailsProps) {
                             dark: darkImageBackground
                         })}
                     >
-                        {filePlugin.render({ file, uploadFile, validateFiles })}
+                        {filePlugin &&
+                            filePlugin.render({
+                                /**
+                                 * TODO: @ts-refactor
+                                 * Figure out which type is the file
+                                 */
+                                // @ts-ignore
+                                file,
+                                uploadFile,
+                                validateFiles
+                            })}
                     </div>
                     <div className={style.download}>
                         <>
@@ -351,7 +403,7 @@ export default function FileDetails(props: FileDetailsProps) {
                                 />
                             </Tooltip>
 
-                            {actions.map((Component, index) => (
+                            {actions.map((Component: React.FC, index: number) => (
                                 <Component key={index} {...props} />
                             ))}
                             {renderDeleteImageAction(file)}
@@ -401,4 +453,6 @@ export default function FileDetails(props: FileDetailsProps) {
             )}
         </Drawer>
     );
-}
+};
+
+export default FileDetails;

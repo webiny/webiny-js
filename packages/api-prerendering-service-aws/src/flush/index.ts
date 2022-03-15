@@ -1,14 +1,24 @@
 import { FlushHookPlugin } from "@webiny/api-prerendering-service/flush/types";
 import CloudFront from "aws-sdk/clients/cloudfront";
 import url from "url";
+import { Args, Configuration } from "~/types";
+
+interface AfterFlushParams {
+    log: (...args: string[]) => void;
+    render: {
+        args: Args;
+        configuration: Configuration;
+    };
+}
 
 // This plugin will issue a cache invalidation request to CloudFront, every time a page has been deleted. This is
 // mostly important when a user unpublishes a new page, and we want to make the page immediately publicly available.
 export default () => {
     return {
         type: "ps-flush-hook",
-        afterFlush: async ({ log, render }) => {
+        afterFlush: async ({ log, render }: AfterFlushParams) => {
             if (!render) {
+                log("Skipping afterFlush because no render was provided.");
                 return;
             }
 
@@ -27,10 +37,13 @@ export default () => {
             }
 
             log("Trying to get the path that needs to be invalidated...");
-            let path = args.path;
+            let path: string | undefined = args.path;
             if (!path) {
                 log(`Path wasn't passed via "args.path", trying to extract it from "args.url"...`);
-                path = url.parse(args.url).pathname;
+                const parsed = url.parse(args.url as string);
+                if (parsed && parsed.pathname) {
+                    path = parsed.pathname;
+                }
             }
 
             if (!path) {

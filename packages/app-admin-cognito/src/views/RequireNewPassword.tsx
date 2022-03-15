@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -11,12 +11,12 @@ import { useRequireNewPassword } from "@webiny/app-cognito-authenticator/hooks/u
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title } from "./StyledComponents";
 
-const sentenceCase = str => {
+const sentenceCase = (str: string) => {
     const lower = str.toLowerCase();
     return lower[0].toUpperCase() + lower.substring(1);
 };
 
-const RequireNewPassword = () => {
+const RequireNewPassword: React.FC = () => {
     const { checkingUser } = useAuthenticator();
     const { shouldRender, requiredAttributes, confirm } = useRequireNewPassword();
 
@@ -75,7 +75,13 @@ const RequireNewPassword = () => {
 
                             <Grid>
                                 <Cell span={12} className={alignRight}>
-                                    <ButtonPrimary onClick={submit}>{"Set password"}</ButtonPrimary>
+                                    <ButtonPrimary
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
+                                    >
+                                        {"Set password"}
+                                    </ButtonPrimary>
                                 </Cell>
                             </Grid>
                         </InnerContent>

@@ -1,22 +1,32 @@
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection from "../DynamicSection";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
+import { BindComponentRenderProp } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (field, bind, index) => {
-    const formId = bind.index.form.data.id || "new";
+const getKey = (field: CmsEditorField, bind: BindComponentRenderProp, index: number): string => {
+    const formId = (bind as any).index?.form?.data?.id || "new";
     return `${formId}.${field.fieldId}.${index}`;
 };
 
-const emptyValue = [{ type: "paragraph", data: { textAlign: "left", className: null, text: "" } }];
+const emptyValue: Record<string, any>[] = [
+    {
+        type: "paragraph",
+        data: {
+            textAlign: "left",
+            className: null,
+            text: ""
+        }
+    }
+];
 
 const EditorWrapper = styled("div")({
     position: "relative",
@@ -37,7 +47,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "rich-text" &&
-                field.multipleValues &&
+                !!field.multipleValues &&
                 !get(field, "predefinedValues.enabled")
             );
         },
@@ -45,6 +55,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
             const { field } = props;
 
             const rteProps = useMemo(() => {
+                /**
+                 * TODO @ts-refactor
+                 * Missing cms-rte-config plugin.
+                 */
+                // @ts-ignore
                 return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
             }, []);
 

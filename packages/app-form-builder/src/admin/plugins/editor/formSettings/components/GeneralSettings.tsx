@@ -4,31 +4,42 @@ import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
 import { Input } from "@webiny/ui/Input";
 import { plugins } from "@webiny/plugins";
-import { FbFormLayoutPlugin } from "../../../../../types";
-import { PbThemePlugin } from "@webiny/app-page-builder/types";
+import { FbFormLayoutPlugin } from "~/types";
+import { PbTheme, PbThemePlugin } from "@webiny/app-page-builder/types";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
+import { BindComponent } from "@webiny/form";
 
-const GeneralSettings = ({ Bind }) => {
+type LayoutListItem = FbFormLayoutPlugin["layout"];
+interface GeneralSettingsProps {
+    Bind: BindComponent;
+}
+const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
     const theme = useMemo(
-        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        (): PbTheme =>
+            Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
         []
     );
 
-    const layouts = useMemo(
-        () =>
-            [
-                ...(get(theme, "formBuilder.layouts") || []),
-                ...plugins.byType<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
-            ].reduce((acc, item) => {
-                if (!acc.find(l => l.name === item.name)) {
-                    acc.push(item);
-                }
-                return acc;
-            }, []),
-        []
-    );
+    const layouts = useMemo((): LayoutListItem[] => {
+        const layoutsList: LayoutListItem[] = [
+            ...(get(theme, "formBuilder.layouts") || []),
+            ...plugins.byType<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
+        ];
+
+        return layoutsList.reduce((acc, item) => {
+            if (!acc.find(layout => layout.name === item.name)) {
+                acc.push(item);
+            }
+            return acc;
+        }, [] as LayoutListItem[]);
+    }, []);
 
     const rteProps = useMemo(() => {
+        /**
+         * TODO @ts-refactor
+         * Missing plugin type for fb-rte-config
+         */
+        // @ts-ignore
         return createPropsFromConfig(plugins.byType("fb-rte-config").map(pl => pl.config));
     }, []);
 

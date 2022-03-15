@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { storiesOf } from "@storybook/react";
 import {
     Story,
@@ -20,7 +20,7 @@ story.addDecorator(withKnobs);
 story.add(
     "usage",
     () => {
-        const Div = props => {
+        const Div: React.FC = props => {
             return <div style={{ padding: 50 }}>{props.children}</div>;
         };
 

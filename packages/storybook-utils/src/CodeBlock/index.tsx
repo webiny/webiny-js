@@ -1,4 +1,8 @@
 import * as React from "react";
+/**
+ * No types for react-highlight.js
+ */
+// @ts-ignore
 import Highlight from "react-highlight.js";
 import copy from "copy-to-clipboard";
 import elementToString from "react-element-to-jsx-string";
@@ -36,9 +40,9 @@ const CopyToClipboard = styled("div")({
 });
 
 class CodeBlock extends React.Component<Props, State> {
-    state = { copied: false };
+    public override state = { copied: false };
 
-    copy = (source: React.ReactNode) => {
+    private readonly copy = (source: React.ReactNode) => {
         copy(source as string);
         this.setState({ copied: true }, () => {
             setTimeout(() => {
@@ -47,7 +51,7 @@ class CodeBlock extends React.Component<Props, State> {
         });
     };
 
-    render() {
+    public override render(): React.ReactNode {
         let { children: source } = this.props;
         if (typeof source === "object") {
             source = elementToString(source, { showDefaultProps: false, showFunctions: true });

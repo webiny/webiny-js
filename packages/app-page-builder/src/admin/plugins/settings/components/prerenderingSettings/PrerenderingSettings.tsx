@@ -18,7 +18,7 @@ import {
 import { Input } from "@webiny/ui/Input";
 import { CenteredView } from "@webiny/app-admin";
 
-const PrerenderingSettings = () => {
+const PrerenderingSettings: React.FC = () => {
     const { showSnackbar } = useSnackbar();
 
     const { data, loading: queryInProgress } = useQuery(GET_SETTINGS);
@@ -95,7 +95,13 @@ const PrerenderingSettings = () => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormFooter>
-                            <ButtonPrimary onClick={form.submit}>Save</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >
+                                Save
+                            </ButtonPrimary>
                         </SimpleFormFooter>
                     </SimpleForm>
                 )}

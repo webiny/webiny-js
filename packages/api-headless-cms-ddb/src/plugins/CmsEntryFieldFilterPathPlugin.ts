@@ -9,21 +9,21 @@ export interface CreatePathCallableParams {
 export interface CreatePathCallable {
     (params: CreatePathCallableParams): string;
 }
-export interface Params {
+export interface CmsEntryFieldFilterPathPluginParams {
     fieldType: string;
     fieldId?: string[];
     path: string | CreatePathCallable;
 }
 export class CmsEntryFieldFilterPathPlugin extends Plugin {
-    public static readonly type: string = "cms-field-filter-path";
+    public static override readonly type: string = "cms-field-filter-path";
 
-    private readonly config: Params;
+    private readonly config: CmsEntryFieldFilterPathPluginParams;
 
     public get fieldType(): string {
         return this.config.fieldType;
     }
 
-    public constructor(config: Params) {
+    public constructor(config: CmsEntryFieldFilterPathPluginParams) {
         super();
 
         this.config = config;
@@ -35,10 +35,11 @@ export class CmsEntryFieldFilterPathPlugin extends Plugin {
         if (field.type !== this.config.fieldType) {
             return false;
         }
-        if (Array.isArray(this.config.fieldId) === false || this.config.fieldId.length === 0) {
+        const fieldId = this.config.fieldId;
+        if (!fieldId || Array.isArray(fieldId) === false || fieldId.length === 0) {
             return true;
         }
-        return this.config.fieldId.includes(field.fieldId);
+        return fieldId.includes(field.fieldId);
     }
 
     public createPath(params: CreatePathCallableParams): string {

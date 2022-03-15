@@ -1,6 +1,7 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createSetupForContentReview } from "../utils/helpers";
+import { ApwContentReview, PageWithWorkflow } from "~/types";
 
 describe(`Pending change requests count test`, () => {
     const options = {
@@ -21,7 +22,7 @@ describe(`Pending change requests count test`, () => {
         until
     } = gqlHandler;
 
-    const createContentReview = async page => {
+    const createContentReview = async (page: PageWithWorkflow) => {
         const [createContentReviewResponse] = await createContentReviewMutation({
             data: {
                 content: {
@@ -40,7 +41,7 @@ describe(`Pending change requests count test`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listContentReviews.data;
                 return list.length === 1;
             },
@@ -61,7 +62,7 @@ describe(`Pending change requests count test`, () => {
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 1;
             },
@@ -72,9 +73,9 @@ describe(`Pending change requests count test`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const [entry] = response.data.apw.listContentReviews.data;
-                return entry.steps.find(step => step.id === step1.id).pendingChangeRequests === 1;
+                return entry.steps.find(step => step.id === step1.id)?.pendingChangeRequests === 1;
             },
             {
                 name: "Wait for updated entry to be available in list query"
@@ -152,12 +153,12 @@ describe(`Pending change requests count test`, () => {
 
             await until(
                 () => listContentReviewsQuery({}).then(([data]) => data),
-                response => {
-                    const [entry] = response.data.apw.listContentReviews.data;
+                (response: any) => {
+                    const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
                     return (
-                        entry.steps.find(step => step.id === step1.id).pendingChangeRequests ===
+                        entry.steps.find(step => step.id === step1.id)?.pendingChangeRequests ===
                             1 &&
-                        entry.steps.find(step => step.id === step2.id).pendingChangeRequests ===
+                        entry.steps.find(step => step.id === step2.id)?.pendingChangeRequests ===
                             i + 1
                     );
                 },

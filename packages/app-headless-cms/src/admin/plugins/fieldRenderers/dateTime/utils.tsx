@@ -179,7 +179,7 @@ export const getDefaultFieldValue = (
     return getCurrent();
 };
 
-export const getCurrentTimeZone = (date?: Date): string => {
+export const getCurrentTimeZone = (date?: Date): string | null => {
     if (!date) {
         date = new Date();
     }
@@ -223,7 +223,12 @@ const deleteIconStyles = css({
     color: "var(--mdc-theme-text-secondary-on-background) !important"
 });
 
-export const RemoveFieldButton = ({ trailingIcon }) => {
+interface RemoveFieldButtonProps {
+    // TODO @ts-refactor figure out correct trailing icon type
+    // @ts-ignore
+    trailingIcon: any;
+}
+export const RemoveFieldButton: React.FC<RemoveFieldButtonProps> = ({ trailingIcon }) => {
     if (!trailingIcon) {
         return null;
     }

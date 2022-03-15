@@ -1,7 +1,7 @@
-import * as React from "react";
-import { FbFormDetailsPluginType } from "../../../../types";
+import React from "react";
+import { FbFormDetailsPluginType } from "~/types";
 import { Tab } from "@webiny/ui/Tabs";
-import RevisionsList from "./RevisionsList";
+import { RevisionsList } from "./RevisionsList";
 
 const plugin: FbFormDetailsPluginType = {
     name: "forms-form-details-revision-content-revisions",

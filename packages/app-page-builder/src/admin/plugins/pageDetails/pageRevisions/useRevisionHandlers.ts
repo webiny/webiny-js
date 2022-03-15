@@ -6,8 +6,13 @@ import { usePublishRevisionHandler } from "./usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as GQLCache from "~/admin/views/Pages/cache";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
+import { PbPageData, PbPageRevision } from "~/types";
 
-export function useRevisionHandlers(props) {
+interface UseRevisionHandlersProps {
+    page: PbPageData;
+    revision: PbPageRevision;
+}
+export function useRevisionHandlers(props: UseRevisionHandlersProps) {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const client = useApolloClient();
@@ -36,7 +41,7 @@ export function useRevisionHandlers(props) {
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [revision]);
 
-    const editRevision = useCallback(() => {
+    const editRevision = useCallback((): void => {
         history.push(`/page-builder/editor/${encodeURIComponent(revision.id)}`);
     }, [revision]);
 

@@ -25,7 +25,7 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-const TenantForm = () => {
+const TenantForm: React.FC = () => {
     const { loading, showEmptyView, createTenant, cancelEditing, tenant, onSubmit } =
         useTenantForm();
 
@@ -70,7 +70,11 @@ const TenantForm = () => {
                     <SimpleFormFooter>
                         <ButtonWrapper>
                             <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
-                            <ButtonPrimary onClick={form.submit}>{t`Save tenant`}</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >{t`Save tenant`}</ButtonPrimary>
                         </ButtonWrapper>
                     </SimpleFormFooter>
                 </SimpleForm>

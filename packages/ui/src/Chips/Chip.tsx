@@ -1,14 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { Chip as RmwcChip, ChipProps as RmwcChipProps } from "@rmwc/chip";
 
-export type ChipProps = RmwcChipProps & {
-    /**
-     * Chip content
-     */
-    children?: React.ReactNode;
-};
+export type ChipProps = RmwcChipProps;
 
-export const Chip = (props: ChipProps) => {
+export const Chip: React.FC<ChipProps> = props => {
     const { children, ...rest } = props;
     return <RmwcChip {...rest}>{children}</RmwcChip>;
 };

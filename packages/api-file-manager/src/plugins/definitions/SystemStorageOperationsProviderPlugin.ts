@@ -1,12 +1,14 @@
 import { Plugin } from "@webiny/plugins";
 import { FileManagerContext, FileManagerSystemStorageOperations } from "~/types";
 
-export interface Params {
+export interface SystemStorageOperationsProviderPluginParams {
     context: FileManagerContext;
 }
 
 export abstract class SystemStorageOperationsProviderPlugin extends Plugin {
-    public static readonly type = "fm.storageOperationsProvider.system";
+    public static override readonly type: string = "fm.storageOperationsProvider.system";
 
-    public abstract provide(params: Params): Promise<FileManagerSystemStorageOperations>;
+    public abstract provide(
+        params: SystemStorageOperationsProviderPluginParams
+    ): Promise<FileManagerSystemStorageOperations>;
 }

@@ -1,5 +1,7 @@
 import * as React from "react";
-import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
+import SingleImageUpload, {
+    SingleImageUploadProps
+} from "@webiny/app-admin/components/SingleImageUpload";
 
 const getImagePreviewStyles = (round: boolean) => ({
     width: 150,
@@ -8,13 +10,13 @@ const getImagePreviewStyles = (round: boolean) => ({
     objectFit: "cover"
 });
 
-const AvatarImage = props => {
+const AvatarImage: React.FC<SingleImageUploadProps> = props => {
     return (
         <SingleImageUpload
             {...props}
             imagePreviewProps={{
                 transform: { width: 300 },
-                style: getImagePreviewStyles(props.round)
+                style: getImagePreviewStyles(props.round || false)
             }}
         />
     );

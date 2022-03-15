@@ -1,3 +1,7 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import DataLoader from "dataloader";
 import {
@@ -10,14 +14,15 @@ import {
     TenantAfterUpdateEvent,
     TenantBeforeDeleteEvent,
     TenantAfterDeleteEvent,
-    Tenancy
+    Tenancy,
+    ListTenantsParams
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
 
 function createTenantLoaders(storageOperations: TenancyStorageOperations) {
     const loaders = new Map<string, DataLoader<any, any>>();
 
-    const getTenant = async ids => {
+    const getTenant = async (ids: readonly string[]) => {
         if (ids.length === 0) {
             return [];
         }
@@ -29,10 +34,13 @@ function createTenantLoaders(storageOperations: TenancyStorageOperations) {
 
     return {
         get getTenant() {
-            if (!loaders.get("getTenant")) {
-                loaders.set("getTenant", new DataLoader<string, any>(ids => getTenant(ids)));
+            let tenantLoader = loaders.get("getTenant");
+            if (tenantLoader) {
+                return tenantLoader;
             }
-            return loaders.get("getTenant");
+            tenantLoader = new DataLoader<string, any>(ids => getTenant(ids));
+            loaders.set("getTenant", tenantLoader);
+            return tenantLoader;
         }
     };
 }
@@ -58,7 +66,10 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
             return await loaders.getTenant.load(id);
         },
 
-        async listTenants<TTenant extends Tenant = Tenant>({ parent }): Promise<TTenant[]> {
+        async listTenants<TTenant extends Tenant = Tenant>(
+            params: ListTenantsParams
+        ): Promise<TTenant[]> {
+            const { parent } = params;
             return storageOperations.listTenants({ parent });
         },
 

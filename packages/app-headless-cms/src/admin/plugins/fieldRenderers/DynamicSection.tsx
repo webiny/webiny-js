@@ -6,6 +6,7 @@ import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { CmsEditorField } from "~/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { GetBindCallable } from "~/admin/components/ContentEntryForm/useBind";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -17,18 +18,26 @@ const style = {
     })
 };
 
-type Props = {
+/**
+ * TODO @ts-refactor figure out correct types
+ */
+interface DynamicSectionPropsChildrenParams {
+    // bind: BindComponentRenderProp;
+    // index: number;
+    [key: string]: any;
+}
+interface DynamicSectionProps {
     field: CmsEditorField;
-    getBind(index?: number): React.ComponentType<any>;
+    getBind: GetBindCallable;
     showLabel?: boolean;
     Label: React.ComponentType<any>;
-    children: (params: any) => React.ReactNode;
+    children: (params: DynamicSectionPropsChildrenParams) => React.ReactElement;
     emptyValue?: any;
     renderTitle?: (value: any[]) => React.ReactElement;
     gridClassName?: string;
-};
+}
 
-const DynamicSection = ({
+const DynamicSection: React.FC<DynamicSectionProps> = ({
     field,
     getBind,
     Label,
@@ -37,7 +46,7 @@ const DynamicSection = ({
     emptyValue = "",
     renderTitle,
     gridClassName
-}: Props) => {
+}) => {
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
 
@@ -51,7 +60,7 @@ const DynamicSection = ({
                  */
                 const { value, appendValue } = bindField;
 
-                const bindFieldValue = value || [];
+                const bindFieldValue: string[] = value || [];
                 return (
                     <Grid className={gridClassName}>
                         {typeof renderTitle === "function" && renderTitle(bindFieldValue)}
@@ -59,14 +68,17 @@ const DynamicSection = ({
                             {/* We always render the first item, for better UX */}
                             {showLabel && field.label && <Label>{field.label}</Label>}
                             <FirstFieldBind>
-                                {bindIndex =>
+                                {bindProps =>
                                     /* We bind it to index "0", so when you start typing, that index in parent array will be populated */
                                     children({
                                         Bind: FirstFieldBind,
                                         field,
                                         // "index" contains Bind props for this particular item in the array
                                         // "field" contains Bind props for the main (parent) field.
-                                        bind: { index: bindIndex, field: bindField },
+                                        bind: {
+                                            index: bindProps,
+                                            field: bindField
+                                        },
                                         index: 0 // Binds to "items.0" in the <Form>.
                                     })
                                 }
@@ -81,11 +93,14 @@ const DynamicSection = ({
                             return (
                                 <Cell span={12} key={realIndex}>
                                     <BindField>
-                                        {bindIndex =>
+                                        {bindProps =>
                                             children({
                                                 Bind: BindField,
                                                 field,
-                                                bind: { index: bindIndex, field: bindField },
+                                                bind: {
+                                                    index: bindProps,
+                                                    field: bindField
+                                                },
                                                 index: realIndex
                                             })
                                         }

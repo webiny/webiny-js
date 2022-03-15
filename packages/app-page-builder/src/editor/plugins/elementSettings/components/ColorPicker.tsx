@@ -10,19 +10,19 @@ const extrapolateActiveElementValue = (
     value?: string,
     valueKey?: string,
     defaultValue?: string
-): string | undefined => {
+): string => {
     if (!valueKey) {
-        return value;
+        return value || "";
     }
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId));
+    const element = useRecoilValue(elementByIdSelector(activeElementId as string));
     if (!element) {
         throw new Error("There is no active element.");
     }
-    return lodashGet(element, valueKey, defaultValue);
+    return lodashGet(element, valueKey, defaultValue || "");
 };
 
-type ColorPickerProps = {
+interface ColorPickerProps {
     label: string;
     value?: string;
     valueKey?: string;
@@ -31,9 +31,9 @@ type ColorPickerProps = {
     updateValue: Function;
     className?: string;
     handlerClassName?: string;
-};
+}
 
-const ColorPicker = ({
+const ColorPicker: React.FC<ColorPickerProps> = ({
     label,
     value,
     valueKey,
@@ -41,7 +41,7 @@ const ColorPicker = ({
     updatePreview,
     updateValue,
     className
-}: ColorPickerProps) => {
+}) => {
     const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
     return (
         <Grid className={className}>
@@ -62,14 +62,15 @@ const ColorPicker = ({
 
 export default React.memo(ColorPicker);
 
-export const BaseColorPickerComponent = ({
+type BaseColorPickerComponent = Omit<ColorPickerProps, "label">;
+export const BaseColorPickerComponent: React.FC<BaseColorPickerComponent> = ({
     value,
     valueKey,
     defaultValue,
     updatePreview,
     updateValue,
     handlerClassName
-}: Partial<ColorPickerProps>) => {
+}) => {
     const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
     return (
         <ColorPickerCmp

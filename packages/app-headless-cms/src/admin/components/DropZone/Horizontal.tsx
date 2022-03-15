@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import Droppable from "../Droppable";
+import { Droppable, IsVisibleCallable } from "../Droppable";
 import { DragSource } from "~/admin/components/FieldEditor/FieldEditorContext";
 
 const InnerDiv = styled("div")({
@@ -19,7 +19,11 @@ const BackgroundColorDiv = styled("div")({
     height: "100%"
 });
 
-type OuterDivProps = { isOver: boolean; isDragging: boolean; last: boolean };
+interface OuterDivProps {
+    isOver: boolean;
+    isDragging: boolean;
+    last: boolean;
+}
 
 const OuterDiv = styled("div")(
     {
@@ -49,13 +53,14 @@ const OuterDiv = styled("div")(
     })
 );
 
-type HorizontalProps = {
+interface HorizontalProps {
     onDrop(item: DragSource): void;
     last?: boolean;
-    isVisible?: any;
-};
+    isVisible?: IsVisibleCallable;
+    ["data-testid"]?: string;
+}
 
-const Horizontal = ({ last, onDrop, isVisible, ...rest }: HorizontalProps) => {
+const Horizontal: React.FC<HorizontalProps> = ({ last, onDrop, isVisible, ...rest }) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
@@ -72,7 +77,7 @@ const Horizontal = ({ last, onDrop, isVisible, ...rest }: HorizontalProps) => {
                         zIndex: isDragging ? 1000 : -1
                     }}
                 >
-                    <OuterDiv isOver={isOver} isDragging={isDragging} last={last}>
+                    <OuterDiv isOver={isOver} isDragging={isDragging} last={last ? true : false}>
                         <InnerDiv>
                             <BackgroundColorDiv />
                         </InnerDiv>

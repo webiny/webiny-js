@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins/types";
 import { PluginsAtomType } from "../pluginsAtom";
 import { plugins } from "@webiny/plugins";
-import { EventActionHandlerMutationActionCallable } from "../../../../../types";
+import { EventActionHandlerMutationActionCallable } from "~/types";
 
 export const deactivatePluginByNameMutation: EventActionHandlerMutationActionCallable<
     PluginsAtomType,
@@ -18,6 +18,9 @@ export const deactivatePluginMutation: EventActionHandlerMutationActionCallable<
     PluginsAtomType,
     Plugin
 > = (state, target) => {
+    if (!target) {
+        return state;
+    }
     const { type, name } = target;
     const allPluginsByType = state[type];
     if (!allPluginsByType || allPluginsByType.length === 0) {

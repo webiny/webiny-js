@@ -15,7 +15,7 @@ export const Element: React.FC<Props> = props => {
         return null;
     }
 
-    const ElementRenderer = renderers[element.type];
+    const ElementRenderer = renderers ? renderers[element.type] : null;
     if (!ElementRenderer) {
         return null;
     }

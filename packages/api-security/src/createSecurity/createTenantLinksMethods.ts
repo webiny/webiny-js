@@ -12,21 +12,21 @@ import {
 
 export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) => {
     return {
-        async createTenantLinks(params: CreateTenantLinkParams[]) {
+        async createTenantLinks(params: CreateTenantLinkParams[]): Promise<void> {
             await storageOperations.createTenantLinks(
                 params.map(item => ({
                     ...item,
                     createdOn: new Date().toISOString(),
-                    webinyVersion: process.env.WEBINY_VERSION
+                    webinyVersion: process.env.WEBINY_VERSION as string
                 }))
             );
         },
 
-        async updateTenantLinks(params: UpdateTenantLinkParams[]) {
+        async updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void> {
             await storageOperations.updateTenantLinks(params);
         },
 
-        async deleteTenantLinks(params: DeleteTenantLinkParams[]) {
+        async deleteTenantLinks(params: DeleteTenantLinkParams[]): Promise<void> {
             await storageOperations.deleteTenantLinks(params);
         },
 
@@ -36,17 +36,17 @@ export const createTenantLinksMethods = ({ storageOperations }: SecurityConfig) 
             return storageOperations.listTenantLinksByType(params);
         },
 
-        listTenantLinksByTenant(params: ListTenantLinksParams) {
+        listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]> {
             return storageOperations.listTenantLinksByTenant(params);
         },
 
-        listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams) {
+        listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]> {
             return storageOperations.listTenantLinksByIdentity(params);
         },
 
         async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
             params: GetTenantLinkByIdentityParams
-        ): Promise<TLink> {
+        ): Promise<TLink | null> {
             return storageOperations.getTenantLinkByIdentity(params);
         }
     };

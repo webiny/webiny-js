@@ -1,3 +1,7 @@
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import {
@@ -13,7 +17,8 @@ import {
     OnBeforeCategoryUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
-    PbContext
+    PbContext,
+    PbSecurityPermission
 } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
@@ -38,14 +43,16 @@ const UpdateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.category";
 
-export interface Params {
+export interface CreateCategoriesCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
+    getLocaleCode: () => string;
 }
-export const createCategoriesCrud = (params: Params): CategoriesCrud => {
-    const { context, storageOperations } = params;
+export const createCategoriesCrud = (params: CreateCategoriesCrudParams): CategoriesCrud => {
+    const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const getPermission = name => context.security.getPermission(name);
+    const getPermission = (name: string) => context.security.getPermission(name);
 
     const onBeforeCategoryCreate = createTopic<OnBeforeCategoryCreateTopicParams>();
     const onAfterCategoryCreate = createTopic<OnAfterCategoryCreateTopicParams>();
@@ -53,14 +60,6 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
     const onAfterCategoryUpdate = createTopic<OnAfterCategoryUpdateTopicParams>();
     const onBeforeCategoryDelete = createTopic<OnBeforeCategoryDeleteTopicParams>();
     const onAfterCategoryDelete = createTopic<OnAfterCategoryDeleteTopicParams>();
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
-    const getLocaleCode = (): string => {
-        return context.i18nContent.getCurrentLocale().code;
-    };
 
     return {
         /**
@@ -72,6 +71,9 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
         onAfterCategoryUpdate,
         onBeforeCategoryDelete,
         onAfterCategoryDelete,
+        /**
+         * This method should return category or null. No error throwing on not found.
+         */
         async getCategory(slug, options = { auth: true }) {
             const { auth } = options;
 
@@ -107,7 +109,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                 throw new NotAuthorizedError();
             }
 
-            let category: Category;
+            let category: Category | null = null;
             try {
                 category = await storageOperations.categories.get(params);
             } catch (ex) {
@@ -120,6 +122,9 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
                     }
                 );
             }
+            if (!category) {
+                return null;
+            }
 
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, category);
@@ -130,7 +135,7 @@ export const createCategoriesCrud = (params: Params): CategoriesCrud => {
         async listCategories() {
             await context.i18nContent.checkI18NContentPermission();
 
-            let permission;
+            let permission: PbSecurityPermission | null = null;
             const categoryPermission = await getPermission("pb.category");
             if (categoryPermission && hasRwd(categoryPermission, "r")) {
                 permission = categoryPermission;

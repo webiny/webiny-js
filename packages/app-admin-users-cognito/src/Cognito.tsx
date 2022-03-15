@@ -6,7 +6,8 @@ import {
     AddMenu as Menu,
     AddUserMenuItem,
     AddRoute,
-    Layout
+    Layout,
+    HigherOrderComponent
 } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-security";
@@ -23,16 +24,23 @@ import installation from "./plugins/installation";
 import permissionRenderer from "./plugins/permissionRenderer";
 import cognito from "./plugins/cognito";
 
-const LoginScreen = createAuthentication();
+/**
+ * TODO @ts-refactor figure out correct LoginScreenTypes.
+ */
+// @ts-ignore
+const LoginScreen: React.FC = createAuthentication();
 
-const CognitoLoginScreen = () => LoginScreen;
-
-const CognitoIdP = () => {
+const CognitoLoginScreen: HigherOrderComponent = () => LoginScreen;
+/**
+ * TODO @ts-refactor @pavel
+ * Compose.component
+ */
+const CognitoIdP: React.FC = () => {
     plugins.register([globalSearchUsers, installation, permissionRenderer, cognito()]);
 
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer} with={CognitoLoginScreen} />
+            <Compose component={LoginScreenRenderer as any} with={CognitoLoginScreen} />
             <Plugins>
                 <HasPermission name={Permission.Users}>
                     <AddRoute exact path={"/admin-users"}>

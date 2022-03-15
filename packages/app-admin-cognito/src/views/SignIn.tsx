@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -9,11 +9,14 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Alert } from "@webiny/ui/Alert";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
-import { useSignIn } from "@webiny/app-cognito-authenticator/hooks/useSignIn";
+import {
+    useSignIn,
+    UseSignInCallableParams
+} from "@webiny/app-cognito-authenticator/hooks/useSignIn";
 import StateContainer from "./StateContainer";
 import { alignRight, alignCenter, InnerContent, Title, errorMessage } from "./StyledComponents";
 
-const SignIn = () => {
+const SignIn: React.FC = () => {
     const { message, changeState, checkingUser } = useAuthenticator();
     const { signIn, loading, error, shouldRender } = useSignIn();
 
@@ -23,7 +26,15 @@ const SignIn = () => {
 
     return (
         <StateContainer>
-            <Form onSubmit={signIn} submitOnEnter>
+            <Form
+                onSubmit={data => {
+                    /**
+                     * We are positive that data is UseSignInCallableParams
+                     */
+                    return signIn(data as unknown as UseSignInCallableParams);
+                }}
+                submitOnEnter
+            >
                 {({ Bind, submit }) => (
                     <Elevation z={2}>
                         <InnerContent>
@@ -59,7 +70,9 @@ const SignIn = () => {
                                     <Bind
                                         name="username"
                                         validators={validation.create("required,email")}
-                                        beforeChange={(val, cb) => cb(val.toLowerCase())}
+                                        beforeChange={(val: string, cb: (value: string) => void) =>
+                                            cb(val.toLowerCase())
+                                        }
                                     >
                                         <Input label={"Your e-mail"} />
                                     </Bind>
@@ -75,7 +88,9 @@ const SignIn = () => {
                                 <Cell span={12} className={alignRight}>
                                     <ButtonPrimary
                                         data-testid="submit-sign-in-form-button"
-                                        onClick={submit}
+                                        onClick={ev => {
+                                            submit(ev);
+                                        }}
                                     >
                                         {"Submit"}
                                     </ButtonPrimary>

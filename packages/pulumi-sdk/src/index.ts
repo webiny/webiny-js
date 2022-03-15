@@ -5,10 +5,17 @@ import { merge, kebabCase, set } from "lodash";
 import downloadBinaries from "./downloadBinaries";
 
 type Command = string | string[];
-type PulumiArgs = { [key: string]: string | boolean };
-type ExecaArgs = { [key: string]: any };
+interface PulumiArgs {
+    [key: string]: string | boolean;
+}
+interface ExecaArgs {
+    env?: {
+        [key: string]: string | undefined;
+    };
+    [key: string]: any;
+}
 
-type Options = {
+interface Options {
     args?: PulumiArgs;
     execa?: ExecaArgs;
     beforePulumiInstall?: () => any;
@@ -18,20 +25,20 @@ type Options = {
     // It's recommended this folder is not checked in into a code repository, since the Pulumi CLI can store
     // sensitive information here, for example - user's Pulumi Service credentials.
     pulumiFolder?: string;
-};
+}
 
-type RunArgs = {
+interface RunArgs {
     command: Command;
     args?: PulumiArgs;
     execa?: ExecaArgs;
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
-};
+}
 
-type InstallArgs = {
+interface InstallArgs {
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
-};
+}
 
 export const FLAG_NON_INTERACTIVE = "--non-interactive";
 
@@ -54,7 +61,7 @@ export class Pulumi {
     }
 
     run(rawArgs: RunArgs) {
-        const args = merge({}, this.options, rawArgs);
+        const args: Options & RunArgs = merge({}, this.options, rawArgs);
 
         if (!Array.isArray(args.command)) {
             args.command = [args.command];
@@ -83,6 +90,9 @@ export class Pulumi {
             finalArgs.push(`--${kebabCase(key)}`, value);
         }
 
+        if (!args.execa) {
+            args.execa = {};
+        }
         // Prepare execa args.
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
         set(args.execa, "env.PULUMI_HOME", this.pulumiFolder);

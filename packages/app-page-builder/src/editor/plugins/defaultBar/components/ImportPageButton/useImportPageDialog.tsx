@@ -34,7 +34,15 @@ const separator = css`
 
 export const importPageDialogTitle = t`Import page`;
 
-export const ImportPageDialogContent = ({ onUploadFile, onPasteFileLink }) => {
+interface ImportPageDialogContentProps {
+    onUploadFile: (file: string) => void;
+    onPasteFileLink: (url: string) => void;
+}
+
+export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = ({
+    onUploadFile,
+    onPasteFileLink
+}) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 
@@ -59,10 +67,11 @@ export const ImportPageDialogContent = ({ onUploadFile, onPasteFileLink }) => {
                 <Form
                     data={{ url: "" }}
                     onSubmit={data => {
-                        if (typeof onPasteFileLink === "function") {
-                            closeDialog();
-                            onPasteFileLink(data.url);
+                        if (typeof onPasteFileLink !== "function") {
+                            return;
                         }
+                        closeDialog();
+                        onPasteFileLink(data["url"]);
                     }}
                 >
                     {({ Bind, submit }) => (
@@ -77,7 +86,13 @@ export const ImportPageDialogContent = ({ onUploadFile, onPasteFileLink }) => {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <ButtonSecondary onClick={submit}>Continue</ButtonSecondary>
+                                <ButtonSecondary
+                                    onClick={ev => {
+                                        submit(ev);
+                                    }}
+                                >
+                                    Continue
+                                </ButtonSecondary>
                             </Cell>
                         </Grid>
                     )}
@@ -115,11 +130,24 @@ const useImportPageDialog = () => {
     const { showDialog } = useDialog();
 
     return {
-        showImportPageDialog: (onUploadFile = null, onPasteFileLink = null) => {
+        showImportPageDialog: (
+            onUploadFile?: (file: string) => void,
+            onPasteFileLink?: (url: string) => void
+        ) => {
             showDialog(
                 <ImportPageDialogContent
-                    onUploadFile={onUploadFile}
-                    onPasteFileLink={onPasteFileLink}
+                    onUploadFile={file => {
+                        if (!onUploadFile) {
+                            return;
+                        }
+                        onUploadFile(file);
+                    }}
+                    onPasteFileLink={url => {
+                        if (!onPasteFileLink) {
+                            return;
+                        }
+                        onPasteFileLink(url);
+                    }}
                 />,
                 {
                     title: importPageDialogTitle,

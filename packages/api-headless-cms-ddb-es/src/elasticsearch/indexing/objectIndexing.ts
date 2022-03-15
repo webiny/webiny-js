@@ -30,6 +30,15 @@ interface ProcessFromIndex {
     }): Record<string, any>;
 }
 
+interface ReducerValue {
+    value: {
+        [key: string]: string;
+    };
+    rawValue: {
+        [key: string]: string;
+    };
+}
+
 const processToIndex: ProcessToIndex = ({
     fields,
     value: sourceValue,
@@ -39,8 +48,11 @@ const processToIndex: ProcessToIndex = ({
     plugins,
     model
 }) => {
-    const reducer = (values, field) => {
+    const reducer = (values: ReducerValue, field: CmsModelField) => {
         const plugin = getFieldIndexPlugin(field.type);
+        if (!plugin || !plugin.toIndex) {
+            return values;
+        }
         const { value, rawValue } = plugin.toIndex({
             model,
             field,
@@ -73,8 +85,11 @@ const processFromIndex: ProcessFromIndex = ({
     plugins,
     model
 }) => {
-    const reducer = (values, field) => {
+    const reducer = (values: Record<string, string>, field: CmsModelField) => {
         const plugin = getFieldIndexPlugin(field.type);
+        if (!plugin || !plugin.fromIndex) {
+            return values;
+        }
         const value = plugin.fromIndex({
             plugins,
             model,
@@ -95,6 +110,11 @@ const processFromIndex: ProcessFromIndex = ({
     return fields.reduce(reducer, {});
 };
 
+interface ToIndexMultipleFieldValue {
+    value: Record<string, string>[];
+    rawValue: Record<string, string>[];
+}
+
 export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
     name: "cms-model-field-to-elastic-search-object",
@@ -112,13 +132,13 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             return { value: null };
         }
 
-        const fields = field.settings.fields as CmsModelField[];
+        const fields = (field.settings?.fields || []) as CmsModelField[];
 
         /**
          * In "object" field, value is either an object or an array of objects.
          */
         if (field.multipleValues) {
-            const result = {
+            const result: ToIndexMultipleFieldValue = {
                 value: [],
                 rawValue: []
             };
@@ -162,7 +182,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             return null;
         }
 
-        const fields = field.settings.fields as CmsModelField[];
+        const fields = (field.settings?.fields || []) as CmsModelField[];
 
         /**
          * In "object" field, value is either an object or an array of objects.
@@ -175,7 +195,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
              */
             const source = value || rawValue || [];
 
-            return source.map((_, index) =>
+            return source.map((_: any, index: number) =>
                 processFromIndex({
                     value: value ? value[index] || {} : {},
                     rawValue: rawValue ? rawValue[index] || {} : {},

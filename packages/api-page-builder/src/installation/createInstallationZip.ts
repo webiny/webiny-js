@@ -1,6 +1,11 @@
 import path from "path";
+/**
+ * Package zip-local does not have types.
+ */
+// @ts-ignore
 import zipper from "zip-local";
 import fs from "fs";
+
 export default (destination = "./pageBuilderInstallation.zip") => {
     if (fs.existsSync(destination)) {
         return;

@@ -49,7 +49,15 @@ export const HEIGHT_UNIT_OPTIONS = [
     }
 ];
 
-export const createInitialPerDeviceSettingValue = (defaultValue: any, baseDisplayMode?: string) => {
+type DefaultValueType = any;
+/**
+ * Figure out better return type.
+ */
+// TODO @ts-refactor
+export const createInitialPerDeviceSettingValue = (
+    defaultValue: DefaultValueType,
+    baseDisplayMode?: string
+): any => {
     // Only set "baseDisplayMode" value if present
     if (baseDisplayMode) {
         return {
@@ -57,7 +65,7 @@ export const createInitialPerDeviceSettingValue = (defaultValue: any, baseDispla
         };
     }
 
-    const value = {};
+    const value: Record<string, string> = {};
     // Get responsive editor modes from plugins.
     const editorModes = plugins
         .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
@@ -68,8 +76,10 @@ export const createInitialPerDeviceSettingValue = (defaultValue: any, baseDispla
     });
     return value;
 };
-
-export const applyFallbackDisplayMode = (mode: DisplayMode, getValue: any) => {
+export const applyFallbackDisplayMode = (
+    mode: DisplayMode,
+    getValue: (value: string) => string
+): string | undefined => {
     // Get display modes
     const displayModeConfigs = plugins
         .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
@@ -80,7 +90,7 @@ export const applyFallbackDisplayMode = (mode: DisplayMode, getValue: any) => {
     const index = orderedConfigs.findIndex(({ displayMode }) => displayMode === mode);
 
     // Merge all values from base "DisplayMode" upto current
-    let output = undefined;
+    let output: string | undefined = undefined;
     for (let i = 0; i < index; i++) {
         const currentValue = getValue(orderedConfigs[i].displayMode);
         // In case of "string", we don't need to merge all values

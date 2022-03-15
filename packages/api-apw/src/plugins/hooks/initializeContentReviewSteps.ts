@@ -1,10 +1,33 @@
 import lodashSet from "lodash/set";
 import get from "lodash/get";
 import { LifeCycleHookCallbackParams } from "~/types";
+import {
+    AdvancedPublishingWorkflow,
+    ApwContentReviewStepStatus,
+    ApwContentTypes,
+    LifeCycleHookCallbackParams
+} from "~/types";
 import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 
-export const initializeContentReviewSteps = ({ apw }: LifeCycleHookCallbackParams) => {
+export const getWorkflowIdFromContent = async (
+    apw: AdvancedPublishingWorkflow,
+    params: { type: ApwContentTypes; id: string; settings: Record<string, any> }
+): Promise<string | null> => {
+    switch (params.type) {
+        case ApwContentTypes.PAGE:
+            const getWorkflowFromPage = apw.getWorkflowGetter(ApwContentTypes.PAGE);
+            return getWorkflowFromPage(params.id, {});
+
+        case ApwContentTypes.CMS_ENTRY:
+            const getWorkflowFromCmsEntry = apw.getWorkflowGetter(ApwContentTypes.CMS_ENTRY);
+            return getWorkflowFromCmsEntry(params.id, params.settings);
+        default:
+            return null;
+    }
+};
+
+export const initializeContentReviewSteps = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {
         const { type, id, settings } = input.content;
         /*
@@ -27,7 +50,7 @@ export const initializeContentReviewSteps = ({ apw }: LifeCycleHookCallbackParam
         const workflow = await apw.workflow.get(workflowId);
         const workflowSteps = workflow.steps;
 
-        let previousStepStatus;
+        let previousStepStatus: ApwContentReviewStepStatus;
         const updatedSteps = workflow.steps.map((step, index) => {
             const status = getContentReviewStepInitialStatus(
                 workflowSteps,

@@ -6,20 +6,31 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
-import { useCmsData } from "./useCmsData";
+import { useCmsData, CmsDataCmsModel } from "./useCmsData";
 import { Note } from "./StyledComponents";
 import ContentModelList from "./ContentModelList";
+import { BindComponent } from "@webiny/form/types";
+import { CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-export const ContentModelPermission = ({
+interface ContentModelPermissionProps {
+    Bind: BindComponent;
+    data: CmsSecurityPermission;
+    setValue: (name: string, value: string) => void;
+    entity: string;
+    title: string;
+    locales: string[];
+    selectedContentModelGroups?: Record<string, string[]>;
+}
+export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
     Bind,
     data,
     setValue,
     entity,
     title,
     locales,
-    selectedContentModelGroups
+    selectedContentModelGroups = {}
 }) => {
     const modelsGroups = useCmsData(locales);
     // Set "cms.contentModel" access scope to "own" if "cms.contentModelGroup" === "own".
@@ -33,10 +44,10 @@ export const ContentModelPermission = ({
     }, [data]);
 
     const getItems = useCallback(
-        (code: string) => {
-            let list = get(modelsGroups, `${code}.models`, []);
+        (code: string): CmsDataCmsModel[] => {
+            let list = get(modelsGroups, `${code}.models`, []) as CmsDataCmsModel[];
 
-            const groups = (selectedContentModelGroups && selectedContentModelGroups[code]) || [];
+            const groups: string[] = selectedContentModelGroups[code] || [];
             if (groups.length) {
                 // Filter by groups
                 list = list.filter(item => groups.includes(item.group.id));
@@ -47,9 +58,11 @@ export const ContentModelPermission = ({
         [modelsGroups]
     );
 
+    const endpoints = data.endpoints || [];
+
     const disabledPrimaryActions =
         [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
-        !data.endpoints.includes("manage");
+        !endpoints.includes("manage");
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -68,11 +81,11 @@ export const ContentModelPermission = ({
                                 >
                                     <option value={"full"}>{t`All models`}</option>
                                     <option value={"models"}>{t`Only specific models`}</option>
-                                    {data.endpoints.includes("manage") && (
+                                    {(endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only models created by the user`}</option>
-                                    )}
+                                    )) || <></>}
                                 </Select>
                             </Bind>
                             {data[`contentModelGroupAccessScope`] === "own" && (
@@ -105,12 +118,16 @@ export const ContentModelPermission = ({
                                     disabled={disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
-                                    {data.endpoints.includes("manage") ? (
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rw"}>{t`Read, write`}</option>
-                                    ) : null}
-                                    {data.endpoints.includes("manage") ? (
+                                    ) : (
+                                        <></>
+                                    )}
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rwd"}>{t`Read, write, delete`}</option>
-                                    ) : null}
+                                    ) : (
+                                        <></>
+                                    )}
                                 </Select>
                             </Bind>
                         </Cell>

@@ -13,14 +13,14 @@ const plugin: CmsModelFieldValidatorPlugin = {
             const { settings } = validator;
 
             let pattern;
-            if (settings.preset === "custom") {
+            if (settings?.preset === "custom") {
                 pattern = settings;
             } else {
                 const patternPlugin = context.plugins
                     .byType<CmsModelFieldPatternValidatorPlugin>(
                         "cms-model-field-validator-pattern"
                     )
-                    .find(item => item.pattern.name === settings.preset);
+                    .find(item => item.pattern.name === settings?.preset);
 
                 if (patternPlugin) {
                     pattern = patternPlugin.pattern;

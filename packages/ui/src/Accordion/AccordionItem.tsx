@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "../List";
 import Transition from "react-transition-group/Transition";
-import { Icon } from "../Icon";
+import { Icon } from "~/Icon";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { Typography } from "../Typography";
+import { Typography } from "~/Typography";
 
 import { ReactComponent as UpArrow } from "./icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownArrow } from "./icons/round-keyboard_arrow_down-24px.svg";
@@ -55,34 +55,39 @@ const defaultStyle = {
     overflow: "hidden"
 };
 
+type TransitionStylesState = "entering" | "entered" | "exiting";
+
+/**
+ * We are casting pointerEvents as any because csstype does not have PointerEvents exported. Or at least, that is the error.
+ */
 const transitionStyles = {
     entering: {
         opacity: 0,
         height: 0,
         padding: "20px 20px 20px 65px",
-        pointerEvents: "auto",
+        pointerEvents: "auto" as any,
         overflow: "initial"
     },
     entered: {
         opacity: 1,
         height: "auto",
         padding: "20px 20px 20px 65px",
-        pointerEvents: "auto",
+        pointerEvents: "auto" as any,
         overflow: "initial"
     },
     exiting: {
         height: "auto",
         padding: "20px 20px 20px 65px",
-        pointerEvents: "auto",
+        pointerEvents: "auto" as any,
         overflow: "initial"
     }
 };
 
-export type AccordionItemProps = {
+export interface AccordionItemProps {
     /**
      * Left side icon
      */
-    icon: React.ReactElement;
+    icon?: React.ReactElement | null;
 
     /**
      * Accordion title
@@ -93,11 +98,6 @@ export type AccordionItemProps = {
      * Optional description
      */
     description?: string;
-
-    /**
-     * Element displayed when accordion is expanded
-     */
-    children?: React.ReactNode;
 
     /**
      * Append a class name
@@ -118,15 +118,15 @@ export type AccordionItemProps = {
     iconClassName?: string;
 };
 
-const AccordionItem = (props: AccordionItemProps) => {
-    const [open, setState] = useState(props.open ? props.open : false);
+const AccordionItem: React.FC<AccordionItemProps> = props => {
+    const [open, setState] = useState<boolean>(props.open ? props.open : false);
 
     const toggleState = useCallback(() => {
         setState(!open);
     }, [open]);
 
     useEffect(() => {
-        setState(props.open);
+        setState(props.open ? true : false);
     }, [props.open]);
 
     return (
@@ -159,7 +159,7 @@ const AccordionItem = (props: AccordionItemProps) => {
                 </ListItemMeta>
             </ListItem>
             <Transition in={open} timeout={duration}>
-                {state => (
+                {(state: TransitionStylesState) => (
                     <Content
                         style={{ ...defaultStyle, ...transitionStyles[state] }}
                         className="webiny-ui-accordion-item__content"

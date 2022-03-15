@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { Checkbox as RmwcCheckbox } from "@rmwc/checkbox";
-import { FormElementMessage } from "../FormElementMessage";
-import { FormComponentProps } from "./../types";
+import { FormElementMessage } from "~/FormElementMessage";
+import { FormComponentProps } from "~/types";
 
-type Props = FormComponentProps & {
+interface Props extends FormComponentProps {
     // Component label.
     label?: React.ReactNode;
 
@@ -11,14 +11,14 @@ type Props = FormComponentProps & {
     disabled?: boolean;
 
     // onClick callback.
-    onClick?: Function;
+    onClick?: (value: boolean) => void;
 
     // Use when checkbox is not checked nor unchecked.
     indeterminate?: boolean;
 
     // Description beneath the checkbox.
     description?: string;
-};
+}
 
 /**
  * Single Checkbox component can be used to store simple boolean values.
@@ -27,17 +27,16 @@ type Props = FormComponentProps & {
  * In that case, each Checkbox component must receive value and onChange callback via props.
  */
 class Checkbox extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
-    };
-
     onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
         this.props.onChange && this.props.onChange((e.target as any).checked);
     };
 
-    render() {
+    public override render() {
         const { value, label, disabled, indeterminate, description, validation, onClick } =
             this.props;
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
         return (
             <React.Fragment>
                 <RmwcCheckbox
@@ -49,11 +48,11 @@ class Checkbox extends React.Component<Props> {
                     // @ts-ignore Although the label is React.ReactNode internally, an error is still thrown.
                     label={label}
                 />
-                {validation.isValid === false && (
-                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                {validationIsValid === false && (
+                    <FormElementMessage error>{validationMessage}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>

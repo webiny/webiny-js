@@ -1,35 +1,57 @@
 import * as React from "react";
 import { plugins } from "@webiny/plugins";
-import { PbThemePlugin, PbTheme, DisplayMode } from "~/types";
+import { DisplayMode, PbTheme, PbThemePlugin } from "~/types";
 
-export const PageBuilderContext = React.createContext(null);
-
-export type ResponsiveDisplayMode = {
-    displayMode: string;
+export interface ResponsiveDisplayMode {
+    displayMode: DisplayMode;
     setDisplayMode: Function;
-};
+}
 
-export type ExportPageData = {
+export interface ExportPageData {
     revisionType: string;
     setRevisionType: Function;
-};
+}
 
-export type PageBuilderContextValue = {
+export interface PageBuilderContextValue {
     theme: PbTheme;
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
         };
     };
-    responsiveDisplayMode?: ResponsiveDisplayMode;
-    exportPageData?: ExportPageData;
-};
+    responsiveDisplayMode: ResponsiveDisplayMode;
+    exportPageData: ExportPageData;
+}
 
-export type PageBuilderProviderProps = {
+export interface PageBuilderProviderProps {
     children?: React.ReactChild | React.ReactChild[];
-};
+}
 
-export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
+export const PageBuilderContext = React.createContext<PageBuilderContextValue>({
+    /**
+     * Initial value. It will never be null
+     */
+    theme: null as unknown as PbTheme,
+    defaults: {
+        pages: {
+            notFound: undefined
+        }
+    },
+    responsiveDisplayMode: {
+        displayMode: DisplayMode.DESKTOP,
+        setDisplayMode: () => {
+            return void 0;
+        }
+    },
+    exportPageData: {
+        revisionType: "",
+        setRevisionType: () => {
+            return void 0;
+        }
+    }
+});
+
+export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
     const [revisionType, setRevisionType] = React.useState("published");
 
@@ -38,7 +60,12 @@ export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
             value={{
                 get theme() {
                     const [themePlugin] = plugins.byType<PbThemePlugin>("pb-theme");
-                    return themePlugin ? themePlugin.theme : null;
+                    if (!themePlugin) {
+                        throw new Error(
+                            "Theme plugin does not exist. Make sure that at least one plugin is loaded."
+                        );
+                    }
+                    return themePlugin.theme;
                 },
                 responsiveDisplayMode: {
                     displayMode,
@@ -55,8 +82,10 @@ export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
     );
 };
 
-export const PageBuilderConsumer = ({ children }) => (
+export const PageBuilderConsumer: React.FC = ({ children }) => (
     <PageBuilderContext.Consumer>
-        {props => React.cloneElement(children, { pageBuilder: props })}
+        {props =>
+            React.cloneElement(children as unknown as React.ReactElement, { pageBuilder: props })
+        }
     </PageBuilderContext.Consumer>
 );

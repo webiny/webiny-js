@@ -1,11 +1,11 @@
-import ValidationError from "./../validationError";
+import ValidationError from "~/validationError";
 import { compareTime } from "./time";
 
 /**
  * Validates that given value is a leaser or equal to a lteValue
  */
-export default (value: string, params: string[]) => {
-    if (!value) {
+export default (value: string, params?: string[]) => {
+    if (!value || !params) {
         return;
     }
     // we need to join because validation params are being split by :

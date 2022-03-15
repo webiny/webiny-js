@@ -1,11 +1,10 @@
 import { CmsFieldTypePlugins, CmsModel } from "~/types";
-import get from "lodash/get";
 
 interface RenderSortEnum {
     (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
-export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }) => {
+export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }): string => {
     const sorters = [
         `id_ASC`,
         `id_DESC`,
@@ -16,7 +15,10 @@ export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }) => {
     ];
 
     for (const field of model.fields) {
-        const isSortable = get(fieldTypePlugins, `${field.type}.isSortable`);
+        if (!fieldTypePlugins[field.type]) {
+            continue;
+        }
+        const isSortable = fieldTypePlugins[field.type].isSortable;
         if (!isSortable) {
             continue;
         }

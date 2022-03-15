@@ -21,6 +21,12 @@ export interface PageImportExportTaskStats {
     total: number;
 }
 
+interface CreatedBy {
+    id: string;
+    type: string;
+    displayName: string | null;
+}
+
 export interface PageImportExportTask {
     id: string;
     parent: string;
@@ -30,19 +36,15 @@ export interface PageImportExportTask {
     error: Record<string, any>;
     input: Record<string, any>;
     createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
     tenant: string;
     locale: string;
 }
 
-export type File = {
+export interface File {
     id: string;
     src: string;
-};
+}
 
 export interface MetaResponse {
     cursor: string | null;

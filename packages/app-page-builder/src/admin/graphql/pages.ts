@@ -1,11 +1,23 @@
 import gql from "graphql-tag";
+import { PbElement, PbErrorResponse, PbPageRevision } from "~/types";
 
 const error = `
-error {
-    code
-    message
+    error {
+        code
+        message
+        data
 }`;
 
+export interface PageResponseData {
+    id: string;
+    pid: string;
+    title: string;
+    path: string;
+    version: string;
+    locked: boolean;
+    status: string;
+    revisions: PbPageRevision[];
+}
 export const DATA_FIELDS = `
     id
     pid
@@ -82,7 +94,21 @@ export const LIST_PAGES = gql`
         }
     }
 `;
-
+/**
+ * ##############################
+ * Get Page Query Response
+ */
+export interface GetPageQueryResponse {
+    pageBuilder: {
+        getPage: {
+            data: PageResponseData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface GetPageQueryVariables {
+    id: string;
+}
 export const GET_PAGE = gql`
     query PbGetPagePreview($id: ID!) {
         pageBuilder {
@@ -100,7 +126,6 @@ export const GET_PAGE = gql`
         }
     }
 `;
-
 export const PUBLISH_PAGE = gql`
     mutation PbPublishPage($id: ID!) {
         pageBuilder {
@@ -126,7 +151,28 @@ export const UNPUBLISH_PAGE = gql`
         }
     }
 `;
-
+/**
+ * ##########################
+ * Delete Page Mutation
+ */
+interface DeletePageMutationResponseData {
+    latestPage: {
+        id: string;
+        status: string;
+        version: number;
+    };
+}
+export interface DeletePageMutationResponse {
+    pageBuilder: {
+        deletePage: {
+            data: DeletePageMutationResponseData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface DeletePageMutationVariables {
+    id: string;
+}
 export const DELETE_PAGE = gql`
     mutation PbDeletePage($id: ID!) {
         pageBuilder {
@@ -154,7 +200,33 @@ const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
         preview
     }
 `;
+/**
+ * ##############################
+ * List Page Elements Query
+ */
+export interface ListPageElementsQueryResponseDataPreview {
+    src: string;
+    meta: {
+        width: number;
+        height: number;
+        aspectRatio: number;
+    };
+}
+export interface ListPageElementsQueryResponseData {
+    id: string;
+    name: string;
+    category: string;
+    type: string;
+    content: PbElement;
+    preview: ListPageElementsQueryResponseDataPreview;
+}
 
+export interface ListPageElementsQueryResponse {
+    pageBuilder: {
+        data?: ListPageElementsQueryResponseData[];
+        error?: PbErrorResponse;
+    };
+}
 export const LIST_PAGE_ELEMENTS = gql`
     query PbListPageElements {
         pageBuilder {

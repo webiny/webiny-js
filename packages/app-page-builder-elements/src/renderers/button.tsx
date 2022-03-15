@@ -3,7 +3,7 @@ import { usePageElements } from "~/hooks/usePageElements";
 import { ElementRenderer } from "~/types";
 
 declare global {
-    //eslint-disable-next-line
+    // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
             "pb-button": any;
@@ -13,11 +13,15 @@ declare global {
     }
 }
 
-export interface Params {
+export interface CreateButtonParams {
     LinkComponent?: React.ComponentType<{ href: string; newTab: boolean }>;
 }
 
-const DefaultLinkComponent = ({ href, newTab, children }) => {
+interface DefaultLinkComponentProps {
+    href: string;
+    newTab?: boolean;
+}
+const DefaultLinkComponent: React.FC<DefaultLinkComponentProps> = ({ href, newTab, children }) => {
     return (
         <a href={href} target={newTab ? "_blank" : "_self"} rel={"noreferrer"}>
             {children}
@@ -25,15 +29,25 @@ const DefaultLinkComponent = ({ href, newTab, children }) => {
     );
 };
 
-export const createButton = (args: Params = {}): ElementRenderer => {
+export const createButton = (args: CreateButtonParams = {}): ElementRenderer => {
     const LinkComponent = args?.LinkComponent || DefaultLinkComponent;
 
-    const Button = ({ element }) => {
+    // TODO @ts-refactor fix "Component definition is missing display name"
+    // eslint-disable-next-line
+    return ({ element }) => {
         const { buttonText, link, type, icon } = element.data;
 
         const { getElementClassNames, getThemeClassNames, combineClassNames } = usePageElements();
 
-        const themeClassNames = getThemeClassNames(theme => theme.styles.buttons[type]);
+        const themeClassNames = getThemeClassNames(theme => {
+            if (!theme.styles || !theme.styles.buttons) {
+                return {};
+            }
+
+            const value = theme.styles.buttons[type];
+
+            return value;
+        });
         const elementClassNames = getElementClassNames(element);
 
         const classNames = combineClassNames(themeClassNames, elementClassNames);
@@ -47,6 +61,4 @@ export const createButton = (args: Params = {}): ElementRenderer => {
             </pb-button>
         );
     };
-
-    return Button;
 };

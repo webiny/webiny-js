@@ -49,10 +49,12 @@ const createType = (): string => {
     return "cms.model";
 };
 
-export interface Params {
+interface CreateModelsStorageOperationsParams {
     entity: Entity<any>;
 }
-export const createModelsStorageOperations = (params: Params): CmsModelStorageOperations => {
+export const createModelsStorageOperations = (
+    params: CreateModelsStorageOperationsParams
+): CmsModelStorageOperations => {
     const { entity } = params;
 
     const create = async (params: CmsModelStorageOperationsCreateParams) => {

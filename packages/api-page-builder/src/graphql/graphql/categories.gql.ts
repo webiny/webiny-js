@@ -2,7 +2,7 @@ import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { PbContext } from "../../types";
 
-const resolve = async fn => {
+const resolve = async (fn: () => Promise<any>): Promise<any> => {
     try {
         return new Response(await fn());
     } catch (e) {
@@ -58,7 +58,7 @@ export const createCategoryGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
             `,
             resolvers: {
                 PbQuery: {
-                    getCategory: async (_, args: { slug: string }, context) => {
+                    getCategory: async (_, args: any, context) => {
                         return resolve(() => {
                             return context.pageBuilder.getCategory(args.slug);
                         });
@@ -68,21 +68,17 @@ export const createCategoryGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    createCategory: async (_, args: { data: Record<string, any> }, context) => {
+                    createCategory: async (_, args: any, context) => {
                         return resolve(() => {
                             return context.pageBuilder.createCategory(args.data);
                         });
                     },
-                    updateCategory: async (
-                        _,
-                        args: { slug: string; data: Record<string, any> },
-                        context
-                    ) => {
+                    updateCategory: async (_, args: any, context) => {
                         return resolve(() => {
                             return context.pageBuilder.updateCategory(args.slug, args.data);
                         });
                     },
-                    deleteCategory: async (_, args: { slug: string }, context) => {
+                    deleteCategory: async (_, args: any, context) => {
                         return resolve(() => {
                             return context.pageBuilder.deleteCategory(args.slug);
                         });

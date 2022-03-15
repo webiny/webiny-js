@@ -1,7 +1,15 @@
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string, fields, boolean, onSet } from "@commodo/fields";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import normalizePath from "./normalizePath";
 
 export const CreateDataModel = withFields({
@@ -33,13 +41,13 @@ export const UpdateSettingsModel = withFields({
         instanceOf: withFields({
             tags: string({
                 list: true,
-                validation: value => {
+                validation: (value?: string[]) => {
                     if (!Array.isArray(value)) {
                         return;
                     }
 
                     if (value.length > 30) {
-                        throw new Error("Cannot store more than 30 tags.");
+                        throw new WebinyError("Cannot store more than 30 tags.");
                     }
 
                     for (let i = 0; i < value.length; i++) {
@@ -60,13 +68,13 @@ export const UpdateSettingsModel = withFields({
             meta: fields({
                 list: true,
                 value: [],
-                validation: value => {
+                validation: (value?: string[]) => {
                     if (!Array.isArray(value)) {
                         return;
                     }
 
                     if (value.length > 30) {
-                        throw new Error("Cannot store more than 30 SEO tags.");
+                        throw new WebinyError("Cannot store more than 30 SEO tags.");
                     }
                     for (let i = 0; i < value.length; i++) {
                         validation.validateSync(value[i], "maxLength:50");
@@ -85,13 +93,13 @@ export const UpdateSettingsModel = withFields({
             meta: fields({
                 value: [],
                 list: true,
-                validation: value => {
+                validation: (value?: string[]) => {
                     if (!Array.isArray(value)) {
                         return;
                     }
 
                     if (value.length > 30) {
-                        throw new Error("Cannot store more than 30 social tags.");
+                        throw new WebinyError("Cannot store more than 30 social tags.");
                     }
                     for (let i = 0; i < value.length; i++) {
                         validation.validateSync(value[i], "maxLength:50");

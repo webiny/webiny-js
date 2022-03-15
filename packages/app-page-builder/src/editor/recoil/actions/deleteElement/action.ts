@@ -1,4 +1,4 @@
-import { EventActionCallable, PbEditorElement } from "~/types";
+import { EventActionCallable, EventActionHandlerCallableState, PbEditorElement } from "~/types";
 import { DeleteElementActionArgsType } from "./types";
 import { UpdateElementTreeActionEvent, SaveRevisionActionEvent } from "..";
 
@@ -9,8 +9,14 @@ const removeElementFromParent = (parent: PbEditorElement, id: string): PbEditorE
     };
 };
 
-const getElementParentById = async (state, id): Promise<PbEditorElement> => {
+const getElementParentById = async (
+    state: EventActionHandlerCallableState,
+    id: string
+): Promise<PbEditorElement | null> => {
     const element = await state.getElementById(id);
+    if (!element || !element.parent) {
+        return null;
+    }
     return await state.getElementById(element.parent);
 };
 
@@ -19,8 +25,18 @@ export const deleteElementAction: EventActionCallable<DeleteElementActionArgsTyp
     _,
     args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
     const { element } = args;
     const parent = await getElementParentById(state, element.id);
+    if (!parent) {
+        return {
+            actions: []
+        };
+    }
     const newParent = removeElementFromParent(parent, element.id);
 
     return {

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { BindComponentRenderProp, Form } from "@webiny/form";
-import { FbFormModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
+import { BindComponentRenderProp, Form, BindComponent } from "@webiny/form";
+import {
+    FbFormModelField,
+    FormLayoutComponent,
+    FormRenderFbFormModelField
+} from "@webiny/app-form-builder/types";
 import { validation } from "@webiny/validation";
 import { RichTextRenderer } from "@webiny/react-rich-text-renderer";
 
@@ -10,6 +14,7 @@ import Radio from "./fields/Radio";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
 import HelperMessage from "./components/HelperMessage";
+import { FormRenderPropParamsSubmit } from "@webiny/form";
 
 /**
  * This is the default form layout component, in which we render all the form fields. We also render terms of service
@@ -38,7 +43,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     /**
      * Once the data is successfully submitted, we show a success message.
      */
-    const submitForm = async data => {
+    const submitForm = async (data: Record<string, any>): Promise<void> => {
         setLoading(true);
         const result = await submit(data);
         setLoading(false);
@@ -50,7 +55,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     /**
      * Renders a field cell with a field element inside.
      */
-    const renderFieldCell = (field, Bind) => {
+    const renderFieldCell = (field: FormRenderFbFormModelField, Bind: BindComponent) => {
         return (
             <div
                 key={field._id}
@@ -76,7 +81,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     /**
      * Renders hidden fields.
      */
-    const renderHiddenField = (field, Bind) => {
+    const renderHiddenField = (field: FormRenderFbFormModelField, Bind: BindComponent) => {
         return (
             <Bind name={field.fieldId} validators={field.validators}>
                 {bind => (
@@ -128,7 +133,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
      * Note that you don't have to worry if the reCAPTCHA was actually enabled via the Form Editor - the component
      * does necessary checks internally and will not render anything if it isn't supposed to.
      */
-    const renderReCaptcha = Bind => {
+    const renderReCaptcha = (Bind: BindComponent) => {
         return (
             <ReCaptcha>
                 {({ errorMessage }) => (
@@ -157,7 +162,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
      * Note that you don't have to worry if the terms of service option was actually enabled via the Form Editor -
      * the component does necessary checks internally and will not render anything if it isn't supposed to.
      */
-    const renderTermsOfService = Bind => {
+    const renderTermsOfService = (Bind: BindComponent) => {
         return (
             <TermsOfService>
                 {({ message, errorMessage, onChange }) => (
@@ -232,7 +237,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
     /**
      * Renders the form submit button. We disable the button if the form is in the loading state.
      */
-    const renderSubmitButton = (submit, loading, buttonLabel) => {
+    const renderSubmitButton = (
+        submit: FormRenderPropParamsSubmit,
+        loading: boolean,
+        buttonLabel: string
+    ) => {
         return (
             <div className="webiny-fb-form-submit-button">
                 <button

@@ -27,6 +27,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
+import { PageBuilderSecurityPermission, PbMenu } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
@@ -49,10 +50,14 @@ const SORTERS = [
     }
 ];
 
-type PageBuilderMenusDataListProps = {
+interface MenuDataListResponse {
+    data: PbMenu[];
+}
+
+interface PageBuilderMenusDataListProps {
     canCreate: boolean;
-};
-const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) => {
+}
+const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ canCreate }) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sort);
     const { history } = useRouter();
@@ -81,7 +86,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                 return menus;
             }
             const [field, order] = sort.split("_");
-            return orderBy(menus, field, order.toLowerCase());
+            return orderBy(menus, field, order.toLowerCase() as "asc" | "desc");
         },
         [sort]
     );
@@ -111,14 +116,17 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
         [slug]
     );
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
-        return identity.getPermission("pb.menu");
-    }, []);
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
+        return getPermission("pb.menu");
+    }, [identity]);
 
     const canDelete = useCallback(item => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         if (pbMenuPermission.own) {
-            const identityId = identity.id || identity.login;
+            const identityId = identity ? identity.id || identity.login : null;
             return item.createdBy.id === identityId;
         }
 
@@ -138,7 +146,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                             value={sort}
                             onChange={setSort}
                             label={t`Sort by`}
-                            description={"Sort pages by"}
+                            description={"Sort menus by"}
                         >
                             {SORTERS.map(({ label, sort: value }) => {
                                 return (
@@ -186,7 +194,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                 />
             }
         >
-            {({ data }) => (
+            {({ data }: MenuDataListResponse) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.slug} selected={item.slug === slug}>

@@ -1,24 +1,27 @@
 import { Plugin } from "@webiny/plugins";
 
-export interface Object {
+export interface ApolloCacheObject {
     __typename?: string;
     [key: string]: any;
 }
 
-interface Callable<T> {
+interface ApolloCacheObjectIdPluginCallable<T> {
+    // TODO @ts-refactor probably a string but @pavel check it out
     (data: T): any;
 }
 
-export class ApolloCacheObjectIdPlugin<T extends Object = Object> extends Plugin {
-    public static readonly type = "cache-get-object-id";
-    private _getObjectId: Callable<T>;
+export class ApolloCacheObjectIdPlugin<
+    T extends ApolloCacheObject = ApolloCacheObject
+> extends Plugin {
+    public static override readonly type: string = "cache-get-object-id";
+    private readonly _getObjectId?: ApolloCacheObjectIdPluginCallable<T>;
 
-    constructor(getObjectId?: Callable<T>) {
+    public constructor(getObjectId?: ApolloCacheObjectIdPluginCallable<T>) {
         super();
         this._getObjectId = getObjectId;
     }
 
-    getObjectId(data: T) {
+    public getObjectId(data: T) {
         if (typeof this._getObjectId !== "function") {
             throw Error(
                 `You must provide a "getObjectId" callable to the plugin constructor or extend the ApolloCacheObjectIdPlugin.`

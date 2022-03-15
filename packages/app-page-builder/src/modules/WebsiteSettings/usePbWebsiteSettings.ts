@@ -3,26 +3,53 @@ import { get, set } from "lodash";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
 import { useRouter } from "@webiny/react-router";
+/**
+ * Package @webiny/telemetry is missing types.
+ */
+// @ts-ignore
 import { sendEvent, setProperties } from "@webiny/telemetry/react";
-import * as GQL from "./graphql";
+import {
+    GET_SETTINGS,
+    UPDATE_SETTINGS,
+    GetSettingsQueryResponse,
+    GetSettingsResponseData,
+    UpdateSettingsMutationResponse,
+    UpdateSettingsMutationVariables
+} from "./graphql";
+
+interface PageBuilderWebsiteSettings {
+    websiteUrl?: string;
+}
 
 export function usePbWebsiteSettings() {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const { data, loading: queryInProgress } = useQuery(GQL.GET_SETTINGS);
-    const settings = get(data, "pageBuilder.getSettings.data") || {};
+    const { data, loading: queryInProgress } = useQuery<GetSettingsQueryResponse>(GET_SETTINGS);
+    const settings: GetSettingsResponseData = get(data, "pageBuilder.getSettings.data", {});
 
-    const defaultSettings = get(data, "pageBuilder.getDefaultSettings.data");
+    const defaultSettings: GetSettingsResponseData = get(
+        data,
+        "pageBuilder.getDefaultSettings.data",
+        {}
+    );
 
-    const [update, { loading: mutationInProgress }] = useMutation(GQL.UPDATE_SETTINGS, {
+    const [update, { loading: mutationInProgress }] = useMutation<
+        UpdateSettingsMutationResponse,
+        UpdateSettingsMutationVariables
+    >(UPDATE_SETTINGS, {
         update: (cache, { data }) => {
-            const dataFromCache = cache.readQuery<Record<string, any>>({ query: GQL.GET_SETTINGS });
+            const dataFromCache = cache.readQuery<GetSettingsQueryResponse>({
+                query: GET_SETTINGS
+            });
+            if (!dataFromCache) {
+                return;
+            }
             const updatedSettings = get(data, "pageBuilder.updateSettings.data");
 
             if (updatedSettings) {
                 cache.writeQuery({
-                    query: GQL.GET_SETTINGS,
+                    query: GET_SETTINGS,
                     data: set(dataFromCache, "pageBuilder.getSettings.data", updatedSettings)
                 });
             }
@@ -34,21 +61,33 @@ export function usePbWebsiteSettings() {
     }, []);
 
     const onSubmit = useCallback(
-        async data => {
+        /**
+         * Figure out correct type for data.
+         */
+        async (data: PageBuilderWebsiteSettings) => {
             // TODO: try useForm and onSubmit
             data.websiteUrl = (data.websiteUrl || "").replace(/\/+$/g, "");
 
             if (settings.websiteUrl !== data.websiteUrl && !data.websiteUrl.includes("localhost")) {
+                /**
+                 * sendEvent is async, why is it not awaited?
+                 */
+                // TODO @ts-refactor
                 sendEvent("custom-domain", {
                     domain: data.websiteUrl
                 });
 
+                /**
+                 * setProperties is async, why is it not awaited?
+                 */
+                // TODO @ts-refactor
                 setProperties({
                     domain: data.websiteUrl
                 });
             }
 
-            delete data.id;
+            // TODO @ts-refactor
+            delete (data as any).id;
             await update({ variables: { data } });
             showSnackbar("Settings updated successfully.");
         },

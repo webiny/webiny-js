@@ -1,3 +1,5 @@
+// TODO @ts-refactor figure out correct types.
+// @ts-nocheck
 import React, { useMemo } from "react";
 import { plugins } from "@webiny/plugins";
 import { Switch } from "@webiny/ui/Switch";
@@ -7,42 +9,69 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { useFormEditor } from "../../../Context";
-import { Form } from "@webiny/form";
+import { BindComponent, Form } from "@webiny/form";
 import { cloneDeep, debounce } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { FbBuilderFormFieldValidatorPlugin } from "../../../../../../types";
+import { FbBuilderFormFieldValidatorPlugin, FbFormModelField } from "~/types";
 
-const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
+interface OnEnabledChangeParams {
+    data: Record<string, string>;
+    validationValue: string;
+    onChangeValidation: string;
+    validator: string;
+}
+const onEnabledChange = ({
+    data,
+    validationValue,
+    onChangeValidation,
+    validator
+}: OnEnabledChangeParams): void => {
     if (data) {
         const index = validationValue.findIndex(item => item.name === validator.name);
         onChangeValidation([
             ...validationValue.slice(0, index),
             ...validationValue.slice(index + 1)
         ]);
-    } else {
-        onChangeValidation([
-            ...validationValue,
-            {
-                name: validator.name,
-                settings: validator.defaultSettings,
-                message: validator.defaultMessage
-            }
-        ]);
+        return;
     }
+    onChangeValidation([
+        ...validationValue,
+        {
+            name: validator.name,
+            settings: validator.defaultSettings,
+            message: validator.defaultMessage
+        }
+    ]);
 };
 
-const onFormChange = debounce(({ data, validationValue, onChangeValidation, validatorIndex }) => {
-    const newValidationValue = cloneDeep(validationValue);
-    newValidationValue[validatorIndex] = {
-        ...newValidationValue[validatorIndex],
-        ...cloneDeep(data)
-    };
-    onChangeValidation(newValidationValue);
-}, 200);
+interface OnFormChangeParams {
+    data: Record<string, string>;
+    validationValue: Record<string, any>;
+    onChangeValidation: (value: Record<string, any>) => void;
+    validatorIndex: number;
+}
 
-const ValidatorsTab = props => {
+const onFormChange = debounce(
+    ({ data, validationValue, onChangeValidation, validatorIndex }: OnFormChangeParams) => {
+        const newValidationValue = cloneDeep(validationValue);
+        newValidationValue[validatorIndex] = {
+            ...newValidationValue[validatorIndex],
+            ...cloneDeep(data)
+        };
+        onChangeValidation(newValidationValue);
+    },
+    200
+);
+
+interface ValidatorsTabProps {
+    field: FbFormModelField;
+    form: {
+        Bind: BindComponent;
+    };
+}
+const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
     const { getFieldPlugin } = useFormEditor();
     const {
         field,

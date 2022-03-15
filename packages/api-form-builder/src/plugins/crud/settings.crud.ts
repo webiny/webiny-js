@@ -6,13 +6,13 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 
-export interface Params {
+export interface CreateSettingsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     context: FormBuilderContext;
 }
 
-export const createSettingsCrud = (params: Params): SettingsCRUD => {
+export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCRUD => {
     const { getTenant, getLocale, context } = params;
 
     return {
@@ -23,7 +23,7 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
                 await utils.checkBaseSettingsPermissions(context);
             }
 
-            let settings: Settings = null;
+            let settings: Settings | null = null;
             try {
                 settings = await this.storageOperations.getSettings({
                     tenant: getTenant().id,
@@ -94,19 +94,19 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
             /**
              * Assign specific properties, just to be sure nothing else gets in the record.
              */
-            const settings: Settings = Object.keys(newSettings).reduce(
+            const settings = Object.keys(newSettings).reduce(
                 (collection, key) => {
                     if (newSettings[key] === undefined) {
                         return collection;
                     }
-                    collection[key] = newSettings[key];
+                    collection[key as keyof Settings] = newSettings[key];
                     return collection;
                 },
                 {
                     ...original,
                     tenant: getTenant().id,
                     locale: getLocale().code
-                }
+                } as Settings
             );
             try {
                 return await this.storageOperations.updateSettings({
@@ -128,7 +128,9 @@ export const createSettingsCrud = (params: Params): SettingsCRUD => {
         async deleteSettings(this: FormBuilder) {
             await utils.checkBaseSettingsPermissions(context);
             const settings = await this.getSettings();
-
+            if (!settings) {
+                return;
+            }
             try {
                 await this.storageOperations.deleteSettings({ settings });
             } catch (ex) {

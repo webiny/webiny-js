@@ -61,11 +61,13 @@ const createKeys = (params: PartitionKeyParams): Keys => {
     };
 };
 
-export interface Params {
+interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
 }
 
-export const createSettingsStorageOperations = (params: Params): CmsSettingsStorageOperations => {
+export const createSettingsStorageOperations = (
+    params: CreateSettingsStorageOperationsParams
+): CmsSettingsStorageOperations => {
     const { entity } = params;
 
     const create = async (params: CmsSettingsStorageOperationsCreateParams) => {
@@ -132,7 +134,7 @@ export const createSettingsStorageOperations = (params: Params): CmsSettingsStor
             if (!record) {
                 return null;
             }
-            const settings = cleanupItem(entity, record);
+            const settings = cleanupItem(entity, record) as CmsSettingsDb;
             return convertFromDbData(settings);
         } catch (ex) {
             throw new WebinyError(

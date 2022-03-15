@@ -1,8 +1,12 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
-import Error from "@webiny/error";
 import {
+    CreatedBy,
     File,
     FileManagerContext,
     FileManagerFilesStorageOperationsListParamsWhere,
@@ -253,18 +257,18 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         },
         async createFilesInBatch(inputs) {
             if (!Array.isArray(inputs)) {
-                throw new Error(`"data" must be an array.`, "CREATE_FILES_NON_ARRAY");
+                throw new WebinyError(`"data" must be an array.`, "CREATE_FILES_NON_ARRAY");
             }
 
             if (inputs.length === 0) {
-                throw new Error(
+                throw new WebinyError(
                     `"data" argument must contain at least one file.`,
                     "CREATE_FILES_MIN_FILES"
                 );
             }
 
             if (inputs.length > BATCH_CREATE_MAX_FILES) {
-                throw new Error(
+                throw new WebinyError(
                     `"data" argument must not contain more than ${BATCH_CREATE_MAX_FILES} files.`,
                     "CREATE_FILES_MAX_FILES"
                 );
@@ -274,7 +278,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             const identity = context.security.getIdentity();
             const tenant = context.tenancy.getCurrentTenant();
-            const createdBy = {
+            const createdBy: CreatedBy = {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type
@@ -341,7 +345,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...initialWhere,
                 private: false,
-                locale: context.i18nContent.getCurrentLocale().code,
+                locale: getLocaleCode(context),
                 tenant: context.tenancy.getCurrentTenant().id
             };
             /**
@@ -406,12 +410,11 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         },
         async listTags({ where: initialWhere, after, limit }) {
             await checkBasePermissions(context);
-            const { i18nContent } = context;
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
                 ...initialWhere,
                 tenant: context.tenancy.getCurrentTenant().id,
-                locale: i18nContent.locale.code
+                locale: getLocaleCode(context)
             };
 
             const params = {

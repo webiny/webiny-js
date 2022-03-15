@@ -47,10 +47,10 @@ interface SplitViewConfig {
 
 export class SplitView extends UIView {
     private _classNames = new Set();
-    private _leftPanel: SplitViewPanelElement;
-    private _rightPanel: SplitViewPanelElement;
+    private _leftPanel?: SplitViewPanelElement;
+    private _rightPanel?: SplitViewPanelElement;
 
-    constructor(id, config: SplitViewConfig = {}) {
+    public constructor(id: string, config: SplitViewConfig = {}) {
         super(`SplitView.${id}`);
 
         this.useGrid(false);
@@ -67,23 +67,23 @@ export class SplitView extends UIView {
         }
     }
 
-    addClassName(className: string) {
+    public addClassName(className: string): void {
         this._classNames.add(className);
     }
 
-    removeClassName(className: string) {
+    public removeClassName(className: string): void {
         this._classNames.delete(className);
     }
 
-    getLeftPanel(): SplitViewPanelElement {
-        return this.getElement("leftPanel");
+    public getLeftPanel(): SplitViewPanelElement {
+        return this.getElement("leftPanel") as SplitViewPanelElement;
     }
 
-    getRightPanel(): SplitViewPanelElement {
-        return this.getElement("rightPanel");
+    public getRightPanel(): SplitViewPanelElement {
+        return this.getElement("rightPanel") as SplitViewPanelElement;
     }
 
-    render(props?: any): React.ReactNode {
+    public override render(props?: any): React.ReactNode {
         return (
             <Grid className={classNames(Array.from(this._classNames.values()))}>
                 {super.render(props)}
@@ -91,7 +91,7 @@ export class SplitView extends UIView {
         );
     }
 
-    private addElements() {
+    private addElements(): void {
         this._leftPanel = new SplitViewPanelElement("leftPanel");
         this._leftPanel.useGrid(false);
         this._leftPanel.setWidth(5);

@@ -25,7 +25,7 @@ import {
     defaultStylesCallback
 } from "~/utils";
 
-export const PageElementsContext = createContext(null);
+export const PageElementsContext = createContext<PageElementsContextValue>(null as unknown as any);
 
 export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
     children,
@@ -35,7 +35,9 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
 }) => {
     // Styles-related callback customization.
     const [customAssignStylesCallback, setCustomAssignStylesCallback] =
-        useState<AssignStylesCallback>(null);
+        useState<AssignStylesCallback>(() => {
+            return {};
+        });
     const [customElementStylesCallback, setCustomElementStylesCallback] =
         useState<ElementStylesCallback>();
     const [customThemeStylesCallback, setCustomThemeStylesCallback] =
@@ -149,9 +151,11 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
 
     return <PageElementsContext.Provider value={value}>{children}</PageElementsContext.Provider>;
 };
-
-export const PageElementsConsumer = ({ children }) => (
+/**
+ * TODO @ts-refactor the props: any
+ */
+export const PageElementsConsumer: React.FC = ({ children }) => (
     <PageElementsContext.Consumer>
-        {props => React.cloneElement(children, props)}
+        {(props: any) => React.cloneElement(children as unknown as React.ReactElement, props)}
     </PageElementsContext.Consumer>
 );

@@ -9,28 +9,28 @@ import {
 } from "~/types";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 
-type CombineClassNamesType = (...styles) => string;
+type CombineClassNamesType = (...styles: string[]) => string;
 const combineClassNames: CombineClassNamesType = (...styles) => {
     return styles.filter(s => s !== "" && s !== "css-0").join(" ");
 };
 
-type ElementRootChildrenFunctionParamsType = {
+interface ElementRootChildrenFunctionParamsType {
     getAllClasses: (...classes: string[]) => string;
     combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     customClasses: string[];
-};
+}
 type ElementRootChildrenFunction = (params: ElementRootChildrenFunctionParamsType) => ReactElement;
 
-type ElementRootProps = {
+interface ElementRootProps {
     element: PbElement | PbEditorElement;
     style?: CSSProperties;
     className?: string;
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;
-};
+}
 
-const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
+const ElementRootComponent: React.FC<ElementRootProps> = ({
     element,
     style,
     children,
@@ -38,9 +38,9 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
 }) => {
     const shallowElement = useMemo(
         () => ({
-            id: element ? element.id : null,
-            type: element ? element.type : null,
-            data: element ? element.data : null,
+            id: element.id,
+            type: element.type,
+            data: element.data,
             elements: []
         }),
         [element.id, element.data]
@@ -77,14 +77,15 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         return null;
     }
     // Handle element visibility.// Use per-device style
-    const visibility = finalStyle[`--${kebabCase(displayMode)}-visibility`];
+    const visibility =
+        finalStyle[`--${kebabCase(displayMode)}-visibility` as unknown as keyof CSSProperties];
     if (visibility === "hidden") {
         return null;
     }
 
     const classNames = element.data.settings?.className || "";
 
-    const getAllClasses = (...extraClasses) => {
+    const getAllClasses = (...extraClasses: string[]): string => {
         return [className, ...extraClasses, ...classNames.split(" ")]
             .filter(v => v && v !== "css-0")
             .join(" ");

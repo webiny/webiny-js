@@ -1,27 +1,36 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import { PbPageData } from "@webiny/app-page-builder/types";
+import {
+    PbErrorResponse,
+    PbPageData,
+    PbPageDataSettingsSeo,
+    PbPageDataSettingsSocial
+} from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
 import Element from "@webiny/app-page-builder/render/components/Element";
 import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
 import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
+import { SettingsQueryResponseData } from "./graphql";
+
+interface Head {
+    favicon?: {
+        src: string;
+    };
+    title: string;
+    seo: PbPageDataSettingsSeo;
+    social: PbPageDataSettingsSocial;
+}
 
 /**
  * This component will render the page, including the page content, its layout, and also meta tags.
- * @param data
- * @param error
- * @constructor
  */
-function Render({
-    page,
-    error,
-    settings
-}: {
-    page: PbPageData;
-    error: Record<string, any>;
-    settings: Record<string, any>;
-}) {
+interface RenderProps {
+    page: PbPageData | null;
+    error: PbErrorResponse | null;
+    settings: SettingsQueryResponseData;
+}
+const Render: React.FC<RenderProps> = ({ page, error, settings }) => {
     const { pageElementRef, responsiveClassName } = useResponsiveClassName();
 
     if (error) {
@@ -35,20 +44,21 @@ function Render({
         return null;
     }
 
-    const head: Record<string, any> = {
-        favicon: settings?.favicon,
-        title: page.title || settings?.name,
+    const head: Head = {
+        favicon: settings.favicon,
+        title: page.title || settings.name,
         seo: {
             title: "",
             description: "",
             meta: [],
-            ...page?.settings?.seo
+            ...(page.settings?.seo || {})
         },
         social: {
             title: "",
             description: "",
             image: null,
-            ...page?.settings?.social
+            meta: [],
+            ...(page.settings?.social || {})
         }
     };
 
@@ -77,9 +87,7 @@ function Render({
                 ))}
 
                 {/* Read social tags from page settings. */}
-                {settings?.social?.title && (
-                    <meta property="og:title" content={settings.social.title} />
-                )}
+                {head.seo?.title && <meta property="og:title" content={head.seo.title} />}
 
                 {head.social.image && (
                     <meta property="og:image" content={head.social.image.src + "?width=1596"} />
@@ -102,6 +110,6 @@ function Render({
             </div>
         </div>
     );
-}
+};
 
 export default Render;

@@ -6,8 +6,10 @@ import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import {
+    Category,
     OnAfterInstallTopicParams,
     OnBeforeInstallTopicParams,
+    Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PbContext,
@@ -16,17 +18,13 @@ import {
 } from "~/types";
 import { createTopic } from "@webiny/pubsub";
 
-export interface Params {
+export interface CreateSystemCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    getTenantId: () => string;
 }
-export const createSystemCrud = (params: Params): SystemCrud => {
-    const { context, storageOperations } = params;
-
-    const getTenantId = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-
+export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => {
+    const { context, storageOperations, getTenantId } = params;
     const onBeforeInstall = createTopic<OnBeforeInstallTopicParams>();
     const onAfterInstall = createTopic<OnAfterInstallTopicParams>();
 
@@ -147,17 +145,25 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                 const fmSettings = await fileManager.settings.getSettings();
 
                 const welcomeToWebinyPageContent = preparePageData({
-                    srcPrefix: fmSettings && fmSettings.srcPrefix,
+                    srcPrefix: fmSettings ? fmSettings.srcPrefix : "",
                     fileIdToFileMap: fileIdToFileMap
                 });
 
-                const initialPagesData = [
+                const initialPagesData: Page[] = [
+                    /**
+                     * Category is missing but we cannot set it because it will override the created one.
+                     */
+                    // @ts-ignore
                     {
                         title: "Welcome to Webiny",
                         path: "/welcome-to-webiny",
                         content: welcomeToWebinyPageContent,
                         settings: {}
                     },
+                    /**
+                     * Category is missing but we cannot set it because it will override the created one.
+                     */
+                    // @ts-ignore
                     {
                         title: "Not Found",
                         path: "/not-found",
@@ -165,14 +171,21 @@ export const createSystemCrud = (params: Params): SystemCrud => {
                         settings: {},
                         // Do not show the page in page lists, only direct get is possible.
                         visibility: {
-                            get: { latest: true, published: true },
-                            list: { latest: false, published: false }
+                            get: {
+                                latest: true,
+                                published: true
+                            },
+                            list: {
+                                latest: false,
+                                published: false
+                            }
                         }
                     }
                 ];
 
                 const initialPages = await Promise.all(
-                    initialPagesData.map(() => this.createPage(staticCategory.slug))
+                    // We can safely cast.
+                    initialPagesData.map(() => this.createPage((staticCategory as Category).slug))
                 );
                 const updatedPages = await Promise.all(
                     initialPagesData.map((data, index) => {

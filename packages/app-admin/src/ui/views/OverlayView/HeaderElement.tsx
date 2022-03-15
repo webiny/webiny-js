@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { UIElement, UIElementConfig } from "~/ui/UIElement";
+import { UIElement, UIElementConfig, UiElementRenderProps } from "~/ui/UIElement";
 import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as CloseIcon } from "~/components/OverlayLayout/icons/close.svg";
@@ -28,7 +28,7 @@ export class HeaderElement extends UIElement<HeaderElementConfig> {
     private _centerSection: UIElement;
     private _rightSection: UIElement = new PlaceholderElement("rightSection");
 
-    constructor(id: string, config: HeaderElementConfig) {
+    public constructor(id: string, config: HeaderElementConfig) {
         super(id, config);
 
         this._centerSection = new HeaderTitleElement("title", {
@@ -40,35 +40,35 @@ export class HeaderElement extends UIElement<HeaderElementConfig> {
         this.useGrid(false);
     }
 
-    setTitle(title: GetterWithoutProps<string>) {
+    public setTitle(title: GetterWithoutProps<string>): void {
         this.config.getTitle = title;
     }
 
-    setLeftSectionElement(element: UIElement) {
+    public setLeftSectionElement(element: UIElement): void {
         this._leftSection = element;
     }
 
-    setCenterSectionElement(element: UIElement) {
+    public setCenterSectionElement(element: UIElement): void {
         this._centerSection = element;
     }
 
-    setRightSectionElement(element: UIElement) {
+    public setRightSectionElement(element: UIElement): void {
         this._rightSection = element;
     }
 
-    getLeftSectionElement() {
+    public getLeftSectionElement(): UIElement {
         return this._leftSection;
     }
 
-    getCenterSectionElement() {
+    public getCenterSectionElement(): UIElement {
         return this._centerSection;
     }
 
-    getRightSectionElement() {
+    public getRightSectionElement(): UIElement {
         return this._rightSection;
     }
 
-    render(props): React.ReactNode {
+    public override render(props: UiElementRenderProps): React.ReactNode {
         return (
             <TopAppBarSecondary fixed style={{ top: 0 }}>
                 <TopAppBarSection className={width} alignStart>

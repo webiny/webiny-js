@@ -43,9 +43,8 @@ const formTabs = css({
         }
     }
 });
-
-export default function EditorContent() {
-    const tabsRef = useRef();
+const EditorContent: React.FC = () => {
+    const tabsRef = useRef<Tabs | null>(null);
     return (
         <ContentContainer>
             <SplitView>
@@ -57,10 +56,10 @@ export default function EditorContent() {
                     <LeftBarFieldList>
                         <Fields
                             onFieldDragStart={() => {
-                                if (tabsRef.current) {
-                                    // @ts-ignore
-                                    tabsRef.current.switchTab(0);
+                                if (!tabsRef.current) {
+                                    return;
                                 }
+                                tabsRef.current.switchTab(0);
                             }}
                         />
                     </LeftBarFieldList>
@@ -81,4 +80,6 @@ export default function EditorContent() {
             </SplitView>
         </ContentContainer>
     );
-}
+};
+
+export default EditorContent;

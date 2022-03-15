@@ -7,7 +7,7 @@ import { HeaderSectionLeftElement } from "./HeaderSectionLeftElement";
 import { HeaderSectionCenterElement } from "./HeaderSectionCenterElement";
 import { HeaderSectionRightElement } from "./HeaderSectionRightElement";
 import Hamburger from "./components/Hamburger";
-import { UIRenderer } from "~/ui/UIRenderer";
+import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 
 enum ElementID {
     MenuButton = "headerMenuButton",
@@ -15,13 +15,13 @@ enum ElementID {
 }
 
 class HeaderElementRenderer extends UIRenderer<HeaderElement> {
-    render({ next }): React.ReactNode {
+    public override render({ next }: UIRenderParams<HeaderElement>): React.ReactNode {
         return <TopAppBarPrimary fixed>{next()}</TopAppBarPrimary>;
     }
 }
 
 export class HeaderElement extends UIElement {
-    constructor(id: string) {
+    public constructor(id: string) {
         super(id);
 
         this.useGrid(false);
@@ -39,29 +39,37 @@ export class HeaderElement extends UIElement {
         this.applyPlugins(HeaderElement);
     }
 
-    getLeftSection(): HeaderSectionLeftElement {
-        return this.getElement("headerLeft");
+    public getLeftSection(): HeaderSectionLeftElement {
+        return this.getElement("headerLeft") as HeaderSectionLeftElement;
     }
 
-    getCenterSection(): HeaderSectionCenterElement {
-        return this.getElement("headerCenter");
+    public getCenterSection(): HeaderSectionCenterElement {
+        return this.getElement("headerCenter") as HeaderSectionCenterElement;
     }
 
-    getRightSection(): HeaderSectionRightElement {
-        return this.getElement("headerRight");
+    public getRightSection(): HeaderSectionRightElement {
+        return this.getElement("headerRight") as HeaderSectionRightElement;
     }
 
-    setLogo(logo: React.ReactElement) {
+    public setLogo(logo: React.ReactElement): void {
         // TODO: extract into a `LogoElement` class
-        this.getElement(ElementID.Logo).replaceWith(
+        const element = this.getElement(ElementID.Logo);
+        if (!element) {
+            return;
+        }
+        element.replaceWith(
             new GenericElement(ElementID.Logo, () => {
                 return <TopAppBarTitle>{logo}</TopAppBarTitle>;
             })
         );
     }
 
-    setMenuButton(menuButton: React.ReactElement) {
-        this.getElement(ElementID.MenuButton).replaceWith(
+    public setMenuButton(menuButton: React.ReactElement): void {
+        const button = this.getElement(ElementID.MenuButton);
+        if (!button) {
+            return;
+        }
+        button.replaceWith(
             new GenericElement(ElementID.MenuButton, () => {
                 return menuButton;
             })

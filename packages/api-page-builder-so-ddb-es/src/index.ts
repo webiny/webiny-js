@@ -29,7 +29,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         elasticsearch,
         table,
         esTable,
-        attributes = {},
+        attributes,
         plugins: customPlugins
     } = params;
 
@@ -77,37 +77,37 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         settings: createSettingsEntity({
             entityName: ENTITIES.SETTINGS,
             table: tableInstance,
-            attributes: attributes[ENTITIES.SETTINGS]
+            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
         }),
         system: createSystemEntity({
             entityName: ENTITIES.SYSTEM,
             table: tableInstance,
-            attributes: attributes[ENTITIES.SYSTEM]
+            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
         }),
         categories: createCategoryEntity({
             entityName: ENTITIES.CATEGORIES,
             table: tableInstance,
-            attributes: attributes[ENTITIES.CATEGORIES]
+            attributes: attributes ? attributes[ENTITIES.CATEGORIES] : {}
         }),
         menus: createMenuEntity({
             entityName: ENTITIES.MENUS,
             table: tableInstance,
-            attributes: attributes[ENTITIES.MENUS]
+            attributes: attributes ? attributes[ENTITIES.MENUS] : {}
         }),
         pageElements: createPageElementEntity({
             entityName: ENTITIES.PAGE_ELEMENTS,
             table: tableInstance,
-            attributes: attributes[ENTITIES.PAGE_ELEMENTS]
+            attributes: attributes ? attributes[ENTITIES.PAGE_ELEMENTS] : {}
         }),
         pages: createPageEntity({
             entityName: ENTITIES.PAGES,
             table: tableInstance,
-            attributes: attributes[ENTITIES.PAGES]
+            attributes: attributes ? attributes[ENTITIES.PAGES] : {}
         }),
         pagesEs: createPageElasticsearchEntity({
             entityName: ENTITIES.PAGES_ES,
             table: tableElasticsearchInstance,
-            attributes: attributes[ENTITIES.PAGES_ES]
+            attributes: attributes ? attributes[ENTITIES.PAGES_ES] : {}
         })
     };
 

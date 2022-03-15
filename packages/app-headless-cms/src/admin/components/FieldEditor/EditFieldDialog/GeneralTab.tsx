@@ -10,15 +10,15 @@ import { FormRenderPropParams } from "@webiny/form/types";
 import { useFieldEditor } from "~/admin/components/FieldEditor";
 import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
 
-type GeneralTabProps = {
+interface GeneralTabProps {
     field: CmsEditorField;
     form: FormRenderPropParams;
     fieldPlugin: CmsEditorFieldTypePlugin;
-};
+}
 
-const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
+const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => {
     const { Bind, setValue } = form;
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
     const { data } = useContentModelEditor();
     const { getField } = useFieldEditor();
 
@@ -30,19 +30,25 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     //    it seems it's behaving correctly. ¯\_(ツ)_/¯
     useEffect(() => {
         setTimeout(() => {
-            inputRef.current && inputRef.current.focus();
+            if (!inputRef.current) {
+                return;
+            }
+            inputRef.current.focus();
         }, 200);
     }, []);
 
-    const afterChangeLabel = useCallback(value => {
+    const afterChangeLabel = useCallback((value: string) => {
         setValue("fieldId", camelCase(value));
     }, []);
 
-    const beforeChangeFieldId = useCallback((value, baseOnChange) => {
-        const newValue = value.trim();
+    const beforeChangeFieldId = useCallback(
+        (value: string, baseOnChange: (value: string) => void) => {
+            const newValue = value.trim();
 
-        baseOnChange(newValue);
-    }, []);
+            baseOnChange(newValue);
+        },
+        []
+    );
 
     const fieldIdValidator = useCallback(fieldId => {
         if (fieldId.trim().toLowerCase() !== "id") {
@@ -50,21 +56,21 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         }
 
         throw new Error(`Cannot use "id" as Field ID.`);
-    }, undefined);
+    }, []);
 
-    const uniqueFieldIdValidator = useCallback(fieldId => {
+    const uniqueFieldIdValidator = useCallback((fieldId: string) => {
         const existingField = getField({ fieldId });
         if (!existingField) {
-            return;
+            return false;
         }
 
         if (existingField.id === field.id) {
             return true;
         }
         throw new Error("Please enter a unique Field ID.");
-    }, undefined);
+    }, []);
 
-    let additionalSettings = null;
+    let additionalSettings: React.ReactNode | null = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
             form,
@@ -75,7 +81,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     }
 
     const predefinedValuesEnabled = useMemo(
-        () =>
+        (): boolean =>
             fieldPlugin.field.allowPredefinedValues &&
             typeof fieldPlugin.field.renderPredefinedValues === "function",
         [field.fieldId]
@@ -88,7 +94,12 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                     <Bind
                         name={"label"}
                         validators={validation.create("required")}
-                        afterChange={!field.id && afterChangeLabel}
+                        afterChange={(value: string) => {
+                            if (field.id) {
+                                return;
+                            }
+                            afterChangeLabel(value);
+                        }}
                     >
                         <Input label={"Label"} inputRef={inputRef} />
                     </Bind>

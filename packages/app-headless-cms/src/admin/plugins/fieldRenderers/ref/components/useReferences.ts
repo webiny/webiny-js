@@ -2,40 +2,62 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import * as GQL from "./graphql";
 import { getOptions } from "./getOptions";
+import { CmsEditorField, CmsLatestContentEntry, CmsModel } from "~/types";
+import {
+    CmsEntrySearchQueryResponse,
+    CmsEntrySearchQueryVariables,
+    CmsEntryGetListResponse,
+    CmsEntryGetListVariables,
+    CmsEntryGetEntryVariable
+} from "./graphql";
+import { BindComponentRenderProp } from "@webiny/form";
 
-type ValueEntry = {
+export interface ReferencedCmsEntry {
     id: string;
     modelId: string;
     modelName: string;
     published: boolean;
     name: string;
-};
+}
 
-function distinctBy(key, array) {
+function distinctBy(
+    key: keyof CmsLatestContentEntry,
+    array: CmsLatestContentEntry[]
+): CmsLatestContentEntry[] {
     const keys = array.map(value => value[key]);
     return array.filter((value, index) => keys.indexOf(value[key]) === index);
 }
 
-export const useReferences = ({ bind, field }) => {
-    const allEntries = useRef([]);
+interface UseReferencesParams {
+    bind: BindComponentRenderProp;
+    field: CmsEditorField;
+}
+export const useReferences = ({ bind, field }: UseReferencesParams) => {
+    const allEntries = useRef<CmsLatestContentEntry[]>([]);
     const client = useApolloClient();
-    const [search, setSearch] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [entries, setEntries] = useState([]);
-    const [latestEntries, setLatestEntries] = useState([]);
-    const [valueEntries, setValueEntries] = useState<ValueEntry[]>([]);
+    const [search, setSearch] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
+    const [entries, setEntries] = useState<CmsLatestContentEntry[]>([]);
+    const [latestEntries, setLatestEntries] = useState<CmsLatestContentEntry[]>([]);
+    const [valueEntries, setValueEntries] = useState<ReferencedCmsEntry[]>([]);
 
-    const { models } = field.settings;
+    const models = (field.settings ? field.settings.models || [] : []) as Pick<
+        CmsModel,
+        "modelId"
+    >[];
     const modelsHash = models.join(",");
-    const values = bind.value ? bind.value : [];
+    const values: CmsEntryGetEntryVariable[] = bind.value ? bind.value : [];
 
-    const searchEntries = async () => {
+    const searchEntries = async (): Promise<void> => {
         if (!search) {
             return;
         }
 
         setLoading(true);
-        const { data } = await client.query({
+        const { data } = await client.query<
+            CmsEntrySearchQueryResponse,
+            CmsEntrySearchQueryVariables
+        >({
             query: GQL.SEARCH_CONTENT_ENTRIES,
             variables: { modelIds: models.map(m => m.modelId), query: search }
         });
@@ -51,13 +73,18 @@ export const useReferences = ({ bind, field }) => {
 
     useEffect(() => {
         client
-            .query({
+            .query<CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables>({
                 query: GQL.SEARCH_CONTENT_ENTRIES,
                 variables: {
                     modelIds: models.map(m => m.modelId),
                     query: "__latest__",
                     limit: 10
-                }
+                },
+                /**
+                 * We cannot update this query response in cache after a reference entry being created/deleted,
+                 * which result in cached response being stale, therefore, we're setting the fetchPolicy to "network-only" to by passing cache.
+                 */
+                fetchPolicy: "network-only"
             })
             .then(({ data }) => {
                 setLatestEntries(data.content.data);
@@ -73,7 +100,10 @@ export const useReferences = ({ bind, field }) => {
         setLoading(true);
 
         client
-            .query({ query: GQL.GET_CONTENT_ENTRIES, variables: { entries: values } })
+            .query<CmsEntryGetListResponse, CmsEntryGetListVariables>({
+                query: GQL.GET_CONTENT_ENTRIES,
+                variables: { entries: values }
+            })
             .then(res => {
                 setLoading(false);
                 const entries = res.data.content.data;
@@ -95,7 +125,7 @@ export const useReferences = ({ bind, field }) => {
      * onChange callback will update internal component state using the previously loaded entries by IDs.
      * It will also format the value to store to the DB.
      */
-    const onChange = useCallback(values => {
+    const onChange = useCallback((values: ReferencedCmsEntry[]) => {
         setSearch("");
         setValueEntries(values);
 

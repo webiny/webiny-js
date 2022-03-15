@@ -1,6 +1,6 @@
 import { FbBuilderFormFieldPatternValidatorPlugin } from "~/types";
 
-export default {
+const plugin: FbBuilderFormFieldPatternValidatorPlugin = {
     type: "form-editor-field-validator-pattern",
     name: "form-editor-field-validator-pattern-upper-case",
     pattern: {
@@ -8,4 +8,5 @@ export default {
         name: "upperCase",
         label: "Upper case"
     }
-} as FbBuilderFormFieldPatternValidatorPlugin;
+};
+export default plugin;

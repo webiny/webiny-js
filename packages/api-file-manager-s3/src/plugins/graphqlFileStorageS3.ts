@@ -3,6 +3,7 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import checkBasePermissions from "@webiny/api-file-manager/plugins/crud/utils/checkBasePermissions";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import getPresignedPostPayload from "../utils/getPresignedPostPayload";
+import WebinyError from "@webiny/error";
 
 const BATCH_UPLOAD_MAX_FILES = 20;
 
@@ -51,12 +52,21 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
         `,
         resolvers: {
             FmQuery: {
-                getPreSignedPostPayload: async (_, args, context) => {
+                getPreSignedPostPayload: async (_, args: any, context) => {
                     try {
                         await checkBasePermissions(context, { rwd: "w" });
 
                         const { data } = args;
                         const settings = await context.fileManager.settings.getSettings();
+                        if (!settings) {
+                            throw new WebinyError(
+                                "Missing File Manager Settings.",
+                                "FILE_MANAGER_SETTINGS_ERROR",
+                                {
+                                    file: data
+                                }
+                            );
+                        }
                         const response = await getPresignedPostPayload(data, settings);
 
                         return new Response(response);
@@ -68,7 +78,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         });
                     }
                 },
-                getPreSignedPostPayloads: async (_, args, context) => {
+                getPreSignedPostPayloads: async (_, args: any, context) => {
                     await checkBasePermissions(context, { rwd: "w" });
 
                     const { data: files } = args;
@@ -95,10 +105,18 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
                     try {
                         const settings = await context.fileManager.settings.getSettings();
+                        if (!settings) {
+                            throw new WebinyError(
+                                "Missing File Manager Settings.",
+                                "FILE_MANAGER_SETTINGS_ERROR",
+                                {
+                                    files
+                                }
+                            );
+                        }
 
                         const promises = [];
-                        for (let i = 0; i < files.length; i++) {
-                            const item = files[i];
+                        for (const item of files) {
                             promises.push(getPresignedPostPayload(item, settings));
                         }
 

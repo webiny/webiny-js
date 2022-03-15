@@ -33,7 +33,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => reviewerGQL.listReviewersQuery({}).then(([data]) => data),
-            response => response.data.apw.listReviewers.data.length === 1,
+            (response: any) => response.data.apw.listReviewers.data.length === 1,
             {
                 name: "Wait for listReviewers"
             }
@@ -80,7 +80,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.apw.listWorkflows.data.length === 5
+            (response: any) => response.data.apw.listWorkflows.data.length === 5
         );
         const [firstWorkflow] = workflows;
         /**
@@ -130,7 +130,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.apw.listWorkflows.data.length === 5
+            (response: any) => response.data.apw.listWorkflows.data.length === 5
         );
         /**
          * Create a page and see what workflow has been assigned to it
@@ -157,7 +157,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.apw.listWorkflows.data.length === 1
+            (response: any) => response.data.apw.listWorkflows.data.length === 1
         );
 
         // List workflows
@@ -220,7 +220,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.apw.listWorkflows.data.length === 1
+            (response: any) => response.data.apw.listWorkflows.data.length === 1
         );
         /**
          * Now page should have this workflow assigned to it.

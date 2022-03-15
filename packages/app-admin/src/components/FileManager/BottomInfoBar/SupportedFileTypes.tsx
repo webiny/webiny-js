@@ -5,16 +5,24 @@ mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
 mime.define({ "image/vnd.microsoft.icon": ["ico"] }, true);
 
-const getUniqueFilePlugins = accept => {
-    const exts = {};
+const getUniqueFilePlugins = (accept: string[]): string[] => {
+    const exts: Record<string, boolean> = {};
     accept.forEach(item => {
-        exts[mime.getExtension(item)] = true;
+        const ext = mime.getExtension(item);
+        if (!ext) {
+            return;
+        }
+        exts[ext] = true;
     });
 
     return Object.keys(exts);
 };
 
-const SupportedFileTypes = ({ accept }) => {
+export interface SupportedFileTypesProps {
+    accept: string[];
+}
+
+const SupportedFileTypes: React.FC<SupportedFileTypesProps> = ({ accept }) => {
     if (!accept) {
         return null;
     }

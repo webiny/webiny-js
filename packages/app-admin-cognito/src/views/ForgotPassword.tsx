@@ -13,7 +13,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { useAuthenticator } from "@webiny/app-cognito-authenticator/hooks/useAuthenticator";
 import { useForgotPassword } from "@webiny/app-cognito-authenticator/hooks/useForgotPassword";
 
-const ForgotPassword = () => {
+const ForgotPassword: React.FC = () => {
     const { checkingUser, authData, changeState } = useAuthenticator();
     const { loading, codeSent, shouldRender, setPassword, requestCode, error } =
         useForgotPassword();
@@ -66,9 +66,10 @@ const ForgotPassword = () => {
                                                 <Bind
                                                     name="username"
                                                     validators={validation.create("required")}
-                                                    beforeChange={(val, cb) =>
-                                                        cb(val.toLowerCase())
-                                                    }
+                                                    beforeChange={(
+                                                        val: string,
+                                                        cb: (value: string) => void
+                                                    ) => cb(val.toLowerCase())}
                                                 >
                                                     <Input
                                                         label={"Email"}
@@ -82,7 +83,11 @@ const ForgotPassword = () => {
 
                                         <Grid>
                                             <Cell span={12} className={alignRight}>
-                                                <ButtonPrimary onClick={submit}>
+                                                <ButtonPrimary
+                                                    onClick={ev => {
+                                                        submit(ev);
+                                                    }}
+                                                >
                                                     {"Send me the code"}
                                                 </ButtonPrimary>
                                             </Cell>
@@ -105,13 +110,17 @@ const ForgotPassword = () => {
                                         <Grid>
                                             <Cell span={12} className={alignRight}>
                                                 <ButtonDefault
-                                                    onClick={() =>
-                                                        requestCode({ username: data.username })
-                                                    }
+                                                    onClick={() => {
+                                                        requestCode({ username: data.username });
+                                                    }}
                                                 >
                                                     {"Resend code"}
                                                 </ButtonDefault>
-                                                <ButtonPrimary onClick={submit}>
+                                                <ButtonPrimary
+                                                    onClick={ev => {
+                                                        submit(ev);
+                                                    }}
+                                                >
                                                     I got the code!
                                                 </ButtonPrimary>
                                             </Cell>

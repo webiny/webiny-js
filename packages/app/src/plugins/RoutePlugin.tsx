@@ -2,11 +2,11 @@ import * as React from "react";
 import { Plugin } from "@webiny/plugins";
 
 interface Config {
-    route: React.ReactElement;
+    route: React.ReactElement | null;
 }
 
 export class RoutePlugin extends Plugin {
-    public static readonly type = "route";
+    public static override readonly type: string = "route";
     private _config: Partial<Config>;
 
     constructor(config?: Config) {
@@ -15,6 +15,9 @@ export class RoutePlugin extends Plugin {
     }
 
     get route(): Config["route"] {
+        if (!this._config.route) {
+            return null;
+        }
         return this._config.route;
     }
 }

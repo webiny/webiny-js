@@ -37,8 +37,9 @@ const TSCONFIG = {
     const errors = {};
     let errorsCount = 0;
     const warningsCount = 0;
+    const includes = ["/packages/", "/packages-v6/"];
 
-    const workspacesPackages = getPackages({ includes: "/packages/" }).filter(pkg => pkg.isTs);
+    const workspacesPackages = getPackages({ includes }).filter(pkg => pkg.isTs);
 
     for (const wpObject of workspacesPackages) {
         if (packagesToCheck.length) {
@@ -96,6 +97,11 @@ const TSCONFIG = {
                         });
                     }
                 };
+
+                // 1.1 Check tsconfig.json - "references" property.
+                if (wpObject.tsConfigJson) {
+                    checkReferences(wpObject.tsConfigJson, TSCONFIG.DEV);
+                }
 
                 if (wpObject.tsConfigBuildJson) {
                     checkReferences(wpObject.tsConfigBuildJson, TSCONFIG.BUILD);

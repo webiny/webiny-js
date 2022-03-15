@@ -1,6 +1,6 @@
 import React from "react";
 
-import { UIElement } from "~/ui/UIElement";
+import { UIElement, UiElementRenderProps } from "~/ui/UIElement";
 import styled from "@emotion/styled";
 
 const ButtonGroup = styled("div")({
@@ -15,13 +15,13 @@ const ButtonGroup = styled("div")({
 });
 
 export class ButtonGroupElement extends UIElement<any> {
-    constructor(id: string) {
+    public constructor(id: string) {
         super(id);
 
         this.useGrid(false);
     }
 
-    render(props?: any): React.ReactNode {
+    public override render(props?: UiElementRenderProps): React.ReactNode {
         return <ButtonGroup>{super.render(props)}</ButtonGroup>;
     }
 }

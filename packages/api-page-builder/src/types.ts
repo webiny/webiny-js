@@ -15,11 +15,7 @@ export interface PageElement {
     content: File;
     preview: File;
     createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
     tenant: string;
     locale: string;
 }
@@ -32,13 +28,14 @@ export interface Menu {
     description: string;
     items: any[];
     createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
     tenant: string;
     locale: string;
+}
+export interface CreatedBy {
+    id: string;
+    type: string;
+    displayName: string | null;
 }
 /**
  * @category RecordModel
@@ -49,11 +46,7 @@ export interface Category {
     url: string;
     layout: string;
     createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
     tenant: string;
     locale: string;
 }
@@ -66,6 +59,25 @@ export type PageStatus =
     | "draft";
 export type PageSpecialType = "home" | "notFound";
 
+export interface PageSettings {
+    social?: {
+        title: string;
+        description: string;
+        image: File;
+        meta: Array<{ property: string; content: string }>;
+    };
+    seo?: {
+        title: string;
+        description: string;
+        meta: Array<{ name: string; content: string }>;
+    };
+    general?: {
+        tags: string[];
+        snippet: string;
+        layout: string;
+        image: File;
+    };
+}
 export interface Page {
     id: string;
     pid: string;
@@ -73,51 +85,31 @@ export interface Page {
     tenant: string;
     title: string;
     editor: string;
-    createdFrom: string;
+    createdFrom: string | null;
     path: string;
     category: string;
-    content: Record<string, any>;
-    publishedOn: string;
+    content: Record<string, any> | null;
+    publishedOn: string | null;
     version: number;
-    settings?: {
-        social?: {
-            title: string;
-            description: string;
-            image: File;
-            meta: Array<{ property: string; content: string }>;
-        };
-        seo?: {
-            title: string;
-            description: string;
-            meta: Array<{ name: string; content: string }>;
-        };
-        general?: {
-            tags: string[];
-            snippet: string;
-            layout: string;
-            image: File;
-        };
-    };
+    settings?: PageSettings;
     locked: boolean;
     status: PageStatus;
     visibility: {
-        list: { latest: boolean; published: boolean };
-        get: { latest: boolean; published: boolean };
+        list: {
+            latest: boolean;
+            published: boolean;
+        };
+        get: {
+            latest: boolean;
+            published: boolean;
+        };
     };
     home: boolean;
     notFound: boolean;
     createdOn: string;
     savedOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-    ownedBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
+    createdBy: CreatedBy;
+    ownedBy: CreatedBy;
     webinyVersion: string;
 }
 
@@ -572,7 +564,7 @@ export interface PageStorageOperationsListParams {
     where: PageStorageOperationsListWhere;
     sort: string[];
     limit: number;
-    after?: string;
+    after: string | null;
 }
 /**
  * @category StorageOperations

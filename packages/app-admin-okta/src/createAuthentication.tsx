@@ -3,48 +3,64 @@ import { setContext } from "apollo-link-context";
 import ApolloClient from "apollo-client";
 import { DocumentNode } from "graphql";
 import { useApolloClient } from "@apollo/react-hooks";
-import { Security } from "@okta/okta-react";
+import { Security, LoginCallback } from "@okta/okta-react";
 import { OktaAuth, AuthStateManager } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-serverless-cms";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
-
-import OktaSignInWidget from "./OktaSignInWidget";
-import { createGetIdentityData, LOGIN_MT, LOGIN_ST } from "./createGetIdentityData";
 import { useTenancy, withTenant } from "@webiny/app-tenancy";
+import OktaSignInWidget from "./OktaSignInWidget";
+import {
+    createGetIdentityData,
+    GetIdentityDataCallable,
+    LOGIN_MT,
+    LOGIN_ST
+} from "./createGetIdentityData";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {};
+const noop = () => {
+    return void 0;
+};
 
 export interface Config {
-    getIdentityData?: any;
+    getIdentityData?: GetIdentityDataCallable;
     loginMutation?: DocumentNode;
     oktaAuth: OktaAuth;
     oktaSignIn: OktaSignIn;
+    clientId: string;
 }
 
-export interface Props {
+export interface AuthenticationProps {
     getIdentityData(params: { client: ApolloClient<any> }): Promise<{ [key: string]: any }>;
     children: React.ReactNode;
 }
 
-export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config) => {
-    const withGetIdentityData = Component => {
-        const WithGetIdentityData = ({ children }) => {
+interface WithGetIdentityDataProps {
+    getIdentityData: GetIdentityDataCallable;
+    children: React.ReactNode;
+}
+
+interface AuthState {
+    isAuthenticated?: boolean;
+    idToken: {
+        clientId?: string;
+    };
+}
+
+export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config }: Config) => {
+    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>): React.FC => {
+        return function WithGetIdentityData({ children }) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
 
             return <Component getIdentityData={getIdentityData}>{children}</Component>;
         };
-
-        return WithGetIdentityData;
     };
 
-    const Authentication = ({ getIdentityData, children }: Props) => {
-        const timerRef = useRef(null);
+    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+        const timerRef = useRef<number | undefined>(undefined);
         const apolloClient = useApolloClient();
         const { identity, setIdentity } = useSecurity();
         const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,7 +74,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config
                         timerRef.current = setTimeout(() => {
                             // Reload browser after 1 hour of inactivity
                             window.location.reload();
-                        }, 3600000);
+                        }, 3600000) as unknown as number;
 
                         return payload;
                     });
@@ -70,7 +86,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config
                             return { headers };
                         }
 
-                        if (!oktaAuth.isAuthenticated()) {
+                        if (!(await oktaAuth.isAuthenticated())) {
                             return { headers };
                         }
 
@@ -91,9 +107,25 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config
             );
         }, []);
 
-        const authStateChanged = useCallback(async authState => {
-            setIsAuthenticated(authState.isAuthenticated);
+        const authStateChanged = useCallback(async (authState: AuthState) => {
+            setIsAuthenticated(!!authState.isAuthenticated);
             if (authState.isAuthenticated) {
+                // Make sure current app client ID matches token's clientId.
+                // If not, verify that current identity can access current app, using the given app client id.
+                if (authState.idToken.clientId !== clientId) {
+                    try {
+                        await oktaAuth.token.renewTokens();
+                    } catch (err) {
+                        if (
+                            err.message.includes("User is not assigned to the client application")
+                        ) {
+                            setIdentity(null);
+                            setIsAuthenticated(false);
+                            return;
+                        }
+                    }
+                }
+
                 try {
                     const { id, displayName, type, permissions, ...other } = await getIdentityData({
                         client: apolloClient
@@ -130,10 +162,11 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, ...config }: Config
 
         return (
             <Security oktaAuth={oktaAuth} restoreOriginalUri={noop}>
+                <LoginCallback />
                 {identity ? (
                     children
                 ) : isAuthenticated ? (
-                    <CircularProgress label={"Checking user..."} />
+                    <CircularProgress label={"Logging in..."} />
                 ) : (
                     <OktaSignInWidget oktaSignIn={oktaSignIn} />
                 )}

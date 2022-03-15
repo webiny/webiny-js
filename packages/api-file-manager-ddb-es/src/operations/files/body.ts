@@ -21,7 +21,7 @@ interface CreateElasticsearchBodyParams {
     context: FileManagerContext;
     where: FileManagerFilesStorageOperationsListParamsWhere;
     limit: number;
-    after?: string;
+    after?: string | null;
     sort: string[];
 }
 
@@ -40,14 +40,14 @@ const createElasticsearchQuery = (
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin> = context.plugins
+    const operatorPlugins = context.plugins
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )
         .reduce((acc, plugin) => {
             acc[plugin.getOperator()] = plugin;
             return acc;
-        }, {});
+        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
 
     const where = {
         ...initialWhere
@@ -65,7 +65,8 @@ const createElasticsearchQuery = (
          * Remove so it is not applied again later.
          * Possibly tenant is not defined, but just in case, remove it.
          */
-        delete where.tenant;
+        // cast as any because TS is complaining about deleting non-optional property
+        delete (where as any).tenant;
     }
     /**
      * If there is a search value passed in where, it is treated a bit differently.
@@ -115,12 +116,12 @@ export const createElasticsearchBody = (
 ): ElasticTsSearchBody => {
     const { context, sort: initialSort, limit: initialLimit, after, where } = params;
 
-    const fieldPlugins: Record<string, FileElasticsearchFieldPlugin> = context.plugins
+    const fieldPlugins = context.plugins
         .byType<FileElasticsearchFieldPlugin>(FileElasticsearchFieldPlugin.type)
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
             return acc;
-        }, {});
+        }, {} as Record<string, FileElasticsearchFieldPlugin>);
 
     const limit = createLimit(initialLimit, 100);
 

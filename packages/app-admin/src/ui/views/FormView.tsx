@@ -32,7 +32,10 @@ interface GetterWithoutProps<T> {
 }
 
 export class FormView extends UIView<FormViewConfig> {
-    constructor(id, config?: FormViewConfig) {
+    public constructor(id: string, config?: FormViewConfig) {
+        if (!config) {
+            config = {};
+        }
         if (!("setupForm" in config)) {
             config.setupForm = true;
         }
@@ -45,7 +48,9 @@ export class FormView extends UIView<FormViewConfig> {
         this.applyPlugins(FormView);
     }
 
-    addElement<TElement extends UIElement = UIElement>(element: TElement): TElement {
+    public override addElement<TElement extends UIElement = UIElement>(
+        element: TElement
+    ): TElement {
         if (element.id === "form" || element.id === "formContainer") {
             return super.addElement(element);
         }
@@ -53,43 +58,43 @@ export class FormView extends UIView<FormViewConfig> {
         return this.getFormContainer().addElement(element);
     }
 
-    setTitle(title: string | GetterWithProps<string>) {
+    public setTitle(title: string | GetterWithProps<string>): void {
         if (typeof title === "string") {
             this.config.getTitle = () => title;
-        } else {
-            this.config.getTitle = title;
+            return;
         }
+        this.config.getTitle = title;
     }
 
-    setOnSubmit(onSubmit: FormOnSubmit) {
+    public setOnSubmit(onSubmit: FormOnSubmit): void {
         this.config.onSubmit = onSubmit;
     }
 
-    setFormData(getter: GetterWithoutProps<Record<string, any>>) {
+    public setFormData(getter: GetterWithoutProps<Record<string, any>>): void {
         this.config.getFormData = getter;
     }
 
-    getFormContainer(): FormContainerElement {
-        return this.getElement("formContainer");
+    public getFormContainer(): FormContainerElement {
+        return this.getElement("formContainer") as FormContainerElement;
     }
 
-    getFormContentElement(): FormContentElement {
-        return this.getElement("formContent");
+    public getFormContentElement(): FormContentElement {
+        return this.getElement("formContent") as FormContentElement;
     }
 
-    getFormHeaderElement(): FormHeaderElement {
-        return this.getElement("formHeader");
+    public getFormHeaderElement(): FormHeaderElement {
+        return this.getElement("formHeader") as FormHeaderElement;
     }
 
-    getFormFooterElement(): FormFooterElement {
-        return this.getElement("formFooter");
+    public getFormFooterElement(): FormFooterElement {
+        return this.getElement("formFooter") as FormFooterElement;
     }
 
-    getSubmitButtonElement(): ButtonElement {
-        return this.getFormFooterElement().getElement("submit");
+    public getSubmitButtonElement(): ButtonElement {
+        return this.getFormFooterElement().getElement("submit") as ButtonElement;
     }
 
-    private addElements() {
+    private addElements(): void {
         const formContainer = new FormContainerElement("formContainer", {
             testId: this.config.testId,
             className: this.config.className,
@@ -99,8 +104,18 @@ export class FormView extends UIView<FormViewConfig> {
         if (this.config.setupForm) {
             const form = this.addElement(
                 new FormElement("form", {
-                    onSubmit: (data, form) => this.config.onSubmit(data, form),
-                    getData: () => this.config.getFormData()
+                    onSubmit: (data, form) => {
+                        if (!this.config.onSubmit) {
+                            return;
+                        }
+                        return this.config.onSubmit(data, form);
+                    },
+                    getData: () => {
+                        if (!this.config.getFormData) {
+                            return {};
+                        }
+                        return this.config.getFormData();
+                    }
                 })
             ) as FormElement;
 
@@ -122,6 +137,9 @@ export class FormView extends UIView<FormViewConfig> {
         this.addElement(
             new FormHeaderElement("formHeader", {
                 getTitle: props => {
+                    if (!this.config.getTitle) {
+                        return "";
+                    }
                     return this.config.getTitle(props);
                 }
             })
@@ -144,7 +162,12 @@ export class FormView extends UIView<FormViewConfig> {
             new ButtonElement("cancel", {
                 type: "default",
                 label: "Cancel",
-                onClick: () => this.config.onCancel(),
+                onClick: () => {
+                    if (!this.config.onCancel) {
+                        return;
+                    }
+                    this.config.onCancel();
+                },
                 shouldRender: () => typeof this.config.onCancel === "function"
             })
         );

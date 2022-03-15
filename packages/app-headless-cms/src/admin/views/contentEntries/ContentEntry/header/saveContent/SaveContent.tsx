@@ -5,7 +5,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import usePermission from "~/admin/hooks/usePermission";
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
-const SaveContentButton = () => {
+const SaveContentButton: React.FC = () => {
     const { form, entry } = useContentEntry();
     const { canEdit } = usePermission();
 
@@ -16,7 +16,9 @@ const SaveContentButton = () => {
     return (
         <ButtonSecondary
             data-testid={"cms-content-save-content-button"}
-            onClick={() => form.current.submit()}
+            onClick={ev => {
+                form.current.submit(ev);
+            }}
         >{t`Save`}</ButtonSecondary>
     );
 };

@@ -18,15 +18,15 @@ export class TextareaElement extends FormFieldElement<TextareaElementConfig> {
         this.applyPlugins(TextareaElement);
     }
 
-    setRows(rows: number) {
+    public setRows(rows: number): void {
         this.config.rows = rows;
     }
 
-    getRows() {
+    public getRows(): number {
         return this.config.rows;
     }
 
-    render(props: TextareaElementRenderProps): React.ReactNode {
+    public override render(props: TextareaElementRenderProps): React.ReactNode {
         if (!props.formProps) {
             throw Error(`TextareaElement must be placed inside of a FormElement.`);
         }

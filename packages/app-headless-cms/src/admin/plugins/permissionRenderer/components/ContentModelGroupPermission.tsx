@@ -6,10 +6,25 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 import { useCmsData } from "./useCmsData";
+import { BindComponent } from "@webiny/form/types";
+import { CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const ContentModelGroupPermission = ({ Bind, data, entity, title, locales }) => {
+interface ContentModelGroupPermissionProps {
+    Bind: BindComponent;
+    data: CmsSecurityPermission;
+    entity: string;
+    title: string;
+    locales: string[];
+}
+const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = ({
+    Bind,
+    data,
+    entity,
+    title,
+    locales
+}) => {
     const modelsGroups = useCmsData(locales);
 
     const getItems = useCallback(
@@ -19,9 +34,11 @@ const ContentModelGroupPermission = ({ Bind, data, entity, title, locales }) => 
         [modelsGroups]
     );
 
+    const endpoints = data.endpoints || [];
+
     const disabledPrimaryActions =
         [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
-        !data.endpoints.includes("manage");
+        !endpoints.includes("manage");
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -36,11 +53,11 @@ const ContentModelGroupPermission = ({ Bind, data, entity, title, locales }) => 
                                 <Select label={t`Access Scope`}>
                                     <option value={"full"}>{t`All groups`}</option>
                                     <option value={"groups"}>{t`Only specific groups`}</option>
-                                    {data.endpoints.includes("manage") && (
+                                    {(endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only groups created by the user`}</option>
-                                    )}
+                                    )) || <></>}
                                 </Select>
                             </Bind>
                         </Cell>
@@ -62,12 +79,16 @@ const ContentModelGroupPermission = ({ Bind, data, entity, title, locales }) => 
                                     disabled={disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
-                                    {data.endpoints.includes("manage") ? (
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rw"}>{t`Read, write`}</option>
-                                    ) : null}
-                                    {data.endpoints.includes("manage") ? (
+                                    ) : (
+                                        <></>
+                                    )}
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rwd"}>{t`Read, write, delete`}</option>
-                                    ) : null}
+                                    ) : (
+                                        <></>
+                                    )}
                                 </Select>
                             </Bind>
                         </Cell>

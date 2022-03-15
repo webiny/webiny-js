@@ -5,10 +5,11 @@ import {
     getCurrentDate,
     getDefaultFieldValue
 } from "~/admin/plugins/fieldRenderers/dateTime/utils";
+import { BindComponentRenderProp } from "@webiny/form";
 
 export interface Props {
     field: CmsEditorField;
-    bind: any;
+    bind: BindComponentRenderProp;
     trailingIcon?: TrailingIcon;
 }
 
@@ -32,7 +33,7 @@ export const DateOnly: React.FC<Props> = props => {
             bind={{
                 ...bind,
                 value: date,
-                onChange: (value: string) => {
+                onChange: async (value: string) => {
                     if (!value) {
                         if (!bindValue) {
                             return;
@@ -43,7 +44,7 @@ export const DateOnly: React.FC<Props> = props => {
                 }
             }}
             field={field}
-            type={field.settings.type}
+            type={field.settings?.type}
             trailingIcon={trailingIcon}
         />
     );

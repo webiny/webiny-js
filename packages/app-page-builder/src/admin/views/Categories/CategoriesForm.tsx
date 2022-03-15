@@ -13,16 +13,27 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { validation } from "@webiny/validation";
-import { GET_CATEGORY, CREATE_CATEGORY, UPDATE_CATEGORY, LIST_CATEGORIES } from "./graphql";
+import {
+    GET_CATEGORY,
+    CREATE_CATEGORY,
+    UPDATE_CATEGORY,
+    LIST_CATEGORIES,
+    GetCategoryQueryResponse,
+    GetCategoryQueryVariables,
+    UpdateCategoryMutationResponse,
+    UpdateCategoryMutationVariables,
+    CreateCategoryMutationResponse,
+    CreateCategoryMutationVariables
+} from "./graphql";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { categoryUrlValidator } from "./validators";
 import { plugins } from "@webiny/plugins";
-import { PbPageLayoutPlugin } from "../../../types";
+import { PageBuilderSecurityPermission, PbCategory, PbPageLayoutPlugin } from "~/types";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
-import pick from "object.pick";
+import pick from "lodash/pick";
 import get from "lodash/get";
 import set from "lodash/set";
 import isEmpty from "lodash/isEmpty";
@@ -36,10 +47,10 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-type CategoriesFormProps = {
+interface CategoriesFormProps {
     canCreate: boolean;
-};
-const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
+}
+const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -50,8 +61,10 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const newEntry = new URLSearchParams(location.search).get("new") === "true";
     const slug = new URLSearchParams(location.search).get("slug");
 
-    const getQuery = useQuery(GET_CATEGORY, {
-        variables: { slug },
+    const getQuery = useQuery<GetCategoryQueryResponse, GetCategoryQueryVariables>(GET_CATEGORY, {
+        variables: {
+            slug: slug as string
+        },
         skip: !slug,
         onCompleted: data => {
             const error = data?.pageBuilder?.getCategory?.error;
@@ -62,23 +75,34 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
         }
     });
 
-    const loadedCategory = getQuery.data?.pageBuilder?.getCategory?.data || {};
+    const loadedCategory = getQuery.data?.pageBuilder?.getCategory?.data || {
+        slug: null,
+        createdBy: {
+            id: null
+        }
+    };
 
-    const [create, createMutation] = useMutation(CREATE_CATEGORY, {
+    const [create, createMutation] = useMutation<
+        CreateCategoryMutationResponse,
+        CreateCategoryMutationVariables
+    >(CREATE_CATEGORY, {
         refetchQueries: [{ query: LIST_CATEGORIES }]
     });
 
-    const [update, updateMutation] = useMutation(UPDATE_CATEGORY, {
+    const [update, updateMutation] = useMutation<
+        UpdateCategoryMutationResponse,
+        UpdateCategoryMutationVariables
+    >(UPDATE_CATEGORY, {
         refetchQueries: [{ query: LIST_CATEGORIES }],
         update: (cache, { data }) => {
-            const categoryDataFromCache = cache.readQuery<Record<string, any>>({
+            const categoryDataFromCache = cache.readQuery<GetCategoryQueryResponse>({
                 query: GET_CATEGORY,
                 variables: { slug }
-            });
+            }) as GetCategoryQueryResponse;
             const updatedCategoryData = get(data, "pageBuilder.category.data");
 
             if (updatedCategoryData) {
-                cache.writeQuery({
+                cache.writeQuery<GetCategoryQueryResponse, GetCategoryQueryVariables>({
                     query: GET_CATEGORY,
                     data: set(
                         categoryDataFromCache,
@@ -97,33 +121,53 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
             const isUpdate = loadedCategory.slug;
             const data = pick(formData, ["slug", "name", "url", "layout"]);
 
-            const [operation, args] = isUpdate
-                ? [update, { variables: { slug: formData.slug, data } }]
-                : [create, { variables: { data } }];
+            // const [operation, args] = isUpdate
+            //     ? [update, { variables: { slug: formData.slug, data } }]
+            //     : [create, { variables: { data } }];
 
-            const response = await operation(args);
+            // const response = await operation(args);
+
+            let response;
+            if (isUpdate) {
+                response = await update({
+                    variables: { slug: formData.slug, data }
+                });
+            } else {
+                response = await create({
+                    variables: {
+                        data
+                    }
+                });
+            }
 
             const error = response?.data?.pageBuilder?.category?.error;
             if (error) {
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return;
             }
 
-            !isUpdate && history.push(`/page-builder/categories?slug=${formData.slug}`);
+            if (!isUpdate) {
+                history.push(`/page-builder/categories?slug=${formData.slug}`);
+            }
+
             showSnackbar(t`Category saved successfully.`);
         },
         [loadedCategory.slug]
     );
 
-    const data = useMemo(() => {
-        return getQuery.data?.pageBuilder?.getCategory.data || {};
+    const data = useMemo((): PbCategory => {
+        return getQuery.data?.pageBuilder?.getCategory.data || ({} as PbCategory);
     }, [loadedCategory.slug]);
 
-    const { identity } = useSecurity();
-    const pbMenuPermission = useMemo(() => {
-        return identity.getPermission("pb.category");
-    }, []);
+    const { identity, getPermission } = useSecurity();
+    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
+        return getPermission("pb.category");
+    }, [identity]);
 
-    const canSave = useMemo(() => {
+    const canSave = useMemo((): boolean => {
+        if (!pbMenuPermission) {
+            return false;
+        }
         // User should be able to save the form
         // if it's a new entry and user has the "own" permission set.
         if (!loadedCategory.slug && pbMenuPermission.own) {
@@ -131,7 +175,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
         }
 
         if (pbMenuPermission.own) {
-            const identityId = identity.id || identity.login;
+            const identityId = identity ? identity.id || identity.login : null;
             return loadedCategory?.createdBy?.id === identityId;
         }
 
@@ -158,7 +202,9 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                         >
                             <ButtonIcon icon={<AddIcon />} /> {t`New Category`}
                         </ButtonDefault>
-                    ) : null
+                    ) : (
+                        <></>
+                    )
                 }
             />
         );
@@ -216,7 +262,9 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                             >{t`Cancel`}</ButtonDefault>
                             {canSave && (
                                 <ButtonPrimary
-                                    onClick={form.submit}
+                                    onClick={ev => {
+                                        form.submit(ev);
+                                    }}
                                 >{t`Save category`}</ButtonPrimary>
                             )}
                         </ButtonWrapper>

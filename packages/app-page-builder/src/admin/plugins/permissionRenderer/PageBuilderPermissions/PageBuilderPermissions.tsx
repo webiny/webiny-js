@@ -8,6 +8,8 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import CustomSection from "./CustomSection";
+import { SecurityPermission } from "@webiny/app-security/types";
+import { PageBuilderSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
@@ -19,17 +21,28 @@ const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 const ENTITIES = ["category", "menu", "page"];
 
-const pwOptions = [
+interface PwOptions {
+    id: string;
+    name: string;
+}
+const pwOptions: PwOptions[] = [
     { id: "p", name: t`Publish` },
     { id: "u", name: t`Unpublish` },
     { id: "r", name: t`Request review` },
     { id: "c", name: t`Request changes` }
 ];
 
-export const PageBuilderPermissions = ({ value, onChange }) => {
+interface PageBuilderPermissionsProps {
+    value: SecurityPermission;
+    onChange: (value: SecurityPermission[]) => void;
+}
+export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
+    value,
+    onChange
+}) => {
     const onFormChange = useCallback(
         formData => {
-            let newValue = [];
+            let newValue: SecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `pb*` permission objects, it's easier to build new ones from scratch.
                 newValue = value.filter(item => !item.name.startsWith(PAGE_BUILDER));
@@ -54,7 +67,7 @@ export const PageBuilderPermissions = ({ value, onChange }) => {
                     formData[`${entity}AccessScope`] &&
                     formData[`${entity}AccessScope`] !== NO_ACCESS
                 ) {
-                    const permission: Record<string, any> = {
+                    const permission: PageBuilderSecurityPermission = {
                         name: `${PAGE_BUILDER}.${entity}`,
                         rwd: "r"
                     };
@@ -107,7 +120,7 @@ export const PageBuilderPermissions = ({ value, onChange }) => {
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "categories", "menus", and "pages".
-        const formData: Record<string, any> = {
+        const formData = {
             accessLevel: CUSTOM_ACCESS,
             settingsAccessLevel: NO_ACCESS
         };

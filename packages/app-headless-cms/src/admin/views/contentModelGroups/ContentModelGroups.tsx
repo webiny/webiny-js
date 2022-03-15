@@ -3,12 +3,13 @@ import { useSecurity } from "@webiny/app-security";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
 import ContentModelGroupsForm from "./ContentModelGroupsForm";
+import { CmsSecurityPermission } from "~/types";
 
-function ContentModelGroups() {
-    const { identity } = useSecurity();
+const ContentModelGroups: React.FC = () => {
+    const { identity, getPermission } = useSecurity();
 
-    const canCreate = useMemo(() => {
-        const permission = identity.getPermission("cms.contentModelGroup");
+    const canCreate = useMemo((): boolean => {
+        const permission = getPermission<CmsSecurityPermission>("cms.contentModelGroup");
         if (!permission) {
             return false;
         }
@@ -18,7 +19,7 @@ function ContentModelGroups() {
         }
 
         return permission.rwd.includes("w");
-    }, []);
+    }, [identity]);
 
     return (
         <SplitView>
@@ -30,6 +31,6 @@ function ContentModelGroups() {
             </RightPanel>
         </SplitView>
     );
-}
+};
 
 export default ContentModelGroups;

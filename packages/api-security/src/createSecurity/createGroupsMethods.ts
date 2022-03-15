@@ -1,9 +1,25 @@
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
+/**
+ * Package deep-equal does not have types.
+ */
+// @ts-ignore
 import deepEqual from "deep-equal";
+/**
+ * Package commodo-fields-object does not have types.
+ */
+// @ts-ignore
 import { object } from "commodo-fields-object";
+/**
+ * Package @commodo/fields does not have types.
+ */
+// @ts-ignore
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { GetGroupParams, Group, GroupInput, GroupTenantLink, Security } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
@@ -26,7 +42,7 @@ const UpdateDataModel = withFields({
     permissions: object({ list: true })
 })();
 
-async function checkPermission(security: Security) {
+async function checkPermission(security: Security): Promise<void> {
     const permission = await security.getPermission("security.group");
 
     if (!permission) {
@@ -34,7 +50,7 @@ async function checkPermission(security: Security) {
     }
 }
 
-async function updateTenantLinks(security: Security, tenant: string, group: Group) {
+async function updateTenantLinks(security: Security, tenant: string, group: Group): Promise<void> {
     const links = await security.listTenantLinksByType<GroupTenantLink>({ tenant, type: "group" });
 
     if (!links.length) {
@@ -43,26 +59,39 @@ async function updateTenantLinks(security: Security, tenant: string, group: Grou
 
     await security.updateTenantLinks(
         links
-            .filter(link => link.data.group === group.id)
+            .filter(link => link.data && link.data.group === group.id)
             .map(link => ({
                 ...link,
-                data: { group: group.id, permissions: group.permissions }
+                data: {
+                    group: group.id,
+                    permissions: group.permissions
+                }
             }))
     );
 }
 
-export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityConfig) => {
+export const createGroupsMethods = ({
+    getTenant: initialGetTenant,
+    storageOperations
+}: SecurityConfig) => {
+    const getTenant = () => {
+        const tenant = initialGetTenant();
+        if (!tenant) {
+            throw new WebinyError("Missing tenant.");
+        }
+        return tenant;
+    };
     return {
         async getGroup(this: Security, { where }: GetGroupParams): Promise<Group> {
             await checkPermission(this);
 
-            let group: Group = null;
+            let group: Group | null = null;
             try {
                 group = await storageOperations.getGroup({
                     where: { ...where, tenant: where.tenant || getTenant() }
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not get group.",
                     ex.code || "GET_GROUP_ERROR",
                     where
@@ -84,14 +113,14 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
                     sort: ["createdOn_ASC"]
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not list API keys.",
                     ex.code || "LIST_API_KEY_ERROR"
                 );
             }
         },
 
-        async createGroup(this: Security, input: GroupInput) {
+        async createGroup(this: Security, input: GroupInput): Promise<Group> {
             await checkPermission(this);
 
             const identity = this.getIdentity();
@@ -107,15 +136,18 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             });
 
             if (existing) {
-                throw new Error(`Group with slug "${input.slug}" already exists.`, "GROUP_EXISTS");
+                throw new WebinyError(
+                    `Group with slug "${input.slug}" already exists.`,
+                    "GROUP_EXISTS"
+                );
             }
 
             const group: Group = {
                 id: mdbid(),
                 tenant: currentTenant,
-                system: false,
                 ...input,
-                webinyVersion: process.env.WEBINY_VERSION,
+                system: input.system === true,
+                webinyVersion: process.env.WEBINY_VERSION as string,
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {
@@ -129,7 +161,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             try {
                 return await storageOperations.createGroup({ group });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not create group.",
                     ex.code || "CREATE_GROUP_ERROR",
                     {
@@ -139,7 +171,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async updateGroup(this: Security, id: string, input: Record<string, any>) {
+        async updateGroup(this: Security, id: string, input: Record<string, any>): Promise<Group> {
             await checkPermission(this);
 
             const model = await new UpdateDataModel().populate(input);
@@ -167,7 +199,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
                 }
                 return result;
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not update group.",
                     ex.code || "UPDATE_GROUP_ERROR",
                     {
@@ -177,7 +209,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             }
         },
 
-        async deleteGroup(this: Security, id: string) {
+        async deleteGroup(this: Security, id: string): Promise<void> {
             await checkPermission(this);
 
             const group = await storageOperations.getGroup({ where: { tenant: getTenant(), id } });
@@ -187,7 +219,7 @@ export const createGroupsMethods = ({ getTenant, storageOperations }: SecurityCo
             try {
                 await storageOperations.deleteGroup({ group });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not delete group.",
                     ex.code || "DELETE_GROUP_ERROR",
                     {

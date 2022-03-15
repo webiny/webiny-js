@@ -23,14 +23,14 @@ import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { FormSubmissionDynamoDbFieldPlugin } from "~/plugins/FormSubmissionDynamoDbFieldPlugin";
 import { get } from "@webiny/db-dynamodb/utils/get";
 
-export interface Params {
+export interface CreateSubmissionStorageOperationsParams {
     entity: Entity<any>;
     table: Table;
     plugins: PluginsContainer;
 }
 
 export const createSubmissionStorageOperations = (
-    params: Params
+    params: CreateSubmissionStorageOperationsParams
 ): FormBuilderSubmissionStorageOperations => {
     const { entity, plugins } = params;
 
@@ -143,10 +143,11 @@ export const createSubmissionStorageOperations = (
     ): Promise<FormBuilderStorageOperationsListSubmissionsResponse> => {
         const { where: initialWhere, sort, limit = 100000, after } = params;
 
-        const where = {
+        const { tenant, locale, formId } = initialWhere;
+
+        const where: Partial<FormBuilderStorageOperationsListSubmissionsParams["where"]> = {
             ...initialWhere
         };
-        const { tenant, locale, formId } = where;
         /**
          * We need to remove conditions so we do not filter by them again.
          */
@@ -199,7 +200,7 @@ export const createSubmissionStorageOperations = (
         });
 
         const totalCount = sortedSubmissions.length;
-        const start = decodeCursor(after) || 0;
+        const start = parseInt(decodeCursor(after) || "0") || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const items = sortedSubmissions.slice(start, end);
@@ -223,7 +224,7 @@ export const createSubmissionStorageOperations = (
 
     const getSubmission = async (
         params: FormBuilderStorageOperationsGetSubmissionParams
-    ): Promise<FbSubmission> => {
+    ): Promise<FbSubmission | null> => {
         const { where } = params;
 
         const keys = {

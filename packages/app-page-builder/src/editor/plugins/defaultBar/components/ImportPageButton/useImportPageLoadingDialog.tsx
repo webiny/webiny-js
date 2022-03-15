@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import get from "lodash/get";
 import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -25,16 +25,21 @@ const processingMessage = t`Importing pages`;
 
 const INTERVAL = 0.5 * 1000;
 
-const MESSAGES = {
+const MESSAGES: Record<string, string> = {
     [PageImportExportTaskStatus.COMPLETED]: completionMessage,
     [PageImportExportTaskStatus.PROCESSING]: processingMessage,
     [PageImportExportTaskStatus.PENDING]: pendingMessage
 };
 
-const ImportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({ taskId }) => {
+interface ImportPageLoadingDialogContentProps {
+    taskId: string;
+}
+const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentProps> = ({
+    taskId
+}) => {
     const { showSnackbar } = useSnackbar();
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
 
     const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
         variables: {
@@ -141,14 +146,17 @@ const ImportPageLoadingDialogContent: FunctionComponent<{ taskId: string }> = ({
                 </LoadingDialog.StatsContainer>
                 <ImportPagesDetails
                     loading={getSubTasksQuery.loading}
-                    data={getSubTasksQuery.data}
+                    result={getSubTasksQuery.data}
                 />
             </LoadingDialog.WrapperRight>
         </LoadingDialog.Wrapper>
     );
 };
 
-const useImportPageLoadingDialog = () => {
+interface UseImportPageLoadingDialogCallableResponse {
+    showImportPageLoadingDialog: (props: ImportPageLoadingDialogContentProps) => void;
+}
+const useImportPageLoadingDialog = (): UseImportPageLoadingDialogCallableResponse => {
     const { showDialog } = useDialog();
 
     return {

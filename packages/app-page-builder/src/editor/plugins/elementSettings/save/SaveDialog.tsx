@@ -43,13 +43,13 @@ const PreviewBox = styled("div")({
     }
 });
 
-type Props = {
+interface Props {
     open: boolean;
     onClose: DialogOnClose;
     onSubmit: FormOnSubmit;
     element: PbEditorElement;
     type: string;
-};
+}
 
 const SaveDialog = (props: Props) => {
     const { element, open, onClose, onSubmit, type } = props;
@@ -132,7 +132,9 @@ const SaveDialog = (props: Props) => {
                                                         onChange={onChange}
                                                         element={element}
                                                     />
-                                                ) : null
+                                                ) : (
+                                                    <></>
+                                                )
                                             }
                                         </Bind>
                                     </PreviewBox>

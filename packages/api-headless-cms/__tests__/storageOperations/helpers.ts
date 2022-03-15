@@ -1,4 +1,8 @@
 import shortId from "shortid";
+/**
+ * Package mdbid does not have types.
+ */
+// @ts-ignore
 import mdbid from "mdbid";
 import {
     CmsEntry,

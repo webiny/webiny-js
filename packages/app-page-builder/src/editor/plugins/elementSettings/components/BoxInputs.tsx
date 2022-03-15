@@ -85,15 +85,15 @@ const defaultCorners = [
  * This component is reused in Padding and Margin plugins since the behavior of both CSS attributes is the same.
  */
 
-type PMSettingsPropsType = {
+interface PMSettingsPropsType {
     label: string;
     value: any;
     valueKey: string;
     getUpdateValue: any;
     sides?: Record<string, any>[];
-};
+}
 
-const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
+const BoxInputs: React.FC<PMSettingsPropsType> = ({
     label,
     value,
     valueKey,

@@ -1,6 +1,11 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
+/**
+ * Package mdbid does not have types
+ */
+// @ts-ignore
 import mdbid from "mdbid";
+import { Category } from "~/types";
 
 const defaultHandler = useGqlHandler({
     permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
@@ -12,7 +17,7 @@ jest.setTimeout(100000);
 describe("Pages Security Test", () => {
     const { createCategory, until } = useGqlHandler();
 
-    let initialCategory;
+    let initialCategory: Category;
 
     beforeEach(async () => {
         await createCategory({
@@ -48,7 +53,7 @@ describe("Pages Security Test", () => {
 
         await until(
             () => useGqlHandler().listPages({ sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 4
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 4
         );
 
         for (let i = 0; i < insufficientPermissions.length; i++) {

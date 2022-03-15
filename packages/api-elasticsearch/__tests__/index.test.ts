@@ -3,6 +3,7 @@ import { ContextPlugin } from "@webiny/handler";
 import { PluginsContainer } from "@webiny/plugins";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { Client } from "@elastic/elasticsearch";
+import { ElasticsearchContext } from "~/types";
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
@@ -50,9 +51,9 @@ describe("ElasticsearchContext", () => {
     });
 
     test.each(operators)(`should initialize the plugin "%s"`, async (operator: string) => {
-        const context: any = {
+        const context = {
             plugins: new PluginsContainer()
-        };
+        } as unknown as ElasticsearchContext;
         const plugin = elasticsearchContext({
             endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
         });
@@ -61,9 +62,10 @@ describe("ElasticsearchContext", () => {
         /**
          * Operators should be registered.
          */
-        const registeredOperatorPlugins = context.plugins.byType(
-            ElasticsearchQueryBuilderOperatorPlugin.type
-        ) as ElasticsearchQueryBuilderOperatorPlugin[];
+        const registeredOperatorPlugins =
+            context.plugins.byType<ElasticsearchQueryBuilderOperatorPlugin>(
+                ElasticsearchQueryBuilderOperatorPlugin.type
+            );
 
         expect(registeredOperatorPlugins).toHaveLength(operators.length);
         const operatorPlugins = registeredOperatorPlugins.filter(pl => {

@@ -6,13 +6,15 @@ import { PbEditorPageElementPlugin, PbEditorElement } from "../../../../types";
 import { useRecoilValue } from "recoil";
 import { CloneElementActionEvent } from "../../../recoil/actions/cloneElement";
 
-type CloneActionPropsType = {
+interface CloneActionPropsType {
     children: React.ReactElement;
-};
-const CloneAction: React.FunctionComponent<CloneActionPropsType> = ({ children }) => {
+}
+const CloneAction: React.FC<CloneActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element: PbEditorElement = useRecoilValue(elementByIdSelector(activeElementId));
+    const element: PbEditorElement = useRecoilValue(
+        elementByIdSelector(activeElementId as string)
+    ) as PbEditorElement;
 
     if (!element) {
         return null;

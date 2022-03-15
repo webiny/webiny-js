@@ -1,6 +1,6 @@
-import { FbBuilderFormFieldValidatorPlugin } from "../../../../types";
+import { FbBuilderFormFieldValidatorPlugin } from "~/types";
 
-export default {
+const plugin: FbBuilderFormFieldValidatorPlugin = {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-required",
     validator: {
@@ -9,4 +9,5 @@ export default {
         description: "You won't be able to submit the form if this field is empty",
         defaultMessage: "Value is required."
     }
-} as FbBuilderFormFieldValidatorPlugin;
+};
+export default plugin;

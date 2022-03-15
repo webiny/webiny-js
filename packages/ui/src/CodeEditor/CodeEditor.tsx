@@ -1,11 +1,11 @@
-import * as React from "react";
-import { FormComponentProps } from "./../types";
+import React from "react";
+import { FormComponentProps } from "~/types";
 import { css } from "emotion";
 
 import AceEditor from "react-ace";
 import "brace/theme/github";
 import "brace/theme/twilight";
-import { FormElementMessage } from "../FormElementMessage";
+import { FormElementMessage } from "~/FormElementMessage";
 
 /**
  * Controls the helper text below the checkbox.
@@ -20,29 +20,27 @@ const webinyCheckboxHelperText = css(
     }
 );
 
-type Props = FormComponentProps & {
+interface Props extends FormComponentProps {
     mode: string;
 
     theme: string;
 
     // Description beneath the input.
     description?: React.ReactNode;
-};
+}
 
 /**
  * CodeEditor component can be used to store simple boolean values.
  */
 class CodeEditor extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
-    };
-
     onChange = (value: string) => {
         this.props.onChange && this.props.onChange(value);
     };
 
-    render() {
+    public override render() {
         const { value, description, validation, theme = "github", ...rest } = this.props;
+
+        const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <React.Fragment>
@@ -55,13 +53,13 @@ class CodeEditor extends React.Component<Props> {
                     className={"mdc-text-field"}
                 />
 
-                {validation.isValid === false && (
+                {validationIsValid === false && (
                     <FormElementMessage error className={webinyCheckboxHelperText}>
-                        {validation.message}
+                        {validationMessage}
                     </FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
+                {validationIsValid !== false && description && (
                     <FormElementMessage className={webinyCheckboxHelperText}>
                         {description}
                     </FormElementMessage>

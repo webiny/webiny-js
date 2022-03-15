@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { FbErrorResponse, FbFormModel, FbUpdateFormInput } from "~/types";
 
 const ERROR_FIELDS = `
     {
@@ -51,7 +52,21 @@ const SETTINGS_FIELDS = /* GraphQL */ `
         }
     }
 `;
-
+/**
+ * ####################
+ * Get Form Query
+ */
+export interface GetFormQueryResponse {
+    formBuilder: {
+        getForm: {
+            data: FbFormModel | null;
+            error: FbErrorResponse | null;
+        };
+    };
+}
+export interface GetFormQueryVariables {
+    revision: string;
+}
 export const GET_FORM = gql`
     query FbGetForm($revision: ID!) {
         formBuilder {
@@ -75,7 +90,22 @@ export const GET_FORM = gql`
         }
     }
 `;
-
+/**
+ * ####################
+ * Update Form Revision Mutation
+ */
+export interface UpdateFormRevisionMutationResponse {
+    formBuilder: {
+        updateRevision: {
+            data: FbFormModel | null;
+            error: FbErrorResponse | null;
+        };
+    };
+}
+export interface UpdateFormRevisionMutationVariables {
+    revision: string;
+    data: FbUpdateFormInput;
+}
 export const UPDATE_REVISION = gql`
     mutation UpdateForm($revision: ID!, $data: FbUpdateFormInput!) {
         formBuilder {

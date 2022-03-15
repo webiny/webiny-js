@@ -1,23 +1,40 @@
 import { useContext } from "react";
 import { I18NContext, I18NContextValue } from "../contexts/I18N";
+import { I18NCurrentLocaleItem, I18NLocaleItem } from "~/types";
 
-export function useI18N() {
+type LocaleTypes = "default" | "content";
+interface UseI18NHook {
+    refetchLocales: I18NContextValue["refetchLocales"];
+    state: I18NContextValue["state"];
+    getDefaultLocale(): I18NLocaleItem | null;
+    getCurrentLocales(): I18NCurrentLocaleItem[];
+    getCurrentLocale(localeContext?: LocaleTypes): string | null;
+    getLocale(localeContext: string): string | null;
+    setCurrentLocale(code: string, localeContext: string): void;
+    getLocales(): I18NLocaleItem[];
+}
+export function useI18N(): UseI18NHook {
     const context = useContext<I18NContextValue>(I18NContext);
 
     const { state, setState, refetchLocales, updateLocaleStorage } = context || {};
-    const self = {
+    const self: UseI18NHook = {
         refetchLocales,
         getDefaultLocale() {
-            return state.locales.find(item => item.default === true);
+            const locale = state.locales.find(item => item.default === true);
+            return locale || null;
         },
         getCurrentLocales() {
             return state.currentLocales;
         },
-        getCurrentLocale(localeContext = "default") {
-            return state.currentLocales.find(locale => locale.context === localeContext)?.locale;
+        getCurrentLocale(localeContext: LocaleTypes = "default") {
+            const locale = state.currentLocales.find(locale => locale.context === localeContext);
+            if (!locale) {
+                return null;
+            }
+            return locale.locale;
         },
-        getLocale(...args) {
-            return self.getCurrentLocale(...args);
+        getLocale(localeContext: LocaleTypes) {
+            return self.getCurrentLocale(localeContext);
         },
         setCurrentLocale(code, localeContext = "default") {
             const newCurrentLocales = [...self.getCurrentLocales()];
@@ -31,10 +48,8 @@ export function useI18N() {
 
             updateLocaleStorage(newCurrentLocales);
 
-            setState(prev => {
-                const next = { ...prev };
-                next.currentLocales = newCurrentLocales;
-                return next;
+            setState({
+                currentLocales: newCurrentLocales
             });
         },
         getLocales() {

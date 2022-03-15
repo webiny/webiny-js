@@ -5,26 +5,28 @@ import {
     PageImportExportTaskStatus,
     PbPageImportExportContext
 } from "~/types";
-import { initialStats, readExtractAndUploadZipFileContents, zeroPad } from "~/importPages/utils";
+import { initialStats, readExtractAndUploadZipFileContents } from "~/importPages/utils";
 import { invokeHandlerClient } from "~/importPages/client";
 import { HandlerArgs as ProcessHandlerArgs } from "../process";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockSecurity } from "~/mockSecurity";
+import { zeroPad } from "@webiny/utils";
 
-export type HandlerArgs = {
+export interface HandlerArgs {
     category: string;
     zipFileKey?: string;
     zipFileUrl?: string;
     task: PageImportExportTask;
     identity: SecurityIdentity;
-};
+}
 
-export type HandlerResponse = {
-    data: string;
-    error: {
-        message: string;
-    };
-};
+interface HandlerResponseError {
+    message: string;
+}
+export interface HandlerResponse {
+    data: string | null;
+    error: HandlerResponseError | null;
+}
 
 interface Configuration {
     handlers: {
@@ -46,10 +48,19 @@ export default (
             log("RUNNING Import Pages Create");
             const { invocationArgs: args, pageBuilder } = context;
             const { task, category, zipFileKey, zipFileUrl, identity } = args;
+            if (!zipFileKey && !zipFileUrl) {
+                return {
+                    data: null,
+                    error: {
+                        message:
+                            "Missing zipFileKey and zipFileUrl parameters. One must be defined."
+                    }
+                };
+            }
             mockSecurity(identity, context);
             // Step 1: Read the zip file
             const pageImportDataList = await readExtractAndUploadZipFileContents(
-                zipFileKey || zipFileUrl
+                zipFileKey || (zipFileUrl as string)
             );
             // Once we have map we can start processing each page
 
@@ -59,7 +70,7 @@ export default (
                 // Create sub task
                 const subtask = await pageBuilder.pageImportExportTask.createSubTask(
                     task.id,
-                    zeroPad(i + 1),
+                    zeroPad(i + 1, 5),
                     {
                         status: PageImportExportTaskStatus.PENDING,
                         data: {
@@ -117,5 +128,10 @@ export default (
                 }
             };
         }
+
+        return {
+            data: "",
+            error: null
+        };
     }
 });

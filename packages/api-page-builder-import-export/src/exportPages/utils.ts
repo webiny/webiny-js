@@ -36,7 +36,7 @@ export async function exportPage(
     fileManager: FileManagerContext["fileManager"]
 ): Promise<S3.ManagedUpload.SendData> {
     // Extract all files
-    const files = extractFilesFromPageData(page.content);
+    const files = extractFilesFromPageData(page.content || {});
     // Filter files
     const filesAvailableForDownload = await getFilteredFiles(files);
     // Extract images from page settings
@@ -78,7 +78,7 @@ export async function exportPage(
     return zipper.process();
 }
 
-export interface ImageFile extends File {
+export interface ImageFile extends Omit<File, "src"> {
     key: string;
 }
 

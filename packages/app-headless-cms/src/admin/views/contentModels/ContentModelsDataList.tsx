@@ -1,4 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
+/**
+ * Package timeago-react does not have types.
+ */
+// @ts-ignore
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
 import get from "lodash/get";
@@ -17,32 +21,41 @@ import { removeModelFromGroupCache, removeModelFromListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { deserializeSorters, serializeSorters } from "../utils";
+import { deserializeSorters } from "../utils";
 import orderBy from "lodash/orderBy";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import usePermission from "../../hooks/usePermission";
-import { CmsEditorContentModel } from "~/types";
+import { CmsEditorContentModel, CmsModel } from "~/types";
+import {
+    DeleteCmsModelMutationResponse,
+    DeleteCmsModelMutationVariables,
+    ListCmsModelsQueryResponse
+} from "../../viewsGraphql";
+import usePermission from "~/admin/hooks/usePermission";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
-const SORTERS = [
+interface Sorter {
+    label: string;
+    sorters: string;
+}
+const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
-        sorters: { savedOn: "desc" }
+        sorters: "savedOn_DESC"
     },
     {
         label: t`Oldest to newest`,
-        sorters: { savedOn: "asc" }
+        sorters: "savedOn_ASC"
     },
     {
         label: t`Name A-Z`,
-        sorters: { name: "asc" }
+        sorters: "name_ASC"
     },
     {
         label: t`Name Z-A`,
-        sorters: { name: "desc" }
+        sorters: "name_DESC"
     }
 ];
 
@@ -55,55 +68,64 @@ const listItemMinHeight = css({
     minHeight: "66px !important"
 });
 
-type ContentModelsDataListProps = {
+interface ContentModelsDataListProps {
     canCreate: boolean;
     onCreate: () => void;
     onClone: (contentModel: CmsEditorContentModel) => void;
-};
-const ContentModelsDataList = ({ canCreate, onCreate, onClone }: ContentModelsDataListProps) => {
-    const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
+}
+const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
+    canCreate,
+    onCreate,
+    onClone
+}) => {
+    const [filter, setFilter] = useState<string>("");
+    const [sort, setSort] = useState<string>(SORTERS[0].sorters);
     const { history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
         dataTestId: "cms-delete-content-model-dialog"
     });
-    const { data, loading } = useQuery(GQL.LIST_CONTENT_MODELS);
+    const { data, loading } = useQuery<ListCmsModelsQueryResponse>(GQL.LIST_CONTENT_MODELS);
     const { canDelete, canEdit } = usePermission();
 
     const filterData = useCallback(
-        ({ name }) => {
+        ({ name }: Pick<CmsModel, "name">): boolean => {
             return name.toLowerCase().includes(filter);
         },
         [filter]
     );
 
     const sortData = useCallback(
-        list => {
+        (list: CmsModel[]): CmsModel[] => {
             if (!sort) {
                 return list;
             }
-            const [[key, value]] = Object.entries(deserializeSorters(sort));
-            return orderBy(list, [key], [value]);
+            const [sortField, sortOrderBy] = deserializeSorters(sort);
+            return orderBy(list, [sortField], [sortOrderBy]);
         },
         [sort]
     );
 
-    const models = loading ? [] : get(data, "listContentModels.data", []);
+    const models: CmsModel[] = loading ? [] : get(data, "listContentModels.data", []);
 
-    const deleteRecord = async item => {
+    const deleteRecord = async (item: CmsModel): Promise<void> => {
         showConfirmation(async () => {
-            await client.mutate({
+            await client.mutate<DeleteCmsModelMutationResponse, DeleteCmsModelMutationVariables>({
                 mutation: GQL.DELETE_CONTENT_MODEL,
                 variables: { modelId: item.modelId },
                 update(cache, { data }) {
+                    if (!data) {
+                        showSnackbar("Missing data on Delete Content Model Mutation Response.");
+                        return;
+                    }
                     const { error } = data.deleteContentModel;
 
                     if (error) {
-                        return showSnackbar(error.message, {
+                        showSnackbar(error.message, {
                             title: t`Something unexpected happened.`
                         });
+                        return;
                     }
 
                     removeModelFromListCache(cache, item);
@@ -117,13 +139,13 @@ const ContentModelsDataList = ({ canCreate, onCreate, onClone }: ContentModelsDa
         });
     };
 
-    const editRecord = contentModel => {
+    const editRecord = (contentModel: CmsModel): void => {
         history.push("/cms/content-models/" + contentModel.modelId);
     };
 
     const viewContentEntries = useCallback(contentModel => {
         return () => history.push("/cms/content-entries/" + contentModel.modelId);
-    }, undefined);
+    }, []);
 
     const contentModelsDataListModalOverlay = useMemo(
         () => (
@@ -138,7 +160,7 @@ const ContentModelsDataList = ({ canCreate, onCreate, onClone }: ContentModelsDa
                         >
                             {SORTERS.map(({ label, sorters }) => {
                                 return (
-                                    <option key={label} value={serializeSorters(sorters)}>
+                                    <option key={label} value={sorters}>
                                         {label}
                                     </option>
                                 );
@@ -181,7 +203,7 @@ const ContentModelsDataList = ({ canCreate, onCreate, onClone }: ContentModelsDa
                 />
             }
         >
-            {({ data = [] }) => (
+            {({ data = [] }: { data: CmsModel[] }) => (
                 <UIL.List data-testid="default-data-list">
                     {data.map(contentModel => {
                         const disableViewContent = contentModel.fields.length === 0;

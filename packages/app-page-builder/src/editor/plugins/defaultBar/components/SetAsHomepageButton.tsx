@@ -1,5 +1,7 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
+import gql from "graphql-tag";
+import { pageAtom, PageAtomType } from "../../../recoil/modules";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
@@ -11,8 +13,8 @@ import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 
-const SetAsHomepageButton: React.FunctionComponent = () => {
-    const page = useRecoilValue(pageAtom);
+const SetAsHomepageButton: React.FC = () => {
+    const page = useRecoilValue(pageAtom) as Required<PageAtomType>;
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();

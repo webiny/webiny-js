@@ -15,16 +15,21 @@ export interface SearchContext {
     addOption(option: SearchOptionData): void;
 }
 
-const SearchContext = React.createContext<SearchContext>(null);
+const SearchContext = React.createContext<SearchContext>({
+    options: [],
+    addOption: () => {
+        return void 0;
+    }
+});
 SearchContext.displayName = "SearchContext";
 
 export function useSearch() {
     return React.useContext(SearchContext);
 }
 
-export const SearchProvider = Component => {
+export const SearchProvider = (Component: React.FC): React.FC => {
     return function SearchProvider({ children, ...props }) {
-        const [options, setOptions] = useState([]);
+        const [options, setOptions] = useState<SearchOptionData[]>([]);
 
         const addOption = useCallback<SearchContext["addOption"]>(
             option => setOptions(options => [...options, option]),
@@ -52,7 +57,7 @@ export const SearchRenderer = makeComposable("SearchRenderer");
 
 export type SearchOptionProps = SearchOptionData;
 
-export const SearchOption = (props: SearchOptionProps) => {
+export const SearchOption: React.FC<SearchOptionProps> = props => {
     const { addOption } = useSearch();
 
     useEffect(() => {

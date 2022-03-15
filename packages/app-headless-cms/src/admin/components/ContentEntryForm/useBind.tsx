@@ -1,22 +1,29 @@
+/**
+ * Figure out correct types for this and packages/app-headless-cms/src/admin/plugins/fieldRenderers/DynamicSection.tsx files
+ * TODO @ts-refactor
+ */
 import React, { useRef, useCallback, cloneElement } from "react";
-import { BindComponent, BindComponentRenderProp } from "@webiny/form";
 import { createValidators } from "./functions/createValidators";
-import { CmsEditorField } from "~/types";
-
-interface FieldBindProps extends BindComponentRenderProp {
-    appendValue: (value: any) => void;
-    prependValue: (value: any) => void;
-    appendValues: (values: any[]) => void;
-    removeValue: (index: number) => void;
-}
+import { BindComponent, CmsEditorField } from "~/types";
+import { Validator } from "@webiny/validation/types";
 
 interface UseBindProps {
     field: CmsEditorField;
-    Bind: BindComponent & { parentName?: string };
+    Bind: BindComponent;
+}
+
+interface UseBindParams {
+    name?: string;
+    validators?: Validator[];
+    children?: any;
+}
+
+export interface GetBindCallable {
+    (index?: number): BindComponent;
 }
 
 export function useBind({ Bind: ParentBind, field }: UseBindProps) {
-    const memoizedBindComponents = useRef({});
+    const memoizedBindComponents = useRef<Record<string, BindComponent>>({});
 
     return useCallback(
         (index = -1) => {
@@ -33,15 +40,17 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
 
             const validators = createValidators(field.validation || []);
             const listValidators = createValidators(field.listValidation || []);
-            const defaultValue = field.multipleValues ? [] : undefined;
+            const defaultValue: string[] | undefined = field.multipleValues ? [] : undefined;
             const isMultipleValues = index === -1 && field.multipleValues;
             const inputValidators = isMultipleValues ? listValidators : validators;
-
-            memoizedBindComponents.current[name] = function UseBind({
-                name: childName,
-                validators: childValidators,
-                children
-            }) {
+            /**
+             * TODO @ts-refactor
+             *
+             * TS is complaining about validators property because UseBindParams.validators cannot be single validator??????
+             */
+            // @ts-ignore
+            memoizedBindComponents.current[name] = function UseBind(params: UseBindParams) {
+                const { name: childName, validators: childValidators, children } = params;
                 return (
                     <ParentBind
                         name={childName || name}
@@ -50,31 +59,29 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                     >
                         {bind => {
                             // Multiple-values functions below.
-                            const props: Partial<FieldBindProps> = { ...bind };
+                            const props = { ...bind };
                             if (field.multipleValues && index === -1) {
-                                props.appendValue = newValue => {
+                                props.appendValue = (newValue: string) => {
                                     bind.onChange([...bind.value, newValue]);
                                 };
-                                props.prependValue = newValue => {
+                                props.prependValue = (newValue: string) => {
                                     bind.onChange([newValue, ...bind.value]);
                                 };
-                                props.appendValues = newValues => {
+                                props.appendValues = (newValues: string[]) => {
                                     bind.onChange([...bind.value, ...newValues]);
                                 };
 
-                                props.removeValue = index => {
-                                    if (index >= 0) {
-                                        let value = bind.value;
-                                        value = [
-                                            ...value.slice(0, index),
-                                            ...value.slice(index + 1)
-                                        ];
-
-                                        bind.onChange(value);
-
-                                        // To make sure the field is still valid, we must trigger validation.
-                                        bind.form.validateInput(field.fieldId);
+                                props.removeValue = (index: number) => {
+                                    if (index < 0) {
+                                        return;
                                     }
+                                    let value = bind.value;
+                                    value = [...value.slice(0, index), ...value.slice(index + 1)];
+
+                                    bind.onChange(value);
+
+                                    // To make sure the field is still valid, we must trigger validation.
+                                    bind.form.validateInput(field.fieldId);
                                 };
                             }
 

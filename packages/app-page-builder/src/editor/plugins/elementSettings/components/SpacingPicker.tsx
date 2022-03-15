@@ -49,8 +49,8 @@ const defaultSelectStyle = css({
     }
 });
 
-type SpacingPickerProps = {
-    value: any;
+interface SpacingPickerProps {
+    value: string;
     onChange: (value: string | number) => void;
     options: any[];
     disabled?: boolean;
@@ -59,8 +59,14 @@ type SpacingPickerProps = {
     className?: string;
     inputClassName?: string;
     selectClassName?: string;
-};
-const SpacingPicker = ({
+}
+
+interface SpacingPickerFormData {
+    unit: "auto" | string;
+    value: string;
+}
+
+const SpacingPicker: React.FC<SpacingPickerProps> = ({
     value,
     onChange,
     disabled,
@@ -70,7 +76,7 @@ const SpacingPicker = ({
     inputClassName,
     selectClassName,
     useDefaultStyle = true
-}: SpacingPickerProps) => {
+}) => {
     const formData = useMemo(() => {
         const parsedValue = parseInt(value);
         const regx = new RegExp(`${parsedValue}`, "g");
@@ -88,7 +94,7 @@ const SpacingPicker = ({
         };
     }, [value]);
 
-    const onFormChange = useCallback(formData => {
+    const onFormChange = useCallback((formData: SpacingPickerFormData) => {
         if (formData.unit === "auto") {
             onChange(formData.unit);
         } else {
@@ -97,7 +103,15 @@ const SpacingPicker = ({
     }, []);
 
     return (
-        <Form data={formData} onChange={onFormChange}>
+        <Form
+            data={formData}
+            onChange={data => {
+                /**
+                 * We are positive that data is SpacingPickerFormData.
+                 */
+                return onFormChange(data as unknown as SpacingPickerFormData);
+            }}
+        >
             {({ data, Bind }) => (
                 <div className={classNames(className, { [defaultWrapperStyle]: useDefaultStyle })}>
                     <div className={"inner-wrapper"}>

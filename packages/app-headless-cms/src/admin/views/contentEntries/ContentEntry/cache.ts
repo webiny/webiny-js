@@ -1,28 +1,52 @@
 import dotProp from "dot-prop-immutable";
 import orderBy from "lodash/orderBy";
-import { CmsEditorContentEntry } from "~/types";
+import { CmsContentEntryRevision, CmsEditorContentEntry, CmsModel } from "~/types";
 import * as GQL from "~/admin/graphql/contentEntries";
 import { parseIdentifier } from "@webiny/utils";
+import { DataProxy } from "apollo-cache";
+import {
+    CmsEntriesListQueryResponse,
+    CmsEntriesListQueryVariables,
+    CmsEntriesListRevisionsQueryResponse,
+    CmsEntriesListRevisionsQueryVariables
+} from "~/admin/graphql/contentEntries";
 
 /*
  * We need to preserve the order of entries with new entry addition
  * because we're not re-fetching the list but updating it directly inside cache.
  * */
-const sortEntries = (list, sort) => {
-    if (!sort || typeof sort !== "string") {
+const sortEntries = (
+    list: CmsEditorContentEntry[],
+    sort?: string[] | null
+): CmsEditorContentEntry[] => {
+    if (!sort) {
+        return list;
+    } else if (Array.isArray(sort) === false) {
+        console.log("Sort is not an Array of string.");
+        return list;
+    } else if (sort.length === 0) {
         return list;
     }
-    const [key, value] = sort.split("_");
+    const [sortBy] = sort;
+    const [key, value] = sortBy.split("_");
     const order = value.toLowerCase() as "asc" | "desc";
     return orderBy(list, [key], [order]);
 };
 
-export const addEntryToListCache = (model, cache, entry: CmsEditorContentEntry, variables) => {
+export const addEntryToListCache = (
+    model: CmsModel,
+    cache: DataProxy,
+    entry: CmsEditorContentEntry,
+    variables: CmsEntriesListQueryVariables
+): void => {
     const gqlParams = { query: GQL.createListQuery(model), variables };
-    const { content } = cache.readQuery(gqlParams);
-    if (!content || !content.data) {
+    const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
+        gqlParams
+    );
+    if (!response || !response.content || !response.content.data) {
         return;
     }
+    const { content } = response;
     cache.writeQuery({
         ...gqlParams,
         data: {
@@ -34,15 +58,23 @@ export const addEntryToListCache = (model, cache, entry: CmsEditorContentEntry, 
     });
 };
 
-export const updateLatestRevisionInListCache = (model, cache, revision, variables) => {
+export const updateLatestRevisionInListCache = (
+    model: CmsModel,
+    cache: DataProxy,
+    revision: CmsContentEntryRevision,
+    variables: CmsEntriesListQueryVariables
+): void => {
     const gqlParams = { query: GQL.createListQuery(model), variables };
 
     const [uniqueId] = revision.id.split("#");
 
-    const { content } = cache.readQuery(gqlParams);
-    if (!content || !content.data) {
+    const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
+        gqlParams
+    );
+    if (!response || !response.content || !response.content.data) {
         return;
     }
+    const { content } = response;
     const index = content.data.findIndex(item => item.id.startsWith(uniqueId));
     if (index === -1) {
         return;
@@ -56,13 +88,21 @@ export const updateLatestRevisionInListCache = (model, cache, revision, variable
     });
 };
 
-export const removeEntryFromListCache = (model, cache, revision, variables) => {
+export const removeEntryFromListCache = (
+    model: CmsModel,
+    cache: DataProxy,
+    revision: CmsContentEntryRevision,
+    variables: CmsEntriesListQueryVariables
+): void => {
     // Delete the item from list cache
     const gqlParams = { query: GQL.createListQuery(model), variables };
-    const { content } = cache.readQuery(gqlParams);
-    if (!content || !content.data) {
+    const response = cache.readQuery<CmsEntriesListQueryResponse, CmsEntriesListQueryVariables>(
+        gqlParams
+    );
+    if (!response || !response.content || !response.content.data) {
         return;
     }
+    const { content } = response;
     const { id: entryId } = parseIdentifier(revision.id);
     const index = content.data.findIndex(item => item.id.startsWith(entryId));
     if (index === -1) {
@@ -77,41 +117,64 @@ export const removeEntryFromListCache = (model, cache, revision, variables) => {
     });
 };
 
-export const removeRevisionFromEntryCache = (model, cache, revision) => {
+export const removeRevisionFromEntryCache = (
+    model: CmsModel,
+    cache: DataProxy,
+    revision: CmsContentEntryRevision
+): CmsContentEntryRevision[] => {
     const gqlParams = {
         query: GQL.createRevisionsQuery(model),
         variables: { id: revision.id.split("#")[0] }
     };
 
-    const { revisions } = cache.readQuery(gqlParams);
-    if (!revisions || !revisions.data) {
-        return;
+    const response = cache.readQuery<
+        CmsEntriesListRevisionsQueryResponse,
+        CmsEntriesListRevisionsQueryVariables
+    >(gqlParams);
+    if (
+        !response ||
+        !response.revisions ||
+        !response.revisions.data ||
+        response.revisions.data.length === 0
+    ) {
+        return [];
     }
-    const index = revisions.data.findIndex(item => item.id === revision.id);
-    const newRevisions = dotProp.delete(revisions, `data.${index}`);
+
+    const { revisions: revisionsData } = response;
+
+    const revisions = revisionsData.data.filter(item => {
+        return item.id !== revision.id;
+    });
 
     cache.writeQuery({
         ...gqlParams,
         data: {
-            revisions: newRevisions
+            revisions
         }
     });
 
-    // Return new revisions
-    return newRevisions.data;
+    return revisions;
 };
 
-export const addRevisionToRevisionsCache = (model, cache, revision) => {
+export const addRevisionToRevisionsCache = (
+    model: CmsModel,
+    cache: DataProxy,
+    revision: CmsContentEntryRevision
+): void => {
     const gqlParams = {
         query: GQL.createRevisionsQuery(model),
         variables: { id: revision.id.split("#")[0] }
     };
 
-    const { revisions } = cache.readQuery(gqlParams);
+    const response = cache.readQuery<
+        CmsEntriesListRevisionsQueryResponse,
+        CmsEntriesListRevisionsQueryVariables
+    >(gqlParams);
 
-    if (!revisions || !revisions.data) {
+    if (!response || !response.revisions || !response.revisions.data) {
         return;
     }
+    const { revisions } = response;
 
     cache.writeQuery({
         ...gqlParams,
@@ -121,17 +184,25 @@ export const addRevisionToRevisionsCache = (model, cache, revision) => {
     });
 };
 
-export const unpublishPreviouslyPublishedRevision = (model, cache, publishedId) => {
+export const unpublishPreviouslyPublishedRevision = (
+    model: CmsModel,
+    cache: DataProxy,
+    publishedId: string
+): void => {
     const gqlParams = {
         query: GQL.createRevisionsQuery(model),
         variables: { id: publishedId.split("#")[0] }
     };
 
-    const { revisions } = cache.readQuery(gqlParams);
+    const response = cache.readQuery<
+        CmsEntriesListRevisionsQueryResponse,
+        CmsEntriesListRevisionsQueryVariables
+    >(gqlParams);
 
-    if (!revisions || !revisions.data) {
+    if (!response || !response.revisions || !response.revisions.data) {
         return;
     }
+    const { revisions } = response;
 
     const prevPublished = revisions.data.findIndex(
         item => item.id !== publishedId && item.meta.status === "published"

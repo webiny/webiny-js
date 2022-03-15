@@ -1,5 +1,5 @@
 import React from "react";
-import { pageAtom } from "../../../recoil/modules";
+import { pageAtom, PageAtomType } from "../../../recoil/modules";
 import { MenuItem } from "@webiny/ui/Menu";
 import { useConfigureWebsiteUrlDialog } from "../../../../admin/hooks/useConfigureWebsiteUrl";
 import { usePageBuilderSettings } from "../../../../admin/hooks/usePageBuilderSettings";
@@ -11,8 +11,8 @@ import { useRecoilValue } from "recoil";
 
 const openTarget = window.Cypress ? "_self" : "_blank";
 
-const PreviewPageButton: React.FunctionComponent = () => {
-    const page = useRecoilValue(pageAtom);
+const PreviewPageButton: React.FC = () => {
+    const page = useRecoilValue(pageAtom) as Required<PageAtomType>;
     const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 

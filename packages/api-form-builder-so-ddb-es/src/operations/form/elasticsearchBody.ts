@@ -44,16 +44,16 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin> = plugins
+    const operatorPlugins = plugins
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )
         .reduce((acc, plugin) => {
             acc[plugin.getOperator()] = plugin;
             return acc;
-        }, {});
+        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
 
-    const where: FormBuilderStorageOperationsListFormsParams["where"] = {
+    const where: Partial<FormBuilderStorageOperationsListFormsParams["where"]> = {
         ...initialWhere
     };
     /**
@@ -63,7 +63,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
      * No need for the tenant filtering otherwise as each index is for single tenant.
      */
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-    if (sharedIndex) {
+    if (sharedIndex && where.tenant) {
         query.must.push({
             term: {
                 "tenant.keyword": where.tenant
@@ -80,7 +80,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
      */
     query.must.push({
         term: {
-            "locale.keyword": where.locale
+            "locale.keyword": where.locale as string
         }
     });
     delete where.locale;
@@ -108,12 +108,12 @@ interface CreateElasticsearchBodyParams {
 export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): esSearchBody => {
     const { plugins, where, limit: initialLimit, sort: initialSort, after } = params;
 
-    const fieldPlugins: Record<string, FormElasticsearchFieldPlugin> = plugins
+    const fieldPlugins = plugins
         .byType<FormElasticsearchFieldPlugin>(FormElasticsearchFieldPlugin.type)
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
             return acc;
-        }, {});
+        }, {} as Record<string, FormElasticsearchFieldPlugin>);
 
     const limit = createLimit(initialLimit, 100);
 

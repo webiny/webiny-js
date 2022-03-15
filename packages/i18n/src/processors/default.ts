@@ -1,24 +1,33 @@
-import _ from "lodash";
-import { Processor } from "../types";
+import lodashTrim from "lodash/trim";
+import { Modifier, Processor } from "~/types";
 
-const processTextPart = (part: string, values: Object, modifiers): string => {
-    if (!_.startsWith(part, "{")) {
+const processTextPart = (
+    part: string,
+    values: Record<string, any>,
+    modifiers: Record<string, Modifier>
+): string => {
+    if (part.startsWith("{") === false) {
         return part;
     }
 
-    const parts = _.trim(part, "{}").split("|");
+    const parts = lodashTrim(part, "{}").split("|");
 
     const [variable, modifier] = parts;
 
-    if (!_.has(values, variable)) {
+    if (!values[variable]) {
         return `{${variable}}`;
     }
 
-    const output = { value: values[variable] };
+    const output = {
+        value: values[variable]
+    };
 
     if (modifier) {
-        const parameters = modifier.split(":");
+        const parameters: string[] = modifier.split(":");
         const name = parameters.shift();
+        if (!name) {
+            return output.value;
+        }
         if (modifiers[name]) {
             const modifier = modifiers[name];
             output.value = modifier.execute(output.value, parameters);
@@ -30,7 +39,7 @@ const processTextPart = (part: string, values: Object, modifiers): string => {
 
 const processor: Processor = {
     name: "default",
-    canExecute(data: { values }) {
+    canExecute(data) {
         for (const key in data.values) {
             const value = data.values[key];
             if (

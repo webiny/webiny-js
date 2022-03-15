@@ -2,6 +2,7 @@ import * as React from "react";
 import { get } from "lodash";
 import { Form } from "./Form";
 import invariant from "invariant";
+import { FormAPI } from "~/types";
 
 export type BindComponentRenderPropValidation = {
     isValid: boolean;
@@ -11,25 +12,33 @@ export type BindComponentRenderPropValidation = {
 
 export type BindComponentRenderPropOnChange = (value: any) => Promise<void>;
 
-export type BindComponentRenderProp = {
-    form: Object;
+export type BindComponentRenderProp<T = any> = {
+    form: FormAPI;
     onChange: BindComponentRenderPropOnChange;
-    value: any;
+    value: T;
     validate: () => Promise<boolean | any>;
     validation: BindComponentRenderPropValidation;
 };
 
-export type BindComponentProps = {
-    name: string;
-    beforeChange?: Function;
-    afterChange?: Function;
+export type BindComponentPropsValue = string | number | boolean | null | undefined;
+export interface BindComponentProps {
+    // TODO @ts-refactor verify that this property can be undefined
+    name?: string;
+    beforeChange?: (
+        value: BindComponentPropsValue,
+        cb: (value: BindComponentPropsValue) => void
+    ) => void;
+    afterChange?: (
+        value: BindComponentPropsValue,
+        cb: (value: BindComponentPropsValue) => void
+    ) => void;
     defaultValue?: any;
     validators?: Function | Array<Function>;
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
     validate?: Function;
-};
+}
 
-export type BindComponent = (props: BindComponentProps) => React.ReactElement;
+export type BindComponent = (props: BindComponentProps) => React.ReactElement | null;
 
 const createBind = (form: Form) => {
     const Bind: BindComponent = props => {

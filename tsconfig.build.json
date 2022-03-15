@@ -6,7 +6,7 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "module": "esnext",
-    "lib": ["dom", "dom.iterable"],
+    "lib": ["esnext", "dom", "dom.iterable"],
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,
@@ -18,7 +18,37 @@
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
     "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }],
     "noUnusedParameters": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "noImplicitUseStrict": false,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": false,
+    "noStrictGenericChecks": false,
+    "noFallthroughCasesInSwitch": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitOverride": true,
+    "strict": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "suppressImplicitAnyIndexErrors": false,
+    "suppressExcessPropertyErrors": false,
+    "keyofStringsOnly": false,
+    "experimentalDecorators": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    /**
+     * Maybe switch to true at some point? There would need to be A LOT of error handling changes.
+     * https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables
+     */
+    "useUnknownInCatchVariables": false,
+    /**
+     * Setting to true will start producing TS errors that are inside libraries we use.
+     * https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes
+     */
+    "exactOptionalPropertyTypes": false
   },
   "exclude": [
     "node_modules",
@@ -30,6 +60,7 @@
     "./packages/create-webiny-project",
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",
-    "./packages/tracking"
+    "./packages/tracking",
+    "./packages-v6/pb-editor"
   ]
 }

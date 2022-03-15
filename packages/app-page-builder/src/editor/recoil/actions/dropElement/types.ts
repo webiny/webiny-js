@@ -1,6 +1,6 @@
 import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
 
-export type DropElementActionArgsType = {
+export interface DropElementActionArgsType {
     source: DragObjectWithTypeWithTarget;
     target: {
         id: string;
@@ -8,4 +8,4 @@ export type DropElementActionArgsType = {
         path?: string;
         position: number;
     };
-};
+}

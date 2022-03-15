@@ -1,20 +1,21 @@
+import middleware from "./middleware";
 import { HandlerPlugin } from "~/plugins/HandlerPlugin";
 import { ContextPlugin } from "~/plugins/ContextPlugin";
-import middleware from "./middleware";
 import { BeforeHandlerPlugin } from "~/plugins/BeforeHandlerPlugin";
 import { Context } from "~/plugins/Context";
 import { HandlerErrorPlugin } from "~/plugins/HandlerErrorPlugin";
 import { HandlerResultPlugin } from "~/plugins/HandlerResultPlugin";
+import { PluginCollection } from "@webiny/plugins/types";
 
-export default (...plugins) =>
-    async (...args) => {
+export default (...plugins: PluginCollection) =>
+    async (...args: string[]) => {
         const context = new Context({
             plugins,
             args,
             /**
              * Inserted via webpack on build time.
              */
-            WEBINY_VERSION: process.env.WEBINY_VERSION
+            WEBINY_VERSION: process.env.WEBINY_VERSION as string
         });
 
         const result = await handle(context);
@@ -74,6 +75,7 @@ async function handle(context: Context) {
         return result;
     } catch (error) {
         // Log error to cloud, as these can be extremely annoying to debug!
+        console.log("@webiny/handler");
         console.log(error);
         const handlers = context.plugins.byType<HandlerErrorPlugin>(HandlerErrorPlugin.type);
         const handler = middleware(

@@ -9,14 +9,14 @@ const reservedFields = ["PK", "SK", "index", "data"];
 
 export type DefinitionParams = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
-export interface Params {
+export interface AttributePluginParams {
     entity: string;
     attribute: string;
     params: DefinitionParams;
 }
 
 export abstract class AttributePlugin extends Plugin {
-    public static readonly type = "db.dynamodb.attribute";
+    public static override readonly type: string = "db.dynamodb.attribute";
     private readonly _entity: string;
     private readonly _attribute: string;
     private readonly _params: DefinitionParams;
@@ -29,7 +29,7 @@ export abstract class AttributePlugin extends Plugin {
         return this._attribute;
     }
 
-    public constructor({ entity, attribute, params }: Params) {
+    public constructor({ entity, attribute, params }: AttributePluginParams) {
         super();
 
         this.validateReserved(attribute);

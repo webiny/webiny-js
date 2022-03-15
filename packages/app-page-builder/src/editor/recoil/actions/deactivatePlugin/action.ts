@@ -1,7 +1,7 @@
 import { PluginsAtomType } from "../../modules";
 import { DeactivatePluginActionArgsType } from "./types";
 import { plugins } from "@webiny/plugins";
-import { EventActionCallable, EventActionHandlerActionCallableResponse } from "../../../../types";
+import { EventActionCallable, EventActionHandlerActionCallableResponse } from "~/types";
 
 const removePlugin = (state: PluginsAtomType, name: string): PluginsAtomType => {
     const plugin = plugins.byName(name);
@@ -25,7 +25,8 @@ const deactivatePluginByName = (
     return {
         state: {
             plugins: newState
-        }
+        },
+        actions: []
     };
 };
 
@@ -39,7 +40,8 @@ const deactivatePluginByType = (
                 ...state,
                 [type]: []
             }
-        }
+        },
+        actions: []
     };
 };
 
@@ -56,15 +58,22 @@ const deactivatePluginsByName = (
     return {
         state: {
             plugins: newState
-        }
+        },
+        actions: []
     };
 };
 
 export const deactivatePluginAction: EventActionCallable<DeactivatePluginActionArgsType> = (
     { plugins: pluginsState },
     _,
-    { name, names, type }
+    args
 ) => {
+    if (!args) {
+        return {
+            actions: []
+        };
+    }
+    const { name, names, type } = args;
     if (name) {
         return deactivatePluginByName(pluginsState, name);
     } else if (type) {

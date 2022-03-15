@@ -1,4 +1,4 @@
-import ValidationError from "./../validationError";
+import ValidationError from "~/validationError";
 
 const regex = {
     base: new RegExp(
@@ -19,8 +19,8 @@ const regex = {
     )
 };
 
-export default (value: any, params: Array<string>) => {
-    if (!value) {
+export default (value: any, params?: string[]) => {
+    if (!value || !params) {
         return;
     }
     value = value + "";

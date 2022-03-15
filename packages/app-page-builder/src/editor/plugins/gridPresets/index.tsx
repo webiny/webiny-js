@@ -19,18 +19,18 @@ export const calculatePresetCells = (cellsType: string): number[] => {
     throw new Error(`Cell type ${cellsType} has an empty or less than zero size cell.`);
 };
 
-export const calculatePresetPluginCells = (pl: PbEditorGridPresetPluginType): number[] => {
-    if (!pl.cellsType) {
-        throw new Error(`There is no cells definition in preset plugin "${pl.name}".`);
+export const calculatePresetPluginCells = (plugin: PbEditorGridPresetPluginType): number[] => {
+    if (!plugin.cellsType) {
+        throw new Error(`There is no cells definition in preset plugin "${plugin.name}".`);
     }
-    const cells = calculatePresetCells(pl.cellsType);
+    const cells = calculatePresetCells(plugin.cellsType);
     if (cells.length === 0) {
-        throw new Error(`There are no cells in preset plugin "${pl.name}".`);
+        throw new Error(`There are no cells in preset plugin "${plugin.name}".`);
     }
     return cells;
 };
 
-export const getDefaultPresetCellsTypePluginType = () => {
+export const getDefaultPresetCellsTypePluginType = (): string => {
     return getDefaultPresetPlugin().cellsType;
 };
 

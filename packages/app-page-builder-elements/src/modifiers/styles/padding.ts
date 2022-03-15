@@ -1,12 +1,12 @@
 import { ElementStylesModifier } from "~/types";
 
 const padding: ElementStylesModifier = ({ element, theme }) => {
-    const { padding } = element.data.settings;
+    const { padding } = element.data.settings || {};
     if (!padding) {
-        return;
+        return null;
     }
 
-    return Object.keys(theme.breakpoints).reduce((returnStyles, breakpointName) => {
+    return Object.keys(theme.breakpoints || {}).reduce((returnStyles, breakpointName) => {
         if (!padding[breakpointName]) {
             return returnStyles;
         }

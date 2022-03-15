@@ -21,7 +21,7 @@ describe("ContentModel modelId variations", () => {
         contentModelGroup = createCMG.data.createContentModelGroup.data;
     });
 
-    const disallowedModelIdEndings = [
+    const disallowedModelIdEndings: [string, string | undefined][] = [
         ["Tab list", "tabList"],
         ["Tab list", undefined],
         ["Tab response", "tabResponse"],
@@ -36,7 +36,7 @@ describe("ContentModel modelId variations", () => {
 
     test.each(disallowedModelIdEndings)(
         "should not allow to create model with modelId that clashes with GraphQL (%s, %s)",
-        async (name: string, modelId?: string) => {
+        async (name, modelId) => {
             const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
 
             const [response] = await createContentModelMutation({

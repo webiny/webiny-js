@@ -14,13 +14,13 @@ import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { get } from "@webiny/db-dynamodb/utils/get";
 
-export interface Params {
+export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
     table: Table;
 }
 
 export const createSettingsStorageOperations = (
-    params: Params
+    params: CreateSettingsStorageOperationsParams
 ): FormBuilderSettingsStorageOperations => {
     const { entity } = params;
 
@@ -68,7 +68,7 @@ export const createSettingsStorageOperations = (
 
     const getSettings = async (
         params: FormBuilderStorageOperationsGetSettingsParams
-    ): Promise<Settings> => {
+    ): Promise<Settings | null> => {
         const keys = createKeys(params);
 
         try {

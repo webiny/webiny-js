@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { Input, Props } from "./Input";
+import { Input, InputProps } from "./Input";
 import {
     getCurrentLocalTime,
     getDefaultFieldValue
 } from "~/admin/plugins/fieldRenderers/dateTime/utils";
 
-export const Time: React.FC<Props> = props => {
+export const Time: React.FC<InputProps> = props => {
     const { field, bind } = props;
     const time = getDefaultFieldValue(field, bind, () => {
         return getCurrentLocalTime(new Date());
@@ -26,7 +26,7 @@ export const Time: React.FC<Props> = props => {
             bind={{
                 ...bind,
                 value: time,
-                onChange: (value: string) => {
+                onChange: async (value: string): Promise<void> => {
                     if (!value) {
                         if (bind.value) {
                             return;

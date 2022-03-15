@@ -5,17 +5,29 @@ import unset from "lodash/unset";
 import cloneDeep from "lodash/cloneDeep";
 import debounce from "lodash/debounce";
 import { useRouter } from "@webiny/react-router";
-import { createListQuery } from "~/admin/graphql/contentEntries";
+import {
+    createListQuery,
+    CmsEntriesListQueryVariables,
+    CmsEntriesListQueryResponse
+} from "~/admin/graphql/contentEntries";
 import { useQuery } from "~/admin/hooks";
 import { useContentEntries } from "./useContentEntries";
-import { CmsEditorContentEntry } from "~/types";
+import { CmsEditorContentEntry, CmsMetaResponse } from "~/types";
+
+interface UpdateSearchCallableParams {
+    filter: string;
+    query: URLSearchParams;
+}
+interface UpdateSearchCallable {
+    (params: UpdateSearchCallableParams): void;
+}
 
 export function useContentEntriesList() {
     const { contentModel, listQueryVariables, setListQueryVariables, sorters, canCreate } =
         useContentEntries();
 
-    const [loadMoreLoading, setLoadMoreLoading] = useState(false);
-    const [filter, setFilter] = useState("");
+    const [loadMoreLoading, setLoadMoreLoading] = useState<boolean>(false);
+    const [filter, setFilter] = useState<string>("");
 
     const { history } = useRouter();
     const baseUrl = `/cms/content-entries/${contentModel.modelId}`;
@@ -25,7 +37,7 @@ export function useContentEntriesList() {
     const id = query.get("id");
     const searchQuery = query.get("search");
     const updateSearch = useCallback(
-        debounce(({ filter, query }) => {
+        debounce<UpdateSearchCallable>(({ filter, query }) => {
             const search = query.get("search");
             if (typeof search !== "string" && !filter) {
                 return;
@@ -64,13 +76,16 @@ export function useContentEntriesList() {
 
     // Generate a query based on current content model
     const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
-    const { data, loading, fetchMore } = useQuery(LIST_QUERY, { variables: listQueryVariables });
+    const { data, loading, fetchMore } = useQuery<
+        CmsEntriesListQueryResponse,
+        CmsEntriesListQueryVariables
+    >(LIST_QUERY, { variables: listQueryVariables });
 
     const onCreate = useCallback(() => {
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
     }, [contentModel]);
 
-    const filterByStatus = useCallback((entries, status) => {
+    const filterByStatus = useCallback((entries: CmsEditorContentEntry[], status?: string) => {
         if (!status || status === "all") {
             return entries;
         }
@@ -78,16 +93,19 @@ export function useContentEntriesList() {
     }, []);
 
     // Load more entries on scroll
-    const loadMore = useCallback(() => {
-        const meta = get(data, "content.meta", {});
+    const loadMore = useCallback((): void => {
+        const meta: CmsMetaResponse = get(data, "content.meta", {});
         if (meta.hasMoreItems) {
             setLoadMoreLoading(true);
             fetchMore({
-                variables: { after: meta.cursor },
-                updateQuery: (prev, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) {
+                variables: {
+                    after: meta.cursor
+                },
+                updateQuery: (prev: CmsEntriesListQueryResponse, result) => {
+                    if (!result || !result.fetchMoreResult) {
                         return prev;
                     }
+                    const fetchMoreResult = result.fetchMoreResult;
 
                     const next = { ...fetchMoreResult };
 

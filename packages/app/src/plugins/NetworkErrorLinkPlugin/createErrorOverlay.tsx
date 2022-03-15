@@ -1,8 +1,14 @@
 import React from "react";
 import { render } from "react-dom";
 import ErrorOverlay from "./ErrorOverlay";
+import { ServerError, ServerParseError } from "apollo-link-http-common";
 
-const createErrorOverlay = ({ query, networkError }) => {
+interface CreateErrorOverlayParams {
+    query: string;
+    networkError: Error | ServerError | ServerParseError;
+}
+const createErrorOverlay = (params: CreateErrorOverlayParams): void => {
+    const { query, networkError } = params;
     // If the element already present in DOM, return immediately.
     if (document.getElementById("overlay-root")) {
         return;

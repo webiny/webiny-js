@@ -1,11 +1,15 @@
 import React from "react";
-import { css } from "emotion";
 import get from "lodash/get";
-import { ElementRoot } from "../../../../render/components/ElementRoot";
+import { css } from "emotion";
+import { ElementRoot } from "~/render/components/ElementRoot";
+import { PbEditorElement } from "~/types";
 
 const center = css({ textAlign: "center" });
 
-const Icon = ({ element }) => {
+interface IconProps {
+    element: PbEditorElement;
+}
+const Icon: React.FC<IconProps> = ({ element }) => {
     return (
         <ElementRoot element={element}>
             {({ getAllClasses, elementStyle }) => {
@@ -16,7 +20,7 @@ const Icon = ({ element }) => {
                 );
 
                 if (!svg) {
-                    return null;
+                    return <></>;
                 }
 
                 return (
