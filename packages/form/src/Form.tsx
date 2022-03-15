@@ -101,7 +101,7 @@ export class Form extends React.Component<FormProps, State> {
 
     public isValid: boolean | null = null;
     public inputs: Record<string, any> = {};
-    public lastRender: Record<string, any> = [];
+    public lastRender: any[] = [];
     public validateFns: Record<string, any> = {};
     public onChangeFns: Record<string, any> = {};
     Bind = createBind(this);

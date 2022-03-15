@@ -1,6 +1,6 @@
-import timeLtePlugin from "../../src/content/plugins/validators/timeLte";
-import timeGtePlugin from "../../src/content/plugins/validators/timeGte";
-import { CmsModelFieldValidation } from "../../src/types";
+import timeLtePlugin from "~/content/plugins/validators/timeLte";
+import timeGtePlugin from "~/content/plugins/validators/timeGte";
+import { CmsModelFieldValidation } from "~/types";
 
 const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
     return {

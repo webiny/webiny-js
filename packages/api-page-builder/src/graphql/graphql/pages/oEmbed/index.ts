@@ -9,7 +9,15 @@ const getHostname = (url: string): string | null => {
     return null;
 };
 
-const providers = providerList
+interface Provider {
+    provider_name: string;
+    provider_url: string;
+    schemes: string[];
+    domain: string;
+    url: string;
+}
+
+const providers: Provider[] = providerList
     .map(item => {
         const { provider_name, provider_url, endpoints } = item;
 
@@ -18,13 +26,19 @@ const providers = providerList
 
         const hostname = getHostname(url);
         const domain = hostname ? hostname.replace("www.", "") : "";
-        return { provider_name, provider_url, schemes, domain, url };
+        return {
+            provider_name,
+            provider_url,
+            schemes,
+            domain,
+            url
+        };
     })
     .filter(item => {
         return item.domain !== "";
     });
 
-export const findProvider = (url: string): { [key: string]: any } | null => {
+export const findProvider = (url: string): Provider | null => {
     const candidates = providers.filter(provider => {
         const { schemes, domain } = provider;
         if (!schemes.length) {
@@ -39,10 +53,14 @@ export const findProvider = (url: string): { [key: string]: any } | null => {
     return candidates.length > 0 ? candidates[0] : null;
 };
 
-export const fetchEmbed = async (
-    params: { [key: string]: any },
-    provider: { [key: string]: any }
-) => {
+interface FetchEmbedParams {
+    [key: string]: any;
+}
+interface FetchEmbedProvider {
+    url: string;
+}
+
+export const fetchEmbed = async (params: FetchEmbedParams, provider: FetchEmbedProvider) => {
     const link =
         `${provider.url}?format=json&` +
         Object.keys(params)

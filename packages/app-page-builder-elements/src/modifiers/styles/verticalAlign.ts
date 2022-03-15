@@ -1,7 +1,7 @@
 import { ElementStylesModifier } from "~/types";
 
 const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
-    const { verticalAlign } = element.data.settings;
+    const { verticalAlign } = element.data.settings || {};
     if (!verticalAlign) {
         return null;
     }
@@ -13,7 +13,10 @@ const verticalAlign: ElementStylesModifier = ({ element, theme }) => {
 
         return {
             ...returnStyles,
-            [breakpointName]: { display: "flex", alignItems: verticalAlign[breakpointName] }
+            [breakpointName]: {
+                display: "flex",
+                alignItems: verticalAlign[breakpointName]
+            }
         };
     }, {});
 };

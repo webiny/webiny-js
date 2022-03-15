@@ -9,6 +9,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import CustomSection from "./CustomSection";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { PageBuilderSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
@@ -66,7 +67,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
                     formData[`${entity}AccessScope`] &&
                     formData[`${entity}AccessScope`] !== NO_ACCESS
                 ) {
-                    const permission: SecurityPermission = {
+                    const permission: PageBuilderSecurityPermission = {
                         name: `${PAGE_BUILDER}.${entity}`,
                         rwd: "r"
                     };
@@ -119,7 +120,7 @@ export const PageBuilderPermissions: React.FC<PageBuilderPermissionsProps> = ({
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "categories", "menus", and "pages".
-        const formData: Record<string, any> = {
+        const formData = {
             accessLevel: CUSTOM_ACCESS,
             settingsAccessLevel: NO_ACCESS
         };

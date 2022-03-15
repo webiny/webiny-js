@@ -16,7 +16,10 @@ export interface Render {
     files: {
         name: string;
         type: string;
-        meta: Record<string, any>;
+        meta: {
+            tags?: TagUrlLink[];
+            [key: string]: any;
+        };
     }[];
 }
 
@@ -152,7 +155,10 @@ export interface Configuration {
         url?: string;
     };
     meta?: {
-        [key: string]: string;
+        notFoundPage?: string;
+        tenant?: string;
+        locale?: string;
+        [key: string]: string | undefined;
     };
 }
 

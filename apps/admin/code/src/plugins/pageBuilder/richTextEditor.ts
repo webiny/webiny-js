@@ -32,7 +32,7 @@ export default {
                 inlineToolbar: ["bold", "italic", "underline", "color", "link"],
                 config: () => {
                     const [pbTheme] = plugins.byType<PbThemePlugin>("pb-theme");
-                    const typography = pbTheme.theme.typography;
+                    const typography = pbTheme.theme.typography || {};
                     // Use typography options only for "p" tag.
                     const typographyForParagraph = {
                         paragraph: typography.paragraph,

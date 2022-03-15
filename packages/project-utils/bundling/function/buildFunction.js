@@ -64,6 +64,13 @@ module.exports = async options => {
         });
     });
 
+    // We only enable WCP-related functionality if the WCP_APP_URL and WCP_API_URL
+    // environment variables are present in runtime. Otherwise we exit.
+    const experimentalWcpFeaturesEnabled = process.env.WCP_APP_URL && process.env.WCP_API_URL;
+    if (!experimentalWcpFeaturesEnabled) {
+        return result;
+    }
+
     const project = getProject({ cwd });
 
     if (!project.config.id) {

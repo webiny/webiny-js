@@ -10,7 +10,7 @@ module.exports = options => {
     const output = getOutput(options);
     const entry = getEntry(options);
 
-    const { cwd, debug, overrides, production } = options;
+    const { cwd, overrides, production } = options;
 
     let babelOptions = require("./babelrc");
     // Customize Babel options.
@@ -18,19 +18,23 @@ module.exports = options => {
         babelOptions = overrides.babel(babelOptions);
     }
 
+    const sourceMaps = options.sourceMaps !== false;
+
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
-    const tsCheksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
+    const tsChecksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
 
     return {
-        entry: path.resolve(entry),
+        entry: [
+            sourceMaps && require.resolve("source-map-support/register"),
+            path.resolve(entry)
+        ].filter(Boolean),
         target: "node",
         output: {
             libraryTarget: "commonjs",
             path: output.path,
             filename: output.filename
         },
-        // Generate sourcemaps for proper error messages
-        devtool: debug ? "source-map" : false,
+        devtool: sourceMaps ? "source-map" : false,
         externals: [/^aws-sdk/],
         mode: production ? "production" : "development",
         optimization: {
@@ -51,7 +55,7 @@ module.exports = options => {
                 ),
                 ...definitions
             }),
-            tsCheksEnabled &&
+            tsChecksEnabled &&
                 new ForkTsCheckerWebpackPlugin({
                     typescript: {
                         configFile: path.resolve(cwd, "./tsconfig.json"),
@@ -65,6 +69,11 @@ module.exports = options => {
         module: {
             exprContextCritical: false,
             rules: [
+                sourceMaps && {
+                    test: /\.js$/,
+                    enforce: "pre",
+                    use: [require.resolve("source-map-loader")]
+                },
                 {
                     test: /\.mjs$/,
                     include: /node_modules/,
@@ -79,7 +88,7 @@ module.exports = options => {
                     exclude: /node_modules/,
                     options: babelOptions
                 }
-            ]
+            ].filter(Boolean)
         },
         resolve: {
             modules: [path.resolve(path.join(cwd, "node_modules")), "node_modules"],

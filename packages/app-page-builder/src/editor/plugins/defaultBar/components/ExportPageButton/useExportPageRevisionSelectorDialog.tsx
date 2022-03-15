@@ -8,6 +8,7 @@ import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
+import { PbElementDataSettingsFormType } from "~/types";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
@@ -23,6 +24,7 @@ const gridStyles = css`
 interface ExportPageDialogMessageProps {
     selected: string[];
 }
+
 const ExportPageDialogMessage: React.FC<ExportPageDialogMessageProps> = ({ selected }) => {
     const { exportPageData } = usePageBuilder();
     const { revisionType: value, setRevisionType: setValue } = exportPageData;
@@ -36,7 +38,13 @@ const ExportPageDialogMessage: React.FC<ExportPageDialogMessageProps> = ({ selec
                     >{t`Choose which revision of the page(s) you want to export:`}</Typography>
                 </Cell>
                 <Cell span={12}>
-                    <Form data={{ revision: value }} onChange={data => setValue(data.revision)}>
+                    <Form
+                        data={{ revision: value }}
+                        onChange={data => {
+                            const { revision } = data as unknown as PbElementDataSettingsFormType;
+                            return setValue(revision);
+                        }}
+                    >
                         {({ Bind }) => (
                             <Bind name="revision">
                                 <RadioGroup

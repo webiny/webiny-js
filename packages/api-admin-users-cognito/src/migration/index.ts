@@ -1,3 +1,7 @@
+/**
+ * Not used anymore.
+ */
+// @ts-ignore
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import { ApiKey, Group } from "@webiny/api-security/types";
 import {

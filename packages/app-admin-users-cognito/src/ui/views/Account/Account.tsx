@@ -26,6 +26,14 @@ import { SecurityIdentity } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
+interface UserAccountFormData {
+    firstName: string;
+    lastName: string;
+    avatar: {
+        src?: string;
+    };
+}
+
 const UserAccountForm: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
@@ -34,7 +42,7 @@ const UserAccountForm: React.FC = () => {
     const currentUser = useQuery(GET_CURRENT_USER);
     const [updateUser] = useMutation(UPDATE_CURRENT_USER);
 
-    const onSubmit = async (formData: Record<string, string>) => {
+    const onSubmit = async (formData: UserAccountFormData) => {
         setLoading(true);
         const { data: response } = await updateUser({
             variables: { data: omit(formData, ["id"]) }
@@ -74,7 +82,15 @@ const UserAccountForm: React.FC = () => {
 
     return (
         <CenteredView maxWidth={600}>
-            <Form data={user} onSubmit={onSubmit}>
+            <Form
+                data={user}
+                onSubmit={data => {
+                    /**
+                     * We are positive that data is UserAccountFormData.
+                     */
+                    onSubmit(data as unknown as UserAccountFormData);
+                }}
+            >
                 {({ data, form, Bind }) => (
                     <SimpleForm>
                         {loading && <CircularProgress style={{ zIndex: 3 }} />}

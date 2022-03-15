@@ -20,6 +20,7 @@ import {
     RenderUrlPostHtmlParams
 } from "./types";
 import { Browser, Page } from "puppeteer";
+import { TagUrlLink } from "~/types";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {
     page.evaluateOnNewDocument(`
@@ -42,7 +43,10 @@ export interface File {
     type: string;
     body: any;
     name: string;
-    meta: Record<string, any>;
+    meta: {
+        tags?: TagUrlLink[];
+        [key: string]: any;
+    };
 }
 
 export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta]> => {

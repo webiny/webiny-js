@@ -7,7 +7,7 @@ import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
-            getContentModel: async (_: unknown, args, context) => {
+            getContentModel: async (_: unknown, args: any, context) => {
                 try {
                     const model = await context.cms.getModel(args.modelId);
                     return new Response(model);
@@ -35,8 +35,8 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
 
     let manageSchema = "";
     if (context.cms.MANAGE) {
-        resolvers.Mutation = {
-            createContentModel: async (_: unknown, args, context) => {
+        resolvers["Mutation"] = {
+            createContentModel: async (_: unknown, args: any, context) => {
                 try {
                     const model = await context.cms.createModel(args.data);
                     return new Response(model);
@@ -44,7 +44,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     return new ErrorResponse(e);
                 }
             },
-            createContentModelFrom: async (_: unknown, args, context) => {
+            createContentModelFrom: async (_: unknown, args: any, context) => {
                 try {
                     const model = await context.cms.createModelFrom(args.modelId, args.data);
                     return new Response(model);
@@ -52,7 +52,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     return new ErrorResponse(e);
                 }
             },
-            updateContentModel: async (_: unknown, args, context) => {
+            updateContentModel: async (_: unknown, args: any, context) => {
                 const { modelId, data } = args;
                 try {
                     const model = await context.cms.updateModel(modelId, data);
@@ -61,7 +61,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     return new ErrorResponse(e);
                 }
             },
-            deleteContentModel: async (_: unknown, args, context) => {
+            deleteContentModel: async (_: unknown, args: any, context) => {
                 const { modelId } = args;
                 try {
                     await context.cms.deleteModel(modelId);

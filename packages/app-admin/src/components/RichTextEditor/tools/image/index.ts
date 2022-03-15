@@ -38,7 +38,9 @@ interface Config {
     getFileSrc: GetFileSourceCallable;
     onSelectFile: OnSelectFileCallable;
     actions: Tune[];
-    context: Record<string, any>;
+    context: {
+        showFileManager: (cb: (file: File) => void) => void;
+    };
 }
 export default class ImageTool {
     private readonly api: API;

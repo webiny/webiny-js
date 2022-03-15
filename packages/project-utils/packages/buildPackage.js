@@ -58,7 +58,12 @@ const babelCompile = async ({ cwd }) => {
         const file = files[i];
         if (BABEL_COMPILE_EXTENSIONS.includes(extname(file))) {
             compilations.push(
-                babel.transformFileAsync(file, { cwd }).then(results => [file, results])
+                babel
+                    .transformFileAsync(file, {
+                        cwd,
+                        sourceMaps: true
+                    })
+                    .then(results => [file, results])
             );
         } else {
             copies.push(
@@ -84,12 +89,18 @@ const babelCompile = async ({ cwd }) => {
 
     const writes = [];
     for (let i = 0; i < compilations.length; i++) {
-        const [file, { code, map }] = await compilations[i];
+        const [file, result] = await compilations[i];
+        const { code, map } = result;
 
         const paths = getDistFilePaths({ file, cwd });
         fs.mkdirSync(dirname(paths.code), { recursive: true });
+
+        // Save the compiled JS file.
         writes.push(fs.promises.writeFile(paths.code, code, "utf8"));
-        writes.push(paths.map, map, "utf8");
+
+        // Save source maps file.
+        const mapJson = JSON.stringify(map);
+        writes.push(fs.promises.writeFile(paths.map, mapJson, "utf8"));
     }
 
     // Wait until all files have been written to disk.

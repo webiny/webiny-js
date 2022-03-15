@@ -25,7 +25,10 @@ export default (config: Config) => {
             }
 
             if (typeof config.getIdentity === "function") {
-                return config.getIdentity({ identityType: config.identityType, token: tokenObj });
+                return config.getIdentity({
+                    identityType: config.identityType,
+                    token: tokenObj
+                });
             }
 
             return {

@@ -7,7 +7,7 @@ const plugin: FbFormTriggerHandlerPlugin = {
     trigger: "webhook",
     async handle({ trigger, data, addLog }) {
         const urls = trigger && trigger.urls;
-        if (Array.isArray(urls) === false) {
+        if (!urls || Array.isArray(urls) === false) {
             return;
         }
         for (const url of urls) {

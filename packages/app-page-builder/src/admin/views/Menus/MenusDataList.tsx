@@ -27,8 +27,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { PbMenu } from "~/types";
-import { SecurityPermission } from "@webiny/app-security/types";
+import { PageBuilderSecurityPermission, PbMenu } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
@@ -118,7 +117,7 @@ const PageBuilderMenusDataList: React.FC<PageBuilderMenusDataListProps> = ({ can
     );
 
     const { identity, getPermission } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.menu");
     }, [identity]);
 

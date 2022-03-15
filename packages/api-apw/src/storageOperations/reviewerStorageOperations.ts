@@ -29,7 +29,13 @@ export const createReviewerStorageOperations = ({
         getReviewer,
         async listReviewers(params) {
             const model = await getReviewerModel();
-            const [entries, meta] = await cms.listLatestEntries(model, params);
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where,
+                    tenant: model.tenant
+                }
+            });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
         async createReviewer(params) {

@@ -9,7 +9,7 @@ type ResolveCreateFrom = ResolverFactory<any, ResolveCreateFromArgs>;
 
 export const resolveCreateFrom: ResolveCreateFrom =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const newRevision = await context.cms.createEntryRevisionFrom(
                 model,

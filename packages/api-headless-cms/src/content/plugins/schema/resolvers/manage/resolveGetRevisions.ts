@@ -8,7 +8,7 @@ type ResolveGetRevisions = ResolverFactory<any, ResolveGetRevisionsArgs>;
 
 export const resolveGetRevisions: ResolveGetRevisions =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const revisions = await context.cms.getEntryRevisions(model, args.id);
 

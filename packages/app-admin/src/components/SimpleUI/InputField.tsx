@@ -66,6 +66,7 @@ interface InputBoxProps {
     value?: string | number;
     onChange?: (value: any) => void;
     defaultValue?: string | number;
+    type?: "string" | "number";
     [key: string]: any;
 }
 const InputField: React.FC<InputBoxProps> = ({
@@ -87,7 +88,11 @@ const InputField: React.FC<InputBoxProps> = ({
             )}
             <input
                 className={classNames(inputStyle, className)}
-                value={getValue({ value, type: props.type, defaultValue })}
+                value={getValue({
+                    value,
+                    type: props.type || "string",
+                    defaultValue
+                })}
                 onChange={ev => {
                     if (!onChange) {
                         return;

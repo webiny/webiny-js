@@ -7,8 +7,10 @@ interface Params {
     search?: string;
 }
 
+const keys: (keyof Params)[] = ["sort", "where", "search"];
+
 export default (location: Location): Params => {
-    const params: Record<string, string | number> = {};
+    const params: Params = {};
 
     if (location) {
         const query = new URLSearchParams(location.search);
@@ -29,7 +31,7 @@ export default (location: Location): Params => {
             params.limit = parseInt(limit);
         }
 
-        ["sort", "where", "search"].forEach(key => {
+        keys.forEach(key => {
             const value = query.get(key);
             if (typeof value !== "string") {
                 return;
@@ -37,7 +39,7 @@ export default (location: Location): Params => {
             try {
                 params[key] = JSON.parse(value);
             } catch (e) {
-                params[key] = value;
+                params[key] = value as any;
             }
         });
     }

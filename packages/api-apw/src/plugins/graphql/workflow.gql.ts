@@ -158,10 +158,10 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     `,
     resolvers: {
         ApwQuery: {
-            getWorkflow: async (_, args, context) => {
+            getWorkflow: async (_, args: any, context) => {
                 return resolve(() => context.apw.workflow.get(args.id));
             },
-            listWorkflows: async (_, args, context) => {
+            listWorkflows: async (_, args: any, context) => {
                 try {
                     /**
                      * We know that args is ListWorkflowsParams.
@@ -176,13 +176,13 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             }
         },
         ApwMutation: {
-            createWorkflow: async (_, args, context) => {
+            createWorkflow: async (_, args: any, context) => {
                 return resolve(() => context.apw.workflow.create(args.data));
             },
-            updateWorkflow: async (_, args, context) => {
+            updateWorkflow: async (_, args: any, context) => {
                 return resolve(() => context.apw.workflow.update(args.id, args.data));
             },
-            deleteWorkflow: async (_, args, context) => {
+            deleteWorkflow: async (_, args: any, context) => {
                 return resolve(() => context.apw.workflow.delete(args.id));
             }
         }

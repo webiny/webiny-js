@@ -82,10 +82,10 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     `,
     resolvers: {
         ApwQuery: {
-            getReviewer: async (_, args, context) => {
+            getReviewer: async (_, args: any, context) => {
                 return resolve(() => context.apw.reviewer.get(args.id));
             },
-            listReviewers: async (_, args, context) => {
+            listReviewers: async (_, args: any, context) => {
                 try {
                     /**
                      * We know that args is CmsEntryListParams.

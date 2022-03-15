@@ -74,11 +74,16 @@ export default () => [
             if (!model) {
                 return null;
             }
-            const entry = await context.cms.getEntry(model, { where: { id: id } });
+            const entry = await context.cms.getEntry(model, {
+                where: {
+                    id: id,
+                    tenant: model.tenant
+                }
+            });
             if (!entry) {
                 return null;
             }
-            return entry.values.workflow || null;
+            return entry.values["workflow"] || null;
         });
     }),
     apwHooks()

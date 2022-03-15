@@ -1,4 +1,4 @@
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { CmsEntry, CmsModel, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { CmsIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
@@ -32,7 +32,7 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
         if (pl) {
             return pl;
         }
-        throw new Error(`Missing field type plugin "${fieldType}". Prepare entry for index.`);
+        throw new WebinyError(`Missing field type plugin "${fieldType}". Prepare entry for index.`);
     }
 
     // These objects will contain values processed by field index plugins
@@ -132,7 +132,7 @@ export const extractEntriesFromIndex = ({
         for (const field of model.fields) {
             const fieldTypePlugin = fieldTypePlugins[field.type];
             if (!fieldTypePlugin) {
-                throw new Error(
+                throw new WebinyError(
                     `Missing field type plugin "${field.type}". Extract entries from index.`
                 );
             }
@@ -155,7 +155,7 @@ export const extractEntriesFromIndex = ({
                     rawValue: entry.rawValues ? entry.rawValues[field.fieldId] : null
                 });
             } catch (ex) {
-                throw new Error(
+                throw new WebinyError(
                     ex.message || "Could not transform entry field from index.",
                     ex.code || "FIELD_FROM_INDEX_ERROR",
                     {

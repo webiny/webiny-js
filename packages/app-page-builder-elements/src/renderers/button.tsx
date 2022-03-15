@@ -41,10 +41,12 @@ export const createButton = (args: CreateButtonParams = {}): ElementRenderer => 
 
         const themeClassNames = getThemeClassNames(theme => {
             if (!theme.styles || !theme.styles.buttons) {
-                return "";
+                return {};
             }
 
-            return theme.styles.buttons[type];
+            const value = theme.styles.buttons[type];
+
+            return value;
         });
         const elementClassNames = getElementClassNames(element);
 

@@ -59,7 +59,7 @@ class Paragraph {
      * @param {object} params.api - editor.js api
      * @param {boolean} readOnly - read only mode flag
      */
-    constructor({ data, config, api, readOnly }: ParagraphArgs) {
+    public constructor({ data, config, api, readOnly }: ParagraphArgs) {
         this.api = api;
         this.readOnly = readOnly;
         this.typography = config.typography || null;
@@ -95,14 +95,14 @@ class Paragraph {
      * @return {string}
      * @constructor
      */
-    static get DEFAULT_PLACEHOLDER(): string {
+    public static get DEFAULT_PLACEHOLDER(): string {
         return "";
     }
 
     /**
      * Enable Conversion Toolbar. Paragraph can be converted to/from other tools
      */
-    static get conversionConfig() {
+    public static get conversionConfig() {
         return {
             export: "text", // to convert Paragraph to other block, use 'text' property of saved data
             import: "text" // to covert other block's exported string to Paragraph, fill 'text' property of tool data
@@ -112,7 +112,7 @@ class Paragraph {
     /**
      * Sanitizer rules
      */
-    static get sanitize() {
+    public static get sanitize() {
         return {
             text: {
                 br: true
@@ -125,7 +125,7 @@ class Paragraph {
      *
      * @return {boolean}
      */
-    static get isReadOnlySupported(): boolean {
+    public static get isReadOnlySupported(): boolean {
         return true;
     }
 
@@ -134,7 +134,7 @@ class Paragraph {
      * @returns {ParagraphData} Current data
      * @private
      */
-    get data(): ParagraphData {
+    public get data(): ParagraphData {
         const text = this._element.innerHTML;
 
         // this._data.text = text;
@@ -153,7 +153,7 @@ class Paragraph {
      * @param {ParagraphData} data — data to set
      * @private
      */
-    set data(data: ParagraphData) {
+    public set data(data: ParagraphData) {
         this._data = data || ({} as ParagraphData);
 
         this._element.innerHTML = this._data.text || "";
@@ -183,7 +183,7 @@ class Paragraph {
      *
      * @returns {{tags: string[]}}
      */
-    static get pasteConfig() {
+    public static get pasteConfig() {
         return {
             tags: ["P"]
         };
@@ -194,7 +194,7 @@ class Paragraph {
      *
      * @return {{icon: string, title: string}}
      */
-    static get toolbox() {
+    public static get toolbox() {
         return {
             icon:
                 '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.2 -0.3 9 11.4" width="12" height="14">\n' +
@@ -209,7 +209,7 @@ class Paragraph {
      *
      * @returns {alignment}
      */
-    get currentAlignment(): Alignment {
+    public get currentAlignment(): Alignment {
         let alignment = this.alignments.find(alignment => alignment.name === this._data.textAlign);
 
         if (!alignment) {
@@ -225,7 +225,7 @@ class Paragraph {
      *
      * @param {KeyboardEvent} e - key up event
      */
-    onKeyUp(e: KeyboardEvent): void {
+    public onKeyUp(e: KeyboardEvent): void {
         if (e.code !== "Backspace" && e.code !== "Delete") {
             return;
         }
@@ -242,15 +242,15 @@ class Paragraph {
      * @return {HTMLElement}
      * @private
      */
-    drawView(): HTMLElement {
-        const div = document.createElement("DIV");
+    public drawView(): HTMLElement {
+        const div: HTMLDivElement = document.createElement("div");
         div.classList.add(this._CSS.wrapper, this._CSS.block);
         // Add custom className to view.
         if (this._data.className) {
             div.classList.add(this._data.className);
         }
         div.contentEditable = "false";
-        div.dataset.placeholder = this.api.i18n.t(this._placeholder);
+        div.dataset["placeholder"] = this.api.i18n.t(this._placeholder);
 
         if (!this.readOnly) {
             div.contentEditable = "true";
@@ -262,24 +262,20 @@ class Paragraph {
 
     /**
      * Return Tool's view
-     *
-     * @returns {HTMLDivElement}
      */
-    render(): HTMLDivElement {
+    public render(): HTMLDivElement {
         return this._element;
     }
 
     /**
      * Create Block's settings block
-     *
-     * @returns {HTMLElement}
      */
-    renderSettings(): HTMLElement {
-        const holder = document.createElement("DIV");
+    public renderSettings(): HTMLElement {
+        const holder: HTMLDivElement = document.createElement("div");
 
         // Add alignment selectors
         this.alignments.forEach(alignment => {
-            const selectTypeButton = document.createElement("SPAN");
+            const selectTypeButton: HTMLSpanElement = document.createElement("span");
 
             selectTypeButton.classList.add(this._CSS.settingsButton);
 
@@ -298,7 +294,7 @@ class Paragraph {
             /**
              * Save alignment to its button
              */
-            selectTypeButton.dataset.textAlign = alignment.name;
+            selectTypeButton.dataset["textAlign"] = alignment.name;
 
             /**
              * Set up click handler
@@ -359,7 +355,7 @@ class Paragraph {
      * @param {ParagraphData} data
      * @public
      */
-    merge(data: ParagraphData): void {
+    public merge(data: ParagraphData): void {
         this.data = {
             ...this.data,
             text: this.data.text + data.text
@@ -384,7 +380,7 @@ class Paragraph {
      * @returns {ParagraphData} - saved data
      * @public
      */
-    save(toolsContent: HTMLElement) {
+    public save(toolsContent: HTMLElement) {
         return {
             text: toolsContent.innerHTML,
             textAlign: this.getTextAlign(toolsContent.className),
@@ -398,7 +394,7 @@ class Paragraph {
      * @param {string} className - heading element className
      * @returns {TextAlign} textAlign
      */
-    getTextAlign(className: string) {
+    public getTextAlign(className: string): TextAlign {
         let textAlign = TextAlign.START;
         // Match className with alignment
         this.alignments.forEach(alignment => {
@@ -414,7 +410,7 @@ class Paragraph {
      *
      * @param {PasteEvent} event - event with pasted data
      */
-    onPaste(event: PasteEvent): void {
+    public onPaste(event: PasteEvent): void {
         const detail = event.detail as HTMLPasteEventDetail;
         this.data = {
             ...this.data,
@@ -427,7 +423,7 @@ class Paragraph {
      *
      * @param {number} alignment - level to set
      */
-    setAlignment(alignment: Alignment) {
+    public setAlignment(alignment: Alignment): void {
         this.data = {
             textAlign: alignment.name,
             text: this.data.text
@@ -439,7 +435,7 @@ class Paragraph {
         this.settingsButtons.forEach(button => {
             button.classList.toggle(
                 this._CSS.settingsButtonActive,
-                button.dataset.textAlign === alignment.name
+                button.dataset["textAlign"] === alignment.name
             );
         });
     }
@@ -449,7 +445,7 @@ class Paragraph {
      *
      * @param {string} className - name of typography class
      */
-    setTypographyClass(className: string) {
+    public setTypographyClass(className: string): void {
         this.data = {
             textAlign: this.data.textAlign,
             text: this.data.text,
@@ -465,7 +461,7 @@ class Paragraph {
      * @returns {HeaderData}
      * @private
      */
-    normalizeData(data?: Partial<ParagraphData>): ParagraphData {
+    public normalizeData(data?: Partial<ParagraphData>): ParagraphData {
         const newData: Partial<ParagraphData> = {};
 
         if (typeof data !== "object") {

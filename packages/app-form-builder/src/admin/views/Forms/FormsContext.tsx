@@ -4,6 +4,7 @@ import { QueryResult } from "@apollo/react-common";
 import { useSecurity } from "@webiny/app-security";
 import { LIST_FORMS, ListFormsQueryResponse } from "../../graphql";
 import { NetworkStatus } from "apollo-client";
+import { FormBuilderSecurityPermission } from "~/types";
 
 export interface FormsContextValue {
     canCreate: boolean;
@@ -59,7 +60,7 @@ export const FormsProvider: React.FC = ({ children }) => {
     const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS);
 
     const canCreate = useMemo((): boolean => {
-        const permission = getPermission("fb.form");
+        const permission = getPermission<FormBuilderSecurityPermission>("fb.form");
         if (!permission) {
             return false;
         }

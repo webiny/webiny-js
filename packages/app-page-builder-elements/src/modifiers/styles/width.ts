@@ -1,7 +1,7 @@
 import { ElementStylesModifier } from "~/types";
 
 const width: ElementStylesModifier = ({ theme, element }) => {
-    const { width } = element.data.settings;
+    const { width } = element.data.settings || {};
     if (!width) {
         return {};
     }
@@ -11,7 +11,12 @@ const width: ElementStylesModifier = ({ theme, element }) => {
             return returnStyles;
         }
 
-        return { ...returnStyles, [breakpointName]: { width: width[breakpointName].value } };
+        return {
+            ...returnStyles,
+            [breakpointName]: {
+                width: width[breakpointName].value
+            }
+        };
     }, {});
 };
 

@@ -30,6 +30,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             code: String
             message: String
             data: JSON
+            stack: String
         }
 
         type SecurityBooleanResponse {

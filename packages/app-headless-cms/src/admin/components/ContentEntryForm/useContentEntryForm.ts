@@ -17,7 +17,12 @@ import {
 import { useMutation } from "~/admin/hooks";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { prepareFormData } from "~/admin/views/contentEntries/ContentEntry/prepareFormData";
-import { CmsEditorContentModel, CmsEditorField, CmsEditorFieldRendererPlugin } from "~/types";
+import {
+    CmsEditorContentEntry,
+    CmsEditorContentModel,
+    CmsEditorField,
+    CmsEditorFieldRendererPlugin
+} from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { plugins } from "@webiny/plugins";
 
@@ -52,9 +57,7 @@ interface UseContentEntryForm {
 
 export interface UseContentEntryFormParams {
     contentModel: CmsEditorContentModel;
-    entry: {
-        [key: string]: any;
-    };
+    entry: Partial<CmsEditorContentEntry>;
     onChange?: FormOnSubmit;
     onSubmit?: FormOnSubmit;
     addEntryToListCache: boolean;
