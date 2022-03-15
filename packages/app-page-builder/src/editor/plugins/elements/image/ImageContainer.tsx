@@ -42,14 +42,14 @@ const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
     const align = getHorizontalAlignFlexAlign(element, displayMode);
 
     const imgStyle: PbElementDataImageType = {
-        width: 0,
-        height: 0
+        width: null,
+        height: null
     };
-    if (image.width) {
+    if (!!image.width) {
         const { width } = image;
         imgStyle.width = width;
     }
-    if (image.height) {
+    if (!!image.height) {
         const { height } = image;
         imgStyle.height = height;
     }
