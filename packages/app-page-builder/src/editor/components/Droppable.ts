@@ -42,7 +42,7 @@ export interface DroppableProps {
     type: string;
     children: DroppableChildrenFunction;
     isDroppable?: DroppableIsDroppablePropType;
-    isVisible: DroppableIsVisiblePropType;
+    isVisible?: DroppableIsVisiblePropType;
     onDrop: DroppableOnDropPropType;
 }
 
@@ -54,14 +54,17 @@ const Droppable: React.FC<DroppableProps> = props => {
 
     const [{ item, isOver }, drop] = useDrop({
         accept: "element",
-        collect: monitor => ({
-            isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
-            item: monitor.getItem()
-        }),
+        collect: monitor => {
+            return {
+                isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
+                item: monitor.getItem()
+            };
+        },
         drop(_, monitor) {
-            if (typeof onDrop === "function") {
-                onDrop(monitor.getItem());
+            if (typeof onDrop !== "function") {
+                return;
             }
+            onDrop(monitor.getItem());
         }
     });
 
