@@ -1,6 +1,6 @@
 import React from "react";
 import { plugins } from "@webiny/plugins";
-import { Switch } from "@webiny/react-router";
+import { Routes as ReactRouterRoutes } from "@webiny/react-router";
 import { RoutePlugin } from "@webiny/app/types";
 
 interface RoutesProps {
@@ -35,10 +35,10 @@ export const Routes: React.FC<RoutesProps> = props => {
     });
 
     return (
-        <Switch>
+        <ReactRouterRoutes>
             {routes.map((route, index) =>
                 React.cloneElement(route, { key: `${route.props.path}:${index}` })
             )}
-        </Switch>
+        </ReactRouterRoutes>
     );
 };

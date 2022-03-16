@@ -24,7 +24,7 @@ const getIdFromMatch = (match: MatchInput | null): string => {
 const BackButton: React.FC = () => {
     const { match, history } = useRouter();
 
-    const id = getIdFromMatch(match as unknown as MatchInput);
+    const id = getIdFromMatch(match);
     return (
         <IconButton
             data-testid="pb-editor-back-button"
