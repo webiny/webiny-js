@@ -16,9 +16,12 @@ export * from "react-router-dom";
 
 export { Link } from "./Link";
 export type { LinkProps } from "./Link";
+export { Route } from "./Route";
 export type { RouteProps } from "./Route";
 export { Prompt } from "./Prompt";
 export type { PromptProps } from "./Prompt";
+export { Routes } from "./Routes";
+export type { RoutesProps } from "./Routes";
 
 export type UseRouter = RouteChildrenProps &
     ReactRouterContextValue & {
