@@ -29,7 +29,7 @@ const createNativeRoute = (props: RouteProps, index: number, location: Location)
     return <Route key={`${newProps.path}:${index}`} {...newProps} />;
 };
 
-export interface RoutesProps extends BaseRoutesProps {}
+export type RoutesProps = BaseRoutesProps;
 
 export const Routes: React.FC<RoutesProps> = props => {
     const location = useLocation();

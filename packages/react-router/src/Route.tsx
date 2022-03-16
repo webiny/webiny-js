@@ -17,7 +17,7 @@ export interface RouteProps extends BaseRouteProps {
 
 export const Route: React.FC<RouteProps> = props => {
     const location = useLocation();
-    if (!props.exact) {
+    if (!props.exact && props.path !== "*") {
         props.path = `${props.path}/*`;
     }
     delete props["exact"];
