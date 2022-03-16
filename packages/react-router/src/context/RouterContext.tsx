@@ -3,16 +3,21 @@ import { plugins } from "@webiny/plugins";
 import { useApolloClient } from "@apollo/react-hooks";
 import { ReactRouterOnLinkPlugin } from "~/types";
 import ApolloClient from "apollo-client";
+import { UseHistory, useHistory } from "~/useHistory";
+import { useLocation, useMatch } from "react-router-dom";
+import { PathMatch } from "react-router";
+import { Location } from "history";
 
 export type ReactRouterContextValue = {
     onLink(link: string): void;
+    history: UseHistory;
+    location: Location;
+    match: PathMatch<any> | null;
 };
 
-export const RouterContext = React.createContext<ReactRouterContextValue>({
-    onLink: () => {
-        return void 0;
-    }
-});
+export const RouterContext = React.createContext<ReactRouterContextValue>(
+    undefined as unknown as any
+);
 
 export const RouterProvider: React.FC = ({ children }) => {
     let apolloClient: ApolloClient<any>;
@@ -21,6 +26,8 @@ export const RouterProvider: React.FC = ({ children }) => {
     } catch {
         // If there is no ApolloProvider, apolloClient will not exist.
     }
+
+    const location = useLocation();
 
     const value = useMemo(() => {
         const onLinkPlugins = plugins.byType<ReactRouterOnLinkPlugin>("react-router-on-link");
@@ -38,9 +45,12 @@ export const RouterProvider: React.FC = ({ children }) => {
                         });
                     }
                 }
-            }
+            },
+            history: useHistory(),
+            location,
+            match: useMatch(location.search)
         };
-    }, []);
+    }, [location]);
     return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>;
 };
 

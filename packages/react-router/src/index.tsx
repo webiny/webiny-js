@@ -3,12 +3,8 @@ import {
     BrowserRouter as RBrowserRouter,
     BrowserRouterProps,
     RouteProps as RouteChildrenProps,
-    UNSAFE_RouteContext as __RouterContext,
-    useNavigate,
-    useLocation,
-    useMatch
+    UNSAFE_RouteContext as __RouterContext
 } from "react-router-dom";
-import { Location, To } from "history";
 import { StaticRouter as RStaticRouter, StaticRouterProps } from "react-router-dom/server";
 import { RouterContext, ReactRouterContextValue } from "./context/RouterContext";
 
@@ -22,41 +18,18 @@ export { Prompt } from "./Prompt";
 export type { PromptProps } from "./Prompt";
 export { Routes } from "./Routes";
 export type { RoutesProps } from "./Routes";
+export { useHistory } from "./useHistory";
+export type { UseHistory } from "./useHistory";
 
-export type UseRouter = RouteChildrenProps &
-    ReactRouterContextValue & {
-        history: UseHistory;
-        location: Location;
-        match: PathMatch<any> | null;
-    };
-
-interface UseHistory {
-    push: (to: To, options?: NavigateOptions) => void;
-}
-export const useHistory = (): UseHistory => {
-    const navigate = useNavigate();
-
-    return {
-        push: (to, options) => {
-            return navigate(to, options);
-        }
-    };
-};
+export type UseRouter = RouteChildrenProps & ReactRouterContextValue;
 
 export function useRouter(): UseRouter {
-    // TODO make sure this works
-    console.log("!CHECK HERE!");
-    const location = useLocation();
     return {
         ...useContext(RouterContext),
-        ...useContext(__RouterContext),
-        history: useHistory(),
-        location,
-        match: useMatch(location.search)
+        ...useContext(__RouterContext)
     };
 }
 
 import enhancer from "./routerEnhancer";
-import { NavigateOptions, PathMatch } from "react-router";
 export const BrowserRouter: React.FC<BrowserRouterProps> = enhancer(RBrowserRouter);
 export const StaticRouter: React.FC<StaticRouterProps> = enhancer(RStaticRouter);
