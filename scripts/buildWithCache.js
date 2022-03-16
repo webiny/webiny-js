@@ -37,7 +37,7 @@ async function build() {
     const packagesNoCache = [];
     const packagesUseCache = [];
 
-    const workspacesPackages = getPackages({ includes: ["/packages/", "/packages-v6/"] }).filter(
+    const workspacesPackages = getPackages({ includes: ["/packages/"] }).filter(
         item => item.isTs
     );
 

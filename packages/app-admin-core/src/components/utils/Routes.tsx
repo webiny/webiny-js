@@ -1,13 +1,42 @@
 import React from "react";
 import { plugins } from "@webiny/plugins";
-import { Routes as ReactRouterRoutes } from "@webiny/react-router";
+import { Routes as ReactRouterRoutes, RouteProps, useLocation } from "@webiny/react-router";
+import { Route } from "react-router-dom";
 import { RoutePlugin } from "@webiny/app/types";
+import { Location } from "history";
 
 interface RoutesProps {
     routes: JSX.Element[];
 }
 
+function createNativeRoute(props: RouteProps, index: number, location: Location) {
+    const newProps = { ...props };
+    if (!props.exact) {
+        newProps.path = `${props.path}/*`;
+    }
+    delete newProps["exact"];
+
+    if (typeof props.render === "function") {
+        newProps.element = props.render({ location });
+    } else if (props.component) {
+        const Component = props.component;
+        newProps.element = <Component />;
+    }
+    delete newProps["render"];
+    delete newProps["component"];
+
+    if (props.children) {
+        newProps.element = props.children;
+    }
+
+    delete newProps["children"];
+
+    return <Route key={`${newProps.path}:${index}`} {...newProps} />;
+}
+
 export const Routes: React.FC<RoutesProps> = props => {
+    const location = useLocation();
+
     const routes = [
         ...props.routes,
         // For backwards compatibility, we need to support the RoutePlugin routes as well.
@@ -36,9 +65,7 @@ export const Routes: React.FC<RoutesProps> = props => {
 
     return (
         <ReactRouterRoutes>
-            {routes.map((route, index) =>
-                React.cloneElement(route, { key: `${route.props.path}:${index}` })
-            )}
+            {routes.map((route, index) => createNativeRoute(route.props, index, location))}
         </ReactRouterRoutes>
     );
 };
