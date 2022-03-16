@@ -78,7 +78,7 @@ const extractValues = (target: any): Value[] => {
     });
 };
 
-export const parseWhere = <T = WhereParserResult>(args: WhereParserArgs): T => {
+export function parseWhere<T = WhereParserResult>(args: WhereParserArgs): T {
     const { where } = args;
     const keys = Object.keys(where || {});
     if (keys.length === 0) {
@@ -181,4 +181,4 @@ export const parseWhere = <T = WhereParserResult>(args: WhereParserArgs): T => {
         acc[key] = value[key];
         return acc;
     }, {} as Record<string, string>);
-};
+}

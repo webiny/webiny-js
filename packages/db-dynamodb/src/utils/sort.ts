@@ -62,7 +62,7 @@ interface Params<T> {
     fields?: FieldPlugin[];
 }
 
-export const sortItems = <T = any>(params: Params<T>): T[] => {
+export function sortItems<T = any>(params: Params<T>): T[] {
     const { items, sort: initialSort = [], fields = [] } = params;
     /**
      * Skip sorting if nothing was passed to sort by or nothing to sort.
@@ -96,4 +96,4 @@ export const sortItems = <T = any>(params: Params<T>): T[] => {
     }
 
     return lodashOrderBy(items, info.sorters, info.orders);
-};
+}

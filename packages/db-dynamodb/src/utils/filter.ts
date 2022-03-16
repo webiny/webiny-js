@@ -201,7 +201,7 @@ const createFilterCallable = (params: Omit<Params, "items">): ((item: any) => bo
     };
 };
 
-export const filterItems = <T = any>(params: Params<T>): T[] => {
+export function filterItems<T = any>(params: Params<T>): T[] {
     const filter = createFilterCallable(params);
     /**
      * No point in going through all the items when there are no filters to be applied.
@@ -210,4 +210,4 @@ export const filterItems = <T = any>(params: Params<T>): T[] => {
         return params.items;
     }
     return params.items.filter(filter);
-};
+}
