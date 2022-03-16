@@ -42,5 +42,6 @@ declare namespace NodeJS {
         EXPORT_PAGES_PROCESS_HANDLER?: string;
         IMPORT_PAGES_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
+        HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
     }
 }
