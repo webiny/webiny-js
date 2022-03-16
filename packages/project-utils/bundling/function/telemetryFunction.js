@@ -1,7 +1,7 @@
 const userFunction = require("./_handler.js");
 const https = require("https");
 
-const TELEMETRY_ENDPOINT = "d16ix00y8ek390.cloudfront.net";
+const TELEMETRY_ENDPOINT = "d1hyim4iinlmte.cloudfront.net";
 const MAXIMUM_MINUTES_UNTIL_REQUEST_FIRED = 5;
 const MAXIMUM_LOGS_STORED_UNTIL_REQUEST_FIRED = 1000;
 
