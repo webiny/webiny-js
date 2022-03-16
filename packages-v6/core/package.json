@@ -85,8 +85,8 @@
     "concurrently": "^7.0.0"
   },
   "scripts": {
-    "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts,.tsx' --out-dir 'lib/esm' --source-maps",
-    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'lib/cjs' --source-maps",
+    "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts,.tsx' --out-dir 'lib/esm' --source-maps --ignore='**/template/**' --copy-files",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'lib/cjs' --source-maps --ignore='**/template/**' --copy-files",
     "build": "yarn build:cjs && yarn build:esm && yarn declarations",
     "watch": "concurrently \"yarn build:cjs --watch\" \"yarn build:esm --watch\"",
     "declarations": "ttsc -p tsconfig.build.json"

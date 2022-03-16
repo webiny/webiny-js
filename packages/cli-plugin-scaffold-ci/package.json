@@ -23,6 +23,7 @@
     "@webiny/cli-plugin-scaffold": "^5.24.0",
     "@webiny/plugins": "^5.24.0",
     "chalk": "^4.1.0",
+    "inquirer": "^7.3.3",
     "js-base64": "^3.6.0",
     "octokit": "^1.0.4",
     "open": "^8.0.6",

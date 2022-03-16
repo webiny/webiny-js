@@ -133,7 +133,7 @@ export class PulumiApp {
 
     public async run() {
         tagResources({
-            WbyProjectName: String(process.env.WEBINY_PROJECT_NAME),
+            WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
             WbyEnvironment: String(process.env.WEBINY_ENV)
         });
 

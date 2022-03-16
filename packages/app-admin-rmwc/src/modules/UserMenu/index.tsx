@@ -13,7 +13,7 @@ import {
 import { Menu } from "@webiny/ui/Menu";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { Link } from "react-router-dom";
+import { Link } from "@webiny/react-router";
 import { useSecurity } from "@webiny/app-security";
 import { Avatar } from "@webiny/ui/Avatar";
 import { Image } from "@webiny/app/components";

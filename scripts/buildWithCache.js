@@ -191,35 +191,45 @@ async function build() {
                     const configPath = path
                         .join(currentPackage.packageFolder, "webiny.config")
                         .replace(/\\/g, "/");
-                    const config = require(configPath);
-                    try {
-                        await config.commands.build({
-                            // We don't want debug nor regular logs logged within the build command.
-                            logs: false,
-                            debug: false,
-                            overrides: buildOverrides
-                        });
 
-                        // Copy and paste built code into the cache folder.
-                        const cacheFolderPath = path.join(
-                            CACHE_FOLDER_PATH,
-                            currentPackage.packageJson.name
-                        );
-                        fs.copySync(
-                            path.join(currentPackage.packageFolder, "dist"),
-                            cacheFolderPath
-                        );
+                    // There are two options:
+                    // 1) use webiny.config.js for v5 packages
+                    // 2) run build script for v6 packages
+                    if (fs.existsSync(configPath)) {
+                        const config = require(configPath);
+                        try {
+                            await config.commands.build({
+                                // We don't want debug nor regular logs logged within the build command.
+                                logs: false,
+                                debug: false,
+                                overrides: buildOverrides
+                            });
 
-                        const sourceHash = await getPackageSourceHash(currentPackage);
-                        metaJson.packages[currentPackage.packageJson.name] = { sourceHash };
+                            // Copy and paste built code into the cache folder.
+                            const cacheFolderPath = path.join(
+                                CACHE_FOLDER_PATH,
+                                currentPackage.packageJson.name
+                            );
+                            fs.copySync(
+                                path.join(currentPackage.packageFolder, "dist"),
+                                cacheFolderPath
+                            );
 
-                        writeJson.sync(META_FILE_PATH, metaJson);
+                            const sourceHash = await getPackageSourceHash(currentPackage);
+                            metaJson.packages[currentPackage.packageJson.name] = { sourceHash };
+
+                            writeJson.sync(META_FILE_PATH, metaJson);
+                            resolve();
+                        } catch (e) {
+                            reject({
+                                error: e,
+                                package: currentPackage
+                            });
+                        }
+                    } else {
+                        // Run build script using execa
+                        await execa("yarn", ["build"], { cwd: currentPackage.packageFolder });
                         resolve();
-                    } catch (e) {
-                        reject({
-                            error: e,
-                            package: currentPackage
-                        });
                     }
                 })
             );

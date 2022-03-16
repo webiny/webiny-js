@@ -2,8 +2,8 @@ import { ApplicationBuilder, ApplicationStack, ApplicationStackArgs } from "./Ap
 
 export class ApplicationBuilderLegacy extends ApplicationBuilder {
     public async createOrSelectStack(args: ApplicationStackArgs): Promise<ApplicationStack> {
-        const PULUMI_SECRETS_PROVIDER = String(process.env.PULUMI_SECRETS_PROVIDER);
-        const PULUMI_CONFIG_PASSPHRASE = String(process.env.PULUMI_CONFIG_PASSPHRASE);
+        const PULUMI_SECRETS_PROVIDER = String(process.env["PULUMI_SECRETS_PROVIDER"]);
+        const PULUMI_CONFIG_PASSPHRASE = String(process.env["PULUMI_CONFIG_PASSPHRASE"]);
         const DEBUG = args.debug ?? false;
 
         await args.pulumi.run({

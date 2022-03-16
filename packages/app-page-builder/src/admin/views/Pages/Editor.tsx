@@ -85,7 +85,7 @@ const Editor: React.FC = () => {
             .query<GetPageQueryResponse, GetPageQueryVariables>({
                 query: GET_PAGE,
                 variables: {
-                    id: decodeURIComponent(params.id)
+                    id: decodeURIComponent(params.id as string)
                 },
                 fetchPolicy: "network-only"
             })
