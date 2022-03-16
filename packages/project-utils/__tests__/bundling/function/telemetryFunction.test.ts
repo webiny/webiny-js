@@ -1,5 +1,5 @@
-const path = require("path");
-const fs = require("fs");
+import * as path from "path";
+import * as fs from "fs";
 
 interface TelemetryDataLogs {
     error: boolean;

@@ -1,6 +1,6 @@
-const { updateTelemetryFunction } = require("../../../bundling/function/telemetry");
-const fs = require("fs");
-const path = require("path");
+import { updateTelemetryFunction } from "../../../bundling/function/telemetry";
+import * as fs from "fs";
+import * as path from "path";
 
 // eslint-disable-next-line jest/no-disabled-tests
 describe.skip("updateTelemetryFunction()", () => {
