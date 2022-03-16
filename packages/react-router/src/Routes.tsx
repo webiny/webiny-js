@@ -6,7 +6,7 @@ import { useLocation } from "~/index";
 
 const createNativeRoute = (props: RouteProps, index: number, location: Location): JSX.Element => {
     const newProps = { ...props };
-    if (!props.exact) {
+    if (!props.exact && props.path !== "*") {
         newProps.path = `${props.path}/*`;
     }
     delete newProps["exact"];
