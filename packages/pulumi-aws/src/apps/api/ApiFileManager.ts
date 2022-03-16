@@ -7,6 +7,7 @@ import { getLayerArn } from "@webiny/aws-layers";
 import { PulumiApp } from "@webiny/pulumi-sdk";
 
 import { Vpc } from "./ApiVpc";
+import { createLambdaRole } from "./ApiLambdaUtils";
 
 interface FileManagerParams {
     fileManagerBucketId: pulumi.Input<string>;
@@ -16,43 +17,11 @@ interface FileManagerParams {
 }
 
 export function createFileManager(app: PulumiApp, params: FileManagerParams) {
-    const roleName = "fm-lambda-role";
-    const bucketArn = `arn:aws:s3:::${params.fileManagerBucketId}`;
-
-    const role = app.addResource(aws.iam.Role, {
-        name: roleName,
-        config: {
-            assumeRolePolicy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "sts:AssumeRole",
-                        Principal: {
-                            Service: "lambda.amazonaws.com"
-                        },
-                        Effect: "Allow"
-                    }
-                ]
-            }
-        }
-    });
-
     const policy = createFileManagerLambdaPolicy(app, params);
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `${roleName}-FileManagerLambdaPolicy`,
-        config: {
-            role: role.output,
-            policyArn: policy.output.arn.apply(arn => arn)
-        }
-    });
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `${roleName}-AWSLambdaVPCAccessExecutionRole`,
-        config: {
-            role: role.output,
-            policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
-        }
+    const role = createLambdaRole(app, {
+        name: "fm-lambda-role",
+        policy: policy.output,
+        vpc: params.vpc
     });
 
     const transform = app.addResource(aws.lambda.Function, {
@@ -143,7 +112,7 @@ export function createFileManager(app: PulumiApp, params: FileManagerParams) {
             action: "lambda:InvokeFunction",
             function: manage.output.arn,
             principal: "s3.amazonaws.com",
-            sourceArn: bucketArn
+            sourceArn: pulumi.interpolate`arn:aws:s3:::${params.fileManagerBucketId}`
         },
         opts: {
             dependsOn: [/* TODO this.bucket, */ manage.output]

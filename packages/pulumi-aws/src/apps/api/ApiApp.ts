@@ -1,5 +1,4 @@
 import * as aws from "@pulumi/aws";
-import * as pulumi from "@pulumi/pulumi";
 
 import {
     defineApp,
@@ -40,67 +39,74 @@ export const ApiApp = defineApp({
         const vpc =
             vpcConfig === true ? createVpc(app) : vpcConfig === false ? undefined : vpcConfig;
 
-        const storageOutput = getStackOutput({
-            folder: "apps/storage",
-            env: app.ctx.env
+        const storage = app.addHandler(async () => {
+            const output = await getStackOutput({
+                folder: "apps/storage",
+                env: app.ctx.env
+            });
+
+            return {
+                fileManagerBucketId: output.fileManagerBucketId as string,
+                primaryDynamodbTableArn: output.primaryDynamodbTableArn as string,
+                primaryDynamodbTableName: output.primaryDynamodbTableName as string,
+                cognitoUserPoolId: output.cognitoUserPoolId as string,
+                cognitoUserPoolArn: output.cognitoUserPoolArn as string,
+                cognitoUserPoolPasswordPolicy: output.cognitoUserPoolPasswordPolicy,
+                cognitoAppClientId: output.cognitoAppClientId as string
+            };
         });
 
-        const current = aws.getCallerIdentity({});
-        const awsAccountId = pulumi.output(current).accountId;
-        const awsRegion = aws.config.requireRegion();
+        const awsAccountId = app.addHandler(() => {
+            return aws.getCallerIdentity({}).then(x => x.accountId);
+        });
 
-        const fileManagerBucketId = storageOutput.fileManagerBucketId as string;
-        const primaryDynamodbTableArn = storageOutput.primaryDynamodbTableArn as string;
-        const primaryDynamodbTableName = storageOutput.primaryDynamodbTableName as string;
-        const cognitoUserPoolId = storageOutput.cognitoUserPoolId as string;
-        const cognitoUserPoolArn = storageOutput.cognitoUserPoolArn as string;
-        const cognitoUserPoolPasswordPolicy = storageOutput.cognitoUserPoolPasswordPolicy;
-        const cognitoAppClientId = storageOutput.cognitoAppClientId as string;
+        const awsRegion = app.addHandler(() => {
+            return aws.config.requireRegion();
+        });
 
         const pageBuilder = createPageBuilder(app, {
             env: {
                 COGNITO_REGION: String(process.env.AWS_REGION),
-                COGNITO_USER_POOL_ID: cognitoUserPoolId,
-                DB_TABLE: primaryDynamodbTableName,
-
-                S3_BUCKET: fileManagerBucketId,
+                COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
+                DB_TABLE: storage.primaryDynamodbTableName,
+                S3_BUCKET: storage.fileManagerBucketId,
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             },
             awsRegion,
             awsAccountId,
-            fileManagerBucketId,
-            primaryDynamodbTableArn,
-            cognitoUserPoolArn,
+            fileManagerBucketId: storage.fileManagerBucketId,
+            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+            cognitoUserPoolArn: storage.cognitoUserPoolArn,
             vpc
         });
 
         const fileManager = createFileManager(app, {
             awsRegion,
             awsAccountId,
-            fileManagerBucketId,
+            fileManagerBucketId: storage.fileManagerBucketId,
             vpc
         });
 
         const prerenderingService = createPrerenderingService(app, {
             env: {
-                DB_TABLE: primaryDynamodbTableName,
+                DB_TABLE: storage.primaryDynamodbTableName,
                 DEBUG
             },
             awsRegion,
             awsAccountId,
-            primaryDynamodbTableArn,
-            fileManagerBucketId,
-            cognitoUserPoolArn,
+            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+            fileManagerBucketId: storage.fileManagerBucketId,
+            cognitoUserPoolArn: storage.cognitoUserPoolArn,
             vpc
         });
 
         const graphql = createGraphql(app, {
             env: {
                 COGNITO_REGION: String(process.env.AWS_REGION),
-                COGNITO_USER_POOL_ID: cognitoUserPoolId,
-                DB_TABLE: primaryDynamodbTableName,
-                S3_BUCKET: fileManagerBucketId,
+                COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
+                DB_TABLE: storage.primaryDynamodbTableName,
+                S3_BUCKET: storage.fileManagerBucketId,
 
                 PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.output.arn,
                 PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.output.arn,
@@ -116,24 +122,24 @@ export const ApiApp = defineApp({
             },
             awsRegion,
             awsAccountId,
-            primaryDynamodbTableArn,
-            fileManagerBucketId,
-            cognitoUserPoolArn,
+            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+            fileManagerBucketId: storage.fileManagerBucketId,
+            cognitoUserPoolArn: storage.cognitoUserPoolArn,
             vpc
         });
 
         const headlessCms = createHeadlessCms(app, {
             env: {
                 COGNITO_REGION: String(process.env.AWS_REGION),
-                COGNITO_USER_POOL_ID: cognitoUserPoolId,
-                DB_TABLE: primaryDynamodbTableName,
-                S3_BUCKET: fileManagerBucketId,
+                COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
+                DB_TABLE: storage.primaryDynamodbTableName,
+                S3_BUCKET: storage.fileManagerBucketId,
                 // TODO: move to okta plugin
                 OKTA_ISSUER: process.env.OKTA_ISSUER,
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             },
-            primaryDynamodbTableArn,
+            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
             vpc
         });
 
@@ -172,13 +178,13 @@ export const ApiApp = defineApp({
         app.addOutputs({
             region: process.env.AWS_REGION,
             apiUrl: cloudfront.output.domainName.apply(value => `https://${value}`),
-            cognitoUserPoolId: cognitoUserPoolId,
-            cognitoAppClientId: cognitoAppClientId,
-            cognitoUserPoolPasswordPolicy: cognitoUserPoolPasswordPolicy,
+            cognitoUserPoolId: storage.cognitoUserPoolId,
+            cognitoAppClientId: storage.cognitoAppClientId,
+            cognitoUserPoolPasswordPolicy: storage.cognitoUserPoolPasswordPolicy,
             updatePbSettingsFunction: pageBuilder.updateSettings.functions.update.output.arn,
             psQueueAdd: prerenderingService.functions.queue.add.output.arn,
             psQueueProcess: prerenderingService.functions.queue.process.output.arn,
-            dynamoDbTable: primaryDynamodbTableName
+            dynamoDbTable: storage.primaryDynamodbTableName
         });
 
         return {

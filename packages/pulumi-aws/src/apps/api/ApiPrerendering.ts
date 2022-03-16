@@ -7,6 +7,7 @@ import { PulumiApp } from "@webiny/pulumi-sdk";
 import { getLayerArn } from "@webiny/aws-layers";
 
 import { Vpc } from "./ApiVpc";
+import { createLambdaRole } from "./ApiLambdaUtils";
 
 interface PreRenderingServiceParams {
     env: Record<string, any>;
@@ -19,52 +20,12 @@ interface PreRenderingServiceParams {
 }
 
 export function createPrerenderingService(app: PulumiApp, params: PreRenderingServiceParams) {
-    const roleName = "pre-rendering-service-lambda-role";
-    const role = app.addResource(aws.iam.Role, {
-        name: roleName,
-        config: {
-            assumeRolePolicy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "sts:AssumeRole",
-                        Principal: {
-                            Service: "lambda.amazonaws.com"
-                        },
-                        Effect: "Allow"
-                    }
-                ]
-            }
-        }
-    });
-
     const policy = createRenderingServiceLambdaPolicy(app, params);
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `${roleName}-PreRenderingServiceLambdaPolicy`,
-        config: {
-            role: role.output,
-            policyArn: policy.output.arn
-        }
+    const role = createLambdaRole(app, {
+        name: "pre-rendering-service-lambda-role",
+        policy: policy.output,
+        vpc: params.vpc
     });
-
-    if (params.vpc) {
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `${roleName}-AWSLambdaVPCAccessExecutionRole`,
-            config: {
-                role: role.output,
-                policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
-            }
-        });
-    } else {
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `${roleName}-AWSLambdaBasicExecutionRole`,
-            config: {
-                role: role.output,
-                policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
-            }
-        });
-    }
 
     const render = app.addResource(aws.lambda.Function, {
         name: "ps-render",

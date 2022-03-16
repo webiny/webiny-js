@@ -21,9 +21,9 @@ export interface ApplicationBuilderConfig extends Partial<ApplicationHooks> {
 }
 
 export interface ApplicationStack {
-    refresh(): Promise<void>;
-    preview(): Promise<void>;
-    up(): Promise<void>;
+    refresh(): Promise<any>;
+    preview(): Promise<any>;
+    up(): Promise<any>;
 }
 
 export abstract class ApplicationBuilder<

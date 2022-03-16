@@ -5,6 +5,7 @@ import * as aws from "@pulumi/aws";
 import { PulumiApp } from "@webiny/pulumi-sdk";
 
 import { Vpc } from "./ApiVpc";
+import { createLambdaRole } from "./ApiLambdaUtils";
 
 interface HeadlessCMSParams {
     env: Record<string, any>;
@@ -13,52 +14,12 @@ interface HeadlessCMSParams {
 }
 
 export function createHeadlessCms(app: PulumiApp, params: HeadlessCMSParams) {
-    const roleName = "headless-cms-lambda-role";
-    const role = app.addResource(aws.iam.Role, {
-        name: roleName,
-        config: {
-            assumeRolePolicy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "sts:AssumeRole",
-                        Principal: {
-                            Service: "lambda.amazonaws.com"
-                        },
-                        Effect: "Allow"
-                    }
-                ]
-            }
-        }
-    });
-
     const policy = createHeadlessCmsLambdaPolicy(app, params);
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `${roleName}-HeadlessCmsLambdaPolicy`,
-        config: {
-            role: role.output,
-            policyArn: policy.output.arn
-        }
+    const role = createLambdaRole(app, {
+        name: "headless-cms-lambda-role",
+        policy: policy.output,
+        vpc: params.vpc
     });
-
-    if (params.vpc) {
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `${roleName}-AWSLambdaVPCAccessExecutionRole`,
-            config: {
-                role: role.output,
-                policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
-            }
-        });
-    } else {
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `${roleName}-AWSLambdaBasicExecutionRole`,
-            config: {
-                role: role.output,
-                policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
-            }
-        });
-    }
 
     const graphql = app.addResource(aws.lambda.Function, {
         name: "headless-cms",

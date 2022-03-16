@@ -75,10 +75,10 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
 
         return {
             async refresh() {
-                await stack.refresh(options);
+                return await stack.refresh(options);
             },
             async preview() {
-                await stack.preview(options);
+                return await stack.preview(options);
             },
             async up() {
                 const result = await stack.up(options);
@@ -89,6 +89,7 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
                 }
 
                 await appController.deployFinished({ outputs });
+                return result;
             }
         };
     }

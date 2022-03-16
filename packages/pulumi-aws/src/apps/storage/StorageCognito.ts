@@ -1,9 +1,14 @@
 import * as aws from "@pulumi/aws";
 import { PulumiApp } from "@webiny/pulumi-sdk";
 
-export function createCognitoResources(app: PulumiApp, params: { protect: boolean }) {
+interface CognitoParams {
+    protect: boolean;
+    useEmailAsUsername: boolean;
+}
+
+export function createCognitoResources(app: PulumiApp, params: CognitoParams) {
     const userPool = app.addResource(aws.cognito.UserPool, {
-        name: "api-user-pool",
+        name: "user-pool",
         config: {
             passwordPolicy: {
                 minimumLength: 8,
@@ -20,12 +25,16 @@ export function createCognitoResources(app: PulumiApp, params: { protect: boolea
             emailConfiguration: {
                 emailSendingAccount: "COGNITO_DEFAULT"
             },
+            // In a legacy setup we use email as username.
+            // We need to provide a way for users to have this setup,
+            // because changing it would require whole cognito pool to be recreated.
+            usernameAttributes: params.useEmailAsUsername ? ["email"] : undefined,
+            aliasAttributes: params.useEmailAsUsername ? undefined : ["preferred_username"],
             lambdaConfig: {},
             mfaConfiguration: "OFF",
             userPoolAddOns: {
                 advancedSecurityMode: "OFF" /* required */
             },
-            usernameAttributes: ["email"],
             verificationMessageTemplate: {
                 defaultEmailOption: "CONFIRM_WITH_CODE"
             },
@@ -71,7 +80,7 @@ export function createCognitoResources(app: PulumiApp, params: { protect: boolea
     });
 
     const userPoolClient = app.addResource(aws.cognito.UserPoolClient, {
-        name: "api-user-pool-client",
+        name: "user-pool-client",
         config: {
             userPoolId: userPool.output.id
         }

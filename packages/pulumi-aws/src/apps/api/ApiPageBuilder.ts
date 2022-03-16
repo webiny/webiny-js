@@ -6,6 +6,7 @@ import * as aws from "@pulumi/aws";
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
 import { PulumiApp } from "@webiny/pulumi-sdk";
 import { Vpc } from "./ApiVpc";
+import { createLambdaRole } from "./ApiLambdaUtils";
 
 interface PageBuilderParams {
     env: Record<string, any>;
@@ -44,51 +45,12 @@ export function createPageBuilder(app: PulumiApp, params: PageBuilderParams) {
 }
 
 function createUpdateSettingsResources(app: PulumiApp, params: PageBuilderParams) {
-    const role = app.addResource(aws.iam.Role, {
-        name: "pb-update-settings-lambda-role",
-        config: {
-            assumeRolePolicy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "sts:AssumeRole",
-                        Principal: {
-                            Service: "lambda.amazonaws.com"
-                        },
-                        Effect: "Allow"
-                    }
-                ]
-            }
-        }
-    });
-
     const policy = createUpdateSettingsLambdaPolicy(app, params);
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `pb-update-settings-lambda-role-policy-attachment`,
-        config: {
-            role: role.output,
-            policyArn: policy.output.arn
-        }
+    const role = createLambdaRole(app, {
+        name: "pb-update-settings-lambda-role",
+        policy: policy.output,
+        vpc: params.vpc
     });
-
-    if (params.vpc) {
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `pb-update-settings-lambda-AWSLambdaVPCAccessExecutionRole`,
-            config: {
-                role: role.output,
-                policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
-            }
-        });
-    } else {
-        app.addResource(aws.iam.RolePolicyAttachment, {
-            name: `pb-update-settings-lambda-AWSLambdaBasicExecutionRole`,
-            config: {
-                role: role.output,
-                policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
-            }
-        });
-    }
 
     const update = app.addResource(aws.lambda.Function, {
         name: "pb-update-settings",
@@ -160,40 +122,11 @@ function createUpdateSettingsLambdaPolicy(app: PulumiApp, params: PageBuilderPar
 }
 
 function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
-    const role = app.addResource(aws.iam.Role, {
-        name: "pb-export-pages-lambda-role",
-        config: {
-            assumeRolePolicy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "sts:AssumeRole",
-                        Principal: {
-                            Service: "lambda.amazonaws.com"
-                        },
-                        Effect: "Allow"
-                    }
-                ]
-            }
-        }
-    });
-
     const policy = createExportPagesLambdaPolicy(app, params);
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `pb-export-pages-lambda-role-policy-attachment`,
-        config: {
-            role: role.output,
-            policyArn: policy.output.arn
-        }
-    });
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `pb-export-pages-lambda-AWSLambdaBasicExecutionRole`,
-        config: {
-            role: role.output,
-            policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
-        }
+    const role = createLambdaRole(app, {
+        name: "pb-export-pages-lambda-role",
+        policy: policy.output,
+        vpc: params.vpc
     });
 
     const combine = app.addResource(aws.lambda.Function, {
@@ -308,40 +241,11 @@ function createExportPagesLambdaPolicy(app: PulumiApp, params: PageBuilderParams
 }
 
 function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
-    const role = app.addResource(aws.iam.Role, {
-        name: "pb-import-page-lambda-role",
-        config: {
-            assumeRolePolicy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: "sts:AssumeRole",
-                        Principal: {
-                            Service: "lambda.amazonaws.com"
-                        },
-                        Effect: "Allow"
-                    }
-                ]
-            }
-        }
-    });
-
     const policy = createImportPagesLambdaPolicy(app, params);
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `pb-import-page-lambda-role-policy-attachment`,
-        config: {
-            role: role.output,
-            policyArn: policy.output.arn
-        }
-    });
-
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `pb-import-page-lambda-AWSLambdaBasicExecutionRole`,
-        config: {
-            role: role.output,
-            policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
-        }
+    const role = createLambdaRole(app, {
+        name: "pb-import-page-lambda-role",
+        policy: policy.output,
+        vpc: params.vpc
     });
 
     const process = app.addResource(aws.lambda.Function, {
