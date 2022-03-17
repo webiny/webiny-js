@@ -49,11 +49,6 @@ export interface VerticalPropsType {
 }
 
 const VerticalComponent: React.FC<VerticalPropsType> = ({ last, onDrop, isVisible, type }) => {
-    if (!isVisible) {
-        isVisible = () => {
-            return false;
-        };
-    }
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (
