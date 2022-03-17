@@ -21,7 +21,7 @@ interface BlockerCallable {
  *
  * @see https://reactrouter.com/api/useBlocker
  */
-export function useBlocker(blocker: BlockerCallable, when = true) {
+const useBlocker = (blocker: BlockerCallable, when = true) => {
     const ctx = useContext(NavigationContext);
 
     const navigator = ctx.navigator as unknown as Navigator;
@@ -49,12 +49,12 @@ export function useBlocker(blocker: BlockerCallable, when = true) {
 
         return unblock;
     }, [navigator, blocker, when]);
-}
+};
 
 /**
  * Prompts the user with an Alert before they leave the current screen.
  */
-export function usePrompt(message: string, when = true) {
+export const usePrompt = (message: string, when = true) => {
     const blocker = useCallback(
         tx => {
             if (window.confirm(message)) {
@@ -65,4 +65,4 @@ export function usePrompt(message: string, when = true) {
     );
 
     useBlocker(blocker, when);
-}
+};

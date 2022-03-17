@@ -5,9 +5,9 @@ import {
     RouteProps as RouteChildrenProps,
     UNSAFE_RouteContext as __RouterContext,
     useLocation,
-    useParams
+    useParams,
+    Location
 } from "react-router-dom";
-import { Location } from "history";
 import { StaticRouter as RStaticRouter, StaticRouterProps } from "react-router-dom/server";
 import { RouterContext, ReactRouterContextValue } from "./context/RouterContext";
 
@@ -26,6 +26,7 @@ export { Routes } from "./Routes";
 export type { RoutesProps } from "./Routes";
 export { useHistory } from "./useHistory";
 export type { UseHistory } from "./useHistory";
+export { usePrompt } from "./usePrompt";
 
 export interface UseRouter extends RouteChildrenProps, ReactRouterContextValue {
     history: UseHistory;

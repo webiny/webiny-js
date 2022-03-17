@@ -1,8 +1,12 @@
 import React from "react";
 import { RouteProps } from "~/Route";
-import { Location } from "history";
-import { Route, Routes as BaseRoutes, RoutesProps as BaseRoutesProps } from "react-router-dom";
-import { useLocation } from "~/index";
+import {
+    Route,
+    Routes as BaseRoutes,
+    RoutesProps as BaseRoutesProps,
+    useLocation,
+    Location
+} from "react-router-dom";
 
 const createNativeRoute = (props: RouteProps, index: number, location: Location): JSX.Element => {
     const newProps = { ...props };
