@@ -18,11 +18,11 @@ const attributesToRemove = [
     "TYPE"
 ];
 
-export const cleanupItem = <T>(
+export function cleanupItem<T>(
     entity: Entity<any>,
     item?: (T & Record<string, any>) | null,
     removeAttributes: string[] = []
-): T | null => {
+): T | null {
     if (!item) {
         return null;
     }
@@ -41,12 +41,12 @@ export const cleanupItem = <T>(
         delete newItem[key];
     }
     return newItem;
-};
+}
 
-export const cleanupItems = <T>(
+export function cleanupItems<T>(
     entity: Entity<any>,
     items: (T & Record<string, any>)[],
     removeAttributes: string[] = []
-): T[] => {
+): T[] {
     return items.map(item => cleanupItem<T>(entity, item, removeAttributes) as T);
-};
+}
