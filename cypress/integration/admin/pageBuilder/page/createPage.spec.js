@@ -22,6 +22,8 @@ context("Pages Creation", () => {
             cy.findByText(/Confirm/i).click();
         });
 
+        cy.findByText("Your page was published successfully!");
+
         // Wait till the "/pages" route
         cy.findAllByTestId("new-record-button").first().should("exist");
 
