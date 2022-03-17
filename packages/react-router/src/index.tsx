@@ -3,10 +3,16 @@ import {
     BrowserRouter as RBrowserRouter,
     BrowserRouterProps,
     RouteProps as RouteChildrenProps,
-    UNSAFE_RouteContext as __RouterContext
+    UNSAFE_RouteContext as __RouterContext,
+    useLocation,
+    useParams
 } from "react-router-dom";
+import { Location } from "history";
 import { StaticRouter as RStaticRouter, StaticRouterProps } from "react-router-dom/server";
 import { RouterContext, ReactRouterContextValue } from "./context/RouterContext";
+
+import enhancer from "./routerEnhancer";
+import { useHistory, UseHistory } from "~/useHistory";
 
 export * from "react-router-dom";
 
@@ -21,15 +27,22 @@ export type { RoutesProps } from "./Routes";
 export { useHistory } from "./useHistory";
 export type { UseHistory } from "./useHistory";
 
-export type UseRouter = RouteChildrenProps & ReactRouterContextValue;
+export interface UseRouter extends RouteChildrenProps, ReactRouterContextValue {
+    history: UseHistory;
+    location: Location;
+    params: Record<string, any>;
+}
 
 export function useRouter(): UseRouter {
+    const location = useLocation();
     return {
         ...useContext(RouterContext),
-        ...useContext(__RouterContext)
+        ...useContext(__RouterContext),
+        history: useHistory(),
+        location,
+        params: useParams()
     };
 }
 
-import enhancer from "./routerEnhancer";
 export const BrowserRouter: React.FC<BrowserRouterProps> = enhancer(RBrowserRouter);
 export const StaticRouter: React.FC<StaticRouterProps> = enhancer(RStaticRouter);

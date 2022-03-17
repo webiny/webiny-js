@@ -211,6 +211,7 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
     };
 
     useEffect(() => {
+        console.log(modelId);
         if (!modelId) {
             return;
         }

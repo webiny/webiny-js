@@ -3286,14 +3286,14 @@ __metadata:
   linkType: hard
 
 "@fortawesome/react-fontawesome@npm:^0.1.17":
-  version: 0.1.17
-  resolution: "@fortawesome/react-fontawesome@npm:0.1.17"
+  version: 0.1.18
+  resolution: "@fortawesome/react-fontawesome@npm:0.1.18"
   dependencies:
     prop-types: ^15.8.1
   peerDependencies:
-    "@fortawesome/fontawesome-svg-core": ~1 || >=1.3.0-beta1
+    "@fortawesome/fontawesome-svg-core": ~1 || ~6
     react: ">=16.x"
-  checksum: a95a9ef1783e93312c153b299c084043eed4d0867a5ab90019c817c3b4d845052b6539524ca0daee828bbb8f102637fbf8c36e5759cf3f11cdd99a904623abb2
+  checksum: eba711234541928e1877435905bcd94ab6aea1cf228833a55fc7c6a2fc18dd08d3f7f327ca4af0f3ba365188ad0869d7ecd31be5940d27f4e2bbe7e12cbcf520
   languageName: node
   linkType: hard
 
@@ -5427,14 +5427,14 @@ __metadata:
   linkType: hard
 
 "@octokit/plugin-throttling@npm:^3.5.1":
-  version: 3.6.1
-  resolution: "@octokit/plugin-throttling@npm:3.6.1"
+  version: 3.6.2
+  resolution: "@octokit/plugin-throttling@npm:3.6.2"
   dependencies:
     "@octokit/types": ^6.0.1
     bottleneck: ^2.15.3
   peerDependencies:
     "@octokit/core": ^3.5.0
-  checksum: 90fc3abe631dc56db4a1dfedefe23aab6cfedea883d1bd8828b06b7272432da65c29cf48ccdec2d94cac53645f01470c4e729b2d9e542f424a6fed99002080aa
+  checksum: 69bd8b51662fcc59a10ac39d827ebb99939ec74aaabefaf9a9af11df41b4816618aa44a37e0ac04ae33af898d00892c978ce97b26c327834d5ed4e4026aa6de4
   languageName: node
   linkType: hard
 
@@ -7693,9 +7693,9 @@ __metadata:
   linkType: hard
 
 "@types/json-schema@npm:*, @types/json-schema@npm:^7.0.4, @types/json-schema@npm:^7.0.5, @types/json-schema@npm:^7.0.8, @types/json-schema@npm:^7.0.9":
-  version: 7.0.9
-  resolution: "@types/json-schema@npm:7.0.9"
-  checksum: 259d0e25f11a21ba5c708f7ea47196bd396e379fddb79c76f9f4f62c945879dc21657904914313ec2754e443c5018ea8372362f323f30e0792897fdb2098a705
+  version: 7.0.10
+  resolution: "@types/json-schema@npm:7.0.10"
+  checksum: 369f12207298e3c8931100ab86c9c60d9217ab930a8ae0b851495f4f30695d3f0eb431eedc8e8d9c69357869899ea0fe6f9d65ddde5ea70415d67ef340dfdd1f
   languageName: node
   linkType: hard
 
@@ -7748,11 +7748,11 @@ __metadata:
   linkType: hard
 
 "@types/keyv@npm:*, @types/keyv@npm:^3.1.1":
-  version: 3.1.3
-  resolution: "@types/keyv@npm:3.1.3"
+  version: 3.1.4
+  resolution: "@types/keyv@npm:3.1.4"
   dependencies:
     "@types/node": "*"
-  checksum: b5f8aa592cc21c16d99e69aec0976f12b893b055e4456d90148a610a6b6088e297b2ba5f38f8c8280cef006cfd8f9ec99e069905020882619dc5fc8aa46f5f27
+  checksum: e009a2bfb50e90ca9b7c6e8f648f8464067271fd99116f881073fa6fa76dc8d0133181dd65e6614d5fb1220d671d67b0124aef7d97dc02d7e342ab143a47779d
   languageName: node
   linkType: hard
 
@@ -13843,8 +13843,8 @@ __metadata:
   linkType: hard
 
 "aws-sdk@npm:^2.0.0, aws-sdk@npm:^2.971.0":
-  version: 2.1094.0
-  resolution: "aws-sdk@npm:2.1094.0"
+  version: 2.1095.0
+  resolution: "aws-sdk@npm:2.1095.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -13855,7 +13855,7 @@ __metadata:
     url: 0.10.3
     uuid: 3.3.2
     xml2js: 0.4.19
-  checksum: d1a2f6f7ddef3cc9d38680958e8bcbebf6f2631204f5addb55b627c3b742ba60332e100d2d5f83d9bccc8f9f1f8db0f24934d9bb69513aa4d81ac6843c0157fe
+  checksum: 29d2fc854479d67f43fec05a6ae93ef50f016d96b458dabd57641fb966ca1fc0b86ed4a15804cd69cd499037369f1f4672a1b403363de88912487a200044559b
   languageName: node
   linkType: hard
 
@@ -18966,9 +18966,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.3.247, electron-to-chromium@npm:^1.4.84":
-  version: 1.4.85
-  resolution: "electron-to-chromium@npm:1.4.85"
-  checksum: 87cea37f0aeb7aead8ddbc9c2b308eac4537eb50095b45faaf6d75b72d599392833ed12d777baf908550df4a090b250af2e4176c130c291e28e83a930f1e84f8
+  version: 1.4.86
+  resolution: "electron-to-chromium@npm:1.4.86"
+  checksum: 41d9f8ef28bba0cbc79a7662fb067dc47f418ca6a7a0df5f251a231e05cc2c7dfe40b6328e3da68661218ca1e682476caf8147b4fe35508b96d2e264a14a1992
   languageName: node
   linkType: hard
 
@@ -26816,9 +26816,9 @@ __metadata:
   linkType: hard
 
 "lru-cache@npm:^7.5.1":
-  version: 7.5.1
-  resolution: "lru-cache@npm:7.5.1"
-  checksum: f6980281c6ae4e58254d68b2d7878d7abb21c366a7ee527687f4a27bcbf7576f923517285d2fbd4b6a45b5eebdc66b4c565b55a8b49d5dc1babd65a912c26367
+  version: 7.6.0
+  resolution: "lru-cache@npm:7.6.0"
+  checksum: bfc0bf531cb6030faabf9ae374d5f2a05ce147035a9d0d1fb44afc6e8106205c8a0ea37d6dcf652829e895bb0df26a485d8cc2f10caf259d045549df87be737c
   languageName: node
   linkType: hard
 

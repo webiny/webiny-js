@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useApolloClient, useMutation } from "@apollo/react-hooks";
-import { useHistory, useParams } from "@webiny/react-router";
+import { useRouter, useParams } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
@@ -47,7 +47,7 @@ const extractPageErrorData = (data: any): any => {
 const Editor: React.FC = () => {
     const client = useApolloClient();
     const params = useParams<{ id: string }>();
-    const history = useHistory();
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [data, setData] = useState<PageDataAndRevisionsState>({
         page: null,

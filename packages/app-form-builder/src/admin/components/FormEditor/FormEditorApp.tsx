@@ -5,11 +5,10 @@ import { FormEditorProvider } from "./Context";
 import FormEditor from "./FormEditor";
 
 const FormEditorApp: React.FC = () => {
-    const router = useRouter();
+    const { params } = useRouter();
     const client = useApolloClient();
 
-    const matched = router.match;
-    const { id = undefined } = matched ? matched.params : {};
+    const id = params ? params["id"] : undefined;
 
     return (
         <FormEditorProvider

@@ -9,17 +9,21 @@ const backStyles = css({
 });
 
 const BackButton = React.memo(() => {
-    const router = useRouter();
+    const { params, history } = useRouter();
 
-    const matched = router.match;
-
-    const { id = undefined } = matched ? matched.params : {};
+    const id = params ? params["id"] : undefined;
 
     return (
         <IconButton
             data-testid="fb-editor-back-button"
             className={backStyles}
-            onClick={() => router.history.push(`/form-builder/forms?id=${id}`)}
+            onClick={() => {
+                if (!id) {
+                    console.error("Could not determine FormID from params.");
+                    return;
+                }
+                history.push(`/form-builder/forms?id=${id}`);
+            }}
             icon={<BackIcon />}
         />
     );
