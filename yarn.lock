@@ -12140,6 +12140,7 @@ __metadata:
     react-dom: 16.14.0
     react-router-dom: ^6.2.2
     rimraf: ^3.0.2
+    ttypescript: ^1.5.13
     typescript: 4.5.5
   peerDependencies:
     react: ^16.14.0
