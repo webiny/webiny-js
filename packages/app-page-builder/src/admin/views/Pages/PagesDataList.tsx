@@ -315,6 +315,12 @@ const PagesDataList: React.FC<PagesDataListProps> = ({ onCreatePage, canCreate, 
             multiSelectAll={multiSelectProps.multiSelectAll}
             isAllMultiSelected={multiSelectProps.isAllMultiSelected}
             isNoneMultiSelected={multiSelectProps.isNoneMultiSelected}
+            refresh={() => {
+                if (!listQuery.refetch) {
+                    return;
+                }
+                listQuery.refetch();
+            }}
         >
             {(
                 { data }: any // TODO @ts-refactor
