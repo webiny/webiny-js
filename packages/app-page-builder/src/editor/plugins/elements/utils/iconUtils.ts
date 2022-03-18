@@ -15,8 +15,11 @@ const getIcons = (): PbIcon[] => {
     }
     return icons;
 };
-
-const getSvg = (id: string[], props: Record<string, any> = {}): string | undefined => {
+interface GetSvgProps {
+    width?: number;
+    color?: string;
+}
+const getSvg = (id: string[], props: GetSvgProps = {}): string | undefined => {
     if (!props.width) {
         props.width = 50;
     }
@@ -26,9 +29,14 @@ const getSvg = (id: string[], props: Record<string, any> = {}): string | undefin
     }
     return renderToStaticMarkup(React.cloneElement(icon.svg, props));
 };
-
+interface IconData {
+    id?: string;
+    width?: number;
+    color?: string;
+    position?: string;
+}
 const updateButtonElementIcon = ({ name, newElement, element }: PostModifyElementArgs): void => {
-    const icon = element?.data || {};
+    const icon: IconData = element?.data || {};
 
     const isIcon = name.startsWith("icon");
     if (!isIcon) {
@@ -40,7 +48,7 @@ const updateButtonElementIcon = ({ name, newElement, element }: PostModifyElemen
         icon.width === width && icon.color === color && icon.position === position;
     let isSelectedIcon = false;
 
-    if (isSameIconProps && id && icon?.id) {
+    if (isSameIconProps && id && icon.id) {
         isSelectedIcon = icon.id[0] === id[0] && icon.id[1] === id[1];
     }
 

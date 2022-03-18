@@ -9,7 +9,7 @@ type ResolvePublish = ResolverFactory<any, ResolvePublishArgs>;
 
 export const resolvePublish: ResolvePublish =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const entry = await context.cms.publishEntry(model, args.revision);
             return new Response(entry);

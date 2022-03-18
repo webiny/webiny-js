@@ -82,7 +82,7 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
     // Set active element path in context.
     useEffect(() => {
         if (activeElement === elementId) {
-            setActiveElementPath(element.path);
+            setActiveElementPath(element.path || []);
         }
     }, [activeElement, elementId]);
 
@@ -92,6 +92,11 @@ const TreeViewItem: React.FC<TreeViewItemProps> = ({ element, level, children, i
                 return;
             }
             ev.stopPropagation();
+            /**
+             * TODO @ts-refactor @ashutosh
+             * We do not have, or expect, isHighlighted to be on the element. Or?
+             */
+            // @ts-ignore
             if (elementAtomValue && elementAtomValue.isHighlighted) {
                 return;
             }

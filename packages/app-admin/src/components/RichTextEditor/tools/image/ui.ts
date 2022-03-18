@@ -5,6 +5,8 @@ interface OnSelectFileCallable {
     (): void;
 }
 interface UiStatus {
+    EMPTY: "empty";
+    FILLED: "filled";
     [key: string]: string;
 }
 interface UiParams {
@@ -62,7 +64,7 @@ export default class Ui {
          *    <caption />
          *  </wrapper>
          */
-        this.nodes.caption.dataset.placeholder = this.config.captionPlaceholder;
+        this.nodes.caption.dataset["placeholder"] = this.config.captionPlaceholder;
         this.nodes.wrapper.appendChild(this.nodes.imageContainer);
         this.nodes.wrapper.appendChild(this.nodes.caption);
         this.nodes.wrapper.appendChild(this.nodes.fileButton);

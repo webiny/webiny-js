@@ -159,8 +159,8 @@ export class PulumiApp {
 
     private async runProgram() {
         tagResources({
-            WbyProjectName: String(process.env.WEBINY_PROJECT_NAME),
-            WbyEnvironment: String(process.env.WEBINY_ENV)
+            WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
+            WbyEnvironment: String(process.env["WEBINY_ENV"])
         });
 
         // TODO: run concurrently?

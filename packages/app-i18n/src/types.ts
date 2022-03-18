@@ -1,4 +1,5 @@
 import { Plugin } from "@webiny/app/types";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 export type I18NLocaleContextPlugin = Plugin<{
     name: "api-i18n-locale-context";
@@ -28,4 +29,9 @@ export interface GetI18NInformationResponse {
             };
         };
     };
+}
+
+export interface I18NSecurityPermission extends SecurityPermission {
+    level?: string;
+    locales?: string[];
 }

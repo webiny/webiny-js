@@ -133,7 +133,7 @@ const dataListContent = css({
 // This was copied from "./types" so that it can be outputted in docs.
 interface DataListProps {
     // Pass a function to take full control of list render.
-    children?: Function | null;
+    children?: ((props: any) => React.ReactNode) | null;
 
     // A title of paginated list.
     title?: React.ReactNode;
@@ -142,7 +142,7 @@ interface DataListProps {
     data?: Record<string, any>[] | null;
 
     // A callback that must refresh current view by repeating the previous query.
-    refresh?: Function | null;
+    refresh?: () => Promise<void> | null;
 
     // If true, Loader component will be shown, disallowing any interaction.
     loading?: boolean;
@@ -180,7 +180,13 @@ interface DataListProps {
     // Callback which returns true if none of the items were selected, otherwise returns false.
     isNoneMultiSelected?: (data: Record<string, any>[] | null) => boolean;
 
-    showOptions?: { [key: string]: any };
+    showOptions?: {
+        refresh?: boolean;
+        pagination?: boolean;
+        filters?: boolean;
+        sorters?: boolean;
+        [key: string]: any;
+    };
 
     // Provide search UI that will be shown in the top left corner.
     search?: React.ReactElement;
@@ -363,10 +369,7 @@ export const DataList: React.FC<DataListProps> = props => {
     } else if (isEmpty(props.data)) {
         render = props.noData;
     } else {
-        /**
-         * TODO: figure out the correct type.
-         */
-        const ch = props.children as any;
+        const ch = props.children;
         render = typeof ch === "function" ? ch(props) : null;
     }
 
@@ -418,7 +421,9 @@ DataList.defaultProps = {
     data: null,
     meta: null,
     loading: false,
-    refresh: null,
+    refresh: async () => {
+        return void 0;
+    },
     setPage: null,
     setPerPage: null,
     perPageOptions: [10, 25, 50],

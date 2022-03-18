@@ -9,6 +9,7 @@ import {
     Category,
     OnAfterInstallTopicParams,
     OnBeforeInstallTopicParams,
+    Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PbContext,
@@ -148,13 +149,21 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     fileIdToFileMap: fileIdToFileMap
                 });
 
-                const initialPagesData = [
+                const initialPagesData: Page[] = [
+                    /**
+                     * Category is missing but we cannot set it because it will override the created one.
+                     */
+                    // @ts-ignore
                     {
                         title: "Welcome to Webiny",
                         path: "/welcome-to-webiny",
                         content: welcomeToWebinyPageContent,
                         settings: {}
                     },
+                    /**
+                     * Category is missing but we cannot set it because it will override the created one.
+                     */
+                    // @ts-ignore
                     {
                         title: "Not Found",
                         path: "/not-found",
@@ -162,8 +171,14 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         settings: {},
                         // Do not show the page in page lists, only direct get is possible.
                         visibility: {
-                            get: { latest: true, published: true },
-                            list: { latest: false, published: false }
+                            get: {
+                                latest: true,
+                                published: true
+                            },
+                            list: {
+                                latest: false,
+                                published: false
+                            }
                         }
                     }
                 ];

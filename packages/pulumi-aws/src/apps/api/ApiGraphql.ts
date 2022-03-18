@@ -39,7 +39,7 @@ export function createGraphql(app: PulumiApp, params: GraphqlParams) {
                 variables: {
                     ...params.env,
                     AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
-                    WCP_ENVIRONMENT_API_KEY: String(process.env.WCP_ENVIRONMENT_API_KEY)
+                    WCP_ENVIRONMENT_API_KEY: String(process.env["WCP_ENVIRONMENT_API_KEY"])
                 }
             },
             vpcConfig: params.vpc

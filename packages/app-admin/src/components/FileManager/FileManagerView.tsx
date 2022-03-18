@@ -41,7 +41,7 @@ import { useFileManager } from "./FileManagerContext";
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
 import NoPermissionView from "./NoPermissionView";
-import { FileItem } from "~/components/FileManager/types";
+import { FileItem, FileManagerSecurityPermission } from "~/components/FileManager/types";
 import { MutationUpdaterFn } from "apollo-client/core/watchQueryOptions";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { ObservableQueryFields } from "@apollo/react-common/lib/types/types";
@@ -214,8 +214,8 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
     const { showSnackbar } = useSnackbar();
 
     const { identity, getPermission } = useSecurity();
-    const fmFilePermission = useMemo(() => {
-        return getPermission("fm.file");
+    const fmFilePermission = useMemo((): FileManagerSecurityPermission | null => {
+        return getPermission<FileManagerSecurityPermission>("fm.file");
     }, [identity]);
     const canCreate = useMemo(() => {
         // Bail out early if no access
@@ -463,6 +463,11 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
                 uploadFile(files.map(file => file.src.file as FileItem).filter(Boolean));
             }}
             onError={errors => {
+                /**
+                 * TODO @ts-refactor
+                 * Figure out if incoming errors var is wrong or the one in the outputFileSelectionError
+                 */
+                // @ts-ignore
                 const message = outputFileSelectionError(errors);
                 showSnackbar(message);
             }}

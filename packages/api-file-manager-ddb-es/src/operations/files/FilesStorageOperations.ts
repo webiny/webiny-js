@@ -409,7 +409,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             );
         }
 
-        const tags = response.body.aggregations.listTags.buckets.map(item => item.key) || [];
+        const listTags = response.body.aggregations["listTags"] || { buckets: [] };
+
+        const tags = listTags.buckets.map(item => item.key) || [];
 
         let hasMoreItems = false;
         const totalCount = tags.length;

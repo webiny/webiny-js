@@ -33,7 +33,7 @@ import isEmpty from "lodash/isEmpty";
 import omit from "lodash/omit";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { SecurityPermission } from "@webiny/app-security/types";
+import { PageBuilderSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/menus/form");
 const ButtonWrapper = styled("div")({
@@ -121,7 +121,7 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
     }, [loadedMenu.slug]);
 
     const { identity, getPermission } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.menu");
     }, [identity]);
 

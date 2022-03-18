@@ -101,6 +101,11 @@ const EditAction: React.FC<EditActionProps> = props => {
                         const errors = validateFiles([blob]);
 
                         if (errors.length) {
+                            /**
+                             * TODO @ts-refactor
+                             * Figure out if incoming errors var is wrong or the one in the outputFileSelectionError
+                             */
+                            // @ts-ignore
                             showSnackbar(outputFileSelectionError(errors));
                         } else {
                             blob.name = file.name;

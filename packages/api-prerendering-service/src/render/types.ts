@@ -28,12 +28,21 @@ export interface RenderHookPlugin extends Plugin {
     afterRender?: HookCallbackFunction;
 }
 
+export interface RenderApolloState {
+    [key: string]: string;
+}
 /**
  * @internal
  */
 export interface RenderResult {
     content: string;
-    meta: Record<string, any>;
+    meta: {
+        apolloState: RenderApolloState;
+        gqlCache: {
+            [key: string]: any;
+        };
+        [key: string]: any;
+    };
 }
 /**
  * @internal

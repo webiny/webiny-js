@@ -14,12 +14,25 @@ export interface Config {
 
 const jwksCache = new Map<string, Record<string, any>[]>();
 
-interface VerifyResult {
+interface Key {
+    kid?: string;
+}
+
+/**
+ * This was extrapolated from packages/api-security-cognito/src/index.ts.
+ * TODO @ts-refactor @pavel
+ * Verify that this is correct and remove ts-refactor
+ */
+interface TokenData {
     token_use: string;
+    sub: string;
+    given_name: string;
+    family_name: string;
+    email: string;
 }
 
 export interface Authenticator {
-    (token: string): Record<string, any> | null;
+    (token: string): Promise<TokenData | null>;
 }
 
 export const createAuthenticator =
@@ -30,7 +43,7 @@ export const createAuthenticator =
             return `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
         };
 
-        const getJWKs = async (): Promise<Record<string, string>[] | undefined> => {
+        const getJWKs = async (): Promise<Key[] | undefined> => {
             const { region, userPoolId } = config;
             const key = `${region}:${userPoolId}`;
 
@@ -67,8 +80,7 @@ export const createAuthenticator =
          * TODO @ts-refactor @pavel
          * Figure out correct types for the verify method. Maybe write your own, without using utils.promisify?
          */
-        // @ts-ignore
-        const token: VerifyResult = await verify(idToken, jwkToPem(jwk));
+        const token: TokenData = await (verify as any)(idToken, jwkToPem(jwk));
         if (token.token_use !== "id") {
             const error: any = new Error("idToken is invalid!");
             error.code = "SECURITY_COGNITO_INVALID_TOKEN";

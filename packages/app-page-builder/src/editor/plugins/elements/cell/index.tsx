@@ -20,6 +20,8 @@ import {
 } from "~/editor/recoil/actions";
 import { AfterDropElementActionEvent } from "~/editor/recoil/actions/afterDropElement";
 
+import lodashGet from "lodash/get";
+
 const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const defaultSettings = [
         "pb-editor-page-element-style-settings-background",
@@ -32,7 +34,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
 
     const elementType = kebabCase(args.elementType || "cell");
 
-    return {
+    const plugin: PbEditorPageElementPlugin = {
         type: "pb-editor-page-element",
         name: `pb-editor-page-element-${elementType}`,
         elementType,
@@ -41,7 +43,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
         canDelete: () => {
             return false;
         },
-        create: (options = {}) => {
+        create: options => {
             const defaultValue: Partial<PbEditorElement> = {
                 type: elementType,
                 elements: [],
@@ -64,7 +66,7 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
                             DisplayMode.DESKTOP
                         ),
                         grid: {
-                            size: options.data?.settings?.grid?.size || 1
+                            size: lodashGet(options, "data.settings.grid.size", 1)
                         }
                     }
                 }
@@ -111,6 +113,8 @@ const cellPlugin = (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPl
             return <CellContainer {...props} elementId={props.element.id} />;
         }
     };
+
+    return plugin;
 };
 // this is required because when saving cell element it cannot be without grid element
 const saveActionPlugin = {

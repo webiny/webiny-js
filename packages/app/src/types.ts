@@ -58,6 +58,7 @@ export interface ImageProps {
     title?: string;
     alt?: string;
     style?: CSSProperties;
+    width?: number;
 }
 
 /**
@@ -80,7 +81,12 @@ export type RoutePlugin = Plugin & {
     route: React.ReactElement;
 };
 
+interface CacheGetObjectIdPluginObj {
+    __typename: string;
+    modelId: string;
+    [key: string]: any;
+}
 export type CacheGetObjectIdPlugin = Plugin & {
     type: "cache-get-object-id";
-    getObjectId(obj: Record<string, any>): string | undefined;
+    getObjectId(obj: CacheGetObjectIdPluginObj): string | undefined;
 };

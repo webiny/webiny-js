@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-
 import { plugins } from "@webiny/plugins";
 import { PbElement, PbRenderElementPlugin, PbTheme, PbThemePlugin } from "~/types";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
@@ -24,6 +23,11 @@ const Element: React.FC<ElementProps> = props => {
 
     const pageElements = usePageElements();
     if (pageElements) {
+        /**
+         * TODO @ts-refactor
+         * Write better types for PbElement and PeElement
+         */
+        // @ts-ignore
         return <PeElement element={element} />;
     }
 

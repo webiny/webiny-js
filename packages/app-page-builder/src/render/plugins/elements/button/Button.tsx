@@ -2,9 +2,13 @@ import React, { CSSProperties, useMemo } from "react";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
 import { ElementRoot } from "../../../components/ElementRoot";
-import { PbElement } from "~/types";
+import { PbButtonElementClickHandlerPlugin, PbElement, PbElementDataType } from "~/types";
 import { Link } from "@webiny/react-router";
-import { PageBuilderContext } from "../../../../contexts/PageBuilder";
+import { PageBuilderContext } from "~/contexts/PageBuilder";
+
+interface ElementData extends Omit<PbElementDataType, "action"> {
+    action?: Partial<PbElementDataType["action"]>;
+}
 
 interface ButtonProps {
     element: PbElement;
@@ -13,11 +17,19 @@ const Button: React.FC<ButtonProps> = ({ element }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = React.useContext(PageBuilderContext);
-    const { type = "default", icon = {}, action = {}, link = {} } = element.data || {};
+    const {
+        type = "default",
+        icon = {},
+        action = {},
+        link = {}
+    }: ElementData = element.data || ({} as ElementData);
     const { svg = null } = icon;
     const { position = "left" } = icon;
 
-    const plugin = useMemo(() => plugins.byName(action.clickHandler), [action.clickHandler]);
+    const plugin = useMemo(
+        () => plugins.byName<PbButtonElementClickHandlerPlugin>(action.clickHandler),
+        [action.clickHandler]
+    );
 
     // Let's preserve backwards compatibility by extracting "link" properties from deprecated "link"
     // element object, if it exists otherwise, we'll use the newer "action" element object
@@ -28,12 +40,15 @@ const Button: React.FC<ButtonProps> = ({ element }) => {
         href = link?.href;
         newTab = !!link?.newTab;
     } else {
-        href = action?.href;
-        newTab = action?.newTab;
+        href = action.href as string;
+        newTab = action.newTab || false;
     }
 
     const clickHandler: () => void = plugin
-        ? () => plugin.handler({ variables: action.variables })
+        ? () =>
+              plugin.handler({
+                  variables: action.variables || []
+              })
         : () => null;
 
     const classes = [

@@ -73,7 +73,7 @@ export const AdminApp = defineApp({
         app.onDeploy(async ({ outputs }) => {
             await adminUpload({
                 appDir: app.ctx.appDir,
-                bucket: outputs.appStorage
+                bucket: outputs["appStorage"]
             });
         });
 
@@ -85,7 +85,7 @@ export const AdminApp = defineApp({
                     cwd: app.ctx.projectDir,
                     env: app.ctx.env,
                     variant: variant,
-                    domain: outputs.appDomain
+                    domain: outputs["appDomain"]
                 });
             });
         }

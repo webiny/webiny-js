@@ -23,25 +23,25 @@ export const websiteUpdatePbSettings = defineAppHook(async (params, context) => 
     try {
         context.success(`Updating Page Builder application's prerendering settings...`);
 
-        const lambdaClient = new LambdaClient({ region: apiOutput.region });
+        const lambdaClient = new LambdaClient({ region: apiOutput["region"] });
 
         const response = await lambdaClient
             .invoke({
-                FunctionName: apiOutput.updatePbSettingsFunction,
+                FunctionName: apiOutput["updatePbSettingsFunction"],
                 Payload: JSON.stringify({
                     data: {
-                        websiteUrl: websiteOutput.deliveryUrl,
-                        websitePreviewUrl: websiteOutput.appUrl,
+                        websiteUrl: websiteOutput["deliveryUrl"],
+                        websitePreviewUrl: websiteOutput["appUrl"],
                         prerendering: {
                             app: {
-                                url: websiteOutput.appUrl
+                                url: websiteOutput["appUrl"]
                             },
                             storage: {
-                                name: websiteOutput.deliveryStorage
+                                name: websiteOutput["deliveryStorage"]
                             },
                             meta: {
                                 cloudfront: {
-                                    distributionId: websiteOutput.deliveryId
+                                    distributionId: websiteOutput["deliveryId"]
                                 }
                             }
                         }

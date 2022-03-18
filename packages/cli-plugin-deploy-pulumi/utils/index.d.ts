@@ -1,4 +1,9 @@
-type StackOutput = Record<string, any>;
+interface StackOutput {
+    apiUrl: string;
+    region: string;
+    dynamoDbTable: string;
+    [key: string]: any;
+}
 
 export function tagResources(tags: Record<string, string>): void;
 

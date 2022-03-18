@@ -1052,7 +1052,12 @@ export const createPageStorageOperations = (
                     }
                 }
             });
-            return response.body.aggregations.tags.buckets.map(item => item.key);
+
+            const tags = response.body.aggregations["tags"];
+            if (!tags || Array.isArray(tags.buckets) === false) {
+                return [];
+            }
+            return tags.buckets.map(item => item.key);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list tags by given parameters.",

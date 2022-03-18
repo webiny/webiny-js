@@ -79,7 +79,7 @@ const Installations: React.FC<InstallationsProps> = props => {
     const renderList = () => {
         const loginItem = (
             <li key={"login"} className={"sign-in"}>
-                <img src={signInDivider} />
+                <img src={signInDivider} alt={""} />
                 <Typography use={"overline"} className={"note"}>
                     TO CONTINUE THE INSTALLATION AFTER THIS POINT YOU’LL NEED TO SIGN IN
                 </Typography>

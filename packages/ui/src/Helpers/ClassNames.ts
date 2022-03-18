@@ -6,12 +6,12 @@ import { clone } from "lodash";
  * the provided appendClasses(string) and any class names defined inside your props.
  * To you the function just do: {...getClasses (props)}
  * and make sure you are not spreading the `props` element, as this will clone and spread your current `props` element already.
- * @param {*} propList
- * @param {*} appendClasses
  */
-
-const getClasses = (propList: Record<string, any>, appendClasses: string[] | string) => {
-    let classes = {};
+/**
+ * TODO @ts-refactor figure out propList type
+ */
+const getClasses = (propList: any, appendClasses: string[] | string) => {
+    let classes = "";
     const props = clone(propList);
     if (propList.hasOwnProperty("className")) {
         classes = classnames(propList.className);

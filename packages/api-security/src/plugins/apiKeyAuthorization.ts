@@ -14,7 +14,7 @@ export default (config: Config) => {
         security.addAuthorizer(async () => {
             const identityType = config.identityType || "api-key";
 
-            const identity = security.getIdentity();
+            const identity = security.getIdentity<APIKeyIdentity>();
 
             if (!identity || identity.type !== identityType) {
                 return null;

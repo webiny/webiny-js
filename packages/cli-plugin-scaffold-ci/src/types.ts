@@ -3,6 +3,7 @@ import {
     CliCommandScaffoldCallableWithErrorArgs
 } from "@webiny/cli-plugin-scaffold/types";
 import { Plugin } from "@webiny/plugins/types";
+import { DistinctQuestion } from "inquirer";
 
 export interface CliPluginsScaffoldCi<T> extends Plugin {
     type: "cli-plugin-scaffold-ci";
@@ -11,4 +12,5 @@ export interface CliPluginsScaffoldCi<T> extends Plugin {
     onGenerate?: (args: CliCommandScaffoldCallableArgs<T>) => Promise<any>;
     onSuccess?: (args: CliCommandScaffoldCallableArgs<T>) => Promise<any>;
     onError?: (args: CliCommandScaffoldCallableWithErrorArgs<T>) => Promise<any>;
+    questions: () => DistinctQuestion<T>[];
 }

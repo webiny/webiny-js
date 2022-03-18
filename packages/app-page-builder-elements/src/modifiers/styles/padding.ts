@@ -1,7 +1,7 @@
 import { ElementStylesModifier } from "~/types";
 
 const padding: ElementStylesModifier = ({ element, theme }) => {
-    const { padding } = element.data.settings;
+    const { padding } = element.data.settings || {};
     if (!padding) {
         return null;
     }

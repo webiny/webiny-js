@@ -46,13 +46,13 @@ export const ApiApp = defineApp({
             });
 
             return {
-                fileManagerBucketId: output.fileManagerBucketId as string,
-                primaryDynamodbTableArn: output.primaryDynamodbTableArn as string,
-                primaryDynamodbTableName: output.primaryDynamodbTableName as string,
-                cognitoUserPoolId: output.cognitoUserPoolId as string,
-                cognitoUserPoolArn: output.cognitoUserPoolArn as string,
-                cognitoUserPoolPasswordPolicy: output.cognitoUserPoolPasswordPolicy,
-                cognitoAppClientId: output.cognitoAppClientId as string
+                fileManagerBucketId: output["fileManagerBucketId"] as string,
+                primaryDynamodbTableArn: output["primaryDynamodbTableArn"] as string,
+                primaryDynamodbTableName: output["primaryDynamodbTableName"] as string,
+                cognitoUserPoolId: output["cognitoUserPoolId"] as string,
+                cognitoUserPoolArn: output["cognitoUserPoolArn"] as string,
+                cognitoUserPoolPasswordPolicy: output["cognitoUserPoolPasswordPolicy"],
+                cognitoAppClientId: output["cognitoAppClientId"] as string
             };
         });
 
@@ -116,7 +116,7 @@ export const ApiApp = defineApp({
                 IMPORT_PAGES_CREATE_HANDLER: pageBuilder.importPages.functions.create.output.arn,
                 EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.exportPages.functions.process.output.arn,
                 // TODO: move to okta plugin
-                OKTA_ISSUER: process.env.OKTA_ISSUER,
+                OKTA_ISSUER: process.env["OKTA_ISSUER"],
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             },
@@ -135,7 +135,7 @@ export const ApiApp = defineApp({
                 DB_TABLE: storage.primaryDynamodbTableName,
                 S3_BUCKET: storage.fileManagerBucketId,
                 // TODO: move to okta plugin
-                OKTA_ISSUER: process.env.OKTA_ISSUER,
+                OKTA_ISSUER: process.env["OKTA_ISSUER"],
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             },

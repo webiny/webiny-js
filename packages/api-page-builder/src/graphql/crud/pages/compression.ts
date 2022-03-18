@@ -24,9 +24,9 @@ const createCompressContent = (plugins: ContentCompressionPlugin[]): CompressCon
     const [plugin] = plugins;
 
     return async (page: Page) => {
-        const value = page.content as Record<string, any>;
+        const value = page.content;
 
-        if (value && value.compression) {
+        if (value && (value as any).compression) {
             return value as CompressedValue;
         }
         try {

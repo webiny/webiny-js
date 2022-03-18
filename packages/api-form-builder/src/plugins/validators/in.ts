@@ -8,7 +8,7 @@ const plugin: FbFormFieldValidatorPlugin = {
         name: "in",
         validate: async (value, validator) => {
             const values = validator.settings.values;
-            if (Array.isArray(values) === false || values.length === 0) {
+            if (!values || Array.isArray(values) === false || values.length === 0) {
                 return true;
             }
             return validation.validate(value, `in:${values.join(":")}`);

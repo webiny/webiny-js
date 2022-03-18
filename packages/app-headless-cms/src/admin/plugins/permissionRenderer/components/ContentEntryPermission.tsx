@@ -8,7 +8,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { Note } from "./StyledComponents";
 import { BindComponent } from "@webiny/form/types";
-import { FormData } from "@webiny/form/types";
+import { CmsSecurityPermission } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
@@ -25,7 +25,7 @@ const pwOptions: PermissionOption[] = [
 
 interface ContentEntryPermissionProps {
     Bind: BindComponent;
-    data: FormData;
+    data: CmsSecurityPermission;
     entity: string;
     setValue: (name: string, value: string) => void;
     title: string;
@@ -47,9 +47,11 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
         }
     }, [data]);
 
+    const endpoints = data.endpoints || [];
+
     const disabledPrimaryActions =
         [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
-        !data.endpoints.includes("manage");
+        !endpoints.includes("manage");
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -75,11 +77,11 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
                                     disabled={data[`contentModelAccessScope`] === "own"}
                                 >
                                     <option value={"full"}>{t`All entries`}</option>
-                                    {data.endpoints.includes("manage") && (
+                                    {(endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only entries created by the user`}</option>
-                                    )}
+                                    )) || <></>}
                                 </Select>
                             </Bind>
                             {data[`contentModelAccessScope`] === "own" && (
@@ -100,12 +102,12 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
                                     disabled={disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
-                                    {data.endpoints.includes("manage") ? (
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rw"}>{t`Read, write`}</option>
                                     ) : (
                                         <></>
                                     )}
-                                    {data.endpoints.includes("manage") ? (
+                                    {endpoints.includes("manage") ? (
                                         <option value={"rwd"}>{t`Read, write, delete`}</option>
                                     ) : (
                                         <></>
@@ -113,7 +115,7 @@ export const ContentEntryPermission: React.FC<ContentEntryPermissionProps> = ({
                                 </Select>
                             </Bind>
                         </Cell>
-                        {data.endpoints.includes("manage") ? (
+                        {endpoints.includes("manage") ? (
                             <Cell span={12}>
                                 <Bind name={`${entity}PW`}>
                                     <CheckboxGroup

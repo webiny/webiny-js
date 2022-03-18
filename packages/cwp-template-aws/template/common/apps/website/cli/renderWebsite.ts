@@ -8,7 +8,7 @@ const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackO
 export default {
     type: "hook-after-deploy",
     name: "hook-after-deploy-website-render",
-    async hook(args, context) {
+    async hook(args: any, context) {
         if (args.projectApplication.id !== "website") {
             return;
         }

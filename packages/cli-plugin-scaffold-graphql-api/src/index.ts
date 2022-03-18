@@ -16,7 +16,7 @@ import {
     LAST_USED_GQL_API_PLUGINS_PATH
 } from "@webiny/cli-plugin-scaffold/utils";
 import execa from "execa";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
 
 interface Input {
@@ -26,7 +26,7 @@ interface Input {
     path: string;
 }
 
-export const deployGraphQLAPI = (stack: string, env: string, inputs: Record<string, any>) =>
+export const deployGraphQLAPI = (stack: string, env: string, inputs: unknown) =>
     execa(
         "yarn",
         [
@@ -36,6 +36,13 @@ export const deployGraphQLAPI = (stack: string, env: string, inputs: Record<stri
             "--env",
             env,
             "--debug",
+            /**
+             * TODO @ts-refactor
+             * There is no debug flag in
+             * * packages/cli-plugin-scaffold-full-stack-app/src/index.ts:239
+             * * packages/cli-plugin-scaffold-graphql-api/src/index.ts:345
+             */
+            // @ts-ignore
             Boolean(inputs.debug) ? "true" : "false"
         ],
         {
@@ -72,7 +79,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "description",
                     message: "Enter description:",
-                    default: (input: Record<string, string>) => {
+                    default: (input: Input) => {
                         return `This is the ${input.name} GraphQL API.`;
                     },
                     validate: description => {
@@ -86,7 +93,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "path",
                     message: "Enter GraphQL API path:",
-                    default: (input: Record<string, string>) => {
+                    default: (input: Input) => {
                         return `${Case.kebab(input.name)}`;
                     },
                     validate: appPath => {
@@ -250,7 +257,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 await execa("yarn");
                 await execa("yarn", ["postinstall"]);
             } catch (err) {
-                throw new Error(
+                throw new WebinyError(
                     `Unable to install dependencies. Try running "yarn" in project root manually.`,
                     err.message
                 );
@@ -357,7 +364,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 console.log(chalk.bold("Next Steps"));
                 console.log(
                     `‣ open your GraphQL API with a GraphQL client, via the following URL:\n  ${chalk.green(
-                        `[POST] ${stackOutput.apiUrl}/graphql`
+                        `[POST] ${stackOutput["apiUrl"]}/graphql`
                     )}`
                 );
             }

@@ -22,7 +22,7 @@ export const Editor: React.FC<EditorPropsType> = ({ page, revisions }) => {
         <RecoilRoot
             initializeState={({ set }) => {
                 /* Here we initialize elementsAtom and rootElement if it exists */
-                set(rootElementAtom, page.content.id);
+                set(rootElementAtom, page.content?.id || "");
 
                 const elements = flattenElements(page.content);
                 Object.keys(elements).forEach(key => {

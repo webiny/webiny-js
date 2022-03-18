@@ -3,7 +3,7 @@ import jwkToPem from "jwk-to-pem";
 import fetch from "node-fetch";
 import util from "util";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
 const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
@@ -23,7 +23,10 @@ export interface AuthenticatorConfig {
     getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
 }
 
-type JwksCacheItem = Record<string, any>;
+interface JwksCacheItem {
+    kid: string;
+    [key: string]: string;
+}
 const jwksCache = new Map<string, JwksCacheItem[]>();
 
 export const createAuthenticator = (config: AuthenticatorConfig) => {
@@ -59,13 +62,13 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                 // @ts-ignore
                 const token = (await verify(idToken, jwkToPem(jwk))) as VerifyResponse;
                 if (!token.jti || !token.jti.startsWith("ID.")) {
-                    throw new Error("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");
+                    throw new WebinyError("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");
                 }
 
                 return token;
             } catch (err) {
                 console.log("OktaAuthenticationPlugin", err);
-                throw new Error(err.message, "SECURITY_OKTA_INVALID_TOKEN");
+                throw new WebinyError(err.message, "SECURITY_OKTA_INVALID_TOKEN");
             }
         }
         return null;

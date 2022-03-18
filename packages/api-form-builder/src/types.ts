@@ -8,6 +8,7 @@ import { Topic } from "@webiny/pubsub/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 
 interface FbFormTriggerData {
+    urls?: string[];
     [key: string]: any;
 }
 interface FbSubmissionData {
@@ -17,7 +18,21 @@ interface FbSubmissionData {
 interface FbFormFieldValidator {
     name: string;
     message: any;
-    settings: Record<string, any>;
+    settings: {
+        /**
+         * In.
+         */
+        values?: string[];
+        /**
+         * gte, lte, max, min
+         */
+        value?: string;
+        /**
+         * Pattern.
+         */
+        preset?: string;
+        [key: string]: any;
+    };
 }
 
 export interface FbFormFieldValidatorPlugin extends Plugin {
@@ -54,6 +69,24 @@ export interface FbFormTriggerHandlerPlugin extends Plugin {
     handle: (args: FbFormTriggerHandlerParams) => Promise<void>;
 }
 
+export interface FbFormFieldOption {
+    label?: string;
+    value?: string;
+}
+
+export interface FbFormField {
+    _id: string;
+    fieldId: string;
+    type: string;
+    name: string;
+    label: string;
+    placeholderText?: string;
+    helpText?: string;
+    options: FbFormFieldOption[];
+    validation: FbFormFieldValidator[];
+    settings?: Record<string, any>;
+}
+
 export interface FbForm {
     id: string;
     tenant: string;
@@ -69,7 +102,7 @@ export interface FbForm {
     published: boolean;
     publishedOn: string | null;
     status: string;
-    fields: Record<string, any>[];
+    fields: FbFormField[];
     layout: string[][];
     stats: Omit<FbFormStats, "conversionRate">;
     settings: Record<string, any>;

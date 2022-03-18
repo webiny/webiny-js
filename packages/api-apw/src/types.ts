@@ -100,21 +100,21 @@ export interface CreatedBy {
     type: string;
 }
 
-interface BaseFields {
+export interface ApwBaseFields {
     id: string;
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;
 }
 
-export interface ApwReviewer extends BaseFields {
+export interface ApwReviewer extends ApwBaseFields {
     identityId: string;
     displayName: string | null;
     type: string;
 }
 
-export interface ApwComment extends BaseFields {
-    body: JSON;
+export interface ApwComment extends ApwBaseFields {
+    body: Record<string, any>;
     changeRequest: {
         id: string;
         entryId: string;
@@ -122,8 +122,8 @@ export interface ApwComment extends BaseFields {
     };
 }
 
-export interface ApwChangeRequest extends BaseFields {
-    body: JSON;
+export interface ApwChangeRequest extends ApwBaseFields {
+    body: Record<string, any>;
     title: string;
     resolved: boolean;
     step: string;
@@ -141,17 +141,17 @@ export interface ApwContentReviewStep {
     signOffProvidedBy: CreatedBy | null;
 }
 
-export interface ApwContentReview extends BaseFields {
+export interface ApwContentReview extends ApwBaseFields {
     status: ApwContentReviewStatus;
     content: {
         id: string;
         type: string;
-        settings: JSON;
+        settings: Record<string, any>;
     };
     steps: Array<ApwContentReviewStep>;
 }
 
-export interface ApwWorkflow extends BaseFields {
+export interface ApwWorkflow extends ApwBaseFields {
     title: string;
     steps: ApwWorkflowStep[];
     scope: ApwWorkflowScope;
@@ -230,16 +230,16 @@ interface UpdateApwCommentParams {
 
 interface CreateApwChangeRequestParams {
     title: string;
-    body: JSON;
+    body: Record<string, any>;
     resolved: boolean;
-    media: JSON;
+    media: Record<string, any>;
 }
 
 interface UpdateApwChangeRequestParams {
     title: string;
-    body: JSON;
+    body: Record<string, any>;
     resolved: boolean;
-    media: JSON;
+    media: Record<string, any>;
 }
 
 export interface ApwContentReviewContent {

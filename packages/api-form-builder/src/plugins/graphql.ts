@@ -39,6 +39,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
 
             type FbDeleteResponse {
@@ -73,7 +74,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             },
             FbMutation: {
-                install: async (_, args, context) => {
+                install: async (_, args: any, context) => {
                     try {
                         await context.formBuilder.installSystem({ domain: args.domain });
 
@@ -86,7 +87,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         });
                     }
                 },
-                upgrade: async (_, args, context) => {
+                upgrade: async (_, args: any, context) => {
                     try {
                         await context.formBuilder.upgradeSystem(args.version as string);
 

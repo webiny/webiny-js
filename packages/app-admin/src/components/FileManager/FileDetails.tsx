@@ -41,7 +41,7 @@ import {
 } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 import mime from "mime";
-import { FileItem } from "./types";
+import { FileItem, FileManagerSecurityPermission } from "./types";
 import { FilesRenderChildren } from "react-butterfiles";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
@@ -183,7 +183,7 @@ const FileDetails: React.FC<FileDetailsProps> = props => {
     const [darkImageBackground, setDarkImageBackground] = useState(false);
 
     const { identity, getPermission } = useSecurity();
-    const fmFilePermission = useMemo(() => {
+    const fmFilePermission = useMemo((): FileManagerSecurityPermission | null => {
         return getPermission("fm.file");
     }, [identity]);
     const canDelete = useCallback(

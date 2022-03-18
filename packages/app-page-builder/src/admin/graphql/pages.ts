@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { PbErrorResponse, PbPageRevision } from "~/types";
+import { PbElement, PbErrorResponse, PbPageRevision } from "~/types";
 
 const error = `
     error {
@@ -217,7 +217,7 @@ export interface ListPageElementsQueryResponseData {
     name: string;
     category: string;
     type: string;
-    content: Record<string, any>;
+    content: PbElement;
     preview: ListPageElementsQueryResponseDataPreview;
 }
 

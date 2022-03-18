@@ -2,6 +2,7 @@ import React, { useEffect, useReducer } from "react";
 import * as History from "history";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { PbPluginsLoader } from "~/types";
 
 const globalState: State = { render: false, editor: false };
 
@@ -24,7 +25,7 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
     );
 
     async function loadPlugins() {
-        const pbPlugins = plugins.byType("pb-plugins-loader");
+        const pbPlugins = plugins.byType<PbPluginsLoader>("pb-plugins-loader");
         // load all editor admin plugins
         const loadEditorPlugins = async () =>
             await Promise.all(

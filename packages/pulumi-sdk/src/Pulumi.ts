@@ -9,6 +9,9 @@ interface PulumiArgs {
     [key: string]: string | boolean;
 }
 interface ExecaArgs {
+    env?: {
+        [key: string]: string | undefined;
+    };
     [key: string]: any;
 }
 
