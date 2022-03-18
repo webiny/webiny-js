@@ -1,15 +1,11 @@
-import WebinyError from "@webiny/error";
+import WebinyError, { ErrorOptions } from "@webiny/error";
 
-interface NotAuthorizedErrorArgsType {
-    message: string;
-    code: string;
-    data: any;
-}
-class NotAuthorizedError extends WebinyError<any> {
-    constructor({ message, code, data }: Partial<NotAuthorizedErrorArgsType> = {}) {
-        super(message || `Not authorized!`, code || `SECURITY_NOT_AUTHORIZED`);
-        this.data = data || null;
+export default class NotAuthorizedError extends WebinyError<any> {
+    constructor(params: ErrorOptions<any> = {}) {
+        super({
+            message: params.message || `Not authorized!`,
+            code: params.code || `SECURITY_NOT_AUTHORIZED`,
+            data: params.data
+        });
     }
 }
-
-export default NotAuthorizedError;

@@ -31,11 +31,7 @@
     "strictFunctionTypes": true,
     "noImplicitOverride": true,
     "strict": true,
-    /**
-     * Leave at false.
-     * https://www.typescriptlang.org/tsconfig#noPropertyAccessFromIndexSignature
-     */
-    "noPropertyAccessFromIndexSignature": false,
+    "noPropertyAccessFromIndexSignature": true,
     "suppressImplicitAnyIndexErrors": false,
     "suppressExcessPropertyErrors": false,
     "keyofStringsOnly": false,

@@ -1,9 +1,9 @@
 import { NodeAPI } from "posthtml";
-import { RenderUrlPostHtmlParams } from "~/render/types";
+import { RenderApolloState, RenderUrlPostHtmlParams } from "~/render/types";
 
-const stringifyApolloState = (state?: any): string | undefined => {
+const stringifyApolloState = (state?: RenderApolloState | null): string | undefined => {
     if (state === undefined || state === null) {
-        return state;
+        return state || undefined;
     }
     try {
         return JSON.stringify(state).replace(/</g, "\\u003c");

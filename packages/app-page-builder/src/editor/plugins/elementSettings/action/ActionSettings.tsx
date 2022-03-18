@@ -48,14 +48,15 @@ const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
 
     // Let's preserve backwards compatibility by extracting href and newTab properties from deprecated
     //  "link" element object if it exists, otherwise we'll use the newer "action" element object
-    let href: string, newTab: boolean;
+    let href: string;
+    let newTab: boolean;
 
     if (element.data?.link && !element.data?.action) {
         href = element.data?.link?.href || "";
         newTab = element.data?.link?.newTab || false;
     } else {
-        href = element.data?.action?.href;
-        newTab = element.data?.action?.newTab;
+        href = element.data?.action?.href || "";
+        newTab = element.data?.action?.newTab || false;
     }
 
     const { clickHandler, actionType, variables } = element.data?.action || {};

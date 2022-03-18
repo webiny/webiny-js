@@ -1,4 +1,4 @@
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { CmsEntry, CmsModel, CmsModelField, CmsContext } from "~/types";
 import { StorageTransformPlugin } from "~/content/plugins/storage/StorageTransformPlugin";
 
@@ -52,7 +52,7 @@ const entryStorageTransform = async (
         const plugin = getStoragePlugin(field.type);
         // TODO: remove this once plugins are converted into classes
         if (typeof plugin[operation] !== "function") {
-            throw new Error(
+            throw new WebinyError(
                 `Missing "${operation}" function in storage plugin "${plugin.name}" for field type "${field.type}"`
             );
         }
@@ -100,9 +100,9 @@ interface EntryFieldFromStorageTransformParams {
 /*
  * A function that is used to transform a single field from storage
  */
-export const entryFieldFromStorageTransform = async (
+export const entryFieldFromStorageTransform = async <T = any>(
     params: EntryFieldFromStorageTransformParams
-): Promise<any> => {
+): Promise<T> => {
     const { context, model, field, value } = params;
     const getStoragePlugin = getStoragePluginFactory(context);
 
@@ -110,7 +110,7 @@ export const entryFieldFromStorageTransform = async (
 
     // TODO: remove this once plugins are converted into classes
     if (typeof plugin.fromStorage !== "function") {
-        throw new Error(
+        throw new WebinyError(
             `Missing "fromStorage" function in storage plugin "${plugin.name}" for field type "${field.type}"`
         );
     }

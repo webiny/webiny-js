@@ -55,6 +55,17 @@ const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => 
     }
 };
 
+interface RecordDynamoDbImage {
+    data: Record<string, any>;
+    ignore?: boolean;
+    index: string;
+}
+
+interface RecordDynamoDbKeys {
+    PK: string;
+    SK: string;
+}
+
 export default (): HandlerPlugin<ElasticsearchContext> => ({
     type: "handler",
     async handle(context) {
@@ -62,14 +73,14 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
         const operations = [];
 
         for (const record of event.Records) {
-            const newImage = Converter.unmarshall(record.dynamodb.NewImage);
+            const newImage = Converter.unmarshall(record.dynamodb.NewImage) as RecordDynamoDbImage;
 
             if (newImage.ignore === true) {
                 continue;
             }
 
-            const oldImage = Converter.unmarshall(record.dynamodb.OldImage);
-            const keys = Converter.unmarshall(record.dynamodb.Keys);
+            const oldImage = Converter.unmarshall(record.dynamodb.OldImage) as RecordDynamoDbImage;
+            const keys = Converter.unmarshall(record.dynamodb.Keys) as RecordDynamoDbKeys;
             const _id = `${keys.PK}:${keys.SK}`;
             const operation = record.eventName;
 

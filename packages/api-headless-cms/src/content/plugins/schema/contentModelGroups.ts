@@ -71,7 +71,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
             },
             Query: {
-                getContentModelGroup: async (_, args, context) => {
+                getContentModelGroup: async (_, args: any, context) => {
                     try {
                         const { id } = args;
                         const model = await context.cms.getGroup(id);
@@ -90,7 +90,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
             },
             Mutation: {
-                createContentModelGroup: async (_, args, context) => {
+                createContentModelGroup: async (_, args: any, context) => {
                     try {
                         const model = await context.cms.createGroup(args.data);
                         return new Response(model);
@@ -98,7 +98,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new ErrorResponse(e);
                     }
                 },
-                updateContentModelGroup: async (_, args, context) => {
+                updateContentModelGroup: async (_, args: any, context) => {
                     try {
                         const group = await context.cms.updateGroup(args.id, args.data);
                         return new Response(group);
@@ -106,7 +106,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         return new ErrorResponse(e);
                     }
                 },
-                deleteContentModelGroup: async (_, args, context) => {
+                deleteContentModelGroup: async (_, args: any, context) => {
                     try {
                         await context.cms.deleteGroup(args.id);
                         return new Response(true);

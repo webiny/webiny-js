@@ -1,7 +1,7 @@
 import { ElementStylesModifier } from "~/types";
 
 const height: ElementStylesModifier = ({ element, theme }) => {
-    const { height } = element.data.settings;
+    const { height } = element.data.settings || {};
     if (!height) {
         return {};
     }

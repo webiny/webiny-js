@@ -8,7 +8,7 @@ type ResolveRepublish = ResolverFactory<any, ResolveRepublishArgs>;
 
 export const resolveRepublish: ResolveRepublish =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const entry = await context.cms.republishEntry(model, args.revision);
             return new Response(entry);

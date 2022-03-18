@@ -20,7 +20,7 @@ export interface ApplicationGenericConfig extends ApplicationBuilderConfig {
 
 export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGenericConfig> {
     public async createOrSelectStack(args: ApplicationStackArgs): Promise<ApplicationStack> {
-        const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+        const PULUMI_SECRETS_PROVIDER = process.env["PULUMI_SECRETS_PROVIDER"];
 
         // Use ";" when on Windows. For Mac and Linux, use ":".
         const PATH_SEPARATOR = os.platform() === "win32" ? ";" : ":";

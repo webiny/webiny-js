@@ -13,7 +13,14 @@ const ENVIRONMENT_VARIABLES_ARTICLE_LINK =
 
 interface ErrorOverlayProps {
     query: string;
-    networkError: Record<string, any>;
+    networkError: {
+        message: string;
+        result?: {
+            error?: {
+                stack?: string;
+            };
+        };
+    };
 }
 const ErrorOverlay: React.FC<ErrorOverlayProps> = props => {
     const { query, networkError } = props;

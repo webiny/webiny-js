@@ -8,7 +8,13 @@ const backStyles = css({
     marginLeft: -10
 });
 
-const getIdFromMatch = (match: Record<string, any> | null): string => {
+interface MatchInput {
+    params?: {
+        id?: string;
+    };
+}
+
+const getIdFromMatch = (match: MatchInput | null): string => {
     if (!match || !match.params) {
         return "";
     }
@@ -18,7 +24,7 @@ const getIdFromMatch = (match: Record<string, any> | null): string => {
 const BackButton: React.FC = () => {
     const { match, history } = useRouter();
 
-    const id = getIdFromMatch(match);
+    const id = getIdFromMatch(match as unknown as MatchInput);
     return (
         <IconButton
             data-testid="pb-editor-back-button"

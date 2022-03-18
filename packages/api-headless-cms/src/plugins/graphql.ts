@@ -13,6 +13,7 @@ export const createGraphQLPlugin = (): GraphQLSchemaPlugin => ({
                 code: String
                 message: String
                 data: JSON
+                stack: String
             }
 
             type CmsCursors {

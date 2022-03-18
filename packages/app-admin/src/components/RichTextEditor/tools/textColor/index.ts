@@ -11,6 +11,14 @@ interface TextColorToolParams {
     config: Config;
 }
 
+interface SanitizeResultSpanResult {
+    class?: string;
+    style?: CSSStyleDeclaration;
+}
+interface SanitizeResult {
+    span: (element: HTMLElement) => SanitizeResultSpanResult;
+}
+
 class TextColorTool {
     private _state: boolean;
     private color: string;
@@ -47,7 +55,7 @@ class TextColorTool {
      * @returns {object} sanitizer configuration.
      * https://editorjs.io/sanitizer
      */
-    static get sanitize(): Record<string, any> {
+    static get sanitize(): SanitizeResult {
         // Block Tools are not connected with Inline ones,
         // so markup added by Inline Tool will be removed on pasting or on saving.
         // We need this config so that `class` & `style` attributes will remain intact for "span".
@@ -55,7 +63,7 @@ class TextColorTool {
             /**
              * TODO: figure out the element type
              */
-            span: (el: Record<string, any>) => {
+            span: (el: HTMLElement) => {
                 // Respect `class` and `style` attributes if this condition is meet.
                 if (el.classList.contains(COLOR_TOOL_CLASS)) {
                     return {

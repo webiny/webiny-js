@@ -8,7 +8,7 @@ import { replaceInPath } from "replace-in-path";
 import loadJsonFile from "load-json-file";
 import writeJsonFile from "write-json-file";
 import chalk from "chalk";
-import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
+import { CliCommandScaffoldTemplate, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import findUp from "find-up";
 import execa from "execa";
 import link from "terminal-link";
@@ -27,6 +27,12 @@ interface Input {
     dataModelName: string;
     showConfirmation?: boolean;
 }
+
+type DependenciesUpdates = [
+    "devDependencies" | "dependencies" | "peerDependencies",
+    string,
+    string
+];
 
 const SCAFFOLD_DOCS_LINK =
     "https://www.webiny.com/docs/how-to-guides/scaffolding/extend-graphql-api";
@@ -110,8 +116,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const templateFolderPath = path.join(__dirname, "template");
 
             // Get needed dependencies updates.
-            const dependenciesUpdates = [];
-            const packageJson = await loadJsonFile<Record<string, any>>(packageJsonPath);
+            const dependenciesUpdates: DependenciesUpdates[] = [];
+            const packageJson = await loadJsonFile<PackageJson>(packageJsonPath);
             if (!packageJson?.devDependencies?.["graphql-request"]) {
                 dependenciesUpdates.push(["devDependencies", "graphql-request", "^3.4.0"]);
             }

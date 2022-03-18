@@ -465,6 +465,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             const page: Page = {
                 ...original,
                 ...input,
+                settings: {
+                    ...original.settings,
+                    ...(input.settings || {})
+                },
                 version: Number(original.version),
                 savedOn: new Date().toISOString()
             };

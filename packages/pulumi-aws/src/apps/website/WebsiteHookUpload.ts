@@ -27,7 +27,7 @@ export const websiteUpload = defineAppHook(async (params, context) => {
 
     await uploadFolderToS3({
         path: buildFolderPath,
-        bucket: websiteOutput.appStorage,
+        bucket: websiteOutput["appStorage"],
         acl: "public-read",
         onFileUploadSuccess: ({ paths }) => {
             context.success(paths.relative);

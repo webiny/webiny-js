@@ -1,5 +1,5 @@
 import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types";
-import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
+import { createGraphQLInputField } from "./helpers";
 
 interface CreateListFiltersParams {
     field: CmsModelField;
@@ -42,10 +42,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return `${field.fieldId}: String`;
         },
         createInputField({ field }) {
-            if (field.multipleValues) {
-                return attachRequiredFieldValue(field.fieldId + ": [String]", field);
-            }
-            return attachRequiredFieldValue(field.fieldId + ": String", field);
+            return createGraphQLInputField(field, "String");
         }
     }
 };

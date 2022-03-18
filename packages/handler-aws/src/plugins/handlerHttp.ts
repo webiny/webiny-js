@@ -9,6 +9,18 @@ const lowercaseKeys = (obj: Record<string, string>) => {
     }, {} as Record<string, string>);
 };
 
+interface InputArgs {
+    httpMethod: string;
+    isBase64Encoded?: boolean;
+    rawPath: string;
+    pathParameters: {
+        [key: string]: any;
+    };
+    queryStringParameters: {
+        [key: string]: any;
+    };
+}
+
 export default {
     type: "context",
     apply(context) {
@@ -49,4 +61,4 @@ export default {
             );
         }
     }
-} as ContextPlugin<HttpContext & ArgsContext>;
+} as ContextPlugin<HttpContext & ArgsContext<InputArgs>>;

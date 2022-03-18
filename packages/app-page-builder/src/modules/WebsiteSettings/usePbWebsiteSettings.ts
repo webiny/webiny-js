@@ -6,7 +6,6 @@ import { useRouter } from "@webiny/react-router";
 /**
  * Package @webiny/telemetry is missing types.
  */
-// @ts-types
 // @ts-ignore
 import { sendEvent, setProperties } from "@webiny/telemetry/react";
 import {
@@ -17,6 +16,10 @@ import {
     UpdateSettingsMutationResponse,
     UpdateSettingsMutationVariables
 } from "./graphql";
+
+interface PageBuilderWebsiteSettings {
+    websiteUrl?: string;
+}
 
 export function usePbWebsiteSettings() {
     const { showSnackbar } = useSnackbar();
@@ -61,7 +64,7 @@ export function usePbWebsiteSettings() {
         /**
          * Figure out correct type for data.
          */
-        async (data: Record<string, string>) => {
+        async (data: PageBuilderWebsiteSettings) => {
             // TODO: try useForm and onSubmit
             data.websiteUrl = (data.websiteUrl || "").replace(/\/+$/g, "");
 

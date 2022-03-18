@@ -30,7 +30,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { categoryUrlValidator } from "./validators";
 import { plugins } from "@webiny/plugins";
-import { PbCategory, PbPageLayoutPlugin } from "~/types";
+import { PageBuilderSecurityPermission, PbCategory, PbPageLayoutPlugin } from "~/types";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
 import pick from "lodash/pick";
@@ -39,7 +39,6 @@ import set from "lodash/set";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { SecurityPermission } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-page-builder/admin/categories/form");
 
@@ -161,7 +160,7 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
     }, [loadedCategory.slug]);
 
     const { identity, getPermission } = useSecurity();
-    const pbMenuPermission = useMemo((): SecurityPermission | null => {
+    const pbMenuPermission = useMemo((): PageBuilderSecurityPermission | null => {
         return getPermission("pb.category");
     }, [identity]);
 

@@ -9,7 +9,7 @@ type ResolveDelete = ResolverFactory<any, ResolveDeleteArgs>;
 
 export const resolveDelete: ResolveDelete =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const { version } = parseIdentifier(args.revision);
             if (version) {

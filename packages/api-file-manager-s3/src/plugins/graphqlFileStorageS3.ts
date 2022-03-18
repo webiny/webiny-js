@@ -52,7 +52,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
         `,
         resolvers: {
             FmQuery: {
-                getPreSignedPostPayload: async (_, args, context) => {
+                getPreSignedPostPayload: async (_, args: any, context) => {
                     try {
                         await checkBasePermissions(context, { rwd: "w" });
 
@@ -78,7 +78,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         });
                     }
                 },
-                getPreSignedPostPayloads: async (_, args, context) => {
+                getPreSignedPostPayloads: async (_, args: any, context) => {
                     await checkBasePermissions(context, { rwd: "w" });
 
                     const { data: files } = args;

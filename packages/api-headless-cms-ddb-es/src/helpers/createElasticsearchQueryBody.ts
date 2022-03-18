@@ -96,7 +96,10 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
 const createInitialQueryValue = (
     args: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where } = args;
+    /**
+     * Cast as partial so we can remove unnecessary keys.
+     */
+    const where = args.where as Partial<CmsEntryListWhere>;
 
     const query: ElasticsearchBoolQueryConfig = {
         must: [],
@@ -107,7 +110,7 @@ const createInitialQueryValue = (
 
     // When ES index is shared between tenants, we need to filter records by tenant ID
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-    if (sharedIndex) {
+    if (sharedIndex && where.tenant) {
         query.must.push({ term: { "tenant.keyword": where.tenant } });
     }
     delete where["tenant"];

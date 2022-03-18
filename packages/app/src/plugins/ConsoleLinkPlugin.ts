@@ -1,10 +1,16 @@
-import { ApolloLink } from "apollo-link";
+import { ApolloLink, FetchResult as BaseFetchResult } from "apollo-link";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin";
 import { OperationDefinitionNode } from "graphql/language/ast";
 
 interface Log {
     args: any[];
     method: "error" | "info" | "log" | "warn";
+}
+
+interface FetchResult extends BaseFetchResult {
+    extensions?: {
+        console?: Log[];
+    };
 }
 
 /**
@@ -16,7 +22,7 @@ export class ConsoleLinkPlugin extends ApolloLinkPlugin {
             const firstDefinition = operation.query.definitions[0] as OperationDefinitionNode;
             const isQuery = firstDefinition["operation"] === "query";
 
-            return forward(operation).map(data => {
+            return forward(operation).map((data: FetchResult) => {
                 if (
                     data.extensions &&
                     Array.isArray(data.extensions.console) &&

@@ -9,7 +9,7 @@ import {
 import { renderField } from "~/content/plugins/utils/renderFields";
 import { renderInputField } from "~/content/plugins/utils/renderInputFields";
 import { createManageTypeName, createTypeName } from "~/content/plugins/utils/createTypeName";
-import { attachRequiredFieldValue } from "~/content/plugins/graphqlFields/requiredField";
+import { attachRequiredFieldValue } from "./helpers";
 
 interface TypeFromFieldParams {
     typeOfType: string;

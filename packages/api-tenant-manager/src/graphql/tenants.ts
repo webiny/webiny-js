@@ -76,7 +76,7 @@ export default new GraphQLSchemaPlugin<Context>({
             }
         },
         TenancyMutation: {
-            createTenant: async (_, args, context) => {
+            createTenant: async (_, args: any, context) => {
                 // TODO: add permission checks
                 const tenant = context.tenancy.getCurrentTenant();
                 const newTenant = await context.tenancy.createTenant({
@@ -89,7 +89,7 @@ export default new GraphQLSchemaPlugin<Context>({
 
                 return new Response(newTenant);
             },
-            updateTenant: async (_, args, context) => {
+            updateTenant: async (_, args: any, context) => {
                 // TODO: add permission checks
                 const tenantToUpdate = await context.tenancy.getTenantById(args.id);
                 if (!tenantToUpdate) {
@@ -103,7 +103,7 @@ export default new GraphQLSchemaPlugin<Context>({
 
                 return new Response(updatedTenant);
             },
-            deleteTenant: async (_, args, context) => {
+            deleteTenant: async (_, args: any, context) => {
                 // TODO: add permission checks
                 const tenantToUpdate = await context.tenancy.getTenantById(args.id);
                 if (!tenantToUpdate) {

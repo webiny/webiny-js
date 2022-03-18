@@ -1,4 +1,4 @@
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "~/types";
 import { getApplicablePlugin } from "~/index";
 
@@ -12,7 +12,7 @@ describe("api upgrade", () => {
                 installedAppVersion: "5.0.0"
             })
         ).toThrowError(
-            new Error(`Upgrade to version 5.1.0 is not available.`, "UPGRADE_NOT_AVAILABLE")
+            new WebinyError(`Upgrade to version 5.1.0 is not available.`, "UPGRADE_NOT_AVAILABLE")
         );
     });
 
@@ -42,7 +42,7 @@ describe("api upgrade", () => {
                 installedAppVersion: "5.0.0"
             })
         ).toThrowError(
-            new Error(
+            new WebinyError(
                 `Skipping of upgrades is not allowed: https://docs.webiny.com/docs/how-to-guides/upgrade-webiny`
             )
         );
@@ -57,7 +57,7 @@ describe("api upgrade", () => {
                 installedAppVersion: "5.1.0"
             })
         ).toThrowError(
-            new Error(`Version 5.1.0 is already installed!`, "VERSION_ALREADY_INSTALLED")
+            new WebinyError(`Version 5.1.0 is already installed!`, "VERSION_ALREADY_INSTALLED")
         );
     });
 
@@ -70,7 +70,7 @@ describe("api upgrade", () => {
                 installedAppVersion: "5.0.0"
             })
         ).toThrowError(
-            new Error(`The requested upgrade version does not match the deployed version.`)
+            new WebinyError(`The requested upgrade version does not match the deployed version.`)
         );
     });
 
@@ -141,7 +141,7 @@ describe("api upgrade", () => {
                 installedAppVersion: "5.0.0"
             })
         ).toThrowError(
-            new Error(`The requested upgrade version does not match the deployed version.`)
+            new WebinyError(`The requested upgrade version does not match the deployed version.`)
         );
     });
 });

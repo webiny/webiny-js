@@ -48,7 +48,7 @@ export const createInstallGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     }
                 },
                 PbMutation: {
-                    install: async (_, args, context) => {
+                    install: async (_, args: any, context) => {
                         try {
                             await context.pageBuilder.installSystem({
                                 name: args.data.name,
@@ -60,7 +60,7 @@ export const createInstallGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return new ErrorResponse(e);
                         }
                     },
-                    upgrade: async (_, args, context) => {
+                    upgrade: async (_, args: any, context) => {
                         try {
                             await context.pageBuilder.upgradeSystem(args.version);
                             return new Response(true);

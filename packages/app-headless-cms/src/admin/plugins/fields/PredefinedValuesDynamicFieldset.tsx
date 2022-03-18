@@ -44,6 +44,10 @@ const Header = styled("div")({
     marginBottom: 15
 });
 
+interface PredefinedValue {
+    selected?: boolean;
+}
+
 interface OnSelectedParams {
     bind: BindComponentRenderProp;
     field: CmsEditorField;
@@ -54,7 +58,7 @@ const onSelectedChange = (params: OnSelectedParams) => {
     const { bind, field, index: targetIndex, value: setToValue } = params;
     bind.form.setValue(
         "predefinedValues.values",
-        bind.value.map((value: Record<string, string>, index: number) => {
+        bind.value.map((value: PredefinedValue, index: number) => {
             const defaultValue = field.multipleValues ? value.selected : false;
             return {
                 ...value,

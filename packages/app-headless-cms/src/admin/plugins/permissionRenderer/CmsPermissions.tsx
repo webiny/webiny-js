@@ -80,15 +80,19 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
             }
 
             if (data.accessLevel === FULL_ACCESS) {
-                newValue.push({ name: CMS_PERMISSION_FULL_ACCESS });
+                newValue.push({
+                    name: CMS_PERMISSION_FULL_ACCESS
+                });
                 onChange(newValue);
                 return;
             }
 
+            const endpoints = data.endpoints;
+
             // Handling custom access level.
-            if (Array.isArray(data.endpoints)) {
+            if (endpoints && Array.isArray(data.endpoints)) {
                 API_ENDPOINTS.forEach(api => {
-                    if (data.endpoints.includes(api.id)) {
+                    if (endpoints.includes(api.id)) {
                         newValue.push({
                             name: `${CMS_PERMISSION}.endpoint.${api.id}`
                         });
@@ -137,7 +141,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
                                         acc[locale] = props[entity][locale];
                                     }
                                     return acc;
-                                }, {});
+                                }, {} as Record<string, string>);
                             }
                         });
                     }
@@ -163,7 +167,9 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
     const formData = useMemo(() => {
         // This function only runs once on Form mount
         if (!Array.isArray(value)) {
-            return { accessLevel: NO_ACCESS, endpoints: [] };
+            return {
+                accessLevel: NO_ACCESS
+            };
         }
 
         const hasFullAccess = value.find(
@@ -171,13 +177,18 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
         );
 
         if (hasFullAccess) {
-            return { accessLevel: FULL_ACCESS, endpoints: API_ENDPOINTS.map(item => item.id) };
+            return {
+                accessLevel: FULL_ACCESS,
+                endpoints: API_ENDPOINTS.map(item => item.id)
+            };
         }
 
         const permissions = value.filter(item => item.name.startsWith(CMS_PERMISSION));
 
         if (!permissions.length) {
-            return { accessLevel: NO_ACCESS, endpoints: [] };
+            return {
+                accessLevel: NO_ACCESS
+            };
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "content models", "content model groups", "content entries" and "environments".
@@ -189,7 +200,7 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
         };
 
         ENTITIES.forEach(entity => {
-            const data = {
+            const data: Record<string, any> = {
                 [`${entity}AccessScope`]: FULL_ACCESS,
                 [`${entity}RWD`]: "r",
                 [`${entity}Props`]: {}
@@ -248,10 +259,11 @@ export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange 
             }}
         >
             {({ data, Bind, setValue }) => {
+                const endpoints = data.endpoints || [];
                 const graphQLEndpointAccess =
-                    data.endpoints.includes("read") ||
-                    data.endpoints.includes("manage") ||
-                    data.endpoints.includes("preview");
+                    endpoints.includes("read") ||
+                    endpoints.includes("manage") ||
+                    endpoints.includes("preview");
 
                 return (
                     <Fragment>

@@ -1,6 +1,5 @@
 import { NotAuthorizedError } from "@webiny/api-security";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import Error from "@webiny/error";
 import { FileManagerContext, FileManagerSettings, FileManagerSystem } from "~/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
@@ -89,7 +88,10 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
             const version = await fileManager.system.getVersion();
 
             if (version) {
-                throw new Error("File Manager is already installed.", "FILES_INSTALL_ABORTED");
+                throw new WebinyError(
+                    "File Manager is already installed.",
+                    "FILES_INSTALL_ABORTED"
+                );
             }
 
             const data: Partial<FileManagerSettings> = {};

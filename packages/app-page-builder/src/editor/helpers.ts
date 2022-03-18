@@ -17,8 +17,11 @@ export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 interface FlattenElementsType {
     [id: string]: PbEditorElement;
 }
-export const flattenElements = (el: PbEditorElement, parent?: string): FlattenElementsType => {
-    const els: Record<string, PbEditorElement> = {};
+export const flattenElements = (el?: PbEditorElement, parent?: string): FlattenElementsType => {
+    if (!el || !el.id) {
+        return {};
+    }
+    const els: FlattenElementsType = {};
     els[el.id] = set(
         el,
         "elements",

@@ -1,7 +1,7 @@
 import { ElementStylesModifier } from "~/types";
 
 const margin: ElementStylesModifier = ({ element, theme }) => {
-    const { margin } = element.data.settings;
+    const { margin } = element.data.settings || {};
     if (!margin) {
         return null;
     }
@@ -25,7 +25,9 @@ const margin: ElementStylesModifier = ({ element, theme }) => {
         } else {
             return {
                 ...returnStyles,
-                [breakpointName]: { margin: values.all }
+                [breakpointName]: {
+                    margin: values.all
+                }
             };
         }
     }, {});

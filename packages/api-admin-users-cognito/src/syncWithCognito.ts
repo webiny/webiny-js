@@ -1,5 +1,5 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
 import { AdminUser, AdminUsersContext, BaseUserAttributes } from "~/types";
 
@@ -69,7 +69,7 @@ export const syncWithCognito = ({
 
                 // User exists; there are multiple ways to resolve the conflict
                 // but for now, we simply prevent user creation.
-                throw new Error({
+                throw new WebinyError({
                     message: `An account with this email already exists in your Cognito User Pool.`,
                     code: "COGNITO_ACCOUNT_EXISTS"
                 });
@@ -179,10 +179,11 @@ export const syncWithCognito = ({
 
             await cognito.adminUpdateUserAttributes(params).promise();
 
-            if (inputData.password) {
+            const { password } = (inputData as any) || {};
+            if (password) {
                 const pass = {
                     Permanent: true,
-                    Password: inputData.password,
+                    Password: password,
                     Username: getUsername(updatedUser),
                     UserPoolId: userPoolId
                 };

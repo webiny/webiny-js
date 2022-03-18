@@ -9,10 +9,25 @@ import { PbContext } from "~/graphql/types";
 
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
-interface Params {
+/**
+ * Type comes from installation/files/data/pagesFilesData.json
+ */
+interface PageFilesData {
+    id: string;
+    name: string;
+    __physicalFileName: string;
+    key: string;
+    size: number;
+    type: string;
+    meta: {
+        private: boolean;
+    };
+}
+
+interface SavePageAssetsParams {
     context: PbContext;
 }
-export default async ({ context }: Params): Promise<Record<string, File>> => {
+export default async ({ context }: SavePageAssetsParams): Promise<Record<string, File>> => {
     /**
      * This function contains logic of file download from S3.
      * Current we're not mocking zip file download from S3 in tests at the moment.
@@ -24,7 +39,7 @@ export default async ({ context }: Params): Promise<Record<string, File>> => {
 
     const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
 
-    const pagesFilesData = await loadJson<Record<string, any>[]>(
+    const pagesFilesData = await loadJson<PageFilesData[]>(
         path.join(INSTALL_EXTRACT_DIR, "data/pagesFilesData.json")
     );
 

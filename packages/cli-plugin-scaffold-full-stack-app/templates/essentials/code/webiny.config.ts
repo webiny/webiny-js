@@ -16,9 +16,13 @@ const API_MAP = {
 };
 
 const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument, for example: "--env dev".`;
-
+/**
+ * TODO @ts-refactor @adrian
+ * Figure out correct types for options.
+ */
 export default {
     commands: {
+        // @ts-ignore
         async watch(options) {
             invariant(options.env, NO_ENV_MESSAGE);
             Object.assign(
@@ -37,6 +41,7 @@ export default {
             const watch = createWatchApp({ cwd: __dirname });
             await watch(options);
         },
+        // @ts-ignore
         async build(options) {
             invariant(options.env, NO_ENV_MESSAGE);
             Object.assign(

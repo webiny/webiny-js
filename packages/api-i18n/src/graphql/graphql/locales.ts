@@ -135,10 +135,10 @@ export const createLocalesGraphQL = (): GraphQLSchemaPlugin<I18NContext> => {
             `,
             resolvers: {
                 I18NQuery: {
-                    getI18NLocale: async (_, args, context) => {
+                    getI18NLocale: async (_, args: any, context) => {
                         return resolve(() => context.i18n.locales.getLocale(args.code));
                     },
-                    listI18NLocales: async (_, args, context) => {
+                    listI18NLocales: async (_, args: any, context) => {
                         try {
                             const [items, meta] = await context.i18n.locales.listLocales(args);
                             return new ListResponse(items, meta);
@@ -150,15 +150,15 @@ export const createLocalesGraphQL = (): GraphQLSchemaPlugin<I18NContext> => {
                     getI18NInformation
                 },
                 I18NMutation: {
-                    createI18NLocale: async (_, args, context) => {
+                    createI18NLocale: async (_, args: any, context) => {
                         return resolve(() => context.i18n.locales.createLocale(args.data));
                     },
-                    updateI18NLocale: async (_, args, context) => {
+                    updateI18NLocale: async (_, args: any, context) => {
                         return resolve(() =>
                             context.i18n.locales.updateLocale(args.code, args.data)
                         );
                     },
-                    deleteI18NLocale: async (_, args, context) => {
+                    deleteI18NLocale: async (_, args: any, context) => {
                         return resolve(() => context.i18n.locales.deleteLocale(args.code));
                     }
                 }

@@ -17,7 +17,8 @@ import {
     OnBeforeCategoryUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
-    PbContext
+    PbContext,
+    PbSecurityPermission
 } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
@@ -134,7 +135,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
         async listCategories() {
             await context.i18nContent.checkI18NContentPermission();
 
-            let permission;
+            let permission: PbSecurityPermission | null = null;
             const categoryPermission = await getPermission("pb.category");
             if (categoryPermission && hasRwd(categoryPermission, "r")) {
                 permission = categoryPermission;

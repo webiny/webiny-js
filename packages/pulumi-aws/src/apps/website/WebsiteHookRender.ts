@@ -15,11 +15,11 @@ export const websiteRender = defineAppHook(async (params, context) => {
     context.info("Issuing a complete website render job...");
 
     try {
-        const lambdaClient = new LambdaClient({ region: apiOutput.region });
+        const lambdaClient = new LambdaClient({ region: apiOutput["region"] });
 
         const response = await lambdaClient
             .invoke({
-                FunctionName: apiOutput.psQueueAdd,
+                FunctionName: apiOutput["psQueueAdd"],
                 Payload: JSON.stringify({
                     render: {
                         path: "*",
@@ -40,7 +40,7 @@ export const websiteRender = defineAppHook(async (params, context) => {
 
         await lambdaClient
             .invoke({
-                FunctionName: apiOutput.psQueueProcess,
+                FunctionName: apiOutput["psQueueProcess"],
                 InvocationType: "Event"
             })
             .promise();

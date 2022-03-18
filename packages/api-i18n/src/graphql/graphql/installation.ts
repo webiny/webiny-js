@@ -34,7 +34,7 @@ export const createInstallationGraphQL = (): GraphQLSchemaPlugin<I18NContext> =>
                     }
                 },
                 I18NMutation: {
-                    install: async (_, args, context) => {
+                    install: async (_, args: any, context) => {
                         try {
                             await context.i18n.system.installSystem(args.data);
                         } catch (e) {

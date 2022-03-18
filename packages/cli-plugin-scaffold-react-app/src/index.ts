@@ -11,7 +11,7 @@ import chalk from "chalk";
 import link from "terminal-link";
 import { formatCode, addWorkspaceToRootPackageJson } from "@webiny/cli-plugin-scaffold/utils";
 import execa from "execa";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 
 import { TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
 
@@ -52,7 +52,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "description",
                     message: "Enter application description:",
-                    default: (input: Record<string, string>) => {
+                    default: (input: Input) => {
                         return `This is the ${input.name} React application.`;
                     },
                     validate: description => {
@@ -66,7 +66,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "path",
                     message: "Enter application path:",
-                    default: (input: Record<string, string>) => {
+                    default: (input: Input) => {
                         return Case.kebab(input.name);
                     },
                     validate: appPath => {
@@ -191,7 +191,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 await execa("yarn");
                 await execa("yarn", ["postinstall"]);
             } catch (err) {
-                throw new Error(
+                throw new WebinyError(
                     `Unable to install dependencies. Try running "yarn" in project root manually.`,
                     err.message
                 );

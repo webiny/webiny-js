@@ -9,7 +9,16 @@ import { Args as PsFlushParams } from "@webiny/api-prerendering-service/flush/ty
 import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/types";
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
 
-import { Category, Menu, Page, PageElement, PageSpecialType, Settings, System } from "~/types";
+import {
+    Category,
+    Menu,
+    Page,
+    PageElement,
+    PageSettings,
+    PageSpecialType,
+    Settings,
+    System
+} from "~/types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 
@@ -191,7 +200,7 @@ export interface PagesCrud {
     listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
     createPage<TPage extends Page = Page>(category: string): Promise<TPage>;
     createPageFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
-    updatePage<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
+    updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
     unpublishPage<TPage extends Page = Page>(id: string): Promise<TPage>;
@@ -330,8 +339,8 @@ export interface OnAfterCategoryDeleteTopicParams {
 export interface CategoriesCrud {
     getCategory(slug: string, options?: { auth: boolean }): Promise<Category | null>;
     listCategories(): Promise<Category[]>;
-    createCategory(data: Record<string, any>): Promise<Category>;
-    updateCategory(slug: string, data: Record<string, any>): Promise<Category>;
+    createCategory(data: PbCategoryInput): Promise<Category>;
+    updateCategory(slug: string, data: PbCategoryInput): Promise<Category>;
     deleteCategory(slug: string): Promise<Category>;
     /**
      * Lifecycle events
@@ -630,4 +639,30 @@ export interface FlushParams {
 export interface PrerenderingHandlers {
     render(args: RenderParams): Promise<void>;
     flush(args: FlushParams): Promise<void>;
+}
+
+export interface PbCategoryInput {
+    name: string;
+    slug: string;
+    url: string;
+    layout: string;
+}
+
+interface PbPageVisibilitySettingsInput {
+    published: boolean;
+    latest: boolean;
+}
+
+interface PbPageVisibilityInput {
+    get: PbPageVisibilitySettingsInput;
+    list: PbPageVisibilitySettingsInput;
+}
+
+export interface PbUpdatePageInput {
+    title?: string;
+    category?: string;
+    path?: string;
+    visibility?: PbPageVisibilityInput;
+    settings?: PageSettings;
+    content?: Record<string, any> | null;
 }

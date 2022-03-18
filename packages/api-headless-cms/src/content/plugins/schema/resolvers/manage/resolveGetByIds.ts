@@ -8,7 +8,7 @@ type ResolveGetByIds = ResolverFactory<any, ResolveGetByIdsArgs>;
 
 export const resolveGetByIds: ResolveGetByIds =
     ({ model }) =>
-    async (_, args, context) => {
+    async (_, args: any, context) => {
         try {
             const response: CmsEntry[] = await context.cms.getEntriesByIds(model, args.revisions);
 

@@ -7,6 +7,7 @@ import CategoriesDialog from "../Categories/CategoriesDialog";
 import { CircularProgress } from "@webiny/ui/Progress";
 import useImportPage from "./hooks/useImportPage";
 import useCreatePage from "./hooks/useCreatePage";
+import { PageBuilderSecurityPermission } from "~/types";
 
 enum LoadingLabel {
     CREATING_PAGE = "Creating page...",
@@ -53,7 +54,7 @@ const Pages: React.FC = () => {
     const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo(() => {
-        const permission = getPermission("pb.page");
+        const permission = getPermission<PageBuilderSecurityPermission>("pb.page");
         if (!permission) {
             return false;
         }
