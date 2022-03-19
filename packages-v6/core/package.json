@@ -92,9 +92,11 @@
     "declarations": "ttsc -p tsconfig.build.json"
   },
   "webiny": {
-    "output": [
-      "cjs",
-      "esm"
-    ]
+    "package": {
+      "output": [
+        "cjs",
+        "esm"
+      ]
+    }
   }
 }

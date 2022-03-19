@@ -28,7 +28,7 @@ export interface WatchOptions {
 
 export const createWatchConfig = async (options: WatchOptions) => {
     if (typeof options.openBrowser === "undefined") {
-        options.openBrowser = true;
+        options.openBrowser = false; // TODO: flip back to `true`
     }
 
     // Makes the script crash on unhandled rejections instead of silently
