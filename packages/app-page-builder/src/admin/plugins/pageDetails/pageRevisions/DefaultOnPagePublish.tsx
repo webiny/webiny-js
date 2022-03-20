@@ -2,13 +2,14 @@ import { useEffect } from "react";
 import get from "lodash/get";
 import { set, merge } from "dot-prop-immutable";
 import cloneDeep from "lodash/cloneDeep";
+import { MutationUpdaterFn } from "apollo-client";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { GET_PAGE, PUBLISH_PAGE } from "~/admin/graphql/pages";
 import { PublishPageOptions } from "~/admin/contexts/AdminPageBuilder";
-import { PageStatus } from "~/types";
+import { PageStatus, PbPageData } from "~/types";
 
 const getUpdateCache =
-    page =>
+    (page: Pick<PbPageData, "id">): MutationUpdaterFn<any> =>
     (cache, { data }) => {
         // Don't do anything if there was an error during publishing!
         if (data.pageBuilder.publishPage.error) {
@@ -30,7 +31,7 @@ const getUpdateCache =
         }
 
         const revisions = get(pageFromCache, "pageBuilder.getPage.data.revisions", []);
-        revisions.forEach(r => {
+        revisions.forEach((r: any) => {
             // Update published/locked fields on the revision that was just published.
             if (r.id === page.id) {
                 r.status = PageStatus.PUBLISHED;
@@ -54,12 +55,15 @@ const getUpdateCache =
 export const DefaultOnPagePublish = () => {
     const { onPagePublish } = useAdminPageBuilder();
 
-    const handlePublishPage = async (revision, options: PublishPageOptions) => {
+    const handlePublishPage = async (
+        revision: Pick<PbPageData, "id" | "version">,
+        options: PublishPageOptions
+    ) => {
         const response = await options.client.mutate({
             mutation: PUBLISH_PAGE,
             variables: { id: revision.id },
             update: getUpdateCache(revision),
-            ...get(options, "mutationOptions", {})
+            ...(get(options, "mutationOptions", {}) as any)
         });
 
         const { error, data } = get(response, "data.pageBuilder.publishPage");

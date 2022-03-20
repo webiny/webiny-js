@@ -2,7 +2,7 @@ import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/El
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderOperatorNotStartsWithPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
-    public name = "elasticsearch.queryBuilder.operator.notStartsWith.default";
+    public override name = "elasticsearch.queryBuilder.operator.notStartsWith.default";
 
     public getOperator(): string {
         return "not_startsWith";

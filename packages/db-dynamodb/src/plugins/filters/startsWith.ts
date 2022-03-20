@@ -10,7 +10,9 @@ export default new ValueFilterPlugin({
 
         if (typeof value !== "string") {
             if (Array.isArray(value) === true) {
-                return value.some(v => v.toLowerCase().startsWith(compareValueInLowerCase));
+                return value.some((v: string) =>
+                    v.toLowerCase().startsWith(compareValueInLowerCase)
+                );
             }
             return false;
         }

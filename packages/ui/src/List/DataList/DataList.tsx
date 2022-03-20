@@ -202,7 +202,6 @@ interface DataListProps {
     setPage?: ((page: string) => void) | null;
 
     setPerPage?: ((page: string) => void) | null;
-};
 
     perPageOptions?: number[];
 }

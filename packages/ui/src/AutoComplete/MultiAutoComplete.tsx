@@ -24,6 +24,7 @@ import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 import { css } from "emotion";
 import { ListItemGraphic } from "~/List";
 import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
+
 const style = {
     pagination: {
         bar: css({
@@ -65,6 +66,7 @@ const listStyles = css({
 interface SelectionItem {
     name: string;
 }
+
 type MultiAutoCompletePropsValue = SelectionItem[];
 
 export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "value"> {
@@ -120,7 +122,7 @@ function paginateMultipleSelection(
     limit: number,
     page: number,
     search: string,
-    textProp: string
+    textProp: keyof SelectionItem
 ) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
@@ -394,7 +396,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                 DEFAULT_PER_PAGE,
                 this.state.multipleSelectionPage,
                 this.state.multipleSelectionSearch,
-                textProp
+                textProp as keyof SelectionItem
             );
 
             return (

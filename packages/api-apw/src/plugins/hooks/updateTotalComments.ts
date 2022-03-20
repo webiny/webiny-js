@@ -6,7 +6,7 @@ import {
     updateContentReviewStep
 } from "../utils";
 
-export const updateTotalCommentsCount = ({ apw }: LifeCycleHookCallbackParams) => {
+export const updateTotalCommentsCount = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.comment.onAfterCommentDelete.subscribe(async ({ comment }) => {
         const { step } = comment;
         /**
@@ -55,7 +55,7 @@ export const updateTotalCommentsCount = ({ apw }: LifeCycleHookCallbackParams) =
     });
 };
 
-export const updateLatestCommentId = ({ apw }: LifeCycleHookCallbackParams) => {
+export const updateLatestCommentId = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.comment.onAfterCommentCreate.subscribe(async ({ comment }) => {
         /**
          * After a "comment" is created, update the "latestCommentId" in

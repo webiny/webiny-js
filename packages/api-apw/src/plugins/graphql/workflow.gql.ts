@@ -1,6 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { ApwContext, ListWorkflowsParams } from "~/types";
+import { ApwContext, ApwReviewer, ListWorkflowsParams } from "~/types";
 import resolve from "~/utils/resolve";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -154,7 +154,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     resolvers: {
         ApwWorkflowStep: {
             reviewers: parent => {
-                return parent.reviewers.map(({ id }) => id);
+                const reviewers: ApwReviewer[] = parent.reviewers;
+                return reviewers.map(({ id }) => id);
             }
         },
         ApwQuery: {

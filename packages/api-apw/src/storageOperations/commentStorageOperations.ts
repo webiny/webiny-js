@@ -4,14 +4,15 @@ import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperation
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 import WebinyError from "@webiny/error";
 import { ApwComment } from "~/types";
+import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 
-const pickIdFromChangeRequest = obj => {
+const pickIdFromChangeRequest = (obj: Record<string, any>): ApwComment => {
     const rawValue = obj["changeRequest"];
     if (!rawValue) {
-        return obj;
+        return obj as unknown as ApwComment;
     }
     obj["changeRequest"] = rawValue.id;
-    return obj;
+    return obj as unknown as ApwComment;
 };
 
 export const createCommentStorageOperations = ({
@@ -46,7 +47,10 @@ export const createCommentStorageOperations = ({
         },
         async listComments(params) {
             const model = await getCommentModel();
-            const [entries, meta] = await cms.listLatestEntries(model, params);
+            const [entries, meta] = await cms.listLatestEntries(
+                model,
+                params as CmsEntryListParams
+            );
             const values = await Promise.all(
                 entries.map(entry =>
                     getFieldValues<ApwComment>({

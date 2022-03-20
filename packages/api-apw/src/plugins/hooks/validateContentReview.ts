@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import { LifeCycleHookCallbackParams } from "~/types";
 
-export const validateContentReview = ({ apw }: LifeCycleHookCallbackParams) => {
+export const validateContentReview = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {
         const { content } = input;
         /**

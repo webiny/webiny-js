@@ -110,7 +110,7 @@ export const safelyGetContentReview = async ({
     id,
     contentReviewMethods
 }: SafelyGetContentReviewParams): Promise<ApwContentReview | null> => {
-    let contentReviewEntry: ApwContentReview;
+    let contentReviewEntry = null;
     try {
         contentReviewEntry = await contentReviewMethods.get(id);
     } catch (e) {

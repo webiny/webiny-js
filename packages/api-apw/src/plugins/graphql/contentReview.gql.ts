@@ -220,6 +220,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             version: async (parent, _, context) => {
                 const getContent = context.apw.getContentGetter(parent.type);
                 const content = await getContent(parent.id, parent.settings);
+                if (!content) {
+                    return null;
+                }
                 return content.version;
             }
         },
@@ -234,7 +237,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                     /**
                      * Aggregate totalComments from each step.
                      */
-                    if (typeof step.totalComments === "number") {
+                    if (!isNaN(step.totalComments)) {
                         count += step.totalComments;
                     }
 
@@ -243,31 +246,36 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             },
             reviewers: async parent => {
                 const steps: ApwContentReviewStep[] = parent.steps;
-                const reviewers = [];
+                const reviewerIds: string[] = [];
 
                 for (const step of steps) {
                     for (const reviewer of step.reviewers) {
-                        if (!reviewers.includes(reviewer.id)) {
-                            reviewers.push(reviewer.id);
+                        if (!reviewerIds.includes(reviewer.id)) {
+                            reviewerIds.push(reviewer.id);
                         }
                     }
                 }
-                return reviewers;
+                return reviewerIds;
             }
         },
         ApwQuery: {
             getContentReview: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.get(args.id));
             },
-            listContentReviews: async (_, args: ApwContentReviewListParams, context) => {
+            listContentReviews: async (_, args: any, context) => {
                 try {
-                    const [entries, meta] = await context.apw.contentReview.list(args);
+                    /**
+                     * We know that args is ApwContentReviewListParams.
+                     */
+                    const [entries, meta] = await context.apw.contentReview.list(
+                        args as unknown as ApwContentReviewListParams
+                    );
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
-            isReviewRequired: async (_, args, context) => {
+            isReviewRequired: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.isReviewRequired(args.data));
             }
         },

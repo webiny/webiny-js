@@ -6,9 +6,9 @@ export interface AsyncProcessor<TInput> {
     (next: NextAsyncProcessor<TInput>): NextAsyncProcessor<TInput>;
 }
 
-export const composeAsync = <TInput = unknown>(
+export function composeAsync<TInput = unknown>(
     functions: Array<AsyncProcessor<TInput>> = []
-): NextAsyncProcessor<TInput> => {
+): NextAsyncProcessor<TInput> {
     return (input: TInput): Promise<TInput> => {
         if (!functions.length) {
             return Promise.resolve(input);
@@ -29,4 +29,4 @@ export const composeAsync = <TInput = unknown>(
 
         return next(input);
     };
-};
+}

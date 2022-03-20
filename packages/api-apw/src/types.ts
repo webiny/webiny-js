@@ -1,5 +1,4 @@
-import { Page, OnBeforePageCreateFromTopicParams } from "@webiny/api-page-builder/types";
-import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import {
     Page,
     OnBeforePageCreateTopicParams,
@@ -8,7 +7,6 @@ import {
     OnBeforePagePublishTopicParams,
     OnBeforePageRequestReviewTopicParams
 } from "@webiny/api-page-builder/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
 import { Context } from "@webiny/handler/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
@@ -72,7 +70,7 @@ export interface PageWithWorkflow extends Page {
     settings: Page["settings"] & {
         apw: {
             workflowId: string;
-            contentReviewId?: string;
+            contentReviewId: string | null;
         };
     };
 }
@@ -254,7 +252,7 @@ interface UpdateApwCommentParams {
 interface CreateApwChangeRequestParams {
     title: string;
     step: string;
-    body: Record<string, any>;;
+    body: Record<string, any>;
     resolved: boolean;
     media: Record<string, any>;
 }
@@ -413,11 +411,17 @@ export interface ApwContentReviewCrud
 export type ContentGetter = (
     id: string,
     settings: { modelId?: string }
-) => Promise<PageWithWorkflow | { title: string; version: number }>;
+) => Promise<PageWithWorkflow | (CmsEntry & { title: string }) | null>;
 
-export type ContentPublisher = (id: string, settings: { modelId?: string }) => Promise<Boolean>;
+export type ContentPublisher = (
+    id: string,
+    settings: { modelId?: string }
+) => Promise<Boolean | null>;
 
-export type ContentUnPublisher = (id: string, settings: { modelId?: string }) => Promise<Boolean>;
+export type ContentUnPublisher = (
+    id: string,
+    settings: { modelId?: string }
+) => Promise<Boolean | null>;
 
 export interface AdvancedPublishingWorkflow {
     addContentGetter: (type: ApwContentTypes, func: ContentGetter) => void;

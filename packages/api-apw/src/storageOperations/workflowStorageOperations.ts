@@ -66,7 +66,7 @@ export const createWorkflowStorageOperations = ({
 
             return getFieldValues(entry, baseFields);
         },
-        async updateWorkflow(params) {
+        async updateWorkflow(this: ApwStorageOperations, params) {
             const model = await getWorkflowModel();
             const reviewerModel = await this.getReviewerModel();
             /**

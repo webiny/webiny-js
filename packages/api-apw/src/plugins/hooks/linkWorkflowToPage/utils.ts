@@ -35,7 +35,7 @@ const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
     return new Date(createdOnB).getTime() - new Date(createdOnA).getTime();
 };
 
-const isWorkflowApplicable = (page, workflow: ApwWorkflow) => {
+const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow) => {
     const application = workflow.app;
     if (application !== ApwWorkflowApplications.PB) {
         return false;
@@ -92,12 +92,12 @@ export const assignWorkflowToPage = async ({ listWorkflow, page }: AssignWorkflo
 
         for (const workflow of sortedWorkflows) {
             /**
-             * We workflow if applicable to this page, we're done here.
-             * Assign the workflow to the page and exit.
+             * Assign the first applicable workflow to the page and exit.
              */
             if (isWorkflowApplicable(page, workflow)) {
                 page.settings.apw = {
-                    workflowId: workflow.id
+                    workflowId: workflow.id,
+                    contentReviewId: null
                 };
                 break;
             }
@@ -127,8 +127,8 @@ export const shouldUpdatePages = (
     if (prevScope.type !== WorkflowScopeTypes.PB) {
         return true;
     }
-    const prevScopePages = prevScope.data.pages;
-    const currentScopePages = scope.data.pages;
+    const prevScopePages: string[] = get(prevScope, "data.pages");
+    const currentScopePages: string[] = get(scope, "data.pages");
     /**
      * Bail out early if there were no pages assigned previously.
      */

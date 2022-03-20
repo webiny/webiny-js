@@ -73,17 +73,33 @@ export default () => [
             if (!model) {
                 return null;
             }
-            const entry = await context.cms.getEntry(model, { where: { id: id } });
-            return { ...entry, title: "NO_TITLE" };
+            const entry = await context.cms.getEntry(model, {
+                where: { id: id, tenant: model.tenant }
+            });
+            if (!entry) {
+                return null;
+            }
+            return { ...entry, title: `Extract "title" form entity.` };
         });
         context.apw.addContentPublisher(ApwContentTypes.PAGE, async id => {
             await context.pageBuilder.publishPage<PageWithWorkflow>(id);
             return true;
         });
         context.apw.addContentPublisher(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+            if (!settings.modelId) {
+                return null;
+            }
             const model = await context.cms.getModel(settings.modelId);
+
+            if (!model) {
+                return null;
+            }
             const publishedEntry = await context.cms.publishEntry(model, id);
-            console.log(JSON.stringify({ publishedEntry }, null, 2));
+
+            if (!publishedEntry) {
+                return null;
+            }
+
             return true;
         });
         context.apw.addContentUnPublisher(ApwContentTypes.PAGE, async id => {
@@ -91,9 +107,19 @@ export default () => [
             return true;
         });
         context.apw.addContentUnPublisher(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+            if (!settings.modelId) {
+                return null;
+            }
             const model = await context.cms.getModel(settings.modelId);
+            if (!model) {
+                return null;
+            }
             const unpublishedEntry = await context.cms.unpublishEntry(model, id);
-            console.log(JSON.stringify({ unpublishedEntry }, null, 2));
+
+            if (!unpublishedEntry) {
+                return null;
+            }
+
             return true;
         });
 

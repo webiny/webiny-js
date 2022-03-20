@@ -5,7 +5,9 @@ import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { AsyncProcessor, composeAsync } from "./compose";
 import { PageBuilderContextValue } from "~/contexts/PageBuilder";
 
-export const AdminPageBuilderContext = React.createContext(null);
+export const AdminPageBuilderContext = React.createContext<AdminPageBuilderContextValue>(
+    {} as AdminPageBuilderContextValue
+);
 
 interface Page {
     id: string;

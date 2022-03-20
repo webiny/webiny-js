@@ -22,14 +22,18 @@ export interface PageMethods {
     onBeforePageUpdate: PageBuilderContextObject["onBeforePageUpdate"];
 }
 
-export const linkWorkflowToPage = ({
-    apw,
-    getPage,
-    updatePage,
-    onBeforePageCreate,
-    onBeforePageCreateFrom,
-    onBeforePageUpdate
-}: LifeCycleHookCallbackParams & PageMethods) => {
+interface LinkWorkflowToPageParams extends Pick<LifeCycleHookCallbackParams, "apw">, PageMethods {}
+
+export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
+    const {
+        apw,
+        getPage,
+        updatePage,
+        onBeforePageCreate,
+        onBeforePageCreateFrom,
+        onBeforePageUpdate
+    } = params;
+
     // TODO: @ashutosh move PB specific code into "api-apw-page-builder" package
     onBeforePageCreate.subscribe<ApwOnBeforePageCreateTopicParams>(async ({ page }) => {
         await assignWorkflowToPage({ listWorkflow: apw.workflow.list, page });
@@ -91,7 +95,9 @@ export const linkWorkflowToPage = ({
          * If the workflow has pages in it's scope, we'll link that workflow for each of those pages.
          */
         if (hasPages(workflow)) {
-            for (const pid of scope.data.pages) {
+            const pages = get(scope, "data.pages");
+
+            for (const pid of pages) {
                 await setPageWorkflowId({
                     getPage,
                     updatePage,
@@ -112,8 +118,8 @@ export const linkWorkflowToPage = ({
          * we'll update the workflow link for corresponding pages.
          */
         if (hasPages(workflow) && shouldUpdatePages(scope, prevScope)) {
-            const previousPages = prevScope.data.pages;
-            const currentPages = scope.data.pages;
+            const previousPages = get(prevScope, "data.pages");
+            const currentPages = get(scope, "data.pages");
 
             const { removedPages, addedPages } = getPagesDiff(currentPages, previousPages);
             for (const pid of addedPages) {

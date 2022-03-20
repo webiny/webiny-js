@@ -12,7 +12,13 @@ import { Icon } from "@webiny/ui/Icon";
 import { Form } from "@webiny/form";
 import { useSnackbar } from "~/hooks/useSnackbar";
 import { getWhere, useFileManager } from "./../FileManagerContext";
-import { UPDATE_FILE, LIST_FILES, LIST_TAGS } from "./../graphql";
+import {
+    UPDATE_FILE,
+    LIST_FILES,
+    LIST_TAGS,
+    ListFilesQueryResponse,
+    ListFileTagsQueryResponse
+} from "./../graphql";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { ReactComponent as LabelIcon } from "./../icons/round-label-24px.svg";
 import { FileItem } from "../types";
@@ -64,6 +70,7 @@ interface TagsProps {
     file: FileItem;
     canEdit: (file: FileItem) => boolean;
 }
+
 const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
     const client = useApolloClient();
 
@@ -248,7 +255,11 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                                 {({ value, ...bindProps }) => (
                                     <MultiAutoComplete
                                         {...bindProps}
-                                        value={tagWithoutScopePrefix(value, queryParams.scope)}
+                                        value={tagWithoutScopePrefix(value, queryParams.scope).map(
+                                            value => ({
+                                                name: value
+                                            })
+                                        )}
                                         options={allTags}
                                         placeholder={"homepage asset"}
                                         description={"Type in a new tag or select an existing one."}

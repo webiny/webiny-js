@@ -21,32 +21,35 @@ export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow =
     const reviewerMethods = createReviewerMethods(params);
     const changeRequestMethods = createChangeRequestMethods(params);
 
-    const getContentGetter = type => {
-        if (!contentGetters.has(type)) {
+    function getContentGetter(type: ApwContentTypes) {
+        const getter = contentGetters.get(type);
+        if (!getter) {
             throw new Error(
                 `No "ContentGetter" loader found for type: "${type}". You must define a loader.`
             );
         }
-        return contentGetters.get(type);
-    };
+        return getter;
+    }
 
-    const getContentPublisher = type => {
-        if (!contentPublisher.has(type)) {
-            throw new Error(
-                `No "ContentPublisher" loader found for type: "${type}". You must define a loader.`
-            );
-        }
-        return contentPublisher.get(type);
-    };
-
-    const getContentUnPublisher = type => {
-        if (!contentUnPublisher.has(type)) {
+    function getContentUnPublisher(type: ApwContentTypes) {
+        const getter = contentUnPublisher.get(type);
+        if (!getter) {
             throw new Error(
                 `No "Content UnPublisher" loader found for type: "${type}". You must define a loader.`
             );
         }
-        return contentUnPublisher.get(type);
-    };
+        return getter;
+    }
+
+    function getContentPublisher(type: ApwContentTypes) {
+        const getter = contentPublisher.get(type);
+        if (!getter) {
+            throw new Error(
+                `No "ContentPublisher" loader found for type: "${type}". You must define a loader.`
+            );
+        }
+        return getter;
+    }
 
     return {
         addContentPublisher(type, func) {

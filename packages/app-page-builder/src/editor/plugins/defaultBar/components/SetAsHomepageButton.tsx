@@ -1,14 +1,12 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import gql from "graphql-tag";
-import { pageAtom, PageAtomType } from "../../../recoil/modules";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { pageAtom } from "~/editor/recoil/modules";
+import { pageAtom, PageAtomType } from "~/editor/recoil/modules";
 import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";

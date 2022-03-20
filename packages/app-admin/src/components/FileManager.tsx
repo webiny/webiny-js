@@ -105,9 +105,9 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             multipleMaxCount: multipleMaxCount as number,
             multipleMaxSize: multipleMaxSize as number,
             onUploadCompletion,
-            tags: tags as string[],
-            scope: scope as string,
-            own: own as boolean
+            tags: tags,
+            scope: scope,
+            own: own
         };
 
         if (images) {

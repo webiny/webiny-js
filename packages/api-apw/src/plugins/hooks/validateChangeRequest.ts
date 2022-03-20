@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { LifeCycleHookCallbackParams } from "~/types";
 
-export const validateChangeRequest = ({ apw }: LifeCycleHookCallbackParams) => {
+export const validateChangeRequest = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.changeRequest.onBeforeChangeRequestCreate.subscribe(async ({ input }) => {
         const { step } = input;
         /**

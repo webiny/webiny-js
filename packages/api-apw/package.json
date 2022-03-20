@@ -1,7 +1,6 @@
 {
   "name": "@webiny/api-apw",
   "version": "5.24.0",
-  "private": "true",
   "keywords": [
     "apw:base"
   ],

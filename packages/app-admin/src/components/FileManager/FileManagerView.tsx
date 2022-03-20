@@ -125,6 +125,9 @@ export interface FileManagerViewProps {
     multipleMaxCount: number;
     multipleMaxSize: number | string;
     onUploadCompletion?: Function;
+    tags?: string[];
+    scope?: string;
+    own?: boolean;
 }
 
 interface RenderFileProps extends Omit<FileProps, "children"> {
