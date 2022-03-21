@@ -35,7 +35,7 @@ export interface CmsEntryGetEntryVariable {
 export interface CmsEntrySearchQueryResponse {
     content: {
         data: CmsLatestContentEntry[];
-        error?: CmsErrorResponse;
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntrySearchQueryVariables {
@@ -58,11 +58,11 @@ export const SEARCH_CONTENT_ENTRIES = gql`
 export interface CmsEntryGetListResponse {
     latest: {
         data: CmsLatestContentEntry[];
-        error?: CmsErrorResponse;
+        error: CmsErrorResponse | null;
     };
     published: {
         data: CmsPublishedContentEntry[];
-        error?: CmsErrorResponse;
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntryGetListVariables {
@@ -85,12 +85,12 @@ export const GET_CONTENT_ENTRIES = gql`
  */
 export interface CmsEntryGetQueryResponse {
     latest: {
-        data: CmsLatestContentEntry;
-        error?: CmsErrorResponse;
+        data: CmsLatestContentEntry | null;
+        error: CmsErrorResponse | null;
     };
     published: {
-        data: CmsPublishedContentEntry;
-        error?: CmsErrorResponse;
+        data: CmsPublishedContentEntry | null;
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntryGetQueryVariables {

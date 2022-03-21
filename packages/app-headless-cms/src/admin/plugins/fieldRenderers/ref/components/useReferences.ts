@@ -15,6 +15,7 @@ import { BindComponentRenderProp } from "@webiny/form";
 
 export interface ReferencedCmsEntry {
     id: string;
+    entryId: string;
     modelId: string;
     modelName: string;
     published: boolean;
@@ -132,6 +133,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                 setValueEntries(
                     Object.values(entries).map(entry => ({
                         id: entry.id,
+                        entryId: entry.entryId,
                         modelId: entry.model.modelId,
                         modelName: entry.model.name,
                         published: entry.status === "published",
@@ -150,7 +152,13 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
         setValueEntries(values);
 
         // Update parent form
-        bind.onChange(values.map(item => ({ modelId: item.modelId, id: item.id })));
+        bind.onChange(
+            values.map(item => ({
+                modelId: item.modelId,
+                entryId: item.entryId,
+                id: item.id
+            }))
+        );
     }, []);
 
     // Format options for the Autocomplete component.

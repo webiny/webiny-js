@@ -9,16 +9,17 @@ import {
     CmsEntrySearchQueryVariables
 } from "./graphql";
 import { getOptions, OptionItem } from "./getOptions";
-import { CmsEditorField, CmsModel } from "~/types";
+import { CmsContentEntryStatusType, CmsEditorField, CmsModel } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 
 interface DataEntry {
     id: string;
+    entryId: string;
     model: {
         modelId: string;
         name: string;
     };
-    status: "published" | "draft";
+    status: CmsContentEntryStatusType;
     title: string;
 }
 
@@ -41,14 +42,15 @@ type EntryCollection = Record<string, DataEntry>;
 
 const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
     return data.reduce((collection, entry) => {
-        collection[entry.id] = entry;
+        collection[entry.entryId] = entry;
         return collection;
     }, {} as EntryCollection);
 };
 
-const convertValueEntryToData = (entry: OptionItem): DataEntry => {
+const convertOptionToData = (entry: OptionItem): DataEntry => {
     return {
         id: entry.id,
+        entryId: entry.entryId,
         model: {
             modelId: entry.modelId,
             name: entry.modelName
@@ -58,12 +60,14 @@ const convertValueEntryToData = (entry: OptionItem): DataEntry => {
     };
 };
 
-const convertDataEntryToValue = (entry: DataEntry): OptionItem => {
+const convertDataEntryToOption = (entry: DataEntry): OptionItem => {
     return {
         id: entry.id,
+        entryId: entry.entryId,
         modelId: entry.model.modelId,
         modelName: entry.model.name,
         published: entry.status === "published",
+        status: entry.status,
         name: entry.title
     };
 };
@@ -72,7 +76,7 @@ const assignValueEntry = (entry: OptionItem | null, collection: EntryCollection)
     if (!entry) {
         return;
     }
-    collection[entry.id] = convertValueEntryToData(entry);
+    collection[entry.id] = convertOptionToData(entry);
 };
 
 export const useReference: UseReferenceHook = ({ bind, field }) => {
@@ -156,7 +160,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         if (entry) {
             // if entry exists set valueEntry to that one so we do not load new one
             setValueEntry(() => {
-                return convertDataEntryToValue(entry);
+                return convertDataEntryToOption(entry);
             });
             return;
         }
@@ -178,20 +182,24 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             })
             .then(res => {
                 setLoading(false);
-                const dataEntry: DataEntry | null = res.data.published.data || res.data.latest.data;
+                const dataEntry = res.data.published.data || res.data.latest.data;
                 if (!dataEntry) {
                     return;
                 }
-                allEntries.current[dataEntry.id] = dataEntry;
+                allEntries.current[dataEntry.entryId] = {
+                    ...dataEntry
+                };
                 setLatestEntries(prev => {
                     return {
                         ...prev,
-                        [dataEntry.id]: dataEntry
+                        [dataEntry.entryId]: {
+                            ...dataEntry
+                        }
                     };
                 });
                 // Calculate a couple of props for the Autocomplete component.
                 setValueEntry(() => {
-                    return convertDataEntryToValue(dataEntry);
+                    return convertDataEntryToOption(dataEntry);
                 });
             });
     }, [valueHash, modelsHash]);
@@ -203,7 +211,11 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             setValueEntry(() => {
                 return entry;
             });
-            bind.onChange({ modelId: entry.modelId, id: entry.id });
+            bind.onChange({
+                modelId: entry.modelId,
+                entryId: entry.entryId,
+                id: entry.id
+            });
             return;
         }
 
@@ -221,7 +233,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
 
     const outputOptions: OptionItem[] = (search && options ? options : defaultOptions) || [];
 
-    if (valueEntry && outputOptions.some(opt => opt.id === valueEntry.id) === false) {
+    if (valueEntry && outputOptions.some(opt => opt.entryId === valueEntry.entryId) === false) {
         outputOptions.push(valueEntry);
     }
 

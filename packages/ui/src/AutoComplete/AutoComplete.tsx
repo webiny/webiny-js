@@ -44,6 +44,10 @@ export interface AutoCompleteProps extends Omit<AutoCompleteBaseProps, "onChange
 
     /* A component that renders supporting UI in case of no result found. */
     noResultFound?: React.ReactNode;
+    /**
+     * A custom component render, used to attach icons, text or what ever is needed after the Downshift render.
+     */
+    renderCustomComponent?: (props: AutoCompleteProps) => React.ReactNode | null;
 }
 
 interface State {
@@ -233,8 +237,12 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
             // valueProp,
             // textProp,
             onInput,
-            validation = { isValid: null, message: null },
+            validation = {
+                isValid: null,
+                message: null
+            },
             placement,
+            renderCustomComponent,
             ...otherInputProps
         } = this.props;
 
@@ -326,6 +334,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                         </div>
                     )}
                 </Downshift>
+                {renderCustomComponent && renderCustomComponent(this.props)}
             </div>
         );
     }

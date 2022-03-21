@@ -11,6 +11,17 @@ interface EntriesByModel {
 
 type GetContentEntryType = "latest" | "published" | "exact";
 
+interface CmsEntryRecord {
+    id: string;
+    entryId: string;
+    model: {
+        modelId: string;
+        name: string;
+    };
+    status: string;
+    title: string;
+}
+
 interface FetchMethod {
     (model: CmsModel, ids: string[]): Promise<CmsEntry[]>;
 }
@@ -93,24 +104,26 @@ const getContentEntries = async (params: GetContentEntriesParams): Promise<Respo
 
     const results = await Promise.all(getters);
 
-    const entries = results.reduce((collection, items) => {
-        return collection.concat(
-            items.map(item => {
-                const model = modelsMap[item.modelId];
+    const entries = results
+        .reduce((collection, items) => {
+            return collection.concat(
+                items.map(item => {
+                    const model = modelsMap[item.modelId];
 
-                return {
-                    id: item.id,
-                    entryId: item.entryId,
-                    model: {
-                        modelId: model.modelId,
-                        name: model.name
-                    },
-                    status: item.status,
-                    title: getEntryTitle(model, item)
-                };
-            })
-        );
-    }, [] as any[]);
+                    return {
+                        id: item.id,
+                        entryId: item.entryId,
+                        model: {
+                            modelId: model.modelId,
+                            name: model.name
+                        },
+                        status: item.status,
+                        title: getEntryTitle(model, item)
+                    };
+                })
+            );
+        }, [] as CmsEntryRecord[])
+        .filter(Boolean);
 
     return new Response(entries);
 };
@@ -156,7 +169,10 @@ const getContentEntry = async (
 
     const result = await method(model, [id]);
 
-    const [entry] = result;
+    const entry = result.shift();
+    if (!entry) {
+        return new Response(null);
+    }
 
     return new Response({
         id: entry.id,

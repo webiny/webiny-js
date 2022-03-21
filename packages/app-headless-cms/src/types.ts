@@ -307,6 +307,13 @@ export interface CmsEditorContentModel {
     plugin?: boolean;
 }
 
+export type CmsContentEntryStatusType =
+    | "draft"
+    | "published"
+    | "unpublished"
+    | "changesRequested"
+    | "reviewRequested";
+
 export interface CmsEditorContentEntry {
     id: string;
     savedOn: string;
@@ -316,7 +323,7 @@ export interface CmsEditorContentEntry {
         title: string;
         publishedOn: string;
         locked: boolean;
-        status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
+        status: CmsContentEntryStatusType;
         version: number;
     };
     [key: string]: any;
@@ -325,11 +332,11 @@ export interface CmsEditorContentEntry {
 export interface CmsLatestContentEntry {
     id: string;
     entryId: string;
-    status: "published" | "draft";
+    status: CmsContentEntryStatusType;
     title: string;
     model: Pick<CmsModel, "modelId" | "name">;
 }
-export interface CmsPublishedContentEntry extends CmsLatestContentEntry {}
+export type CmsPublishedContentEntry = CmsLatestContentEntry;
 
 export interface CmsContentEntryRevision {
     id: string;
@@ -340,7 +347,7 @@ export interface CmsContentEntryRevision {
         title: string;
         publishedOn: string;
         locked: boolean;
-        status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
+        status: CmsContentEntryStatusType;
         version: number;
     };
 }

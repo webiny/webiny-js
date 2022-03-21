@@ -1,20 +1,101 @@
-import React from "react";
+import React, { useCallback } from "react";
 import debounce from "lodash/debounce";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { i18n } from "@webiny/app/i18n";
-import { Link } from "@webiny/react-router";
+import { Link, useRouter } from "@webiny/react-router";
 import { useNewRefEntry } from "../hooks/useNewRefEntry";
 import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
 import { CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
+import { css } from "emotion";
+import { ReactComponent as ViewIcon } from "~/admin/icons/visibility.svg";
+import { ReactComponent as PublishedIcon } from "~/admin/icons/published.svg";
+import { ReactComponent as UnpublishedIcon } from "~/admin/icons/unpublished.svg";
+import { ReactComponent as DraftIcon } from "~/admin/icons/draft.svg";
+import { OptionItem } from "~/admin/plugins/fieldRenderers/ref/components/getOptions";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const unpublishedLabel = t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`;
 const publishedLabel = t`Selected content entry is published. You can view it {here}.`;
+
+const autocompleteVisualHelpersCssClass = css({
+    top: "15px",
+    right: "20px",
+    height: "20px",
+    position: "absolute",
+    display: "table",
+    verticalAlign: "middle"
+});
+
+const viewIconCssClass = css({
+    display: "table-cell",
+    verticalAlign: "middle",
+    marginLeft: "10px",
+    cursor: "pointer"
+});
+
+const entryStatusCssClass = css({
+    display: "table-cell",
+    verticalAlign: "middle"
+});
+
+const getItemOption = (options: OptionItem[], entryId: string): OptionItem | null => {
+    if (!entryId || !options || options.length === 0) {
+        return null;
+    }
+    return options.find(item => item.entryId === entryId) || null;
+};
+
+interface ViewEntryProps {
+    item: OptionItem;
+}
+const ViewEntry: React.FC<ViewEntryProps> = ({ item }) => {
+    const { history } = useRouter();
+    const onClick = useCallback(() => {
+        history.push(createEntryUrl(item));
+    }, [item]);
+    return (
+        <a onClick={onClick}>
+            <ViewIcon />
+        </a>
+    );
+};
+
+const getEntryStatus = (item: OptionItem): string => {
+    return ["published", "draft", "unpublished"].includes(item.status) ? item.status : "draft";
+};
+interface EntryStatusProps {
+    item: OptionItem;
+}
+const EntryStatus: React.FC<EntryStatusProps> = ({ item }) => {
+    const status = getEntryStatus(item);
+
+    const published = status === "published";
+    const unpublished = status === "unpublished";
+    return (
+        <div>
+            {published && <PublishedIcon />}
+            {unpublished && <UnpublishedIcon />}
+            {!published && !unpublished && <DraftIcon />}
+        </div>
+    );
+};
+
+const getItemStatusText = (item: OptionItem): string => {
+    switch (item.status) {
+        case "published":
+            return "This entry is published.";
+        case "unpublished":
+            return "This entry has not been published.";
+        default:
+            return "Latest revision of this entry is in draft stage.";
+    }
+};
 
 interface ContentEntriesAutocompleteProps {
     bind: BindComponentRenderProp;
@@ -37,6 +118,31 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
         });
     }
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
+
+    const renderVisualHelperIconsComponent = useCallback(() => {
+        if (!bind.value || !bind.value.entryId) {
+            return null;
+        }
+
+        const item = getItemOption(options, bind.value.entryId);
+        if (!item) {
+            return null;
+        }
+        return (
+            <div className={autocompleteVisualHelpersCssClass}>
+                <Tooltip
+                    content={getItemStatusText(item)}
+                    placement={"top"}
+                    className={entryStatusCssClass}
+                >
+                    <EntryStatus item={item} />
+                </Tooltip>
+                <Tooltip content={"View entry"} placement={"top"} className={viewIconCssClass}>
+                    <ViewEntry item={item} />
+                </Tooltip>
+            </div>
+        );
+    }, [bind.value, options]);
 
     /*
      * Wrap AutoComplete input in NewRefEntry modal.
@@ -70,6 +176,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
                     }
                     onInput={debounce(search => setSearch(search), 250)}
                     noResultFound={<NewEntryButton />}
+                    renderCustomComponent={renderVisualHelperIconsComponent}
                 />
             </NewRefEntryFormDialog>
         );
@@ -92,6 +199,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
             }
             onInput={debounce(search => setSearch(search), 250)}
             noResultFound={helpText}
+            renderCustomComponent={renderVisualHelperIconsComponent}
         />
     );
 };
