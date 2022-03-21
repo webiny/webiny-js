@@ -2,7 +2,8 @@ import * as fs from "fs";
 import { getProject } from "@webiny/cli/utils";
 import { updateTelemetryFunction } from "../../../bundling/function/telemetry";
 
-jest.setTimeout(30000);
+// This key is a valid test accout environment key that we use to smoke test that telemetry data can be pushed
+const VALID_API_KEY = "8c8d2096-934e-47b0-ab02-25feace28d48";
 
 interface TelemetryDataLogs {
     error: boolean;
@@ -61,9 +62,8 @@ describe("Telemetry functions", () => {
     describe("postTelemetryData()", () => {
         test("Can post telemetry data", async () => {
             const now = Date.now();
-            const validApiKey = "8c8d2096-934e-47b0-ab02-25feace28d48";
             const mockSchema: TelemetryData = {
-                apiKey: validApiKey,
+                apiKey: VALID_API_KEY,
                 version: "5.20.0",
                 logs: [
                     {
