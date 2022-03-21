@@ -329,6 +329,7 @@ export interface CmsLatestContentEntry {
     title: string;
     model: Pick<CmsModel, "modelId" | "name">;
 }
+export interface CmsPublishedContentEntry extends CmsLatestContentEntry {}
 
 export interface CmsContentEntryRevision {
     id: string;

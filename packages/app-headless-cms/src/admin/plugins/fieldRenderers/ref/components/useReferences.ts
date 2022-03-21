@@ -115,7 +115,16 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                 }, {} as Record<string, CmsLatestContentEntry>);
 
                 const entries = (res.data.published.data || []).reduce((collection, item) => {
-                    collection[item.entryId] = item;
+                    const entryId = item.entryId;
+                    const existingItem = latest[entryId];
+                    if (existingItem) {
+                        collection[entryId] = {
+                            ...existingItem,
+                            status: item.status
+                        };
+                        return collection;
+                    }
+                    collection[entryId] = item;
                     return collection;
                 }, latest);
 

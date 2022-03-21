@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { CmsErrorResponse, CmsLatestContentEntry } from "~/types";
+import { CmsErrorResponse, CmsLatestContentEntry, CmsPublishedContentEntry } from "~/types";
 
 const fields = `
 data {
@@ -61,7 +61,7 @@ export interface CmsEntryGetListResponse {
         error?: CmsErrorResponse;
     };
     published: {
-        data: CmsLatestContentEntry[];
+        data: CmsPublishedContentEntry[];
         error?: CmsErrorResponse;
     };
 }
@@ -89,7 +89,7 @@ export interface CmsEntryGetQueryResponse {
         error?: CmsErrorResponse;
     };
     published: {
-        data: CmsLatestContentEntry;
+        data: CmsPublishedContentEntry;
         error?: CmsErrorResponse;
     };
 }
