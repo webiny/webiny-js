@@ -4,7 +4,8 @@ const path = require("path");
 const fetch = require("node-fetch");
 const { getProject } = require("@webiny/cli/utils");
 
-const WCP_API_CLIENTS_URL = `https://${process.env.WCP_API_URL}/clients/latest`;
+// TODO use env variable
+const WCP_API_CLIENTS_URL = `https://d16ix00y8ek390.cloudfront.net/clients/latest`;
 
 async function updateTelemetryFunction() {
     const response = await fetch(WCP_API_CLIENTS_URL);
