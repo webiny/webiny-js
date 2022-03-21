@@ -82,8 +82,7 @@ module.exports = async options => {
         flag: "r"
     });
 
-    // TODO this wont include the headless CMS functions
-    const includesGraphQl = handlerFile.includes("handler-graphql");
+    const includesGraphQl = handlerFile.includes("wcp-telemetry-tracker");
     if (includesGraphQl) {
         await injectHandlerTelemetry(cwd);
     }

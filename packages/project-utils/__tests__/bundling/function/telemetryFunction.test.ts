@@ -53,7 +53,7 @@ afterEach(() => {
 });
 
 // eslint-disable-next-line jest/no-disabled-tests
-describe.skip("Telemetry functions", () => {
+describe("Telemetry functions", () => {
     describe("postTelemetryData()", () => {
         test("Can post telemetry data", async () => {
             const now = Date.now();

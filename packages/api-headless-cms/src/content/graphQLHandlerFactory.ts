@@ -172,5 +172,5 @@ export const graphQLHandlerFactory = (
         }
     };
 
-    return [...(debug ? debugPlugins() : []), handler];
+    return [...(debug ? debugPlugins() : []), handler, { type: "wcp-telemetry-tracker" }];
 };
