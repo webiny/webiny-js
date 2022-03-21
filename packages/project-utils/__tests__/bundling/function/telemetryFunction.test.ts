@@ -1,5 +1,7 @@
-import * as path from "path";
 import * as fs from "fs";
+import { getProject } from "@webiny/cli/utils";
+
+jest.setTimeout(30000);
 
 interface TelemetryDataLogs {
     error: boolean;
@@ -23,9 +25,7 @@ let postTelemetryData: (data: TelemetryData) => Promise<TelemetryDataResult>;
 let localData: TelemetryData;
 let handler: () => Promise<any>;
 
-const pathToProjectUtilsRoot = path.join(__dirname, "../../../bundling/function");
-
-const handlerPath = pathToProjectUtilsRoot + "/_handler.js";
+const handlerPath = getProject().root + "/.webiny/_handler.js";
 
 function waitForMilliSeconds(ms: number): Promise<unknown> {
     return new Promise(resolve => {
@@ -41,7 +41,7 @@ beforeEach(() => {
     fs.writeFileSync(handlerPath, "");
 
     // Now we can export the telemetry functions
-    const telemetry = require("../../../bundling/function/telemetryFunction");
+    const telemetry = require(getProject().root + "/.webiny/telemetryFunction.js");
     postTelemetryData = telemetry.postTelemetryData;
     localData = telemetry.localData;
     handler = telemetry.handler;
@@ -56,7 +56,7 @@ describe("Telemetry functions", () => {
     describe("postTelemetryData()", () => {
         test("Can post telemetry data", async () => {
             const now = Date.now();
-            const validApiKey = "beb3f14e-141f-427d-9923-755112e35eef";
+            const validApiKey = "2fd4d858-cf83-48ce-b321-a6846888aa1e";
             const mockSchema: TelemetryData = {
                 apiKey: validApiKey,
                 version: "5.20.0",
@@ -94,7 +94,7 @@ describe("Telemetry functions", () => {
             const result = await postTelemetryData(mockSchema);
 
             const { message } = result.error || {};
-            expect(message).toEqual('project.env "undefined" not found.');
+            expect(message).toEqual("Internal Server Error");
         });
     });
 
