@@ -52,7 +52,6 @@ afterEach(() => {
     fs.unlinkSync(handlerPath);
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
 describe("Telemetry functions", () => {
     describe("postTelemetryData()", () => {
         test("Can post telemetry data", async () => {
