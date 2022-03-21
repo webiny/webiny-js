@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { getProject } from "@webiny/cli/utils";
+import { updateTelemetryFunction } from "../../../bundling/function/telemetry";
 
 jest.setTimeout(30000);
 
@@ -32,6 +33,10 @@ function waitForMilliSeconds(ms: number): Promise<unknown> {
         setTimeout(resolve, ms);
     });
 }
+beforeAll(async () => {
+    // Make sure the latest Telemetry code is in the local storage
+    await updateTelemetryFunction();
+});
 
 beforeEach(() => {
     // The telemetry function is being injected into the folder where the clients handler function is, so it
@@ -56,7 +61,7 @@ describe("Telemetry functions", () => {
     describe("postTelemetryData()", () => {
         test("Can post telemetry data", async () => {
             const now = Date.now();
-            const validApiKey = "2fd4d858-cf83-48ce-b321-a6846888aa1e";
+            const validApiKey = "8c8d2096-934e-47b0-ab02-25feace28d48";
             const mockSchema: TelemetryData = {
                 apiKey: validApiKey,
                 version: "5.20.0",
@@ -94,7 +99,7 @@ describe("Telemetry functions", () => {
             const result = await postTelemetryData(mockSchema);
 
             const { message } = result.error || {};
-            expect(message).toEqual("Internal Server Error");
+            expect(message).toEqual('project.env "undefined" not found.');
         });
     });
 
