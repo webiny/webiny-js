@@ -10,7 +10,7 @@ describe("updateTelemetryFunction()", () => {
         await updateTelemetryFunction();
 
         const telemetryFunctionPath = fs.statSync(
-            getProject().root + "/.webiny//telemetryFunction.js"
+            getProject().root + "/.webiny/telemetryFunction.js"
         );
 
         const lastModified = new Date(telemetryFunctionPath.mtime).getTime();

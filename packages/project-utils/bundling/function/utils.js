@@ -1,6 +1,4 @@
 const path = require("path");
-const fs = require("fs-extra");
-const telemetry = require("./telemetry");
 
 const getDefaults = cwd => ({
     outputPath: path.join(cwd, "build"),
