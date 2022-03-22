@@ -15,7 +15,7 @@ import { ReactComponent as ViewIcon } from "~/admin/icons/visibility.svg";
 import { ReactComponent as PublishedIcon } from "~/admin/icons/published.svg";
 import { ReactComponent as UnpublishedIcon } from "~/admin/icons/unpublished.svg";
 import { ReactComponent as DraftIcon } from "~/admin/icons/draft.svg";
-import { OptionItem } from "~/admin/plugins/fieldRenderers/ref/components/getOptions";
+import { OptionItem } from "./types";
 import { Tooltip } from "@webiny/ui/Tooltip";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");

@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
-import { CmsErrorResponse, CmsLatestContentEntry, CmsPublishedContentEntry } from "~/types";
+import { CmsErrorResponse } from "~/types";
+import { CmsReferenceContentEntry } from "./types";
 
 const fields = `
 data {
@@ -34,7 +35,7 @@ export interface CmsEntryGetEntryVariable {
 
 export interface CmsEntrySearchQueryResponse {
     content: {
-        data: CmsLatestContentEntry[];
+        data: CmsReferenceContentEntry[];
         error: CmsErrorResponse | null;
     };
 }
@@ -57,11 +58,11 @@ export const SEARCH_CONTENT_ENTRIES = gql`
 
 export interface CmsEntryGetListResponse {
     latest: {
-        data: CmsLatestContentEntry[];
+        data: CmsReferenceContentEntry[];
         error: CmsErrorResponse | null;
     };
     published: {
-        data: CmsPublishedContentEntry[];
+        data: CmsReferenceContentEntry[];
         error: CmsErrorResponse | null;
     };
 }
@@ -85,11 +86,11 @@ export const GET_CONTENT_ENTRIES = gql`
  */
 export interface CmsEntryGetQueryResponse {
     latest: {
-        data: CmsLatestContentEntry | null;
+        data: CmsReferenceContentEntry | null;
         error: CmsErrorResponse | null;
     };
     published: {
-        data: CmsPublishedContentEntry | null;
+        data: CmsReferenceContentEntry | null;
         error: CmsErrorResponse | null;
     };
 }

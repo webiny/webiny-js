@@ -1,20 +1,11 @@
-import { CmsContentEntryStatusType, CmsEditorContentEntry, CmsModel } from "~/types";
+import { CmsEditorContentEntry, CmsModel } from "~/types";
+import { OptionItem } from "./types";
 
 interface CmsEntry extends Pick<CmsEditorContentEntry, "id" | "entryId" | "title" | "status"> {
     model: Pick<CmsModel, "modelId" | "name">;
 }
 interface Options {
     (item: CmsEntry): Record<string, string>;
-}
-
-export interface OptionItem {
-    id: string;
-    entryId: string;
-    modelId: string;
-    modelName: string;
-    name: string;
-    published: boolean;
-    status: CmsContentEntryStatusType;
 }
 
 export const getOptions = (entries: CmsEntry[] = [], extraOptions?: Options): OptionItem[] => {

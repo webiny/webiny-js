@@ -329,15 +329,6 @@ export interface CmsEditorContentEntry {
     [key: string]: any;
 }
 
-export interface CmsLatestContentEntry {
-    id: string;
-    entryId: string;
-    status: CmsContentEntryStatusType;
-    title: string;
-    model: Pick<CmsModel, "modelId" | "name">;
-}
-export type CmsPublishedContentEntry = CmsLatestContentEntry;
-
 export interface CmsContentEntryRevision {
     id: string;
     savedOn: string;

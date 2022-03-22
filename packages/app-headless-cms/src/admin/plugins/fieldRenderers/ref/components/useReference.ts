@@ -8,20 +8,10 @@ import {
     CmsEntrySearchQueryResponse,
     CmsEntrySearchQueryVariables
 } from "./graphql";
-import { getOptions, OptionItem } from "./getOptions";
-import { CmsContentEntryStatusType, CmsEditorField, CmsModel } from "~/types";
+import { getOptions } from "./getOptions";
+import { CmsEditorField, CmsModel } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
-
-interface DataEntry {
-    id: string;
-    entryId: string;
-    model: {
-        modelId: string;
-        name: string;
-    };
-    status: CmsContentEntryStatusType;
-    title: string;
-}
+import { OptionItem, ReferenceDataEntry } from "./types";
 
 interface UseReferenceHookArgs {
     bind: BindComponentRenderProp;
@@ -38,16 +28,16 @@ interface UseReferenceHookValue {
 
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
-type EntryCollection = Record<string, DataEntry>;
+type EntryCollection = Record<string, ReferenceDataEntry>;
 
-const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
+const convertQueryDataToEntryList = (data: ReferenceDataEntry[]): EntryCollection => {
     return data.reduce((collection, entry) => {
         collection[entry.entryId] = entry;
         return collection;
     }, {} as EntryCollection);
 };
 
-const convertOptionToData = (entry: OptionItem): DataEntry => {
+const convertOptionToData = (entry: OptionItem): ReferenceDataEntry => {
     return {
         id: entry.id,
         entryId: entry.entryId,
@@ -60,7 +50,7 @@ const convertOptionToData = (entry: OptionItem): DataEntry => {
     };
 };
 
-const convertDataEntryToOption = (entry: DataEntry): OptionItem => {
+const convertDataEntryToOption = (entry: ReferenceDataEntry): OptionItem => {
     return {
         id: entry.id,
         entryId: entry.entryId,
@@ -186,14 +176,17 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                 if (!dataEntry) {
                     return;
                 }
-                allEntries.current[dataEntry.entryId] = {
-                    ...dataEntry
+                const entry: ReferenceDataEntry = {
+                    ...dataEntry,
+                    latest: res.data.latest.data ? res.data.latest.data.id : null,
+                    published: res.data.published.data ? res.data.published.data.id : null
                 };
+                allEntries.current[dataEntry.entryId] = entry;
                 setLatestEntries(prev => {
                     return {
                         ...prev,
                         [dataEntry.entryId]: {
-                            ...dataEntry
+                            ...entry
                         }
                     };
                 });

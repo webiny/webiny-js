@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
 import { getOptions } from "./getOptions";
-import { CmsEditorField, CmsLatestContentEntry, CmsModel } from "~/types";
+import { CmsEditorField, CmsModel } from "~/types";
 import {
     SEARCH_CONTENT_ENTRIES,
     GET_CONTENT_ENTRIES,
@@ -12,6 +12,7 @@ import {
     CmsEntryGetEntryVariable
 } from "./graphql";
 import { BindComponentRenderProp } from "@webiny/form";
+import { CmsReferenceContentEntry } from "./types";
 
 export interface ReferencedCmsEntry {
     id: string;
@@ -23,9 +24,9 @@ export interface ReferencedCmsEntry {
 }
 
 function distinctBy(
-    key: keyof CmsLatestContentEntry,
-    array: CmsLatestContentEntry[]
-): CmsLatestContentEntry[] {
+    key: keyof CmsReferenceContentEntry,
+    array: CmsReferenceContentEntry[]
+): CmsReferenceContentEntry[] {
     const keys = array.map(value => value[key]);
     return array.filter((value, index) => keys.indexOf(value[key]) === index);
 }
@@ -35,12 +36,12 @@ interface UseReferencesParams {
     field: CmsEditorField;
 }
 export const useReferences = ({ bind, field }: UseReferencesParams) => {
-    const allEntries = useRef<CmsLatestContentEntry[]>([]);
+    const allEntries = useRef<CmsReferenceContentEntry[]>([]);
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const [entries, setEntries] = useState<CmsLatestContentEntry[]>([]);
-    const [latestEntries, setLatestEntries] = useState<CmsLatestContentEntry[]>([]);
+    const [entries, setEntries] = useState<CmsReferenceContentEntry[]>([]);
+    const [latestEntries, setLatestEntries] = useState<CmsReferenceContentEntry[]>([]);
     const [valueEntries, setValueEntries] = useState<ReferencedCmsEntry[]>([]);
 
     const models = (field.settings ? field.settings.models || [] : []) as Pick<
@@ -113,7 +114,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                 const latest = (res.data.latest.data || []).reduce((collection, item) => {
                     collection[item.entryId] = item;
                     return collection;
-                }, {} as Record<string, CmsLatestContentEntry>);
+                }, {} as Record<string, CmsReferenceContentEntry>);
 
                 const entries = (res.data.published.data || []).reduce((collection, item) => {
                     const entryId = item.entryId;
