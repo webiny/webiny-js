@@ -17,7 +17,8 @@ import {
 } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwContext, createApwGraphQL } from "~/index";
-import { createStorageOperations as createApwSchedulerStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
+import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -96,7 +97,8 @@ const documentClient = new DocumentClient({
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
     const ops = getStorageOperations({
-        plugins: params.storageOperationPlugins || []
+        plugins: params.storageOperationPlugins || [],
+        documentClient
     });
 
     const tenant = {
@@ -113,7 +115,10 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
     } = params;
 
     const headlessCmsApp = createHeadlessCmsApp({
-        storageOperations: ops.storageOperations
+        storageOperations: createHeadlessCmsStorageOperations({
+            documentClient,
+            modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+        })
     });
 
     const handler = createHandler({
@@ -139,7 +144,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                             id: apiKey,
                             name: apiKey,
                             tenant: tenant.id,
-                            permissions: identity?.permissions || [],
+                            permissions: identity?.["permissions"] || [],
                             token,
                             createdBy: {
                                 id: "test",
@@ -165,7 +170,8 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             }),
             ...headlessCmsApp,
             createApwContext({
-                storageOperations: createApwSchedulerStorageOperations({ documentClient })
+                // storageOperations: createApwSchedulerStorageOperations({ documentClient })
+                storageOperations: ops.storageOperations
             }),
             createApwGraphQL(),
             plugins

@@ -90,11 +90,11 @@ export const setupCategory = async ({ getCategory, createCategory }: SetupCatego
     return createCategoryResponse.data.pageBuilder.createCategory.data;
 };
 
-const setupReviewer = async gqlHandler => {
+const setupReviewer = async (gqlHandler: any) => {
     await gqlHandler.securityIdentity.login();
 
     await gqlHandler.until(
-        () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]) => data),
+        () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]: any[]) => data),
         (response: any) => response.data.apw.listReviewers.data.length === 1,
         {
             name: "Wait for listReviewer query"
@@ -106,7 +106,7 @@ const setupReviewer = async gqlHandler => {
     return reviewer;
 };
 
-const setupPage = async gqlHandler => {
+const setupPage = async (gqlHandler: any) => {
     const category = await setupCategory({
         getCategory: gqlHandler.getCategory,
         createCategory: gqlHandler.createCategory
@@ -124,7 +124,7 @@ const setupWorkflow = async (gqlHandler: any): Promise<ApwWorkflow> => {
     return createWorkflowResponse.data.apw.createWorkflow.data;
 };
 
-export const createSetupForContentReview = async gqlHandler => {
+export const createSetupForContentReview = async (gqlHandler: any) => {
     const workflow = await setupWorkflow(gqlHandler);
 
     await gqlHandler.until(
@@ -147,7 +147,7 @@ export const createSetupForContentReview = async gqlHandler => {
     };
 };
 
-export const createContentReviewSetup = async gqlHandler => {
+export const createContentReviewSetup = async (gqlHandler: any) => {
     const { page } = await createSetupForContentReview(gqlHandler);
     /*
      Create a content review entry.

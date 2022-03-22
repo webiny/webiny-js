@@ -42,7 +42,7 @@ describe(`Schedule action in a content review process`, function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => response.data.apw.getContentReview.data !== null,
+            (response: any) => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for entry to be available in get query"
             }
@@ -68,7 +68,7 @@ describe(`Schedule action in a content review process`, function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const entry = response.data.apw.getContentReview.data;
 
                 const hasChanged = entry && entry.savedOn !== previousSavedOn;

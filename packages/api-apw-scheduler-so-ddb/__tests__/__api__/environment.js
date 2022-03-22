@@ -1,3 +1,5 @@
+const dbPlugins = require("@webiny/handler-db").default;
+const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 /**
@@ -18,6 +20,18 @@ class ApwScheduleActionTestEnvironment extends NodeEnvironment {
             secretAccessKey: "test"
         });
 
+        const plugins = [
+            /**
+             * TODO remove when all apps are created with their own storage operations factory and drivers.
+             */
+            dbPlugins({
+                table: process.env.DB_TABLE,
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
+            })
+        ];
+
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
          */
@@ -27,7 +41,7 @@ class ApwScheduleActionTestEnvironment extends NodeEnvironment {
                     documentClient,
                     table: process.env.DB_TABLE
                 }),
-                plugins: []
+                plugins
             };
         };
     }
