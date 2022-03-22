@@ -1,7 +1,8 @@
 import * as fs from "fs";
-import { getProject, getTelemetryFunctionPath } from "@webiny/cli/utils";
+import { getProject } from "@webiny/cli/utils";
+import { getTelemetryFunctionPath } from "../../../bundling/function/utils";
 import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
-import sleep from "wcp/backend/src/utils/tests/sleep.ts";
+import sleep from "../../../../../../wcp/wcp/backend/src/utils/tests/sleep";
 
 // This environment API key has been previously created via a test WCP account created at https://app.webiny.com. Consult internal documentation for more information on the used account.
 const VALID_API_KEY = "8c8d2096-934e-47b0-ab02-25feace28d48";
@@ -43,6 +44,7 @@ beforeEach(() => {
     fs.writeFileSync(handlerPath, "");
 
     // Now we can export the telemetry functions
+    console.log(getTelemetryFunctionPath());
     const telemetry = require(getTelemetryFunctionPath());
     postTelemetryData = telemetry.postTelemetryData;
     localData = telemetry.localData;

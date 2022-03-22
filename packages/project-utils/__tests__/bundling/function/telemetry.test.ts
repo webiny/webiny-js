@@ -1,5 +1,5 @@
 import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
-import { getTelemetryFunctionPath } from "@webiny/cli/utils";
+import { getTelemetryFunctionPath } from "../../../bundling/function/utils";
 import * as fs from "fs";
 
 describe("downloadTelemetryFunction()", () => {
