@@ -21,18 +21,3 @@ export const convertReferenceEntriesToOptionCollection = (
         return collection;
     }, {} as OptionItemCollection);
 };
-
-// export const convertOptionToReferenceEntry = (option: OptionItem) => {
-//     return {
-//         id: option.id,
-//         entryId: option.entryId,
-//         model: {
-//             modelId: option.modelId,
-//             name: option.modelName
-//         },
-//         status: option.status,
-//         title: option.name,
-//         published: option.published,
-//         latest: option.latest
-//     };
-// };

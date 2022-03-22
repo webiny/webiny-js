@@ -27,8 +27,3 @@ export interface CmsReferenceContentEntry {
         title: string;
     };
 }
-
-// export interface ReferenceDataEntry extends CmsReferenceContentEntry {
-//     published: string | null;
-//     latest: string | null;
-// }

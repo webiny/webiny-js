@@ -113,17 +113,3 @@ export const GET_CONTENT_ENTRY = gql`
         }
     }
 `;
-/**
- * Not used anywhere.
- * Remove if determined that is correct
- */
-// export const GET_CONTENT_MODELS = gql`
-//     query CmsGetContentModels {
-//         listContentModels {
-//             data {
-//                 modelId
-//                 titleFieldId
-//             }
-//         }
-//     }
-// `;

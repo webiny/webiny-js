@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import debounce from "lodash/debounce";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
@@ -10,8 +10,7 @@ import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
 import { CmsContentEntryStatusType, CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
-import { css } from "emotion";
-import { ReactComponent as ViewIcon } from "~/admin/icons/visibility.svg";
+import styled from "@emotion/styled";
 import { ReactComponent as PublishedIcon } from "~/admin/icons/published.svg";
 import { ReactComponent as UnpublishedIcon } from "~/admin/icons/unpublished.svg";
 import { ReactComponent as DraftIcon } from "~/admin/icons/draft.svg";
@@ -23,46 +22,25 @@ const t = i18n.ns("app-headless-cms/admin/fields/ref");
 const unpublishedLabel = t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`;
 const publishedLabel = t`Selected content entry is published. You can view it {here}.`;
 
-const autocompleteVisualHelpersCssClass = css({
-    top: "15px",
-    right: "20px",
-    height: "20px",
-    position: "absolute",
-    display: "table",
+const EntryStatusWrapper = styled("div")({
+    display: "table"
+});
+const EntryStatusTooltip = styled("div")({
+    display: "table-cell",
+    width: "30px",
     verticalAlign: "middle"
 });
-
-const viewIconCssClass = css({
-    display: "table-cell",
-    verticalAlign: "middle",
-    marginLeft: "10px",
-    cursor: "pointer",
-    opacity: 0.5
-});
-
-const entryStatusCssClass = css({
+const EntryStatusText = styled("div")({
     display: "table-cell",
     verticalAlign: "middle"
 });
 
-const getItemOption = (options: OptionItem[], id: string): OptionItem | null => {
+const getItemOption = (options: OptionItem[], id?: string | null): OptionItem | null => {
     if (!id || !options || options.length === 0) {
         return null;
     }
     const [entryId] = id.split("#");
     return options.find(item => item.entryId === entryId) || null;
-};
-
-interface ViewEntryProps {
-    item: OptionItem;
-}
-const ViewEntry: React.FC<ViewEntryProps> = ({ item }) => {
-    const url = createEntryUrl(item);
-    return (
-        <a href={url}>
-            <ViewIcon />
-        </a>
-    );
 };
 
 const getEntryStatus = (item: OptionItem): CmsContentEntryStatusType => {
@@ -75,19 +53,28 @@ const getEntryStatus = (item: OptionItem): CmsContentEntryStatusType => {
 };
 
 interface EntryStatusProps {
-    item: OptionItem;
+    item: OptionItem | null;
 }
-const EntryStatus: React.FC<EntryStatusProps> = ({ item }) => {
+const EntryStatus: React.FC<EntryStatusProps> = ({ item, children }) => {
+    if (!item) {
+        return <>{children}</>;
+    }
     const status = getEntryStatus(item);
+    const tooltipText = getItemStatusText(item);
 
     const published = status === "published";
     const unpublished = status === "unpublished";
     return (
-        <div>
-            {published && <PublishedIcon />}
-            {unpublished && <UnpublishedIcon />}
-            {!published && !unpublished && <DraftIcon />}
-        </div>
+        <EntryStatusWrapper>
+            <EntryStatusTooltip>
+                <Tooltip content={tooltipText} placement={"bottom"}>
+                    {published && <PublishedIcon />}
+                    {unpublished && <UnpublishedIcon />}
+                    {!published && !unpublished && <DraftIcon />}
+                </Tooltip>
+            </EntryStatusTooltip>
+            <EntryStatusText>{children}</EntryStatusText>
+        </EntryStatusWrapper>
     );
 };
 
@@ -125,31 +112,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
     }
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
 
-    const renderVisualHelperIconsComponent = useCallback(() => {
-        if (!bind.value || !bind.value.id) {
-            return null;
-        }
-
-        const item = getItemOption(options, bind.value.id);
-        if (!item) {
-            return null;
-        }
-        return (
-            <div className={autocompleteVisualHelpersCssClass}>
-                <Tooltip
-                    content={getItemStatusText(item)}
-                    placement={"top"}
-                    className={entryStatusCssClass}
-                >
-                    <EntryStatus item={item} />
-                </Tooltip>
-                <Tooltip content={"View entry"} placement={"top"} className={viewIconCssClass}>
-                    <ViewEntry item={item} />
-                </Tooltip>
-            </div>
-        );
-    }, [bind.value, options]);
-
+    const item = getItemOption(options, bind.value ? bind.value.id : null);
     /*
      * Wrap AutoComplete input in NewRefEntry modal.
      */
@@ -177,12 +140,11 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
                     description={
                         <>
                             {field.helpText}
-                            {entryInfo}
+                            <EntryStatus item={item}>{entryInfo}</EntryStatus>
                         </>
                     }
                     onInput={debounce(search => setSearch(search), 250)}
                     noResultFound={<NewEntryButton />}
-                    renderCustomComponent={renderVisualHelperIconsComponent}
                 />
             </NewRefEntryFormDialog>
         );
@@ -200,12 +162,11 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
             description={
                 <>
                     {field.helpText}
-                    {entryInfo}
+                    <EntryStatus item={item}>{entryInfo}</EntryStatus>
                 </>
             }
             onInput={debounce(search => setSearch(search), 250)}
             noResultFound={helpText}
-            renderCustomComponent={renderVisualHelperIconsComponent}
         />
     );
 };

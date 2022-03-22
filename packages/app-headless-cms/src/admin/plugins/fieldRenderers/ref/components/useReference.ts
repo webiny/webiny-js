@@ -31,13 +31,6 @@ interface UseReferenceHookValue {
 
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
-// const assignValueEntry = (entry: OptionItem | null, collection: OptionItemCollection): void => {
-//     if (!entry) {
-//         return;
-//     }
-//     collection[entry.id] = convertOptionToReferenceEntry(entry);
-// };
-
 export const useReference: UseReferenceHook = ({ bind, field }) => {
     const allEntries = useRef<OptionItemCollection>({});
     const client = useApolloClient();
@@ -69,7 +62,8 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             query: SEARCH_CONTENT_ENTRIES,
             variables: {
                 modelIds: models.map(m => m.modelId),
-                query: search
+                query: search,
+                limit: 10
             }
         });
         setLoading(false);
