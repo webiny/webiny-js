@@ -74,7 +74,8 @@
     "webpack": "5.65.0",
     "webpack-dev-server": "4.6.0",
     "webpack-manifest-plugin": "4.0.2",
-    "webpackbar": "5.0.2"
+    "webpackbar": "5.0.2",
+    "node-fetch": "^2.6.1"
   },
   "license": "MIT",
   "adio": {
