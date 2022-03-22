@@ -8,6 +8,6 @@ export interface PresetFactory<TOptions> {
     (options: TOptions): Preset | Promise<Preset>;
 }
 
-export const definePreset = <TOptions = unknown>(factory: PresetFactory<TOptions>) => {
+export function definePreset<TOptions = unknown>(factory: PresetFactory<TOptions>) {
     return (options: TOptions) => factory(options);
-};
+}

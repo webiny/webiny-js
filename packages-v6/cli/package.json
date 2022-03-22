@@ -11,9 +11,8 @@
   "dependencies": {
     "@webiny/core": "^6.0.0",
     "chokidar": "^3.5.3",
-    "dotenv": "^16.0.0",
     "execa": "^5.1.1",
-    "tsconfig-paths": "^3.12.0",
+    "ts-morph": "^14.0.0",
     "yargs": "^17.3.1"
   },
   "devDependencies": {

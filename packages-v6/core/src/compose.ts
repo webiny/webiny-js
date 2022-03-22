@@ -14,9 +14,9 @@ export interface AsyncProcessor<TInput> {
     (next: NextAsyncProcessor<TInput>): NextAsyncProcessor<TInput>;
 }
 
-export const composeSync = <TInput = unknown>(
+export function composeSync<TInput = unknown>(
     functions: Array<Processor<TInput>> = []
-): NextProcessor<TInput> => {
+): NextProcessor<TInput> {
     return (input: TInput): TInput => {
         if (!functions.length) {
             return input;
@@ -37,11 +37,11 @@ export const composeSync = <TInput = unknown>(
 
         return next(input);
     };
-};
+}
 
-export const composeAsync = <TInput = unknown>(
+export function composeAsync<TInput = unknown>(
     functions: Array<AsyncProcessor<TInput>> = []
-): NextAsyncProcessor<TInput> => {
+): NextAsyncProcessor<TInput> {
     console.log("composeAsync123");
     return (input: TInput): Promise<TInput> => {
         if (!functions.length) {
@@ -63,4 +63,4 @@ export const composeAsync = <TInput = unknown>(
 
         return next(input);
     };
-};
+}

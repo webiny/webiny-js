@@ -16,22 +16,25 @@ export interface RouteProps extends BaseRouteProps {
 }
 
 export const Route: React.FC<RouteProps> = props => {
+    const newProps = {
+        ...props
+    };
     const location = useLocation();
-    if (!props.exact && props.path !== "*") {
-        props.path = `${props.path}/*`;
+    if (!newProps.exact && newProps.path !== "*") {
+        newProps.path = `${newProps.path}/*`;
     }
-    delete props["exact"];
+    delete newProps["exact"];
 
-    if (typeof props.render === "function") {
-        props.element = props.render({
+    if (typeof newProps.render === "function") {
+        newProps.element = newProps.render({
             location
         });
-    } else if (props.component) {
-        const Component = props.component;
-        props.element = <Component />;
+    } else if (newProps.component) {
+        const Component = newProps.component;
+        newProps.element = <Component />;
     }
-    delete props["render"];
-    delete props["component"];
+    delete newProps["render"];
+    delete newProps["component"];
 
-    return <BaseRoute {...props} />;
+    return <BaseRoute {...newProps} />;
 };

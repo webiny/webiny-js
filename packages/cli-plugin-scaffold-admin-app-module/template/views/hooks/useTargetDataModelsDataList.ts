@@ -130,7 +130,9 @@ export const useTargetDataModelsDataList: useTargetDataModelsDataListHook = () =
     return {
         targetDataModels,
         loading,
-        refresh: listQuery.refetch,
+        refresh: (): void => {
+            listQuery.refetch();
+        },
         pagination,
         setSort,
         newTargetDataModel,

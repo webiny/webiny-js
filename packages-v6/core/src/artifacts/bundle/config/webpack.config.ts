@@ -17,7 +17,7 @@ import getCSSModuleLocalIdent from "react-dev-utils/getCSSModuleLocalIdent";
 // @ts-ignore
 import ModuleNotFoundPlugin from "react-dev-utils/ModuleNotFoundPlugin";
 import { getClientEnvironment } from "./env";
-// import ESLintPlugin from "eslint-webpack-plugin";
+import ESLintPlugin from "eslint-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import WebpackBar from "webpackbar";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
@@ -517,18 +517,18 @@ export const createWebpackConfig: CreateWebpackConfig = (
                 }
             }),
 
-            // new ESLintPlugin({
-            //     extensions: ["js", "mjs", "jsx", "ts", "tsx"],
-            //     formatter: require.resolve("react-dev-utils/eslintFormatter"),
-            //     eslintPath: require.resolve("eslint"),
-            //     context: paths.appSrc,
-            //     // ESLint class options
-            //     cwd: paths.appPath,
-            //     resolvePluginsRelativeTo: __dirname,
-            //     baseConfig: {
-            //         extends: [require.resolve("eslint-config-react-app/base")]
-            //     }
-            // }),
+            new ESLintPlugin({
+                extensions: ["js", "mjs", "jsx", "ts", "tsx"],
+                formatter: require.resolve("react-dev-utils/eslintFormatter"),
+                eslintPath: require.resolve("eslint"),
+                context: paths.appSrc,
+                // ESLint class options
+                cwd: paths.appPath,
+                resolvePluginsRelativeTo: __dirname,
+                baseConfig: {
+                    extends: [require.resolve("eslint-config-react-app/base")]
+                }
+            }),
 
             // TypeScript type checking
             new ForkTsCheckerWebpackPlugin({

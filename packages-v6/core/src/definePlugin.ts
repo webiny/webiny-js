@@ -138,30 +138,30 @@ export interface ProcessorFactory<TConfig, TInput> {
 
 type HandlerConfigurator = ProcessorFactory<FunctionHandlerConfig, ApiPlugin[]>;
 
-export const defineHandlerPlugin = (fn: HandlerConfigurator): HandlerConfigurator => {
+export function defineHandlerPlugin(fn: HandlerConfigurator): HandlerConfigurator {
     return config => next => input => {
         // We intercept the return value, to flatten the output.
         return fn(config)(next)(input).then(value => value.flat(Infinity));
     };
-};
+}
 
-export const defineAdminConfig = (fn: AsyncProcessor<AdminConfig>): AsyncProcessor<AdminConfig> => {
+export function defineAdminConfig(fn: AsyncProcessor<AdminConfig>): AsyncProcessor<AdminConfig> {
     return next => input => fn(next)(input);
-};
+}
 
 type AdminConfigurator = ProcessorFactory<AdminConfig, JSX.Element[]>;
 
-export const defineAdminPlugin = (fn: AdminConfigurator): AdminConfigurator => {
+export function defineAdminPlugin(fn: AdminConfigurator): AdminConfigurator {
     return config => next => input => fn(config)(next)(input);
-};
+}
 
 interface PulumiConfigurator<TOptions> {
     (options: TOptions): (pulumiApps: PulumiApps) => void | Promise<void>;
 }
 
-export const definePulumiConfig = <TOptions = unknown>(fn: PulumiConfigurator<TOptions>) => {
+export function definePulumiConfig<TOptions = unknown>(fn: PulumiConfigurator<TOptions>) {
     return (options: TOptions) => (pulumiApps: PulumiApps) => fn(options)(pulumiApps);
-};
+}
 
 /**
  * Create file path resolver.
@@ -174,9 +174,11 @@ export const definePulumiConfig = <TOptions = unknown>(fn: PulumiConfigurator<TO
  * Instead of `require.resolve`, we use `path.join`. This will help us control the internals
  * of the resolution process in the future.
  */
-export const createResolver = (dir: string) => (filePath: string) => {
-    if (dir.includes("cjs")) {
-        dir = dir.replace("cjs", "esm");
-    }
-    return path.join(dir || "", filePath);
-};
+export function createResolver(dir: string) {
+    return function resolver(filePath: string) {
+        if (dir.includes("cjs")) {
+            dir = dir.replace("cjs", "esm");
+        }
+        return path.join(dir || "", filePath);
+    };
+}

@@ -26,6 +26,7 @@ module.exports = {
             "path",
             "https",
             "follow-redirects",
+            "child_process",
             "os",
             "fs",
             "util",

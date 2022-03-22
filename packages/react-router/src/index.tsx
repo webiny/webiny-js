@@ -4,13 +4,15 @@ import {
     BrowserRouterProps,
     RouteProps as RouteChildrenProps,
     UNSAFE_RouteContext as __RouterContext,
-    useNavigate,
     useLocation,
-    useMatch
+    useParams,
+    Location
 } from "react-router-dom";
-import { Location, To } from "history";
 import { StaticRouter as RStaticRouter, StaticRouterProps } from "react-router-dom/server";
 import { RouterContext, ReactRouterContextValue } from "./context/RouterContext";
+
+import enhancer from "./routerEnhancer";
+import { useHistory, UseHistory } from "~/useHistory";
 
 export * from "react-router-dom";
 
@@ -22,41 +24,26 @@ export { Prompt } from "./Prompt";
 export type { PromptProps } from "./Prompt";
 export { Routes } from "./Routes";
 export type { RoutesProps } from "./Routes";
+export { useHistory } from "./useHistory";
+export type { UseHistory } from "./useHistory";
+export { usePrompt } from "./usePrompt";
 
-export type UseRouter = RouteChildrenProps &
-    ReactRouterContextValue & {
-        history: UseHistory;
-        location: Location;
-        match: PathMatch<any> | null;
-    };
-
-interface UseHistory {
-    push: (to: To, options?: NavigateOptions) => void;
+export interface UseRouter extends RouteChildrenProps, ReactRouterContextValue {
+    history: UseHistory;
+    location: Location;
+    params: Record<string, any>;
 }
-export const useHistory = (): UseHistory => {
-    const navigate = useNavigate();
-
-    return {
-        push: (to, options) => {
-            return navigate(to, options);
-        }
-    };
-};
 
 export function useRouter(): UseRouter {
-    // TODO make sure this works
-    console.log("!CHECK HERE!");
     const location = useLocation();
     return {
         ...useContext(RouterContext),
         ...useContext(__RouterContext),
         history: useHistory(),
         location,
-        match: useMatch(location.search)
+        params: useParams()
     };
 }
 
-import enhancer from "./routerEnhancer";
-import { NavigateOptions, PathMatch } from "react-router";
 export const BrowserRouter: React.FC<BrowserRouterProps> = enhancer(RBrowserRouter);
 export const StaticRouter: React.FC<StaticRouterProps> = enhancer(RStaticRouter);

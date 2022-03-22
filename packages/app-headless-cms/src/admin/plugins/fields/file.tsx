@@ -3,7 +3,7 @@ import { ReactComponent as FileIcon } from "./icons/round_insert_drive_file-24px
 import { CmsEditorFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { Radio } from "@webiny/ui/Radio";
+import { Switch } from "@webiny/ui/Switch";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
@@ -34,7 +34,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"settings.imagesOnly"}>
-                            <Radio
+                            <Switch
                                 label={t`Images only`}
                                 description={t`Allow only images to be selected`}
                             />
