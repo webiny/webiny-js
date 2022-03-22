@@ -8,10 +8,13 @@ import {
     CmsEntrySearchQueryResponse,
     CmsEntrySearchQueryVariables
 } from "./graphql";
-import { getOptions } from "./getOptions";
 import { CmsEditorField, CmsModel } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
-import { OptionItem, ReferenceDataEntry } from "./types";
+import { OptionItem, OptionItemCollection } from "./types";
+import {
+    convertReferenceEntriesToOptionCollection,
+    convertReferenceEntryToOption
+} from "./helpers";
 
 interface UseReferenceHookArgs {
     bind: BindComponentRenderProp;
@@ -28,54 +31,20 @@ interface UseReferenceHookValue {
 
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
-type EntryCollection = Record<string, ReferenceDataEntry>;
-
-const convertQueryDataToEntryList = (data: ReferenceDataEntry[]): EntryCollection => {
-    return data.reduce((collection, entry) => {
-        collection[entry.entryId] = entry;
-        return collection;
-    }, {} as EntryCollection);
-};
-
-const convertOptionToData = (entry: OptionItem): ReferenceDataEntry => {
-    return {
-        id: entry.id,
-        entryId: entry.entryId,
-        model: {
-            modelId: entry.modelId,
-            name: entry.modelName
-        },
-        status: entry.published ? "published" : "draft",
-        title: entry.name
-    };
-};
-
-const convertDataEntryToOption = (entry: ReferenceDataEntry): OptionItem => {
-    return {
-        id: entry.id,
-        entryId: entry.entryId,
-        modelId: entry.model.modelId,
-        modelName: entry.model.name,
-        published: entry.status === "published",
-        status: entry.status,
-        name: entry.title
-    };
-};
-
-const assignValueEntry = (entry: OptionItem | null, collection: EntryCollection): void => {
-    if (!entry) {
-        return;
-    }
-    collection[entry.id] = convertOptionToData(entry);
-};
+// const assignValueEntry = (entry: OptionItem | null, collection: OptionItemCollection): void => {
+//     if (!entry) {
+//         return;
+//     }
+//     collection[entry.id] = convertOptionToReferenceEntry(entry);
+// };
 
 export const useReference: UseReferenceHook = ({ bind, field }) => {
-    const allEntries = useRef<EntryCollection>({});
+    const allEntries = useRef<OptionItemCollection>({});
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const [entries, setEntries] = useState<EntryCollection>({});
-    const [latestEntries, setLatestEntries] = useState<EntryCollection>({});
+    const [entries, setEntries] = useState<OptionItemCollection>({});
+    const [latestEntries, setLatestEntries] = useState<OptionItemCollection>({});
     const [valueEntry, setValueEntry] = useState<OptionItem | null>(null);
 
     const models = (field.settings ? field.settings.models || [] : []) as Pick<
@@ -85,7 +54,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const modelsHash = models.join(",");
 
     const value = bind.value;
-    const valueHash = value ? value.id : null;
+    const valueHash = value ? value.entryId : null;
 
     const searchEntries = async () => {
         if (!search) {
@@ -103,14 +72,18 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                 query: search
             }
         });
-
         setLoading(false);
 
-        const searchEntries = convertQueryDataToEntryList(data.content.data);
-        assignValueEntry(valueEntry, searchEntries);
-        Object.assign(allEntries.current, searchEntries);
+        const collection = convertReferenceEntriesToOptionCollection(data.content.data);
+        if (valueEntry) {
+            collection[valueEntry.entryId] = valueEntry;
+        }
+        allEntries.current = {
+            ...allEntries.current,
+            ...collection
+        };
 
-        setEntries(searchEntries);
+        setEntries(collection);
     };
 
     useEffect(() => {
@@ -118,6 +91,9 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     }, [search]);
 
     useEffect(() => {
+        if (models.length === 0) {
+            return;
+        }
         client
             .query<CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables>({
                 query: SEARCH_CONTENT_ENTRIES,
@@ -132,11 +108,18 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                 fetchPolicy: "network-only"
             })
             .then(({ data }) => {
-                const latestEntryData = convertQueryDataToEntryList(data.content.data);
-                assignValueEntry(valueEntry, latestEntryData);
+                const latestEntryData = convertReferenceEntriesToOptionCollection(
+                    data.content.data
+                );
+                if (valueEntry) {
+                    latestEntryData[valueEntry.entryId] = valueEntry;
+                }
 
                 setLatestEntries(latestEntryData);
-                Object.assign(allEntries.current, latestEntryData);
+                allEntries.current = {
+                    ...allEntries.current,
+                    ...latestEntryData
+                };
             });
     }, [modelsHash]);
 
@@ -148,9 +131,11 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
 
         const entry = allEntries.current[valueHash];
         if (entry) {
-            // if entry exists set valueEntry to that one so we do not load new one
+            /**
+             * if entry exists set valueEntry to that one so we do not load new one
+             */
             setValueEntry(() => {
-                return convertDataEntryToOption(entry);
+                return entry;
             });
             return;
         }
@@ -172,27 +157,29 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             })
             .then(res => {
                 setLoading(false);
-                const dataEntry = res.data.published.data || res.data.latest.data;
+                const dataEntry = res.data.latest.data;
                 if (!dataEntry) {
                     return;
                 }
-                const entry: ReferenceDataEntry = {
-                    ...dataEntry,
-                    latest: res.data.latest.data ? res.data.latest.data.id : null,
+                const option: OptionItem = {
+                    ...convertReferenceEntryToOption(dataEntry),
+                    latest: dataEntry.id,
                     published: res.data.published.data ? res.data.published.data.id : null
                 };
-                allEntries.current[dataEntry.entryId] = entry;
+                allEntries.current[option.entryId] = option;
                 setLatestEntries(prev => {
                     return {
                         ...prev,
-                        [dataEntry.entryId]: {
-                            ...entry
+                        [option.entryId]: {
+                            ...option
                         }
                     };
                 });
-                // Calculate a couple of props for the Autocomplete component.
+                /**
+                 * Calculate a couple of props for the Autocomplete component.
+                 */
                 setValueEntry(() => {
-                    return convertDataEntryToOption(dataEntry);
+                    return option;
                 });
             });
     }, [valueHash, modelsHash]);
@@ -206,7 +193,6 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             });
             bind.onChange({
                 modelId: entry.modelId,
-                entryId: entry.entryId,
                 id: entry.id
             });
             return;
@@ -216,12 +202,16 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         bind.onChange(null);
     }, []);
 
-    // Format options for the Autocomplete component.
-    const options = useMemo(() => getOptions(Object.values(entries)), [entries]);
+    /**
+     * Format options for the Autocomplete component.
+     */
+    const options = useMemo(() => Object.values(entries), [entries]);
 
-    // Format default options for the Autocomplete component.
+    /**
+     * Format default options for the Autocomplete component.
+     */
     const defaultOptions = useMemo(() => {
-        return getOptions(Object.values(latestEntries));
+        return Object.values(latestEntries);
     }, [latestEntries]);
 
     const outputOptions: OptionItem[] = (search && options ? options : defaultOptions) || [];

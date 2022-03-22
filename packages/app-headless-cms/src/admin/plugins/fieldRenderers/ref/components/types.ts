@@ -6,8 +6,13 @@ export interface OptionItem {
     modelId: string;
     modelName: string;
     name: string;
-    published: boolean;
+    published: string | null;
+    latest: string | null;
     status: CmsContentEntryStatusType;
+}
+
+export interface OptionItemCollection {
+    [key: string]: OptionItem;
 }
 
 export interface CmsReferenceContentEntry {
@@ -16,9 +21,14 @@ export interface CmsReferenceContentEntry {
     title: string;
     status: CmsContentEntryStatusType;
     model: Pick<CmsModel, "modelId" | "name">;
+    published?: {
+        id: string;
+        entryId: string;
+        title: string;
+    };
 }
 
-export interface ReferenceDataEntry extends CmsReferenceContentEntry {
-    published: string | null;
-    latest: string | null;
-}
+// export interface ReferenceDataEntry extends CmsReferenceContentEntry {
+//     published: string | null;
+//     latest: string | null;
+// }

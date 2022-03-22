@@ -12,6 +12,11 @@ data {
         modelId
         name
     }
+    published {
+        id
+        entryId
+        title
+    }
 }
 error {
     code

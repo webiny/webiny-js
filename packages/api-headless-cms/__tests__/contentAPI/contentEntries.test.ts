@@ -80,7 +80,8 @@ describe("Content entries", () => {
         getContentEntry,
         getLatestContentEntry,
         getPublishedContentEntry,
-        createFruitFrom
+        createFruitFrom,
+        searchContentEntries
     } = useFruitManageHandler({
         ...manageOpts
     });
@@ -460,6 +461,93 @@ describe("Content entries", () => {
                             model: {
                                 modelId: strawberry.meta.modelId,
                                 name: "Fruit"
+                            }
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should search for latest entries in given models", async () => {
+        const { apple, banana, strawberry } = await setupFruits();
+
+        const [secondBananaResponse] = await createFruitFrom({
+            revision: banana.id
+        });
+        expect(secondBananaResponse).toMatchObject({
+            data: {
+                createFruitFrom: {
+                    data: {
+                        id: (banana.id || "").replace("0001", "0002"),
+                        entryId: banana.entryId,
+                        meta: {
+                            version: 2,
+                            status: "draft"
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const secondBanana = secondBananaResponse.data.createFruitFrom.data;
+
+        await waitFruits("should be second banana as draft", [
+            {
+                id: apple.id,
+                status: "published"
+            },
+            {
+                id: secondBanana.id,
+                status: "draft"
+            },
+            {
+                id: strawberry.id,
+                status: "published"
+            }
+        ]);
+
+        const [response] = await searchContentEntries({
+            modelsIds: ["fruit"]
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                entries: {
+                    data: [
+                        {
+                            id: secondBanana.id,
+                            entryId: secondBanana.entryId,
+                            title: secondBanana.name,
+                            status: secondBanana.meta.status,
+                            published: {
+                                id: banana.id,
+                                entryId: banana.entryId,
+                                title: banana.name
+                            }
+                        },
+                        {
+                            id: strawberry.id,
+                            entryId: strawberry.entryId,
+                            title: strawberry.name,
+                            status: strawberry.meta.status,
+                            published: {
+                                id: strawberry.id,
+                                entryId: strawberry.entryId,
+                                title: strawberry.name
+                            }
+                        },
+                        {
+                            id: apple.id,
+                            entryId: apple.entryId,
+                            title: apple.name,
+                            status: apple.meta.status,
+                            published: {
+                                id: apple.id,
+                                entryId: apple.entryId,
+                                title: apple.name
                             }
                         }
                     ],

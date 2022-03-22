@@ -38,7 +38,9 @@ import {
     GET_LATEST_CONTENT_ENTRY_QUERY,
     GET_LATEST_CONTENT_ENTRIES_QUERY,
     GET_PUBLISHED_CONTENT_ENTRIES_QUERY,
-    GET_PUBLISHED_CONTENT_ENTRY_QUERY
+    GET_PUBLISHED_CONTENT_ENTRY_QUERY,
+    SEARCH_CONTENT_ENTRIES_QUERY,
+    SearchContentEntriesVariables
 } from "./graphql/contentEntry";
 import { ContextPlugin } from "@webiny/handler";
 import { TestContext } from "./types";
@@ -239,6 +241,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async getPublishedContentEntries(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PUBLISHED_CONTENT_ENTRIES_QUERY, variables } });
+        },
+        async searchContentEntries(variables: SearchContentEntriesVariables) {
+            return invoke({ body: { query: SEARCH_CONTENT_ENTRIES_QUERY, variables } });
         }
     };
 };

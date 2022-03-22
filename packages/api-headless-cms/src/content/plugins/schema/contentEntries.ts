@@ -201,12 +201,19 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 name: String
             }
 
+            type CmsPublishedContentEntry {
+                id: ID!
+                entryId: String!
+                title: String
+            }
+
             type CmsContentEntry {
                 id: ID!
                 entryId: String!
                 model: CmsModelMeta
                 status: String
                 title: String
+                published: CmsPublishedContentEntry
             }
 
             type CmsContentEntriesResponse {
@@ -247,6 +254,32 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             }
         `,
         resolvers: {
+            CmsContentEntry: {
+                published: async (parent, _, context) => {
+                    try {
+                        const models = await context.cms.listModels();
+                        const model = models.find(({ modelId }) => {
+                            return parent.model.modelId === modelId;
+                        });
+                        if (!model) {
+                            return null;
+                        }
+                        const [entry] = await context.cms.getPublishedEntriesByIds(model, [
+                            parent.id
+                        ]);
+                        if (!entry) {
+                            return null;
+                        }
+                        return {
+                            id: entry.id,
+                            entryId: entry.entryId,
+                            title: getEntryTitle(model, entry)
+                        };
+                    } catch (ex) {
+                        return null;
+                    }
+                }
+            },
             Query: {
                 async searchContentEntries(_, args: any, context) {
                     const { modelIds, query, limit = 10 } = args;
@@ -267,18 +300,20 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                                 where
                             });
 
-                            return items.map((entry: CmsEntry) => ({
-                                id: entry.id,
-                                entryId: entry.entryId,
-                                model: {
-                                    modelId: model.modelId,
-                                    name: model.name
-                                },
-                                status: entry.status,
-                                title: getEntryTitle(model, entry),
-                                // We need `savedOn` to sort entries from latest to oldest
-                                savedOn: entry.savedOn
-                            }));
+                            return items.map((entry: CmsEntry) => {
+                                return {
+                                    id: entry.id,
+                                    entryId: entry.entryId,
+                                    model: {
+                                        modelId: model.modelId,
+                                        name: model.name
+                                    },
+                                    status: entry.status,
+                                    title: getEntryTitle(model, entry),
+                                    // We need `savedOn` to sort entries from latest to oldest
+                                    savedOn: entry.savedOn
+                                };
+                            });
                         });
 
                     const entries = await Promise.all(getters).then(results =>

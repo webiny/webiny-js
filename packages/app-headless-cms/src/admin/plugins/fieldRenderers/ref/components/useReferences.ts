@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
-import { getOptions } from "./getOptions";
 import { CmsEditorField, CmsModel } from "~/types";
 import {
     SEARCH_CONTENT_ENTRIES,
@@ -12,37 +11,24 @@ import {
     CmsEntryGetEntryVariable
 } from "./graphql";
 import { BindComponentRenderProp } from "@webiny/form";
-import { CmsReferenceContentEntry } from "./types";
-
-export interface ReferencedCmsEntry {
-    id: string;
-    entryId: string;
-    modelId: string;
-    modelName: string;
-    published: boolean;
-    name: string;
-}
-
-function distinctBy(
-    key: keyof CmsReferenceContentEntry,
-    array: CmsReferenceContentEntry[]
-): CmsReferenceContentEntry[] {
-    const keys = array.map(value => value[key]);
-    return array.filter((value, index) => keys.indexOf(value[key]) === index);
-}
+import { CmsReferenceContentEntry, OptionItem, OptionItemCollection } from "./types";
+import {
+    convertReferenceEntriesToOptionCollection,
+    convertReferenceEntryToOption
+} from "~/admin/plugins/fieldRenderers/ref/components/helpers";
 
 interface UseReferencesParams {
     bind: BindComponentRenderProp;
     field: CmsEditorField;
 }
 export const useReferences = ({ bind, field }: UseReferencesParams) => {
-    const allEntries = useRef<CmsReferenceContentEntry[]>([]);
+    const allEntries = useRef<OptionItemCollection>({});
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const [entries, setEntries] = useState<CmsReferenceContentEntry[]>([]);
-    const [latestEntries, setLatestEntries] = useState<CmsReferenceContentEntry[]>([]);
-    const [valueEntries, setValueEntries] = useState<ReferencedCmsEntry[]>([]);
+    const [entries, setEntries] = useState<OptionItemCollection>({});
+    const [latestEntries, setLatestEntries] = useState<OptionItem[]>([]);
+    const [valueEntries, setValueEntries] = useState<OptionItem[]>([]);
 
     const models = (field.settings ? field.settings.models || [] : []) as Pick<
         CmsModel,
@@ -62,12 +48,21 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
             CmsEntrySearchQueryVariables
         >({
             query: SEARCH_CONTENT_ENTRIES,
-            variables: { modelIds: models.map(m => m.modelId), query: search }
+            variables: {
+                modelIds: models.map(m => m.modelId),
+                query: search
+            }
         });
         setLoading(false);
 
-        allEntries.current = distinctBy("id", [...allEntries.current, ...data.content.data]);
-        setEntries(data.content.data);
+        const collection = convertReferenceEntriesToOptionCollection(data.content.data);
+
+        allEntries.current = {
+            ...allEntries.current,
+            ...collection
+        };
+
+        setEntries(collection);
     };
 
     useEffect(() => {
@@ -89,8 +84,11 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                 fetchPolicy: "network-only"
             })
             .then(({ data }) => {
-                setLatestEntries(data.content.data);
-                allEntries.current = [...data.content.data];
+                const collection = convertReferenceEntriesToOptionCollection(data.content.data);
+                setLatestEntries(Object.values(collection));
+                allEntries.current = {
+                    ...collection
+                };
             });
     }, [modelsHash]);
 
@@ -131,16 +129,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                 }, latest);
 
                 // Calculate a couple of props for the Autocomplete component.
-                setValueEntries(
-                    Object.values(entries).map(entry => ({
-                        id: entry.id,
-                        entryId: entry.entryId,
-                        modelId: entry.model.modelId,
-                        modelName: entry.model.name,
-                        published: entry.status === "published",
-                        name: entry.title
-                    }))
-                );
+                setValueEntries(Object.values(entries).map(convertReferenceEntryToOption));
             });
     }, []);
 
@@ -148,7 +137,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
      * onChange callback will update internal component state using the previously loaded entries by IDs.
      * It will also format the value to store to the DB.
      */
-    const onChange = useCallback((values: ReferencedCmsEntry[]): void => {
+    const onChange = useCallback((values: OptionItem[]): void => {
         setSearch("");
         setValueEntries(values);
 
@@ -163,10 +152,10 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
     }, []);
 
     // Format options for the Autocomplete component.
-    const options = useMemo(() => getOptions(entries), [entries]);
+    const options = useMemo(() => Object.values(entries), [entries]);
 
     // Format default options for the Autocomplete component.
-    const defaultOptions = useMemo(() => getOptions(latestEntries), [latestEntries]);
+    const defaultOptions = useMemo(() => Object.values(latestEntries), [latestEntries]);
 
     return {
         onChange,

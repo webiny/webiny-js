@@ -8,13 +8,13 @@ const ModelId = styled("span")({
     color: "var(--mdc-theme-text-secondary-on-background) !important"
 });
 
-export interface Props {
+export interface RenderItemProps {
     name: string;
     modelName: string;
     modelId: string;
     id: string;
 }
-export const renderItem: React.FC<Props> = props => {
+export const renderItem: React.FC<RenderItemProps> = props => {
     return (
         <Typography use={"body2"}>
             <Link to={createEntryUrl(props)}>{props.name}</Link>

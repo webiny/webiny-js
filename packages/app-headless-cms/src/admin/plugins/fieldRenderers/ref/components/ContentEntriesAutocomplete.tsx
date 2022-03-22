@@ -3,12 +3,12 @@ import debounce from "lodash/debounce";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { i18n } from "@webiny/app/i18n";
-import { Link, useRouter } from "@webiny/react-router";
+import { Link } from "@webiny/react-router";
 import { useNewRefEntry } from "../hooks/useNewRefEntry";
 import { useReference } from "./useReference";
 import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
-import { CmsEditorField } from "~/types";
+import { CmsContentEntryStatusType, CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { css } from "emotion";
 import { ReactComponent as ViewIcon } from "~/admin/icons/visibility.svg";
@@ -36,7 +36,8 @@ const viewIconCssClass = css({
     display: "table-cell",
     verticalAlign: "middle",
     marginLeft: "10px",
-    cursor: "pointer"
+    cursor: "pointer",
+    opacity: 0.5
 });
 
 const entryStatusCssClass = css({
@@ -44,10 +45,11 @@ const entryStatusCssClass = css({
     verticalAlign: "middle"
 });
 
-const getItemOption = (options: OptionItem[], entryId: string): OptionItem | null => {
-    if (!entryId || !options || options.length === 0) {
+const getItemOption = (options: OptionItem[], id: string): OptionItem | null => {
+    if (!id || !options || options.length === 0) {
         return null;
     }
+    const [entryId] = id.split("#");
     return options.find(item => item.entryId === entryId) || null;
 };
 
@@ -55,20 +57,23 @@ interface ViewEntryProps {
     item: OptionItem;
 }
 const ViewEntry: React.FC<ViewEntryProps> = ({ item }) => {
-    const { history } = useRouter();
-    const onClick = useCallback(() => {
-        history.push(createEntryUrl(item));
-    }, [item]);
+    const url = createEntryUrl(item);
     return (
-        <a onClick={onClick}>
+        <a href={url}>
             <ViewIcon />
         </a>
     );
 };
 
-const getEntryStatus = (item: OptionItem): string => {
-    return ["published", "draft", "unpublished"].includes(item.status) ? item.status : "draft";
+const getEntryStatus = (item: OptionItem): CmsContentEntryStatusType => {
+    if (item.status === "published") {
+        return "published";
+    } else if (item.status === "unpublished" || (!item.published && item.status === "draft")) {
+        return "unpublished";
+    }
+    return "draft";
 };
+
 interface EntryStatusProps {
     item: OptionItem;
 }
@@ -87,7 +92,8 @@ const EntryStatus: React.FC<EntryStatusProps> = ({ item }) => {
 };
 
 const getItemStatusText = (item: OptionItem): string => {
-    switch (item.status) {
+    const status = getEntryStatus(item);
+    switch (status) {
         case "published":
             return "This entry is published.";
         case "unpublished":
@@ -120,11 +126,11 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
 
     const renderVisualHelperIconsComponent = useCallback(() => {
-        if (!bind.value || !bind.value.entryId) {
+        if (!bind.value || !bind.value.id) {
             return null;
         }
 
-        const item = getItemOption(options, bind.value.entryId);
+        const item = getItemOption(options, bind.value.id);
         if (!item) {
             return null;
         }
