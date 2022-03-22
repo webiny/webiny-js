@@ -8,28 +8,21 @@ const backStyles = css({
     marginLeft: -10
 });
 
-interface MatchInput {
-    params?: {
-        id?: string;
-    };
-}
-
-const getIdFromMatch = (match: MatchInput | null): string => {
-    if (!match || !match.params) {
-        return "";
-    }
-    return match.params.id || "";
-};
-
 const BackButton: React.FC = () => {
-    const { match, history } = useRouter();
+    const { params, history } = useRouter();
 
-    const id = getIdFromMatch(match as unknown as MatchInput);
+    const id = params ? params["id"] : null;
     return (
         <IconButton
             data-testid="pb-editor-back-button"
             className={backStyles}
-            onClick={() => history.push(`/page-builder/pages?id=${id}`)}
+            onClick={() => {
+                if (!id) {
+                    console.error("Could not determine PageID from params.");
+                    return;
+                }
+                history.push(`/page-builder/pages?id=${id}`);
+            }}
             icon={<BackIcon />}
         />
     );

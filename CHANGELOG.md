@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
+
+
+### Bug Fixes
+
+* **app-page-builder:** cypress fails on create page ([#2280](https://github.com/webiny/webiny-js/issues/2280)) ([ac333cb](https://github.com/webiny/webiny-js/commit/ac333cba32336c8cb323add500f11968bae92c62))
+* ts build and react-router v6 ([#2277](https://github.com/webiny/webiny-js/issues/2277)) ([da4e0b8](https://github.com/webiny/webiny-js/commit/da4e0b8e05c97f1163a1f836e243c687037370ac))
+
+
+
+
+
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* **v5:** page builder ([#2275](https://github.com/webiny/webiny-js/issues/2275)) ([6fead56](https://github.com/webiny/webiny-js/commit/6fead5669bcc630851786b1095760c6e05933a4d))
+
+
+
+
+
+# [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
+
+
+### Bug Fixes
+
+* **api-authentication-cognito:** use preferred_username if exists ([22e4949](https://github.com/webiny/webiny-js/commit/22e49490447dbf8e84da6de35343b41b265365f6))
+* **api-headless-cms:** error when storing empty multi ref field ([#2273](https://github.com/webiny/webiny-js/issues/2273)) ([e905f63](https://github.com/webiny/webiny-js/commit/e905f63dd1bf94c8fe7162c0df80f1268eb84576))
+* **app-page-builder:** add any type to pb theme plugin ([e8f12e0](https://github.com/webiny/webiny-js/commit/e8f12e03bda9bfbb43f62679279a38c9624ced92))
+* **app-page-builder:** restore slug hyphen support [skip ci] ([bf0bdb6](https://github.com/webiny/webiny-js/commit/bf0bdb69e26787a2b60d5f828d683001c9548b98))
+* **cwp-template-aws:** enable Cognito preferred_username in Pulumi config ([cc53af1](https://github.com/webiny/webiny-js/commit/cc53af14efc92808e3a4a32b59a3358fa4bffeb9))
+* **cwp-template-aws:** pb theme plugin type ([a0a05e2](https://github.com/webiny/webiny-js/commit/a0a05e201181c7d6c029a9b628cc2b80ebb65afc))
+* **fortawesome:** update dependency versions ([b5ced14](https://github.com/webiny/webiny-js/commit/b5ced14b40b8d2af620876e066670fcffeb4a6ec))
+* **project-utils:** improve the behavior of webpack define plugin ([#2260](https://github.com/webiny/webiny-js/issues/2260)) ([c5a3558](https://github.com/webiny/webiny-js/commit/c5a3558a8b65228e529f900a85a90f6ce6ab1624))
+* **react-rich-text-renderer:** compile to commonJS ([#2262](https://github.com/webiny/webiny-js/issues/2262)) ([ea802fb](https://github.com/webiny/webiny-js/commit/ea802fb58f77697e8a41caa0fb3e5f5c6fc72981))
+* api key endpoints ([7886d4b](https://github.com/webiny/webiny-js/commit/7886d4b52da23ecd113b0e058f6ca07a3d396551))
+* api page builder installation ([6bf2186](https://github.com/webiny/webiny-js/commit/6bf2186d4b6c1ceb0311b8e18ff142cd8812ea43))
+* disable experimental WCP-related functionality ([27be4ab](https://github.com/webiny/webiny-js/commit/27be4ab4107cda59552e3129aa7948a89e063007))
+* types after merge ([#2257](https://github.com/webiny/webiny-js/issues/2257)) ([157e4d2](https://github.com/webiny/webiny-js/commit/157e4d2bf09011a231b91372e11481bd843f490a))
+
+
+### Features
+
+* add env types to cwp-template-aws ([1f312ef](https://github.com/webiny/webiny-js/commit/1f312ef47e8e69b51c321c087d046d4d658ab2e1))
+* enable sourcemaps for lambda functions ([#2272](https://github.com/webiny/webiny-js/issues/2272)) ([0694711](https://github.com/webiny/webiny-js/commit/0694711dca6b3c8f9f91858f97871d1660ad30df))
+* strict typescript ([#2235](https://github.com/webiny/webiny-js/issues/2235)) ([c7c49e7](https://github.com/webiny/webiny-js/commit/c7c49e744667112a0013ea5370644f4df7eb800a))
+* ts no property access from index ([#2258](https://github.com/webiny/webiny-js/issues/2258)) ([7510c75](https://github.com/webiny/webiny-js/commit/7510c7549bf8587c21aca9cfb71dd45d0d22b892))
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package webiny-js

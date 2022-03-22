@@ -48,13 +48,14 @@ function getClientEnvironment(publicUrl) {
             }
         );
 
-    // Stringify all values so we can feed into Webpack DefinePlugin
-    const stringified = {
-        "process.env": Object.keys(raw).reduce((env, key) => {
-            env[key] = JSON.stringify(raw[key]);
-            return env;
-        }, {})
-    };
+    // Stringify all values so we can feed into Webpack DefinePlugin.
+    // Provide values one by one, not as a single process.env object,
+    // because otherwise plugin will put a big JSON object every time process.env is used in code.
+    // This way minifier also removes reduntant code on prod (like if(process.env.NODE_ENV === 'development')).
+    const stringified = {};
+    for (const key of Object.keys(raw)) {
+        stringified[`process.env.${key}`] = JSON.stringify(raw[key]);
+    }
 
     return { raw, stringified };
 }

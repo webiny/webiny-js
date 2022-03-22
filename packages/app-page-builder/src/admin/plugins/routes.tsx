@@ -79,14 +79,16 @@ const plugins: RoutePlugin[] = [
             <Route
                 exact
                 path="/page-builder/editor/:id"
-                render={({ location }) => (
-                    <SecureRoute permission={ROLE_PB_PAGES}>
-                        <EditorPluginsLoader location={location}>
-                            <Helmet title={"Page Builder - Edit page"} />
-                            <Editor />
-                        </EditorPluginsLoader>
-                    </SecureRoute>
-                )}
+                render={({ location }) => {
+                    return (
+                        <SecureRoute permission={ROLE_PB_PAGES}>
+                            <EditorPluginsLoader location={location}>
+                                <Helmet title={"Page Builder - Edit page"} />
+                                <Editor />
+                            </EditorPluginsLoader>
+                        </SecureRoute>
+                    );
+                }}
             />
         )
     }

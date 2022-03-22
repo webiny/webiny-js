@@ -20,10 +20,10 @@ import { CmsModel } from "~/types";
 const t = i18n.ns("app-headless-cms/admin/content-entries");
 
 const ContentEntries: React.FC = () => {
-    const { match } = useRouter();
+    const { params } = useRouter();
     const [contentModel, setContentModel] = useState<CmsModel>();
     const { history } = useRouter();
-    const modelId = get(match, "params.modelId");
+    const modelId = params ? params["modelId"] : null;
     const { showSnackbar } = useSnackbar();
 
     useQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>(GET_CONTENT_MODEL, {

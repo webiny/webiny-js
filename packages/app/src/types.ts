@@ -58,7 +58,8 @@ export interface ImageProps {
     title?: string;
     alt?: string;
     style?: CSSProperties;
-    width?: number;
+    width?: string | number;
+    height?: string | number;
 }
 
 /**
