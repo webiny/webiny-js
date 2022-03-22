@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package create-webiny-project

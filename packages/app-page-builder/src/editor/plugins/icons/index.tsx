@@ -20,6 +20,7 @@ const plugin: PbIconsPlugin = {
     name: "pb-icons-fontawesome",
     type: "pb-icons",
     init() {
+        // @ts-ignore
         library.add(fab, fas, far);
         const definitions = (library as any).definitions as unknown as Record<IconPrefix, IconName>;
         /**

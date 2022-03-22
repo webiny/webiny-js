@@ -13,7 +13,7 @@ interface CreateListResponseParams<T> {
     limit: number;
 }
 
-export const createListResponse = <T>(params: CreateListResponseParams<T>): [T[], MetaResponse] => {
+export function createListResponse<T>(params: CreateListResponseParams<T>): [T[], MetaResponse] {
     const { items: initialItems, after, totalCount, limit } = params;
     let start = Number(decodeCursor(after));
     if (isNaN(start) === true) {
@@ -32,4 +32,4 @@ export const createListResponse = <T>(params: CreateListResponseParams<T>): [T[]
     };
 
     return [items, meta];
-};
+}
