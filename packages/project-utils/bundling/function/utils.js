@@ -7,7 +7,6 @@ const getDefaults = cwd => ({
 });
 
 const getTelemetryFunctionPath = () => {
-    console.log("iiiiiiiiiiiiiiiiiiiiiii");
     return path.join(getProject().root, ".webiny/telemetryFunction.js");
 };
 

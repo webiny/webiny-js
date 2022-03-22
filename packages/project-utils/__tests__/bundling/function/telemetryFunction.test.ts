@@ -44,7 +44,6 @@ beforeEach(() => {
     fs.writeFileSync(handlerPath, "");
 
     // Now we can export the telemetry functions
-    console.log(getTelemetryFunctionPath());
     const telemetry = require(getTelemetryFunctionPath());
     postTelemetryData = telemetry.postTelemetryData;
     localData = telemetry.localData;
@@ -97,7 +96,7 @@ describe("Telemetry functions", () => {
             const result = await postTelemetryData(mockSchema);
 
             const { message } = result.error || {};
-            expect(message).toEqual('project.env "undefined" not found.');
+            expect(message).toEqual("Internal Server Error");
         });
     });
 
