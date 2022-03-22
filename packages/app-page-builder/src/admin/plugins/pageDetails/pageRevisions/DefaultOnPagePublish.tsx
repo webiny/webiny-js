@@ -78,6 +78,13 @@ export const DefaultOnPagePublish = () => {
         return onPagePublish(next => async params => {
             const result = await next(params);
 
+            /**
+             * If there is error in one of previous hooks. Don't execute the action and just return the result.
+             */
+            if (result.error) {
+                return result;
+            }
+
             const { error, data } = await handlePublishPage(result.page, result.options);
 
             return { ...merge(result, "page", data), error };
