@@ -47,6 +47,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
+    "@webiny/api-headless-cms-ddb": "^5.24.0",
     "@webiny/api-security-so-ddb": "^5.24.0",
     "@webiny/api-tenancy-so-ddb": "^5.24.0",
     "@webiny/cli": "^5.24.0",

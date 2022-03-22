@@ -3,6 +3,9 @@
   "include": ["src"],
   "references": [
     {
+      "path": "../api-headless-cms-ddb/tsconfig.build.json"
+    },
+    {
       "path": "../api-headless-cms/tsconfig.build.json"
     },
     {
