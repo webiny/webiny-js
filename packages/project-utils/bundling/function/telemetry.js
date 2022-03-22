@@ -1,11 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 const fetch = require("node-fetch");
-const { getTelemetryFunctionPath } = require("@webiny/cli/utils");
+const { getTelemetryFunctionPath } = require("./utils");
 
-const WCP_API_CLIENTS_URL = `${WCP_API_URL}/clients/latest`;
+const WCP_API_CLIENTS_URL = `${process.env.WCP_API_URL}/clients/latest`;
 
 async function downloadTelemetryFunction() {
+    console.log(WCP_API_CLIENTS_URL);
     const response = await fetch(WCP_API_CLIENTS_URL);
 
     const telemetryCode = await response.text();

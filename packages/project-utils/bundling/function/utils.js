@@ -1,4 +1,5 @@
 const path = require("path");
+const { getProject } = require("@webiny/cli/utils");
 
 const getDefaults = cwd => ({
     outputPath: path.join(cwd, "build"),
@@ -6,6 +7,7 @@ const getDefaults = cwd => ({
 });
 
 const getTelemetryFunctionPath = () => {
+    console.log("iiiiiiiiiiiiiiiiiiiiiii");
     return path.join(getProject().root, ".webiny/telemetryFunction.js");
 };
 
