@@ -10,7 +10,7 @@ const t = i18n.ns("app-apw/admin/content-reviews/datalist/modal");
 interface ContentReviewsFilterModalProps {
     status: string;
     setStatus: (value: any) => void;
-    sort: string;
+    sort: string | null;
     setSort: (value: any) => void;
     sorters: { label: string; value: string }[];
 }
@@ -40,7 +40,7 @@ export const ContentReviewsFilterModal = (props: ContentReviewsFilterModalProps)
                 </Cell>
                 <Cell span={12}>
                     <Select
-                        value={sort}
+                        value={sort || ""}
                         onChange={setSort}
                         label={t`Sort by`}
                         description={t`Sort reviews by.`}

@@ -84,7 +84,7 @@ export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
                     <Box>
                         <TypographyTitle use={"subtitle1"}>{step.title}</TypographyTitle>
                     </Box>
-                    {createdOn && (
+                    {createdOn ? (
                         <Box display={"flex"}>
                             <TypographyBody use={"caption"}>By:&nbsp;&nbsp;</TypographyBody>
                             <TypographySecondary
@@ -92,7 +92,7 @@ export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
                                 style={{ textTransform: "capitalize" }}
                             >
                                 {t`{author}`({
-                                    author: createdBy.displayName
+                                    author: createdBy?.displayName
                                 })}
                             </TypographySecondary>
                             <TypographySecondary use={"caption"}>
@@ -102,8 +102,8 @@ export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
                                 })}
                             </TypographySecondary>
                         </Box>
-                    )}
-                    {step.status === ApwContentReviewStepStatus.ACTIVE && (
+                    ) : null}
+                    {step.status === ApwContentReviewStepStatus.ACTIVE ? (
                         <>
                             <Columns space={2.5} alignItems={"center"}>
                                 <Box>
@@ -126,7 +126,7 @@ export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
                                 </BadgeBox>
                             </Columns>
                         </>
-                    )}
+                    ) : null}
                 </Stack>
             </Columns>
         </PanelListItem>

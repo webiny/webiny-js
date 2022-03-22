@@ -24,10 +24,10 @@ const defaultStyles = {
 interface ApwFileProps {
     value: ApwMediaFile;
     onChange: Function;
-    showFileManager: Function;
+    showFileManager: () => void;
 }
 
-export const DefaultRenderImagePreview = renderImageProps => (
+export const DefaultRenderImagePreview = (renderImageProps: any) => (
     <Image {...renderImageProps} {...changeRequestImagePreviewProps} />
 );
 
@@ -40,11 +40,11 @@ export const ApwFile: React.FC<ApwFileProps> = props => {
         return imagePlugins.some(extension => url.includes(extension));
     }, []);
 
-    const defaultRenderImagePreview = renderImageProps => (
+    const defaultRenderImagePreview = (renderImageProps: any) => (
         <Image {...renderImageProps} {...imagePreviewProps} />
     );
 
-    const renderImagePreview = value => {
+    const renderImagePreview = (value: any) => {
         if (value && !isImage(value.src)) {
             return createRenderImagePreview({ value, imagePreviewProps });
         }

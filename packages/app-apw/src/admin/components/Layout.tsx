@@ -63,11 +63,11 @@ const StyledBox = ({
     alignItems,
     ...props
 }: StyledBoxProps) => {
-    const padding = spacing[props.padding];
-    let paddingTop = spacing[props.paddingTop];
-    let paddingRight = spacing[props.paddingRight];
-    let paddingBottom = spacing[props.paddingBottom];
-    let paddingLeft = spacing[props.paddingLeft];
+    const padding = props.padding ? spacing[props.padding] : undefined;
+    let paddingTop = props.paddingTop ? spacing[props.paddingTop] : undefined;
+    let paddingRight = props.paddingRight ? spacing[props.paddingRight] : undefined;
+    let paddingBottom = props.paddingBottom ? spacing[props.paddingBottom] : undefined;
+    let paddingLeft = props.paddingLeft ? spacing[props.paddingLeft] : undefined;
     if (paddingX) {
         paddingLeft = spacing[paddingX];
         paddingRight = spacing[paddingX];
@@ -77,11 +77,11 @@ const StyledBox = ({
         paddingBottom = spacing[paddingY];
     }
 
-    let margin = spacing[props.margin];
-    let marginTop = spacing[props.marginTop];
-    let marginRight = spacing[props.marginRight];
-    let marginBottom = spacing[props.marginBottom];
-    let marginLeft = spacing[props.marginLeft];
+    let margin = props.margin ? spacing[props.margin] : undefined;
+    let marginTop = props.marginTop ? spacing[props.marginTop] : undefined;
+    let marginRight = props.marginRight ? spacing[props.marginRight] : undefined;
+    let marginBottom = props.marginBottom ? spacing[props.marginBottom] : undefined;
+    let marginLeft = props.marginLeft ? spacing[props.marginLeft] : undefined;
 
     if (marginX) {
         marginLeft = spacing[marginX];
@@ -146,7 +146,7 @@ export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) =
                 if (child === null) {
                     return child;
                 }
-                const childProps = {};
+                const childProps: any = {};
                 if (index > 0) {
                     childProps["marginLeft"] = space;
                 }
@@ -159,7 +159,7 @@ export const Columns: React.FC<ColumnsProps> = ({ children, space, ...props }) =
 
 interface StackProps extends StyledBoxProps {
     space: SpacingScale;
-    children: Array<React.ReactComponentElement<typeof Box | typeof Columns>>;
+    children: Array<React.ReactComponentElement<typeof Box | typeof Columns> | null>;
     className?: string;
 }
 

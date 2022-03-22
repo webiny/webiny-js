@@ -14,7 +14,7 @@ interface UsePublishContentResult {
 
 export const usePublishContent = (): UsePublishContentResult => {
     const [loading, setLoading] = useState<boolean>(false);
-    const { id } = useContentReviewId();
+    const { id } = useContentReviewId() || { id: "" };
     const { showSnackbar } = useSnackbar();
 
     const [publishContent] = useMutation(PUBLISH_CONTENT_MUTATION, {

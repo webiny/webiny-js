@@ -61,7 +61,7 @@ export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => 
                             </Typography>
                         </StatusBox>
                     </Stack>
-                    {latestCommentId && <LatestComment id={latestCommentId} />}
+                    {latestCommentId ? <LatestComment id={latestCommentId} /> : null}
                 </Stack>
             </Box>
             <ContentReviewStatus

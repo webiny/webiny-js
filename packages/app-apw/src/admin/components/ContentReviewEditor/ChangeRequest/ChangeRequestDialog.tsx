@@ -136,7 +136,7 @@ const dialogContainerStyles = css`
 
 const fields = ["title", "body", "media"];
 
-const isValidId = (id: string) => {
+const isValidId = (id: string | null) => {
     if (typeof id !== "string") {
         return false;
     }
@@ -146,7 +146,11 @@ const isValidId = (id: string) => {
 export const ChangeRequestDialog: React.FC = () => {
     const { open, setOpen, changeRequestId, setChangeRequestId } = useChangeRequestDialog();
     const { id: stepId } = useCurrentStepId();
-    const { id: contentReviewId } = useContentReviewId();
+    const useContentReviewIdResult = useContentReviewId();
+    if (!useContentReviewIdResult) {
+        return null;
+    }
+    const { id: contentReviewId } = useContentReviewIdResult;
     const { create, changeRequest, update } = useChangeRequest({ id: changeRequestId });
 
     const resetFormAndCloseDialog = () => {
@@ -160,10 +164,10 @@ export const ChangeRequestDialog: React.FC = () => {
         if (open) {
             return pick(changeRequest, fields);
         }
-        return null;
+        return {};
     }, [open, changeRequest]);
 
-    const onSubmit = async formData => {
+    const onSubmit = async (formData: any) => {
         const data = {
             ...formData,
             step: `${contentReviewId}#${stepId}`
@@ -196,7 +200,11 @@ export const ChangeRequestDialog: React.FC = () => {
                     </DialogContent>
                     <DialogActions>
                         <ButtonDefault onClick={resetFormAndCloseDialog}>{t`Cancel`}</ButtonDefault>
-                        <ButtonDefault onClick={props.submit}>{t`Submit`}</ButtonDefault>
+                        <ButtonDefault
+                            onClick={() => {
+                                props.submit();
+                            }}
+                        >{t`Submit`}</ButtonDefault>
                     </DialogActions>
                 </UiDialog.Dialog>
             )}

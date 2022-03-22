@@ -58,7 +58,7 @@ export const ApwOnPageDelete = () => {
                 const error = get(response, "data.apw.deleteContentReview.error");
                 if (error) {
                     showSnackbar(error.message);
-                    return;
+                    return next({ ...params, error });
                 } else {
                     showSnackbar(`Content review deleted successfully!`);
                     return next(params);

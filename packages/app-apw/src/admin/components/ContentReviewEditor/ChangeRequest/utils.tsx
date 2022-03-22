@@ -44,7 +44,7 @@ export const createRenderImagePreview = ({
 }: CreateRenderImagePreviewParams) => {
     const fileName = value.name;
 
-    const renderImagePreview = renderImageProps => {
+    const renderImagePreview = (renderImageProps: any) => {
         return (
             <div {...renderImageProps} {...imagePreviewProps}>
                 <div className={IconWrapperStyle}>

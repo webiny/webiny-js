@@ -6,7 +6,7 @@ import { LIST_CHANGE_REQUESTS_QUERY } from "../graphql/changeRequest.gql";
 import { ApwChangeRequest } from "~/types";
 import { useChangeRequestStep } from "./useChangeRequest";
 
-const serializeSorters = data => {
+const serializeSorters = (data: any) => {
     if (!data) {
         return data;
     }

@@ -99,7 +99,7 @@ const PbPagesList: React.FC<PbPagesListProps> = ({ bind }) => {
                     useSimpleValues={false}
                     loading={loading}
                     textProp={"title"}
-                    onInput={search => setQuery(search)}
+                    onInput={(search: string) => setQuery(search)}
                 />
             </Box>
         </Stack>
@@ -123,7 +123,7 @@ const PbScopeSettings: React.FC<PbScopeSettingsProps> = ({ Bind, runValidation }
                         name={"scope.data.pages"}
                         validators={runValidation ? validation.create("minLength:1") : noop}
                         beforeChange={(pages, onChange) => {
-                            onChange(pages.map(item => item.pid));
+                            onChange(pages.map((item: any) => item.pid));
                         }}
                     >
                         {bind => <PbPagesList bind={bind} runValidation={runValidation} />}

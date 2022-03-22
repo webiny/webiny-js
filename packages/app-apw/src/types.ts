@@ -69,7 +69,7 @@ export interface ApwContentReviewStep extends ApwWorkflowStep {
     id: string;
     status: ApwContentReviewStepStatus;
     pendingChangeRequests: number;
-    signOffProvidedOn: string;
+    signOffProvidedOn: string | null;
 }
 
 interface BaseFields {

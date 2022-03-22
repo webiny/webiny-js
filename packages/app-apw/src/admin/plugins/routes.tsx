@@ -12,7 +12,7 @@ const ContentReviewEditor = lazy(
     () => import("~/admin/views/contentReviewDashboard/ContentReviewEditor")
 );
 
-const Loader = ({ children, ...props }) => (
+const Loader: React.FC<{ children: React.ReactElement }> = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 

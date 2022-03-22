@@ -14,7 +14,7 @@ import { ApwChangeRequest } from "~/types";
 import { GET_CONTENT_REVIEW_QUERY } from "~/admin/views/contentReviewDashboard/hooks/graphql";
 
 interface UseChangeRequestParams {
-    id?: string;
+    id: string | null;
 }
 
 interface UseChangeRequestResult {
@@ -29,7 +29,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { encodedId: stepId } = useCurrentStepId();
-    const { encodedId, id: contentReviewId } = useContentReviewId();
+    const { encodedId, id: contentReviewId } = useContentReviewId() || { encodedId: "", id: "" };
 
     const step = `${contentReviewId}#${stepId}`;
 
@@ -135,7 +135,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
 
 export const useChangeRequestStep = (): string => {
     const { encodedId: stepId } = useCurrentStepId();
-    const { id: contentReviewId } = useContentReviewId();
+    const { id: contentReviewId } = useContentReviewId() || { id: "" };
 
     return `${contentReviewId}#${stepId}`;
 };

@@ -77,7 +77,7 @@ export const CenterPanel = () => {
         <>
             <PanelBox flex={"1 1 22%"}>
                 <CreateChangeRequest
-                    disabled={currentStep.signOffProvidedOn !== null}
+                    disabled={currentStep !== null && currentStep.signOffProvidedOn !== null}
                     create={() => setOpen(true)}
                 />
                 <ChangeRequestList>
@@ -85,10 +85,12 @@ export const CenterPanel = () => {
                         <ChangeRequestListItem key={item.id} {...item} />
                     ))}
                 </ChangeRequestList>
-                <ProvideSignOff
-                    currentStep={currentStep}
-                    changeRequestsPending={changeRequestsPending}
-                />
+                {currentStep && (
+                    <ProvideSignOff
+                        currentStep={currentStep}
+                        changeRequestsPending={changeRequestsPending}
+                    />
+                )}
             </PanelBox>
             <Switch>
                 <Route exact path={path}>

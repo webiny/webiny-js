@@ -11,7 +11,7 @@ interface UsePbPagesResult {
     query: string;
     setQuery: (query: string) => void;
     options: Record<string, any>[];
-    value: Record<string, any>[];
+    value: Record<"name", string>[];
 }
 
 interface UsePbPagesParams {
@@ -46,14 +46,14 @@ export const usePbPages = ({ bind }: UsePbPagesParams): UsePbPagesResult => {
      * Prepare the list of options for the AutoComplete.
      */
     const options = useMemo(
-        () => pagesList.map(page => pick(page, ["title", "id", "pid"])),
+        () => pagesList.map((page: any) => pick(page, ["title", "id", "pid"])),
         [pagesList]
     );
     /**
      * Prepare value for the AutoComplete.
      */
     const value = useMemo(
-        () => options.filter(item => pageIds.includes(item.pid)),
+        () => options.filter((item: any) => pageIds.includes(item.pid)),
         [options, pageIds]
     );
 

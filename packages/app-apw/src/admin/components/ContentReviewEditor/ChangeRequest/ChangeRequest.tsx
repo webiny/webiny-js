@@ -81,6 +81,10 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
         dataTestId: "apw-content-review-editor-change-request-delete-dialog"
     });
 
+    const handleResolve = async (resolved: boolean) => {
+        await markResolved(!resolved);
+    };
+
     if (!changeRequest) {
         return null;
     }
@@ -124,8 +128,8 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     </ButtonBox>
                     <ButtonBox paddingY={1}>
                         <DefaultButton
-                            onClick={async () => {
-                                await markResolved(!changeRequest.resolved);
+                            onClick={() => {
+                                handleResolve(changeRequest.resolved);
                             }}
                         >
                             <ButtonIcon icon={<MarkTaskIcon />} />

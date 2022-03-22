@@ -14,7 +14,7 @@ type CreateContentReviewInput = Pick<ApwContentReviewContent, "id" | "type">;
 
 export const ApwOnPublish = () => {
     const pageBuilder = useAdminPageBuilder();
-    const [input, setInput] = useState<CreateContentReviewInput>(null);
+    const [input, setInput] = useState<CreateContentReviewInput | null>(null);
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
@@ -53,6 +53,7 @@ export const ApwOnPublish = () => {
 
     useEffect(() => {
         return pageBuilder.onPagePublish(next => async params => {
+            console.log("APW");
             const { page } = params;
             const input = {
                 id: page.id,
@@ -67,13 +68,27 @@ export const ApwOnPublish = () => {
             const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
             if (contentReviewId) {
                 showSnackbar(`A peer review for this content has been already requested.`);
-                return;
+                return next({
+                    ...params,
+                    error: {
+                        message: `A peer review for this content has been already requested.`,
+                        code: "PEER_REVIEW_REQUESTED",
+                        data: {}
+                    }
+                });
             }
 
             const isReviewRequired = get(data, "apw.isReviewRequired.data.isReviewRequired");
             if (isReviewRequired) {
                 setInput(input);
-                return;
+                return next({
+                    ...params,
+                    error: {
+                        message: `A peer review is required.`,
+                        code: "PEER_REVIEW_REQUIRED",
+                        data: {}
+                    }
+                });
             }
 
             return next(params);

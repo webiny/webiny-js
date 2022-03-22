@@ -88,7 +88,7 @@ const PublishingWorkflowForm = () => {
                                     <Bind name={"steps"}>
                                         {({ value }) =>
                                             value &&
-                                            value.map((_, index) => (
+                                            value.map((_: any, index: number) => (
                                                 <WorkflowStep
                                                     key={index}
                                                     Bind={Bind}
@@ -119,7 +119,11 @@ const PublishingWorkflowForm = () => {
                         <SimpleFormFooter className={formFooterStyle}>
                             <ButtonWrapper>
                                 <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
-                                <ButtonPrimary onClick={form.submit}>{t`Save`}</ButtonPrimary>
+                                <ButtonPrimary
+                                    onClick={event => {
+                                        form.submit(event);
+                                    }}
+                                >{t`Save`}</ButtonPrimary>
                             </ButtonWrapper>
                         </SimpleFormFooter>
                     </SimpleForm>

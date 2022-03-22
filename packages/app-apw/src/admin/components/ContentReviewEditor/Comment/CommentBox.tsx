@@ -106,7 +106,9 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment })
                                         <IconButton
                                             icon={<AttachFileIcon />}
                                             rotate={"45deg"}
-                                            onClick={showFileManager}
+                                            onClick={() => {
+                                                showFileManager();
+                                            }}
                                         />
                                     )}
                                 </FileManager>

@@ -17,7 +17,7 @@ interface UseStepSignOffResult {
 export const useStepSignOff = (): UseStepSignOffResult => {
     const [loading, setLoading] = useState<boolean>(false);
     const { id: stepId } = useCurrentStepId();
-    const { id } = useContentReviewId();
+    const { id } = useContentReviewId() || { id: "" };
     const { showSnackbar } = useSnackbar();
     const changeRequestId = useActiveChangeRequestId();
 

@@ -15,7 +15,7 @@ const statusToBackgroundColor = {
     [ApwChangeRequestStatus.PENDING]: "var(--mdc-theme-on-background)"
 };
 
-const StatusBadge = styled.div<{ status: string }>`
+const StatusBadge = styled.div<{ status: ApwChangeRequestStatus }>`
     width: 10px;
     height: 10px;
     border-radius: 50%;

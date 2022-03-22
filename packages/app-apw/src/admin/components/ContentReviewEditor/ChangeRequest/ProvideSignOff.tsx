@@ -39,7 +39,11 @@ export const ProvideSignOff: React.FC<ProvideSignOffProps> = ({
     if (currentStep && currentStep.signOffProvidedOn) {
         return (
             <SignOffBox paddingX={5}>
-                <ButtonDefault onClick={async () => await retractSignOff()}>
+                <ButtonDefault
+                    onClick={() => {
+                        retractSignOff();
+                    }}
+                >
                     <ButtonIcon icon={<NotInterestedIcon />} />
                     {t`Retract Sign off`}
                 </ButtonDefault>
@@ -54,7 +58,12 @@ export const ProvideSignOff: React.FC<ProvideSignOffProps> = ({
         <SignOffBox paddingX={5}>
             {changeRequestsPending ? (
                 <Tooltip content={disabledButtonTooltip}>
-                    <ButtonPrimary onClick={async () => await provideSignOff()} disabled={true}>
+                    <ButtonPrimary
+                        onClick={() => {
+                            provideSignOff();
+                        }}
+                        disabled={true}
+                    >
                         <ButtonIcon icon={<CheckIcon />} />
                         {provideSignOffButtonLabel}
                     </ButtonPrimary>
@@ -62,7 +71,9 @@ export const ProvideSignOff: React.FC<ProvideSignOffProps> = ({
             ) : (
                 <ButtonPrimary
                     style={SignOffButtonStyles}
-                    onClick={async () => await provideSignOff()}
+                    onClick={() => {
+                        provideSignOff();
+                    }}
                 >
                     <ButtonIcon icon={<CheckIcon />} />
                     {provideSignOffButtonLabel}

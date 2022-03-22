@@ -92,7 +92,7 @@ const PublishingWorkflowsDataList = () => {
             {({ data }) => (
                 <>
                     <ScrollList data-testid="default-data-list" className={listStyles}>
-                        {data.map(item => (
+                        {data.map((item: any) => (
                             <ListItem key={item.id} selected={item.id === currentWorkflowId}>
                                 <ListItemText>
                                     {item.title}

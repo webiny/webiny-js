@@ -52,7 +52,7 @@ const Title: React.FunctionComponent<{ value: string; onChange: Function }> = ({
     onChange
 }) => {
     const [editTitle, setEdit] = useState<boolean>(false);
-    const [stateTitle, setTitle] = useState<string>(null);
+    const [stateTitle, setTitle] = useState<string | null>(null);
     let title = stateTitle === null ? value : stateTitle;
 
     const enableEdit = useCallback(() => setEdit(true), []);

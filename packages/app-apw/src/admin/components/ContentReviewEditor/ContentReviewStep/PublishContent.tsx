@@ -60,7 +60,9 @@ export const PublishContent: React.FC<PublishContentProps> = ({ status }) => {
             <PublishContentBox paddingX={5}>
                 <ButtonDefault
                     style={defaultButtonStyles}
-                    onClick={async () => await unpublishContent()}
+                    onClick={() => {
+                        unpublishContent();
+                    }}
                 >
                     <ButtonIcon icon={<CheckIcon />} />
                     {t`Un-Publish Content`}
@@ -73,7 +75,9 @@ export const PublishContent: React.FC<PublishContentProps> = ({ status }) => {
         <PublishContentBox paddingX={5}>
             <ButtonPrimary
                 style={{ ...defaultButtonStyles, ...activeButtonStyles }}
-                onClick={async () => await publishContent()}
+                onClick={() => {
+                    publishContent();
+                }}
             >
                 <ButtonIcon icon={<CheckIcon />} />
                 {t` Publish Content`}

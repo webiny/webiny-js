@@ -9,7 +9,7 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/data-list");
 
-const serializeSorters = data => {
+const serializeSorters = (data: any) => {
     if (!data) {
         return data;
     }
@@ -30,7 +30,7 @@ interface UsePublishingWorkflowsListHook {
             createdOn: string;
             [key: string]: any;
         }>;
-        currentWorkflowId: string;
+        currentWorkflowId: string | null;
         createPublishingWorkflow: (app: string) => void;
         filter: string;
         setFilter: (filter: string) => void;

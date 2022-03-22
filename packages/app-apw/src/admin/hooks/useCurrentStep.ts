@@ -4,20 +4,27 @@ import { useContentReviewId, useCurrentStepId } from "./useContentReviewId";
 import { ApwContentReviewStep } from "~/types";
 
 interface UseCurrentStepResult {
-    currentStep: ApwContentReviewStep;
+    currentStep: ApwContentReviewStep | null;
     changeRequestsPending: boolean;
 }
 
 export const useCurrentStep = (): UseCurrentStepResult => {
-    const { id } = useContentReviewId();
+    const contentReviewId = useContentReviewId();
+    if (!contentReviewId) {
+        return {
+            currentStep: null,
+            changeRequestsPending: false
+        };
+    }
     const { id: stepId } = useCurrentStepId();
-    const { contentReview } = useContentReview({ id });
+    const { contentReview } = useContentReview({ id: contentReviewId.id });
 
     const currentStep = useMemo(() => {
+        let currentStep;
         if (contentReview && Array.isArray(contentReview.steps)) {
-            return contentReview.steps.find(step => step.id === stepId);
+            currentStep = contentReview.steps.find(step => step.id === stepId);
         }
-        return null;
+        return currentStep || null;
     }, [contentReview, stepId]);
 
     const changeRequestsPending = useMemo(() => {

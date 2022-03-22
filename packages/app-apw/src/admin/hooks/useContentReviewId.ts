@@ -9,8 +9,11 @@ interface UseContentReviewIdResult {
     id: string;
 }
 
-export const useContentReviewId = (): UseContentReviewIdResult => {
+export const useContentReviewId = (): UseContentReviewIdResult | null => {
     const { match } = useRouter();
+    if (!match) {
+        return null;
+    }
     const { contentReviewId } = match.params as MatchQuery;
     return {
         id: decodeURIComponent(contentReviewId),

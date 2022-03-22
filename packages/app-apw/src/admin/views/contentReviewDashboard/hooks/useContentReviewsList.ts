@@ -6,7 +6,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { LIST_CONTENT_REVIEWS_QUERY } from "./graphql";
 import { ApwContentReview, ApwContentReviewListItem, ApwContentReviewStatus } from "~/types";
 
-const serializeSorters = data => {
+const serializeSorters = (data: any) => {
     if (!data) {
         return data;
     }
@@ -24,7 +24,7 @@ interface UseContentReviewsListHook {
         contentReviews: Array<ApwContentReview>;
         filter: string;
         setFilter: (filter: string) => void;
-        sort: string;
+        sort: string | null;
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
         editContentReview: (item: ApwContentReviewListItem) => void;
@@ -37,7 +37,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     const defaultSorter = config.sorters.length ? config.sorters[0].value : null;
     const [filter, setFilter] = useState<string>("");
     const [title, setTitle] = useState<string>("");
-    const [sort, setSort] = useState<string>(defaultSorter);
+    const [sort, setSort] = useState<string | null>(defaultSorter);
     const [status, setStatus] = useState<ApwContentReviewStatus | "all">("all");
     const { history } = useRouter();
 
