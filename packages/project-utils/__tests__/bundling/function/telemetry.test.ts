@@ -1,12 +1,12 @@
-import { updateTelemetryFunction } from "../../../bundling/function/telemetry";
+import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
 import { getTelemetryFunctionPath } from "@webiny/cli/utils";
 import * as fs from "fs";
 
-describe("updateTelemetryFunction()", () => {
+describe("downloadTelemetryFunction()", () => {
     test("The telemetry function file has been updated", async () => {
         const now = Date.now();
 
-        await updateTelemetryFunction();
+        await downloadTelemetryFunction();
 
         const telemetryFunctionPath = fs.statSync(getTelemetryFunctionPath());
 

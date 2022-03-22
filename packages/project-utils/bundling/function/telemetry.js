@@ -1,12 +1,11 @@
 const fs = require("fs");
-const telemetry = require("./telemetry");
 const path = require("path");
 const fetch = require("node-fetch");
 const { getTelemetryFunctionPath } = require("@webiny/cli/utils");
 
 const WCP_API_CLIENTS_URL = `${WCP_API_URL}/clients/latest`;
 
-async function updateTelemetryFunction() {
+async function downloadTelemetryFunction() {
     const response = await fetch(WCP_API_CLIENTS_URL);
 
     const telemetryCode = await response.text();
@@ -15,7 +14,7 @@ async function updateTelemetryFunction() {
 }
 
 async function injectHandlerTelemetry(cwd) {
-    await telemetry.updateTelemetryFunction();
+    await downloadTelemetryFunction();
 
     fs.renameSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
 
@@ -23,6 +22,6 @@ async function injectHandlerTelemetry(cwd) {
 }
 
 module.exports = {
-    updateTelemetryFunction,
+    downloadTelemetryFunction,
     injectHandlerTelemetry
 };

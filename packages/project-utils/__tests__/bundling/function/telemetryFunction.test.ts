@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { getProject, getTelemetryFunctionPath } from "@webiny/cli/utils";
-import { updateTelemetryFunction } from "../../../bundling/function/telemetry";
+import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
 import sleep from "wcp/backend/src/utils/tests/sleep.ts";
 
 // This environment API key has been previously created via a test WCP account created at https://app.webiny.com. Consult internal documentation for more information on the used account.
@@ -32,7 +32,7 @@ const handlerPath = getProject().root + "/.webiny/_handler.js";
 
 beforeAll(async () => {
     // Make sure the latest Telemetry code is in the local storage
-    await updateTelemetryFunction();
+    await downloadTelemetryFunction();
 });
 
 beforeEach(() => {
