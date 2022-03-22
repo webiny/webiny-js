@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { getProject } from "@webiny/cli/utils";
-import { getTelemetryFunctionPath } from "../../../bundling/function/utils";
+import { getTelemetryFunctionDownloadPath } from "../../../bundling/function/utils";
 import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
 import sleep from "../../../../../../wcp/wcp/backend/src/utils/tests/sleep";
 
@@ -44,7 +44,7 @@ beforeEach(() => {
     fs.writeFileSync(handlerPath, "");
 
     // Now we can export the telemetry functions
-    const telemetry = require(getTelemetryFunctionPath());
+    const telemetry = require(getTelemetryFunctionDownloadPath());
     postTelemetryData = telemetry.postTelemetryData;
     localData = telemetry.localData;
     handler = telemetry.handler;

@@ -1,5 +1,5 @@
 import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
-import { getTelemetryFunctionPath } from "../../../bundling/function/utils";
+import { getTelemetryFunctionDownloadPath } from "../../../bundling/function/utils";
 import * as fs from "fs";
 
 describe("downloadTelemetryFunction()", () => {
@@ -8,7 +8,7 @@ describe("downloadTelemetryFunction()", () => {
 
         await downloadTelemetryFunction();
 
-        const telemetryFunctionPath = fs.statSync(getTelemetryFunctionPath());
+        const telemetryFunctionPath = fs.statSync(getTelemetryFunctionDownloadPath());
 
         const lastModified = new Date(telemetryFunctionPath.mtime).getTime();
 
