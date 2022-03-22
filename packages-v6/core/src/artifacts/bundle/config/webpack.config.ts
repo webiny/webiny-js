@@ -18,7 +18,7 @@ import getCSSModuleLocalIdent from "react-dev-utils/getCSSModuleLocalIdent";
 import ModuleNotFoundPlugin from "react-dev-utils/ModuleNotFoundPlugin";
 import { getClientEnvironment } from "./env";
 // import ESLintPlugin from "eslint-webpack-plugin";
-// import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import WebpackBar from "webpackbar";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import { Paths } from "./paths";
@@ -426,7 +426,7 @@ export const createWebpackConfig: CreateWebpackConfig = (
             ]
         },
         plugins: [
-            new ModuleGraphPlugin(),
+            isEnvDevelopment && new ModuleGraphPlugin(),
             new webpack.ProvidePlugin({
                 Buffer: ["buffer", "Buffer"]
             }),
@@ -531,13 +531,13 @@ export const createWebpackConfig: CreateWebpackConfig = (
             // }),
 
             // TypeScript type checking
-            // new ForkTsCheckerWebpackPlugin({
-            //     typescript: {
-            //         configFile: paths.appTsConfig,
-            //         typescriptPath: require.resolve("typescript")
-            //     },
-            //     async: isEnvDevelopment
-            // }),
+            new ForkTsCheckerWebpackPlugin({
+                typescript: {
+                    configFile: paths.appTsConfig,
+                    typescriptPath: require.resolve("typescript")
+                },
+                async: isEnvDevelopment
+            }),
 
             new WebpackBar({ name: path.basename(paths.appPath) })
         ].filter(Boolean),
@@ -549,11 +549,12 @@ export const createWebpackConfig: CreateWebpackConfig = (
         // make the output less verbose
         stats: "errors-warnings",
 
-        // WebpackDevServer is noisy by default so we emit custom message instead
-        // by listening to the compiler events with `compiler.hooks[...].tap` calls above.
         infrastructureLogging: {
             colors: true,
             level: "error"
+        },
+        watchOptions: {
+            aggregateTimeout: 100
         }
     };
 

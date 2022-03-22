@@ -29,13 +29,10 @@ export const runCli = () => {
             global: true,
             type: "boolean"
         })
-        .command("build-admin", "Build admin app", {}, () => {
-            console.log("Build admin");
-            return webiny.buildAdmin({ watch: false });
+        .command("build admin", "Build admin app", {}, async () => {
+            await webiny.buildAdmin({ watch: false });
         })
         .command("watch admin", "Watch admin app", {}, async () => {
-            // const { watchPackages } = await import("./watchPackages");
-            // await watchPackages();
             return webiny.buildAdmin({ watch: true });
         })
         .command("build-package", "Build package", {}, async () => {
@@ -55,5 +52,5 @@ export const runCli = () => {
             }
         )
         .help()
-        .parseAsync();
+        .parse();
 };

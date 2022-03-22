@@ -42,6 +42,7 @@ export const composeSync = <TInput = unknown>(
 export const composeAsync = <TInput = unknown>(
     functions: Array<AsyncProcessor<TInput>> = []
 ): NextAsyncProcessor<TInput> => {
+    console.log("composeAsync123");
     return (input: TInput): Promise<TInput> => {
         if (!functions.length) {
             return Promise.resolve(input);

@@ -2,7 +2,6 @@ import path from "path";
 import fs from "fs";
 // @ts-ignore
 import getWorkspaces from "get-yarn-workspaces";
-import { useWebiny } from "../../../webiny";
 
 const isFolder = (p: string) => fs.statSync(p).isDirectory();
 const fixPath = (pkg: string) => pkg.replace(/\//g, path.sep);
@@ -33,7 +32,6 @@ export interface Paths {
 }
 
 export default ({ appIndexJs, cwd }: Params): Paths => {
-    const webiny = useWebiny();
     // Make sure any symlinks in the project folder are resolved:
     // https://github.com/facebook/create-react-app/issues/637
     const appDirectory = fs.realpathSync(cwd);
@@ -47,7 +45,7 @@ export default ({ appIndexJs, cwd }: Params): Paths => {
         appIndexJs: appIndexJs,
         appPackageJson: resolveApp("package.json"),
         appSrc: resolveApp("src"),
-        appTsConfig: webiny.resolve("tsconfig.json"),
+        appTsConfig: resolveApp("tsconfig.json"),
         yarnLockFile: resolveApp("yarn.lock"),
         appNodeModules: resolveApp("node_modules"),
         publicUrl: "/",

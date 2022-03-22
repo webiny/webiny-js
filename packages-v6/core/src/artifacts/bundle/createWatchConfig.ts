@@ -1,8 +1,8 @@
-import fs from "fs";
 import webpack from "webpack";
 import WebpackDevServer from "webpack-dev-server";
 // @ts-ignore
-import { choosePort, createCompiler, prepareUrls } from "react-dev-utils/WebpackDevServerUtils";
+import { choosePort, createCompiler } from "./config/WebpackDevServerUtils";
+import { prepareUrls } from "./config/prepareUrls";
 // @ts-ignore
 import chalk from "react-dev-utils/chalk";
 // @ts-ignore
@@ -42,7 +42,6 @@ export const createWatchConfig = async (options: WatchOptions) => {
     const { createWebpackConfig } = await import("./config/webpack.config");
     const { createDevServerConfig } = await import("./config/webpackDevServer.config");
 
-    const useYarn = fs.existsSync(paths.yarnLockFile);
     const isInteractive = process.stdout.isTTY;
 
     // Warn and crash if required files are missing
@@ -72,7 +71,6 @@ export const createWatchConfig = async (options: WatchOptions) => {
             appName,
             config: buildConfig,
             urls,
-            useYarn,
             webpack
         });
 
