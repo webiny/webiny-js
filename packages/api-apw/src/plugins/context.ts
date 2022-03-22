@@ -9,10 +9,12 @@ import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { Tenant } from "@webiny/api-tenancy/types";
+import { CreateApwContextParams } from "~/scheduler/types";
+import { createScheduler } from "~/scheduler";
 
-export default () => [
+export default (params: CreateApwContextParams) => [
     new ContextPlugin<ApwContext>(async context => {
-        const { tenancy, security, i18nContent } = context;
+        const { tenancy, security, i18nContent, handlerClient } = context;
 
         const contentHeadlessCmsContextPlugins = createContentHeadlessCmsContext({
             storageOperations: context.cms.storageOperations
@@ -42,6 +44,14 @@ export default () => [
         };
         const getIdentity = () => security.getIdentity();
 
+        const scheduler = createScheduler({
+            getLocale,
+            getIdentity,
+            getTenant,
+            getPermission,
+            storageOperations: params.storageOperations
+        });
+
         context.apw = createApw({
             getLocale,
             getIdentity,
@@ -56,7 +66,9 @@ export default () => [
                  * TODO: This is required for "entryFieldFromStorageTransform" which access plugins from context.
                  */
                 getCmsContext: () => context
-            })
+            }),
+            scheduler,
+            handlerClient
         });
         /**
          * TODO: @ashutosh

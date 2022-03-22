@@ -35,14 +35,22 @@ interface CreateContentReviewMethodsParams extends CreateApwParams {
     getContentUnPublisher: AdvancedPublishingWorkflow["getContentUnPublisher"];
 }
 
-export function createContentReviewMethods({
-    getIdentity,
-    storageOperations,
-    getReviewer,
-    getContentGetter,
-    getContentPublisher,
-    getContentUnPublisher
-}: CreateContentReviewMethodsParams): ApwContentReviewCrud {
+export function createContentReviewMethods(
+    params: CreateContentReviewMethodsParams
+): ApwContentReviewCrud {
+    const {
+        getIdentity,
+        storageOperations,
+        getReviewer,
+        getContentGetter,
+        getContentPublisher,
+        getContentUnPublisher,
+        scheduler,
+        handlerClient,
+        getTenant,
+        getLocale
+    } = params;
+
     const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
     const onAfterContentReviewCreate = createTopic<OnAfterContentReviewCreateTopicParams>();
     const onBeforeContentReviewUpdate = createTopic<OnBeforeContentReviewUpdateTopicParams>();
@@ -349,6 +357,25 @@ export function createContentReviewMethods({
 
             await this.update(id, { status: ApwContentReviewStatus.READY_TO_BE_PUBLISHED });
 
+            return true;
+        },
+        async scheduleAction(data) {
+            // Save input in DB
+            await scheduler.create(data);
+            /**
+             * This function contains logic of file download from S3.
+             * Current we're not mocking zip file download from S3 in tests at the moment.
+             * So, we're manually mocking it in case of test just by returning an empty object.
+             */
+            if (process.env.NODE_ENV === "test") {
+                return true;
+            }
+            // Invoke handler
+            await handlerClient.invoke<{ tenant: string; locale: string }>({
+                name: String(process.env.APW_SCHEDULER_SCHEDULE_ACTION_HANDLER),
+                payload: { tenant: getTenant().id, locale: getLocale().code },
+                await: false
+            });
             return true;
         }
     };

@@ -157,3 +157,14 @@ export const UNPUBLISH_CONTENT_MUTATION = /* GraphQL */ `
         }
     }
 `;
+
+export const SCHEDULE_ACTION_MUTATION = /* GraphQL */ `
+    mutation ScheduleActionMutation($data: ApwScheduleActionInput!) {
+        apw {
+            scheduleAction(data: $data) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;

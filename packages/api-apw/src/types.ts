@@ -13,6 +13,8 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
+import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types";
+import HandlerClient from "@webiny/handler-client/HandlerClient";
 
 export interface ApwFile {
     id: string;
@@ -264,6 +266,18 @@ interface UpdateApwChangeRequestParams {
     media: Record<string, any>;
 }
 
+enum ApwScheduleActionTypes {
+    PUBLISH = "publish",
+    UNPUBLISH = "unpublish"
+}
+
+export interface ApwScheduleActionData {
+    action: ApwScheduleActionTypes;
+    type: ApwContentTypes;
+    datetime: string;
+    entryId: string;
+}
+
 export interface ApwContentReviewContent {
     id: string;
     type: ApwContentTypes;
@@ -397,6 +411,8 @@ export interface ApwContentReviewCrud
 
     unpublishContent(id: string): Promise<Boolean>;
 
+    scheduleAction(data: ApwScheduleActionData): Promise<boolean>;
+
     /**
      * Lifecycle events
      */
@@ -440,6 +456,7 @@ export interface AdvancedPublishingWorkflow {
 export interface ApwContext extends Context, CmsContext {
     apw: AdvancedPublishingWorkflow;
     pageBuilder: PageBuilderContextObject;
+    scheduleAction: ScheduleActionContext["scheduleAction"];
 }
 
 export interface LifeCycleHookCallbackParams {
@@ -454,6 +471,8 @@ export interface CreateApwParams {
     getTenant: () => Tenant;
     getPermission: (name: string) => Promise<SecurityPermission | null>;
     storageOperations: ApwStorageOperations;
+    scheduler: ApwScheduleActionCrud;
+    handlerClient: HandlerClient;
 }
 
 interface StorageOperationsGetReviewerParams {

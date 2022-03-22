@@ -4,9 +4,10 @@
  */
 import graphql from "~/plugins/graphql";
 import context from "./plugins/context";
+import { CreateApwContextParams } from "./scheduler/types";
 
-export const createApwContext = () => {
-    return context();
+export const createApwContext = (params: CreateApwContextParams) => {
+    return context(params);
 };
 
 export const createApwGraphQL = () => {

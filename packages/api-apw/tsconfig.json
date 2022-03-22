@@ -2,22 +2,63 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-headless-cms" },
-    { "path": "../api-i18n" },
-    { "path": "../api-i18n-content" },
-    { "path": "../api-i18n-ddb" },
-    { "path": "../api-page-builder" },
-    { "path": "../api-page-builder-so-ddb" },
-    { "path": "../api-security" },
-    { "path": "../api-tenancy" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-graphql" },
-    { "path": "../plugins" },
-    { "path": "../pubsub" },
-    { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy-so-ddb" }
+    {
+      "path": "../api-headless-cms"
+    },
+    {
+      "path": "../api-i18n"
+    },
+    {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../api-i18n-ddb"
+    },
+    {
+      "path": "../api-page-builder"
+    },
+    {
+      "path": "../api-page-builder-so-ddb"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-tenancy"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../pubsub"
+    },
+    {
+      "path": "../api-security-so-ddb"
+    },
+    {
+      "path": "../api-tenancy-so-ddb"
+    },
+    {
+      "path": "../handler-args"
+    },
+    {
+      "path": "../handler-client"
+    },
+    {
+      "path": "../validation"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

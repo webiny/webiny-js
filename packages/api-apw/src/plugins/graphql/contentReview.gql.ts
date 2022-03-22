@@ -188,6 +188,23 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             error: ApwError
         }
 
+        enum ApwContentActions {
+            publish
+            unpublish
+        }
+
+        type ApwScheduleActionResponse {
+            data: Boolean
+            error: ApwError
+        }
+
+        input ApwScheduleActionInput {
+            action: ApwContentActions!
+            datetime: String!
+            type: ApwContentReviewContentTypes!
+            entryId: ID!
+        }
+
         extend type ApwQuery {
             getContentReview(id: ID!): ApwContentReviewResponse
 
@@ -213,6 +230,8 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             publishContent(id: ID!): ApwPublishContentResponse
 
             unpublishContent(id: ID!): ApwPublishContentResponse
+
+            scheduleAction(data: ApwScheduleActionInput!): ApwScheduleActionResponse
         }
     `,
     resolvers: {
@@ -297,6 +316,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             },
             unpublishContent: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.unpublishContent(args.id));
+            },
+            scheduleAction: async (_, args: any, context) => {
+                return resolve(() => context.apw.contentReview.scheduleAction(args.data));
             }
         }
     }

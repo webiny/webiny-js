@@ -17,6 +17,7 @@ import {
 } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwContext, createApwGraphQL } from "~/index";
+import { createStorageOperations as createApwSchedulerStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -40,7 +41,8 @@ import {
     RETRACT_SIGN_OFF_MUTATION,
     IS_REVIEW_REQUIRED_QUERY,
     PUBLISH_CONTENT_MUTATION,
-    UNPUBLISH_CONTENT_MUTATION
+    UNPUBLISH_CONTENT_MUTATION,
+    SCHEDULE_ACTION_MUTATION
 } from "./graphql/contentReview";
 import { LOGIN } from "./graphql/login";
 import { GET_REVIEWER_QUERY, LIST_REVIEWERS_QUERY } from "./graphql/reviewer";
@@ -162,7 +164,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                 storageOperations: createPageBuilderStorageOperations({ documentClient })
             }),
             ...headlessCmsApp,
-            createApwContext(),
+            createApwContext({
+                storageOperations: createApwSchedulerStorageOperations({ documentClient })
+            }),
             createApwGraphQL(),
             plugins
         ],
@@ -306,6 +310,9 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async unpublishContentMutation(variables: Record<string, any>) {
             return invoke({ body: { query: UNPUBLISH_CONTENT_MUTATION, variables } });
+        },
+        async scheduleActionMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: SCHEDULE_ACTION_MUTATION, variables } });
         }
     };
 };
