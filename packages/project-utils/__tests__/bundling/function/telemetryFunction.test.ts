@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { getProject } from "@webiny/cli/utils";
 import { getTelemetryFunctionDownloadPath } from "../../../bundling/function/utils";
 import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
-import sleep from "../../../../../../wcp/wcp/backend/src/utils/tests/sleep";
+import { sleep } from "../../../testing/helpers/sleep";
 
 // This environment API key has been previously created via a test WCP account created at https://app.webiny.com. Consult internal documentation for more information on the used account.
 const VALID_API_KEY = "8c8d2096-934e-47b0-ab02-25feace28d48";
