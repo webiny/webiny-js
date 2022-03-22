@@ -3,6 +3,7 @@ import { getProject } from "@webiny/cli/utils";
 import { getTelemetryFunctionDownloadPath } from "../../../bundling/function/utils";
 import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
 import { sleep } from "../../../testing/helpers/sleep";
+import * as path from "path";
 
 // This environment API key has been previously created via a test WCP account created at https://app.webiny.com. Consult internal documentation for more information on the used account.
 const VALID_API_KEY = "8c8d2096-934e-47b0-ab02-25feace28d48";
@@ -29,7 +30,7 @@ let postTelemetryData: (data: TelemetryData) => Promise<TelemetryDataResult>;
 let localData: TelemetryData;
 let handler: () => Promise<any>;
 
-const handlerPath = getProject().root + "/.webiny/_handler.js";
+const handlerPath = path.join(getProject().root + "/.webiny/_handler.js");
 
 beforeAll(async () => {
     // Make sure the latest Telemetry code is in the local storage
