@@ -82,8 +82,8 @@ module.exports = async options => {
         flag: "r"
     });
 
-    const includesGraphQl = handlerFile.includes("wcp-telemetry-tracker");
-    if (includesGraphQl) {
+    const isTracked = handlerFile.includes("wcp-telemetry-tracker");
+    if (isTracked) {
         await injectHandlerTelemetry(cwd);
     }
 

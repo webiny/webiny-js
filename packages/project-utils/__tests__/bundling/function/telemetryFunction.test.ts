@@ -1,8 +1,9 @@
 import * as fs from "fs";
-import { getProject } from "@webiny/cli/utils";
+import { getProject, getTelemetryFunctionPath } from "@webiny/cli/utils";
 import { updateTelemetryFunction } from "../../../bundling/function/telemetry";
+import sleep from "wcp/backend/src/utils/tests/sleep.ts";
 
-// This key is a valid test accout environment key that we use to smoke test that telemetry data can be pushed
+// This environment API key has been previously created via a test WCP account created at https://app.webiny.com. Consult internal documentation for more information on the used account.
 const VALID_API_KEY = "8c8d2096-934e-47b0-ab02-25feace28d48";
 
 interface TelemetryDataLogs {
@@ -29,11 +30,6 @@ let handler: () => Promise<any>;
 
 const handlerPath = getProject().root + "/.webiny/_handler.js";
 
-function waitForMilliSeconds(ms: number): Promise<unknown> {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
-}
 beforeAll(async () => {
     // Make sure the latest Telemetry code is in the local storage
     await updateTelemetryFunction();
@@ -47,7 +43,7 @@ beforeEach(() => {
     fs.writeFileSync(handlerPath, "");
 
     // Now we can export the telemetry functions
-    const telemetry = require(getProject().root + "/.webiny/telemetryFunction.js");
+    const telemetry = require(getTelemetryFunctionPath());
     postTelemetryData = telemetry.postTelemetryData;
     localData = telemetry.localData;
     handler = telemetry.handler;
@@ -127,7 +123,7 @@ describe("Telemetry functions", () => {
             Date.now = jest.fn(() => timeInFiveMinutes);
 
             // Wait a second to let the function fire if 5 minutes have passed
-            await waitForMilliSeconds(2000);
+            await sleep(2000);
 
             // The timer should have fired and clears the logs
             expect(localData.logs.length).toEqual(0);

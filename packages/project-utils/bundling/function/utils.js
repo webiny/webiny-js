@@ -5,6 +5,10 @@ const getDefaults = cwd => ({
     outputFilename: "handler.js"
 });
 
+const getTelemetryFunctionPath = () => {
+    return path.join(getProject().root, ".webiny/telemetryFunction.js");
+};
+
 const getOutput = ({ cwd, overrides }) => {
     let output = null;
     if (overrides && overrides.output) {
@@ -33,4 +37,8 @@ const getEntry = ({ cwd, overrides }) => {
     return overrides.entry || path.join(cwd, "src/index");
 };
 
-module.exports = { getOutput, getEntry };
+module.exports = {
+    getOutput,
+    getTelemetryFunctionPath,
+    getEntry
+};

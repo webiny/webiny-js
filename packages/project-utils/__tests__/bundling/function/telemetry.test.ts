@@ -1,5 +1,5 @@
 import { updateTelemetryFunction } from "../../../bundling/function/telemetry";
-import { getProject } from "@webiny/cli/utils";
+import { getTelemetryFunctionPath } from "@webiny/cli/utils";
 import * as fs from "fs";
 
 describe("updateTelemetryFunction()", () => {
@@ -8,9 +8,7 @@ describe("updateTelemetryFunction()", () => {
 
         await updateTelemetryFunction();
 
-        const telemetryFunctionPath = fs.statSync(
-            getProject().root + "/.webiny/telemetryFunction.js"
-        );
+        const telemetryFunctionPath = fs.statSync(getTelemetryFunctionPath());
 
         const lastModified = new Date(telemetryFunctionPath.mtime).getTime();
 
