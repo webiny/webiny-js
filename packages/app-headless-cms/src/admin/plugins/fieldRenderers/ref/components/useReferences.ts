@@ -128,7 +128,11 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                     if (existingItem) {
                         collection[entryId] = {
                             ...existingItem,
-                            status: item.status
+                            published: {
+                                id: item.id,
+                                entryId: item.entryId,
+                                title: item.title
+                            }
                         };
                         return collection;
                     }
