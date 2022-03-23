@@ -4,7 +4,7 @@ import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Link } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { useReferences } from "./useReferences";
-import { renderItem } from "./renderItem";
+import { renderItem, renderListItemOptions } from "./renderItem";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 import { useNewRefEntry } from "../hooks/useNewRefEntry";
 import { CmsEditorField } from "~/types";
@@ -67,6 +67,7 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
                     {...bind}
                     renderItem={renderItem}
                     renderListItemLabel={renderItem}
+                    renderListItemOptions={renderListItemOptions}
                     useMultipleSelectionList
                     onChange={onChange}
                     loading={loading}
@@ -91,6 +92,7 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
             {...bind}
             renderItem={renderItem}
             renderListItemLabel={renderItem}
+            renderListItemOptions={renderListItemOptions}
             useMultipleSelectionList
             onChange={onChange}
             loading={loading}

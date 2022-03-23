@@ -93,7 +93,7 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
     }, [modelsHash]);
 
     useEffect(() => {
-        if (!values || !values.length) {
+        if (!values || values.length == 0) {
             return;
         }
 
@@ -103,7 +103,15 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
             .query<CmsEntryGetListResponse, CmsEntryGetListVariables>({
                 query: GET_CONTENT_ENTRIES,
                 variables: {
-                    entries: values
+                    /**
+                     * We need make sure nothing else other than modelId and id is passed to entries variable.
+                     */
+                    entries: values.map(value => {
+                        return {
+                            modelId: value.modelId,
+                            id: value.id
+                        };
+                    })
                 }
             })
             .then(res => {
@@ -145,7 +153,6 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
         bind.onChange(
             values.map(item => ({
                 modelId: item.modelId,
-                entryId: item.entryId,
                 id: item.id
             }))
         );
