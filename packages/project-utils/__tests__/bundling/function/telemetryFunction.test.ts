@@ -30,7 +30,7 @@ let postTelemetryData: (data: TelemetryData) => Promise<TelemetryDataResult>;
 let localData: TelemetryData;
 let handler: () => Promise<any>;
 
-const handlerPath = path.join(getProject().root + "/.webiny/_handler.js");
+const handlerPath = path.join(getProject().root, ".webiny", "_handler.js");
 
 beforeAll(async () => {
     // Make sure the latest Telemetry code is in the local storage
