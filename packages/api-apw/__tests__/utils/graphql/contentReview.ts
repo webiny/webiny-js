@@ -137,9 +137,9 @@ export const RETRACT_SIGN_OFF_MUTATION = /* GraphQL */ `
 `;
 
 export const PUBLISH_CONTENT_MUTATION = /* GraphQL */ `
-    mutation PublishContentMutation($id: ID!) {
+    mutation PublishContentMutation($id: ID!, $datetime: String) {
         apw {
-            publishContent(id: $id) {
+            publishContent(id: $id, datetime: $datetime) {
                 data
                 error ${ERROR_FIELDS}
             }
@@ -148,20 +148,9 @@ export const PUBLISH_CONTENT_MUTATION = /* GraphQL */ `
 `;
 
 export const UNPUBLISH_CONTENT_MUTATION = /* GraphQL */ `
-    mutation UnPublishContentMutation($id: ID!) {
+    mutation UnPublishContentMutation($id: ID!, $datetime: String) {
         apw {
-            unpublishContent(id: $id) {
-                data
-                error ${ERROR_FIELDS}
-            }
-        }
-    }
-`;
-
-export const SCHEDULE_ACTION_MUTATION = /* GraphQL */ `
-    mutation ScheduleActionMutation($data: ApwScheduleActionInput!) {
-        apw {
-            scheduleAction(data: $data) {
+            unpublishContent(id: $id, datetime: $datetime) {
                 data
                 error ${ERROR_FIELDS}
             }

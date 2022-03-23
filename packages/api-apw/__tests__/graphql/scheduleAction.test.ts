@@ -1,4 +1,3 @@
-import { ApwContentReviewStepStatus } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { createSetupForContentReview } from "../utils/helpers";
 
@@ -14,7 +13,7 @@ describe(`Schedule action in a content review process`, function () {
         getContentReviewQuery,
         createContentReviewMutation,
         provideSignOffMutation,
-        scheduleActionMutation,
+        publishContentMutation,
         until
     } = gqlHandler;
 
@@ -22,7 +21,12 @@ describe(`Schedule action in a content review process`, function () {
         return createSetupForContentReview(gqlHandler);
     };
 
-    test(`should able to schedule publish page`, async () => {
+    let contentReview: any = null;
+
+    const preparePageForPublish = async () => {
+        if (contentReview) {
+            return contentReview;
+        }
         const { page } = await setup();
         /*
          Create a content review entry.
@@ -37,8 +41,7 @@ describe(`Schedule action in a content review process`, function () {
         });
         const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
 
-        const [step1] = createdContentReview.steps;
-        let previousSavedOn = createdContentReview.savedOn;
+        const [step1, step2, step3] = createdContentReview.steps;
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
@@ -49,117 +52,105 @@ describe(`Schedule action in a content review process`, function () {
         );
 
         /**
-         * Should able to providing sign-off for "active" step.
+         * Let's provide sign-off to every step of the publishing workflow.
          */
-        const [provideSignOffResponse] = await provideSignOffMutation({
+        await provideSignOffMutation({
             id: createdContentReview.id,
             step: step1.id
         });
-        expect(provideSignOffResponse).toEqual({
-            data: {
-                apw: {
-                    provideSignOff: {
-                        data: true,
-                        error: null
-                    }
-                }
-            }
+
+        await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step2.id
         });
 
-        await until(
-            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            (response: any) => {
-                const entry = response.data.apw.getContentReview.data;
-
-                const hasChanged = entry && entry.savedOn !== previousSavedOn;
-                if (hasChanged) {
-                    previousSavedOn = entry.savedOn;
-                    return true;
-                }
-                return false;
-            },
-            {
-                name: "Wait for updated entry to be available in get query"
-            }
-        );
+        await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step3.id
+        });
 
         /**
-         * Now that we've provided sign-off for step1, step2 should have status "active" because step1 is done
-         * and step3 should also have status "active" because step2 is not of type "mandatory_blocking".
+         * After providing sign-off to every step of the workflow,
+         * Now the content should be in "readyToBePublished" stage.
          */
         const [getContentReviewResponse] = await getContentReviewQuery({
             id: createdContentReview.id
         });
-        expect(getContentReviewResponse).toEqual({
-            data: {
-                apw: {
-                    getContentReview: {
-                        data: {
-                            id: expect.any(String),
-                            createdOn: expect.stringMatching(/^20/),
-                            savedOn: expect.stringMatching(/^20/),
-                            createdBy: {
-                                id: "12345678",
-                                displayName: "John Doe",
-                                type: "admin"
-                            },
-                            status: "underReview",
-                            title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                version: expect.any(Number),
-                                settings: null
-                            },
-                            steps: [
-                                {
-                                    status: ApwContentReviewStepStatus.DONE,
-                                    id: expect.any(String),
-                                    pendingChangeRequests: 0,
-                                    signOffProvidedOn: expect.stringMatching(/^20/),
-                                    signOffProvidedBy: {
-                                        id: "12345678",
-                                        displayName: "John Doe"
-                                    }
-                                },
-                                {
-                                    status: ApwContentReviewStepStatus.ACTIVE,
-                                    id: expect.any(String),
-                                    pendingChangeRequests: 0,
-                                    signOffProvidedOn: null,
-                                    signOffProvidedBy: null
-                                },
-                                {
-                                    status: ApwContentReviewStepStatus.ACTIVE,
-                                    id: expect.any(String),
-                                    pendingChangeRequests: 0,
-                                    signOffProvidedOn: null,
-                                    signOffProvidedBy: null
-                                }
-                            ]
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
+        const updatedContentReview = getContentReviewResponse.data.apw.getContentReview.data;
+        expect(updatedContentReview.status).toEqual("readyToBePublished");
 
+        contentReview = createdContentReview;
+
+        return createdContentReview;
+    };
+
+    test(`should return error when scheduling publish page for invalid datetime.`, async () => {
+        const contentReview = await preparePageForPublish();
         /**
-         * Try scheduling publish page.
+         * Should return error when scheduling publish page for invalid datetime.
          */
-        const [schedulePublishPageResponse] = await scheduleActionMutation({
-            data: {
-                datetime: new Date().toISOString(),
-                action: "publish",
-                type: "page",
-                entryId: page.id
-            }
+        const [schedulePublishPageResponse] = await publishContentMutation({
+            id: contentReview.id,
+            datetime: ""
         });
 
         expect(schedulePublishPageResponse).toEqual({
             data: {
                 apw: {
-                    scheduleAction: {
+                    publishContent: {
+                        data: null,
+                        error: {
+                            message: expect.any(String),
+                            code: "INVALID_DATETIME_FORMAT",
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should return error when scheduling publish page for past datetime.`, async () => {
+        const contentReview = await preparePageForPublish();
+        /**
+         * Should return error when scheduling publish page for past datetime.
+         */
+        const [schedulePublishPageResponse] = await publishContentMutation({
+            id: contentReview.id,
+            datetime: new Date("2022-01-01T00:00:00").toISOString()
+        });
+
+        expect(schedulePublishPageResponse).toEqual({
+            data: {
+                apw: {
+                    publishContent: {
+                        data: null,
+                        error: {
+                            message: expect.any(String),
+                            code: "PAST_DATETIME",
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should be able to schedule publish page action.`, async () => {
+        const contentReview = await preparePageForPublish();
+
+        /**
+         * Should be able to schedule publish page action.
+         */
+        const [schedulePublishPageResponse] = await publishContentMutation({
+            id: contentReview.id,
+            datetime: new Date(Date.now() + 1000 * 60 * 30).toISOString()
+        });
+
+        expect(schedulePublishPageResponse).toEqual({
+            data: {
+                apw: {
+                    publishContent: {
                         data: true,
                         error: null
                     }
