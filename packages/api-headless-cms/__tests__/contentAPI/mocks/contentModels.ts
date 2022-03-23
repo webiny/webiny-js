@@ -6,6 +6,7 @@ const { version: webinyVersion } = require("@webiny/cli/package.json");
 
 export interface Fruit {
     id?: string;
+    entryId?: string;
     name: string;
     isSomething: boolean;
     rating: number;

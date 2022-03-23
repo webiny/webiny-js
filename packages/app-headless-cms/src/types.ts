@@ -307,6 +307,13 @@ export interface CmsEditorContentModel {
     plugin?: boolean;
 }
 
+export type CmsContentEntryStatusType =
+    | "draft"
+    | "published"
+    | "unpublished"
+    | "changesRequested"
+    | "reviewRequested";
+
 export interface CmsEditorContentEntry {
     id: string;
     savedOn: string;
@@ -316,17 +323,10 @@ export interface CmsEditorContentEntry {
         title: string;
         publishedOn: string;
         locked: boolean;
-        status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
+        status: CmsContentEntryStatusType;
         version: number;
     };
     [key: string]: any;
-}
-
-export interface CmsLatestContentEntry {
-    id: string;
-    status: "published" | "draft";
-    title: string;
-    model: Pick<CmsModel, "modelId" | "name">;
 }
 
 export interface CmsContentEntryRevision {
@@ -338,7 +338,7 @@ export interface CmsContentEntryRevision {
         title: string;
         publishedOn: string;
         locked: boolean;
-        status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
+        status: CmsContentEntryStatusType;
         version: number;
     };
 }

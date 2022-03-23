@@ -10,11 +10,21 @@ import { renderItem } from "./renderItem";
 import { createEntryUrl } from "./createEntryUrl";
 import { CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
+import { OptionItem } from "./types";
+import { EntryStatus } from "./EntryStatus";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const unpublishedLabel = t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`;
 const publishedLabel = t`Selected content entry is published. You can view it {here}.`;
+
+const getItemOption = (options: OptionItem[], id?: string | null): OptionItem | null => {
+    if (!id || !options || options.length === 0) {
+        return null;
+    }
+    const [entryId] = id.split("#");
+    return options.find(item => item.entryId === entryId) || null;
+};
 
 interface ContentEntriesAutocompleteProps {
     bind: BindComponentRenderProp;
@@ -38,6 +48,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
     }
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
 
+    const item = getItemOption(options, bind.value ? bind.value.id : null);
     /*
      * Wrap AutoComplete input in NewRefEntry modal.
      */
@@ -45,7 +56,14 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
         return (
             <NewRefEntryFormDialog
                 modelId={refModelId}
-                onChange={entry => onChange(entry, entry as any)}
+                onChange={entry => {
+                    /**
+                     * TODO @ts-refactor @ashutosh
+                     * Need to figure out correct types.
+                     */
+                    // @ts-ignore
+                    return onChange(entry, entry);
+                }}
             >
                 <AutoComplete
                     {...bind}
@@ -58,7 +76,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
                     description={
                         <>
                             {field.helpText}
-                            {entryInfo}
+                            <EntryStatus item={item}>{entryInfo}</EntryStatus>
                         </>
                     }
                     onInput={debounce(search => setSearch(search), 250)}
@@ -80,7 +98,7 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
             description={
                 <>
                     {field.helpText}
-                    {entryInfo}
+                    <EntryStatus item={item}>{entryInfo}</EntryStatus>
                 </>
             }
             onInput={debounce(search => setSearch(search), 250)}

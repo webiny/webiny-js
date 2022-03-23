@@ -233,7 +233,10 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
             // valueProp,
             // textProp,
             onInput,
-            validation = { isValid: null, message: null },
+            validation = {
+                isValid: null,
+                message: null
+            },
             placement,
             ...otherInputProps
         } = this.props;

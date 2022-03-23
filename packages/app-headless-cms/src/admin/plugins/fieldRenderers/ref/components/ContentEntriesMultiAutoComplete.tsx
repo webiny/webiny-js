@@ -3,12 +3,13 @@ import debounce from "lodash/debounce";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Link } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
-import { ReferencedCmsEntry, useReferences } from "./useReferences";
-import { renderItem } from "./renderItem";
+import { useReferences } from "./useReferences";
+import { renderItem, renderListItemOptions } from "./renderItem";
 import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
 import { useNewRefEntry } from "../hooks/useNewRefEntry";
 import { CmsEditorField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
+import { OptionItem } from "./types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -26,7 +27,7 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
 
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
 
-    const entryWarning = (entry: ReferencedCmsEntry, index: number): React.ReactElement | null => {
+    const entryWarning = (entry: OptionItem, index: number): React.ReactElement | null => {
         const { id, modelId, name, published } = entry;
         if (published) {
             return null;
@@ -41,8 +42,8 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
         );
     };
 
-    let warning = entries.filter(item => item.published === false);
-    if (warning.length) {
+    let warning = entries.filter(item => !item.published);
+    if (warning.length > 0) {
         warning = warn({
             entries: <>{warning.map(entryWarning)}</>
         });
@@ -66,6 +67,7 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
                     {...bind}
                     renderItem={renderItem}
                     renderListItemLabel={renderItem}
+                    renderListItemOptions={renderListItemOptions}
                     useMultipleSelectionList
                     onChange={onChange}
                     loading={loading}
@@ -90,6 +92,7 @@ const ContentEntriesMultiAutocomplete: React.FC<ContentEntriesMultiAutocompleteP
             {...bind}
             renderItem={renderItem}
             renderListItemLabel={renderItem}
+            renderListItemOptions={renderListItemOptions}
             useMultipleSelectionList
             onChange={onChange}
             loading={loading}

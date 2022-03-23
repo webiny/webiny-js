@@ -91,7 +91,11 @@ describe("content model test", () => {
             "listContentModels",
             "searchContentEntries",
             "getContentEntry",
+            "getLatestContentEntry",
+            "getPublishedContentEntry",
             "getContentEntries",
+            "getLatestContentEntries",
+            "getPublishedContentEntries",
             "getContentModelGroup",
             "listContentModelGroups"
         ]);
