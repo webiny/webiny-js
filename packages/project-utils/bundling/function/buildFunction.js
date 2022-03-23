@@ -77,7 +77,7 @@ module.exports = async options => {
         return result;
     }
 
-    const handlerFile = await fs.readFile(path.join(options.cwd, "/build/handler.js"), {
+    const handlerFile = await fs.readFile(path.join(options.cwd, "build", "handler.js"), {
         encoding: "utf8",
         flag: "r"
     });

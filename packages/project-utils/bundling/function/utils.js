@@ -31,7 +31,7 @@ const getOutput = ({ cwd, overrides }) => {
 };
 
 const getTelemetryFunctionDownloadPath = () => {
-    return path.join(getProject().root, ".webiny/telemetryFunction.js");
+    return path.join(getProject().root, ".webiny", "telemetryFunction.js");
 };
 
 const getEntry = ({ cwd, overrides }) => {
