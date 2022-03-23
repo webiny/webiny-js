@@ -407,9 +407,9 @@ export interface ApwContentReviewCrud
         contentReviewId?: string;
     }>;
 
-    publishContent(id: string): Promise<Boolean>;
+    publishContent(id: string, datetime?: string): Promise<Boolean>;
 
-    unpublishContent(id: string): Promise<Boolean>;
+    unpublishContent(id: string, datetime?: string): Promise<Boolean>;
 
     scheduleAction(data: ApwScheduleActionData): Promise<boolean>;
 

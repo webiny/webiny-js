@@ -227,9 +227,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
 
             retractSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
 
-            publishContent(id: ID!): ApwPublishContentResponse
+            publishContent(id: ID!, datetime: String): ApwPublishContentResponse
 
-            unpublishContent(id: ID!): ApwPublishContentResponse
+            unpublishContent(id: ID!, datetime: String): ApwPublishContentResponse
 
             scheduleAction(data: ApwScheduleActionInput!): ApwScheduleActionResponse
         }
@@ -312,13 +312,14 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 return resolve(() => context.apw.contentReview.retractSignOff(args.id, args.step));
             },
             publishContent: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.publishContent(args.id));
+                return resolve(() =>
+                    context.apw.contentReview.publishContent(args.id, args.datetime)
+                );
             },
             unpublishContent: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.unpublishContent(args.id));
-            },
-            scheduleAction: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.scheduleAction(args.data));
+                return resolve(() =>
+                    context.apw.contentReview.unpublishContent(args.id, args.datetime)
+                );
             }
         }
     }

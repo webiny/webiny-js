@@ -6,7 +6,6 @@ import {
     ApwContentReview,
     ApwContentReviewCrud,
     ApwContentReviewStatus,
-    ApwContentReviewStep,
     ApwContentReviewStepStatus,
     ApwContentTypes,
     ApwReviewerCrud,
@@ -27,6 +26,8 @@ import {
     StepInActiveError,
     StepMissingError
 } from "~/utils/errors";
+import { ApwScheduleActionTypes } from "~/scheduler/types";
+import { checkValidDateTime, getPendingRequiredSteps } from "./helpers";
 
 interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
@@ -313,7 +314,7 @@ export function createContentReviewMethods(
                 contentReviewId
             };
         },
-        async publishContent(this: ApwContentReviewCrud, id: string) {
+        async publishContent(this: ApwContentReviewCrud, id: string, datetime) {
             const { content, status } = await this.get(id);
 
             if (status !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
@@ -328,6 +329,20 @@ export function createContentReviewMethods(
                 });
             }
 
+            checkValidDateTime(datetime);
+
+            /**
+             * If datetime is present it means we're scheduling the  publish action.
+             */
+            if (datetime) {
+                return this.scheduleAction({
+                    action: ApwScheduleActionTypes.PUBLISH,
+                    type: content.type,
+                    entryId: content.id,
+                    datetime
+                });
+            }
+
             const contentPublisher = getContentPublisher(content.type);
 
             await contentPublisher(content.id, content.settings);
@@ -336,7 +351,7 @@ export function createContentReviewMethods(
 
             return true;
         },
-        async unpublishContent(this: ApwContentReviewCrud, id: string) {
+        async unpublishContent(this: ApwContentReviewCrud, id: string, datetime) {
             const { content, status } = await this.get(id);
 
             if (status !== ApwContentReviewStatus.PUBLISHED) {
@@ -348,6 +363,19 @@ export function createContentReviewMethods(
                         status,
                         content
                     }
+                });
+            }
+            checkValidDateTime(datetime);
+
+            /**
+             * If datetime is present it means we're scheduling the unpublish action.
+             */
+            if (datetime) {
+                return this.scheduleAction({
+                    action: ApwScheduleActionTypes.UNPUBLISH,
+                    type: content.type,
+                    entryId: content.id,
+                    datetime
                 });
             }
 
@@ -363,9 +391,8 @@ export function createContentReviewMethods(
             // Save input in DB
             await scheduler.create(data);
             /**
-             * This function contains logic of file download from S3.
-             * Current we're not mocking zip file download from S3 in tests at the moment.
-             * So, we're manually mocking it in case of test just by returning an empty object.
+             * This function contains logic of lambda invocation.
+             * Current we're not mocking it, therefore, we're just returning true.
              */
             if (process.env.NODE_ENV === "test") {
                 return true;
@@ -380,25 +407,3 @@ export function createContentReviewMethods(
         }
     };
 }
-
-interface GetPendingRequiredSteps {
-    (
-        steps: ApwContentReviewStep[],
-        predicate: (step: ApwContentReviewStep) => boolean
-    ): ApwContentReviewStep[];
-}
-
-const getPendingRequiredSteps: GetPendingRequiredSteps = (steps, predicate) => {
-    return steps.filter(step => {
-        const isRequiredStep = [
-            ApwWorkflowStepTypes.MANDATORY_BLOCKING,
-            ApwWorkflowStepTypes.MANDATORY_NON_BLOCKING
-        ].includes(step.type);
-
-        if (!isRequiredStep) {
-            return false;
-        }
-
-        return predicate(step);
-    });
-};
