@@ -86,7 +86,10 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
 
     return (
         <Form
-            onChange={onChange}
+            onChange={(data, form) => {
+                setIsDirty(true);
+                return onChange(data, form);
+            }}
             onSubmit={(data, form) => {
                 setIsDirty(false);
                 return onSubmit(data, form);
@@ -97,7 +100,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
             onInvalid={() => {
                 setIsDirty(true);
                 showSnackbar(
-                    "You have fields that did not pass the validation. Please check the form!"
+                    "You have fields that did not pass the validation. Please check the form."
                 );
             }}
         >
@@ -106,7 +109,9 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                     <>
                         <Prompt
                             when={isDirty}
-                            message={"Form has changed, please discard if not applicable."}
+                            message={
+                                "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
+                            }
                         />
                         <FormWrapper data-testid={"cms-content-form"}>
                             {loading && <CircularProgress />}
