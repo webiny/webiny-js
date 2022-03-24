@@ -8,6 +8,8 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { CmsContentFormRendererPlugin } from "~/types";
 import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntryForm";
 import { Fields } from "./Fields";
+import { Prompt } from "@webiny/react-router";
+import { useSnackbar } from "@webiny/app-admin";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
@@ -21,6 +23,19 @@ interface ContentEntryFormProps extends UseContentEntryFormParams {
 export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
     const { contentModel } = props;
     const { loading, data, onChange, onSubmit, invalidFields } = useContentEntryForm(props);
+
+    const [isDirty, setIsDirty] = React.useState<boolean>(false);
+    /**
+     * Reset isDirty when the loaded data changes.
+     */
+    useEffect(() => {
+        if (!isDirty) {
+            return;
+        }
+        setIsDirty(false);
+    }, [data]);
+
+    const { showSnackbar } = useSnackbar();
 
     const ref = useRef<FormAPI | null>(null);
 
@@ -72,27 +87,44 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
     return (
         <Form
             onChange={onChange}
-            onSubmit={onSubmit}
+            onSubmit={(data, form) => {
+                setIsDirty(false);
+                return onSubmit(data, form);
+            }}
             data={data}
             ref={ref}
             invalidFields={invalidFields}
+            onInvalid={() => {
+                setIsDirty(true);
+                showSnackbar(
+                    "You have fields that did not pass the validation. Please check the form!"
+                );
+            }}
         >
-            {formProps => (
-                <FormWrapper data-testid={"cms-content-form"}>
-                    {loading && <CircularProgress />}
-                    {formRenderer ? (
-                        renderCustomLayout(formProps)
-                    ) : (
-                        <Fields
-                            contentModel={contentModel}
-                            fields={contentModel.fields || []}
-                            layout={contentModel.layout || []}
-                            {...formProps}
-                            Bind={formProps.Bind as any}
+            {formProps => {
+                return (
+                    <>
+                        <Prompt
+                            when={isDirty}
+                            message={"Form has changed, please discard if not applicable."}
                         />
-                    )}
-                </FormWrapper>
-            )}
+                        <FormWrapper data-testid={"cms-content-form"}>
+                            {loading && <CircularProgress />}
+                            {formRenderer ? (
+                                renderCustomLayout(formProps)
+                            ) : (
+                                <Fields
+                                    contentModel={contentModel}
+                                    fields={contentModel.fields || []}
+                                    layout={contentModel.layout || []}
+                                    {...formProps}
+                                    Bind={formProps.Bind as any}
+                                />
+                            )}
+                        </FormWrapper>
+                    </>
+                );
+            }}
         </Form>
     );
 };
