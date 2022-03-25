@@ -62,7 +62,7 @@ export default async (
     };
 
     if (params.Fields.key.startsWith("/")) {
-        params.Fields.key = params.Fields.key.substr(1);
+        params.Fields.key = params.Fields.key.slice(1);
     }
 
     const s3 = new S3();

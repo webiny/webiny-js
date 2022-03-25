@@ -190,7 +190,7 @@ export const getCurrentTimeZone = (date?: Date): string | null => {
         return null;
     }
     const timezone = matches[1];
-    return `${timezone.substr(0, 3)}:${timezone.substr(3)}`;
+    return `${timezone.slice(0, 3)}:${timezone.slice(3)}`;
 };
 
 export const getCurrentLocalTime = (date?: Date): string => {

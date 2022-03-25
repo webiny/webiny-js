@@ -41,7 +41,7 @@ const convertValueFromIndex = (
         return value as string;
     } else if (type === "date") {
         const dateValue = new Date(value);
-        return dateValue.toISOString().substr(0, 10);
+        return dateValue.toISOString().slice(0, 10);
     }
     return new Date(value).toISOString();
 };
