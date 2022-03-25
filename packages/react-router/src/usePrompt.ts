@@ -7,7 +7,7 @@
  * Thanks to https://github.com/rmorse
  */
 import { useContext, useEffect, useCallback } from "react";
-import { UNSAFE_NavigationContext as NavigationContext } from "react-router-dom";
+import { UNSAFE_NavigationContext as NavigationContext, useLocation } from "react-router-dom";
 import { History, Transition } from "history";
 
 type Navigator = Pick<History, "go" | "push" | "replace" | "createHref" | "block">;
@@ -23,7 +23,13 @@ interface BlockerCallable {
  */
 const useBlocker = (blocker: BlockerCallable, when = true) => {
     const ctx = useContext(NavigationContext);
-
+    /**
+     * We must use the location values because it is possible for a component which uses Prompt is not unmounted.
+     * Example, when switching from CMS entry to another one, if blocker was removed, a new one will not appear because
+     * useEffect will not rerun.
+     */
+    const location = useLocation();
+    const url = `${location.pathname}${location.search}`;
     const navigator = ctx.navigator as unknown as Navigator;
 
     useEffect(() => {
@@ -48,7 +54,7 @@ const useBlocker = (blocker: BlockerCallable, when = true) => {
         });
 
         return unblock;
-    }, [navigator, blocker, when]);
+    }, [url, navigator, blocker, when]);
 };
 
 /**
