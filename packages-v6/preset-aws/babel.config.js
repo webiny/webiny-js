@@ -1,22 +1,23 @@
-const sharedPresets = ["@babel/typescript"];
+const sharedPresets = [require.resolve("@babel/preset-typescript")];
 const shared = {
     presets: sharedPresets
 };
 
 module.exports = {
     env: {
-        esmUnbundled: shared,
+        esm: shared,
         cjs: {
             ...shared,
             presets: [
                 [
-                    "@babel/env",
+                    require.resolve("@babel/preset-env"),
                     {
                         modules: "commonjs"
                     }
                 ],
                 ...sharedPresets
-            ]
+            ],
+            plugins: [[require.resolve("@babel/plugin-transform-runtime"), { useESModules: false }]]
         }
     }
 };

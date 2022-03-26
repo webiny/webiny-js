@@ -1,7 +1,13 @@
 {
   "name": "@webiny/pulumi-sdk-v6",
   "version": "6.0.0",
-  "main": "index.js",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -10,8 +16,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+    "access": "public"
   },
   "dependencies": {
     "@pulumi/aws": "^4.10.0",
@@ -27,9 +32,14 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@babel/runtime": "^7.17.2",
     "@types/lodash": "^4.14.178",
     "@types/node": "^10.0.0",
-    "@webiny/cli": "^5.24.0",
+    "@webiny/cli2": "6.0.0",
     "@webiny/project-utils": "^5.24.0",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
@@ -37,13 +47,19 @@
   "adio": {
     "ignore": {
       "dependencies": [
+        "@babel/runtime",
         "@pulumi/pulumi",
         "@pulumi/aws"
       ]
     }
   },
   "scripts": {
-    "build": "yarn webiny run build",
-    "watch": "yarn webiny run watch"
+    "build": "yarn wby build package"
+  },
+  "webiny": {
+    "moduleTypes": [
+      "cjs",
+      "esm"
+    ]
   }
 }

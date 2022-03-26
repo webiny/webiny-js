@@ -29,7 +29,7 @@
     "ts-morph": "^11.0.0",
     "typescript": "4.5.5",
     "uniqid": "5.4.0",
-    "yargs": "14.2.3"
+    "yargs": "^17.4.0"
   },
   "license": "MIT",
   "publishConfig": {

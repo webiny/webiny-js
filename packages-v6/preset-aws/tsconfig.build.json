@@ -4,10 +4,9 @@
     "noEmit": false,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "declarationMap": true,
-    "outDir": "dist/types",
     "rootDir": "./src",
-    "declarationDir": "./dist/types",
+    "outDir": "./lib/types",
+    "declarationDir": "./lib/types",
     "baseUrl": "."
   },
   "include": ["./src"]

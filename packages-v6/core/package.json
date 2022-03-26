@@ -81,22 +81,17 @@
     "@types/webpack": "5.28.0",
     "@types/webpack-dev-server": "^4.7.2",
     "@types/webpack-env": "1.16.3",
+    "@webiny/cli2": "6.0.0",
     "concurrently": "^7.0.0"
   },
   "scripts": {
-    "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts,.tsx' --out-dir 'lib/esm' --source-maps --ignore='**/template/**' --copy-files",
-    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'lib/cjs' --source-maps --ignore='**/template/**' --copy-files",
-    "build": "yarn build:cjs && yarn build:esm && yarn declarations",
-    "watch": "concurrently \"yarn build:cjs --watch\" \"yarn build:esm --watch\"",
-    "declarations": "ttsc -p tsconfig.build.json"
+    "build": "yarn wby build package"
   },
   "webiny": {
-    "package": {
-      "output": [
-        "cjs",
-        "esm"
-      ]
-    }
+    "moduleTypes": [
+      "cjs",
+      "esm"
+    ]
   },
   "adio": {
     "ignore": {

@@ -5,18 +5,24 @@
   "bin": {
     "wby": "./src/bin.js"
   },
+  "main": "./src/index.ts",
   "scripts": {
-    "build": "babel src --extensions '.ts' --out-dir 'lib' --source-maps --copy-files"
+    "build": "yarn wby build package"
   },
   "dependencies": {
     "@webiny/core": "^6.0.0",
-    "chokidar": "^3.5.3",
     "execa": "^5.1.1",
+    "load-json-file": "^7.0.1",
     "ts-morph": "^14.0.0",
     "yargs": "^17.3.1"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.8",
     "ts-node": "^10.5.0"
+  },
+  "webiny": {
+    "moduleTypes": [
+      "cjs"
+    ]
   }
 }

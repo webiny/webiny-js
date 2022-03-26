@@ -5,7 +5,7 @@ require("ts-node").register({
     dir: process.cwd()
 });
 
-const { runCli } = require("./cli.ts");
+const { runCli } = require("./cli");
 (async () => {
     await runCli();
     process.exit();

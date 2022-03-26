@@ -10,7 +10,7 @@
     "baseUrl": ".",
     "skipLibCheck": true
   },
-  "exclude": ["./src/artifacts/admin/template"],
+  "exclude": ["./src/bin.js"],
   "include": ["./src"],
-  "references": [{ "path": "../pulumi-sdk/tsconfig.build.json" }]
+  "references": [{ "path": "../core/tsconfig.build.json" }]
 }

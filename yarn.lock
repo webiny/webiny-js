@@ -11740,14 +11740,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli2@workspace:packages-v6/cli":
+"@webiny/cli2@6.0.0, @webiny/cli2@workspace:packages-v6/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli2@workspace:packages-v6/cli"
   dependencies:
     "@types/yargs": ^17.0.8
     "@webiny/core": ^6.0.0
-    chokidar: ^3.5.3
     execa: ^5.1.1
+    load-json-file: ^7.0.1
     ts-morph: ^14.0.0
     ts-node: ^10.5.0
     yargs: ^17.3.1
@@ -11776,13 +11776,13 @@ __metadata:
     ts-morph: ^11.0.0
     typescript: 4.5.5
     uniqid: 5.4.0
-    yargs: 14.2.3
+    yargs: ^17.4.0
   bin:
     webiny: ./bin.js
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@npm:5.24.0, @webiny/cli@npm:^5.24.0":
+"@webiny/cli@npm:5.24.0":
   version: 5.24.0
   resolution: "@webiny/cli@npm:5.24.0"
   dependencies:
@@ -11850,6 +11850,7 @@ __metadata:
     "@types/webpack": 5.28.0
     "@types/webpack-dev-server": ^4.7.2
     "@types/webpack-env": 1.16.3
+    "@webiny/cli2": 6.0.0
     "@webiny/global-config": ^5.23.1
     "@webiny/plugins": ^5.25.0-beta.2
     "@webiny/pulumi-sdk-v6": ^6.0.0
@@ -12394,6 +12395,11 @@ __metadata:
   resolution: "@webiny/preset-aws@workspace:packages-v6/preset-aws"
   dependencies:
     "@babel/cli": ^7.17.0
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-react": ^7.16.7
+    "@babel/preset-typescript": ^7.16.7
+    "@babel/runtime": ^7.17.2
     "@webiny/core": 6.0.0
   languageName: unknown
   linkType: soft
@@ -12585,11 +12591,16 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
+    "@babel/plugin-transform-runtime": ^7.17.0
+    "@babel/preset-env": ^7.16.11
+    "@babel/preset-react": ^7.16.7
+    "@babel/preset-typescript": ^7.16.7
+    "@babel/runtime": ^7.17.2
     "@pulumi/aws": ^4.10.0
     "@pulumi/pulumi": ^3.25.0
     "@types/lodash": ^4.14.178
     "@types/node": ^10.0.0
-    "@webiny/cli": ^5.24.0
+    "@webiny/cli2": 6.0.0
     "@webiny/project-utils": ^5.24.0
     decompress: ^4.2.1
     download: ^5.0.3
@@ -27125,6 +27136,13 @@ __metadata:
     strip-bom: ^3.0.0
     type-fest: ^0.3.0
   checksum: 8bf15599db9471e264d916f98f1f51eb5d1e6a26d0ec3711d17df54d5983ccba1a0a4db2a6490bb27171f1261b72bf237d557f34e87d26e724472b92bdbdd4f7
+  languageName: node
+  linkType: hard
+
+"load-json-file@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "load-json-file@npm:7.0.1"
+  checksum: a560288da6891778321ef993e4bdbdf05374a4f3a3aeedd5ba6b64672798c830d748cfc59a2ec9891a3db30e78b3d04172e0dcb0d4828168289a393147ca0e74
   languageName: node
   linkType: hard
 
