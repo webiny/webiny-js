@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "@webiny/admin",
   "sideEffects": false,
   "main": "./src/index.tsx",
