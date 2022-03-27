@@ -126,7 +126,7 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getReview(revision: ID!): ReviewResponse
+        getReview(revision: ID, entryId: ID, status: CmsEntryStatusType): ReviewResponse
         
         getReviewRevisions(id: ID!): ReviewArrayResponse
         

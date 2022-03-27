@@ -1,14 +1,21 @@
 import gql from "graphql-tag";
-import { CmsErrorResponse, CmsLatestContentEntry } from "~/types";
+import { CmsErrorResponse } from "~/types";
+import { CmsReferenceContentEntry } from "./types";
 
 const fields = `
 data {
     id
+    entryId
     status
     title
     model {
         modelId
         name
+    }
+    published {
+        id
+        entryId
+        title
     }
 }
 error {
@@ -33,17 +40,17 @@ export interface CmsEntryGetEntryVariable {
 
 export interface CmsEntrySearchQueryResponse {
     content: {
-        data: CmsLatestContentEntry[];
-        error?: CmsErrorResponse;
+        data: CmsReferenceContentEntry[];
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntrySearchQueryVariables {
     modelIds: string[];
-    query: string;
+    query?: string;
     limit?: number;
 }
 export const SEARCH_CONTENT_ENTRIES = gql`
-    query CmsSearchContentEntries($modelIds: [ID!]!, $query: String!, $limit: Int) {
+    query CmsSearchContentEntries($modelIds: [ID!]!, $query: String, $limit: Int) {
         content: searchContentEntries(modelIds: $modelIds, query: $query, limit: $limit) {
             ${fields}
         }
@@ -55,9 +62,13 @@ export const SEARCH_CONTENT_ENTRIES = gql`
  */
 
 export interface CmsEntryGetListResponse {
-    content: {
-        data: CmsLatestContentEntry[];
-        error?: CmsErrorResponse;
+    latest: {
+        data: CmsReferenceContentEntry[];
+        error: CmsErrorResponse | null;
+    };
+    published: {
+        data: CmsReferenceContentEntry[];
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntryGetListVariables {
@@ -65,7 +76,10 @@ export interface CmsEntryGetListVariables {
 }
 export const GET_CONTENT_ENTRIES = gql`
     query CmsGetContentEntries($entries: [CmsModelEntryInput!]!) {
-        content: getContentEntries(entries: $entries) {
+        latest: getLatestContentEntries(entries: $entries) {
+            ${fields}
+        }
+        published: getPublishedContentEntries(entries: $entries) {
             ${fields}
         }
     }
@@ -76,9 +90,13 @@ export const GET_CONTENT_ENTRIES = gql`
  * Get Entry Query Response
  */
 export interface CmsEntryGetQueryResponse {
-    content: {
-        data: CmsLatestContentEntry;
-        error?: CmsErrorResponse;
+    latest: {
+        data: CmsReferenceContentEntry | null;
+        error: CmsErrorResponse | null;
+    };
+    published: {
+        data: CmsReferenceContentEntry | null;
+        error: CmsErrorResponse | null;
     };
 }
 export interface CmsEntryGetQueryVariables {
@@ -87,19 +105,11 @@ export interface CmsEntryGetQueryVariables {
 
 export const GET_CONTENT_ENTRY = gql`
     query CmsGetContentEntry($entry: CmsModelEntryInput!) {
-        content: getContentEntry(entry: $entry) {
+        latest: getLatestContentEntry(entry: $entry) {
             ${fields}
         }
-    }
-`;
-
-export const GET_CONTENT_MODELS = gql`
-    query CmsGetContentModels {
-        listContentModels {
-            data {
-                modelId
-                titleFieldId
-            }
+        published: getPublishedContentEntry(entry: $entry) {
+            ${fields}
         }
     }
 `;

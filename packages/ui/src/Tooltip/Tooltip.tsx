@@ -9,7 +9,7 @@ type TooltipPropsContent =
     | React.ReactFragment
     | React.ReactPortal;
 
-interface TooltipProps {
+export interface TooltipProps {
     // A component (eg. button) which will trigger the tooltip.
     children: React.ReactNode;
 
@@ -20,7 +20,15 @@ interface TooltipProps {
     trigger?: string;
 
     // Can be "left","right","top","bottom", "topLeft", "topRight", "bottomLeft" or "bottomRight".
-    placement?: string;
+    placement?:
+        | "left"
+        | "right"
+        | "top"
+        | "bottom"
+        | "topLeft"
+        | "topRight"
+        | "bottomLeft"
+        | "bottomRight";
 
     // CSS class name
     className?: string;

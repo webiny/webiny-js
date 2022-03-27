@@ -21,31 +21,39 @@ const t = i18n.ns("app-headless-cms/admin/content-entries");
 
 const ContentEntries: React.FC = () => {
     const { params } = useRouter();
-    const [contentModel, setContentModel] = useState<CmsModel>();
-    const { history } = useRouter();
     const modelId = params ? params["modelId"] : null;
+    const [contentModel, setContentModel] = useState<CmsModel | null>(null);
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    useQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>(GET_CONTENT_MODEL, {
-        skip: !modelId,
-        variables: { modelId },
-        onCompleted: data => {
-            const contentModel = get(data, "getContentModel.data", null);
-            if (contentModel) {
-                return setContentModel(contentModel);
+    const { loading, error } = useQuery<GetCmsModelQueryResponse, GetCmsModelQueryVariables>(
+        GET_CONTENT_MODEL,
+        {
+            skip: !modelId,
+            variables: {
+                modelId
+            },
+            onCompleted: data => {
+                const contentModel = get(data, "getContentModel.data", null);
+                if (contentModel) {
+                    return setContentModel(contentModel);
+                }
+
+                history.push("/cms/content-models");
+                showSnackbar(
+                    t`Could not load content for model "{modelId}". Redirecting...`({
+                        modelId
+                    })
+                );
             }
-
-            history.push("/cms/content-models");
-            showSnackbar(
-                t`Could not load content for model "{modelId}". Redirecting...`({
-                    modelId
-                })
-            );
         }
-    });
+    );
 
-    if (!contentModel) {
+    if (!contentModel || loading) {
         return <CircularProgress label={t`Loading content model...`} />;
+    } else if (error) {
+        showSnackbar(error.message);
+        return null;
     }
 
     return (
