@@ -10,7 +10,6 @@
     }
   },
   "dependencies": {
-    "@babel/code-frame": "^7.16.7",
     "@babel/core": "^7.17.5",
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
@@ -40,7 +39,6 @@
     "fork-ts-checker-webpack-plugin": "^6.5.0",
     "fs-extra": "^10.0.1",
     "get-yarn-workspaces": "1.0.2",
-    "glob": "^7.1.2",
     "html-webpack-plugin": "^5.5.0",
     "is-root": "^3.0.0",
     "mini-css-extract-plugin": "2.4.5",
@@ -58,7 +56,6 @@
     "read-json-sync": "2.0.1",
     "resolve": "^1.22.0",
     "resolve-url-loader": "4.0.0",
-    "rimraf": "3.0.2",
     "sass": "1.44.0",
     "sass-loader": "12.3.0",
     "scheduler": "0.19.1",
@@ -82,12 +79,13 @@
     "@types/webpack": "5.28.0",
     "@types/webpack-dev-server": "^4.7.2",
     "@types/webpack-env": "1.16.3",
-    "concurrently": "^7.0.0"
+    "concurrently": "^7.0.0",
+    "rimraf": "3.0.2"
   },
   "scripts": {
     "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts,.tsx' --out-dir 'lib/esm' --source-maps --ignore='**/template/**' --copy-files",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'lib/cjs' --source-maps --ignore='**/template/**' --copy-files",
-    "build": "yarn build:cjs && yarn build:esm && yarn declarations",
+    "build": "yarn rimraf ./lib && yarn build:cjs && yarn build:esm && yarn declarations",
     "declarations": "ttsc -p tsconfig.build.json"
   },
   "webiny": {

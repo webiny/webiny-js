@@ -11836,7 +11836,6 @@ __metadata:
   resolution: "@webiny/core@workspace:packages-v6/core"
   dependencies:
     "@babel/cli": ^7.17.0
-    "@babel/code-frame": ^7.16.7
     "@babel/core": ^7.17.5
     "@babel/plugin-transform-runtime": ^7.17.0
     "@babel/preset-env": ^7.16.11
@@ -11872,7 +11871,6 @@ __metadata:
     fork-ts-checker-webpack-plugin: ^6.5.0
     fs-extra: ^10.0.1
     get-yarn-workspaces: 1.0.2
-    glob: ^7.1.2
     html-webpack-plugin: ^5.5.0
     is-root: ^3.0.0
     mini-css-extract-plugin: 2.4.5
