@@ -10,7 +10,11 @@ export const websiteRender = defineAppHook(async (params, context) => {
     }
 
     // 2. Get exports from `site` stack, for `args.env` environment.
-    const apiOutput = getStackOutput({ folder: "api", env: params.env });
+    const apiOutput = getStackOutput({
+        folder: "api",
+        env: params.env,
+        variant: params.variant
+    });
 
     context.info("Issuing a complete website render job...");
 

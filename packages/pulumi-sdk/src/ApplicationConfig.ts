@@ -17,5 +17,5 @@ export interface ApplicationHooks {
 }
 
 export interface ApplicationConfig<TApp extends PulumiApp> extends Partial<ApplicationHooks> {
-    config?(app: TApp, ctx: ApplicationContext): void;
+    config?(app: TApp, ctx: ApplicationContext): Promise<void> | void;
 }

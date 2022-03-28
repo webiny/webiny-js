@@ -4,7 +4,7 @@ const { login, getPulumi, loadEnvVariables } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 
 module.exports = async (inputs, context) => {
-    const { env, folder, json } = inputs;
+    const { env, folder, json, variant } = inputs;
     await loadEnvVariables(inputs, context);
 
     const cwd = process.cwd();
@@ -21,13 +21,15 @@ module.exports = async (inputs, context) => {
         folder: inputs.folder
     });
 
+    const stackName = variant ? `${env}.${variant}` : env;
+
     let stackExists = true;
     try {
         const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
         const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
 
         await pulumi.run({
-            command: ["stack", "select", env],
+            command: ["stack", "select", stackName],
             args: {
                 secretsProvider: PULUMI_SECRETS_PROVIDER
             },
@@ -55,5 +57,7 @@ module.exports = async (inputs, context) => {
         return console.log(JSON.stringify(null));
     }
 
-    context.error(`Project application ${red(folder)} (${red(env)} environment) does not exist.`);
+    context.error(
+        `Project application ${red(folder)} (${red(stackName)} environment) does not exist.`
+    );
 };

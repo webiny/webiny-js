@@ -47,7 +47,7 @@ interface DeployEventHandler {
     (params: DeployEventParams): Promise<void> | void;
 }
 
-export class PulumiApp {
+export abstract class PulumiApp<TConfig = unknown> {
     public readonly name: string;
     public readonly ctx: ApplicationContext;
     private readonly resourceHandlers: ResourceHandler[] = [];
@@ -60,6 +60,8 @@ export class PulumiApp {
         this.name = params.name;
         this.ctx = params.ctx;
     }
+
+    public abstract setup(config: TConfig): Promise<void> | void;
 
     public onResource(handler: ResourceHandler): void {
         this.resourceHandlers.push(handler);
@@ -205,21 +207,24 @@ export function defineAppModule<TModule, TConfig = void>(
 
 export interface CreateAppParams<TOutput extends Record<string, unknown>, TConfig = void> {
     name: string;
-    config(app: PulumiApp, config: TConfig): TOutput;
+    config(app: PulumiApp, config: TConfig): TOutput | Promise<TOutput>;
 }
 
 export function defineApp<TOutput extends Record<string, unknown>, TConfig = void>(
     params: CreateAppParams<TOutput, TConfig>
 ) {
-    const appDef = class App extends PulumiApp {
-        constructor(ctx: ApplicationContext, config: TConfig) {
+    const appDef = class App extends PulumiApp<TConfig> {
+        constructor(ctx: ApplicationContext) {
             super({ name: params.name, ctx: ctx });
-            const output = params.config(this, config);
+        }
+
+        public async setup(config: TConfig) {
+            const output = await params.config(this, config);
             Object.assign(this, output);
         }
     };
 
-    return appDef as new (ctx: ApplicationContext, config: TConfig) => PulumiApp & TOutput;
+    return appDef as new (ctx: ApplicationContext) => PulumiApp<TConfig> & TOutput;
 }
 
 function createConfigProxy<T extends object>(obj: T) {

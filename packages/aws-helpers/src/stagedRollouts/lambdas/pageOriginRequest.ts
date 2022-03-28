@@ -2,7 +2,7 @@ import { get } from "https";
 import { load } from "cheerio";
 import { defineLambdaEdgeRequestHandler, CloudFrontResponse } from "~/lambdaEdge";
 
-import { variantCookie, variantHeader } from "../utils/common";
+import { pointsToFile, variantCookie, variantHeader } from "../utils/common";
 import { isConfigRequest, loadConfig } from "../utils/config";
 import {
     getHeader,
@@ -11,6 +11,7 @@ import {
     getRequestCookies
 } from "../utils/headers";
 import { isHeaderBlacklisted } from "../utils/headerBlacklist";
+import { setDomainOrigin } from "../utils/origin";
 
 export const pageOriginRequest = defineLambdaEdgeRequestHandler(async event => {
     const cf = event.Records[0].cf;
@@ -59,7 +60,13 @@ export const pageOriginRequest = defineLambdaEdgeRequestHandler(async event => {
 
     console.log(`Forwarding to ${stageConfig.domain}`);
 
+    if (pointsToFile(request.uri)) {
+        setDomainOrigin(request, stageConfig.domain);
+        return request;
+    }
+
     const response = await getOriginPage(stageConfig.domain, request.uri);
+    setResponseCookie(response, `${variantCookie}=${stageName}; Secure; Path=/;`);
     return response;
 });
 
@@ -79,16 +86,16 @@ function getOriginPage(domain: string, path: string) {
                     const host = `https://${domain}`;
 
                     doc("head > link").each((_i, el) => {
-                        const href = el.attribs.href;
+                        const href = el.attribs["href"];
                         if (href && href.startsWith("/")) {
-                            el.attribs.href = host + href;
+                            el.attribs["href"] = host + href;
                         }
                     });
 
                     doc("script").each((_i, el) => {
-                        const src = el.attribs.src;
+                        const src = el.attribs["src"];
                         if (src && src.startsWith("/")) {
-                            el.attribs.src = host + src;
+                            el.attribs["src"] = host + src;
                         }
                     });
 

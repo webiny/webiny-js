@@ -77,6 +77,7 @@ export const AdminApp = defineApp({
             });
         });
 
+        // Update variant gateway configuration.
         const variant = app.ctx.variant;
         if (variant) {
             app.onDeploy(async ({ outputs }) => {
@@ -110,9 +111,10 @@ export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminA
                 deploy: false
             }
         },
-        app(ctx) {
-            const app = new AdminApp(ctx, config);
-            config.config?.(app, ctx);
+        async app(ctx) {
+            const app = new AdminApp(ctx);
+            await app.setup(config);
+            await config.config?.(app, ctx);
             return app;
         },
         beforeBuild: config.beforeBuild,

@@ -9,10 +9,18 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
  */
 export const websiteUpdatePbSettings = defineAppHook(async (params, context) => {
     // 1. Get exports from `site` stack, for `args.env` environment.
-    const websiteOutput = getStackOutput({ folder: "apps/website", env: params.env });
+    const websiteOutput = getStackOutput({
+        folder: "apps/website",
+        env: params.env,
+        variant: params.variant
+    });
 
     // 2. Get exports from `api` stack, again, for `args.env` environment.
-    const apiOutput = getStackOutput({ folder: "api", env: params.env });
+    const apiOutput = getStackOutput({
+        folder: "api",
+        env: params.env,
+        variant: params.variant
+    });
     if (!apiOutput) {
         context.warning(`API was not deployed yet. Could not update page builder settings.`);
         return;

@@ -2,7 +2,8 @@ import {
     defineApp,
     createGenericApplication,
     ApplicationContext,
-    ApplicationHooks
+    ApplicationHooks,
+    ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { createCognitoResources } from "./StorageCognito";
@@ -10,7 +11,6 @@ import { createDynamoTable } from "./StorageDynamo";
 import { createFileManagerBucket } from "./StorageFileManager";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
-    config?(app: StorageApp, ctx: ApplicationContext): void;
     protect?(ctx: ApplicationContext): boolean;
     legacy?(ctx: ApplicationContext): StorageAppLegacyConfig;
 }
@@ -57,13 +57,15 @@ export const StorageApp = defineApp({
 
 export type StorageApp = InstanceType<typeof StorageApp>;
 
-export function createStorageApp(config: StorageAppConfig) {
+export function createStorageApp(config: StorageAppConfig & ApplicationConfig<StorageApp>) {
     return createGenericApplication({
         id: "storage",
         name: "storage",
         description: "Your project's persistent storages.",
-        app(ctx) {
-            const app = new StorageApp(ctx, config);
+        async app(ctx) {
+            const app = new StorageApp(ctx);
+            await app.setup(config);
+            await config.config?.(app, ctx);
             config.config?.(app, ctx);
             return app;
         },

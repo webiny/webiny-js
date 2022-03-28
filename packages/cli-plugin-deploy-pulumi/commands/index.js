@@ -170,6 +170,10 @@ module.exports = [
                         describe: `Environment`,
                         type: "string"
                     });
+                    yargs.option("variant", {
+                        describe: `Variant (staged rollouts only)`,
+                        type: "string"
+                    });
                     yargs.option("json", {
                         describe: `Emit output as JSON`,
                         type: "boolean"

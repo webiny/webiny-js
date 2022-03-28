@@ -35,7 +35,7 @@ module.exports = async (inputs, context) => {
 
     await loadEnvVariables(inputs, context);
 
-    const hookArgs = { context, env, inputs, projectApplication };
+    const hookArgs = { context, env, variant, inputs, projectApplication };
 
     const application =
         projectApplication.config instanceof ApplicationBuilderGeneric

@@ -4,11 +4,12 @@ import {
     defineApp,
     ApplicationContext,
     createGenericApplication,
-    mergeAppHooks
+    mergeAppHooks,
+    updateGatewayConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
-import { websiteUpload } from "./WebsiteHookUpload";
+import { websiteUpload } from "./WebsiteUpload";
 import { websiteRender } from "./WebsiteHookRender";
 import { websiteUpdatePbSettings } from "./WebsiteHookUpdatePbSettings";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
@@ -138,13 +139,36 @@ export const WebsiteApp = defineApp({
             appId: appCloudfront.output.id,
             appStorage: appBucket.bucket.output.id,
             appUrl: appCloudfront.output.domainName.apply(value => `https://${value}`),
+            appDomain: appCloudfront.output.domainName,
             // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
             // The static HTML snapshots delivered from them still rely on the app's S3 bucket
             // defined above, for serving static assets (JS, CSS, images).
             deliveryId: deliveryCloudfront.output.id,
             deliveryStorage: deliveryBucket.bucket.output.id,
+            deliveryDomain: deliveryCloudfront.output.domainName,
             deliveryUrl: deliveryCloudfront.output.domainName.apply(value => `https://${value}`)
         });
+
+        app.onDeploy(async ({ outputs }) => {
+            await websiteUpload({
+                appDir: app.ctx.appDir,
+                bucket: outputs["appStorage"]
+            });
+        });
+
+        // Update variant gateway configuration.
+        const variant = app.ctx.variant;
+        if (variant) {
+            app.onDeploy(async ({ outputs }) => {
+                await updateGatewayConfig({
+                    app: "website",
+                    cwd: app.ctx.projectDir,
+                    env: app.ctx.env,
+                    variant: variant,
+                    domain: outputs["deliveryDomain"]
+                });
+            });
+        }
 
         return {
             app: {
@@ -172,19 +196,15 @@ export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<We
                 deploy: false
             }
         },
-        app(ctx) {
-            const app = new WebsiteApp(ctx, config);
-            config.config?.(app, ctx);
+        async app(ctx) {
+            const app = new WebsiteApp(ctx);
+            await app.setup(config);
+            await config.config?.(app, ctx);
             return app;
         },
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(
-            websiteUpload,
-            websiteRender,
-            websiteUpdatePbSettings,
-            config.afterDeploy
-        )
+        afterDeploy: mergeAppHooks(websiteRender, websiteUpdatePbSettings, config.afterDeploy)
     });
 }

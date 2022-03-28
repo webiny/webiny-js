@@ -4,8 +4,8 @@ import {
     defineApp,
     createGenericApplication,
     ApplicationContext,
-    ApplicationHooks,
-    PulumiApp
+    PulumiApp,
+    ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
@@ -19,14 +19,13 @@ import { createHeadlessCms } from "./ApiHeadlessCMS";
 import { createApiGateway } from "./ApiGateway";
 import { createCloudfront } from "./ApiCloudfront";
 
-export interface ApiAppConfig extends Partial<ApplicationHooks> {
-    config?(app: ApiApp, ctx: ApplicationContext): void;
+export interface ApiAppConfig {
     vpc?(app: PulumiApp, ctx: ApplicationContext): boolean | Vpc;
 }
 
 export const ApiApp = defineApp({
     name: "Api",
-    config(app, config: ApiAppConfig) {
+    async config(app, config: ApiAppConfig) {
         // Among other things, this determines the amount of information we reveal on runtime errors.
         // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
         const DEBUG = String(process.env.DEBUG);
@@ -200,7 +199,7 @@ export const ApiApp = defineApp({
 
 export type ApiApp = InstanceType<typeof ApiApp>;
 
-export function createApiApp(config: ApiAppConfig) {
+export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
     return createGenericApplication({
         id: "api",
         name: "api",
@@ -213,9 +212,10 @@ export function createApiApp(config: ApiAppConfig) {
                 depth: 5
             }
         },
-        app(ctx) {
-            const app = new ApiApp(ctx, config);
-            config.config?.(app, ctx);
+        async app(ctx) {
+            const app = new ApiApp(ctx);
+            await app.setup(config);
+            await config.config?.(app, ctx);
             return app;
         },
         beforeBuild: config.beforeBuild,

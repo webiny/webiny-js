@@ -1,11 +1,15 @@
 import { get } from "https";
 import { CloudFrontRequest, CloudFrontRequestEvent } from "~/lambdaEdge";
 
-const configTTL = 60 * 1000; // 1 minute
 const configPath = "/_config.json";
+// Config must be cached per domain.
+// Otherwise cache will spill over different apps, because we may share this lambda.
+const configCache = new Map<string, GatewayConfigCache>();
 
-let configCache: GatewayConfig | undefined;
-let configTimestamp = 0;
+interface GatewayConfigCache {
+    config: GatewayConfig;
+    timestamp: number;
+}
 
 export interface StageConfig {
     domain: string;
@@ -19,19 +23,22 @@ export function isConfigRequest(request: CloudFrontRequest) {
 }
 
 export async function loadConfig(event: CloudFrontRequestEvent) {
-    if (configCache && Date.now() - configTimestamp < configTTL) {
-        return Promise.resolve(configCache);
-    }
-
-    configCache = await loadConfigCore(event);
-    configTimestamp = Date.now();
-
-    return configCache;
-}
-
-function loadConfigCore(event: CloudFrontRequestEvent) {
     const domain = event.Records[0].cf.config.distributionDomainName;
 
+    let config = configCache.get(domain);
+    if (!config || isCacheExpired(config.timestamp)) {
+        config = {
+            config: await loadConfigCore(domain),
+            timestamp: Date.now()
+        };
+
+        configCache.set(domain, config);
+    }
+
+    return config.config;
+}
+
+function loadConfigCore(domain: string) {
     return new Promise<GatewayConfig>((resolve, reject) => {
         let dataString = "";
 
@@ -58,4 +65,9 @@ function loadConfigCore(event: CloudFrontRequestEvent) {
             });
         });
     });
+}
+
+function isCacheExpired(timestamp: number) {
+    const ttl = 60 * 1000; // 1 minute
+    return Date.now() - timestamp > ttl;
 }
