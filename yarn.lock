@@ -11747,7 +11747,7 @@ __metadata:
     "@types/yargs": ^17.0.8
     "@webiny/core": ^6.0.0
     execa: ^5.1.1
-    load-json-file: ^7.0.1
+    load-json-file: ^6.2.0
     ts-morph: ^14.0.0
     ts-node: ^10.5.0
     yargs: ^17.3.1
@@ -27136,13 +27136,6 @@ __metadata:
     strip-bom: ^3.0.0
     type-fest: ^0.3.0
   checksum: 8bf15599db9471e264d916f98f1f51eb5d1e6a26d0ec3711d17df54d5983ccba1a0a4db2a6490bb27171f1261b72bf237d557f34e87d26e724472b92bdbdd4f7
-  languageName: node
-  linkType: hard
-
-"load-json-file@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "load-json-file@npm:7.0.1"
-  checksum: a560288da6891778321ef993e4bdbdf05374a4f3a3aeedd5ba6b64672798c830d748cfc59a2ec9891a3db30e78b3d04172e0dcb0d4828168289a393147ca0e74
   languageName: node
   linkType: hard
 
