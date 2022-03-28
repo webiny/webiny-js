@@ -40,9 +40,8 @@ export const getSourceFile = (project: Project, file: string) => {
         console.log("File variable not sent.");
         return null;
     }
-    let source;
 
-    source = project.getSourceFile(file);
+    const source = project.getSourceFile(file);
     if (source) {
         return source;
     }
