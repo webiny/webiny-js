@@ -11740,12 +11740,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli2@6.0.0, @webiny/cli2@workspace:packages-v6/cli":
+"@webiny/cli2@workspace:packages-v6/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli2@workspace:packages-v6/cli"
   dependencies:
     "@types/yargs": ^17.0.8
-    "@webiny/core": ^6.0.0
+    "@webiny/core": ^5.25.0-beta.2
     execa: ^5.1.1
     load-json-file: ^6.2.0
     ts-morph: ^14.0.0
@@ -11831,7 +11831,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/core@6.0.0, @webiny/core@^6.0.0, @webiny/core@workspace:packages-v6/core":
+"@webiny/core@^5.25.0-beta.2, @webiny/core@workspace:packages-v6/core":
   version: 0.0.0-use.local
   resolution: "@webiny/core@workspace:packages-v6/core"
   dependencies:
@@ -11850,10 +11850,9 @@ __metadata:
     "@types/webpack": 5.28.0
     "@types/webpack-dev-server": ^4.7.2
     "@types/webpack-env": 1.16.3
-    "@webiny/cli2": 6.0.0
-    "@webiny/global-config": ^5.23.1
+    "@webiny/global-config": ^5.25.0-beta.2
     "@webiny/plugins": ^5.25.0-beta.2
-    "@webiny/pulumi-sdk-v6": ^6.0.0
+    "@webiny/pulumi-sdk-v6": ^5.25.0-beta.2
     "@webiny/telemetry": ^5.23.1
     address: ^1.1.2
     babel-loader: ^8.2.3
@@ -12051,7 +12050,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/global-config@npm:5.24.0, @webiny/global-config@npm:^5.23.1":
+"@webiny/global-config@npm:5.24.0":
   version: 5.24.0
   resolution: "@webiny/global-config@npm:5.24.0"
   dependencies:
@@ -12400,7 +12399,7 @@ __metadata:
     "@babel/preset-react": ^7.16.7
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.17.2
-    "@webiny/core": 6.0.0
+    "@webiny/core": ^5.25.0-beta.2
   languageName: unknown
   linkType: soft
 
@@ -12585,7 +12584,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pulumi-sdk-v6@^6.0.0, @webiny/pulumi-sdk-v6@workspace:packages-v6/pulumi-sdk":
+"@webiny/pulumi-sdk-v6@^5.25.0-beta.2, @webiny/pulumi-sdk-v6@workspace:packages-v6/pulumi-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-sdk-v6@workspace:packages-v6/pulumi-sdk"
   dependencies:
@@ -12600,7 +12599,6 @@ __metadata:
     "@pulumi/pulumi": ^3.25.0
     "@types/lodash": ^4.14.178
     "@types/node": ^10.0.0
-    "@webiny/cli2": 6.0.0
     "@webiny/project-utils": ^5.24.0
     decompress: ^4.2.1
     download: ^5.0.3

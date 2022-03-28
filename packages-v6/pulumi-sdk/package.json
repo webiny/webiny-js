@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/pulumi-sdk-v6",
-  "version": "6.0.0",
+  "version": "5.25.0-beta.2",
   "types": "./lib/types/index.d.ts",
   "exports": {
     ".": {
@@ -40,7 +40,6 @@
     "@babel/runtime": "^7.17.2",
     "@types/lodash": "^4.14.178",
     "@types/node": "^10.0.0",
-    "@webiny/cli2": "6.0.0",
     "@webiny/project-utils": "^5.24.0",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
@@ -55,7 +54,10 @@
     }
   },
   "scripts": {
-    "build": "yarn wby build package"
+    "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts,.tsx' --out-dir 'lib/esm' --source-maps --ignore='**/template/**' --copy-files",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'lib/cjs' --source-maps --ignore='**/template/**' --copy-files",
+    "build": "yarn build:cjs && yarn build:esm && yarn declarations",
+    "declarations": "ttsc -p tsconfig.build.json"
   },
   "webiny": {
     "moduleTypes": [
