@@ -6,12 +6,8 @@ describe("HTTP Options request", () => {
     const manageOpts = {
         path: "manage/en-US",
         plugins: [
-            new ContextPlugin(async context => {
-                context.waitFor<CmsContext>(["cms"], ctx => {
-                    ctx.cms.onBeforeGroupCreate.subscribe(async () => {
-                        throw new Error("This should not fire or register.");
-                    });
-                });
+            new ContextPlugin<CmsContext>(async () => {
+                throw new Error("This should not register.");
             })
         ]
     };
