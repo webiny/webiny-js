@@ -12,5 +12,8 @@
   },
   "exclude": ["./src/artifacts/admin/template"],
   "include": ["./src"],
-  "references": [{ "path": "../pulumi-sdk/tsconfig.build.json" }]
+  "references": [
+    { "path": "../pulumi-sdk/tsconfig.build.json" },
+    { "path": "../../packages/plugins/tsconfig.build.json" }
+  ]
 }

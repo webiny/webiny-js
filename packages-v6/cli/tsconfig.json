@@ -11,5 +11,5 @@
       "@webiny/core": ["../core/src"]
     }
   },
-  "references": [{ "path": "../core/tsconfig.json" }]
+  "references": [{ "path": "../core" }]
 }

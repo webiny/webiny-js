@@ -3,11 +3,9 @@
   "include": ["src"],
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDirs": ["./src"],
-    "outDir": "./dist",
-    "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"]
     }
-  }
+  },
+  "references": [{ "path": "../pulumi-sdk" }, { "path": "../../packages/plugins" }]
 }
