@@ -37,6 +37,12 @@ export const assignModelEvents = () => {
         context.cms.onAfterModelCreate.subscribe(async () => {
             pubSubTracker.track("contentModel:afterCreate");
         });
+        context.cms.onBeforeModelCreateFrom.subscribe(async () => {
+            pubSubTracker.track("contentModel:beforeCreateFrom");
+        });
+        context.cms.onAfterModelCreateFrom.subscribe(async () => {
+            pubSubTracker.track("contentModel:afterCreateFrom");
+        });
         context.cms.onBeforeModelUpdate.subscribe(async () => {
             pubSubTracker.track("contentModel:beforeUpdate");
         });
