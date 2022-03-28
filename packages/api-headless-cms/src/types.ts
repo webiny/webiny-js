@@ -371,11 +371,11 @@ export interface CmsModel {
     /**
      * Date created
      */
-    createdOn?: Date;
+    createdOn?: string;
     /**
      * Date saved. Changes on both save and create.
      */
-    savedOn?: Date;
+    savedOn?: string;
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */
