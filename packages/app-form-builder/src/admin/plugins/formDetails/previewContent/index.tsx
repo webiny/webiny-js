@@ -26,7 +26,7 @@ const PreviewContentTab: React.FC<FbFormDetailsPluginRenderParams> = props => {
         if (!props.revisions.length) {
             return;
         }
-        setRevisionId(props.revisions[0].id);
+        setRevisionId(props.form.id);
     }, [props.form.id, props.revisions.length]);
 
     const revision = props.revisions.find(item => item.id === revisionId);
