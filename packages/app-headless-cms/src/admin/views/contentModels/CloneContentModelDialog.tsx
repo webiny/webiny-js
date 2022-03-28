@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { css } from "emotion";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
@@ -53,10 +53,10 @@ export interface Props {
 const disallowedModelIdEndingList: string[] = ["Response", "List", "Meta", "Input", "Sorter"];
 
 const getSelectedGroup = (
-    groups: CmsGroupOption[],
+    groups: CmsGroupOption[] | null,
     model: CmsEditorContentModel
 ): string | null => {
-    if (groups.length === 0 || !model) {
+    if (!groups || groups.length === 0 || !model) {
         return "";
     }
     const current = model.group.id;
@@ -69,13 +69,14 @@ const getSelectedGroup = (
 };
 
 const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel, closeModal }) => {
-    const [loading, setLoading] = React.useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { getLocales, getCurrentLocale, setCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale();
-    const [locale, setLocale] = React.useState<string>(currentLocale || "");
+    const [locale, setLocale] = useState<string>(currentLocale || "");
+    const [groups, setGroups] = useState<CmsGroupOption[] | null>(null);
 
     const [createContentModelFrom] = useMutation<
         CreateCmsModelFromMutationResponse,
@@ -112,24 +113,39 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
         }
     });
 
-    const { data, loading: loadingGroups } = useQueryLocale<ListMenuCmsGroupsQueryResponse>(
+    const locales = getLocales().map(({ code }) => {
+        return {
+            value: code,
+            label: code === currentLocale ? "Current locale" : code
+        };
+    });
+
+    const { data, loading: groupsLoading } = useQueryLocale<ListMenuCmsGroupsQueryResponse>(
         LIST_MENU_CONTENT_GROUPS_MODELS,
         locale,
         {
-            skip: !open
+            skip: !open || !!groups
         }
     );
 
-    const contentModelGroups: CmsGroupOption[] = get(data, "listContentModelGroups.data", []).map(
-        (item: CmsGroup): CmsGroupOption => {
+    useEffect(() => {
+        if (!data || groupsLoading) {
+            return;
+        }
+        const contentModelGroups: CmsGroupOption[] = get(
+            data,
+            "listContentModelGroups.data",
+            []
+        ).map((item: CmsGroup): CmsGroupOption => {
             return {
                 value: item.id,
                 label: item.name
             };
-        }
-    );
+        });
+        setGroups(contentModelGroups);
+    }, [data, groupsLoading]);
 
-    const selectedGroup = getSelectedGroup(contentModelGroups, contentModel);
+    const selectedGroup = getSelectedGroup(groups, contentModel);
 
     const nameValidator = useCallback((name: string) => {
         const target = (name || "").trim();
@@ -150,13 +166,6 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
         return true;
     }, []);
 
-    const locales = getLocales().map(locale => {
-        return {
-            value: locale.code,
-            label: locale.code === currentLocale ? "Current locale" : locale.code
-        };
-    });
-
     return (
         <UID.Dialog
             open={open}
@@ -164,7 +173,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
             className={narrowDialog}
             data-testid="cms-clone-content-model-modal"
         >
-            {loadingGroups && (
+            {(!groups || groupsLoading) && (
                 <CircularProgress label={"Please wait while we load required information."} />
             )}
             {open && (
@@ -209,18 +218,6 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                                     </Cell>
                                     <Cell span={12}>
                                         <Bind
-                                            name={"group"}
-                                            validators={validation.create("required")}
-                                        >
-                                            <Select
-                                                description={t`Choose a content model group`}
-                                                label={t`Content model group`}
-                                                options={contentModelGroups}
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind
                                             name={"locale"}
                                             validators={validation.create("required")}
                                             afterChange={(value?: string) => {
@@ -228,12 +225,25 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
                                                     return;
                                                 }
                                                 setLocale(value);
+                                                setGroups(null);
                                             }}
                                         >
                                             <Select
                                                 description={t`Choose a locale into which you wish to clone the model`}
                                                 label={t`Content model locale`}
                                                 options={locales}
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name={"group"}
+                                            validators={validation.create("required")}
+                                        >
+                                            <Select
+                                                description={t`Choose a content model group`}
+                                                label={t`Content model group`}
+                                                options={groups || []}
                                             />
                                         </Bind>
                                     </Cell>
