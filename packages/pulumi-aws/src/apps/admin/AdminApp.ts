@@ -3,14 +3,13 @@ import * as aws from "@pulumi/aws";
 import {
     defineApp,
     createGenericApplication,
-    mergeAppHooks,
     ApplicationContext,
     ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { adminUpload } from "./AdminHookUpload";
+import { adminUpload } from "./AdminUpload";
 
 export interface AdminAppConfig {
     /** Custom domain configuration */
@@ -66,7 +65,15 @@ export const AdminApp = defineApp({
 
         app.addOutputs({
             appStorage: bucket.bucket.output.id,
+            appDomain: cloudfront.output.domainName,
             appUrl: cloudfront.output.domainName.apply(value => `https://${value}`)
+        });
+
+        app.onDeploy(async ({ outputs }) => {
+            await adminUpload({
+                appDir: app.ctx.appDir,
+                bucket: outputs["appStorage"]
+            });
         });
 
         return {
@@ -89,14 +96,15 @@ export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminA
                 deploy: false
             }
         },
-        app(ctx) {
-            const app = new AdminApp(ctx, config);
-            config.config?.(app, ctx);
+        async app(ctx) {
+            const app = new AdminApp(ctx);
+            await app.setup(config);
+            await config.config?.(app, ctx);
             return app;
         },
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(adminUpload, config.afterDeploy)
+        afterDeploy: config.afterDeploy
     });
 }

@@ -208,6 +208,23 @@ module.exports = [
                     process.exit(0);
                 }
             );
+
+            yargs.command(
+                "storage-migrate",
+                `Extracts a storage application from API.`,
+                () => {
+                    yargs.example("$0 storage-migrate --env dev");
+
+                    yargs.option("env", {
+                        describe: `Environment`,
+                        type: "string"
+                    });
+                },
+                async argv => {
+                    await require("./storageMigrate")(argv, context);
+                    process.exit(0);
+                }
+            );
         }
     }
 ];

@@ -96,13 +96,13 @@ module.exports = async (inputs, context) => {
     console.log();
 
     if (inputs.refresh) {
-        await stack.refresh({ onOutput: console.info });
+        await stack.refresh();
     }
 
     if (inputs.preview) {
-        await stack.preview({ onOutput: console.info });
+        await stack.preview();
     } else {
-        await stack.up({ onOutput: console.info });
+        await stack.up();
     }
 
     const duration = getDuration();

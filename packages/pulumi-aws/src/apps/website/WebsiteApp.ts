@@ -172,9 +172,10 @@ export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<We
                 deploy: false
             }
         },
-        app(ctx) {
-            const app = new WebsiteApp(ctx, config);
-            config.config?.(app, ctx);
+        async app(ctx) {
+            const app = new WebsiteApp(ctx);
+            await app.setup(config);
+            await config.config?.(app, ctx);
             return app;
         },
         beforeBuild: config.beforeBuild,
