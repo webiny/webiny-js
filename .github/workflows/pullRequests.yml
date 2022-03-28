@@ -192,8 +192,8 @@ jobs:
         run: yarn --immutable
 
       - name: Git status
-        run: git status
-
+        run: git status && git diff packages-v6/cli/src/bin.js
+        
       - name: Build packages
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
         
