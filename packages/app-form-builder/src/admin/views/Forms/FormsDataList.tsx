@@ -277,9 +277,10 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                                 {({ showConfirmation }) => (
                                                     <DeleteIcon
                                                         onClick={() =>
-                                                            showConfirmation(async () =>
-                                                                deleteRecord(form)
-                                                            )
+                                                            showConfirmation(async () => {
+                                                                await deleteRecord(form);
+                                                                history.push("/form-builder/forms");
+                                                            })
                                                         }
                                                     />
                                                 )}

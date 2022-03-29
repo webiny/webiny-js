@@ -66,7 +66,8 @@ const DeleteRevision: React.FC<DeleteRevisionProps> = ({
                                     update: (cache, { data }) => {
                                         const { error } = data.formBuilder.deleteForm;
                                         if (error) {
-                                            return showSnackbar(error.message);
+                                            showSnackbar(error.message);
+                                            return;
                                         }
 
                                         showSnackbar(
@@ -79,7 +80,8 @@ const DeleteRevision: React.FC<DeleteRevisionProps> = ({
                                             removeFormFromListCache(cache, form);
 
                                             // Redirect
-                                            return history.push("/form-builder/forms");
+                                            history.push("/form-builder/forms");
+                                            return;
                                         }
 
                                         // We have other revisions, update form's cache
@@ -94,13 +96,14 @@ const DeleteRevision: React.FC<DeleteRevisionProps> = ({
                                         // Redirect to the first revision in the list of all form revisions.
                                         const firstRevision = revisions[0];
                                         selectRevision(firstRevision);
-                                        if (revision.id === form.id) {
-                                            return history.push(
-                                                `/form-builder/forms?id=${encodeURIComponent(
-                                                    firstRevision.id
-                                                )}`
-                                            );
+                                        if (revision.id !== form.id) {
+                                            return;
                                         }
+                                        history.push(
+                                            `/form-builder/forms?id=${encodeURIComponent(
+                                                firstRevision.id
+                                            )}`
+                                        );
                                     }
                                 });
                             })
