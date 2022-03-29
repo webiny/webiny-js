@@ -49,6 +49,8 @@ import {
     createPublishedType,
     createSortKey
 } from "./keys";
+import { sortItems } from "@webiny/db-dynamodb/utils/sort";
+import { PageDynamoDbElasticsearchFieldPlugin } from "~/plugins/definitions/PageDynamoDbElasticsearchFieldPlugin";
 
 export interface CreatePageStorageOperationsParams {
     entity: Entity<any>;
@@ -1073,11 +1075,13 @@ export const createPageStorageOperations = (
     const listRevisions = async (
         params: PageStorageOperationsListRevisionsParams
     ): Promise<Page[]> => {
+        const { where, sort } = params;
+
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createPartitionKey({
-                ...params.where,
-                id: params.where.pid
+                ...where,
+                id: where.pid
             }),
             options: {
                 beginsWith: "REV#",
@@ -1085,8 +1089,9 @@ export const createPageStorageOperations = (
             }
         };
 
+        let items: Page[] = [];
         try {
-            return await queryAll<Page>(queryAllParams);
+            items = await queryAll<Page>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load all the revisions from requested page.",
@@ -1096,6 +1101,16 @@ export const createPageStorageOperations = (
                 }
             );
         }
+
+        const fields = plugins.byType<PageDynamoDbElasticsearchFieldPlugin>(
+            PageDynamoDbElasticsearchFieldPlugin.type
+        );
+
+        return sortItems({
+            items,
+            fields,
+            sort
+        });
     };
 
     return {

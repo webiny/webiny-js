@@ -20,7 +20,10 @@ import { createMenuDynamoDbFields } from "~/operations/menu/fields";
 import { createMenuStorageOperations } from "~/operations/menu";
 import { createPageElementDynamoDbFields } from "~/operations/pageElement/fields";
 import { createPageElementStorageOperations } from "~/operations/pageElement";
-import { createPagesElasticsearchFields } from "~/operations/pages/fields";
+import {
+    createPagesElasticsearchFields,
+    createPagesDynamoDbFields
+} from "~/operations/pages/fields";
 import { createPageStorageOperations } from "~/operations/pages";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
@@ -70,7 +73,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Page fields required for filtering/sorting.
          */
-        createPagesElasticsearchFields()
+        createPagesElasticsearchFields(),
+        /**
+         * Page fields required for filtering/sorting when using dynamodb.
+         */
+        createPagesDynamoDbFields()
     ]);
 
     const entities = {

@@ -576,6 +576,7 @@ export interface PageStorageOperationsListRevisionsParams {
         tenant: string;
         locale: string;
     };
+    sort: string[];
     limit: number;
     after?: string;
 }

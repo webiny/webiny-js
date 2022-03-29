@@ -100,7 +100,7 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         {
             type: "api-file-manager-storage",
             name: "api-file-manager-storage",
-            async upload(args) {
+            async upload(args: any) {
                 // TODO: use tmp OS directory
                 const key = path.join(__dirname, args.name);
 
@@ -123,7 +123,7 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
+    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }) => {
         const response = await handler({
             httpMethod,
             headers,
@@ -156,101 +156,101 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         },
 
         // Menus.
-        async createMenu(variables) {
+        async createMenu(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_MENU, variables } });
         },
-        async updateMenu(variables) {
+        async updateMenu(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_MENU, variables } });
         },
-        async deleteMenu(variables) {
+        async deleteMenu(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_MENU, variables } });
         },
         async listMenus(variables = {}) {
             return invoke({ body: { query: LIST_MENUS, variables } });
         },
-        async getMenu(variables) {
+        async getMenu(variables: Record<string, any>) {
             return invoke({ body: { query: GET_MENU, variables } });
         },
-        async getPublicMenu(variables) {
+        async getPublicMenu(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PUBLIC_MENU, variables } });
         },
 
         // Categories.
-        async createCategory(variables) {
+        async createCategory(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },
-        async updateCategory(variables) {
+        async updateCategory(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_CATEGORY, variables } });
         },
-        async deleteCategory(variables) {
+        async deleteCategory(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_CATEGORY, variables } });
         },
         async listCategories(variables = {}) {
             return invoke({ body: { query: LIST_CATEGORIES, variables } });
         },
-        async getCategory(variables) {
+        async getCategory(variables: Record<string, any>) {
             return invoke({ body: { query: GET_CATEGORY, variables } });
         },
 
         // Pages.
-        async createPage(variables) {
+        async createPage(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
         },
-        async updatePage(variables) {
+        async updatePage(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_PAGE, variables } });
         },
-        async publishPage(variables) {
+        async publishPage(variables: Record<string, any>) {
             return invoke({ body: { query: PUBLISH_PAGE, variables } });
         },
-        async unpublishPage(variables) {
+        async unpublishPage(variables: Record<string, any>) {
             return invoke({ body: { query: UNPUBLISH_PAGE, variables } });
         },
-        async requestReview(variables) {
+        async requestReview(variables: Record<string, any>) {
             return invoke({ body: { query: REQUEST_REVIEW, variables } });
         },
-        async requestChanges(variables) {
+        async requestChanges(variables: Record<string, any>) {
             return invoke({ body: { query: REQUEST_CHANGES, variables } });
         },
-        async deletePage(variables) {
+        async deletePage(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_PAGE, variables } });
         },
-        async listPages(variables) {
+        async listPages(variables: Record<string, any>) {
             return invoke({ body: { query: LIST_PAGES, variables } });
         },
         async listPublishedPages(variables = {}) {
             return invoke({ body: { query: LIST_PUBLISHED_PAGES, variables } });
         },
-        async listPageTags(variables) {
+        async listPageTags(variables: Record<string, any>) {
             return invoke({ body: { query: LIST_PAGE_TAGS, variables } });
         },
-        async getPage(variables) {
+        async getPage(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PAGE, variables } });
         },
-        async getPublishedPage(variables) {
+        async getPublishedPage(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PUBLISHED_PAGE, variables } });
         },
-        async oEmbedData(variables) {
+        async oEmbedData(variables: Record<string, any>) {
             return invoke({ body: { query: OEMBED_DATA, variables } });
         },
         // PageElements.
-        async createPageElement(variables) {
+        async createPageElement(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_PAGE_ELEMENT, variables } });
         },
-        async updatePageElement(variables) {
+        async updatePageElement(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_PAGE_ELEMENT, variables } });
         },
-        async deletePageElement(variables) {
+        async deletePageElement(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_PAGE_ELEMENT, variables } });
         },
         async listPageElements(variables: any = {}) {
             return invoke({ body: { query: LIST_PAGE_ELEMENTS, variables } });
         },
-        async getPageElement(variables) {
+        async getPageElement(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PAGE_ELEMENT, variables } });
         },
 
         // PageBuilder Settings.
-        async updateSettings(variables) {
+        async updateSettings(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
         },
         async getSettings(variables = {}) {

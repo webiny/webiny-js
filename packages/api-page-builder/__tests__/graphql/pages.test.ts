@@ -118,7 +118,7 @@ describe("CRUD Test", () => {
 
         const [listAfterUpdateResponse] = await until(
             () => listPages({ sort: ["createdOn_DESC"] }),
-            ([res]) => {
+            ([res]: any) => {
                 const data: any[] = res.data.pageBuilder.listPages.data;
                 return data.length === 3 && data.every(obj => obj.title.match(/title-UPDATED-/));
             },
@@ -226,7 +226,7 @@ describe("CRUD Test", () => {
 
         const [listPagesAfterDeleteResponse] = await until(
             () => listPages({ sort: ["createdOn_DESC"] }),
-            ([res]) => {
+            ([res]: any) => {
                 return res.data.pageBuilder.listPages.data.length === 0;
             },
             {
@@ -296,6 +296,77 @@ describe("CRUD Test", () => {
                             data: null,
                             message: `Page not found.`
                         }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should create multiple page revisions and sort them properly", async () => {
+        await createCategory({
+            data: {
+                slug: `category`,
+                name: `Category`,
+                url: `/category-url/`,
+                layout: `layout`
+            }
+        });
+
+        const page = await createPage({ category: "category" }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const revisions: string[] = [page.id];
+        const total = 25;
+
+        for (let i = revisions.length; i < total; i++) {
+            const [revisionResponse] = await createPage({
+                from: revisions[i - 1],
+                category: "category"
+            });
+
+            expect(revisionResponse).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        createPage: {
+                            data: {
+                                id: `${page.pid}#${String(i + 1).padStart(4, "0")}`
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
+
+            revisions.push(revisionResponse.data.pageBuilder.createPage.data.id);
+        }
+
+        const [pageDataResponse] = await until(
+            () =>
+                getPage({
+                    id: page.id
+                }),
+            ([res]: any) => {
+                return res.data.pageBuilder.getPage.data.revisions.length === total;
+            },
+            {
+                name: "get page with revisions",
+                tries: 20
+            }
+        );
+
+        expect(pageDataResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            revisions: revisions.map(rev => {
+                                return {
+                                    id: rev
+                                };
+                            })
+                        },
+                        error: null
                     }
                 }
             }
