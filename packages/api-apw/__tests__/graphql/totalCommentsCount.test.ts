@@ -22,7 +22,7 @@ describe(`Total comments count test`, () => {
         until
     } = gqlHandler;
 
-    const createContentReview = async page => {
+    const createContentReview = async (page: any) => {
         const [createContentReviewResponse] = await createContentReviewMutation({
             data: {
                 content: {
@@ -43,6 +43,17 @@ describe(`Total comments count test`, () => {
         }
     ]);
 
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
+    };
+
     test(`should able to update "totalComments" count in a content review`, async () => {
         const { page } = await createSetupForContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
@@ -50,7 +61,7 @@ describe(`Total comments count test`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listContentReviews.data;
                 return list.length === 1;
             },
@@ -71,7 +82,7 @@ describe(`Total comments count test`, () => {
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 1;
             },
@@ -82,9 +93,12 @@ describe(`Total comments count test`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const [entry] = response.data.apw.listContentReviews.data;
-                return entry.steps.find(step => step.id === step1.id).pendingChangeRequests === 1;
+                return (
+                    entry.steps.find((step: any) => step.id === step1.id).pendingChangeRequests ===
+                    1
+                );
             },
             {
                 name: "Wait for updated entry to be available in list query"
@@ -112,7 +126,7 @@ describe(`Total comments count test`, () => {
                 listCommentsQuery({ changeRequest: { id: changeRequested.id } }).then(
                     ([data]) => data
                 ),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listComments.data;
                 return list.length === 2;
             },
@@ -123,7 +137,7 @@ describe(`Total comments count test`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const [entry] = response.data.apw.listContentReviews.data;
                 return entry.totalComments === 2;
             },
@@ -152,12 +166,7 @@ describe(`Total comments count test`, () => {
                                 },
                                 status: "underReview",
                                 title: expect.any(String),
-                                content: {
-                                    id: expect.any(String),
-                                    type: "page",
-                                    version: expect.any(Number),
-                                    settings: null
-                                },
+                                content: expect.objectContaining(expectedContent),
                                 steps: expectedSteps,
                                 totalComments: 2,
                                 activeStep: {
@@ -199,7 +208,7 @@ describe(`Total comments count test`, () => {
                 listCommentsQuery({ changeRequest: { id: changeRequested.id } }).then(
                     ([data]) => data
                 ),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listComments.data;
                 return list.length === 1;
             },
@@ -228,12 +237,7 @@ describe(`Total comments count test`, () => {
                                 },
                                 status: "underReview",
                                 title: expect.any(String),
-                                content: {
-                                    id: expect.any(String),
-                                    type: "page",
-                                    version: expect.any(Number),
-                                    settings: null
-                                },
+                                content: expect.objectContaining(expectedContent),
                                 steps: expectedSteps,
                                 totalComments: 1,
                                 activeStep: {
@@ -262,7 +266,7 @@ describe(`Total comments count test`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listContentReviews.data;
                 return list.length === 1;
             },
@@ -283,7 +287,7 @@ describe(`Total comments count test`, () => {
 
         await until(
             () => listChangeRequestsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listChangeRequests.data;
                 return list.length === 1;
             },
@@ -294,9 +298,12 @@ describe(`Total comments count test`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const [entry] = response.data.apw.listContentReviews.data;
-                return entry.steps.find(step => step.id === step1.id).pendingChangeRequests === 1;
+                return (
+                    entry.steps.find((step: any) => step.id === step1.id).pendingChangeRequests ===
+                    1
+                );
             },
             {
                 name: "Wait for updated entry to be available in list query"
@@ -324,7 +331,7 @@ describe(`Total comments count test`, () => {
                 listCommentsQuery({ changeRequest: { id: changeRequested.id } }).then(
                     ([data]) => data
                 ),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listComments.data;
                 return list.length === 2;
             },
@@ -335,7 +342,7 @@ describe(`Total comments count test`, () => {
 
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const [entry] = response.data.apw.listContentReviews.data;
                 return entry.totalComments === 2;
             },
@@ -364,12 +371,7 @@ describe(`Total comments count test`, () => {
                                 },
                                 status: "underReview",
                                 title: expect.any(String),
-                                content: {
-                                    id: expect.any(String),
-                                    type: "page",
-                                    version: expect.any(Number),
-                                    settings: null
-                                },
+                                content: expect.objectContaining(expectedContent),
                                 steps: expectedSteps,
                                 totalComments: 2,
                                 activeStep: {
@@ -413,7 +415,7 @@ describe(`Total comments count test`, () => {
                 listCommentsQuery({ changeRequest: { id: changeRequested.id } }).then(
                     ([data]) => data
                 ),
-            response => {
+            (response: any) => {
                 const list = response.data.apw.listComments.data;
                 return list.length === 0;
             },
@@ -442,12 +444,7 @@ describe(`Total comments count test`, () => {
                                 },
                                 status: "underReview",
                                 title: expect.any(String),
-                                content: {
-                                    id: expect.any(String),
-                                    type: "page",
-                                    version: expect.any(Number),
-                                    settings: null
-                                },
+                                content: expect.objectContaining(expectedContent),
                                 steps: expect.arrayContaining([
                                     {
                                         id: expect.any(String),

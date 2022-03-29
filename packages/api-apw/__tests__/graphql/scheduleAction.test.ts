@@ -14,6 +14,7 @@ describe(`Schedule action in a content review process`, function () {
         createContentReviewMutation,
         provideSignOffMutation,
         publishContentMutation,
+        deleteScheduledActionMutation,
         until
     } = gqlHandler;
 
@@ -21,12 +22,7 @@ describe(`Schedule action in a content review process`, function () {
         return createSetupForContentReview(gqlHandler);
     };
 
-    let contentReview: any = null;
-
     const preparePageForPublish = async () => {
-        if (contentReview) {
-            return contentReview;
-        }
         const { page } = await setup();
         /*
          Create a content review entry.
@@ -78,8 +74,6 @@ describe(`Schedule action in a content review process`, function () {
         });
         const updatedContentReview = getContentReviewResponse.data.apw.getContentReview.data;
         expect(updatedContentReview.status).toEqual("readyToBePublished");
-
-        contentReview = createdContentReview;
 
         return createdContentReview;
     };
@@ -138,13 +132,13 @@ describe(`Schedule action in a content review process`, function () {
 
     test(`should be able to schedule publish page action.`, async () => {
         const contentReview = await preparePageForPublish();
-
+        const datetime = new Date(Date.now() + 1000 * 60 * 30).toISOString();
         /**
          * Should be able to schedule publish page action.
          */
         const [schedulePublishPageResponse] = await publishContentMutation({
             id: contentReview.id,
-            datetime: new Date(Date.now() + 1000 * 60 * 30).toISOString()
+            datetime
         });
 
         expect(schedulePublishPageResponse).toEqual({
@@ -157,5 +151,117 @@ describe(`Schedule action in a content review process`, function () {
                 }
             }
         });
+
+        /**
+         * After scheduling publish page, now the content should have "contentScheduledOn".
+         */
+        const [getContentReviewResponse] = await getContentReviewQuery({
+            id: contentReview.id
+        });
+
+        expect(getContentReviewResponse.data.apw.getContentReview.data.content.scheduledOn).toEqual(
+            datetime
+        );
+        expect(getContentReviewResponse.data.apw.getContentReview.data.content.scheduledBy).toEqual(
+            {
+                id: expect.any(String),
+                type: expect.any(String),
+                displayName: expect.any(String)
+            }
+        );
+    });
+
+    test(`should be able to delete schedule publish page action.`, async () => {
+        const contentReview = await preparePageForPublish();
+        const datetime = new Date(Date.now() + 1000 * 60 * 30).toISOString();
+
+        /**
+         * Should return error when trying to delete a scheduled action before creating one.
+         */
+        let [deleteScheduledActionResponse] = await deleteScheduledActionMutation({
+            id: contentReview.id
+        });
+        expect(deleteScheduledActionResponse).toEqual({
+            data: {
+                apw: {
+                    deleteScheduledAction: {
+                        data: null,
+                        error: {
+                            code: "NO_ACTION_SCHEDULED",
+                            message: expect.any(String),
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+
+        /**
+         * Should be able to schedule publish page action.
+         */
+        const [schedulePublishPageResponse] = await publishContentMutation({
+            id: contentReview.id,
+            datetime
+        });
+
+        expect(schedulePublishPageResponse).toEqual({
+            data: {
+                apw: {
+                    publishContent: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * After scheduling publish page, now the content should have "contentScheduledOn".
+         */
+        let [getContentReviewResponse] = await getContentReviewQuery({
+            id: contentReview.id
+        });
+
+        expect(getContentReviewResponse.data.apw.getContentReview.data.content.scheduledOn).toEqual(
+            datetime
+        );
+        expect(getContentReviewResponse.data.apw.getContentReview.data.content.scheduledBy).toEqual(
+            {
+                id: expect.any(String),
+                type: expect.any(String),
+                displayName: expect.any(String)
+            }
+        );
+
+        /**
+         * Should able to delete a scheduled action after creating one.
+         */
+        [deleteScheduledActionResponse] = await deleteScheduledActionMutation({
+            id: contentReview.id
+        });
+        expect(deleteScheduledActionResponse).toEqual({
+            data: {
+                apw: {
+                    deleteScheduledAction: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * After deleting the scheduled publish page action, now the content should not have "contentScheduledOn".
+         */
+        [getContentReviewResponse] = await getContentReviewQuery({
+            id: contentReview.id
+        });
+
+        expect(getContentReviewResponse.data.apw.getContentReview.data.content.scheduledOn).toEqual(
+            null
+        );
+        expect(getContentReviewResponse.data.apw.getContentReview.data.content.scheduledBy).toEqual(
+            null
+        );
     });
 });

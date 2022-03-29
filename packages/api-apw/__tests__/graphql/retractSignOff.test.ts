@@ -22,6 +22,17 @@ describe("Retract sign off for a step in content review process", function () {
         return createSetupForContentReview(gqlHandler);
     };
 
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
+    };
+
     test(`should able to retract sign-off`, async () => {
         const { page } = await setup();
         /*
@@ -128,13 +139,7 @@ describe("Retract sign off for a step in content review process", function () {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.DONE,
@@ -224,13 +229,7 @@ describe("Retract sign off for a step in content review process", function () {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,

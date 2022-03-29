@@ -17,7 +17,8 @@ describe(`Delete "content review" and associated "change requests" and "comments
         createCommentMutation,
         listChangeRequestsQuery,
         listCommentsQuery,
-        deleteContentReviewMutation
+        deleteContentReviewMutation,
+        getPageQuery
     } = gqlHandler;
 
     /**
@@ -28,6 +29,17 @@ describe(`Delete "content review" and associated "change requests" and "comments
         return {
             page
         };
+    };
+
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
     };
 
     test(`Should able to "delete" entire content review process`, async () => {
@@ -107,12 +119,7 @@ describe(`Delete "content review" and associated "change requests" and "comments
         });
 
         expect(getContentReviewResponse.data.apw.getContentReview.data).toEqual({
-            content: {
-                id: expect.any(String),
-                settings: null,
-                type: "page",
-                version: 1
-            },
+            content: expect.objectContaining(expectedContent),
             createdBy: {
                 displayName: expect.any(String),
                 id: expect.any(String),
@@ -285,5 +292,12 @@ describe(`Delete "content review" and associated "change requests" and "comments
                 }
             }
         });
+
+        /**
+         * Should unlink attached "contentReview" from page settings after contentReview deletion.
+         */
+        const [getPageResponse] = await getPageQuery({ id: page.id });
+        const pageData = getPageResponse.data.pageBuilder.getPage.data;
+        expect(pageData.settings.apw.contentReviewId).toEqual(null);
     });
 });

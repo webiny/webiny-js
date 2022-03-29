@@ -34,6 +34,17 @@ describe(`Pending change requests count test`, () => {
         return createContentReviewResponse.data.apw.createContentReview.data;
     };
 
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
+    };
+
     test(`should able to update "pendingChangeRequests" count in a content review`, async () => {
         const { page } = await createSetupForContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
@@ -75,7 +86,10 @@ describe(`Pending change requests count test`, () => {
             () => listContentReviewsQuery({}).then(([data]) => data),
             (response: any) => {
                 const [entry] = response.data.apw.listContentReviews.data;
-                return entry.steps.find(step => step.id === step1.id)?.pendingChangeRequests === 1;
+                return (
+                    entry.steps.find((step: any) => step.id === step1.id)?.pendingChangeRequests ===
+                    1
+                );
             },
             {
                 name: "Wait for updated entry to be available in list query"
@@ -101,12 +115,7 @@ describe(`Pending change requests count test`, () => {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     id: expect.any(String),
@@ -187,12 +196,7 @@ describe(`Pending change requests count test`, () => {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     id: expect.any(String),
@@ -252,12 +256,7 @@ describe(`Pending change requests count test`, () => {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     id: expect.any(String),
@@ -317,12 +316,7 @@ describe(`Pending change requests count test`, () => {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     id: expect.any(String),
@@ -382,12 +376,7 @@ describe(`Pending change requests count test`, () => {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     id: expect.any(String),
@@ -454,12 +443,7 @@ describe(`Pending change requests count test`, () => {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     id: expect.any(String),
@@ -556,12 +540,7 @@ describe(`Pending change requests count test`, () => {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     id: expect.any(String),

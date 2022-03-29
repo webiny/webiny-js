@@ -58,6 +58,17 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         return createContentReviewResponse.data.apw.createContentReview.data;
     };
 
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
+    };
+
     test("should able to add change request in a content review", async () => {
         const { page } = await createSetupForContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
@@ -312,12 +323,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     id: expect.any(String),

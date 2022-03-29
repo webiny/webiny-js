@@ -23,6 +23,17 @@ describe("Provide sign off for a step in content review process", function () {
         return createSetupForContentReview(gqlHandler);
     };
 
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
+    };
+
     test(`should able to provide sign-off`, async () => {
         const { page } = await setup();
         /*
@@ -128,12 +139,7 @@ describe("Provide sign off for a step in content review process", function () {
                             },
                             status: "underReview",
                             title: expect.any(String),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                version: expect.any(Number),
-                                settings: null
-                            },
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.DONE,
@@ -361,7 +367,7 @@ describe("Provide sign off for a step in content review process", function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => response.data.apw.getContentReview.data !== null,
+            (response: any) => response.data.apw.getContentReview.data !== null,
             {
                 name: "Wait for entry to be available in get query"
             }
@@ -378,7 +384,7 @@ describe("Provide sign off for a step in content review process", function () {
 
         await until(
             () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
-            response => {
+            (response: any) => {
                 const entry = response.data.apw.getContentReview.data;
                 const hasChanged = entry && entry.savedOn !== previousSavedOn;
                 if (hasChanged) {

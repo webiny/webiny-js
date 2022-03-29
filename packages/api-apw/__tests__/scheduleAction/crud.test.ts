@@ -39,7 +39,8 @@ describe("Schedule action CRUD Test", () => {
             data: {
                 datetime: expect.stringMatching(/^20/),
                 type: "page",
-                action: "publish"
+                action: "publish",
+                entryId: expect.any(String)
             }
         });
 
@@ -57,7 +58,8 @@ describe("Schedule action CRUD Test", () => {
             data: {
                 datetime: expect.stringMatching(/^20/),
                 type: "page",
-                action: "publish"
+                action: "publish",
+                entryId: expect.any(String)
             }
         });
 
@@ -76,14 +78,15 @@ describe("Schedule action CRUD Test", () => {
                 data: {
                     datetime: expect.stringMatching(/^20/),
                     type: "page",
-                    action: "publish"
+                    action: "publish",
+                    entryId: expect.any(String)
                 }
             }
         ]);
         expect(meta).toEqual({
             hasMoreItems: false,
             totalCount: 1,
-            cursor: null
+            cursor: expect.any(String)
         });
 
         /**
@@ -119,7 +122,8 @@ describe("Schedule action CRUD Test", () => {
             data: {
                 datetime: expect.stringMatching(/^20/),
                 type: "page",
-                action: "publish"
+                action: "publish",
+                entryId: expect.any(String)
             }
         });
 
@@ -181,7 +185,8 @@ describe("Schedule action CRUD Test", () => {
                     data: {
                         datetime: expect.stringMatching(/^20/),
                         type: "page",
-                        action: "publish"
+                        action: "publish",
+                        entryId: expect.any(String)
                     }
                 })
             ])
@@ -189,7 +194,7 @@ describe("Schedule action CRUD Test", () => {
         expect(meta).toEqual({
             hasMoreItems: false,
             totalCount: 5,
-            cursor: null
+            cursor: expect.any(String)
         });
         /**
          * Sorted by datetime(ISO string) in ascending order.
@@ -219,7 +224,8 @@ describe("Schedule action CRUD Test", () => {
                     data: {
                         datetime: expect.stringMatching(/^20/),
                         type: "page",
-                        action: "publish"
+                        action: "publish",
+                        entryId: expect.any(String)
                     }
                 })
             ])
@@ -227,7 +233,7 @@ describe("Schedule action CRUD Test", () => {
         expect(meta).toEqual({
             hasMoreItems: false,
             totalCount: 5,
-            cursor: null
+            cursor: expect.any(String)
         });
 
         /**
@@ -283,7 +289,8 @@ describe("Schedule action CRUD Test", () => {
                     data: {
                         datetime: expect.stringMatching(/^20/),
                         type: "page",
-                        action: "publish"
+                        action: "publish",
+                        entryId: expect.any(String)
                     }
                 })
             ])
@@ -308,7 +315,8 @@ describe("Schedule action CRUD Test", () => {
                     data: {
                         datetime: expect.stringMatching(/^20/),
                         type: "page",
-                        action: "publish"
+                        action: "publish",
+                        entryId: expect.any(String)
                     }
                 })
             ])
@@ -356,7 +364,8 @@ describe("Schedule action CRUD Test", () => {
                     data: {
                         datetime: expect.stringMatching(/^20/),
                         type: "page",
-                        action: "publish"
+                        action: "publish",
+                        entryId: expect.any(String)
                     }
                 })
             ])

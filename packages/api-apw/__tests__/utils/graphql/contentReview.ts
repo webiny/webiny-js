@@ -32,6 +32,18 @@ const getDataFields = (fields = "") => `{
         settings {
             modelId
         }
+        publishedOn
+        publishedBy {
+            id
+            displayName
+            type
+        }
+        scheduledOn
+        scheduledBy {
+            id
+            displayName
+            type
+        }
     }
     ${fields}
 }`;
@@ -151,6 +163,17 @@ export const UNPUBLISH_CONTENT_MUTATION = /* GraphQL */ `
     mutation UnPublishContentMutation($id: ID!, $datetime: String) {
         apw {
             unpublishContent(id: $id, datetime: $datetime) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const DELETE_SCHEDULED_ACTION_MUTATION = /* GraphQL */ `
+    mutation DeleteScheduledActionMutation($id: ID!) {
+        apw {
+            deleteScheduledAction(id: $id) {
                 data
                 error ${ERROR_FIELDS}
             }

@@ -22,6 +22,17 @@ describe("Content Review crud test", () => {
         return createSetupForContentReview(gqlHandler);
     };
 
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
+    };
+
     test(`should able to create, update, get, list and delete "Content Review"`, async () => {
         const { page, workflow } = await setup();
         /*
@@ -63,12 +74,7 @@ describe("Content Review crud test", () => {
                                 signOffProvidedOn: null,
                                 signOffProvidedBy: null
                             })),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                version: expect.any(Number),
-                                settings: null
-                            }
+                            content: expect.objectContaining(expectedContent)
                         },
                         error: null
                     }
@@ -115,12 +121,7 @@ describe("Content Review crud test", () => {
                                 signOffProvidedOn: null,
                                 signOffProvidedBy: null
                             })),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                version: expect.any(Number),
-                                settings: null
-                            }
+                            content: expect.objectContaining(expectedContent)
                         },
                         error: null
                     }
@@ -170,12 +171,7 @@ describe("Content Review crud test", () => {
                                     signOffProvidedBy: null
                                 })),
                                 totalComments: 0,
-                                content: {
-                                    id: expect.any(String),
-                                    type: expect.any(String),
-                                    version: expect.any(Number),
-                                    settings: null
-                                },
+                                content: expect.objectContaining(expectedContent),
                                 activeStep: {
                                     title: expect.any(String)
                                 },
