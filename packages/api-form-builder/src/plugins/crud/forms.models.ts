@@ -19,7 +19,7 @@ export const FormFieldsModel = withFields({
      * Note: We've replaced "i18nString()" with "string()"
      */
     label: string({ validation: validation.create("maxLength:100") }),
-    helpText: string({ validation: validation.create("maxLength:100") }),
+    helpText: string({ validation: validation.create("maxLength:255") }),
     placeholderText: string({ validation: validation.create("maxLength:100") }),
     options: fields({
         list: true,

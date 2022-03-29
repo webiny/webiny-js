@@ -7,11 +7,21 @@ import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
 import { ReactComponent as HandleIcon } from "../../../../icons/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
-import { useFormEditor } from "../../Context";
+import { FormEditorFieldError, useFormEditor } from "../../Context";
 import { FbFormModelField, FieldLayoutPositionType } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.namespace("FormsApp.Editor.EditTab");
+
+const getFieldError = (
+    field: FbFormModelField,
+    errors: FormEditorFieldError[] | null
+): FormEditorFieldError | null => {
+    if (!errors || Array.isArray(errors) === false) {
+        return null;
+    }
+    return errors.find(error => error.fieldId === field.fieldId) || null;
+};
 
 export const EditTab: React.FC = () => {
     const {
@@ -20,6 +30,7 @@ export const EditTab: React.FC = () => {
         updateField,
         deleteField,
         data,
+        errors,
         moveField,
         moveRow,
         getFieldPlugin
@@ -155,6 +166,7 @@ export const EditTab: React.FC = () => {
                                                         field={field}
                                                         onEdit={editField}
                                                         onDelete={deleteField}
+                                                        error={getFieldError(field, errors)}
                                                     />
                                                 </div>
 
