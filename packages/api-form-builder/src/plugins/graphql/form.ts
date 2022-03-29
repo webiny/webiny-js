@@ -311,8 +311,18 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
         `,
         resolvers: {
             FbForm: {
-                overallStats: (form, _, { formBuilder }) => {
-                    return formBuilder.getFormStats(form.id);
+                overallStats: async (form, _, { formBuilder }) => {
+                    try {
+                        return await formBuilder.getFormStats(form.id);
+                    } catch (ex) {
+                        console.log(`Could not fetch form "${form.id}" stats.`);
+                        console.log(ex.message);
+                    }
+                    return {
+                        views: 0,
+                        submissions: 0,
+                        conversionRate: 0
+                    };
                 },
                 settings: async (form, _, { formBuilder }) => {
                     const settings = await formBuilder.getSettings({ auth: false });

@@ -627,4 +627,80 @@ describe('Form Builder "Form" Test', () => {
             }
         );
     });
+
+    it("should properly sort form revisions", async () => {
+        const name = "test form";
+        const [formResponse] = await createForm({
+            data: {
+                name
+            }
+        });
+        expect(formResponse).toMatchObject({
+            data: {
+                formBuilder: {
+                    createForm: {
+                        data: {
+                            name
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const form = formResponse.data.formBuilder.createForm.data;
+        const revisions: string[] = [form.id];
+        const total = 25;
+        /**
+         * Now we need to create 20+ revisions
+         */
+        for (let i = revisions.length; i < total; i++) {
+            const prev = revisions[i - 1];
+            const [createRevisionResponse] = await createRevisionFrom({
+                revision: prev
+            });
+            expect(createRevisionResponse).toMatchObject({
+                data: {
+                    formBuilder: {
+                        createRevisionFrom: {
+                            data: {
+                                name,
+                                version: i + 1
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
+            revisions.push(createRevisionResponse.data.formBuilder.createRevisionFrom.data.id);
+        }
+        expect(revisions).toHaveLength(total);
+
+        await until(
+            () =>
+                getFormRevisions({
+                    id: form.id
+                }).then(([data]) => data),
+            ({ data }: any) => {
+                return data.formBuilder.getFormRevisions.data.length === revisions.length;
+            }
+        );
+
+        const [listRevisionsResponse] = await getFormRevisions({
+            id: form.id
+        });
+        expect(listRevisionsResponse).toMatchObject({
+            data: {
+                formBuilder: {
+                    getFormRevisions: {
+                        data: revisions.map(rev => {
+                            return {
+                                id: rev
+                            };
+                        }),
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });

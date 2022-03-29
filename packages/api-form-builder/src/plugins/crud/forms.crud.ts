@@ -144,7 +144,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                         id,
                         tenant: getTenant().id,
                         locale: getLocale().code
-                    }
+                    },
+                    sort: ["version_ASC"]
                 });
                 if (forms.length === 0 || !permission) {
                     return forms;
@@ -567,7 +568,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             };
 
             try {
-                return this.storageOperations.createFormFrom({
+                return await this.storageOperations.createFormFrom({
                     original,
                     latest,
                     form
