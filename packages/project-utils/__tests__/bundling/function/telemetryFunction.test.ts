@@ -6,7 +6,7 @@ import { sleep } from "../../../testing/helpers/sleep";
 import * as path from "path";
 
 // This environment API key has been previously created via a test WCP account created at https://app.webiny.com. Consult internal documentation for more information on the used account.
-const VALID_API_KEY = "8c8d2096-934e-47b0-ab02-25feace28d48";
+const VALID_API_KEY = "f79af720-958a-474d-8150-a2618e0380a3";
 
 interface TelemetryDataLogs {
     error: boolean;
