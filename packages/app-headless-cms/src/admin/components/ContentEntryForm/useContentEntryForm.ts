@@ -279,63 +279,60 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         return createContentFrom(entry.id, gqlData);
     };
 
-    const defaultValues = useMemo(
-        (overrides: Record<string, any> = {}): Record<string, any> => {
-            const values: Record<string, any> = {};
+    const defaultValues = useMemo((): Record<string, any> => {
+        const values: Record<string, any> = {};
+        /**
+         * Assign the default values:
+         * * check the settings.defaultValue
+         * * check the predefinedValues for selected value
+         */
+        for (const field of contentModel.fields) {
             /**
-             * Assign the default values:
-             * * check the settings.defaultValue
-             * * check the predefinedValues for selected value
+             * When checking if defaultValue is set in settings, we do the undefined check because it can be null, 0, empty string, false, etc...
              */
-            for (const field of contentModel.fields) {
+            const { settings, multipleValues = false } = field;
+            if (settings && settings.defaultValue !== undefined) {
                 /**
-                 * When checking if defaultValue is set in settings, we do the undefined check because it can be null, 0, empty string, false, etc...
+                 * Special type of field is the boolean one.
+                 * We MUST set true/false for default value.
                  */
-                const { settings, multipleValues = false } = field;
-                if (settings && settings.defaultValue !== undefined) {
-                    /**
-                     * Special type of field is the boolean one.
-                     * We MUST set true/false for default value.
-                     */
-                    values[field.fieldId] = convertDefaultValue(field, settings.defaultValue);
-                    continue;
-                }
-                /**
-                 * No point in going further if predefined values are not enabled.
-                 */
-                const { predefinedValues } = field;
-                if (
-                    !predefinedValues ||
-                    !predefinedValues.enabled ||
-                    Array.isArray(predefinedValues.values) === false
-                ) {
-                    continue;
-                }
-                /**
-                 * When field is not a multiple values one, we find the first possible default selected value and set it as field value.
-                 */
-                if (!multipleValues) {
-                    const selectedValue = predefinedValues.values.find(({ selected }) => {
-                        return !!selected;
-                    });
-                    if (selectedValue) {
-                        values[field.fieldId] = convertDefaultValue(field, selectedValue.value);
-                    }
-                    continue;
-                }
-                /**
-                 *
-                 */
-                values[field.fieldId] = predefinedValues.values
-                    .filter(({ selected }) => !!selected)
-                    .map(({ value }) => {
-                        return convertDefaultValue(field, value);
-                    });
+                values[field.fieldId] = convertDefaultValue(field, settings.defaultValue);
+                continue;
             }
-            return { ...values, ...overrides };
-        },
-        [contentModel.modelId]
-    );
+            /**
+             * No point in going further if predefined values are not enabled.
+             */
+            const { predefinedValues } = field;
+            if (
+                !predefinedValues ||
+                !predefinedValues.enabled ||
+                Array.isArray(predefinedValues.values) === false
+            ) {
+                continue;
+            }
+            /**
+             * When field is not a multiple values one, we find the first possible default selected value and set it as field value.
+             */
+            if (!multipleValues) {
+                const selectedValue = predefinedValues.values.find(({ selected }) => {
+                    return !!selected;
+                });
+                if (selectedValue) {
+                    values[field.fieldId] = convertDefaultValue(field, selectedValue.value);
+                }
+                continue;
+            }
+            /**
+             *
+             */
+            values[field.fieldId] = predefinedValues.values
+                .filter(({ selected }) => !!selected)
+                .map(({ value }) => {
+                    return convertDefaultValue(field, value);
+                });
+        }
+        return values;
+    }, [contentModel.modelId]);
 
     return {
         /**
