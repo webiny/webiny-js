@@ -138,7 +138,7 @@ module.exports = () => ({
             "whoami",
             `Display the current logged-in user`,
             yargs => {
-                yargs.example("$0 login");
+                yargs.example("$0 whoami");
                 yargs.option("debug", {
                     describe: `Turn on debug logs`,
                     type: "boolean"
