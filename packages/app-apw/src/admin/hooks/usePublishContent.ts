@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import get from "lodash/get";
-import { PUBLISH_CONTENT_MUTATION, UNPUBLISH_CONTENT_MUTATION } from "../graphql/provideSignoff";
+import {
+    PUBLISH_CONTENT_MUTATION,
+    UNPUBLISH_CONTENT_MUTATION,
+    DELETE_SCHEDULED_ACTION_MUTATION
+} from "../graphql/provideSignoff";
 import { useContentReviewId } from "~/admin/hooks/useContentReviewId";
 import { useSnackbar } from "@webiny/app-admin";
 import { GET_CONTENT_REVIEW_QUERY } from "~/admin/views/contentReviewDashboard/hooks/graphql";
@@ -9,6 +13,7 @@ import { GET_CONTENT_REVIEW_QUERY } from "~/admin/views/contentReviewDashboard/h
 interface UsePublishContentResult {
     publishContent: Function;
     unpublishContent: Function;
+    deleteScheduledAction: () => void;
     loading: boolean;
 }
 
@@ -55,15 +60,39 @@ export const usePublishContent = (): UsePublishContentResult => {
         }
     });
 
+    const [deleteScheduledAction] = useMutation(DELETE_SCHEDULED_ACTION_MUTATION, {
+        refetchQueries: [
+            {
+                query: GET_CONTENT_REVIEW_QUERY,
+                variables: {
+                    id
+                }
+            }
+        ],
+        onCompleted: response => {
+            const error = get(response, "apw.deleteScheduledAction.error");
+            if (error) {
+                showSnackbar(error.message);
+                return;
+            }
+            showSnackbar("Unset scheduled action successfully!");
+        }
+    });
+
     return {
-        publishContent: async () => {
+        publishContent: async (datetime?: string) => {
             setLoading(true);
-            await publishContent({ variables: { id } });
+            await publishContent({ variables: { id, datetime } });
             setLoading(false);
         },
-        unpublishContent: async () => {
+        unpublishContent: async (datetime?: string) => {
             setLoading(true);
-            await unpublishContent({ variables: { id } });
+            await unpublishContent({ variables: { id, datetime } });
+            setLoading(false);
+        },
+        deleteScheduledAction: async () => {
+            setLoading(true);
+            await deleteScheduledAction({ variables: { id } });
             setLoading(false);
         },
         loading

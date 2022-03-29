@@ -11,7 +11,7 @@ import {
 import { formatDate } from "~/admin/components/utils";
 import { PanelBox } from "./Styled";
 import { ContentReviewStep } from "./ContentReviewStep";
-import { PublishContent } from "./ContentReviewStep/PublishContent";
+import { ChangeContentStatus } from "./ChangeContentStatus";
 
 const ReviewRequestedStepData = {
     id: "123",
@@ -24,9 +24,9 @@ const ReviewRequestedStepData = {
 };
 
 const ContentReviewStepList = styled(List)`
+    flex: 1 0 0;
     padding: 0;
     overflow: auto;
-    height: calc(100vh - 64px - 56px);
 `;
 
 interface LeftPanelProps {
@@ -37,13 +37,12 @@ interface LeftPanelProps {
 }
 
 export const LeftPanel: React.FC<LeftPanelProps> = ({
-    status,
     steps,
     reviewRequestedBy,
     reviewRequestedOn
 }) => {
     return (
-        <PanelBox flex={"1 1 26%"}>
+        <PanelBox flex={"1 1 26%"} display={"flex"} style={{ flexDirection: "column" }}>
             <ContentReviewStepList>
                 <ContentReviewStep
                     disabled={true}
@@ -59,7 +58,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                     />
                 ))}
             </ContentReviewStepList>
-            <PublishContent status={status} />
+            <ChangeContentStatus />
         </PanelBox>
     );
 };

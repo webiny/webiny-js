@@ -27,6 +27,14 @@ const getDataFields = (fields = "") => `{
         id
         type
         version
+        publishedOn
+        publishedBy {
+            displayName
+        }
+        scheduledBy {
+            displayName
+        }
+        scheduledOn
     }
     steps {
         status

@@ -102,6 +102,10 @@ export interface ApwContentReviewContent {
     settings: {
         modelId?: string;
     };
+    scheduledOn: string | null;
+    scheduledBy: CreatedBy | null;
+    publishedOn: string | null;
+    publishedBy: CreatedBy | null;
 }
 
 export interface ApwContentReview extends BaseFields {

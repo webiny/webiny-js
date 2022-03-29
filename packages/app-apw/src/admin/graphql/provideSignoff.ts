@@ -29,9 +29,9 @@ export const RETRACT_SIGN_OFF_MUTATION = /* GraphQL */ gql`
 `;
 
 export const PUBLISH_CONTENT_MUTATION = /* GraphQL */ gql`
-    mutation PublishContentMutation($id: ID!) {
+    mutation PublishContentMutation($id: ID!, $datetime: String) {
         apw {
-            publishContent(id: $id) {
+            publishContent(id: $id, datetime: $datetime) {
                 data
                 error ${ERROR_FIELDS}
             }
@@ -40,9 +40,20 @@ export const PUBLISH_CONTENT_MUTATION = /* GraphQL */ gql`
 `;
 
 export const UNPUBLISH_CONTENT_MUTATION = /* GraphQL */ gql`
-    mutation UnpublishContentMutation($id: ID!) {
+    mutation UnpublishContentMutation($id: ID!, $datetime: String) {
         apw {
-            unpublishContent(id: $id) {
+            unpublishContent(id: $id, datetime: $datetime) {
+                data
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const DELETE_SCHEDULED_ACTION_MUTATION = /* GraphQL */ gql`
+    mutation DeleteScheduledActionMutation($id: ID!) {
+        apw {
+            deleteScheduledAction(id: $id) {
                 data
                 error ${ERROR_FIELDS}
             }
