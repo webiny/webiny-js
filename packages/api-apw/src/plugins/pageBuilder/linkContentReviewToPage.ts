@@ -38,7 +38,24 @@ export const linkContentReviewToPage = ({ pageBuilder, apw }: InitiateContentRev
 
     pageBuilder.onBeforePageDelete.subscribe(async ({ page }) => {
         const contentReviewId = get(page, "settings.apw.contentReviewId");
-        if (contentReviewId) {
+        if (!contentReviewId) {
+            return;
+        }
+
+        let contentReview;
+        try {
+            contentReview = await apw.contentReview.get(contentReviewId);
+        } catch (e) {
+            /**
+             * We're handling the case whereby "contentReviewId" is still linked to page;
+             * even when the contentReview entry has been deleted. In that case, we'll allow page deletion.
+             */
+            if (e.code !== "NOT_FOUND") {
+                throw e;
+            }
+        }
+
+        if (contentReview) {
             throw new Error(
                 `Cannot delete the page because a peer review has been requested. Please delete the review first.`,
                 "CANNOT_DELETE_REVIEW_EXIST",

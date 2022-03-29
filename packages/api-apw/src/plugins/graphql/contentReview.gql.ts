@@ -4,7 +4,8 @@ import {
     ApwContentReviewStep,
     ApwContentReviewStepStatus,
     ApwContext,
-    ApwContentReviewListParams
+    ApwContentReviewListParams,
+    ApwContentReviewContent
 } from "~/types";
 import resolve from "~/utils/resolve";
 
@@ -149,6 +150,10 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             type: ApwContentReviewContentTypes!
             version: Int!
             settings: ApwContentReviewContentSettings
+            publishedOn: String
+            publishedBy: ApwCreatedBy
+            scheduledOn: DateTime
+            scheduledBy: ApwCreatedBy
         }
 
         input ApwContentReviewContentInput {
@@ -232,17 +237,47 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             unpublishContent(id: ID!, datetime: String): ApwPublishContentResponse
 
             scheduleAction(data: ApwScheduleActionInput!): ApwScheduleActionResponse
+
+            deleteScheduledAction(id: ID!): ApwScheduleActionResponse
         }
     `,
     resolvers: {
         ApwContentReviewContent: {
-            version: async (parent, _, context) => {
+            version: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
                 const getContent = context.apw.getContentGetter(parent.type);
                 const content = await getContent(parent.id, parent.settings);
                 if (!content) {
                     return null;
                 }
                 return content.version;
+            },
+            publishedOn: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
+                const getContent = context.apw.getContentGetter(parent.type);
+                const content = await getContent(parent.id, parent.settings);
+                if (!content) {
+                    return null;
+                }
+                return content.publishedOn;
+            },
+            publishedBy: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
+                const id = parent.publishedBy;
+                if (id) {
+                    const [[reviewer]] = await context.apw.reviewer.list({
+                        where: { identityId: id }
+                    });
+                    return reviewer;
+                }
+                return null;
+            },
+            scheduledBy: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
+                const id = parent.scheduledBy;
+                if (id) {
+                    const [[reviewer]] = await context.apw.reviewer.list({
+                        where: { identityId: id }
+                    });
+                    return reviewer;
+                }
+                return null;
             }
         },
         ApwContentReviewListItem: {
@@ -320,6 +355,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 return resolve(() =>
                     context.apw.contentReview.unpublishContent(args.id, args.datetime)
                 );
+            },
+            deleteScheduledAction: async (_, args: any, context) => {
+                return resolve(() => context.apw.contentReview.deleteScheduledAction(args.id));
             }
         }
     }

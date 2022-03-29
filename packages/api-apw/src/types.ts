@@ -284,6 +284,10 @@ export interface ApwContentReviewContent {
     settings: {
         modelId?: string;
     };
+    scheduledOn?: string | null;
+    scheduledBy?: string | null;
+    scheduledActionId?: string | null;
+    publishedBy?: string | null;
 }
 
 export interface CreateApwContentReviewParams {
@@ -294,6 +298,7 @@ interface UpdateApwContentReviewParams {
     title?: string;
     steps?: ApwContentReviewStep[];
     status?: ApwContentReviewStatus;
+    content?: ApwContentReviewContent;
 }
 
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
@@ -411,7 +416,9 @@ export interface ApwContentReviewCrud
 
     unpublishContent(id: string, datetime?: string): Promise<Boolean>;
 
-    scheduleAction(data: ApwScheduleActionData): Promise<boolean>;
+    scheduleAction(data: ApwScheduleActionData): Promise<string>;
+
+    deleteScheduledAction(id: string): Promise<boolean>;
 
     /**
      * Lifecycle events
@@ -451,6 +458,7 @@ export interface AdvancedPublishingWorkflow {
     comment: ApwCommentCrud;
     changeRequest: ApwChangeRequestCrud;
     contentReview: ApwContentReviewCrud;
+    scheduleAction: ApwScheduleActionCrud;
 }
 
 export interface ApwContext extends Context, CmsContext {

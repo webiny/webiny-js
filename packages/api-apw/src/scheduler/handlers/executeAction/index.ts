@@ -39,7 +39,6 @@ export default ({
         try {
             log("RUNNING ScheduleAction ExecuteAction Handler");
             const { invocationArgs: args } = context;
-            console.log("args ", args);
 
             const { futureDateTime: datetime } = args;
             /**
@@ -66,6 +65,7 @@ export default ({
              * Execute all actions.
              */
             if (items && items.length) {
+                log(`Found ${items.length} actions.`);
                 for (let i = 0; i < items.length; i++) {
                     const item = items[i];
                     log(

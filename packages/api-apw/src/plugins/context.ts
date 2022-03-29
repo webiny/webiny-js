@@ -11,6 +11,7 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { CreateApwContextParams } from "~/scheduler/types";
 import { createScheduler } from "~/scheduler";
+import { createCustomAuth } from "~/scheduler/handlers/executeAction/security";
 
 export default (params: CreateApwContextParams) => [
     new ContextPlugin<ApwContext>(async context => {
@@ -135,7 +136,8 @@ export default (params: CreateApwContextParams) => [
             return true;
         });
 
-        apwPageBuilderPlugins({ pageBuilder: context.pageBuilder, apw: context.apw });
+        apwPageBuilderPlugins({ pageBuilder: context.pageBuilder, apw: context.apw, getIdentity });
     }),
-    apwHooks()
+    apwHooks(),
+    createCustomAuth()
 ];

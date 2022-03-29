@@ -106,6 +106,34 @@ const contentSettingsModelIdField = () =>
         type: "text"
     });
 
+const scheduledActionIdField = () =>
+    createModelField({
+        label: "Scheduled action Id",
+        type: "text",
+        parent: "contentReview Content"
+    });
+
+const contentScheduledOnField = () =>
+    createModelField({
+        label: "Scheduled on",
+        type: "datetime",
+        parent: "contentReview Content"
+    });
+
+const contentScheduledByField = () =>
+    createModelField({
+        label: "Scheduled by",
+        type: "text",
+        parent: "contentReview Content"
+    });
+
+const contentPublishedByField = () =>
+    createModelField({
+        label: "Published by",
+        type: "text",
+        parent: "contentReview Content"
+    });
+
 const stepStatusField = (): CmsModelField => ({
     multipleValues: false,
     listValidation: [],
@@ -244,7 +272,11 @@ export const createContentReviewModelDefinition = ({
             contentIdField(),
             contentTypeField(),
             contentWorkflowIdField(),
-            contentSettingsField([contentSettingsModelIdField()])
+            contentSettingsField([contentSettingsModelIdField()]),
+            contentScheduledOnField(),
+            contentScheduledByField(),
+            scheduledActionIdField(),
+            contentPublishedByField()
         ]),
         contentStatus(),
         stepsField([

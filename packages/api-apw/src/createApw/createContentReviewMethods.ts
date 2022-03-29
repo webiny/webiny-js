@@ -27,7 +27,11 @@ import {
     StepMissingError
 } from "~/utils/errors";
 import { ApwScheduleActionTypes } from "~/scheduler/types";
-import { checkValidDateTime, getPendingRequiredSteps } from "./helpers";
+import {
+    checkValidDateTime,
+    getPendingRequiredSteps,
+    INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META
+} from "./helpers";
 
 interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
@@ -316,6 +320,7 @@ export function createContentReviewMethods(
         },
         async publishContent(this: ApwContentReviewCrud, id: string, datetime) {
             const { content, status } = await this.get(id);
+            const identity = getIdentity();
 
             if (status !== ApwContentReviewStatus.READY_TO_BE_PUBLISHED) {
                 throw new Error({
@@ -332,27 +337,39 @@ export function createContentReviewMethods(
             checkValidDateTime(datetime);
 
             /**
-             * If datetime is present it means we're scheduling the  publish action.
+             * If datetime is present it means we're scheduling this action.
              */
             if (datetime) {
-                return this.scheduleAction({
+                const scheduledActionId = await this.scheduleAction({
                     action: ApwScheduleActionTypes.PUBLISH,
                     type: content.type,
                     entryId: content.id,
                     datetime
                 });
+                /**
+                 * Update scheduled related meta data.
+                 */
+                await this.update(id, {
+                    content: {
+                        ...content,
+                        scheduledOn: datetime,
+                        scheduledBy: identity.id,
+                        scheduledActionId
+                    }
+                });
+
+                return true;
             }
 
             const contentPublisher = getContentPublisher(content.type);
 
             await contentPublisher(content.id, content.settings);
 
-            await this.update(id, { status: ApwContentReviewStatus.PUBLISHED });
-
             return true;
         },
         async unpublishContent(this: ApwContentReviewCrud, id: string, datetime) {
             const { content, status } = await this.get(id);
+            const identity = getIdentity();
 
             if (status !== ApwContentReviewStatus.PUBLISHED) {
                 throw new Error({
@@ -368,34 +385,45 @@ export function createContentReviewMethods(
             checkValidDateTime(datetime);
 
             /**
-             * If datetime is present it means we're scheduling the unpublish action.
+             * If datetime is present it means we're scheduling this action.
              */
             if (datetime) {
-                return this.scheduleAction({
+                const scheduledActionId = await this.scheduleAction({
                     action: ApwScheduleActionTypes.UNPUBLISH,
                     type: content.type,
                     entryId: content.id,
                     datetime
                 });
+                /**
+                 * Update scheduled related meta data.
+                 */
+                await this.update(id, {
+                    content: {
+                        ...content,
+                        scheduledOn: datetime,
+                        scheduledBy: identity.id,
+                        scheduledActionId
+                    }
+                });
+
+                return true;
             }
 
             const contentUnPublisher = getContentUnPublisher(content.type);
 
             await contentUnPublisher(content.id, content.settings);
 
-            await this.update(id, { status: ApwContentReviewStatus.READY_TO_BE_PUBLISHED });
-
             return true;
         },
         async scheduleAction(data) {
             // Save input in DB
-            await scheduler.create(data);
+            const scheduledAction = await scheduler.create(data);
             /**
              * This function contains logic of lambda invocation.
              * Current we're not mocking it, therefore, we're just returning true.
              */
             if (process.env.NODE_ENV === "test") {
-                return true;
+                return scheduledAction.id;
             }
             // Invoke handler
             await handlerClient.invoke<{ tenant: string; locale: string }>({
@@ -403,6 +431,39 @@ export function createContentReviewMethods(
                 payload: { tenant: getTenant().id, locale: getLocale().code },
                 await: false
             });
+            return scheduledAction.id;
+        },
+        async deleteScheduledAction(id) {
+            const contentReview = await this.get(id);
+            const scheduledActionId = get(contentReview, "content.scheduledActionId");
+
+            /**
+             * Check if there is any action scheduled for this "content review".
+             */
+            if (!scheduledActionId) {
+                throw new Error({
+                    message: `There is no action scheduled for content review.`,
+                    code: "NO_ACTION_SCHEDULED",
+                    data: {
+                        id
+                    }
+                });
+            }
+            /**
+             * Delete scheduled action.
+             */
+            await scheduler.delete(scheduledActionId);
+
+            /**
+             * Reset scheduled related meta data.
+             */
+            await this.update(id, {
+                content: {
+                    ...contentReview.content,
+                    ...INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META
+                }
+            });
+
             return true;
         }
     };

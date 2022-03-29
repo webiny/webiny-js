@@ -74,6 +74,10 @@ export const createApw = (params: CreateApwParams): AdvancedPublishingWorkflow =
             getContentGetter,
             getContentPublisher,
             getContentUnPublisher
-        })
+        }),
+        /**
+         * Add scheduler to context so that we can access it later. For example, during testing.
+         */
+        scheduleAction: params.scheduler
     };
 };

@@ -53,3 +53,9 @@ export const getPendingRequiredSteps: GetPendingRequiredSteps = (steps, predicat
         return predicate(step);
     });
 };
+
+export const INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META = {
+    scheduledOn: null,
+    scheduledBy: null,
+    scheduledActionId: null
+};
