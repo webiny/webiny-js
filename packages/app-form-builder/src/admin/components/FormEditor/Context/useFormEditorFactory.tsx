@@ -208,6 +208,7 @@ export const useFormEditorFactory = (
                     showSnackbar(
                         "Unspecified Form Builder error. Please check the console for more details."
                     );
+                    console.log(error);
                     return;
                 }
                 dispatch({
