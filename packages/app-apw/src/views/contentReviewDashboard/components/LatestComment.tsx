@@ -3,7 +3,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { useComment } from "~/plugins/editor/comment/hooks/useComment";
 import { CommentStatusBox, TypographySecondary, AuthorName } from "./Styled";
-import { formatDate } from "~/components/utils";
+import { formatDate } from "~/utils";
 import { RichTextEditor } from "@webiny/ui/RichTextEditor";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");

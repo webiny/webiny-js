@@ -14,7 +14,7 @@ import {
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { ApwWorkflowScopeTypes } from "~/types";
-import { getNanoid } from "~/components/utils";
+import { getNanoid } from "~/utils";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 

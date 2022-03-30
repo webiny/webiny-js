@@ -16,7 +16,7 @@ import { validation } from "@webiny/validation";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { FileManager } from "@webiny/app-admin/components";
 import { ApwFile } from "./ApwFile";
-import { getNanoid } from "~/components/utils";
+import { getNanoid } from "~/utils";
 
 const t = i18n.ns("app-apw/content-review/editor/change-request");
 

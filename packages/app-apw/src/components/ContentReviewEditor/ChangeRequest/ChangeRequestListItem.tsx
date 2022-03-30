@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { Box, Columns, Stack } from "~/components/Layout";
 import { Avatar } from "~/views/publishingWorkflows/components/ReviewersList";
-import { fromNow } from "~/components/utils";
+import { fromNow } from "~/utils";
 import { ChangeRequestItem, TypographySecondary, TypographyTitle } from "../Styled";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { ApwChangeRequest, ApwChangeRequestStatus } from "~/types";

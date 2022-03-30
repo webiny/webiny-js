@@ -8,7 +8,7 @@ import {
     ApwWorkflowStepTypes,
     CreatedBy
 } from "~/types";
-import { formatDate } from "~/components/utils";
+import { formatDate } from "~/utils";
 import { PanelBox } from "./Styled";
 import { ContentReviewStep } from "./ContentReviewStep";
 import { ChangeContentStatus } from "./ChangeContentStatus";

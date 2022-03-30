@@ -13,7 +13,7 @@ import { useScheduleActionDialog } from "./useScheduleActionDialog";
 import { Typography } from "@webiny/ui/Typography";
 import { useContentReview } from "~/hooks/useContentReview";
 import { useContentReviewId } from "~/hooks/useContentReviewId";
-import { formatDatetime } from "~/components/utils";
+import { formatDatetime } from "~/utils";
 
 const t = i18n.ns("app-apw/content-reviews/editor/steps/publishContent");
 
