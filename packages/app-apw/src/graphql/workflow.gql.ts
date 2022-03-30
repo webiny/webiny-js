@@ -127,7 +127,7 @@ export const LIST_WORKFLOWS_QUERY = /* GraphQL */ gql`
  */
 export interface CreateWorkflowMutationResponse {
     apw: {
-        createWorkflow: {
+        workflow: {
             data: ApwWorkflow;
             error?: Error | null;
         };
@@ -155,7 +155,7 @@ export const CREATE_WORKFLOW_MUTATION = /* GraphQL */ gql`
  */
 export interface UpdateWorkflowMutationResponse {
     apw: {
-        updateWorkflow: {
+        workflow: {
             data: ApwWorkflow;
             error?: Error | null;
         };

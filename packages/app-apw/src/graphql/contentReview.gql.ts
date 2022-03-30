@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { ApwContentReview } from "~/types";
+import { ApwContentReview, ApwContentReviewContent } from "~/types";
 
 const ERROR_FIELDS = `{
     message
@@ -142,7 +142,7 @@ export const LIST_CONTENT_REVIEWS_QUERY = /* GraphQL */ gql`
  */
 export interface CreateContentReviewMutationResponse {
     apw: {
-        createContentReview: {
+        contentReview: {
             data: ApwContentReview;
             error?: Error | null;
         };
@@ -150,7 +150,9 @@ export interface CreateContentReviewMutationResponse {
 }
 
 export interface CreateApwContentReviewMutationVariables {
-    data: Partial<ApwContentReview>;
+    data: {
+        content: Pick<ApwContentReviewContent, "id" | "type">;
+    };
 }
 
 export const CREATE_CONTENT_REVIEW_MUTATION = /* GraphQL */ gql`

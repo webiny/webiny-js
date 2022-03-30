@@ -111,7 +111,7 @@ export const LIST_COMMENTS_QUERY = /* GraphQL */ gql`
  */
 export interface CreateCommentMutationResponse {
     apw: {
-        createComment: {
+        comment: {
             data: ApwComment;
             error?: Error | null;
         };

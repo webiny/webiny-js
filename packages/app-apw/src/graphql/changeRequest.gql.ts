@@ -113,7 +113,7 @@ export const LIST_CHANGE_REQUESTS_QUERY = /* GraphQL */ gql`
  */
 export interface CreateChangeRequestMutationResponse {
     apw: {
-        createChangeRequest: {
+        changeRequest: {
             data: ApwChangeRequest;
             error?: Error | null;
         };
@@ -141,7 +141,7 @@ export const CREATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
  */
 export interface UpdateChangeRequestMutationResponse {
     apw: {
-        updateChangeRequest: {
+        changeRequest: {
             data: ApwChangeRequest;
             error?: Error | null;
         };

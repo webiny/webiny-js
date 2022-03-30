@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
-import { useComment } from "~/plugins/editor/comment/hooks/useComment";
+import { useComment } from "~/hooks/useComment";
 import { CommentStatusBox, TypographySecondary, AuthorName } from "./Styled";
 import { formatDate } from "~/utils";
 import { RichTextEditor } from "@webiny/ui/RichTextEditor";
@@ -19,7 +19,7 @@ export interface LatestCommentProps {
 }
 
 export const LatestComment: React.FC<LatestCommentProps> = ({ id, ...boxProps }) => {
-    const { comment, loading } = useComment({ id });
+    const { comment, loading } = useComment(id);
 
     if (loading) {
         return <TypographySecondary use={"caption"}>t{`Loading comments...`}</TypographySecondary>;
