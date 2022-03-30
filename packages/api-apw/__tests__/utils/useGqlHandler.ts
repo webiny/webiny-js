@@ -113,7 +113,10 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         setupTenancyAndSecurityGraphQL,
         createHeadlessCmsApp
     } = params;
-
+    /**
+     * We're using ddb-only storageOperations here because current jest setup doesn't allow
+     * usage of more than one storageOperations at a time with the help of --keyword flag.
+     */
     const headlessCmsApp = createHeadlessCmsApp({
         storageOperations: createHeadlessCmsStorageOperations({
             documentClient,
@@ -165,12 +168,15 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             i18nContentPlugins(),
             mockLocalesPlugins(),
             createPageBuilderGraphQL(),
+            /**
+             * We're using ddb-only storageOperations here because current jest setup doesn't allow
+             * usage of more than one storageOperations at a time with the help of --keyword flag.
+             */
             createPageBuilderContext({
                 storageOperations: createPageBuilderStorageOperations({ documentClient })
             }),
             ...headlessCmsApp,
             createApwContext({
-                // storageOperations: createApwSchedulerStorageOperations({ documentClient })
                 storageOperations: ops.storageOperations
             }),
             createApwGraphQL(),
