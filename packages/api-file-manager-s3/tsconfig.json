@@ -3,9 +3,9 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-file-manager" },
+    { "path": "../error" },
     { "path": "../handler-graphql" },
-    { "path": "../validation" },
-    { "path": "../error" }
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -15,12 +15,12 @@
       "~/*": ["./src/*"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"]
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

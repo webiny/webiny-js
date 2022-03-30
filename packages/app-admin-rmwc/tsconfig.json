@@ -4,11 +4,11 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-plugin-admin-welcome-screen" },
     { "path": "../app-security" },
     { "path": "../plugins" },
     { "path": "../react-router" },
-    { "path": "../ui" },
-    { "path": "../app-plugin-admin-welcome-screen" }
+    { "path": "../ui" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -20,6 +20,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/src/*"],
+      "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
@@ -27,9 +29,7 @@
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
-      "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/src/*"],
-      "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"]
+      "@webiny/ui": ["../ui/src"]
     },
     "baseUrl": "."
   }
