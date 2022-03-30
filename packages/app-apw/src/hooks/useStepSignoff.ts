@@ -51,7 +51,11 @@ export const useStepSignOff = (): UseStepSignOffResult => {
                 return;
             }
             showSnackbar("Sign off provided successfully!");
-        }
+        },
+        /*
+         * We want to wait for "GET_CONTENT_REVIEW_QUERY" because we rely on it for sign-off provided status of a step.
+         */
+        awaitRefetchQueries: true
     });
     const [retractSignOff] = useMutation<
         RetractSignOffMutationResponse,
@@ -76,7 +80,11 @@ export const useStepSignOff = (): UseStepSignOffResult => {
                 return;
             }
             showSnackbar("Sign off retracted successfully!");
-        }
+        },
+        /*
+         * We want to wait for "GET_CONTENT_REVIEW_QUERY" because we rely on it for sign-off provided status of a step.
+         */
+        awaitRefetchQueries: true
     });
 
     return {
