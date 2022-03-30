@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import pick from "lodash/pick";
 import { css } from "emotion";
 import * as UiDialog from "@webiny/ui/Dialog";
-import { ButtonDefault } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { i18n } from "@webiny/app/i18n";
 import { Box, Columns, Stack } from "~/components/Layout";
 import { Input } from "@webiny/ui/Input";
@@ -200,11 +200,11 @@ export const ChangeRequestDialog: React.FC = () => {
                     </DialogContent>
                     <DialogActions>
                         <ButtonDefault onClick={resetFormAndCloseDialog}>{t`Cancel`}</ButtonDefault>
-                        <ButtonDefault
+                        <ButtonPrimary
                             onClick={() => {
                                 props.submit();
                             }}
-                        >{t`Submit`}</ButtonDefault>
+                        >{t`Submit`}</ButtonPrimary>
                     </DialogActions>
                 </UiDialog.Dialog>
             )}
