@@ -4,6 +4,7 @@ import React, {
     useMemo,
     useState,
     useCallback,
+    FC,
     FunctionComponentElement,
     ComponentType,
     ReactElement
@@ -13,14 +14,11 @@ import { Routes as SortRoutes } from "./components/utils/Routes";
 import { DebounceRender } from "./components/utils/DebounceRender";
 import { PluginsProvider } from "./components/core/Plugins";
 
-/**
- * TODO: Determine the exact type
- */
-const compose = (...fns: any[]) => {
-    return (Base: any) => {
+function compose(...fns: HigherOrderComponent[]) {
+    return function ComposedComponent(Base: FC<unknown>): FC<unknown> {
         return fns.reduceRight((Component, hoc) => hoc(Component), Base);
     };
-};
+}
 
 interface Wrapper {
     component: ComponentType<unknown>;
@@ -67,8 +65,13 @@ export const useAdmin = () => {
     return useContext(AdminContext);
 };
 
-export interface HigherOrderComponent<TInputProps = unknown, TOutputProps = TInputProps> {
-    (Component: React.FC<TInputProps>): React.FC<TOutputProps>;
+/**
+ * IMPORTANT: TInputProps default type is `any` because this interface is use as a prop type in the `Compose` component.
+ * You can pass any HigherOrderComponent as a prop, regardless of its TInputProps type. The only way to allow that is
+ * to let it be `any` in this interface.
+ */
+export interface HigherOrderComponent<TInputProps = any, TOutputProps = TInputProps> {
+    (Component: FC<TInputProps>): FC<TOutputProps>;
 }
 
 export interface AdminProps {
