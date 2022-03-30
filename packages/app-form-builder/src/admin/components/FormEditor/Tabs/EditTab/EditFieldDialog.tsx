@@ -39,7 +39,7 @@ const FbFormModelFieldList = styled("div")({
 
 interface EditFieldDialogProps {
     field: FbFormModelField | null;
-    onClose: Function;
+    onClose: () => void;
     onSubmit: FormOnSubmit;
 }
 
@@ -132,7 +132,7 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                             key={pl.name}
                                             fieldType={pl.field}
                                             onClick={() => {
-                                                const newCurrent: any = pl.field.createField();
+                                                const newCurrent = pl.field.createField();
                                                 if (current) {
                                                     // User edited existing field, that's why we still want to
                                                     // keep a couple of previous values.
