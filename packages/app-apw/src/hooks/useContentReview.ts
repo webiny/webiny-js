@@ -1,6 +1,10 @@
 import { useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
-import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
+import {
+    GET_CONTENT_REVIEW_QUERY,
+    GetContentReviewQueryResponse,
+    GetContentReviewQueryVariables
+} from "~/graphql/contentReview.gql";
 import { ApwContentReview } from "~/types";
 import { useParams } from "@webiny/react-router";
 
@@ -16,7 +20,10 @@ interface UseContentReviewResult {
 export function useContentReview(params: UseContentReviewParams): UseContentReviewResult {
     const id = decodeURIComponent(params.id);
 
-    const { data, loading } = useQuery(GET_CONTENT_REVIEW_QUERY, {
+    const { data, loading } = useQuery<
+        GetContentReviewQueryResponse,
+        GetContentReviewQueryVariables
+    >(GET_CONTENT_REVIEW_QUERY, {
         variables: { id },
         skip: !id
     });

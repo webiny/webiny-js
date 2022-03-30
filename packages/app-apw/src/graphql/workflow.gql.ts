@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { ApwWorkflow } from "~/types";
 
 const ERROR_FIELDS = `{
     message
@@ -36,6 +37,23 @@ const getDataFields = (fields = "") => `{
     ${fields}
 }`;
 
+/**
+ * ##################
+ * Get "Workflow" Query Response
+ */
+export interface GetWorkflowQueryResponse {
+    apw: {
+        getWorkflow: {
+            data: ApwWorkflow;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface GetWorkflowQueryVariables {
+    id: string;
+}
+
 export const GET_WORKFLOW_QUERY = /* GraphQL */ gql`
     query GetWorkflow($id: ID!) {
         apw {
@@ -46,6 +64,34 @@ export const GET_WORKFLOW_QUERY = /* GraphQL */ gql`
         }
     }
 `;
+
+/**
+ * ##################
+ * List "Workflow Query Response
+ */
+export interface ListWorkflowResponse {
+    data: ApwWorkflow[];
+    error?: Error | null;
+    meta: {
+        hasMoreItems: boolean;
+        totalItem: number;
+        cursor: string | null;
+    };
+}
+
+export interface ListWorkflowQueryResponse {
+    apw: {
+        listWorkflow: ListWorkflowResponse;
+    };
+}
+
+export interface ListWorkflowQueryVariables {
+    where?: Record<string, any>;
+    limit?: number;
+    after?: string;
+    sort?: string[];
+    search?: string;
+}
 
 export const LIST_WORKFLOWS_QUERY = /* GraphQL */ gql`
     query ListWorkflows(
@@ -75,6 +121,23 @@ export const LIST_WORKFLOWS_QUERY = /* GraphQL */ gql`
     }
 `;
 
+/**
+ * ##################
+ * Create "Workflow" Mutation Response
+ */
+export interface CreateWorkflowMutationResponse {
+    apw: {
+        createWorkflow: {
+            data: ApwWorkflow;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface CreateWorkflowMutationVariables {
+    data: Partial<ApwWorkflow>;
+}
+
 export const CREATE_WORKFLOW_MUTATION = /* GraphQL */ gql`
     mutation CreateWorkflowMutation($data: ApwCreateWorkflowInput!) {
         apw {
@@ -86,6 +149,24 @@ export const CREATE_WORKFLOW_MUTATION = /* GraphQL */ gql`
     }
 `;
 
+/**
+ * ##################
+ * Update "Workflow" Mutation Response
+ */
+export interface UpdateWorkflowMutationResponse {
+    apw: {
+        updateWorkflow: {
+            data: ApwWorkflow;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface UpdateWorkflowMutationVariables {
+    id: string;
+    data: Partial<ApwWorkflow>;
+}
+
 export const UPDATE_WORKFLOW_MUTATION = /* GraphQL */ gql`
     mutation UpdateWorkflowMutation($id: ID!, $data: ApwUpdateWorkflowInput!) {
         apw {
@@ -96,6 +177,23 @@ export const UPDATE_WORKFLOW_MUTATION = /* GraphQL */ gql`
         }
     }
 `;
+
+/**
+ * ##################
+ * Delete "Workflow" Mutation Response
+ */
+export interface DeleteWorkflowMutationResponse {
+    apw: {
+        deleteWorkflow: {
+            data: boolean;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface DeleteWorkflowMutationVariables {
+    id: string;
+}
 
 export const DELETE_WORKFLOW_MUTATION = /* GraphQL */ gql`
     mutation DeleteWorkflowMutation($id: ID!) {

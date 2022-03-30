@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import get from "lodash/get";
-import { PROVIDE_SIGN_OFF_MUTATION, RETRACT_SIGN_OFF_MUTATION } from "~/graphql/provideSignoff";
 import { useContentReviewId, useCurrentStepId } from "~/hooks/useContentReviewId";
 import { useSnackbar } from "@webiny/app-admin";
 import { GET_CHANGE_REQUEST_QUERY } from "~/graphql/changeRequest.gql";
 import { useActiveChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
-import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
+import {
+    GET_CONTENT_REVIEW_QUERY,
+    PROVIDE_SIGN_OFF_MUTATION,
+    ProvideSignOffMutationResponse,
+    ProvideSignOffMutationVariables,
+    RETRACT_SIGN_OFF_MUTATION,
+    RetractSignOffMutationResponse,
+    RetractSignOffMutationVariables
+} from "~/graphql/contentReview.gql";
 
 interface UseStepSignOffResult {
     provideSignOff: Function;
@@ -21,7 +28,10 @@ export const useStepSignOff = (): UseStepSignOffResult => {
     const { showSnackbar } = useSnackbar();
     const changeRequestId = useActiveChangeRequestId();
 
-    const [provideSignOff] = useMutation(PROVIDE_SIGN_OFF_MUTATION, {
+    const [provideSignOff] = useMutation<
+        ProvideSignOffMutationResponse,
+        ProvideSignOffMutationVariables
+    >(PROVIDE_SIGN_OFF_MUTATION, {
         refetchQueries: [
             {
                 query: GET_CHANGE_REQUEST_QUERY,
@@ -43,7 +53,10 @@ export const useStepSignOff = (): UseStepSignOffResult => {
             showSnackbar("Sign off provided successfully!");
         }
     });
-    const [retractSignOff] = useMutation(RETRACT_SIGN_OFF_MUTATION, {
+    const [retractSignOff] = useMutation<
+        RetractSignOffMutationResponse,
+        RetractSignOffMutationVariables
+    >(RETRACT_SIGN_OFF_MUTATION, {
         refetchQueries: [
             {
                 query: GET_CHANGE_REQUEST_QUERY,

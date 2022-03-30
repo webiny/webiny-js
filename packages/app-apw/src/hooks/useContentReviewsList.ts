@@ -1,12 +1,15 @@
 import { useCallback, useState, useMemo, useEffect } from "react";
-import get from "lodash/get";
 import debounce from "lodash/debounce";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
-import { LIST_CONTENT_REVIEWS_QUERY } from "~/graphql/contentReview.gql";
+import {
+    LIST_CONTENT_REVIEWS_QUERY,
+    ListContentReviewsQueryResponse,
+    ListContentReviewsQueryVariables
+} from "~/graphql/contentReview.gql";
 import { ApwContentReview, ApwContentReviewListItem, ApwContentReviewStatus } from "~/types";
 
-const baseUrl = "/apw/content-reviews";
+const BASE_URL = "/apw/content-reviews";
 
 const serializeSorters = (data: any) => {
     if (!data) {
@@ -58,10 +61,13 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         title_contains: title ? title : undefined
     };
 
-    const listQuery = useQuery(LIST_CONTENT_REVIEWS_QUERY, {
+    const { data, loading } = useQuery<
+        ListContentReviewsQueryResponse,
+        ListContentReviewsQueryVariables
+    >(LIST_CONTENT_REVIEWS_QUERY, {
         variables: {
             where: where,
-            sort: [sort]
+            sort: [sort as string]
         },
         /**
          * We're using "network-only" fetchPolicy here because, we need to update the cache result for this query after creating a content review,
@@ -70,18 +76,17 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         fetchPolicy: "network-only"
     });
 
-    const data = listQuery.loading ? [] : get(listQuery, "data.apw.listContentReviews.data");
+    const contentReviews = data ? data.apw.listContentReviews.data : [];
 
     const editContentReview = useCallback((item: ApwContentReviewListItem) => {
-        const url = item.activeStep
-            ? `${baseUrl}/${encodeURIComponent(item.id)}/${item.activeStep.id}`
-            : `${baseUrl}/${encodeURIComponent(item.id)}`;
+        const base = `${BASE_URL}/${encodeURIComponent(item.id)}`;
+        const url = item.activeStep ? `${base}/${item.activeStep.id}` : base;
         history.push(url);
     }, []);
 
     return {
-        contentReviews: data,
-        loading: listQuery.loading,
+        contentReviews,
+        loading,
         filter,
         setFilter,
         sort,

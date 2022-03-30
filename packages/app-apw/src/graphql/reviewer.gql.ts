@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { ApwReviewer } from "~/types";
 
 const ERROR_FIELDS = `{
     message
@@ -26,6 +27,23 @@ const DATA_FIELDS = `{
     type
 }`;
 
+/**
+ * ##################
+ * Get "Reviewer" Query Response
+ */
+export interface GetReviewerQueryResponse {
+    apw: {
+        getReviewer: {
+            data: ApwReviewer;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface GetReviewerQueryVariables {
+    id: string;
+}
+
 export const GET_REVIEWER_QUERY = /* GraphQL */ gql`
     query GetReviewer($id: ID!) {
         apw {
@@ -36,6 +54,34 @@ export const GET_REVIEWER_QUERY = /* GraphQL */ gql`
         }
     }
 `;
+
+/**
+ * ##################
+ * List "Reviewer" Query Response
+ */
+export interface ListReviewersResponse {
+    data: ApwReviewer[];
+    error?: Error | null;
+    meta: {
+        hasMoreItems: boolean;
+        totalItem: number;
+        cursor: string | null;
+    };
+}
+
+export interface ListReviewersQueryResponse {
+    apw: {
+        listReviewers: ListReviewersResponse;
+    };
+}
+
+export interface ListReviewersQueryVariables {
+    where?: Record<string, any>;
+    limit?: number;
+    after?: string;
+    sort?: string[];
+    search?: string;
+}
 
 export const LIST_REVIEWS_QUERY = /* GraphQL */ gql`
     query ListReviewers(

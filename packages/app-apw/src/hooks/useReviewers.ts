@@ -1,6 +1,9 @@
 import { useQuery } from "@apollo/react-hooks";
-import get from "lodash/get";
-import { LIST_REVIEWS_QUERY } from "~/graphql/reviewer.gql";
+import {
+    LIST_REVIEWS_QUERY,
+    ListReviewersQueryResponse,
+    ListReviewersQueryVariables
+} from "~/graphql/reviewer.gql";
 import { ApwReviewer } from "~/types";
 
 interface UseReviewersResult {
@@ -9,10 +12,12 @@ interface UseReviewersResult {
 }
 
 export const useReviewers = (): UseReviewersResult => {
-    const { data, loading } = useQuery(LIST_REVIEWS_QUERY);
+    const { data, loading } = useQuery<ListReviewersQueryResponse, ListReviewersQueryVariables>(
+        LIST_REVIEWS_QUERY
+    );
 
     return {
-        reviewers: get(data, "apw.listReviewers.data", []),
+        reviewers: data ? data.apw.listReviewers.data : [],
         loading
     };
 };

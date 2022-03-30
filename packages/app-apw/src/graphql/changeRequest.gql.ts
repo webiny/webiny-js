@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { ApwChangeRequest } from "~/types";
 
 const ERROR_FIELDS = `{
     message
@@ -28,6 +29,22 @@ const getDataFields = (fields = "") => `{
     media
     ${fields}
 }`;
+/**
+ * ##################
+ * Get "ChangeRequest" Query Response
+ */
+export interface GetChangeRequestQueryResponse {
+    apw: {
+        getChangeRequest: {
+            data: ApwChangeRequest;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface GetChangeRequestQueryVariables {
+    id: string;
+}
 
 export const GET_CHANGE_REQUEST_QUERY = /* GraphQL */ gql`
     query GetChangeRequest($id: ID!) {
@@ -39,6 +56,32 @@ export const GET_CHANGE_REQUEST_QUERY = /* GraphQL */ gql`
         }
     }
 `;
+
+/**
+ * ##################
+ * List "ChangeRequest" Query Response
+ */
+export interface ListChangeRequestsResponse {
+    data: ApwChangeRequest[];
+    error?: Error | null;
+    meta: {
+        hasMoreItems: boolean;
+        totalItem: number;
+        cursor: string | null;
+    };
+}
+export interface ListChangeRequestsQueryResponse {
+    apw: {
+        listChangeRequests: ListChangeRequestsResponse;
+    };
+}
+export interface ListChangeRequestsQueryVariables {
+    where?: Record<string, any>;
+    sort?: string[];
+    limit?: number;
+    search?: string;
+    after?: string;
+}
 
 export const LIST_CHANGE_REQUESTS_QUERY = /* GraphQL */ gql`
     query ListChangeRequests(
@@ -64,6 +107,23 @@ export const LIST_CHANGE_REQUESTS_QUERY = /* GraphQL */ gql`
     }
 `;
 
+/**
+ * ##################
+ * Create "ChangeRequest" Mutation Response
+ */
+export interface CreateChangeRequestMutationResponse {
+    apw: {
+        createChangeRequest: {
+            data: ApwChangeRequest;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface CreateChangeRequestMutationVariables {
+    data: Partial<ApwChangeRequest>;
+}
+
 export const CREATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
     mutation CreateChangeRequestMutation($data: ApwCreateChangeRequestInput!) {
         apw {
@@ -75,6 +135,24 @@ export const CREATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
     }
 `;
 
+/**
+ * ##################
+ * Update "ChangeRequest" Mutation Response
+ */
+export interface UpdateChangeRequestMutationResponse {
+    apw: {
+        updateChangeRequest: {
+            data: ApwChangeRequest;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface UpdateChangeRequestMutationVariables {
+    id: string;
+    data: Partial<ApwChangeRequest>;
+}
+
 export const UPDATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
     mutation UpdateChangeRequestMutation($id: ID!, $data: ApwUpdateChangeRequestInput!) {
         apw {
@@ -85,6 +163,23 @@ export const UPDATE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
         }
     }
 `;
+
+/**
+ * ##################
+ * Delete "ChangeRequest" Mutation Response
+ */
+export interface DeleteChangeRequestMutationResponse {
+    apw: {
+        deleteChangeRequest: {
+            data: boolean;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface DeleteChangeRequestMutationVariables {
+    id: string;
+}
 
 export const DELETE_CHANGE_REQUEST_MUTATION = /* GraphQL */ gql`
     mutation DeleteChangeRequestMutation($id: ID!) {

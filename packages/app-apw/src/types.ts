@@ -150,3 +150,10 @@ export interface ApwMediaFile {
     src: string;
     id: string;
 }
+
+export interface ApwWorkflow extends BaseFields {
+    title: string;
+    steps: ApwWorkflowStep[];
+    scope: ApwWorkflowScope;
+    app: ApwWorkflowApplications;
+}

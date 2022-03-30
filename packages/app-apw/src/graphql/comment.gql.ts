@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { ApwComment } from "~/types";
 
 const ERROR_FIELDS = `{
     message
@@ -27,6 +28,23 @@ const getDataFields = (fields = "") => `{
     ${fields}
 }`;
 
+/**
+ * ##################
+ * Get "Comment" Query Response
+ */
+export interface GetCommentQueryResponse {
+    apw: {
+        getComment: {
+            data: ApwComment;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface GetCommentQueryVariables {
+    id: string;
+}
+
 export const GET_COMMENT_QUERY = /* GraphQL */ gql`
     query GetComment($id: ID!) {
         apw {
@@ -37,6 +55,33 @@ export const GET_COMMENT_QUERY = /* GraphQL */ gql`
         }
     }
 `;
+
+/**
+ * ##################
+ * List "Comment" Query Response
+ */
+export interface ListCommentsResponse {
+    data: ApwComment[];
+    error?: Error | null;
+    meta: {
+        hasMoreItems: boolean;
+        totalItem: number;
+        cursor: string | null;
+    };
+}
+
+export interface ListCommentsQueryResponse {
+    apw: {
+        listComments: ListCommentsResponse;
+    };
+}
+
+export interface ListCommentsQueryVariables {
+    where?: Record<string, any>;
+    sort?: string[];
+    limit?: number;
+    after?: string;
+}
 
 export const LIST_COMMENTS_QUERY = /* GraphQL */ gql`
     query ListComments(
@@ -60,22 +105,28 @@ export const LIST_COMMENTS_QUERY = /* GraphQL */ gql`
     }
 `;
 
+/**
+ * ##################
+ * Create "Comment" Mutation Response
+ */
+export interface CreateCommentMutationResponse {
+    apw: {
+        createComment: {
+            data: ApwComment;
+            error?: Error | null;
+        };
+    };
+}
+
+export interface CreateCommentMutationVariables {
+    data: Partial<ApwComment>;
+}
+
 export const CREATE_COMMENT_MUTATION = /* GraphQL */ gql`
     mutation CreateCommentMutation($data: ApwCreateCommentInput!) {
         apw {
             comment: createComment(data: $data) {
                 data ${getDataFields()}
-                error ${ERROR_FIELDS}
-            }
-        }
-    }
-`;
-
-export const DELETE_COMMENT_MUTATION = /* GraphQL */ gql`
-    mutation DeleteCommentMutation($id: ID!) {
-        apw {
-            deleteComment(id: $id) {
-                data
                 error ${ERROR_FIELDS}
             }
         }

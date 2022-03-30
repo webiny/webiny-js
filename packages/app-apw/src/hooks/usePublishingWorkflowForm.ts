@@ -9,7 +9,13 @@ import {
     GET_WORKFLOW_QUERY,
     CREATE_WORKFLOW_MUTATION,
     LIST_WORKFLOWS_QUERY,
-    UPDATE_WORKFLOW_MUTATION
+    UPDATE_WORKFLOW_MUTATION,
+    GetWorkflowQueryResponse,
+    GetWorkflowQueryVariables,
+    CreateWorkflowMutationResponse,
+    CreateWorkflowMutationVariables,
+    UpdateWorkflowMutationResponse,
+    UpdateWorkflowMutationVariables
 } from "~/graphql/workflow.gql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
@@ -46,6 +52,8 @@ const newFormData = {
 const CREATE_MUTATION_FIELDS = ["title", "steps", "scope", "app"];
 const UPDATE_MUTATION_FIELDS = ["title", "steps", "scope"];
 
+const BASE_URL = "/apw/publishing-workflows";
+
 export const usePublishingWorkflowForm = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -54,23 +62,32 @@ export const usePublishingWorkflowForm = () => {
     const currentWorkflowId = useCurrentWorkflowId();
     const app = useCurrentApp();
 
-    const getQuery = useQuery(GET_WORKFLOW_QUERY, {
-        variables: { id: currentWorkflowId },
-        skip: !currentWorkflowId,
-        onCompleted: data => {
-            const error = get(data, "apw.getWorkflow.error");
-            if (error) {
-                history.push(baseUrl);
-                showSnackbar(error.message);
+    const getQuery = useQuery<GetWorkflowQueryResponse, GetWorkflowQueryVariables>(
+        GET_WORKFLOW_QUERY,
+        {
+            variables: { id: currentWorkflowId as string },
+            skip: !currentWorkflowId,
+            onCompleted: data => {
+                const error = get(data, "apw.getWorkflow.error");
+                if (error) {
+                    history.push(BASE_URL);
+                    showSnackbar(error.message);
+                }
             }
         }
-    });
+    );
 
-    const [create, createMutation] = useMutation(CREATE_WORKFLOW_MUTATION, {
+    const [create, createMutation] = useMutation<
+        CreateWorkflowMutationResponse,
+        CreateWorkflowMutationVariables
+    >(CREATE_WORKFLOW_MUTATION, {
         refetchQueries: [{ query: LIST_WORKFLOWS_QUERY }]
     });
 
-    const [update, updateMutation] = useMutation(UPDATE_WORKFLOW_MUTATION, {
+    const [update, updateMutation] = useMutation<
+        UpdateWorkflowMutationResponse,
+        UpdateWorkflowMutationVariables
+    >(UPDATE_WORKFLOW_MUTATION, {
         refetchQueries: [{ query: LIST_WORKFLOWS_QUERY }]
     });
 
@@ -84,11 +101,17 @@ export const usePublishingWorkflowForm = () => {
             const data = { ...formData, app };
 
             const isUpdate = data.createdOn;
-            const [operation, args] = isUpdate
-                ? [update, { variables: { id: data.id, data: pick(data, UPDATE_MUTATION_FIELDS) } }]
-                : [create, { variables: { data: pick(data, CREATE_MUTATION_FIELDS) } }];
 
-            const response = await operation(args);
+            let response;
+            if (isUpdate) {
+                response = await update({
+                    variables: { id: data.id, data: pick(data, UPDATE_MUTATION_FIELDS) }
+                });
+            } else {
+                response = await create({
+                    variables: { data: pick(data, CREATE_MUTATION_FIELDS) }
+                });
+            }
 
             const error = get(response, "data.apw.workflow.error");
             if (error) {
@@ -96,19 +119,22 @@ export const usePublishingWorkflowForm = () => {
             }
             const workflowData = get(response, "data.apw.workflow.data");
 
-            !isUpdate &&
-                history.push(`${baseUrl}?id=${encodeURIComponent(workflowData.id)}&app=${app}`);
+            if (!isUpdate) {
+                history.push(`${BASE_URL}?id=${encodeURIComponent(workflowData.id)}&app=${app}`);
+            }
+
             showSnackbar(t`Workflow saved successfully.`);
         },
         [currentWorkflowId, app]
     );
 
-    const workflow = get(getQuery, "data.apw.getWorkflow.data");
+    const workflow = getQuery.data ? getQuery.data.apw.getWorkflow.data : {};
 
     const showEmptyView = !newEntry && !loading && isEmpty(workflow);
-    const baseUrl = "/apw/publishing-workflows";
-    const createPublishingWorkflow = useCallback(() => history.push(baseUrl + "?new=true"), []);
-    const cancelEditing = useCallback(() => history.push(baseUrl), []);
+
+    const createPublishingWorkflow = useCallback(() => history.push(BASE_URL + "?new=true"), []);
+
+    const cancelEditing = useCallback(() => history.push(BASE_URL), []);
 
     return {
         workflow: isEmpty(workflow) ? newFormData : workflow,

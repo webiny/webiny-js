@@ -1,8 +1,11 @@
 import { useCallback, useState } from "react";
-import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
-import { LIST_CHANGE_REQUESTS_QUERY } from "../graphql/changeRequest.gql";
+import {
+    LIST_CHANGE_REQUESTS_QUERY,
+    ListChangeRequestsQueryResponse,
+    ListChangeRequestsQueryVariables
+} from "~/graphql/changeRequest.gql";
 import { ApwChangeRequest } from "~/types";
 import { useChangeRequestStep } from "./useChangeRequest";
 
@@ -13,6 +16,8 @@ const serializeSorters = (data: any) => {
     const [[key, value]] = Object.entries(data);
     return `${key}:${value}`;
 };
+
+const BASE_URL = "/apw/content-reviews";
 
 interface Config {
     sorters: { label: string; sorters: Record<string, string> }[];
@@ -44,22 +49,21 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
         }
     };
 
-    const listQuery = useQuery(LIST_CHANGE_REQUESTS_QUERY, {
+    const { data, loading } = useQuery<
+        ListChangeRequestsQueryResponse,
+        ListChangeRequestsQueryVariables
+    >(LIST_CHANGE_REQUESTS_QUERY, {
         variables
     });
 
-    const data = listQuery.loading ? [] : get(listQuery, "data.apw.listChangeRequests.data");
-
-    const loading = [listQuery].some(item => item.loading);
-
-    const baseUrl = "/apw/content-reviews";
+    const changeRequests = data ? data.apw.listChangeRequests.data : [];
 
     const editContentReview = useCallback((id: string) => {
-        history.push(`${baseUrl}/${encodeURIComponent(id)}`);
+        history.push(`${BASE_URL}/${encodeURIComponent(id)}`);
     }, []);
 
     return {
-        changeRequests: data,
+        changeRequests,
         loading,
         filter,
         setFilter,

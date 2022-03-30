@@ -5,14 +5,16 @@ import { ApwComment } from "~/types";
 import { useListCommentsVariables } from "~/hooks/useCommentsList";
 import {
     CREATE_COMMENT_MUTATION,
-    DELETE_COMMENT_MUTATION,
     LIST_COMMENTS_QUERY,
-    GET_COMMENT_QUERY
-} from "../graphql/comment.gql";
+    GET_COMMENT_QUERY,
+    CreateCommentMutationResponse,
+    CreateCommentMutationVariables,
+    GetCommentQueryVariables,
+    GetCommentQueryResponse
+} from "~/graphql/comment.gql";
 
 interface UseCommentResult {
     createComment: Function;
-    deleteComment: (id: string) => Promise<any>;
     comment: ApwComment;
     loading: boolean;
 }
@@ -20,16 +22,22 @@ interface UseCommentResult {
 export const useComment = (id?: string): UseCommentResult => {
     const { showSnackbar } = useSnackbar();
 
-    const { data, loading } = useQuery(GET_COMMENT_QUERY, {
-        variables: { id },
-        skip: !id
-    });
+    const { data, loading } = useQuery<GetCommentQueryResponse, GetCommentQueryVariables>(
+        GET_COMMENT_QUERY,
+        {
+            variables: { id: id as string },
+            skip: !id
+        }
+    );
 
     const comment = get(data, "apw.getComment.data");
 
     const listCommentsVariables = useListCommentsVariables();
 
-    const [createComment] = useMutation(CREATE_COMMENT_MUTATION, {
+    const [createComment] = useMutation<
+        CreateCommentMutationResponse,
+        CreateCommentMutationVariables
+    >(CREATE_COMMENT_MUTATION, {
         refetchQueries: [{ query: LIST_COMMENTS_QUERY, variables: listCommentsVariables }],
         onCompleted: response => {
             const error = get(response, "apw.comment.error");
@@ -45,22 +53,9 @@ export const useComment = (id?: string): UseCommentResult => {
         awaitRefetchQueries: true
     });
 
-    const [deleteComment] = useMutation(DELETE_COMMENT_MUTATION, {
-        refetchQueries: [{ query: LIST_COMMENTS_QUERY, variables: listCommentsVariables }],
-        onCompleted: response => {
-            const error = get(response, "apw.deleteComment.error");
-            if (error) {
-                showSnackbar(error.message);
-                return;
-            }
-            showSnackbar("Comment deleted successfully!");
-        }
-    });
-
     return {
         comment,
         loading,
-        createComment,
-        deleteComment: async id => deleteComment({ variables: { id } })
+        createComment
     };
 };

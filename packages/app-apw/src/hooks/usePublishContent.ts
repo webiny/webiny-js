@@ -4,8 +4,14 @@ import get from "lodash/get";
 import {
     PUBLISH_CONTENT_MUTATION,
     UNPUBLISH_CONTENT_MUTATION,
-    DELETE_SCHEDULED_ACTION_MUTATION
-} from "~/graphql/provideSignoff";
+    DELETE_SCHEDULED_ACTION_MUTATION,
+    PublishContentMutationResponse,
+    PublishContentMutationVariables,
+    UnPublishContentMutationResponse,
+    UnPublishContentMutationVariables,
+    DeleteContentReviewMutationResponse,
+    DeleteApwContentReviewMutationVariables
+} from "~/graphql/contentReview.gql";
 import { useContentReviewId } from "~/hooks/useContentReviewId";
 import { useSnackbar } from "@webiny/app-admin";
 import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
@@ -22,7 +28,10 @@ export const usePublishContent = (): UsePublishContentResult => {
     const { id } = useContentReviewId() || { id: "" };
     const { showSnackbar } = useSnackbar();
 
-    const [publishContent] = useMutation(PUBLISH_CONTENT_MUTATION, {
+    const [publishContent] = useMutation<
+        PublishContentMutationResponse,
+        PublishContentMutationVariables
+    >(PUBLISH_CONTENT_MUTATION, {
         refetchQueries: [
             {
                 query: GET_CONTENT_REVIEW_QUERY,
@@ -41,7 +50,10 @@ export const usePublishContent = (): UsePublishContentResult => {
         }
     });
 
-    const [unpublishContent] = useMutation(UNPUBLISH_CONTENT_MUTATION, {
+    const [unpublishContent] = useMutation<
+        UnPublishContentMutationResponse,
+        UnPublishContentMutationVariables
+    >(UNPUBLISH_CONTENT_MUTATION, {
         refetchQueries: [
             {
                 query: GET_CONTENT_REVIEW_QUERY,
@@ -60,7 +72,10 @@ export const usePublishContent = (): UsePublishContentResult => {
         }
     });
 
-    const [deleteScheduledAction] = useMutation(DELETE_SCHEDULED_ACTION_MUTATION, {
+    const [deleteScheduledAction] = useMutation<
+        DeleteContentReviewMutationResponse,
+        DeleteApwContentReviewMutationVariables
+    >(DELETE_SCHEDULED_ACTION_MUTATION, {
         refetchQueries: [
             {
                 query: GET_CONTENT_REVIEW_QUERY,

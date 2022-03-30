@@ -5,7 +5,15 @@ import {
     GET_CHANGE_REQUEST_QUERY,
     LIST_CHANGE_REQUESTS_QUERY,
     DELETE_CHANGE_REQUEST_MUTATION,
-    UPDATE_CHANGE_REQUEST_MUTATION
+    UPDATE_CHANGE_REQUEST_MUTATION,
+    GetChangeRequestQueryResponse,
+    GetChangeRequestQueryVariables,
+    CreateChangeRequestMutationResponse,
+    CreateChangeRequestMutationVariables,
+    UpdateChangeRequestMutationResponse,
+    UpdateChangeRequestMutationVariables,
+    DeleteChangeRequestMutationResponse,
+    DeleteChangeRequestMutationVariables
 } from "~/graphql/changeRequest.gql";
 import { useSnackbar } from "@webiny/app-admin";
 import { useRouter } from "@webiny/react-router";
@@ -33,19 +41,25 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
 
     const step = `${contentReviewId}#${stepId}`;
 
-    const getQuery = useQuery(GET_CHANGE_REQUEST_QUERY, {
-        variables: { id },
-        skip: !id,
-        onCompleted: response => {
-            const error = get(response, "apw.changeRequest.error");
-            if (error) {
-                showSnackbar(error.message);
-                history.push(`/apw/content-reviews/${encodedId}/${stepId}`);
+    const getQuery = useQuery<GetChangeRequestQueryResponse, GetChangeRequestQueryVariables>(
+        GET_CHANGE_REQUEST_QUERY,
+        {
+            variables: { id: id as string },
+            skip: !id,
+            onCompleted: response => {
+                const error = get(response, "apw.changeRequest.error");
+                if (error) {
+                    showSnackbar(error.message);
+                    history.push(`/apw/content-reviews/${encodedId}/${stepId}`);
+                }
             }
         }
-    });
+    );
 
-    const [create] = useMutation(CREATE_CHANGE_REQUEST_MUTATION, {
+    const [create] = useMutation<
+        CreateChangeRequestMutationResponse,
+        CreateChangeRequestMutationVariables
+    >(CREATE_CHANGE_REQUEST_MUTATION, {
         refetchQueries: [
             {
                 query: LIST_CHANGE_REQUESTS_QUERY,
@@ -65,7 +79,10 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
-    const [update] = useMutation(UPDATE_CHANGE_REQUEST_MUTATION, {
+    const [update] = useMutation<
+        UpdateChangeRequestMutationResponse,
+        UpdateChangeRequestMutationVariables
+    >(UPDATE_CHANGE_REQUEST_MUTATION, {
         refetchQueries: [{ query: LIST_CHANGE_REQUESTS_QUERY, variables: { where: { step } } }],
         onCompleted: response => {
             const error = get(response, "apw.changeRequest.error");
@@ -79,7 +96,10 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
-    const [deleteChangeRequest] = useMutation(DELETE_CHANGE_REQUEST_MUTATION, {
+    const [deleteChangeRequest] = useMutation<
+        DeleteChangeRequestMutationResponse,
+        DeleteChangeRequestMutationVariables
+    >(DELETE_CHANGE_REQUEST_MUTATION, {
         refetchQueries: [
             {
                 query: LIST_CHANGE_REQUESTS_QUERY,
@@ -99,7 +119,10 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
-    const [updateMutation] = useMutation(UPDATE_CHANGE_REQUEST_MUTATION, {
+    const [updateMutation] = useMutation<
+        UpdateChangeRequestMutationResponse,
+        UpdateChangeRequestMutationVariables
+    >(UPDATE_CHANGE_REQUEST_MUTATION, {
         refetchQueries: [
             { query: LIST_CHANGE_REQUESTS_QUERY },
             {
@@ -121,7 +144,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
     });
 
     const markResolved = async (resolved: boolean) => {
-        await updateMutation({ variables: { id, data: { resolved } } });
+        await updateMutation({ variables: { id: id as string, data: { resolved } } });
     };
 
     return {

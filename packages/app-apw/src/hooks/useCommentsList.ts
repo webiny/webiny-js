@@ -1,6 +1,10 @@
 import get from "lodash/get";
 import { useQuery } from "@apollo/react-hooks";
-import { LIST_COMMENTS_QUERY } from "../graphql/comment.gql";
+import {
+    LIST_COMMENTS_QUERY,
+    ListCommentsQueryResponse,
+    ListCommentsQueryVariables
+} from "~/graphql/comment.gql";
 import { ApwComment } from "~/types";
 import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
 
@@ -36,9 +40,12 @@ export const useListCommentsVariables = () => {
 
 export const useCommentsList = (): UseCommentsListResult => {
     const variables = useListCommentsVariables();
-    const { data, loading } = useQuery(LIST_COMMENTS_QUERY, {
-        variables
-    });
+    const { data, loading } = useQuery<ListCommentsQueryResponse, ListCommentsQueryVariables>(
+        LIST_COMMENTS_QUERY,
+        {
+            variables
+        }
+    );
 
     const comments = get(data, "apw.listComments.data", []);
 
