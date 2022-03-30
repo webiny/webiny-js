@@ -13,10 +13,9 @@ import {
 } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
-import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { ReactComponent as EditIcon } from "~/admin/assets/icons/edit_24dp.svg";
 
 import { usePublishingWorkflowsList } from "./hooks/usePublishingWorkflowsList";
 import { ApwWorkflowApplications } from "~/types";
@@ -94,7 +93,9 @@ const PublishingWorkflowsDataList = () => {
                     <ScrollList data-testid="default-data-list" className={listStyles}>
                         {data.map((item: any) => (
                             <ListItem key={item.id} selected={item.id === currentWorkflowId}>
-                                <ListItemText>
+                                <ListItemText
+                                    onClick={() => editPublishingWorkflow(item.id, item.app)}
+                                >
                                     {item.title}
                                     <ListItemTextSecondary>
                                         {t`Scope: `}
@@ -110,12 +111,6 @@ const PublishingWorkflowsDataList = () => {
                                         <DeleteIcon
                                             onClick={() => deletePublishingWorkflow(item.id)}
                                             data-testid={"default-data-list.delete"}
-                                        />
-                                        <IconButton
-                                            icon={<EditIcon />}
-                                            onClick={() =>
-                                                editPublishingWorkflow(item.id, item.app)
-                                            }
                                         />
                                     </ListActions>
                                 </ListItemMeta>
