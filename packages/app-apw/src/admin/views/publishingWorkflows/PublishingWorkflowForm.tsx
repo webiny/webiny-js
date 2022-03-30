@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import get from "lodash/get";
+import isEqual from "lodash/isEqual";
+import { Prompt } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
@@ -25,6 +27,8 @@ import WorkflowScope from "./components/WorkflowScope";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
+const prompt = t`There are some unsaved changes! Are you sure you want to navigate away and discard all changes?`;
+
 const ButtonWrapper = styled("div")({
     display: "flex",
     justifyContent: "space-between"
@@ -46,6 +50,7 @@ const accordionIconStyle = css`
 const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
 
 const PublishingWorkflowForm = () => {
+    const [hasChanges, setHasChanges] = useState<boolean>(false);
     const { workflow, loading, showEmptyView, cancelEditing, onSubmit } =
         usePublishingWorkflowForm();
 
@@ -62,74 +67,87 @@ const PublishingWorkflowForm = () => {
     }
 
     return (
-        <Form data={workflow} onSubmit={onSubmit}>
-            {({ data, form, Bind, setValue }) => {
-                const addStep = () => setValue("steps", [...data.steps, getInitialStepData()]);
-                const removeStep = (index: number) =>
-                    setValue("steps", [
-                        ...data.steps.slice(0, index),
-                        ...data.steps.slice(index + 1)
-                    ]);
+        <>
+            <Prompt when={hasChanges} message={prompt} />
+            <Form
+                data={workflow}
+                onSubmit={onSubmit}
+                onChange={data => {
+                    setHasChanges(!isEqual(data, workflow));
+                }}
+            >
+                {({ data, form, Bind, setValue }) => {
+                    const addStep = () => setValue("steps", [...data.steps, getInitialStepData()]);
+                    const removeStep = (index: number) =>
+                        setValue("steps", [
+                            ...data.steps.slice(0, index),
+                            ...data.steps.slice(index + 1)
+                        ]);
 
-                return (
-                    <SimpleForm data-testid={"apw-publishing-workflow-form"}>
-                        {loading && <CircularProgress />}
-                        <Bind name="title">
-                            {props => <WorkflowFormHeader Title={<Title {...props} />} />}
-                        </Bind>
-                        <SimpleFormContent>
-                            <Accordion elevation={0}>
-                                <AccordionItem
-                                    icon={<WorkflowStepIcon />}
-                                    title={t`Workflow steps`}
-                                    description={workflowStepsDescription}
-                                    iconClassName={accordionIconStyle}
-                                >
-                                    <Bind name={"steps"}>
-                                        {({ value }) =>
-                                            value &&
-                                            value.map((_: any, index: number) => (
-                                                <WorkflowStep
-                                                    key={index}
-                                                    Bind={Bind}
-                                                    index={index}
-                                                    removeStep={() => removeStep(index)}
-                                                />
-                                            ))
-                                        }
-                                    </Bind>
-                                    <ButtonPrimary
-                                        onClick={addStep}
-                                        style={{ backgroundColor: "var(--mdc-theme-secondary)" }}
+                    return (
+                        <SimpleForm data-testid={"apw-publishing-workflow-form"}>
+                            {loading && <CircularProgress />}
+                            <Bind name="title">
+                                {props => <WorkflowFormHeader Title={<Title {...props} />} />}
+                            </Bind>
+                            <SimpleFormContent>
+                                <Accordion elevation={0}>
+                                    <AccordionItem
+                                        icon={<WorkflowStepIcon />}
+                                        title={t`Workflow steps`}
+                                        description={workflowStepsDescription}
+                                        iconClassName={accordionIconStyle}
                                     >
-                                        <ButtonIcon icon={<AddIcon />} />
-                                        {t`Add Step`}
-                                    </ButtonPrimary>
-                                </AccordionItem>
-                                <AccordionItem
-                                    icon={<WorkflowScopeIcon />}
-                                    title={t`Scope`}
-                                    description={t`Define the conditions when this workflow applies.`}
-                                    iconClassName={accordionIconStyle}
-                                >
-                                    <WorkflowScope Bind={Bind} value={get(data, "scope")} />
-                                </AccordionItem>
-                            </Accordion>
-                        </SimpleFormContent>
-                        <SimpleFormFooter className={formFooterStyle}>
-                            <ButtonWrapper>
-                                <ButtonDefault onClick={cancelEditing}>{t`Cancel`}</ButtonDefault>
-                                <ButtonPrimary
-                                    onClick={event => {
-                                        form.submit(event);
-                                    }}
-                                >{t`Save`}</ButtonPrimary>
-                            </ButtonWrapper>
-                        </SimpleFormFooter>
-                    </SimpleForm>
-                );
-            }}
-        </Form>
+                                        <Bind name={"steps"}>
+                                            {({ value }) =>
+                                                value &&
+                                                value.map((_: any, index: number) => (
+                                                    <WorkflowStep
+                                                        key={index}
+                                                        Bind={Bind}
+                                                        index={index}
+                                                        removeStep={() => removeStep(index)}
+                                                    />
+                                                ))
+                                            }
+                                        </Bind>
+                                        <ButtonPrimary
+                                            onClick={addStep}
+                                            style={{
+                                                backgroundColor: "var(--mdc-theme-secondary)"
+                                            }}
+                                        >
+                                            <ButtonIcon icon={<AddIcon />} />
+                                            {t`Add Step`}
+                                        </ButtonPrimary>
+                                    </AccordionItem>
+                                    <AccordionItem
+                                        icon={<WorkflowScopeIcon />}
+                                        title={t`Scope`}
+                                        description={t`Define the conditions when this workflow applies.`}
+                                        iconClassName={accordionIconStyle}
+                                    >
+                                        <WorkflowScope Bind={Bind} value={get(data, "scope")} />
+                                    </AccordionItem>
+                                </Accordion>
+                            </SimpleFormContent>
+                            <SimpleFormFooter className={formFooterStyle}>
+                                <ButtonWrapper>
+                                    <ButtonDefault
+                                        onClick={cancelEditing}
+                                    >{t`Cancel`}</ButtonDefault>
+                                    <ButtonPrimary
+                                        onClick={event => {
+                                            form.submit(event);
+                                        }}
+                                    >{t`Save`}</ButtonPrimary>
+                                </ButtonWrapper>
+                            </SimpleFormFooter>
+                        </SimpleForm>
+                    );
+                }}
+            </Form>
+        </>
     );
 };
 
