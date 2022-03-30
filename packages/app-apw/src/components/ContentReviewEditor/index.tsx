@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { useParams, useRouteMatch, Route, Switch } from "@webiny/react-router";
 import { Box, Columns } from "~/components/Layout";
-import { useContentReview } from "~/views/contentReviewDashboard/hooks/useContentReview";
+import { useContentReview } from "~/hooks/useContentReview";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 /**

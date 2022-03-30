@@ -6,12 +6,12 @@ import {
     LIST_CHANGE_REQUESTS_QUERY,
     DELETE_CHANGE_REQUEST_MUTATION,
     UPDATE_CHANGE_REQUEST_MUTATION
-} from "../graphql/changeRequest.gql";
+} from "~/graphql/changeRequest.gql";
 import { useSnackbar } from "@webiny/app-admin";
 import { useRouter } from "@webiny/react-router";
 import { useContentReviewId, useCurrentStepId } from "~/hooks/useContentReviewId";
 import { ApwChangeRequest } from "~/types";
-import { GET_CONTENT_REVIEW_QUERY } from "~/views/contentReviewDashboard/hooks/graphql";
+import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
 
 interface UseChangeRequestParams {
     id: string | null;

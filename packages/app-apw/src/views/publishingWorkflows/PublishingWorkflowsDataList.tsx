@@ -17,7 +17,7 @@ import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
-import { usePublishingWorkflowsList } from "./hooks/usePublishingWorkflowsList";
+import { usePublishingWorkflowsList } from "~/hooks/usePublishingWorkflowsList";
 import { ApwWorkflowApplications } from "~/types";
 import { Box, Columns } from "~/components/Layout";
 

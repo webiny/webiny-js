@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import get from "lodash/get";
-import { PROVIDE_SIGN_OFF_MUTATION, RETRACT_SIGN_OFF_MUTATION } from "../graphql/provideSignoff";
+import { PROVIDE_SIGN_OFF_MUTATION, RETRACT_SIGN_OFF_MUTATION } from "~/graphql/provideSignoff";
 import { useContentReviewId, useCurrentStepId } from "~/hooks/useContentReviewId";
 import { useSnackbar } from "@webiny/app-admin";
 import { GET_CHANGE_REQUEST_QUERY } from "~/graphql/changeRequest.gql";
 import { useActiveChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
-import { GET_CONTENT_REVIEW_QUERY } from "~/views/contentReviewDashboard/hooks/graphql";
+import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
 
 interface UseStepSignOffResult {
     provideSignOff: Function;

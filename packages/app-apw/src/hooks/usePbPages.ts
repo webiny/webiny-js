@@ -3,7 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
 import pick from "lodash/pick";
 import debounce from "lodash/debounce";
-import { LIST_PAGES } from "./graphql";
+import { LIST_PAGES } from "~/graphql/workflow.gql";
 import { BindComponentRenderProp } from "@webiny/form/Bind";
 
 interface UsePbPagesResult {

@@ -3,7 +3,7 @@ import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useCurrentWorkflowId } from "./useLocationSearch";
-import { DELETE_WORKFLOW_MUTATION, LIST_WORKFLOWS_QUERY } from "./graphql";
+import { DELETE_WORKFLOW_MUTATION, LIST_WORKFLOWS_QUERY } from "~/graphql/workflow.gql";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 

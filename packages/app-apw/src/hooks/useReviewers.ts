@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
-import { LIST_REVIEWS_QUERY } from "./graphql";
+import { LIST_REVIEWS_QUERY } from "~/graphql/reviewer.gql";
 import { ApwReviewer } from "~/types";
 
 interface UseReviewersResult {

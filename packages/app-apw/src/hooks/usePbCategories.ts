@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
-import { LIST_CATEGORIES } from "./graphql";
+import { LIST_CATEGORIES } from "~/graphql/workflow.gql";
 import { PbCategory } from "~/types";
 
 interface UsePbCategoriesResult {

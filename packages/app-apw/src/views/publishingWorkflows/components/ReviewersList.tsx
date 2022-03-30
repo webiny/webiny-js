@@ -7,7 +7,7 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { ChildrenRenderProp } from "@webiny/ui/Checkbox/CheckboxGroup";
 import { Box, Columns } from "~/components/Layout";
 import { restGridStyles } from "./Styled";
-import { useReviewers } from "../hooks/useReviewers";
+import { useReviewers } from "~/hooks/useReviewers";
 
 export const GRADIENTS = [
     "135deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%",

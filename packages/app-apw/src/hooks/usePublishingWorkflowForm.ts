@@ -10,7 +10,7 @@ import {
     CREATE_WORKFLOW_MUTATION,
     LIST_WORKFLOWS_QUERY,
     UPDATE_WORKFLOW_MUTATION
-} from "./graphql";
+} from "~/graphql/workflow.gql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { ApwWorkflowScopeTypes } from "~/types";

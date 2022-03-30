@@ -4,7 +4,7 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useAdminPageBuilder } from "@webiny/app-page-builder/admin/hooks/useAdminPageBuilder";
-import { CREATE_CONTENT_REVIEW_MUTATION } from "~/views/contentReviewDashboard/hooks/graphql";
+import { CREATE_CONTENT_REVIEW_MUTATION } from "~/graphql/contentReview.gql";
 import { ApwContentReviewContent, ApwContentTypes } from "~/types";
 import { IS_REVIEW_REQUIRED_QUERY } from "./graphql";
 

@@ -6,7 +6,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ApwContentReviewListItem } from "~/types";
 import { ContentReviewListItem } from "./components/ContentReviewItem";
-import { useContentReviewsList } from "./hooks/useContentReviewsList";
+import { useContentReviewsList } from "~/hooks/useContentReviewsList";
 import { ContentReviewsFilterModal } from "./components/ContentReviewsFilterOverlay";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");

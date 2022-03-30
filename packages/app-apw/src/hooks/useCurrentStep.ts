@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useContentReview } from "~/views/contentReviewDashboard/hooks/useContentReview";
+import { useContentReview } from "~/hooks/useContentReview";
 import { useContentReviewId, useCurrentStepId } from "./useContentReviewId";
 import { ApwContentReviewStep } from "~/types";
 

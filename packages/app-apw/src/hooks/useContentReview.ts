@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
-import { GET_CONTENT_REVIEW_QUERY } from "./graphql";
+import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
 import { ApwContentReview } from "~/types";
 import { useParams } from "@webiny/react-router";
 

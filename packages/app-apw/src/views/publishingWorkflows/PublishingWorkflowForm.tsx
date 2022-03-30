@@ -15,7 +15,7 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
-import { usePublishingWorkflowForm, getInitialStepData } from "./hooks/usePublishingWorkflowForm";
+import { usePublishingWorkflowForm, getInitialStepData } from "~/hooks/usePublishingWorkflowForm";
 
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as WorkflowScopeIcon } from "~/assets/icons/workflow-scope.svg";

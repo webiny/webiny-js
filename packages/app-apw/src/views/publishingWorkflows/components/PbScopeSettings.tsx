@@ -9,9 +9,9 @@ import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { BindComponent } from "@webiny/form";
 import { Box, Stack } from "~/components/Layout";
-import { ListItemWithCheckbox } from "~/views/publishingWorkflows/components/ReviewersList";
-import { usePbCategories } from "~/views/publishingWorkflows/hooks/usePbCategories";
-import { usePbPages } from "~/views/publishingWorkflows/hooks/usePbPages";
+import { ListItemWithCheckbox } from "./ReviewersList";
+import { usePbCategories } from "~/hooks/usePbCategories";
+import { usePbPages } from "~/hooks/usePbPages";
 import { validation } from "@webiny/validation";
 import { BindComponentRenderProp } from "@webiny/form/Bind";
 

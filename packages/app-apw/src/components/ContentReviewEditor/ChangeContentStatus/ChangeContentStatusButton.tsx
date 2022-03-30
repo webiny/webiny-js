@@ -11,7 +11,7 @@ import { usePublishContent } from "~/hooks/usePublishContent";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useScheduleActionDialog } from "./useScheduleActionDialog";
 import { Typography } from "@webiny/ui/Typography";
-import { useContentReview } from "~/views/contentReviewDashboard/hooks/useContentReview";
+import { useContentReview } from "~/hooks/useContentReview";
 import { useContentReviewId } from "~/hooks/useContentReviewId";
 import { formatDatetime } from "~/components/utils";
 

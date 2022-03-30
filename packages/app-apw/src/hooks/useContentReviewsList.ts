@@ -3,7 +3,7 @@ import get from "lodash/get";
 import debounce from "lodash/debounce";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
-import { LIST_CONTENT_REVIEWS_QUERY } from "./graphql";
+import { LIST_CONTENT_REVIEWS_QUERY } from "~/graphql/contentReview.gql";
 import { ApwContentReview, ApwContentReviewListItem, ApwContentReviewStatus } from "~/types";
 
 const baseUrl = "/apw/content-reviews";

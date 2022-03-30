@@ -5,10 +5,10 @@ import {
     PUBLISH_CONTENT_MUTATION,
     UNPUBLISH_CONTENT_MUTATION,
     DELETE_SCHEDULED_ACTION_MUTATION
-} from "../graphql/provideSignoff";
+} from "~/graphql/provideSignoff";
 import { useContentReviewId } from "~/hooks/useContentReviewId";
 import { useSnackbar } from "@webiny/app-admin";
-import { GET_CONTENT_REVIEW_QUERY } from "~/views/contentReviewDashboard/hooks/graphql";
+import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
 
 interface UsePublishContentResult {
     publishContent: Function;
