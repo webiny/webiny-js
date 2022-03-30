@@ -26,3 +26,7 @@ export const formatDatetime = (date: string): string => {
 export const fromNow = (date: string): string => {
     return dayjs(date).fromNow();
 };
+
+export const routePaths = {
+    CONTENT_REVIEWS: `/apw/content-reviews`
+};

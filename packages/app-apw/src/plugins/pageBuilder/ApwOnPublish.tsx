@@ -1,12 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import get from "lodash/get";
+import { useRouter } from "@webiny/react-router";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useAdminPageBuilder } from "@webiny/app-page-builder/admin/hooks/useAdminPageBuilder";
-import { CREATE_CONTENT_REVIEW_MUTATION } from "~/graphql/contentReview.gql";
 import { ApwContentReviewContent, ApwContentTypes } from "~/types";
+import {
+    CREATE_CONTENT_REVIEW_MUTATION,
+    CreateContentReviewMutationResponse,
+    CreateApwContentReviewMutationVariables
+} from "~/graphql/contentReview.gql";
 import { IS_REVIEW_REQUIRED_QUERY } from "./graphql";
+import { routePaths } from "~/utils";
 
 const t = i18n.ns("app-apw/page-builder/dialog");
 
@@ -17,6 +23,7 @@ export const ApwOnPublish = () => {
     const [input, setInput] = useState<CreateContentReviewInput | null>(null);
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
+    const { history } = useRouter();
 
     const { showConfirmation: showRequestReviewConfirmation } = useConfirmationDialog({
         title: t`Request review`,
@@ -32,7 +39,14 @@ export const ApwOnPublish = () => {
     const resetShowReview = () => setInput(null);
 
     const handleRequestReview = useCallback(async () => {
-        const response = await client.mutate({
+        if (!input) {
+            return;
+        }
+
+        const response = await client.mutate<
+            CreateContentReviewMutationResponse,
+            CreateApwContentReviewMutationVariables
+        >({
             mutation: CREATE_CONTENT_REVIEW_MUTATION,
             variables: {
                 data: {
@@ -40,12 +54,19 @@ export const ApwOnPublish = () => {
                 }
             }
         });
-        const error = get(response, "data.apw.contentReview.error");
+        const error = response.data && response.data.apw.contentReview.error;
+        const contentReview = response.data && response.data.apw.contentReview.data;
 
         if (error) {
             showSnackbar(error.message);
-        } else {
+        } else if (contentReview) {
             showSnackbar(`Content review requested successfully!`);
+            /**
+             * Redirect to newly created "content review".
+             */
+            history.push(routePaths.CONTENT_REVIEWS + "/" + encodeURIComponent(contentReview.id));
+        } else {
+            showSnackbar(`Something went wrong!`);
         }
 
         resetShowReview();
@@ -53,7 +74,6 @@ export const ApwOnPublish = () => {
 
     useEffect(() => {
         return pageBuilder.onPagePublish(next => async params => {
-            console.log("APW");
             const { page } = params;
             const input = {
                 id: page.id,
