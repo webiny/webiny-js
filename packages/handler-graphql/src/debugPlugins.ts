@@ -1,5 +1,5 @@
 import { interceptConsole } from "./interceptConsole";
-import { GraphQLAfterQueryPlugin } from "./types";
+import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin } from "./types";
 import { Context, ContextPlugin } from "@webiny/handler/types";
 
 interface Log {
@@ -28,6 +28,13 @@ export default () => [
             });
         }
     } as ContextPlugin<DebugContext>,
+    {
+        type: "graphql-before-query",
+        apply({ context }) {
+            // Empty logs
+            context.debug.logs = [];
+        }
+    } as GraphQLBeforeQueryPlugin<DebugContext>,
     {
         type: "graphql-after-query",
         apply({ result, context }) {
