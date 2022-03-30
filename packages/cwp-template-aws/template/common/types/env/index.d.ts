@@ -43,5 +43,6 @@ declare namespace NodeJS {
         IMPORT_PAGES_CREATE_HANDLER?: string;
         PUBLIC_URL?: string;
         HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM?: "false" | string;
+        APW_SCHEDULER_SCHEDULE_ACTION_HANDLER?: string;
     }
 }
