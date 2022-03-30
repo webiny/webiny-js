@@ -33,7 +33,7 @@ const BaseExtension: React.FC = () => {
                 name={"documentation"}
                 label={"Documentation"}
                 icon={<DocsIcon />}
-                path={"https://docs.webiny.com/"}
+                path={"https://www.webiny.com/docs"}
                 rel={"noopener noreferrer"}
                 target={"_blank"}
                 tags={["footer"]}

@@ -111,7 +111,7 @@ module.exports = async (inputs, context) => {
                 `To finish the setup, please open your ${green("Admin")} app (${green(
                     outputs.apps.admin.appUrl
                 )}) and complete the installation wizard. To learn more, visit ${green(
-                    "https://docs.webiny.com"
+                    "https://www.webiny.com/docs"
                 )}.`
             ].join("\n")
         );
