@@ -1,36 +1,36 @@
 import fetch from "node-fetch";
-const consoleLog = console.log;
+import { HandlerResultPlugin } from "@webiny/handler";
 
-const logs: any[] = [];
-console.log = (...args: any) => {
-    logs.push({
-        args,
-        meta: {
-            functionName: process.env.AWS_LAMBDA_FUNCTION_NAME
-        }
-    });
-    consoleLog(...args);
-};
+export default () => {
+    const consoleLog = console.log;
 
-export default () => ({
-    type: "handler-result",
-    async apply() {
+    const logs: any[] = [];
+    console.log = (...args: any) => {
+        logs.push({
+            args,
+            meta: {
+                functionName: process.env.AWS_LAMBDA_FUNCTION_NAME
+            }
+        });
+        consoleLog(...args);
+    };
+
+    return new HandlerResultPlugin(async () => {
         const url = process.env.WEBINY_LOGS_FORWARD_URL;
         if (logs.length && typeof url === "string" && url.startsWith("http")) {
             try {
-                const body = JSON.stringify(logs);
                 await fetch(url, {
-                    body,
+                    body: JSON.stringify(logs),
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "Bypass-Tunnel-Reminder": "1"
                     }
                 });
-            } catch {
-                // Do nothing.
+            } catch (err) {
+                consoleLog(`Failed to send logs to "localtunnel"`, err.message);
             }
         }
         logs.length = 0;
-    }
-});
+    });
+};
