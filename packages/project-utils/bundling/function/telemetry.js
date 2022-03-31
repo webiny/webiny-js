@@ -3,7 +3,7 @@ const path = require("path");
 const fetch = require("node-fetch");
 const { getTelemetryFunctionDownloadPath } = require("./utils");
 
-const WCP_API_CLIENTS_URL = `${process.env.WCP_API_URL}/clients/latest`;
+const WCP_API_CLIENTS_URL = `${process.env.WCP_API_URL}/clients/latest.js`;
 
 async function downloadTelemetryFunction() {
     const response = await fetch(WCP_API_CLIENTS_URL);
