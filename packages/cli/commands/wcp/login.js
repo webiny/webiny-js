@@ -48,6 +48,9 @@ const CREATE_USER_PAT = /* GraphQL */ `
     }
 `;
 
+// For a bit nicer UX.
+const pause = () => new Promise(resolve => setTimeout(resolve, 2000));
+
 module.exports = () => ({
     type: "cli-command",
     name: "cli-command-wcp-login",
@@ -71,30 +74,45 @@ module.exports = () => ({
                     type: "number"
                 });
             },
-            async ({ debug, debugLevel, pat: passedPat }) => {
+            async ({ debug, debugLevel, pat: patFromParams }) => {
                 const graphQLClient = new GraphQLClient(WCP_API_URL);
 
                 let pat;
 
-                if (passedPat) {
-                    graphQLClient.setHeaders({ authorization: passedPat });
-                    pat = await graphQLClient
-                        .request(GET_USER_PAT, { token: passedPat })
-                        .then(({ users }) => users.getUserPat);
-
-                    if (pat.expiresOn) {
+                if (patFromParams) {
+                    try {
+                        graphQLClient.setHeaders({ authorization: patFromParams });
                         pat = await graphQLClient
-                            .request(CREATE_USER_PAT, { data: { meta: pat.meta } })
-                            .then(({ users }) => users.createUserPat);
+                            .request(GET_USER_PAT, { token: patFromParams })
+                            .then(({ users }) => users.getUserPat);
 
-                        graphQLClient.setHeaders({ authorization: pat.token });
+                        // If we've received a PAT that has expiration, let's create a long-lived PAT.
+                        // We don't want to have our users interrupted because of an expired PAT.
+                        if (pat.expiresOn) {
+                            pat = await graphQLClient
+                                .request(CREATE_USER_PAT, { data: { meta: pat.meta } })
+                                .then(({ users }) => users.createUserPat);
+                        }
+                    } catch (e) {
+                        if (debug) {
+                            context.debug(
+                                `Could not use the provided ${context.debug.hl(
+                                    patFromParams
+                                )} PAT because of the following error:`
+                            );
+                            console.debug(e);
+                        }
+
+                        throw new Error(
+                            `Invalid PAT received. Please try again or try removing the PAT and perform a manual login.`
+                        );
                     }
                 } else {
-                    const token = await graphQLClient
+                    const generatedPat = await graphQLClient
                         .request(GENERATE_USER_PAT)
                         .then(({ users }) => users.generateUserPat);
 
-                    const queryParams = `pat=${token}&pat_name=${encodeURIComponent(
+                    const queryParams = `pat=${generatedPat}&pat_name=${encodeURIComponent(
                         "Webiny CLI"
                     )}&ref=cli`;
                     const openUrl = `${WCP_APP_URL}/login/cli?${queryParams}`;
@@ -103,9 +121,9 @@ module.exports = () => ({
                     await open(openUrl);
 
                     const graphql = {
-                        variables: { token },
+                        variables: { token: generatedPat },
                         headers: {
-                            Authorization: token
+                            Authorization: generatedPat
                         }
                     };
 
@@ -158,17 +176,43 @@ module.exports = () => ({
 
                 context.success(`You've successfully logged in to Webiny Control Panel!`);
 
-                const meta = pat.meta || {};
+                // If we have `orgId` and `projectId` in PAT's meta data, let's immediately activate the project.
+                if (pat.meta) {
+                    const { orgId, projectId } = pat.meta;
+                    if (orgId && projectId) {
+                        await pause();
 
-                // If we have orgId and projectId in PAT token's meta data, let's immediately activate the project.
-                if (meta.orgId && meta.projectId) {
-                    await setProjectId({
-                        project: context.project,
-                        orgId: meta.orgId,
-                        projectId: meta.projectId
-                    });
+                        console.log();
 
-                    context.info(`Successfully set ${meta.orgId}/${meta.projectId} project.`);
+                        const id = `${orgId}/${projectId}`;
+                        context.info(
+                            `${context.info.hl(id)} project detected. Updating ${context.info.hl(
+                                "webiny.project.ts"
+                            )}...`
+                        );
+
+                        await pause();
+
+                        await setProjectId({
+                            project: context.project,
+                            orgId,
+                            projectId
+                        });
+
+                        context.success(
+                            `${context.success.hl(
+                                "webiny.project.ts"
+                            )} has been updated successfully.`
+                        );
+
+                        await pause();
+                        console.log();
+                        context.info(
+                            `If you've just created this project, you might want to deploy it via the ${context.info.hl(
+                                "yarn webiny deploy"
+                            )} command.`
+                        );
+                    }
                 }
             }
         );
