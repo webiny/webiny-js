@@ -1,28 +1,4 @@
-const { GraphQLClient } = require("graphql-request");
-const { WCP_API_URL, getWcpPat } = require("./utils");
-
-const USER_PAT_FIELDS = /* GraphQL */ `
-    fragment UserPatFields on UserPat {
-        name
-        meta
-        token
-        expiresOn
-        user {
-            email
-        }
-    }
-`;
-
-const GET_USER_PAT = /* GraphQL */ `
-    ${USER_PAT_FIELDS}
-    query GetUserPat($token: ID!) {
-        users {
-            getUserPat(token: $token) {
-                ...UserPatFields
-            }
-        }
-    }
-`;
+const { getUser } = require("./utils");
 
 module.exports = () => ({
     type: "cli-command",
@@ -44,23 +20,8 @@ module.exports = () => ({
                 });
             },
             async ({ debug }) => {
-                const pat = getWcpPat();
-                if (!pat) {
-                    throw new Error(
-                        `It seems you are not logged in. Please login using the ${context.error.hl(
-                            "webiny login"
-                        )} command.`
-                    );
-                }
-
-                const graphQLClient = new GraphQLClient(WCP_API_URL);
-                graphQLClient.setHeaders({ authorization: pat });
-
                 try {
-                    const user = await graphQLClient
-                        .request(GET_USER_PAT, { token: pat })
-                        .then(({ users }) => users.getUserPat.user);
-
+                    const user = await getUser();
                     context.info(
                         `You are logged in to Webiny Control Panel as ${context.info.hl(
                             user.email
