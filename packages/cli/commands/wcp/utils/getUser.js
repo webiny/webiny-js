@@ -7,6 +7,7 @@ const GET_CURRENT_USER = /* GraphQL */ `
         users {
             getCurrentUser {
                 id
+                email
                 firstName
                 lastName
             }
