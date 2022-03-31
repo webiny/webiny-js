@@ -2,7 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import { PulumiApp } from "@webiny/pulumi-sdk";
-import { buildLambdaEdge } from "@webiny/project-utils";
+import { buildCloudFrontFunction, buildLambdaEdge } from "@webiny/project-utils";
 
 export function createLambdas(app: PulumiApp) {
     const role = app.addResource(aws.iam.Role, {
@@ -31,16 +31,14 @@ export function createLambdas(app: PulumiApp) {
         // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
         const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
-        const pageViewerRequest = createLambda("pageViewerRequest", awsUsEast1, role.output);
-        const pageOriginRequest = createLambda("pageOriginRequest", awsUsEast1, role.output);
-        const pageOriginResponse = createLambda("pageOriginResponse", awsUsEast1, role.output);
-        const assetOriginRequest = createLambda("assetOriginRequest", awsUsEast1, role.output);
+        const pageViewerRequest = createCloudfrontFunction("pageViewerRequest");
+        const pageViewerResponse = createCloudfrontFunction("pageViewerResponse");
+        const pageOriginRequest = createLambdaEdge("pageOriginRequest", awsUsEast1, role.output);
 
         return {
             pageViewerRequest,
-            pageOriginRequest,
-            pageOriginResponse,
-            assetOriginRequest
+            pageViewerResponse,
+            pageOriginRequest
         };
     });
 
@@ -50,12 +48,9 @@ export function createLambdas(app: PulumiApp) {
     };
 }
 
-function createLambda(name: string, provider: aws.Provider, role: pulumi.Output<aws.iam.Role>) {
-    const content = [
-        `import { ${name} } from '@webiny/aws-helpers/stagedRollouts';`,
-        `export default ${name}`
-    ];
-    const output = buildLambdaEdge(content.join("\n"));
+function createLambdaEdge(name: string, provider: aws.Provider, role: pulumi.Output<aws.iam.Role>) {
+    const file = `@webiny/aws-helpers/stagedRollouts/functions/${name}`;
+    const output = buildLambdaEdge(file);
 
     return new aws.lambda.Function(
         name,
@@ -72,4 +67,14 @@ function createLambda(name: string, provider: aws.Provider, role: pulumi.Output<
         },
         { provider }
     );
+}
+
+function createCloudfrontFunction(name: string) {
+    const file = `@webiny/aws-helpers/stagedRollouts/functions/${name}`;
+    const output = buildCloudFrontFunction(file);
+
+    return new aws.cloudfront.Function(name, {
+        runtime: "cloudfront-js-1.0",
+        code: output.then(o => o.code)
+    });
 }

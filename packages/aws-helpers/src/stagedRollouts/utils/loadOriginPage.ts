@@ -3,7 +3,7 @@ import { get } from "https";
 import { load, Element } from "cheerio";
 import { isHeaderBlacklisted } from "./headerBlacklist";
 
-export function loadPage(domain: string, path: string) {
+export function loadOriginPage(domain: string, path: string) {
     return new Promise<CloudFrontResponse>((resolve, reject) => {
         let responseBody = "";
         const req = get(
@@ -23,7 +23,10 @@ export function loadPage(domain: string, path: string) {
                         headers: {}
                     };
 
+                    // Rewrite headers from the HTTP response
                     for (const header of Object.keys(res.headers)) {
+                        // We cannot set any header we want.
+                        // CloudFront is restricting us from setting or changing some headers.
                         if (isHeaderBlacklisted(header)) {
                             continue;
                         }

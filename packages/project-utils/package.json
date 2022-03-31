@@ -68,6 +68,7 @@
     "rimraf": "3.0.2",
     "rollup": "^2.70.0",
     "rollup-plugin-esbuild": "^4.8.2",
+    "rollup-plugin-terser": "^7.0.2",
     "sass": "1.44.0",
     "sass-loader": "12.3.0",
     "scheduler": "0.19.1",

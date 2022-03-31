@@ -4,6 +4,7 @@ const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require("@rollup/plugin-commonjs");
 const { babel } = require("@rollup/plugin-babel");
 const json = require("@rollup/plugin-json");
+const { terser } = require("rollup-plugin-terser");
 
 module.exports = async function (file) {
     const inputOptions = {
@@ -25,11 +26,16 @@ module.exports = async function (file) {
                         "@babel/preset-env",
                         {
                             targets: {
-                                node: 12
+                                // force transpiling to ES5
+                                // because CloudFront Functions require it
+                                node: 5
                             }
                         }
                     ]
                 ]
+            }),
+            terser({
+                mangle: true
             })
         ],
         onwarn: warning => {

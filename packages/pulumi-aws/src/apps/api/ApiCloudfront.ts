@@ -12,6 +12,8 @@ export function createCloudfront(app: PulumiApp, params: ApiCloudfrontParams) {
         name: "api-cloudfront",
         config: {
             waitForDeployment: false,
+            isIpv6Enabled: true,
+            enabled: true,
             defaultCacheBehavior: {
                 compress: true,
                 allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
@@ -30,8 +32,6 @@ export function createCloudfront(app: PulumiApp, params: ApiCloudfrontParams) {
                 targetOriginId: params.apiGateway.api.output.name,
                 viewerProtocolPolicy: "allow-all"
             },
-            isIpv6Enabled: true,
-            enabled: true,
             orderedCacheBehaviors: [
                 {
                     compress: true,
@@ -44,7 +44,7 @@ export function createCloudfront(app: PulumiApp, params: ApiCloudfrontParams) {
                         headers: ["Accept", "Accept-Language"],
                         queryString: true
                     },
-                    pathPattern: "/cms*",
+                    pathPattern: "/cms/*",
                     viewerProtocolPolicy: "allow-all",
                     targetOriginId: params.apiGateway.api.output.name
                 },

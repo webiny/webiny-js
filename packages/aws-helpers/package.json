@@ -6,8 +6,8 @@
     ".": {
       "import": "./dist/index.js"
     },
-    "./stagedRollouts": {
-      "import": "./dist/stagedRollouts/index.js"
+    "./stagedRollouts/*": {
+      "import": "./dist/stagedRollouts/*.js"
     }
   },
   "repository": {

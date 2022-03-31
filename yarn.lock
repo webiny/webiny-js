@@ -11894,6 +11894,7 @@ __metadata:
     rimraf: 3.0.2
     rollup: ^2.70.0
     rollup-plugin-esbuild: ^4.8.2
+    rollup-plugin-terser: ^7.0.2
     sass: 1.44.0
     sass-loader: 12.3.0
     scheduler: 0.19.1
@@ -12482,7 +12483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.2.4, acorn@npm:^8.4.1, acorn@npm:^8.7.0":
+"acorn@npm:^8.2.4, acorn@npm:^8.4.1, acorn@npm:^8.5.0, acorn@npm:^8.7.0":
   version: 8.7.0
   resolution: "acorn@npm:8.7.0"
   bin:
@@ -25586,7 +25587,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-worker@npm:^26.6.2":
+"jest-worker@npm:^26.2.1, jest-worker@npm:^26.6.2":
   version: 26.6.2
   resolution: "jest-worker@npm:26.6.2"
   dependencies:
@@ -34133,6 +34134,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rollup-plugin-terser@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "rollup-plugin-terser@npm:7.0.2"
+  dependencies:
+    "@babel/code-frame": ^7.10.4
+    jest-worker: ^26.2.1
+    serialize-javascript: ^4.0.0
+    terser: ^5.0.0
+  peerDependencies:
+    rollup: ^2.0.0
+  checksum: af84bb7a7a894cd00852b6486528dfb8653cf94df4c126f95f389a346f401d054b08c46bee519a2ab6a22b33804d1d6ac6d8c90b1b2bf8fffb097eed73fc3c72
+  languageName: node
+  linkType: hard
+
 "rollup@npm:^2.70.0":
   version: 2.70.0
   resolution: "rollup@npm:2.70.0"
@@ -36499,6 +36514,20 @@ __metadata:
   bin:
     terser: bin/terser
   checksum: f980789097d4f856c1ef4b9a7ada37beb0bb022fb8aa3057968862b5864ad7c244253b3e269c9eb0ab7d0caf97b9521273f2d1cf1e0e942ff0016e0583859c71
+  languageName: node
+  linkType: hard
+
+"terser@npm:^5.0.0":
+  version: 5.12.1
+  resolution: "terser@npm:5.12.1"
+  dependencies:
+    acorn: ^8.5.0
+    commander: ^2.20.0
+    source-map: ~0.7.2
+    source-map-support: ~0.5.20
+  bin:
+    terser: bin/terser
+  checksum: dd33af5d87a1159bcc38f354707505f1449a33d1491c512e9536f11fea7c3474cdc40e2e5fdf75f58658cfaab8ef47cb7454acd6406b2ce487675cb1978c6275
   languageName: node
   linkType: hard
 

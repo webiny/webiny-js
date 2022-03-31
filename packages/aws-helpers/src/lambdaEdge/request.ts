@@ -1,5 +1,5 @@
-import { CloudFrontRequest } from "~/lambdaEdge";
 import { setHeader } from "./headers";
+import { CloudFrontRequest } from "./types";
 
 export function setDomainOrigin(request: CloudFrontRequest, domain: string) {
     request.origin = {

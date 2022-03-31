@@ -5,7 +5,8 @@ import {
     createGenericApplication,
     ApplicationContext,
     PulumiApp,
-    ApplicationConfig
+    ApplicationConfig,
+    updateGatewayConfig
 } from "@webiny/pulumi-sdk";
 
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
@@ -177,6 +178,7 @@ export const ApiApp = defineApp({
         app.addOutputs({
             region: process.env.AWS_REGION,
             apiUrl: cloudfront.output.domainName.apply(value => `https://${value}`),
+            apiDomain: cloudfront.output.domainName,
             cognitoUserPoolId: storage.cognitoUserPoolId,
             cognitoAppClientId: storage.cognitoAppClientId,
             cognitoUserPoolPasswordPolicy: storage.cognitoUserPoolPasswordPolicy,
@@ -185,6 +187,20 @@ export const ApiApp = defineApp({
             psQueueProcess: prerenderingService.functions.queue.process.output.arn,
             dynamoDbTable: storage.primaryDynamodbTableName
         });
+
+        // Update variant gateway configuration.
+        const variant = app.ctx.variant;
+        if (variant) {
+            app.onDeploy(async ({ outputs }) => {
+                await updateGatewayConfig({
+                    app: "api",
+                    cwd: app.ctx.projectDir,
+                    env: app.ctx.env,
+                    variant: variant,
+                    domain: outputs["apiDomain"]
+                });
+            });
+        }
 
         return {
             fileManager,

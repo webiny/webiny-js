@@ -53,6 +53,7 @@ interface BuildFunctionConfig {
 export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
 export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
 export function buildLambdaEdge(content: string) : Promise<OutputChunk>;
+export function buildCloudFrontFunction(content: string) : Promise<OutputChunk>;
 
 // Build commands - packages.
 interface BuildPackageConfig {

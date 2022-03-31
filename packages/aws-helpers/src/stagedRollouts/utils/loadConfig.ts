@@ -1,7 +1,7 @@
 import { get } from "https";
-import { CloudFrontRequest, CloudFrontRequestEvent } from "~/lambdaEdge";
+import { CloudFrontRequestEvent } from "~/lambdaEdge";
+import { configPath } from "./common";
 
-const configPath = "/_config.json";
 // Config must be cached per domain.
 // Otherwise cache will spill over different apps, because we may share this lambda.
 const configCache = new Map<string, GatewayConfigCache>();
@@ -17,10 +17,6 @@ export interface StageConfig {
 }
 
 export type GatewayConfig = Record<string, StageConfig>;
-
-export function isConfigRequest(request: CloudFrontRequest) {
-    return request.uri === configPath;
-}
 
 export async function loadConfig(event: CloudFrontRequestEvent) {
     const domain = event.Records[0].cf.config.distributionDomainName;

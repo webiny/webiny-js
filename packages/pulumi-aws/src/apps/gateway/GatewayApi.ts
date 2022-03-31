@@ -5,18 +5,18 @@ import { ApplicationContext, loadGatewayConfig, PulumiApp } from "@webiny/pulumi
 import { createLambdas } from "./GatewayLambdas";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
-export interface GatewayReactAppConfig {
+export interface GatewayApiConfig {
     /** Custom domain configuration */
     domain?(ctx: ApplicationContext): CustomDomainParams;
 }
 
-export interface GatewayReactAppParams {
+export interface GatewayApiParams {
     name: string;
     lambdas: ReturnType<typeof createLambdas>;
-    config: GatewayReactAppConfig;
+    config: GatewayApiConfig;
 }
 
-export function createReactAppGateway(app: PulumiApp, params: GatewayReactAppParams) {
+export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
     const bucket = app.addResource(aws.s3.Bucket, {
         name: `${params.name}-gateway`,
         config: {
@@ -51,6 +51,7 @@ export function createReactAppGateway(app: PulumiApp, params: GatewayReactAppPar
         name: `${params.name}-gateway-cdn`,
         config: {
             enabled: true,
+            isIpv6Enabled: true,
             waitForDeployment: false,
             origins: [
                 {
@@ -68,39 +69,60 @@ export function createReactAppGateway(app: PulumiApp, params: GatewayReactAppPar
                 compress: true,
                 targetOriginId: bucket.output.arn,
                 viewerProtocolPolicy: "redirect-to-https",
-                allowedMethods: ["GET", "HEAD", "OPTIONS"],
+                allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
                 forwardedValues: {
-                    headers: ["webiny-variant-fixed", "webiny-variant-random"],
+                    headers: ["webiny-variant", "Accept", "Accept-Language"],
                     cookies: {
-                        forward: "none"
+                        forward: "whitelist",
+                        whitelistedNames: ["webiny-variant"]
                     },
-                    queryString: false
+                    queryString: true
                 },
                 // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
-                defaultTtl: 600,
-                maxTtl: 600,
-                functionAssociations: [
-                    {
-                        eventType: "viewer-request",
-                        functionArn: params.lambdas.functions.pageViewerRequest.arn
-                    },
-                    {
-                        eventType: "viewer-response",
-                        functionArn: params.lambdas.functions.pageViewerResponse.arn
-                    }
-                ],
-                lambdaFunctionAssociations: [
-                    {
-                        eventType: "origin-request",
-                        lambdaArn: params.lambdas.functions.pageOriginRequest.qualifiedArn
-                    }
-                ]
+                defaultTtl: 0,
+                maxTtl: 86400
+                // lambdaFunctionAssociations: [
+                //     {
+                //         eventType: "viewer-request",
+                //         lambdaArn: params.lambdas.functions.pageViewerRequest.qualifiedArn
+                //     },
+                //     {
+                //         eventType: "origin-response",
+                //         lambdaArn: params.lambdas.functions.pageOriginResponse.qualifiedArn
+                //     }
+                // ]
             },
-            priceClass: "PriceClass_100",
-            customErrorResponses: [
-                { errorCode: 404, responseCode: 404, responsePagePath: "/index.html" }
+            orderedCacheBehaviors: [
+                {
+                    pathPattern: "/files/*",
+                    targetOriginId: bucket.output.arn,
+                    viewerProtocolPolicy: "redirect-to-https",
+                    allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+                    cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                    forwardedValues: {
+                        headers: ["webiny-variant", "Accept", "Accept-Language"],
+                        cookies: {
+                            forward: "whitelist",
+                            whitelistedNames: ["webiny-variant"]
+                        },
+                        queryString: true
+                    },
+                    minTtl: 0,
+                    defaultTtl: 0,
+                    maxTtl: 2592000
+                    // lambdaFunctionAssociations: [
+                    //     {
+                    //         eventType: "viewer-request",
+                    //         lambdaArn: params.lambdas.functions.pageViewerRequest.qualifiedArn
+                    //     },
+                    //     {
+                    //         eventType: "origin-response",
+                    //         lambdaArn: params.lambdas.functions.pageOriginResponse.qualifiedArn
+                    //     }
+                    // ]
+                }
             ],
             restrictions: {
                 geoRestriction: {

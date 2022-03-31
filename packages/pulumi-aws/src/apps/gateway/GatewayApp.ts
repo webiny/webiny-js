@@ -2,8 +2,10 @@ import { defineApp, createGenericApplication, ApplicationConfig } from "@webiny/
 
 import { createReactAppGateway, GatewayReactAppConfig } from "./GatewayReactApp";
 import { createLambdas } from "./GatewayLambdas";
+import { createApiAppGateway, GatewayApiConfig } from "./GatewayApi";
 
 export interface GatewayAppConfig {
+    api?: GatewayApiConfig;
     admin?: GatewayReactAppConfig;
     website?: GatewayReactAppConfig;
 }
@@ -12,6 +14,12 @@ export const GatewayApp = defineApp({
     name: "Gateway",
     config(app, config: GatewayAppConfig) {
         const lambdas = createLambdas(app);
+
+        const api = createApiAppGateway(app, {
+            name: "api",
+            lambdas,
+            config: config.api || {}
+        });
 
         const admin = createReactAppGateway(app, {
             name: "admin",
@@ -27,6 +35,7 @@ export const GatewayApp = defineApp({
 
         return {
             lambdas,
+            api,
             admin,
             website
         };
