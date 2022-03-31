@@ -182,9 +182,7 @@ module.exports = () => ({
                         console.log();
 
                         const id = `${orgId}/${projectId}`;
-                        context.info(
-                            `${context.info.hl(id)} project detected. Initializing...`
-                        );
+                        context.info(`${context.info.hl(id)} project detected. Initializing...`);
 
                         await sleep();
 

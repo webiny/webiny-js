@@ -148,10 +148,12 @@ module.exports = () => [
                                 projectId = selectedProject.id;
 
                             await sleep();
-                            console.log()
+                            console.log();
 
                             context.info(
-                                `Initializing ${context.success.hl(selectedProject.name)} project...`
+                                `Initializing ${context.success.hl(
+                                    selectedProject.name
+                                )} project...`
                             );
 
                             await sleep();
@@ -164,7 +166,9 @@ module.exports = () => [
                             });
 
                             context.success(
-                                `Project ${context.success.hl(selectedProject.name)} initialized successfully.`
+                                `Project ${context.success.hl(
+                                    selectedProject.name
+                                )} initialized successfully.`
                             );
 
                             await sleep();
