@@ -1,6 +1,6 @@
 const open = require("open");
 const inquirer = require("inquirer");
-const { getUser, WCP_APP_URL, setProjectId } = require("./utils");
+const { getUser, WCP_APP_URL, setProjectId, sleep } = require("./utils");
 
 module.exports = () => [
     {
@@ -144,12 +144,36 @@ module.exports = () => [
                                 }).then(result => result.project);
                             }
 
+                            const orgId = selectedOrg.id,
+                                projectId = selectedProject.id;
+
+                            await sleep();
+                            console.log()
+
+                            context.info(
+                                `Initializing ${context.success.hl(selectedProject.name)} project...`
+                            );
+
+                            await sleep();
+
                             // Assign the necessary IDs into root `webiny.project.ts` project file.
                             await setProjectId({
                                 project: context.project,
-                                orgId: selectedOrg.id,
-                                projectId: selectedProject.id
+                                orgId,
+                                projectId
                             });
+
+                            context.success(
+                                `Project ${context.success.hl(selectedProject.name)} initialized successfully.`
+                            );
+
+                            await sleep();
+                            console.log();
+                            context.info(
+                                `If you've just created this project, you might want to deploy it via the ${context.info.hl(
+                                    "yarn webiny deploy"
+                                )} command.`
+                            );
                         }
                     );
                 }
