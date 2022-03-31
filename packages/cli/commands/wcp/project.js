@@ -1,9 +1,6 @@
-const { getUser } = require("./api");
-const { WCP_APP_URL } = require("./api");
 const open = require("open");
 const inquirer = require("inquirer");
-const path = require("path");
-const tsMorph = require("ts-morph");
+const { getUser, WCP_APP_URL, setProjectId } = require("./utils");
 
 module.exports = () => [
     {
@@ -148,60 +145,15 @@ module.exports = () => [
                             }
 
                             // Assign the necessary IDs into root `webiny.project.ts` project file.
-                            const webinyProjectPath = path.join(
-                                context.project.root,
-                                "webiny.project.ts"
-                            );
-
-                            const tsMorphProject = new tsMorph.Project();
-                            tsMorphProject.addSourceFileAtPath(webinyProjectPath);
-
-                            const source = tsMorphProject.getSourceFile(webinyProjectPath);
-
-                            const defaultExport = source.getFirstDescendant(node => {
-                                if (tsMorph.Node.isExportAssignment(node) === false) {
-                                    return false;
-                                }
-                                return node.getText().startsWith("export default ");
+                            await setProjectId({
+                                project: context.project,
+                                orgId: selectedOrg.id,
+                                projectId: selectedProject.id
                             });
-
-                            if (!defaultExport) {
-                                throw new Error(
-                                    `Could not find the default export in ${context.error.hl(
-                                        "webiny.project.ts"
-                                    )}.`
-                                );
-                            }
-
-                            // Get ObjectLiteralExpression within the default export and assign the `id` property to it.
-                            const exportedObjectLiteral = defaultExport.getFirstDescendant(
-                                node => tsMorph.Node.isObjectLiteralExpression(node) === true
-                            );
-
-                            const existingIdProperty = exportedObjectLiteral.getProperty(node => {
-                                return (
-                                    tsMorph.Node.isPropertyAssignment(node) &&
-                                    node.getName() === "id"
-                                );
-                            });
-
-                            if (tsMorph.Node.isPropertyAssignment(existingIdProperty)) {
-                                existingIdProperty.setInitializer(`"${selectedProject.id}"`);
-                            } else {
-                                exportedObjectLiteral.insertProperty(
-                                    0,
-                                    `id: "${selectedOrg.id}/${selectedProject.id}"`
-                                );
-                            }
-
-                            await tsMorphProject.save();
                         }
                     );
                 }
             );
         }
-    },
-    {
-        type: "cli-plugi"
     }
 ];
