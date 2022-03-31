@@ -1,5 +1,6 @@
-const { localStorage, log } = require("@webiny/cli/utils");
+const { log } = require("@webiny/cli/utils");
 const { request } = require("graphql-request");
+const { getWcpPat } = require("./getWcpPat");
 
 const GET_CURRENT_USER = /* GraphQL */ `
     query GetUser {
@@ -49,7 +50,7 @@ module.exports.getUser = async () => {
         return user;
     }
 
-    const pat = localStorage().get("wcpPat");
+    const pat = getWcpPat();
     if (!pat) {
         throw new Error(
             `It seems you are not logged in. Please login using the ${log.error.hl(
