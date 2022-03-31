@@ -135,3 +135,28 @@ export const assignMenuLifecycleEvents = () => {
         });
     });
 };
+
+export const assignPageElementLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforePageElementCreate.subscribe(async params => {
+            tracker.track("pageElement:beforeCreate", params);
+        });
+        context.pageBuilder.onAfterPageElementCreate.subscribe(async params => {
+            tracker.track("pageElement:afterCreate", params);
+        });
+
+        context.pageBuilder.onBeforePageElementUpdate.subscribe(async params => {
+            tracker.track("pageElement:beforeUpdate", params);
+        });
+        context.pageBuilder.onAfterPageElementUpdate.subscribe(async params => {
+            tracker.track("pageElement:afterUpdate", params);
+        });
+
+        context.pageBuilder.onBeforePageElementDelete.subscribe(async params => {
+            tracker.track("pageElement:beforeDelete", params);
+        });
+        context.pageBuilder.onAfterPageElementDelete.subscribe(async params => {
+            tracker.track("pageElement:afterDelete", params);
+        });
+    });
+};
