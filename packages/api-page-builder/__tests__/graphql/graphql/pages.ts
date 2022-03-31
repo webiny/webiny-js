@@ -1,3 +1,64 @@
+export interface PageData {
+    id: string;
+    pid: string;
+    editor: string;
+    category: {
+        slug: string;
+    };
+    version: number;
+    title: string;
+    path: string;
+    url: string;
+    content: Record<string, any>;
+    savedOn: string;
+    status: string;
+    locked: boolean;
+    publishedOn: string;
+    revisions: {
+        id: string;
+        status: string;
+        locked: boolean;
+        version: number;
+    }[];
+    settings: {
+        general: {
+            snippet: string;
+            tags: string[];
+            layout: string;
+            image: {
+                id: string;
+                src: string;
+            };
+        };
+        social: {
+            meta: {
+                property: string;
+                content: string;
+            };
+            title: string;
+            description: string;
+            image: {
+                id: string;
+                src: string;
+            };
+        };
+        seo: {
+            title: string;
+            description: string;
+            meta: {
+                name: string;
+                content: string;
+            };
+        };
+    };
+    createdFrom: string;
+    createdOn: string;
+    createdBy: {
+        id: string;
+        displayName: string;
+        type: string;
+    };
+}
 export const DATA_FIELD = /* GraphQL */ `
     {
         id
@@ -15,7 +76,6 @@ export const DATA_FIELD = /* GraphQL */ `
         status
         locked
         publishedOn
-        locked
         revisions {
             id
             status
