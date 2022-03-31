@@ -218,7 +218,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                     input: data,
                     category
                 });
-                await onBeforeCategoryCreate.publish({
+                await onAfterCategoryCreate.publish({
                     category: result
                 });
                 return result;

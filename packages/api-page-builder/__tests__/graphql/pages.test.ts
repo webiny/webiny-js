@@ -39,7 +39,7 @@ describe("CRUD Test", () => {
         const ids = [];
         // Test creating, getting and updating three pages.
         for (let i = 0; i < 3; i++) {
-            let data: any = {
+            let data: Record<string, any> = {
                 category: "slug"
             };
 
