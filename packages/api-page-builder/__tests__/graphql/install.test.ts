@@ -18,7 +18,6 @@ describe("Install Test", () => {
 
     test("should be able to get app version anonymously, but not install", async () => {
         const { isInstalled, install } = useGqlHandler({
-            identity: null,
             permissions: []
         });
 

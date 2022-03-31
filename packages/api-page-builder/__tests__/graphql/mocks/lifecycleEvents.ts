@@ -63,3 +63,25 @@ export const assignPageLifecycleEvents = () => {
         });
     });
 };
+
+export const assignSystemLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforeInstall.subscribe(async params => {
+            tracker.track("system:beforeInstall", params);
+        });
+        context.pageBuilder.onAfterInstall.subscribe(async params => {
+            tracker.track("system:afterInstall", params);
+        });
+    });
+};
+
+export const assignSettingsLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforeSettingsUpdate.subscribe(async params => {
+            tracker.track("settings:beforeSettingsUpdate", params);
+        });
+        context.pageBuilder.onAfterSettingsUpdate.subscribe(async params => {
+            tracker.track("settings:afterSettingsUpdate", params);
+        });
+    });
+};
