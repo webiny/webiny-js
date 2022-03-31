@@ -33,10 +33,11 @@ module.exports.setProjectId = async ({ project, orgId, projectId }) => {
         return tsMorph.Node.isPropertyAssignment(node) && node.getName() === "id";
     });
 
+    const fullId = `${orgId}/${projectId}`;
     if (tsMorph.Node.isPropertyAssignment(existingIdProperty)) {
-        existingIdProperty.setInitializer(`"${projectId}"`);
+        existingIdProperty.setInitializer(`"${fullId}"`);
     } else {
-        exportedObjectLiteral.insertProperty(0, `id: "${orgId}/${projectId}"`);
+        exportedObjectLiteral.insertProperty(0, `id: "${fullId}"`);
     }
 
     await tsMorphProject.save();
