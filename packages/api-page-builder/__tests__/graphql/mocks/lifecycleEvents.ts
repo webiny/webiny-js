@@ -85,3 +85,53 @@ export const assignSettingsLifecycleEvents = () => {
         });
     });
 };
+
+export const assignCategoryLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforeCategoryCreate.subscribe(async params => {
+            tracker.track("category:beforeCreate", params);
+        });
+        context.pageBuilder.onAfterCategoryCreate.subscribe(async params => {
+            tracker.track("category:afterCreate", params);
+        });
+
+        context.pageBuilder.onBeforeCategoryUpdate.subscribe(async params => {
+            tracker.track("category:beforeUpdate", params);
+        });
+        context.pageBuilder.onAfterCategoryUpdate.subscribe(async params => {
+            tracker.track("category:afterUpdate", params);
+        });
+
+        context.pageBuilder.onBeforeCategoryDelete.subscribe(async params => {
+            tracker.track("category:beforeDelete", params);
+        });
+        context.pageBuilder.onAfterCategoryDelete.subscribe(async params => {
+            tracker.track("category:afterDelete", params);
+        });
+    });
+};
+
+export const assignMenuLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforeMenuCreate.subscribe(async params => {
+            tracker.track("menu:beforeCreate", params);
+        });
+        context.pageBuilder.onAfterMenuCreate.subscribe(async params => {
+            tracker.track("menu:afterCreate", params);
+        });
+
+        context.pageBuilder.onBeforeMenuUpdate.subscribe(async params => {
+            tracker.track("menu:beforeUpdate", params);
+        });
+        context.pageBuilder.onAfterMenuUpdate.subscribe(async params => {
+            tracker.track("menu:afterUpdate", params);
+        });
+
+        context.pageBuilder.onBeforeMenuDelete.subscribe(async params => {
+            tracker.track("menu:beforeDelete", params);
+        });
+        context.pageBuilder.onAfterMenuDelete.subscribe(async params => {
+            tracker.track("menu:afterDelete", params);
+        });
+    });
+};
