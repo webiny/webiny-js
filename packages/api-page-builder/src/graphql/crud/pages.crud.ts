@@ -493,7 +493,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     page
                 });
 
-                await onBeforePageUpdate.publish({
+                await onAfterPageUpdate.publish({
                     original,
                     page: result,
                     input
