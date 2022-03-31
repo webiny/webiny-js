@@ -171,7 +171,7 @@ module.exports = () => ({
 
                 setWcpPat(pat.token);
 
-                context.success(`You've successfully logged in to Webiny Control Panel!`);
+                context.success(`You've successfully logged in to Webiny Control Panel.`);
 
                 // If we have `orgId` and `projectId` in PAT's meta data, let's immediately activate the project.
                 if (pat.meta) {
@@ -183,9 +183,7 @@ module.exports = () => ({
 
                         const id = `${orgId}/${projectId}`;
                         context.info(
-                            `${context.info.hl(id)} project detected. Updating ${context.info.hl(
-                                "webiny.project.ts"
-                            )}...`
+                            `${context.info.hl(id)} project detected. Initializing...`
                         );
 
                         await sleep();
@@ -197,9 +195,7 @@ module.exports = () => ({
                         });
 
                         context.success(
-                            `${context.success.hl(
-                                "webiny.project.ts"
-                            )} has been updated successfully.`
+                            `Project ${context.success.hl(id)} initialized successfully.`
                         );
 
                         await sleep();
