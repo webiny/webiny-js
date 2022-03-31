@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-cognito-authenticator",
-  "version": "5.25.0-beta.3",
+  "version": "5.25.0-beta.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
     "@babel/core": "^7.16.0",
     "@types/jsonwebtoken": "8.5.1",
     "@types/jwk-to-pem": "^2.0.1",
-    "@webiny/cli": "^5.25.0-beta.3",
-    "@webiny/project-utils": "^5.25.0-beta.3",
+    "@webiny/cli": "^5.25.0-beta.4",
+    "@webiny/project-utils": "^5.25.0-beta.4",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
   },

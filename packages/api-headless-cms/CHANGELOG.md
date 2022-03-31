@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** skip context setup during OPTIONS request ([4676207](https://github.com/webiny/webiny-js/commit/46762070a10b6ab0cc730cc04af9df12ab8489ae))
+
+
+
+
+
 # [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
 
 

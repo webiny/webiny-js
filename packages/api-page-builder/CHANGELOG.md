@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+
+### Bug Fixes
+
+* **api-form-builder:** wrong partition key when deleting ([#2295](https://github.com/webiny/webiny-js/issues/2295)) ([d4522d2](https://github.com/webiny/webiny-js/commit/d4522d2010eef76f55ed6389624e35b8cb29d836))
+
+
+
+
+
 # [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
 
 **Note:** Version bump only for package @webiny/api-page-builder

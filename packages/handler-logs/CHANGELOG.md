@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+
+### Bug Fixes
+
+* **handler-logs:** add missing dependency ([f5673b8](https://github.com/webiny/webiny-js/commit/f5673b8c1a749889f2597effeb49fabc229cb933))
+* **handler-logs:** use HandlerResultPlugin plugin class ([8ede2bd](https://github.com/webiny/webiny-js/commit/8ede2bdf39f455661abe575533cf71ce17ec6bbc))
+
+
+
+
+
 # [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
 
 **Note:** Version bump only for package @webiny/handler-logs

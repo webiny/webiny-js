@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+
+### Bug Fixes
+
+* **admin:** update referral links (closes [#2296](https://github.com/webiny/webiny-js/issues/2296)) ([c82261e](https://github.com/webiny/webiny-js/commit/c82261ee8555f05f63d3cf923c96ba1135578e55))
+* **api-form-builder:** wrong partition key when deleting ([#2295](https://github.com/webiny/webiny-js/issues/2295)) ([d4522d2](https://github.com/webiny/webiny-js/commit/d4522d2010eef76f55ed6389624e35b8cb29d836))
+* **api-headless-cms:** skip context setup during OPTIONS request ([4676207](https://github.com/webiny/webiny-js/commit/46762070a10b6ab0cc730cc04af9df12ab8489ae))
+* **app-admin-core:** use ComposableFC type in the Compose component ([#2300](https://github.com/webiny/webiny-js/issues/2300)) ([a7ade35](https://github.com/webiny/webiny-js/commit/a7ade352b24b89d9ae6d21fd56ed11c1c9fa7c14))
+* **app-form-builder:** activate revision from the URL [skip ci] ([895f922](https://github.com/webiny/webiny-js/commit/895f92253aee59b64a68c4983585d3b0734dd2eb))
+* **app-form-builder:** assign unique graphql operation name ([0f56e8f](https://github.com/webiny/webiny-js/commit/0f56e8f6a3a122b747bda13e7ef07d8e748753bc))
+* **cwp-template-aws:** remove scaffolds that will not be supported in v6 ([c90f828](https://github.com/webiny/webiny-js/commit/c90f828fa8a2204e69783e6cde36f6d270a8a55b))
+* **handler-graphql:** reset debug logs after graphql query is executed ([4aaba76](https://github.com/webiny/webiny-js/commit/4aaba766ca388899881b2b1d3ee6b76c121b2396))
+* **handler-graphql:** reset logs at context construction time ([4e84f7d](https://github.com/webiny/webiny-js/commit/4e84f7d4882ca77427e469af2cc8dd305344eca3))
+* **handler-graphql:** reset logs per graphql query ([afb44fe](https://github.com/webiny/webiny-js/commit/afb44fe86604dbf6f047d468b594ae63838abb8e))
+* **handler-logs:** add missing dependency ([f5673b8](https://github.com/webiny/webiny-js/commit/f5673b8c1a749889f2597effeb49fabc229cb933))
+* **handler-logs:** use HandlerResultPlugin plugin class ([8ede2bd](https://github.com/webiny/webiny-js/commit/8ede2bdf39f455661abe575533cf71ce17ec6bbc))
+
+
+
+
+
 # [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
 
 
