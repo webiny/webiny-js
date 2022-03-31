@@ -31,6 +31,7 @@ interface UseChangeRequestResult {
     deleteChangeRequest: (id: string) => Promise<any>;
     changeRequest: ApwChangeRequest;
     markResolved: (resolved: boolean) => Promise<void>;
+    loading: boolean;
 }
 
 export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeRequestResult => {
@@ -56,7 +57,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     );
 
-    const [create] = useMutation<
+    const [create, createMutationResponse] = useMutation<
         CreateChangeRequestMutationResponse,
         CreateChangeRequestMutationVariables
     >(CREATE_CHANGE_REQUEST_MUTATION, {
@@ -79,7 +80,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
-    const [update] = useMutation<
+    const [update, updateResponse] = useMutation<
         UpdateChangeRequestMutationResponse,
         UpdateChangeRequestMutationVariables
     >(UPDATE_CHANGE_REQUEST_MUTATION, {
@@ -96,7 +97,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
-    const [deleteChangeRequest] = useMutation<
+    const [deleteChangeRequest, deleteChangeRequestMutationResponse] = useMutation<
         DeleteChangeRequestMutationResponse,
         DeleteChangeRequestMutationVariables
     >(DELETE_CHANGE_REQUEST_MUTATION, {
@@ -119,7 +120,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         }
     });
 
-    const [updateMutation] = useMutation<
+    const [updateMutation, updateMutationResponse] = useMutation<
         UpdateChangeRequestMutationResponse,
         UpdateChangeRequestMutationVariables
     >(UPDATE_CHANGE_REQUEST_MUTATION, {
@@ -152,7 +153,14 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         update,
         deleteChangeRequest: async id => deleteChangeRequest({ variables: { id } }),
         changeRequest: get(getQuery, "data.apw.getChangeRequest.data"),
-        markResolved
+        markResolved,
+        loading: [
+            getQuery.loading,
+            createMutationResponse.loading,
+            updateMutationResponse.loading,
+            deleteChangeRequestMutationResponse.loading,
+            updateResponse.loading
+        ].some(loading => loading === true)
     };
 };
 

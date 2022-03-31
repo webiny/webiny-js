@@ -2,10 +2,11 @@ import React, { useMemo } from "react";
 import pick from "lodash/pick";
 import { css } from "emotion";
 import * as UiDialog from "@webiny/ui/Dialog";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
+import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";
 import { Box, Columns, Stack } from "~/components/Layout";
-import { Input } from "@webiny/ui/Input";
 import styled from "@emotion/styled";
 import { useChangeRequestDialog } from "./useChangeRequestDialog";
 import { Form } from "@webiny/form";
@@ -151,7 +152,9 @@ export const ChangeRequestDialog: React.FC = () => {
         return null;
     }
     const { id: contentReviewId } = useContentReviewIdResult;
-    const { create, changeRequest, update } = useChangeRequest({ id: changeRequestId });
+
+    const id = isValidId(changeRequestId) ? changeRequestId : null;
+    const { create, changeRequest, update, loading } = useChangeRequest({ id });
 
     const resetFormAndCloseDialog = () => {
         setChangeRequestId(getNanoid());
@@ -190,13 +193,14 @@ export const ChangeRequestDialog: React.FC = () => {
             {props => (
                 <UiDialog.Dialog
                     open={open}
-                    onClose={closeDialog}
+                    onClose={resetFormAndCloseDialog}
                     data-testid="apw-new-change-request-modal"
                     className={dialogContainerStyles}
                 >
                     <UiDialog.DialogTitle>{t`Change request`}</UiDialog.DialogTitle>
                     <DialogContent>
-                        <ChangeRequestMessage Bind={props.Bind} key={changeRequestId} />
+                        {loading && <CircularProgress label={t`Loading`} />}
+                        <ChangeRequestMessage Bind={props.Bind} />
                     </DialogContent>
                     <DialogActions>
                         <ButtonDefault onClick={resetFormAndCloseDialog}>{t`Cancel`}</ButtonDefault>

@@ -13,6 +13,7 @@ import { DefaultRenderImagePreview } from "./ApwFile";
 import { useChangeRequestDialog } from "./useChangeRequestDialog";
 import { TypographyBody, TypographyTitle } from "../Styled";
 import { FileWithOverlay, Media } from "./ChangeRequestMedia";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 const t = i18n.ns("app-apw/content-reviews/editor/steps/changeRequest");
 
@@ -64,7 +65,7 @@ interface ChangeRequestProps {
 
 export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
     const { id } = props;
-    const { deleteChangeRequest, changeRequest, markResolved } = useChangeRequest({ id });
+    const { deleteChangeRequest, changeRequest, markResolved, loading } = useChangeRequest({ id });
     const { setOpen, setChangeRequestId } = useChangeRequestDialog();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -87,6 +88,10 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
 
     if (!changeRequest) {
         return null;
+    }
+
+    if (loading) {
+        return <CircularProgress label={`Loading`} />;
     }
 
     return (
