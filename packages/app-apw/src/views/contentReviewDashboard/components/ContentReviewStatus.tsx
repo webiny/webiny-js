@@ -1,6 +1,6 @@
 import React from "react";
 import upperCase from "lodash/upperCase";
-import { ApwContentReviewStatus } from "~/types";
+import { ApwContentReviewContent, ApwContentReviewStatus } from "~/types";
 import { Box, Columns, Stack } from "~/components/Layout";
 import {
     Circle,
@@ -25,20 +25,29 @@ const CommentBadge: React.FC<{ comments: number }> = ({ comments, ...props }) =>
     );
 };
 
+const getScheduledMessage = (status: ApwContentReviewStatus): string => {
+    return `Content scheduled for ${
+        status === ApwContentReviewStatus.READY_TO_BE_PUBLISHED ? "publishing" : "unpublishing"
+    }`;
+};
+
 export interface ContentReviewStatusProps {
     status: ApwContentReviewStatus;
     comments: number;
     reviewers: string[];
     width?: string;
+    content: ApwContentReviewContent;
 }
 
 export const ContentReviewStatus: React.FC<ContentReviewStatusProps> = ({
     status,
     comments,
     reviewers,
+    content,
     ...boxProps
 }) => {
     const level = statusToLevel[status];
+    const label = content.scheduledOn ? getScheduledMessage(status) : status;
     return (
         <Stack {...boxProps} space={2} className={statusBoxStyle} padding={4} paddingBottom={3}>
             <Columns space={4}>
@@ -47,7 +56,7 @@ export const ContentReviewStatus: React.FC<ContentReviewStatusProps> = ({
                 <Circle active={level >= 2} />
             </Columns>
             <Box display={"flex"}>
-                <StatusText>{upperCase(status)}</StatusText>
+                <StatusText>{upperCase(label)}</StatusText>
             </Box>
             <Columns space={2.5} alignItems={"center"}>
                 <Columns space={1.5}>

@@ -83,17 +83,7 @@ export function ContentReviewDataList() {
                 <List>
                     {data.map((item: ApwContentReviewListItem) => (
                         <DataListItem key={item.id} onClick={() => editContentReview(item)}>
-                            <ContentReviewListItem
-                                status={item.status}
-                                submittedOn={item.createdOn}
-                                submittedBy={item.createdBy.displayName}
-                                reviewers={item.reviewers}
-                                comments={item.totalComments}
-                                activeStep={item.activeStep}
-                                latestCommentId={item.latestCommentId}
-                                contentTitle={item.title}
-                                contentRevisionNumber={item.content.version}
-                            />
+                            <ContentReviewListItem {...item} />
                         </DataListItem>
                     ))}
                 </List>

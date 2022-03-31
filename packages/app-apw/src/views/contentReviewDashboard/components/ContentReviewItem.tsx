@@ -4,33 +4,39 @@ import { Box, Columns, Stack } from "~/components/Layout";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 
-import { ContentReviewBy, ContentReviewByProps } from "./ContentReviewSubmittedInfo";
-import { ContentReviewStatus, ContentReviewStatusProps } from "./ContentReviewStatus";
+import { ContentReviewBy } from "./ContentReviewSubmittedInfo";
+import { ContentReviewStatus } from "./ContentReviewStatus";
 import { LatestComment } from "./LatestComment";
-import { ApwContentReviewStep } from "~/types";
+import { ApwContentReviewListItem } from "~/types";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
-interface ContentReviewItemProps extends ContentReviewByProps, ContentReviewStatusProps {
-    activeStep: ApwContentReviewStep;
-    contentTitle: string;
-    contentRevisionNumber: number;
-    latestCommentId: string;
-}
+type ContentReviewItemProps = Pick<
+    ApwContentReviewListItem,
+    | "content"
+    | "latestCommentId"
+    | "title"
+    | "activeStep"
+    | "reviewers"
+    | "status"
+    | "totalComments"
+    | "createdOn"
+    | "createdBy"
+>;
 
 const STATUS_BOX_WIDTH = "126px";
 
 export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => {
     const {
         activeStep,
-        contentTitle,
-        contentRevisionNumber,
-        submittedOn,
-        submittedBy,
-        comments,
+        title,
         reviewers,
         status,
-        latestCommentId
+        latestCommentId,
+        content,
+        createdOn,
+        createdBy,
+        totalComments
     } = props;
 
     return (
@@ -45,16 +51,19 @@ export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => 
                 <Stack space={3}>
                     <Columns space={1} justifyContent={"space-between"} alignItems={"center"}>
                         <Box>
-                            <TypographyBold use={"subtitle1"}>{contentTitle}</TypographyBold>
+                            <TypographyBold use={"subtitle1"}>{title}</TypographyBold>
                         </Box>
                         <Box display={"flex"} justifyContent={"flex-end"}>
                             <Typography use={"caption"}>
-                                {t`rev #{version}`({ version: contentRevisionNumber })}
+                                {t`rev #{version}`({ version: content.version })}
                             </Typography>
                         </Box>
                     </Columns>
                     <Stack space={2}>
-                        <ContentReviewBy submittedOn={submittedOn} submittedBy={submittedBy} />
+                        <ContentReviewBy
+                            submittedOn={createdOn}
+                            submittedBy={createdBy.displayName}
+                        />
                         <StatusBox display={"flex"} paddingX={2.5} width={"fit-content"}>
                             <Typography use={"caption"}>
                                 {activeStep && activeStep.title}
@@ -67,8 +76,9 @@ export const ContentReviewListItem: React.FC<ContentReviewItemProps> = props => 
             <ContentReviewStatus
                 width={STATUS_BOX_WIDTH}
                 status={status}
-                comments={comments}
+                comments={totalComments}
                 reviewers={reviewers}
+                content={content}
             />
         </Columns>
     );
