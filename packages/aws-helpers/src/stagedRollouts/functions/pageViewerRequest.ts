@@ -11,13 +11,19 @@ defineCloudfrontFunctionRequestHandler(event => {
         return request;
     }
 
-    // Try to get stage name from cookie.
-    const variantFixed = request.cookies?.[variantFixedKey]?.value;
+    // Try to get stage name from cookie or header.
+    const variantFixed =
+        request.cookies?.[variantFixedKey]?.value || request.headers[variantFixedKey]?.value;
     if (variantFixed) {
         // If there is a fixed variant set, we just pass it further to origin request handler.
         request.headers[variantFixedKey] = {
             value: variantFixed
         };
+
+        // If variant is explicitly selected, remove any random header a user may have passed.
+        // We want to have either one or another for better cache hit rate.
+        delete request.headers[variantRandomKey];
+        return request;
     }
 
     // Otherwise we try to retrieve randomized number from user cookie.

@@ -1,7 +1,12 @@
-import { defineLambdaEdgeRequestHandler, getHeader, setDomainOrigin } from "~/lambdaEdge";
+import {
+    CloudFrontRequest,
+    defineLambdaEdgeRequestHandler,
+    getHeader,
+    setDomainOrigin
+} from "~/lambdaEdge";
 
 import { pointsToFile, variantFixedKey, variantRandomKey, configPath } from "../utils/common";
-import { GatewayConfig, loadConfig } from "../utils/loadConfig";
+import { GatewayConfig, loadConfig, VariantConfig } from "../utils/loadConfig";
 import { loadOriginPage } from "../utils/loadOriginPage";
 
 export default defineLambdaEdgeRequestHandler(async event => {
@@ -20,8 +25,12 @@ export default defineLambdaEdgeRequestHandler(async event => {
         const variantConfig = config[variantFixed];
         if (variantConfig) {
             // If a proper variant was passed through header, we redirect to selected variant.
-            setDomainOrigin(request, variantConfig.domain);
-            return request;
+            return await selectVariant(request, variantConfig);
+        } else {
+            return {
+                status: "404",
+                body: `No variant ${variantFixed} found`
+            };
         }
     }
 
@@ -42,16 +51,20 @@ export default defineLambdaEdgeRequestHandler(async event => {
         };
     }
 
+    return await selectVariant(request, variantConfig);
+});
+
+async function selectVariant(request: CloudFrontRequest, variant: VariantConfig) {
     // For file requests we just pass the request to proper origin.
     if (pointsToFile(request.uri)) {
-        setDomainOrigin(request, variantConfig.domain);
+        setDomainOrigin(request, variant.domain);
         return request;
     }
 
     // For pages we make a custom HTTP request to the origin and transform page properly.
     // For example we change asset URLs to be absolute.
-    return await loadOriginPage(variantConfig.domain, request.uri);
-});
+    return await loadOriginPage(variant.domain, request.uri);
+}
 
 function getRandomVariant(config: GatewayConfig, random: number) {
     let totalWeight = 0;

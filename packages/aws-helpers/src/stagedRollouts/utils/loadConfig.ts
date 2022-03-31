@@ -11,12 +11,12 @@ interface GatewayConfigCache {
     timestamp: number;
 }
 
-export interface StageConfig {
+export interface VariantConfig {
     domain: string;
     weight: number;
 }
 
-export type GatewayConfig = Record<string, StageConfig>;
+export type GatewayConfig = Record<string, VariantConfig>;
 
 export async function loadConfig(event: CloudFrontRequestEvent) {
     const domain = event.Records[0].cf.config.distributionDomainName;
