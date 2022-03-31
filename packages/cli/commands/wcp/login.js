@@ -1,6 +1,6 @@
 const open = require("open");
 const { GraphQLClient } = require("graphql-request");
-const { WCP_API_URL, WCP_APP_URL, setProjectId, setWcpPat, getWcpPat } = require("./utils");
+const { WCP_API_URL, WCP_APP_URL, setProjectId, setWcpPat, sleep } = require("./utils");
 
 // 120 retries * 2000ms interval = 4 minutes until the command returns an error.
 const LOGIN_RETRIES_COUNT = 30;
@@ -47,9 +47,6 @@ const CREATE_USER_PAT = /* GraphQL */ `
         }
     }
 `;
-
-// For a bit nicer UX.
-const pause = () => new Promise(resolve => setTimeout(resolve, 2000));
 
 module.exports = () => ({
     type: "cli-command",
@@ -180,7 +177,7 @@ module.exports = () => ({
                 if (pat.meta) {
                     const { orgId, projectId } = pat.meta;
                     if (orgId && projectId) {
-                        await pause();
+                        await sleep();
 
                         console.log();
 
@@ -191,7 +188,7 @@ module.exports = () => ({
                             )}...`
                         );
 
-                        await pause();
+                        await sleep();
 
                         await setProjectId({
                             project: context.project,
@@ -205,7 +202,7 @@ module.exports = () => ({
                             )} has been updated successfully.`
                         );
 
-                        await pause();
+                        await sleep();
                         console.log();
                         context.info(
                             `If you've just created this project, you might want to deploy it via the ${context.info.hl(
