@@ -1,4 +1,4 @@
-const { getUser, getProjectEnvironmentBySlug, updateUserLastActiveOn } = require("./api");
+const { getUser, getProjectEnvironmentBySlug, updateUserLastActiveOn } = require("./utils");
 
 module.exports = () => [
     // Within this hook, we're setting the `WCP_ENVIRONMENT_API_KEY` env variable, which can then be used in
