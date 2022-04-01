@@ -3,7 +3,7 @@ const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 const fs = require("fs-extra");
 const { getProject } = require("@webiny/cli/utils");
-const { injectHandlerTelemetry } = require("./utils");
+const { injectHandlerTelemetry } = require("./telemetry");
 
 module.exports = async options => {
     const duration = getDuration();
