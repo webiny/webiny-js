@@ -31,6 +31,15 @@ interface UseReferenceHookValue {
 
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
+const getValueHash = (value: any): string | null => {
+    if (!value || (!value.id && !value.entryId)) {
+        return null;
+    } else if (value.entryId) {
+        return value.entryId;
+    }
+    return value.id.split("#").shift();
+};
+
 export const useReference: UseReferenceHook = ({ bind, field }) => {
     const allEntries = useRef<OptionItemCollection>({});
     const client = useApolloClient();
@@ -47,7 +56,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const modelsHash = models.join(",");
 
     const value = bind.value;
-    const valueHash = value ? value.entryId : null;
+    const valueHash = getValueHash(value);
 
     const searchEntries = async () => {
         if (!search) {
@@ -123,7 +132,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             return;
         }
 
-        const entry = allEntries.current[valueHash];
+        const entry = valueHash ? allEntries.current[valueHash] : null;
         if (entry) {
             /**
              * if entry exists set valueEntry to that one so we do not load new one
@@ -199,14 +208,14 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     /**
      * Format options for the Autocomplete component.
      */
-    const options = useMemo(() => Object.values(entries), [entries]);
+    const options = useMemo(() => Object.values(entries), [valueHash]);
 
     /**
      * Format default options for the Autocomplete component.
      */
     const defaultOptions = useMemo(() => {
         return Object.values(latestEntries);
-    }, [latestEntries]);
+    }, [valueHash]);
 
     const outputOptions: OptionItem[] = (search && options ? options : defaultOptions) || [];
 
