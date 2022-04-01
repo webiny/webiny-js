@@ -106,7 +106,9 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
  */
 // TODO @ts-refactor
 FieldRenderer.defaultProps = {
-    validation: { isValid: null },
+    validation: {
+        isValid: null
+    },
     styles: { width: "100%", height: "auto" }
 } as Partial<FieldRendererProps>;
 

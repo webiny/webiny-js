@@ -87,7 +87,6 @@ const ButtonContainer: React.FC<ButtonContainerPropsType> = ({
     return (
         <div style={style}>
             <a
-                href={"#"}
                 style={elementStyle}
                 {...elementAttributes}
                 className={getAllClasses(

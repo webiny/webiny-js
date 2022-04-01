@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
+
+
+### Bug Fixes
+
+* **app-page-builder:** cypress fails on create page ([#2280](https://github.com/webiny/webiny-js/issues/2280)) ([ac333cb](https://github.com/webiny/webiny-js/commit/ac333cba32336c8cb323add500f11968bae92c62))
+* ts build and react-router v6 ([#2277](https://github.com/webiny/webiny-js/issues/2277)) ([da4e0b8](https://github.com/webiny/webiny-js/commit/da4e0b8e05c97f1163a1f836e243c687037370ac))
+
+
+
+
+
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
+
+
+### Bug Fixes
+
+* api key endpoints ([7886d4b](https://github.com/webiny/webiny-js/commit/7886d4b52da23ecd113b0e058f6ca07a3d396551))
+* **fortawesome:** update dependency versions ([b5ced14](https://github.com/webiny/webiny-js/commit/b5ced14b40b8d2af620876e066670fcffeb4a6ec))
+
+
+### Features
+
+* strict typescript ([#2235](https://github.com/webiny/webiny-js/issues/2235)) ([c7c49e7](https://github.com/webiny/webiny-js/commit/c7c49e744667112a0013ea5370644f4df7eb800a))
+* ts no property access from index ([#2258](https://github.com/webiny/webiny-js/issues/2258)) ([7510c75](https://github.com/webiny/webiny-js/commit/7510c7549bf8587c21aca9cfb71dd45d0d22b892))
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

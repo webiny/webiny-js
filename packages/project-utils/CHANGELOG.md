@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** error when storing empty multi ref field ([#2273](https://github.com/webiny/webiny-js/issues/2273)) ([e905f63](https://github.com/webiny/webiny-js/commit/e905f63dd1bf94c8fe7162c0df80f1268eb84576))
+* **project-utils:** improve the behavior of webpack define plugin ([#2260](https://github.com/webiny/webiny-js/issues/2260)) ([c5a3558](https://github.com/webiny/webiny-js/commit/c5a3558a8b65228e529f900a85a90f6ce6ab1624))
+* disable experimental WCP-related functionality ([27be4ab](https://github.com/webiny/webiny-js/commit/27be4ab4107cda59552e3129aa7948a89e063007))
+
+
+### Features
+
+* enable sourcemaps for lambda functions ([#2272](https://github.com/webiny/webiny-js/issues/2272)) ([0694711](https://github.com/webiny/webiny-js/commit/0694711dca6b3c8f9f91858f97871d1660ad30df))
+* strict typescript ([#2235](https://github.com/webiny/webiny-js/issues/2235)) ([c7c49e7](https://github.com/webiny/webiny-js/commit/c7c49e744667112a0013ea5370644f4df7eb800a))
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package @webiny/project-utils

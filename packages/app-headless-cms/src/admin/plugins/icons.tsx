@@ -20,6 +20,7 @@ const plugin: CmsIconsPlugin = {
     name: "cms-icons-fontawesome",
     type: "cms-icons",
     init() {
+        // @ts-ignore
         library.add(fab, fas, far);
         const definitions = (library as any).definitions as unknown as Record<IconPrefix, IconName>;
         /**

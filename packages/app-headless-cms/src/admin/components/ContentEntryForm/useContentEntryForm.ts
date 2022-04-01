@@ -50,7 +50,7 @@ interface UseContentEntryForm {
     loading: boolean;
     setLoading: Dispatch<SetStateAction<boolean>>;
     onChange: FormOnSubmit;
-    onSubmit: (data: Record<string, any>) => void;
+    onSubmit: FormOnSubmit;
     invalidFields: Record<string, string>;
     renderPlugins: CmsEditorFieldRendererPlugin[];
 }
@@ -254,6 +254,13 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         [contentModel.modelId, listQueryVariables]
     );
 
+    const onChange: FormOnSubmit = (data, form) => {
+        if (!params.onChange) {
+            return;
+        }
+        return params.onChange(data, form);
+    };
+
     const onSubmit = async (data: Record<string, any>) => {
         const fieldsIds = contentModel.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
@@ -333,11 +340,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         data: entry && entry.id ? entry : getDefaultValues(),
         loading,
         setLoading,
-        onChange:
-            params.onChange ||
-            (() => {
-                return void 0;
-            }),
+        onChange,
         onSubmit,
         invalidFields,
         renderPlugins

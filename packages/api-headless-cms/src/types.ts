@@ -113,7 +113,12 @@ interface CmsModelFieldRenderer {
  */
 export interface CmsModelField {
     /**
-     * A generated ID for the model field
+     * A generated unique ID for the model field.
+     * MUST be absolute unique throughout the models.
+     * Must be in form of a-zA-Z0-9.
+     *
+     * We generate a unique id value when you're building a model via UI,
+     * but when user is creating a model via a plugin it is up to them to be careful about this.
      */
     id: string;
     /**
@@ -121,7 +126,11 @@ export interface CmsModelField {
      */
     type: string;
     /**
-     * A unique field ID for mapping values
+     * A unique field ID for mapping values.
+     * Must in form of a-zA-Z0-9.
+     *
+     * We generate a unique fieldId value when you're building a model via UI,
+     * but when user is creating a model via a plugin it is up to them to be careful about this.
      */
     fieldId: string;
     /**
@@ -362,11 +371,11 @@ export interface CmsModel {
     /**
      * Date created
      */
-    createdOn?: Date;
+    createdOn?: string;
     /**
      * Date saved. Changes on both save and create.
      */
-    savedOn?: Date;
+    savedOn?: string;
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */

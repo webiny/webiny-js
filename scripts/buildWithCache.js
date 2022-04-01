@@ -37,9 +37,7 @@ async function build() {
     const packagesNoCache = [];
     const packagesUseCache = [];
 
-    const workspacesPackages = getPackages({ includes: ["/packages/", "/packages-v6/"] }).filter(
-        item => item.isTs
-    );
+    const workspacesPackages = getPackages({ includes: ["/packages/"] }).filter(item => item.isTs);
 
     console.log(`There is a total of ${green(workspacesPackages.length)} packages.`);
     const useCache = argv.hasOwnProperty("cache") ? argv.cache : true;

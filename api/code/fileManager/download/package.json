@@ -6,9 +6,9 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/api-file-manager": "^5.24.0",
-    "@webiny/cli": "^5.24.0",
-    "@webiny/handler-aws": "^5.24.0",
-    "@webiny/project-utils": "^5.24.0"
+    "@webiny/api-file-manager": "^5.25.0-beta.2",
+    "@webiny/cli": "^5.25.0-beta.2",
+    "@webiny/handler-aws": "^5.25.0-beta.2",
+    "@webiny/project-utils": "^5.25.0-beta.2"
   }
 }
