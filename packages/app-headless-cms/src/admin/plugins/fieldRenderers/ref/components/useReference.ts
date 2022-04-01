@@ -53,7 +53,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         CmsModel,
         "modelId" | "name"
     >[];
-    const modelsHash = models.join(",");
+    const modelsHash = models.map(model => model.modelId).join(",");
 
     const value = bind.value;
     const valueHash = getValueHash(value);
@@ -208,14 +208,14 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     /**
      * Format options for the Autocomplete component.
      */
-    const options = useMemo(() => Object.values(entries), [valueHash]);
+    const options = useMemo(() => Object.values(entries), [valueHash, entries]);
 
     /**
      * Format default options for the Autocomplete component.
      */
     const defaultOptions = useMemo(() => {
         return Object.values(latestEntries);
-    }, [valueHash]);
+    }, [valueHash, latestEntries]);
 
     const outputOptions: OptionItem[] = (search && options ? options : defaultOptions) || [];
 
