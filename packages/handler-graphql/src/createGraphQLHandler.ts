@@ -26,6 +26,7 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
 
     return [
         ...(debug ? debugPlugins() : []),
+        { type: "wcp-telemetry-tracker" },
         {
             type: "handler",
             name: "handler-graphql",

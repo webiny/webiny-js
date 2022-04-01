@@ -1,6 +1,6 @@
 const open = require("open");
 const { GraphQLClient } = require("graphql-request");
-const { WCP_API_URL, WCP_APP_URL, setProjectId, setWcpPat, sleep } = require("./utils");
+const { WCP_GRAPHQL_API_URL, WCP_APP_URL, setProjectId, setWcpPat, sleep } = require("./utils");
 
 // 120 retries * 2000ms interval = 4 minutes until the command returns an error.
 const LOGIN_RETRIES_COUNT = 30;
@@ -72,7 +72,7 @@ module.exports = () => ({
                 });
             },
             async ({ debug, debugLevel, pat: patFromParams }) => {
-                const graphQLClient = new GraphQLClient(WCP_API_URL);
+                const graphQLClient = new GraphQLClient(WCP_GRAPHQL_API_URL);
 
                 let pat;
 
@@ -136,10 +136,10 @@ module.exports = () => ({
                             }
 
                             try {
-                                const pat = await graphQLClient.request(
-                                    GET_USER_PAT,
-                                    graphql.variables
-                                );
+                                const pat = await graphQLClient
+                                    .request(GET_USER_PAT, graphql.variables)
+                                    .then(({ users }) => users.getUserPat);
+
                                 clearInterval(interval);
                                 resolve(pat);
                             } catch (e) {
