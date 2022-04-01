@@ -22,6 +22,7 @@ interface UseReferencesParams {
     field: CmsEditorField;
 }
 export const useReferences = ({ bind, field }: UseReferencesParams) => {
+    const isMounted = useRef(true);
     const allEntries = useRef<OptionItemCollection>({});
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
@@ -66,6 +67,12 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
     };
 
     useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    useEffect(() => {
         searchEntries();
     }, [search]);
 
@@ -84,6 +91,10 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                 fetchPolicy: "network-only"
             })
             .then(({ data }) => {
+                if (!isMounted.current) {
+                    return;
+                }
+
                 const collection = convertReferenceEntriesToOptionCollection(data.content.data);
                 setLatestEntries(Object.values(collection));
                 allEntries.current = {
@@ -115,6 +126,10 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
                 }
             })
             .then(res => {
+                if (!isMounted.current) {
+                    return;
+                }
+
                 setLoading(false);
 
                 const latest = (res.data.latest.data || []).reduce((collection, item) => {
