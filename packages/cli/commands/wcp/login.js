@@ -136,10 +136,10 @@ module.exports = () => ({
                             }
 
                             try {
-                                const pat = await graphQLClient.request(
-                                    GET_USER_PAT,
-                                    graphql.variables
-                                );
+                                const pat = await graphQLClient
+                                    .request(GET_USER_PAT, graphql.variables)
+                                    .then(({ users }) => users.getUserPat);
+
                                 clearInterval(interval);
                                 resolve(pat);
                             } catch (e) {
