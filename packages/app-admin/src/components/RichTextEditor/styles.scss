@@ -1,9 +1,19 @@
 .codex-editor {
-  /**
-  * The context menu of the rich text editor is getting obscured if directly below is another rich text editor.
-  * This change help us fix that visual issue.
-  */
-  z-index: unset;
+  .ce-toolbox {
+    right: 0;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #e8e8eb;
+    box-shadow: 0 3px 15px -3px rgb(13 20 33 / 13%);
+    border-radius: 6px;
+    z-index: 2;
+  }
+
+  .ce-toolbox--opened {
+    animation-duration: 0.1s;
+    animation-name: panelShowing;
+    padding: 5px 5px 5px 0;
+  }
 
   .codex-editor__redactor {
     padding-bottom: 0 !important;
@@ -22,6 +32,15 @@
     line-height: 65px;
     height: 30px;
     letter-spacing: 0.2em;
+  }
+
+  .ce-settings {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #e8e8eb;
+    box-shadow: 0 3px 15px -3px rgb(13 20 33 / 13%);
+    border-radius: 6px;
+    z-index: 2;
   }
 
   // Reset default styles
@@ -45,7 +64,9 @@
 
   // Reset Toolbar style
   .ce-toolbar__content {
-    max-width: 92%;
+    right: -10px;
+    max-width: 100%;
+    position: absolute;
   }
 }
 
