@@ -127,7 +127,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
     const tabsRef = useRef<Tabs | null>(null);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     const contentEntryProviderProps = useContentEntryProviderProps();
 
@@ -207,7 +207,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
     const loading = isLoading || getEntry.loading || getRevisions.loading;
     const entry: CmsEditorContentEntry = get(getEntry, "data.content.data") || {};
 
-    const value = {
+    const value: ContentEntryContext = {
         canCreate,
         contentModel,
         createEntry,
@@ -217,7 +217,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
         entry,
         form: formRef,
         loading,
-        revisions: get(getRevisions, "data.revisions.data") || {},
+        revisions: get(getRevisions, "data.revisions.data") || [],
         refetchContent: getEntry.refetch,
         setFormRef,
         setLoading,
