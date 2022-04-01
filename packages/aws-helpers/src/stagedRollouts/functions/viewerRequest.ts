@@ -31,7 +31,7 @@ defineCloudfrontFunctionRequestHandler(event => {
     let variantRandom = Number(request.cookies?.[variantRandomKey]?.value);
     if (isNaN(variantRandom) || variantRandom < 1 || variantRandom > 100) {
         // If no value is present we simply randomize one.
-        variantRandom = Math.ceil(Math.random() * 100);
+        variantRandom = Math.floor(Math.random() * 100 + 1);
     }
 
     // TODO take interval from config

@@ -82,17 +82,23 @@ export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
                 // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
                 defaultTtl: 0,
-                maxTtl: 86400
-                // lambdaFunctionAssociations: [
-                //     {
-                //         eventType: "viewer-request",
-                //         lambdaArn: params.lambdas.functions.pageViewerRequest.qualifiedArn
-                //     },
-                //     {
-                //         eventType: "origin-response",
-                //         lambdaArn: params.lambdas.functions.pageOriginResponse.qualifiedArn
-                //     }
-                // ]
+                maxTtl: 86400,
+                functionAssociations: [
+                    {
+                        eventType: "viewer-request",
+                        functionArn: params.lambdas.functions.viewerRequest.arn
+                    },
+                    {
+                        eventType: "viewer-response",
+                        functionArn: params.lambdas.functions.viewerResponse.arn
+                    }
+                ],
+                lambdaFunctionAssociations: [
+                    {
+                        eventType: "origin-request",
+                        lambdaArn: params.lambdas.functions.apiOriginRequest.qualifiedArn
+                    }
+                ]
             },
             orderedCacheBehaviors: [
                 {
@@ -111,17 +117,23 @@ export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
                     },
                     minTtl: 0,
                     defaultTtl: 0,
-                    maxTtl: 2592000
-                    // lambdaFunctionAssociations: [
-                    //     {
-                    //         eventType: "viewer-request",
-                    //         lambdaArn: params.lambdas.functions.pageViewerRequest.qualifiedArn
-                    //     },
-                    //     {
-                    //         eventType: "origin-response",
-                    //         lambdaArn: params.lambdas.functions.pageOriginResponse.qualifiedArn
-                    //     }
-                    // ]
+                    maxTtl: 2592000,
+                    functionAssociations: [
+                        {
+                            eventType: "viewer-request",
+                            functionArn: params.lambdas.functions.viewerRequest.arn
+                        },
+                        {
+                            eventType: "viewer-response",
+                            functionArn: params.lambdas.functions.viewerResponse.arn
+                        }
+                    ],
+                    lambdaFunctionAssociations: [
+                        {
+                            eventType: "origin-request",
+                            lambdaArn: params.lambdas.functions.apiOriginRequest.qualifiedArn
+                        }
+                    ]
                 }
             ],
             restrictions: {

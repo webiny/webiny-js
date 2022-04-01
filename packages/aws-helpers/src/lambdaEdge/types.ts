@@ -8,4 +8,5 @@ export type CloudFrontRequest = awsLambda.CloudFrontRequest;
 export type CloudFrontRequestEvent = awsLambda.CloudFrontRequestEvent;
 export type CloudFrontResponse = awsLambda.CloudFrontResponse;
 export type CloudFrontResponseEvent = awsLambda.CloudFrontResponseEvent;
+export type CloudFrontResultResponse = awsLambda.CloudFrontResultResponse;
 export type CloudFrontHeaders = awsLambda.CloudFrontHeaders;

@@ -31,14 +31,16 @@ export function createLambdas(app: PulumiApp) {
         // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
         const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
-        const pageViewerRequest = createCloudfrontFunction("pageViewerRequest");
-        const pageViewerResponse = createCloudfrontFunction("pageViewerResponse");
+        const viewerRequest = createCloudfrontFunction("viewerRequest");
+        const viewerResponse = createCloudfrontFunction("viewerResponse");
         const pageOriginRequest = createLambdaEdge("pageOriginRequest", awsUsEast1, role.output);
+        const apiOriginRequest = createLambdaEdge("apiOriginRequest", awsUsEast1, role.output);
 
         return {
-            pageViewerRequest,
-            pageViewerResponse,
-            pageOriginRequest
+            viewerRequest,
+            viewerResponse,
+            pageOriginRequest,
+            apiOriginRequest
         };
     });
 

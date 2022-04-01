@@ -84,11 +84,11 @@ export function createReactAppGateway(app: PulumiApp, params: GatewayReactAppPar
                 functionAssociations: [
                     {
                         eventType: "viewer-request",
-                        functionArn: params.lambdas.functions.pageViewerRequest.arn
+                        functionArn: params.lambdas.functions.viewerRequest.arn
                     },
                     {
                         eventType: "viewer-response",
-                        functionArn: params.lambdas.functions.pageViewerResponse.arn
+                        functionArn: params.lambdas.functions.viewerResponse.arn
                     }
                 ],
                 lambdaFunctionAssociations: [
