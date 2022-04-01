@@ -76,10 +76,10 @@ module.exports.getProjectEnvironmentBySlug = async ({
         );
     }
 
-    const { WCP_API_URL } = require(".");
+    const { WCP_GRAPHQL_API_URL } = require(".");
     const headers = { authorization: pat };
     return request(
-        WCP_API_URL,
+        WCP_GRAPHQL_API_URL,
         GET_ENVIRONMENT,
         {
             orgId,
@@ -92,7 +92,7 @@ module.exports.getProjectEnvironmentBySlug = async ({
         .then(async response => response.projects.getEnvironment)
         .catch(() => {
             return request(
-                WCP_API_URL,
+                WCP_GRAPHQL_API_URL,
                 CREATE_ENVIRONMENT,
                 {
                     orgId,

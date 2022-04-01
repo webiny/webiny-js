@@ -22,7 +22,7 @@ module.exports.updateUserLastActiveOn = async () => {
         );
     }
 
-    const { WCP_API_URL } = require(".");
+    const { WCP_GRAPHQL_API_URL } = require(".");
     const headers = { authorization: pat };
-    return request(WCP_API_URL, UPDATE_LAST_ACTIVE_TO_NOW, {}, headers);
+    return request(WCP_GRAPHQL_API_URL, UPDATE_LAST_ACTIVE_TO_NOW, {}, headers);
 };
