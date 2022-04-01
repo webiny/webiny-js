@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+
+### Bug Fixes
+
+* **app-admin:** improve rich text editor styles ([1d319cc](https://github.com/webiny/webiny-js/commit/1d319cc0cecf907b1f1d49da6001b8478836ba19))
+
+
+
+
+
 # [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
 
 **Note:** Version bump only for package @webiny/app-admin

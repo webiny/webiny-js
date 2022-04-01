@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** entry references not loading ([509d306](https://github.com/webiny/webiny-js/commit/509d3060b84b5c5884edf4468aba03a38b64a4a0))
+* **app-headless-cms:** handle setState on unmounted component ([a25394b](https://github.com/webiny/webiny-js/commit/a25394b594e0584ed46a82576407b81aba33dd36))
+* **app-headless-cms:** unnecessary rerendering breaks mounting editorjs ([4436962](https://github.com/webiny/webiny-js/commit/4436962ac84dafffa58a14f9d5fb7b0c296cde63))
+
+
+
+
+
 # [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
 
 
