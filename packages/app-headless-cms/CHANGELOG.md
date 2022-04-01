@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** reference field value not changed on entry change ([#2311](https://github.com/webiny/webiny-js/issues/2311)) ([394ca22](https://github.com/webiny/webiny-js/commit/394ca22185990ad152c2146d4d5837b877f79889))
+
+
+
+
+
 # [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
 
 
