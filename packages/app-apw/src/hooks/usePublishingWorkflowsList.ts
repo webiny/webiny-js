@@ -69,7 +69,7 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
         dataTestId: "default-data-list.delete-dialog"
     });
 
-    const workflows = data ? data.apw.listWorkflow.data : [];
+    const workflows = data ? data.apw.listWorkflows.data : [];
 
     const createPublishingWorkflow = useCallback(
         app => history.push(`${BASE_URL}?new=true&app=${app}`),

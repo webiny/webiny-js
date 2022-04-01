@@ -81,7 +81,7 @@ export interface ListWorkflowResponse {
 
 export interface ListWorkflowQueryResponse {
     apw: {
-        listWorkflow: ListWorkflowResponse;
+        listWorkflows: ListWorkflowResponse;
     };
 }
 
