@@ -55,7 +55,8 @@ export interface RichTextEditorProps {
     description?: string;
     disabled?: boolean;
     validation?: FormComponentProps["validation"];
-};
+    className?: string;
+}
 
 export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     const elementId = useRef("rte-" + shortid.generate());
@@ -112,11 +113,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         };
     }, []);
 
-    const { label, description, disabled, validation } = props;
+    const { label, description, disabled, validation, className } = props;
 
     return (
         <Fragment>
-            <div className={classNames(classes.wrapper, { [classes.disable]: disabled })}>
+            <div
+                className={classNames(classes.wrapper, className, { [classes.disable]: disabled })}
+            >
                 {label && (
                     <div
                         className={classNames(
