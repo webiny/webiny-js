@@ -3,6 +3,7 @@ import { css } from "emotion";
 import { ReactComponent as FileIcon } from "@webiny/app-admin/assets/icons/insert_drive_file-24px.svg";
 import lodashSet from "lodash/set";
 import lodashGet from "lodash/get";
+import cloneDeep from "lodash/cloneDeep";
 import { RichTextEditorProps } from "@webiny/ui/RichTextEditor";
 
 export const imagePlugins = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
@@ -69,7 +70,7 @@ export const getTrimmedBody = (body: RichTextEditorProps["value"]) => {
     /**
      * Extract first block and return it as the whole body.
      */
-    const [firstBlock] = body;
+    const firstBlock = cloneDeep(body[0]);
 
     const text = lodashGet(firstBlock, "data.text");
     return [
