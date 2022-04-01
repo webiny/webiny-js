@@ -6,15 +6,15 @@ import { Box, Columns, Stack } from "~/components/Layout";
 import { fromNow } from "~/utils";
 import { Avatar } from "~/views/publishingWorkflows/components/ReviewersList";
 import { useCommentsList } from "~/hooks/useCommentsList";
-import { TypographyBody, TypographySecondary, AuthorName } from "../Styled";
+import { TypographyBody, TypographySecondary, AuthorName, richTextWrapperStyles } from "../Styled";
 import { CommentFile } from "../ChangeRequest/ApwFile";
 import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
 
 const CommentsBox = styled(Stack)`
     background-color: var(--mdc-theme-background);
     overflow: auto;
-    height: calc(100vh - 64px - 178px - 56px);
     overscroll-behavior: contain;
+    flex: 1;
 `;
 
 const CommentBox = styled(Box)`
@@ -41,7 +41,11 @@ const Comment: React.FC<CommentProps> = props => {
             </Columns>
             <CommentBox paddingX={3.5} paddingY={5}>
                 <TypographyBody use={"caption"}>
-                    <RichTextEditor readOnly={true} value={comment.body} />
+                    <RichTextEditor
+                        readOnly={true}
+                        className={richTextWrapperStyles}
+                        value={comment.body}
+                    />
                 </TypographyBody>
                 {comment.media && (
                     <Box padding={4}>

@@ -167,7 +167,7 @@ export const ChangeRequestDialog: React.FC = () => {
         if (open) {
             return pick(changeRequest, fields);
         }
-        return {};
+        return null;
     }, [open, changeRequest]);
 
     const onSubmit = async (formData: any) => {
@@ -189,18 +189,19 @@ export const ChangeRequestDialog: React.FC = () => {
     };
 
     return (
-        <Form data={formData} onSubmit={onSubmit}>
+        <Form data={formData as FormData} onSubmit={onSubmit}>
             {props => (
                 <UiDialog.Dialog
                     open={open}
-                    onClose={resetFormAndCloseDialog}
+                    onClose={closeDialog}
                     data-testid="apw-new-change-request-modal"
                     className={dialogContainerStyles}
+                    preventOutsideDismiss={true} // We want users to explicitly close the dialog with "Cancel" button
                 >
                     <UiDialog.DialogTitle>{t`Change request`}</UiDialog.DialogTitle>
                     <DialogContent>
                         {loading && <CircularProgress label={t`Loading`} />}
-                        <ChangeRequestMessage Bind={props.Bind} />
+                        <ChangeRequestMessage Bind={props.Bind} key={changeRequestId} />
                     </DialogContent>
                     <DialogActions>
                         <ButtonDefault onClick={resetFormAndCloseDialog}>{t`Cancel`}</ButtonDefault>

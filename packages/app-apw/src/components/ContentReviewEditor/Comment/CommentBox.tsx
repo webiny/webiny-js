@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
+import { css, cx } from "emotion";
 import get from "lodash/get";
 import { validation } from "@webiny/validation";
 import { Form } from "@webiny/form";
@@ -12,13 +13,20 @@ import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
 import { Box, Columns } from "~/components/Layout";
 import Spinner from "react-spinner-material";
 import { FileManager } from "@webiny/app-admin/components";
+import { richTextWrapperStyles } from "../Styled";
+
+const richTextStyles = css`
+    & .ce-inline-toolbar {
+        display: none;
+    }
+`;
 
 const Loader = () => (
     <Spinner size={24} spinnerWidth={2} spinnerColor={"var(--mdc-theme-primary)"} visible={true} />
 );
 
 const CommentBoxColumns = styled(Columns)`
-    height: 56px;
+    min-height: 56px;
     border-top: 1px solid var(--mdc-theme-background);
 `;
 
@@ -118,7 +126,10 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ scrollToLatestComment })
 
                     <InputBox style={{ flex: "1 1 100%" }}>
                         <Bind name={"body"} validators={validation.create("required,minLength:1")}>
-                            <RichTextEditor placeholder={`Type something to send...`} />
+                            <RichTextEditor
+                                placeholder={`Type something to send...`}
+                                className={cx(richTextWrapperStyles, richTextStyles)}
+                            />
                         </Bind>
                     </InputBox>
                     <Box>

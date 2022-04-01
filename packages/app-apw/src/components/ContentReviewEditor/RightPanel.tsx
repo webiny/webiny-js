@@ -1,10 +1,22 @@
 import React, { useRef } from "react";
+import styled from "@emotion/styled";
 import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
 import { Box, Stack } from "~/components/Layout";
 import { PanelBox } from "./Styled";
 import ChangeRequest from "./ChangeRequest/ChangeRequest";
 import { Comments } from "./Comment/Comments";
 import { CommentBox } from "./Comment/CommentBox";
+
+const RightPanelStack = styled(PanelBox)`
+    display: flex;
+    flex-direction: column;
+`;
+
+const CommentStack = styled(Stack)`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+`;
 
 export const RightPanel = () => {
     const changeRequestId = useCurrentChangeRequestId();
@@ -30,12 +42,12 @@ export const RightPanel = () => {
         );
     }
     return (
-        <PanelBox flex={"1 1 52%"}>
+        <RightPanelStack flex={"1 1 52%"}>
             <ChangeRequest id={changeRequestId} />
-            <Stack space={0}>
+            <CommentStack space={0}>
                 <Comments ref={ref} />
                 <CommentBox scrollToLatestComment={scrollToLatestComment} />
-            </Stack>
-        </PanelBox>
+            </CommentStack>
+        </RightPanelStack>
     );
 };

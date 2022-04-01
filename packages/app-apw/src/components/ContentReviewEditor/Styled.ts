@@ -2,6 +2,12 @@ import { Box } from "~/components/Layout";
 import { ListItem } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
+import { css } from "emotion";
+
+export const richTextWrapperStyles = css`
+    background-color: transparent;
+    padding: 0;
+`;
 
 export const PanelBox = styled(Box)<{ flex: string }>`
     border-right: 1px solid var(--mdc-theme-background);

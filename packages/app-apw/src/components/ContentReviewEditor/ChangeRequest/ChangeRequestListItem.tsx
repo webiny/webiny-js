@@ -4,10 +4,16 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { Box, Columns, Stack } from "~/components/Layout";
 import { Avatar } from "~/views/publishingWorkflows/components/ReviewersList";
-import { fromNow } from "~/utils";
-import { ChangeRequestItem, TypographySecondary, TypographyTitle } from "../Styled";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
+import { fromNow } from "~/utils";
+import {
+    ChangeRequestItem,
+    richTextWrapperStyles,
+    TypographySecondary,
+    TypographyTitle
+} from "../Styled";
 import { ApwChangeRequest, ApwChangeRequestStatus } from "~/types";
+import { getTrimmedBody } from "./utils";
 
 const statusToBackgroundColor = {
     [ApwChangeRequestStatus.RESOLVED]: "var(--mdc-theme-secondary)",
@@ -68,14 +74,20 @@ export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => 
                     paddingTop={1}
                 >
                     <Box>
-                        <TypographyTitle use={"subtitle1"}>{title}</TypographyTitle>
+                        <TypographyTitle use={"subtitle2"}>{title}</TypographyTitle>
                     </Box>
                     <Box>
                         <StatusBadge status={status} />
                     </Box>
                 </Columns>
                 <Box>
-                    <RichTextEditor readOnly={true} value={body} />
+                    <TypographySecondary use={"caption"}>
+                        <RichTextEditor
+                            readOnly={true}
+                            className={richTextWrapperStyles}
+                            value={getTrimmedBody(body)}
+                        />
+                    </TypographySecondary>
                 </Box>
             </Stack>
         </ChangeRequestItem>

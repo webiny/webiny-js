@@ -11,7 +11,7 @@ import { useConfirmationDialog } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { DefaultRenderImagePreview } from "./ApwFile";
 import { useChangeRequestDialog } from "./useChangeRequestDialog";
-import { TypographyBody, TypographyTitle } from "../Styled";
+import { richTextWrapperStyles, TypographyBody, TypographyTitle } from "../Styled";
 import { FileWithOverlay, Media } from "./ChangeRequestMedia";
 import { CircularProgress } from "@webiny/ui/Progress";
 
@@ -102,8 +102,13 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                         <TypographyTitle use={"subtitle1"}>{changeRequest.title}</TypographyTitle>
                     </Box>
                     <Box>
-                        <TypographyBody use={"caption"}>
-                            <RichTextEditor key={id} readOnly={true} value={changeRequest.body} />
+                        <TypographyBody use={"body2"}>
+                            <RichTextEditor
+                                key={id}
+                                className={richTextWrapperStyles}
+                                readOnly={true}
+                                value={changeRequest.body}
+                            />
                         </TypographyBody>
                     </Box>
                 </Stack>

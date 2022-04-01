@@ -1,6 +1,9 @@
 import * as React from "react";
 import { css } from "emotion";
 import { ReactComponent as FileIcon } from "@webiny/app-admin/assets/icons/insert_drive_file-24px.svg";
+import lodashSet from "lodash/set";
+import lodashGet from "lodash/get";
+import { RichTextEditorProps } from "@webiny/ui/RichTextEditor";
 
 export const imagePlugins = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
 
@@ -55,4 +58,27 @@ export const createRenderImagePreview = ({
         );
     };
     return renderImagePreview;
+};
+
+const SAFE_TEXT_LENGTH = 140;
+
+export const getTrimmedBody = (body: RichTextEditorProps["value"]) => {
+    if (!Array.isArray(body) || body.length === 0) {
+        return body;
+    }
+    /**
+     * Extract first block and return it as the whole body.
+     */
+    const [firstBlock] = body;
+
+    const text = lodashGet(firstBlock, "data.text");
+    return [
+        lodashSet(
+            firstBlock,
+            "data.text",
+            text.length > SAFE_TEXT_LENGTH
+                ? lodashGet(firstBlock, "data.text").substring(0, SAFE_TEXT_LENGTH) + "..."
+                : text
+        )
+    ];
 };
