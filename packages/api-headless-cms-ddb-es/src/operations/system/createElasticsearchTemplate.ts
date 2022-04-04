@@ -1,13 +1,35 @@
 import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
 import { IndicesPutTemplate } from "@elastic/elasticsearch/api/requestParams";
+import { PluginsContainer } from "@webiny/plugins";
+import { CmsElasticsearchIndexTemplatePlugin } from "~/plugins/CmsElasticsearchIndexTemplatePlugin";
 
 export interface CreateElasticsearchTemplateParams {
     elasticsearch: Client;
+    plugins: PluginsContainer;
 }
 
 export const createElasticsearchTemplate = async (params: CreateElasticsearchTemplateParams) => {
-    const { elasticsearch } = params;
+    const { elasticsearch, plugins } = params;
+
+    const templatePlugins = plugins.byType<CmsElasticsearchIndexTemplatePlugin>(
+        CmsElasticsearchIndexTemplatePlugin.type
+    );
+
+    const names: string[] = [];
+    for (const plugin of templatePlugins) {
+        const name = plugin.template.name;
+        if (names.includes(name)) {
+            throw new WebinyError(
+                "Duplicate CmsElasticsearchIndexTemplatePlugin template name.",
+                "DUPLICATE_TEMPLATE_NAME",
+                {
+                    name
+                }
+            );
+        }
+        names.push(name);
+    }
 
     const options: IndicesPutTemplate = {
         name: "headless-cms-entries-index",

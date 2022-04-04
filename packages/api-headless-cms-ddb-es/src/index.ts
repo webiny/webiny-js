@@ -107,9 +107,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     return {
         init: async (cms: HeadlessCms) => {
-            cms.onBeforeSystemInstall.subscribe(async () => {
+            cms.onBeforeSystemInstall.subscribe(async ({ tenant }) => {
                 await createElasticsearchTemplate({
-                    elasticsearch
+                    elasticsearch,
+                    plugins
                 });
             });
         },
