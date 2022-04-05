@@ -1,11 +1,17 @@
 import React, { useEffect } from "react";
 import { HigherOrderComponent, useAdmin } from "~/admin";
 
+export interface ComposableFC<TProps> extends React.FC<TProps> {
+    original: React.FC<TProps>;
+    originalName: string;
+}
+
 export interface ComposeProps {
-    component: React.FC<unknown> & {
-        original: React.FC<unknown>;
-        originalName?: string;
-    };
+    /**
+     * Component to compose.
+     * NOTE: ComposableFC<TProps> use `any` because the type of the component props is irrelevant.
+     */
+    component: ComposableFC<any>;
     with: HigherOrderComponent | HigherOrderComponent[];
 }
 

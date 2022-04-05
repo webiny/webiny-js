@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** skip context setup during OPTIONS request ([4676207](https://github.com/webiny/webiny-js/commit/46762070a10b6ab0cc730cc04af9df12ab8489ae))
+
+
+
+
+
+# [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
+
+
+### Features
+
+* **api-headless-cms:** clear scheme cache after model clone ([#2288](https://github.com/webiny/webiny-js/issues/2288)) ([6f3f2a7](https://github.com/webiny/webiny-js/commit/6f3f2a70720d96842c1f2d64c0dc7283cf451895))
+* **api-headless-cms:** get published or latest revision via manage api ([#2266](https://github.com/webiny/webiny-js/issues/2266)) ([7a1806d](https://github.com/webiny/webiny-js/commit/7a1806db84c24c2d80588d5d2b611aea74614d65))
+* **headless-cms:** comment on the field properties ([#2287](https://github.com/webiny/webiny-js/issues/2287)) ([a430979](https://github.com/webiny/webiny-js/commit/a4309799b3e883b757de3eee727d59a2c70159c6))
+
+
+
+
+
 # [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
 
 

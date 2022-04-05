@@ -18,14 +18,20 @@ export * from "react-router-dom";
 
 export { Link } from "./Link";
 export type { LinkProps } from "./Link";
+
 export { Route } from "./Route";
 export type { RouteProps } from "./Route";
+
 export { Prompt } from "./Prompt";
 export type { PromptProps } from "./Prompt";
+
 export { Routes } from "./Routes";
+export { Routes as Switch } from "./Routes";
 export type { RoutesProps } from "./Routes";
+
 export { useHistory } from "./useHistory";
 export type { UseHistory } from "./useHistory";
+
 export { usePrompt } from "./usePrompt";
 
 export interface UseRouter extends RouteChildrenProps, ReactRouterContextValue {

@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
+
+**Note:** Version bump only for package @webiny/react-router
+
+
+
+
+
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/react-router
+
+
+
+
+
+# [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
+
+
+### Features
+
+* **react-router:** export Routes as Switch ([9128895](https://github.com/webiny/webiny-js/commit/9128895ec6d94419a5485402833f8ca94eda4e7b))
+
+
+
+
+
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+**Note:** Version bump only for package @webiny/react-router
+
+
+
+
+
+# [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
+
+
+### Features
+
+* **app-headless-cms:** block navigation on cms entry form error ([#2285](https://github.com/webiny/webiny-js/issues/2285)) ([48cd11b](https://github.com/webiny/webiny-js/commit/48cd11b4a381221f9b86b4062ff451cb67883883))
+
+
+
+
+
 # [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
 
 

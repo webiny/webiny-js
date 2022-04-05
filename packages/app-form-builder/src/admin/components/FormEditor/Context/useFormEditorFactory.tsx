@@ -23,9 +23,12 @@ import {
 } from "~/types";
 import { ApolloClient } from "apollo-client";
 import {
+    FormEditorFieldError,
     FormEditorProviderContext,
     FormEditorProviderContextState
 } from "~/admin/components/FormEditor/Context/index";
+import dotProp from "dot-prop-immutable";
+import { useSnackbar } from "@webiny/app-admin";
 
 interface SetDataCallable {
     (value: FbFormModel): FbFormModel;
@@ -40,6 +43,7 @@ type State = FormEditorProviderContextState;
 export interface FormEditor {
     apollo: ApolloClient<any>;
     data: FbFormModel;
+    errors: FormEditorFieldError[] | null;
     state: State;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
     saveForm: (
@@ -60,6 +64,48 @@ export interface FormEditor {
     getFieldPosition: (field: FieldIdType | FbFormModelField) => FieldLayoutPositionType | null;
 }
 
+const extractFieldErrors = (error: FbErrorResponse, form: FbFormModel): FormEditorFieldError[] => {
+    const invalidFields: any[] = dotProp.get(error, "data.invalidFields.fields.data", []);
+    if (Array.isArray(invalidFields) === false) {
+        return [];
+    }
+
+    const results: Record<string, FormEditorFieldError> = {};
+    for (const invalidField of invalidFields) {
+        if (!invalidField.data || !invalidField.data.invalidFields) {
+            continue;
+        }
+        const index = invalidField.data.index;
+        if (index === undefined) {
+            console.log("Could not determine field index from given error.");
+            console.log(invalidField.data);
+            continue;
+        }
+        const field = form.fields[index];
+        if (!field) {
+            console.log(`Could not get field by index ${index}. There is an error in it.`);
+            continue;
+        }
+
+        const er = invalidField.data.invalidFields;
+
+        if (!results[field.fieldId]) {
+            results[field.fieldId] = {
+                fieldId: field.fieldId,
+                label: field.label || field.fieldId,
+                index,
+                errors: {}
+            };
+        }
+
+        results[field.fieldId].errors = Object.keys(er).reduce((collection, key) => {
+            collection[key] = er[key].message || "unknown error";
+            return collection;
+        }, results[field.fieldId].errors);
+    }
+    return Object.values(results);
+};
+
 export const useFormEditorFactory = (
     FormEditorContext: React.Context<FormEditorProviderContext>
 ) => {
@@ -69,11 +115,14 @@ export const useFormEditorFactory = (
             throw new Error("useFormEditor must be used within a FormEditorProvider");
         }
 
+        const { showSnackbar } = useSnackbar();
+
         const { state, dispatch } = context;
 
         const self: FormEditor = {
             apollo: state.apollo,
             data: state.data || ({} as FbFormModel),
+            errors: state.errors,
             state,
             async getForm(id) {
                 const response = await self.apollo.query<
@@ -128,12 +177,14 @@ export const useFormEditorFactory = (
                     }
                 });
 
-                return (
-                    response.data?.formBuilder?.updateRevision || {
-                        data: null,
-                        error: null
-                    }
-                );
+                const values = dotProp.get(response, "data.formBuilder.updateRevision", {});
+
+                const { data: responseData, error: responseError } = values || {};
+
+                return {
+                    data: responseData || null,
+                    error: responseError || null
+                };
             },
             /**
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
@@ -148,7 +199,23 @@ export const useFormEditorFactory = (
                 if (!saveForm) {
                     return;
                 }
-                self.saveForm(data);
+                const { error } = await self.saveForm(data);
+                if (!error) {
+                    return;
+                }
+                const errors = extractFieldErrors(error, data);
+                if (Object.keys(errors).length === 0) {
+                    showSnackbar(
+                        "Unspecified Form Builder error. Please check the console for more details."
+                    );
+                    console.log(error);
+                    return;
+                }
+                dispatch({
+                    type: "errors",
+                    errors
+                });
+                showSnackbar(<h6>Error while saving form!</h6>);
             },
 
             /**

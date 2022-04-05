@@ -194,7 +194,7 @@ const Welcome: React.FC = () => {
                         style={{ margin: "1rem 1rem 1rem 0rem" }}
                     >
                         <Link
-                            to="https://docs.webiny.com/"
+                            to="https://www.webiny.com/docs"
                             className={linkStyle}
                             target={"_blank"}
                             rel={"noopener noreferrer"}
@@ -261,7 +261,7 @@ const Welcome: React.FC = () => {
                     </Cell>
                     <Cell span={1} className={iconTextStyle} align="middle">
                         <Link
-                            to="https://twitter.com/WebinyPlatform"
+                            to="https://twitter.com/WebinyCMS"
                             className={linkStyle}
                             target={"_blank"}
                             rel={"noopener noreferrer"}

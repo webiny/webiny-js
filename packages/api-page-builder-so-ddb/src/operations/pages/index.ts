@@ -823,7 +823,7 @@ export const createPageStorageOperations = (
 
         let dbRecords: Page[] = [];
         try {
-            dbRecords = await queryAll(queryAllParams);
+            dbRecords = await queryAll<Page>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load pages by given query params.",
@@ -882,7 +882,7 @@ export const createPageStorageOperations = (
     const listRevisions = async (
         params: PageStorageOperationsListRevisionsParams
     ): Promise<Page[]> => {
-        const { where } = params;
+        const { where, sort } = params;
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createRevisionPartitionKey({
@@ -895,8 +895,9 @@ export const createPageStorageOperations = (
             }
         };
 
+        let items: any[] = [];
         try {
-            return await queryAll(queryAllParams);
+            items = await queryAll<Page>(queryAllParams);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load all the revisions from requested page.",
@@ -906,6 +907,14 @@ export const createPageStorageOperations = (
                 }
             );
         }
+
+        const fields = plugins.byType<PageDynamoDbFieldPlugin>(PageDynamoDbFieldPlugin.type);
+
+        return sortItems({
+            items,
+            fields,
+            sort
+        });
     };
 
     const listTags = async (params: PageStorageOperationsListTagsParams): Promise<string[]> => {
