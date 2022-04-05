@@ -22,9 +22,15 @@ import { ReactComponent as DeleteIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 
 import { css } from "emotion";
+
+const listItemMetaClassName = css({
+    display: "table"
+});
+const iconButtonClassName = css({
+    display: "table-cell !important"
+});
 import { ListItemGraphic } from "~/List";
 import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
-
 const style = {
     pagination: {
         bar: css({
@@ -66,7 +72,6 @@ const listStyles = css({
 interface SelectionItem {
     name: string;
 }
-
 type MultiAutoCompletePropsValue = SelectionItem[];
 
 export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "value"> {
@@ -94,6 +99,10 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
      * Render list item when `useMultipleSelectionList` is used.
      */
     renderListItemLabel?: Function;
+    /**
+     * Render in meta wrapper
+     */
+    renderListItemOptions?: (item: any) => React.ReactNode | null;
 
     /* A component that renders supporting UI in case of no result found. */
     noResultFound?: React.ReactNode;
@@ -103,17 +112,17 @@ export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "val
     value?: MultiAutoCompletePropsValue;
 }
 
-type State = {
+interface MultiAutoCompleteState {
     inputValue: string;
     multipleSelectionPage: number;
     multipleSelectionSearch: string;
     reorderFormVisible: string;
     reorderFormValue: string;
-};
-
-function Spinner() {
-    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
+
+const Spinner: React.FC = () => {
+    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
+};
 
 const DEFAULT_PER_PAGE = 10;
 
@@ -194,7 +203,10 @@ const OptionsList: React.FC<OptionsListProps> = ({ getMenuProps, children }) => 
     );
 };
 
-export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
+export class MultiAutoComplete extends React.Component<
+    MultiAutoCompleteProps,
+    MultiAutoCompleteState
+> {
     static defaultProps: Partial<MultiAutoCompleteProps> = {
         valueProp: "id",
         textProp: "name",
@@ -220,7 +232,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         }
     };
 
-    public override state: State = {
+    public override state: MultiAutoCompleteState = {
         inputValue: "",
         multipleSelectionPage: 0,
         multipleSelectionSearch: "",
@@ -387,6 +399,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
             useMultipleSelectionList,
             description,
             renderListItemLabel,
+            renderListItemOptions,
             textProp
         } = this.props;
 
@@ -518,22 +531,27 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                         >
                                             {item.index + 1}.
                                         </div>{" "}
-                                        {(renderListItemLabel as Function).call(this, item)}
-                                        <ListItemMeta>
+                                        {renderListItemLabel &&
+                                            renderListItemLabel.call(this, item)}
+                                        <ListItemMeta className={listItemMetaClassName}>
+                                            {renderListItemOptions &&
+                                                renderListItemOptions.call(this, item)}
                                             <IconButton
                                                 icon={<DeleteIcon />}
+                                                className={iconButtonClassName}
                                                 onClick={() => {
-                                                    if (onChange) {
-                                                        onChange([
-                                                            ...(value as SelectionItem[]).slice(
-                                                                0,
-                                                                item.index
-                                                            ),
-                                                            ...(value as SelectionItem[]).slice(
-                                                                item.index + 1
-                                                            )
-                                                        ]);
+                                                    if (!onChange) {
+                                                        return;
                                                     }
+                                                    onChange([
+                                                        ...(value as SelectionItem[]).slice(
+                                                            0,
+                                                            item.index
+                                                        ),
+                                                        ...(value as SelectionItem[]).slice(
+                                                            item.index + 1
+                                                        )
+                                                    ]);
                                                 }}
                                             />
                                         </ListItemMeta>

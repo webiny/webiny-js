@@ -94,12 +94,17 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
         };
     }, [value]);
 
+    const defaultUnitValue: string | undefined = options[0] ? options[0].value : undefined;
+
     const onFormChange = useCallback((formData: SpacingPickerFormData) => {
         if (formData.unit === "auto") {
             onChange(formData.unit);
-        } else {
-            onChange(formData.value + formData.unit);
+            return;
+        } else if (formData.value !== undefined && formData.value !== "") {
+            onChange(formData.value + (formData.unit || defaultUnitValue));
+            return;
         }
+        onChange("");
     }, []);
 
     return (
@@ -112,38 +117,46 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
                 return onFormChange(data as unknown as SpacingPickerFormData);
             }}
         >
-            {({ data, Bind }) => (
-                <div className={classNames(className, { [defaultWrapperStyle]: useDefaultStyle })}>
-                    <div className={"inner-wrapper"}>
-                        <Bind name={"value"}>
-                            <InputField
-                                className={classNames(inputClassName, {
-                                    [defaultInputStyle]: useDefaultStyle
-                                })}
-                                disabled={data.unit === "auto" || disabled}
-                                type={"number"}
-                            />
-                        </Bind>
-                        <Bind name={"unit"}>
-                            <SelectField
-                                className={classNames(selectClassName, {
-                                    [defaultSelectStyle]: useDefaultStyle
-                                })}
-                                disabled={disabled}
-                            >
-                                {options.map(item => (
-                                    <option key={item.value} value={item.value}>
-                                        {item.label}
-                                    </option>
-                                ))}
-                            </SelectField>
-                        </Bind>
+            {({ data, Bind }) => {
+                const unitValue = data.unit || defaultUnitValue;
+                return (
+                    <div
+                        className={classNames(className, {
+                            [defaultWrapperStyle]: useDefaultStyle
+                        })}
+                    >
+                        <div className={"inner-wrapper"}>
+                            <Bind name={"value"}>
+                                <InputField
+                                    className={classNames(inputClassName, {
+                                        [defaultInputStyle]: useDefaultStyle
+                                    })}
+                                    disabled={data.unit === "auto" || disabled}
+                                    type={"number"}
+                                />
+                            </Bind>
+                            <Bind name={"unit"}>
+                                <SelectField
+                                    className={classNames(selectClassName, {
+                                        [defaultSelectStyle]: useDefaultStyle
+                                    })}
+                                    disabled={disabled}
+                                    value={unitValue}
+                                >
+                                    {options.map(item => (
+                                        <option key={item.value} value={item.value}>
+                                            {item.label}
+                                        </option>
+                                    ))}
+                                </SelectField>
+                            </Bind>
+                        </div>
+                        {validation && validation.isValid === false && (
+                            <FormElementMessage error>{validation.message}</FormElementMessage>
+                        )}
                     </div>
-                    {validation && validation.isValid === false && (
-                        <FormElementMessage error>{validation.message}</FormElementMessage>
-                    )}
-                </div>
-            )}
+                );
+            }}
         </Form>
     );
 };

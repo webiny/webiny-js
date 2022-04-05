@@ -3,6 +3,93 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** re-enable scaffolds ([8979856](https://github.com/webiny/webiny-js/commit/8979856fb654d7448578f14109c8db81f9ee4d3e))
+
+
+
+
+
+# [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+
+### Bug Fixes
+
+* **admin:** update referral links (closes [#2296](https://github.com/webiny/webiny-js/issues/2296)) ([c82261e](https://github.com/webiny/webiny-js/commit/c82261ee8555f05f63d3cf923c96ba1135578e55))
+* **cwp-template-aws:** remove scaffolds that will not be supported in v6 ([c90f828](https://github.com/webiny/webiny-js/commit/c90f828fa8a2204e69783e6cde36f6d270a8a55b))
+
+
+
+
+
+# [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
+
+
+### Bug Fixes
+
+* ts build and react-router v6 ([#2277](https://github.com/webiny/webiny-js/issues/2277)) ([da4e0b8](https://github.com/webiny/webiny-js/commit/da4e0b8e05c97f1163a1f836e243c687037370ac))
+
+
+
+
+
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** error when storing empty multi ref field ([#2273](https://github.com/webiny/webiny-js/issues/2273)) ([e905f63](https://github.com/webiny/webiny-js/commit/e905f63dd1bf94c8fe7162c0df80f1268eb84576))
+* **cwp-template-aws:** enable Cognito preferred_username in Pulumi config ([cc53af1](https://github.com/webiny/webiny-js/commit/cc53af14efc92808e3a4a32b59a3358fa4bffeb9))
+* **cwp-template-aws:** pb theme plugin type ([a0a05e2](https://github.com/webiny/webiny-js/commit/a0a05e201181c7d6c029a9b628cc2b80ebb65afc))
+* types after merge ([#2257](https://github.com/webiny/webiny-js/issues/2257)) ([157e4d2](https://github.com/webiny/webiny-js/commit/157e4d2bf09011a231b91372e11481bd843f490a))
+
+
+### Features
+
+* add env types to cwp-template-aws ([1f312ef](https://github.com/webiny/webiny-js/commit/1f312ef47e8e69b51c321c087d046d4d658ab2e1))
+* strict typescript ([#2235](https://github.com/webiny/webiny-js/issues/2235)) ([c7c49e7](https://github.com/webiny/webiny-js/commit/c7c49e744667112a0013ea5370644f4df7eb800a))
+* ts no property access from index ([#2258](https://github.com/webiny/webiny-js/issues/2258)) ([7510c75](https://github.com/webiny/webiny-js/commit/7510c7549bf8587c21aca9cfb71dd45d0d22b892))
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

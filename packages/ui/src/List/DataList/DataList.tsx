@@ -142,7 +142,7 @@ interface DataListProps {
     data?: Record<string, any>[] | null;
 
     // A callback that must refresh current view by repeating the previous query.
-    refresh?: () => Promise<void> | null;
+    refresh?: (() => void) | null;
 
     // If true, Loader component will be shown, disallowing any interaction.
     loading?: boolean;
@@ -429,7 +429,7 @@ DataList.defaultProps = {
     data: null,
     meta: null,
     loading: false,
-    refresh: async () => {
+    refresh: () => {
         return void 0;
     },
     setPage: null,

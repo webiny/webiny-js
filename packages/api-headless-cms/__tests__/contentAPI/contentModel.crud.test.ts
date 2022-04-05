@@ -91,7 +91,11 @@ describe("content model test", () => {
             "listContentModels",
             "searchContentEntries",
             "getContentEntry",
+            "getLatestContentEntry",
+            "getPublishedContentEntry",
             "getContentEntries",
+            "getLatestContentEntries",
+            "getPublishedContentEntries",
             "getContentModelGroup",
             "listContentModelGroups"
         ]);
@@ -597,6 +601,67 @@ describe("content model test", () => {
         });
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(true);
         expect(pubSubTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreateFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterCreateFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
+    });
+
+    test("should execute hooks on create from", async () => {
+        const { createContentModelMutation, createContentModelFromMutation } = useContentGqlHandler(
+            {
+                ...manageHandlerOpts,
+                plugins: [assignModelEvents()]
+            }
+        );
+
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Test Content model",
+                modelId: "test-content-model",
+                group: contentModelGroup.id
+            }
+        });
+        const { modelId } = createResponse.data.createContentModel.data;
+        // need to reset because hooks for create have been fired
+        pubSubTracker.reset();
+
+        const [response] = await createContentModelFromMutation({
+            modelId,
+            data: {
+                name: "Cloned model",
+                modelId: "clonedTestModel",
+                description: "Cloned model description",
+                group: contentModelGroup.id
+            }
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                createContentModelFrom: {
+                    data: {
+                        name: "Cloned model",
+                        description: "Cloned model description",
+                        modelId: "clonedTestModel",
+                        group: {
+                            id: contentModelGroup.id,
+                            name: contentModelGroup.name
+                        },
+                        fields: [],
+                        layout: [],
+                        plugin: false
+                    },
+                    error: null
+                }
+            }
+        });
+
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreateFrom")).toEqual(true);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterCreateFrom")).toEqual(true);
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
         expect(pubSubTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
@@ -640,6 +705,8 @@ describe("content model test", () => {
 
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
         expect(pubSubTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreateFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterCreateFrom")).toEqual(false);
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(true);
         expect(pubSubTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(true);
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
@@ -678,6 +745,8 @@ describe("content model test", () => {
 
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
         expect(pubSubTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:beforeCreateFrom")).toEqual(false);
+        expect(pubSubTracker.isExecutedOnce("contentModel:afterCreateFrom")).toEqual(false);
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
         expect(pubSubTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
         expect(pubSubTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(true);

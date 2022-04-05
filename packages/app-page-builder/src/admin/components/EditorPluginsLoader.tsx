@@ -4,7 +4,10 @@ import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { PbPluginsLoader } from "~/types";
 
-const globalState: State = { render: false, editor: false };
+const globalState: State = {
+    render: false,
+    editor: false
+};
 
 // Since these plugins are loaded asynchronously, and some overrides might've been registered
 // already by the developer (e.g. in the main App.tsx file), we only register new plugins.
@@ -24,7 +27,7 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
         globalState
     );
 
-    async function loadPlugins() {
+    const loadPlugins = async () => {
         const pbPlugins = plugins.byType<PbPluginsLoader>("pb-plugins-loader");
         // load all editor admin plugins
         const loadEditorPlugins = async () =>
@@ -67,16 +70,22 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
 
             setLoaded({ editor: true, render: true });
         }
-    }
+    };
 
     useEffect(() => {
         loadPlugins();
-    }, []);
+    }, [location.pathname]);
 
+    /**
+     * This condition is for the list of pages.
+     * Page can be selected at this point.
+     */
     if (location.pathname.startsWith("/page-builder/pages") && loaded.render) {
         return children as unknown as React.ReactElement;
     }
-
+    /**
+     * This condition is for editing of the selected page.
+     */
     if (location.pathname.startsWith("/page-builder/editor") && loaded.editor) {
         return children as unknown as React.ReactElement;
     }

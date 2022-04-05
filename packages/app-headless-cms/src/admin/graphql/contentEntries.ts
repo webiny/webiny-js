@@ -35,6 +35,7 @@ export interface CmsEntryGetQueryResponse {
         error: CmsErrorResponse | null;
     };
 }
+
 export interface CmsEntryGetQueryVariables {
     revision: string;
 }

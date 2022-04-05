@@ -88,10 +88,7 @@ const createArticleItem = async ({ manager, from = null, publish, data }: any) =
 /**
  * We need only certain values from the article data when created.
  */
-const extractReadArticle = (
-    item: Record<string, any>,
-    category?: Record<string, any>
-): Record<string, any> => {
+const extractReadArticle = (item: any, category?: any): Record<string, any> => {
     return {
         id: item.id,
         entryId: item.entryId,
@@ -374,6 +371,20 @@ describe("entry references", () => {
                 return entries.every(entry => {
                     return !!entry.meta.publishedOn;
                 });
+            },
+            {
+                name: "list all published articles"
+            }
+        );
+        /**
+         * And that we can see it on read api.
+         */
+        await until(
+            () => articleRead.listArticles().then(([data]) => data),
+            ({ data }: any) => {
+                const entries: any[] = data?.listArticles?.data || [];
+
+                return entries.length === 1;
             },
             {
                 name: "list all published articles"

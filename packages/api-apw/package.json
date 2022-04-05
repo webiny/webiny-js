@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-apw",
-  "version": "5.24.0",
+  "version": "5.25.0",
   "keywords": [
     "apw:base"
   ],
@@ -48,11 +48,10 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
-    "@webiny/api-headless-cms-ddb": "^5.24.0",
-    "@webiny/api-security-so-ddb": "^5.24.0",
-    "@webiny/api-tenancy-so-ddb": "^5.24.0",
-    "@webiny/cli": "^5.24.0",
-    "@webiny/project-utils": "^5.24.0",
+    "@webiny/api-security-so-ddb": "^5.25.0",
+    "@webiny/api-tenancy-so-ddb": "^5.25.0",
+    "@webiny/cli": "^5.25.0",
+    "@webiny/project-utils": "^5.25.0",
     "apollo-graphql": "^0.4.1",
     "get-yarn-workspaces": "^1.0.2",
     "graphql": "^15.7.2",

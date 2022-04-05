@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
+
+**Note:** Version bump only for package @webiny/handler-graphql
+
+
+
+
+
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/handler-graphql
+
+
+
+
+
+# [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/handler-graphql
+
+
+
+
+
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+
+### Bug Fixes
+
+* **handler-graphql:** reset debug logs after graphql query is executed ([4aaba76](https://github.com/webiny/webiny-js/commit/4aaba766ca388899881b2b1d3ee6b76c121b2396))
+* **handler-graphql:** reset logs at context construction time ([4e84f7d](https://github.com/webiny/webiny-js/commit/4e84f7d4882ca77427e469af2cc8dd305344eca3))
+* **handler-graphql:** reset logs per graphql query ([afb44fe](https://github.com/webiny/webiny-js/commit/afb44fe86604dbf6f047d468b594ae63838abb8e))
+
+
+
+
+
+# [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
+
+**Note:** Version bump only for package @webiny/handler-graphql
+
+
+
+
+
+# [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
+
+**Note:** Version bump only for package @webiny/handler-graphql
+
+
+
+
+
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+**Note:** Version bump only for package @webiny/handler-graphql
+
+
+
+
+
+# [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
+
+
+### Bug Fixes
+
+* types after merge ([#2257](https://github.com/webiny/webiny-js/issues/2257)) ([157e4d2](https://github.com/webiny/webiny-js/commit/157e4d2bf09011a231b91372e11481bd843f490a))
+
+
+### Features
+
+* enable sourcemaps for lambda functions ([#2272](https://github.com/webiny/webiny-js/issues/2272)) ([0694711](https://github.com/webiny/webiny-js/commit/0694711dca6b3c8f9f91858f97871d1660ad30df))
+* strict typescript ([#2235](https://github.com/webiny/webiny-js/issues/2235)) ([c7c49e7](https://github.com/webiny/webiny-js/commit/c7c49e744667112a0013ea5370644f4df7eb800a))
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package @webiny/handler-graphql

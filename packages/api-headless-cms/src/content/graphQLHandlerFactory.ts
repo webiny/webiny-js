@@ -139,7 +139,11 @@ export const graphQLHandlerFactory = (
                 return next();
             }
 
-            if (http.request.method === "OPTIONS") {
+            const method = (http.request.method || "").toLowerCase();
+            /**
+             * In case of OPTIONS method we just return the headers since there is no need to go further.
+             */
+            if (method.toLowerCase() === "options") {
                 return http.response({
                     statusCode: 204,
                     headers: {
@@ -148,8 +152,10 @@ export const graphQLHandlerFactory = (
                     }
                 });
             }
-
-            if (http.request.method !== "POST") {
+            /**
+             * We expect, and allow, only POST method to access our GraphQL
+             */
+            if (method !== "post") {
                 return next();
             }
 
@@ -172,5 +178,5 @@ export const graphQLHandlerFactory = (
         }
     };
 
-    return [...(debug ? debugPlugins() : []), handler];
+    return [...(debug ? debugPlugins() : []), handler, { type: "wcp-telemetry-tracker" }];
 };
