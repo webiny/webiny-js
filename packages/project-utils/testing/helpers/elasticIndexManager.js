@@ -5,6 +5,12 @@ module.exports.elasticIndexManager = (global, elasticsearchClient) => {
         });
     };
 
+    const clearEsIndexTemplates = async () => {
+        await elasticsearchClient.indices.deleteIndexTemplate({
+            name: "*"
+        });
+    };
+
     global.__beforeEach = async () => {
         await clearEsIndices();
     };
@@ -19,5 +25,6 @@ module.exports.elasticIndexManager = (global, elasticsearchClient) => {
 
     global.__afterAll = async () => {
         await clearEsIndices();
+        await clearEsIndexTemplates();
     };
 };
