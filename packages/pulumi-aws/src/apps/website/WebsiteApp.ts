@@ -4,7 +4,8 @@ import {
     defineApp,
     ApplicationContext,
     createGenericApplication,
-    mergeAppHooks
+    mergeAppHooks,
+    ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
@@ -12,7 +13,9 @@ import { websiteUpload } from "./WebsiteHookUpload";
 import { websiteRender } from "./WebsiteHookRender";
 import { websiteUpdatePbSettings } from "./WebsiteHookUpdatePbSettings";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { ApplicationConfig } from "@webiny/pulumi-sdk";
+import { createPrerenderingService } from "./WebsitePrerendering";
+import { getStorageOutput } from "../getStorageOutput";
+import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 export interface WebsiteAppConfig {
     /** Custom domain configuration */
@@ -22,6 +25,10 @@ export interface WebsiteAppConfig {
 export const WebsiteApp = defineApp({
     name: "Website",
     config(app, config: WebsiteAppConfig) {
+        const storage = getStorageOutput(app);
+        const awsAccountId = getAwsAccountId(app);
+        const awsRegion = getAwsRegion(app);
+
         const appBucket = createPublicAppBucket(app, "app");
 
         const appCloudfront = app.addResource(aws.cloudfront.Distribution, {
@@ -126,6 +133,19 @@ export const WebsiteApp = defineApp({
             }
         });
 
+        const prerendering = createPrerenderingService(app, {
+            awsRegion,
+            awsAccountId,
+            primaryDynamodbTableName: storage.primaryDynamodbTableName,
+            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+            fileManagerBucketId: storage.fileManagerBucketId,
+            cognitoUserPoolArn: storage.cognitoUserPoolArn,
+            eventBusArn: storage.eventBusArn,
+            appCloudfront: appCloudfront.output,
+            deliveryBucket: deliveryBucket.bucket.output,
+            deliveryCloudfront: deliveryCloudfront.output
+        });
+
         const domain = config.domain?.(app.ctx);
         if (domain) {
             applyCustomDomain(deliveryCloudfront, domain);
@@ -147,6 +167,7 @@ export const WebsiteApp = defineApp({
         });
 
         return {
+            prerendering,
             app: {
                 ...appBucket,
                 cloudfront: appCloudfront

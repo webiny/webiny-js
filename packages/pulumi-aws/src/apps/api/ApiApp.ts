@@ -1,5 +1,3 @@
-import * as aws from "@pulumi/aws";
-
 import {
     defineApp,
     createGenericApplication,
@@ -7,8 +5,6 @@ import {
     PulumiApp,
     ApplicationConfig
 } from "@webiny/pulumi-sdk";
-
-import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 import { createGraphql } from "./ApiGraphql";
 import { createVpc, Vpc } from "./ApiVpc";
@@ -18,6 +14,8 @@ import { createPageBuilder } from "./ApiPageBuilder";
 import { createHeadlessCms } from "./ApiHeadlessCMS";
 import { createApiGateway } from "./ApiGateway";
 import { createCloudfront } from "./ApiCloudfront";
+import { getStorageOutput } from "../getStorageOutput";
+import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 export interface ApiAppConfig {
     vpc?(app: PulumiApp, ctx: ApplicationContext): boolean | Vpc;
@@ -38,30 +36,9 @@ export const ApiApp = defineApp({
         const vpc =
             vpcConfig === true ? createVpc(app) : vpcConfig === false ? undefined : vpcConfig;
 
-        const storage = app.addHandler(async () => {
-            const output = await getStackOutput({
-                folder: "apps/storage",
-                env: app.ctx.env
-            });
-
-            return {
-                fileManagerBucketId: output["fileManagerBucketId"] as string,
-                primaryDynamodbTableArn: output["primaryDynamodbTableArn"] as string,
-                primaryDynamodbTableName: output["primaryDynamodbTableName"] as string,
-                cognitoUserPoolId: output["cognitoUserPoolId"] as string,
-                cognitoUserPoolArn: output["cognitoUserPoolArn"] as string,
-                cognitoUserPoolPasswordPolicy: output["cognitoUserPoolPasswordPolicy"],
-                cognitoAppClientId: output["cognitoAppClientId"] as string
-            };
-        });
-
-        const awsAccountId = app.addHandler(() => {
-            return aws.getCallerIdentity({}).then(x => x.accountId);
-        });
-
-        const awsRegion = app.addHandler(() => {
-            return aws.config.requireRegion();
-        });
+        const storage = getStorageOutput(app);
+        const awsAccountId = getAwsAccountId(app);
+        const awsRegion = getAwsRegion(app);
 
         const pageBuilder = createPageBuilder(app, {
             env: {
@@ -97,6 +74,7 @@ export const ApiApp = defineApp({
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
             fileManagerBucketId: storage.fileManagerBucketId,
             cognitoUserPoolArn: storage.cognitoUserPoolArn,
+            eventBusArn: storage.eventBusArn,
             vpc
         });
 
@@ -108,8 +86,9 @@ export const ApiApp = defineApp({
                 S3_BUCKET: storage.fileManagerBucketId,
 
                 PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.output.arn,
-                PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.output.arn,
-                PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.output.arn,
+                PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.lambda.output.arn,
+                PRERENDERING_QUEUE_ADD_HANDLER:
+                    prerenderingService.functions.queue.add.lambda.output.arn,
                 PRERENDERING_QUEUE_PROCESS_HANDLER:
                     prerenderingService.functions.queue.process.output.arn,
                 IMPORT_PAGES_CREATE_HANDLER: pageBuilder.importPages.functions.create.output.arn,
@@ -181,7 +160,7 @@ export const ApiApp = defineApp({
             cognitoAppClientId: storage.cognitoAppClientId,
             cognitoUserPoolPasswordPolicy: storage.cognitoUserPoolPasswordPolicy,
             updatePbSettingsFunction: pageBuilder.updateSettings.functions.update.output.arn,
-            psQueueAdd: prerenderingService.functions.queue.add.output.arn,
+            psQueueAdd: prerenderingService.functions.queue.add.lambda.output.arn,
             psQueueProcess: prerenderingService.functions.queue.process.output.arn,
             dynamoDbTable: storage.primaryDynamodbTableName
         });

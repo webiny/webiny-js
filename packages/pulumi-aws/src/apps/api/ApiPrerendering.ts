@@ -14,6 +14,7 @@ interface PreRenderingServiceParams {
     primaryDynamodbTableArn: pulumi.Input<string>;
     fileManagerBucketId: pulumi.Input<string>;
     cognitoUserPoolArn: pulumi.Input<string>;
+    eventBusArn: pulumi.Input<string>;
     awsAccountId: pulumi.Input<string>;
     awsRegion: pulumi.Input<string>;
     vpc: Vpc | undefined;
@@ -56,61 +57,8 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
         }
     });
 
-    const flush = app.addResource(aws.lambda.Function, {
-        name: "ps-flush",
-        config: {
-            role: role.output.arn,
-            runtime: "nodejs14.x",
-            handler: "handler.handler",
-            timeout: 30,
-            memorySize: 512,
-            environment: {
-                variables: {
-                    ...params.env
-                }
-            },
-            description: "Flushes previously render pages.",
-            code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive(
-                    path.join(app.ctx.appDir, "code/prerenderingService/flush/build")
-                )
-            }),
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
-        }
-    });
-
-    const queueAdd = app.addResource(aws.lambda.Function, {
-        name: "ps-queue-add",
-        config: {
-            role: role.output.arn,
-            runtime: "nodejs14.x",
-            handler: "handler.handler",
-            timeout: 30,
-            memorySize: 512,
-            environment: {
-                variables: {
-                    ...params.env
-                }
-            },
-            description: "Adds a prerendering task to the prerendering queue.",
-            code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive(
-                    path.join(app.ctx.appDir, "code/prerenderingService/queue/add/build")
-                )
-            }),
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
-        }
-    });
+    const queueAdd = createQueueAddFunction(app, role.output, params);
+    const flush = createFlushFunction(app, role.output, params);
 
     const queueProcess = app.addResource(aws.lambda.Function, {
         name: "ps-queue-process",
@@ -124,7 +72,7 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
                 variables: {
                     ...params.env,
                     PRERENDERING_RENDER_HANDLER: render.output.arn,
-                    PRERENDERING_FLUSH_HANDLER: flush.output.arn
+                    PRERENDERING_FLUSH_HANDLER: flush.lambda.output.arn
                 }
             },
             description: "Processes all jobs added to the prerendering queue.",
@@ -245,4 +193,144 @@ function createRenderingServiceLambdaPolicy(app: PulumiApp, params: PreRendering
             }
         }
     });
+}
+
+function createQueueAddFunction(
+    app: PulumiApp,
+    role: pulumi.Output<aws.iam.Role>,
+    params: PreRenderingServiceParams
+) {
+    const lambda = app.addResource(aws.lambda.Function, {
+        name: "ps-queue-add",
+        config: {
+            role: role.arn,
+            runtime: "nodejs14.x",
+            handler: "handler.handler",
+            timeout: 30,
+            memorySize: 512,
+            environment: {
+                variables: {
+                    ...params.env
+                }
+            },
+            description: "Adds a prerendering task to the prerendering queue.",
+            code: new pulumi.asset.AssetArchive({
+                ".": new pulumi.asset.FileArchive(
+                    path.join(app.ctx.appDir, "code/prerenderingService/queue/add/build")
+                )
+            }),
+            vpcConfig: params.vpc
+                ? {
+                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
+                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
+                  }
+                : undefined
+        }
+    });
+
+    const eventRule = app.addResource(aws.cloudwatch.EventRule, {
+        name: "ps-queue-add-event-rule",
+        config: {
+            eventBusName: params.eventBusArn,
+            eventPattern: JSON.stringify({
+                "detail-type": ["RenderPages"]
+            })
+        }
+    });
+
+    const eventPermission = app.addResource(aws.lambda.Permission, {
+        name: "ps-queue-add-event-permission",
+        config: {
+            action: "lambda:InvokeFunction",
+            function: lambda.output.arn,
+            principal: "events.amazonaws.com",
+            sourceArn: eventRule.output.arn
+        }
+    });
+
+    const eventTarget = app.addResource(aws.cloudwatch.EventTarget, {
+        name: "ps-queue-add-event-target",
+        config: {
+            rule: eventRule.output.name,
+            eventBusName: params.eventBusArn,
+            arn: lambda.output.arn
+        }
+    });
+
+    return {
+        lambda,
+        eventRule,
+        eventPermission,
+        eventTarget
+    };
+}
+
+function createFlushFunction(
+    app: PulumiApp,
+    role: pulumi.Output<aws.iam.Role>,
+    params: PreRenderingServiceParams
+) {
+    const lambda = app.addResource(aws.lambda.Function, {
+        name: "ps-flush",
+        config: {
+            role: role.arn,
+            runtime: "nodejs14.x",
+            handler: "handler.handler",
+            timeout: 30,
+            memorySize: 512,
+            environment: {
+                variables: {
+                    ...params.env
+                }
+            },
+            description: "Flushes previously render pages.",
+            code: new pulumi.asset.AssetArchive({
+                ".": new pulumi.asset.FileArchive(
+                    path.join(app.ctx.appDir, "code/prerenderingService/flush/build")
+                )
+            }),
+            vpcConfig: params.vpc
+                ? {
+                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
+                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
+                  }
+                : undefined
+        }
+    });
+
+    const eventRule = app.addResource(aws.cloudwatch.EventRule, {
+        name: "ps-flush-event-rule",
+        config: {
+            eventBusName: params.eventBusArn,
+            eventPattern: JSON.stringify({
+                "detail-type": ["FlushPages"]
+            })
+        }
+    });
+
+    const eventPermission = app.addResource(aws.lambda.Permission, {
+        name: "ps-flush-event-permission",
+        config: {
+            action: "lambda:InvokeFunction",
+            function: lambda.output.arn,
+            principal: "events.amazonaws.com",
+            sourceArn: eventRule.output.arn
+        }
+    });
+
+    const eventTarget = app.addResource(aws.cloudwatch.EventTarget, {
+        name: "ps-flush-event-target",
+        config: {
+            rule: eventRule.output.name,
+            eventBusName: params.eventBusArn,
+            arn: lambda.output.arn
+        }
+    });
+
+    return {
+        lambda,
+        eventRule,
+        eventPermission,
+        eventTarget
+    };
 }

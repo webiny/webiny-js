@@ -158,7 +158,7 @@ export interface Configuration {
         notFoundPage?: string;
         tenant?: string;
         locale?: string;
-        [key: string]: string | undefined;
+        [key: string]: any | undefined;
     };
 }
 
