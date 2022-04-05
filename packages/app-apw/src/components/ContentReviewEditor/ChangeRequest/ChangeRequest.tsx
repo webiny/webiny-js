@@ -102,6 +102,11 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
     if (!changeRequest) {
         return null;
     }
+    /**
+     * "RichTextEditor" does not update the rendered text when its value prop changes.
+     *  To overcome this issue, we're forcing a re-render via "key" prop.
+     */
+    const richTextEditorKey = `${id}__${changeRequest?.savedOn}`;
 
     if (loading) {
         return <CircularProgress label={`Loading`} />;
@@ -117,7 +122,7 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     <RichTextBox>
                         <TypographyBody use={"body2"}>
                             <RichTextEditor
-                                key={id}
+                                key={richTextEditorKey}
                                 className={cx(richTextWrapperStyles, textStyles)}
                                 readOnly={true}
                                 value={changeRequest.body}

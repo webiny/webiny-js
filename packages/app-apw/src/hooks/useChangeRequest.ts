@@ -1,5 +1,7 @@
 import get from "lodash/get";
 import { useQuery, useMutation } from "@apollo/react-hooks";
+import cloneDeep from "lodash/cloneDeep";
+import set from "lodash/set";
 import {
     CREATE_CHANGE_REQUEST_MUTATION,
     GET_CHANGE_REQUEST_QUERY,
@@ -41,12 +43,17 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
     const { encodedId, id: contentReviewId } = useContentReviewId() || { encodedId: "", id: "" };
 
     const step = `${contentReviewId}#${stepId}`;
+    const skip = !id;
 
     const getQuery = useQuery<GetChangeRequestQueryResponse, GetChangeRequestQueryVariables>(
         GET_CHANGE_REQUEST_QUERY,
         {
             variables: { id: id as string },
-            skip: !id,
+            /**
+             * "skip" option was not working properly so we're dynamically setting "fetchPolicy" as workaround.
+             * https://github.com/apollographql/apollo-client/issues/6190#issuecomment-649933628
+             */
+            fetchPolicy: skip ? "cache-only" : "cache-first",
             onCompleted: response => {
                 const error = get(response, "apw.changeRequest.error");
                 if (error) {
@@ -84,16 +91,44 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
         UpdateChangeRequestMutationResponse,
         UpdateChangeRequestMutationVariables
     >(UPDATE_CHANGE_REQUEST_MUTATION, {
-        refetchQueries: [{ query: LIST_CHANGE_REQUESTS_QUERY, variables: { where: { step } } }],
+        refetchQueries: [
+            {
+                query: LIST_CHANGE_REQUESTS_QUERY,
+                variables: { where: { step } }
+            }
+        ],
         onCompleted: response => {
             const error = get(response, "apw.changeRequest.error");
             if (error) {
                 showSnackbar(error.message);
                 return;
             }
-            const { id } = get(response, "apw.changeRequest.data");
             showSnackbar("Change request updated successfully!");
-            history.push(`/apw/content-reviews/${encodedId}/${stepId}/${encodeURIComponent(id)}`);
+        },
+        update: (cache, { data }) => {
+            /**
+             * Update "savedOn" property in "GET_CHANGE_REQUEST_QUERY" cache.
+             */
+            const getQueryDataFromCache = cache.readQuery<GetChangeRequestQueryResponse>({
+                query: GET_CHANGE_REQUEST_QUERY,
+                variables: { id }
+            });
+
+            if (!getQueryDataFromCache) {
+                return;
+            }
+
+            const newData = cloneDeep(getQueryDataFromCache);
+
+            cache.writeQuery({
+                query: GET_CHANGE_REQUEST_QUERY,
+                variables: { id },
+                data: set(
+                    newData,
+                    "apw.getChangeRequest.data.savedOn",
+                    get(data, "apw.changeRequest.data.savedOn")
+                )
+            });
         }
     });
 
