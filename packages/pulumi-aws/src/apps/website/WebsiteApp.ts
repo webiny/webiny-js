@@ -11,7 +11,6 @@ import {
 import { createPublicAppBucket } from "../createAppBucket";
 import { websiteUpload } from "./WebsiteHookUpload";
 import { websiteRender } from "./WebsiteHookRender";
-import { websiteUpdatePbSettings } from "./WebsiteHookUpdatePbSettings";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { getStorageOutput } from "../getStorageOutput";
@@ -202,11 +201,6 @@ export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<We
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(
-            websiteUpload,
-            websiteRender,
-            websiteUpdatePbSettings,
-            config.afterDeploy
-        )
+        afterDeploy: mergeAppHooks(websiteUpload, websiteRender, config.afterDeploy)
     });
 }

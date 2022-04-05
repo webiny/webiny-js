@@ -94,8 +94,6 @@ export default (params: HandlerConfig): HandlerPlugin => {
                 i++;
             }
 
-            console.log(JSON.stringify([...toRender.values()]));
-
             const result = await sqsClient
                 .sendMessageBatch({
                     QueueUrl: params.sqsQueueUrl,
@@ -103,12 +101,10 @@ export default (params: HandlerConfig): HandlerPlugin => {
                 })
                 .promise();
 
-            console.log(
-                JSON.stringify({
-                    failed: result.Failed,
-                    success: result.Successful
-                })
-            );
+            if (result.Failed.length) {
+                console.error("Failed to deliver some of messages");
+                console.error(JSON.stringify(result.Failed));
+            }
         }
     };
 
