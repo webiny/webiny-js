@@ -167,3 +167,10 @@ export interface Args {
     path?: string;
     configuration?: Configuration;
 }
+
+export interface RenderPagesEvent extends Args {
+    tag?: {
+        key: string;
+        value?: string;
+    };
+}

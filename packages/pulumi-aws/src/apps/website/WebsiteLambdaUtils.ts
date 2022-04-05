@@ -4,7 +4,7 @@ import { PulumiApp } from "@webiny/pulumi-sdk";
 
 interface LambdaRoleParams {
     name: string;
-    policy: pulumi.Output<aws.iam.Policy>;
+    policy?: pulumi.Output<aws.iam.Policy>;
     executionRole: pulumi.Input<string>;
 }
 
@@ -27,13 +27,15 @@ export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
         }
     });
 
-    app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `${params.name}-policy`,
-        config: {
-            role: role.output,
-            policyArn: params.policy.arn
-        }
-    });
+    if (params.policy) {
+        app.addResource(aws.iam.RolePolicyAttachment, {
+            name: `${params.name}-policy`,
+            config: {
+                role: role.output,
+                policyArn: params.policy.arn
+            }
+        });
+    }
 
     app.addResource(aws.iam.RolePolicyAttachment, {
         name: `${params.name}-execution-role`,
