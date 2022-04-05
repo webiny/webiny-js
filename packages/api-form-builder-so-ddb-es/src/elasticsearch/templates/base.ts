@@ -1,25 +1,11 @@
-import { Client } from "@elastic/elasticsearch";
-import configurations from "~/configurations";
+import { FormElasticsearchIndexTemplatePlugin } from "~/plugins/FormElasticsearchIndexTemplatePlugin";
 
-interface CreateElasticsearchIndexParams {
-    elasticsearch: Client;
-    tenant: string;
-}
-
-export const createElasticsearchIndex = async (params: CreateElasticsearchIndexParams) => {
-    const { tenant, elasticsearch } = params;
-
-    const esIndex = configurations.es({
-        tenant
-    });
-
-    const { body: exists } = await elasticsearch.indices.exists(esIndex);
-    if (exists) {
-        return;
-    }
-    await elasticsearch.indices.create({
-        ...esIndex,
+export const base = new FormElasticsearchIndexTemplatePlugin({
+    template: {
+        name: "form-builder-forms-index-default",
+        order: 50,
         body: {
+            index_patterns: ["*-form-builder"],
             /**
              * need this part for sorting to work on text fields
              */
@@ -49,5 +35,5 @@ export const createElasticsearchIndex = async (params: CreateElasticsearchIndexP
                 }
             }
         }
-    });
-};
+    }
+});
