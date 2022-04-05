@@ -20,6 +20,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
+import { createDefaultElasticsearchIndexTemplate } from "~/operations/system/defaultTemplate";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -102,12 +103,16 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Field plugins for Elasticsearch.
          */
-        elasticsearchPlugins()
+        elasticsearchPlugins(),
+        /**
+         * Default index template plugins.
+         */
+        createDefaultElasticsearchIndexTemplate()
     ]);
 
     return {
         init: async (cms: HeadlessCms) => {
-            cms.onBeforeSystemInstall.subscribe(async ({ tenant }) => {
+            cms.onBeforeSystemInstall.subscribe(async () => {
                 await createElasticsearchTemplate({
                     elasticsearch,
                     plugins

@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
-import { IndicesPutTemplate } from "@elastic/elasticsearch/api/requestParams";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsElasticsearchIndexTemplatePlugin } from "~/plugins/CmsElasticsearchIndexTemplatePlugin";
 
@@ -31,52 +30,23 @@ export const createElasticsearchTemplate = async (params: CreateElasticsearchTem
         names.push(name);
     }
 
-    const options: IndicesPutTemplate = {
-        name: "headless-cms-entries-index",
-        body: {
-            index_patterns: ["*headless-cms*"],
-            settings: {
-                analysis: {
-                    analyzer: {
-                        lowercase_analyzer: {
-                            type: "custom",
-                            filter: ["lowercase", "trim"],
-                            tokenizer: "keyword"
-                        }
-                    }
+    /**
+     * We need to add all the templates to the Elasticsearch.
+     * Order of template plugins does not matter. Use order in the template definition.
+     * TODO figure if we need to delete templates on error
+     */
+    for (const plugin of templatePlugins) {
+        try {
+            await elasticsearch.indices.putTemplate(plugin.template);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not create Elasticsearch index template for the Headless CMS.",
+                ex.code || "CMS_ELASTICSEARCH_TEMPLATE_ERROR",
+                {
+                    error: ex,
+                    options: plugin.template
                 }
-            },
-            mappings: {
-                properties: {
-                    property: {
-                        type: "text",
-                        fields: {
-                            keyword: {
-                                type: "keyword",
-                                ignore_above: 256
-                            }
-                        },
-                        analyzer: "lowercase_analyzer"
-                    },
-                    rawValues: {
-                        type: "object",
-                        enabled: false
-                    }
-                }
-            }
+            );
         }
-    };
-
-    try {
-        await elasticsearch.indices.putTemplate(options);
-    } catch (ex) {
-        throw new WebinyError(
-            ex.message || "Could not create Elasticsearch index template for the Headless CMS.",
-            ex.code || "CMS_ELASTICSEARCH_TEMPLATE_ERROR",
-            {
-                error: ex,
-                options
-            }
-        );
     }
 };
