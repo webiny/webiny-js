@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import get from "lodash/get";
@@ -50,8 +50,7 @@ const accordionIconStyle = css`
 const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
 
 const PublishingWorkflowForm = () => {
-    const [hasChanges, setHasChanges] = useState<boolean>(false);
-    const { workflow, loading, showEmptyView, cancelEditing, onSubmit } =
+    const { workflow, loading, showEmptyView, cancelEditing, onSubmit, isDirty, setIsDirty } =
         usePublishingWorkflowForm();
 
     /*
@@ -68,12 +67,12 @@ const PublishingWorkflowForm = () => {
 
     return (
         <>
-            <Prompt when={hasChanges} message={prompt} />
+            <Prompt when={isDirty} message={prompt} />
             <Form
                 data={workflow}
                 onSubmit={onSubmit}
                 onChange={data => {
-                    setHasChanges(!isEqual(data, workflow));
+                    setIsDirty(!isEqual(data, workflow));
                 }}
             >
                 {({ data, form, Bind, setValue }) => {

@@ -1,10 +1,10 @@
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import isEmpty from "lodash/isEmpty";
 import { useRouter } from "@webiny/react-router";
 import get from "lodash/get";
 import pick from "lodash/pick";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { useCurrentWorkflowId, useCurrentApp } from "./useLocationSearch";
+import { useCurrentApp } from "./useLocationSearch";
 import {
     GET_WORKFLOW_QUERY,
     CREATE_WORKFLOW_MUTATION,
@@ -21,6 +21,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { ApwWorkflowScopeTypes } from "~/types";
 import { getNanoid } from "~/utils";
+import { useQuery as useRouterQuery } from "~/hooks/useQuery";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
@@ -54,12 +55,37 @@ const UPDATE_MUTATION_FIELDS = ["title", "steps", "scope"];
 
 const BASE_URL = "/apw/publishing-workflows";
 
-export const usePublishingWorkflowForm = () => {
-    const { location, history } = useRouter();
-    const { showSnackbar } = useSnackbar();
+export type UsePublishingWorkflowFormHook = {
+    (): {
+        workflow: Record<string, any>;
+        loading: boolean;
+        showEmptyView: boolean;
+        createPublishingWorkflow: () => void;
+        cancelEditing: () => void;
+        onSubmit: (formData: any) => Promise<void>;
+        isDirty: boolean;
+        setIsDirty: (value: boolean) => void;
+    };
+};
 
-    const newEntry = new URLSearchParams(location.search).get("new") === "true";
-    const currentWorkflowId = useCurrentWorkflowId();
+export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
+    const { history } = useRouter();
+    const { showSnackbar } = useSnackbar();
+    const [isDirty, setIsDirty] = useState<boolean>(false);
+    const query = useRouterQuery();
+    const currentWorkflowId = query.get("id");
+
+    /**
+     * Reset "isDirty" flag whenever "currentWorkflowId" changes.
+     */
+    useEffect(() => {
+        if (isDirty) {
+            setIsDirty(false);
+        }
+    }, [currentWorkflowId]);
+
+    const newEntry = query.get("new") === "true";
+
     const app = useCurrentApp();
 
     const getQuery = useQuery<GetWorkflowQueryResponse, GetWorkflowQueryVariables>(
@@ -142,6 +168,8 @@ export const usePublishingWorkflowForm = () => {
         showEmptyView,
         createPublishingWorkflow,
         cancelEditing,
-        onSubmit
+        onSubmit,
+        isDirty,
+        setIsDirty
     };
 };
