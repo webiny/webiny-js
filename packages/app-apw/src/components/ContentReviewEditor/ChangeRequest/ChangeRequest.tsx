@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
+import { cx, css } from "emotion";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { RichTextEditor } from "@webiny/ui/RichTextEditor";
 import { Box, Columns, Stack } from "~/components/Layout";
@@ -16,6 +17,13 @@ import { FileWithOverlay, Media } from "./ChangeRequestMedia";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const t = i18n.ns("app-apw/content-reviews/editor/steps/changeRequest");
+
+const textStyles = css`
+    & .ce-paragraph {
+        line-height: 1.1em;
+        padding: 0;
+    }
+`;
 
 const BlankMedia = styled(Media)`
     background: linear-gradient(135deg, rebeccapurple 0%, mediumpurple 100%);
@@ -35,6 +43,11 @@ const ContentStack = styled(Stack)`
     justify-content: space-between;
     border-right: 1px solid var(--mdc-theme-background);
     flex: 1 0 64%;
+`;
+
+const RichTextBox = styled(Box)`
+    height: 54px;
+    overflow: auto;
 `;
 
 const MediaBox = styled(Box)`
@@ -101,16 +114,16 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     <Box>
                         <TypographyTitle use={"subtitle1"}>{changeRequest.title}</TypographyTitle>
                     </Box>
-                    <Box>
+                    <RichTextBox>
                         <TypographyBody use={"body2"}>
                             <RichTextEditor
                                 key={id}
-                                className={richTextWrapperStyles}
+                                className={cx(richTextWrapperStyles, textStyles)}
                                 readOnly={true}
                                 value={changeRequest.body}
                             />
                         </TypographyBody>
-                    </Box>
+                    </RichTextBox>
                 </Stack>
                 <ActionColumns space={0}>
                     <ButtonBox paddingY={1}>

@@ -15,7 +15,6 @@ const RightPanelStack = styled(PanelBox)`
 const CommentStack = styled(Stack)`
     display: flex;
     flex-direction: column;
-    flex: 1;
 `;
 
 export const RightPanel = () => {

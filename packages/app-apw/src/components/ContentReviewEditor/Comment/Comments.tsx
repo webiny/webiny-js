@@ -10,11 +10,15 @@ import { TypographyBody, TypographySecondary, AuthorName, richTextWrapperStyles 
 import { CommentFile } from "../ChangeRequest/ApwFile";
 import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
 
+const HEADER_HEIGHT = "65px";
+const CR_DETAIL_HEIGHT = "179px";
+const COMMENT_BOX_HEIGHT = "56px";
+
 const CommentsBox = styled(Stack)`
     background-color: var(--mdc-theme-background);
     overflow: auto;
     overscroll-behavior: contain;
-    flex: 1;
+    height: calc(100vh - ${HEADER_HEIGHT} - ${CR_DETAIL_HEIGHT} - ${COMMENT_BOX_HEIGHT});
 `;
 
 const CommentBox = styled(Box)`
