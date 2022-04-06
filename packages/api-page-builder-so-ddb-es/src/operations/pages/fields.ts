@@ -1,4 +1,5 @@
 import { PageElasticsearchFieldPlugin } from "~/plugins/definitions/PageElasticsearchFieldPlugin";
+import { PageDynamoDbElasticsearchFieldPlugin } from "~/plugins/definitions/PageDynamoDbElasticsearchFieldPlugin";
 
 export const createPagesElasticsearchFields = (): PageElasticsearchFieldPlugin[] => [
     new PageElasticsearchFieldPlugin({
@@ -38,3 +39,13 @@ export const createPagesElasticsearchFields = (): PageElasticsearchFieldPlugin[]
         field: "*"
     })
 ];
+
+export const createPagesDynamoDbFields = (): PageDynamoDbElasticsearchFieldPlugin[] => {
+    return [
+        new PageDynamoDbElasticsearchFieldPlugin({
+            field: "version",
+            type: "number",
+            sortable: true
+        })
+    ];
+};

@@ -279,7 +279,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         return createContentFrom(entry.id, gqlData);
     };
 
-    const getDefaultValues = (overrides: Record<string, any> = {}): Record<string, any> => {
+    const defaultValues = useMemo((): Record<string, any> => {
         const values: Record<string, any> = {};
         /**
          * Assign the default values:
@@ -331,13 +331,14 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
                     return convertDefaultValue(field, value);
                 });
         }
-        return { ...values, ...overrides };
-    };
+        return values;
+    }, [contentModel.modelId]);
+
     return {
         /**
          * If entry is not set or entry.id does not exist, it means that form is for the new entry, so fetch default values.
          */
-        data: entry && entry.id ? entry : getDefaultValues(),
+        data: entry && entry.id ? entry : defaultValues,
         loading,
         setLoading,
         onChange,
