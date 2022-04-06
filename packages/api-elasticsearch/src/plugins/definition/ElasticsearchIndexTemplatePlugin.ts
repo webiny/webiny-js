@@ -18,7 +18,7 @@ interface RequestBodyParams {
             };
             [key: string]: any;
         };
-        // [key: string]: any;
+        [key: string]: any;
     };
 }
 
@@ -29,7 +29,10 @@ export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
 
     public constructor(config: ElasticsearchIndexTemplatePluginConfig) {
         super();
-        this.template = config;
+        this.template = {
+            ...config,
+            method: config.method || "POST"
+        };
         this.validateTemplate();
     }
 
