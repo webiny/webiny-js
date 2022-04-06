@@ -11641,7 +11641,7 @@ __metadata:
   resolution: "@webiny/cli2@workspace:packages-v6/cli"
   dependencies:
     "@types/yargs": ^17.0.8
-    "@webiny/core": ^5.25.0-beta.2
+    "@webiny/core": ^5.25.0
     execa: ^5.1.1
     load-json-file: ^6.2.0
     ts-morph: ^14.0.0
@@ -11700,7 +11700,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/core@^5.25.0-beta.2, @webiny/core@workspace:packages-v6/core":
+"@webiny/core@^5.25.0, @webiny/core@workspace:packages-v6/core":
   version: 0.0.0-use.local
   resolution: "@webiny/core@workspace:packages-v6/core"
   dependencies:
@@ -11718,9 +11718,9 @@ __metadata:
     "@types/webpack": 5.28.0
     "@types/webpack-dev-server": ^4.7.2
     "@types/webpack-env": 1.16.3
-    "@webiny/global-config": ^5.25.0-beta.2
-    "@webiny/plugins": ^5.25.0-beta.2
-    "@webiny/pulumi-sdk-v6": ^5.25.0-beta.2
+    "@webiny/global-config": ^5.25.0
+    "@webiny/plugins": ^5.25.0
+    "@webiny/pulumi-sdk-v6": ^5.25.0
     "@webiny/telemetry": ^5.23.1
     address: ^1.1.2
     babel-loader: ^8.2.3
@@ -11875,7 +11875,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/global-config@^5.25.0, @webiny/global-config@^5.25.0-beta.2, @webiny/global-config@workspace:packages/global-config":
+"@webiny/global-config@^5.25.0, @webiny/global-config@workspace:packages/global-config":
   version: 0.0.0-use.local
   resolution: "@webiny/global-config@workspace:packages/global-config"
   dependencies:
@@ -12098,7 +12098,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@^5.17.0-beta.1, @webiny/plugins@^5.25.0, @webiny/plugins@^5.25.0-beta.2, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.17.0-beta.1, @webiny/plugins@^5.25.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -12124,7 +12124,7 @@ __metadata:
     "@babel/preset-react": ^7.16.7
     "@babel/preset-typescript": ^7.16.7
     "@babel/runtime": ^7.17.2
-    "@webiny/core": ^5.25.0-beta.2
+    "@webiny/core": ^5.25.0
   languageName: unknown
   linkType: soft
 
@@ -12235,7 +12235,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pulumi-sdk-v6@^5.25.0-beta.2, @webiny/pulumi-sdk-v6@workspace:packages-v6/pulumi-sdk":
+"@webiny/pulumi-sdk-v6@^5.25.0, @webiny/pulumi-sdk-v6@workspace:packages-v6/pulumi-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-sdk-v6@workspace:packages-v6/pulumi-sdk"
   dependencies:

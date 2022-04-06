@@ -10,7 +10,7 @@
     }
   },
   "dependencies": {
-    "@webiny/core": "^5.25.0-beta.2"
+    "@webiny/core": "^5.25.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.0",
