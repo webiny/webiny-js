@@ -37,7 +37,7 @@
     "strictFunctionTypes": true,
     "noImplicitOverride": true,
     "strict": true,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "suppressImplicitAnyIndexErrors": false,
     "suppressExcessPropertyErrors": false,
     "keyofStringsOnly": false,
@@ -65,7 +65,6 @@
     "./packages/create-webiny-project",
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",
-    "./packages/tracking",
-    "./packages-v6/pb-editor"
+    "./packages/tracking"
   ]
 }
