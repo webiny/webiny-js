@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import get from "lodash/get";
-import { useRouter } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useCurrentWorkflowId } from "./useLocationSearch";
 import {
@@ -52,7 +52,7 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(serializeSorters(defaultSorter));
     const { showSnackbar } = useSnackbar();
-    const { history } = useRouter();
+    const navigate = useNavigate();
 
     const currentWorkflowId = useCurrentWorkflowId();
     const { data, loading } = useQuery<ListWorkflowQueryResponse, ListWorkflowQueryVariables>(
@@ -72,12 +72,12 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
     const workflows = data ? data.apw.listWorkflows.data : [];
 
     const createPublishingWorkflow = useCallback(
-        app => history.push(`${BASE_URL}?new=true&app=${app}`),
+        app => navigate(`${BASE_URL}?new=true&app=${app}`),
         []
     );
 
     const editPublishingWorkflow = useCallback((id, app) => {
-        history.push(`${BASE_URL}?id=${encodeURIComponent(id)}&app=${app}`);
+        navigate(`${BASE_URL}?id=${encodeURIComponent(id)}&app=${app}`);
     }, []);
 
     const deletePublishingWorkflow = useCallback(
@@ -93,7 +93,7 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
                 showSnackbar(t`Workflow "{id}" deleted.`({ id }));
 
                 if (currentWorkflowId === id) {
-                    history.push(BASE_URL);
+                    navigate(BASE_URL);
                 }
             });
         },

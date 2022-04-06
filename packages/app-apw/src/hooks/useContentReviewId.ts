@@ -1,8 +1,4 @@
-import { useParams, useRouter } from "@webiny/react-router";
-
-interface MatchQuery {
-    contentReviewId: string;
-}
+import { useParams, useLocation } from "@webiny/react-router";
 
 interface UseContentReviewIdResult {
     encodedId: string;
@@ -10,11 +6,10 @@ interface UseContentReviewIdResult {
 }
 
 export const useContentReviewId = (): UseContentReviewIdResult | null => {
-    const { match } = useRouter();
-    if (!match) {
+    const { contentReviewId } = useParams();
+    if (!contentReviewId) {
         return null;
     }
-    const { contentReviewId } = match.params as MatchQuery;
     return {
         id: decodeURIComponent(contentReviewId),
         encodedId: contentReviewId
@@ -35,7 +30,7 @@ export const useCurrentStepId = (): UseCurrentStepIdResult => {
 };
 
 export const useActiveStepId = (): string => {
-    const { location } = useRouter();
+    const location = useLocation();
     /**
      * Get active "stepId" from pathname.
      * Where pathname will be "/apw/content-reviews/:contentReviewId/:stepId/:changeRequestId"

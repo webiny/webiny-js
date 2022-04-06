@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { useParams, useRouteMatch, Route, Switch } from "@webiny/react-router";
+import { useParams, Routes, Route } from "@webiny/react-router";
 import { Box, Columns } from "~/components/Layout";
 import { useContentReview } from "~/hooks/useContentReview";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -24,7 +24,6 @@ const EditorColumns = styled(Columns)`
 export const ContentReviewEditor: React.FC = () => {
     const { contentReviewId } = useParams() as { contentReviewId: string };
     const { loading, contentReview } = useContentReview({ id: contentReviewId });
-    const { path } = useRouteMatch();
 
     if (loading) {
         return <CircularProgress label={"Loading content review..."} />;
@@ -41,19 +40,19 @@ export const ContentReviewEditor: React.FC = () => {
                         reviewRequestedBy={contentReview.createdBy}
                         status={contentReview.status}
                     />
-                    <Switch>
-                        <Route exact path={path}>
+                    <Routes>
+                        <Route path={"/"}>
                             <PanelBox flex={"1 1 74%"}>
                                 <PlaceholderBox
                                     text={`Click on the left side list to display step details`}
                                 />
                             </PanelBox>
                         </Route>
-                        <Route path={`${path}/:stepId`}>
+                        <Route path={`:stepId`}>
                             <CenterPanel />
                             <ChangeRequestDialog />
                         </Route>
-                    </Switch>
+                    </Routes>
                 </EditorColumns>
             </Box>
         </ChangeRequestDialogProvider>

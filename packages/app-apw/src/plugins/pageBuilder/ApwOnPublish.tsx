@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import get from "lodash/get";
-import { useRouter } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
@@ -23,7 +23,7 @@ export const ApwOnPublish = () => {
     const [input, setInput] = useState<CreateContentReviewInput | null>(null);
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
-    const { history } = useRouter();
+    const navigate = useNavigate();
 
     const { showConfirmation: showRequestReviewConfirmation } = useConfirmationDialog({
         title: t`Request review`,
@@ -64,7 +64,7 @@ export const ApwOnPublish = () => {
             /**
              * Redirect to newly created "content review".
              */
-            history.push(routePaths.CONTENT_REVIEWS + "/" + encodeURIComponent(contentReview.id));
+            navigate(routePaths.CONTENT_REVIEWS + "/" + encodeURIComponent(contentReview.id));
         } else {
             showSnackbar(`Something went wrong!`);
         }

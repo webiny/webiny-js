@@ -1,6 +1,6 @@
 import { useCallback, useState, useMemo, useEffect } from "react";
 import debounce from "lodash/debounce";
-import { useRouter } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import {
     LIST_CONTENT_REVIEWS_QUERY,
@@ -44,7 +44,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     const [title, setTitle] = useState<string>("");
     const [sort, setSort] = useState<string | null>(defaultSorter);
     const [status, setStatus] = useState<ApwContentReviewStatus | "all">("all");
-    const { history } = useRouter();
+    const navigate = useNavigate();
 
     const performSearch = useMemo(() => {
         return debounce(value => setTitle(value), 250);
@@ -81,7 +81,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     const editContentReview = useCallback((item: ApwContentReviewListItem) => {
         const base = `${BASE_URL}/${encodeURIComponent(item.id)}`;
         const url = item.activeStep ? `${base}/${item.activeStep.id}` : base;
-        history.push(url);
+        navigate(url);
     }, []);
 
     return {

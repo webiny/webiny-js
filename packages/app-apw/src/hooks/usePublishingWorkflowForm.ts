@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
 import isEmpty from "lodash/isEmpty";
-import { useRouter } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import get from "lodash/get";
 import pick from "lodash/pick";
 import { useQuery, useMutation } from "@apollo/react-hooks";
@@ -69,7 +69,7 @@ export type UsePublishingWorkflowFormHook = {
 };
 
 export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
-    const { history } = useRouter();
+    const navigate = useNavigate();
     const { showSnackbar } = useSnackbar();
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const query = useRouterQuery();
@@ -96,7 +96,7 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
             onCompleted: data => {
                 const error = get(data, "apw.getWorkflow.error");
                 if (error) {
-                    history.push(BASE_URL);
+                    navigate(BASE_URL);
                     showSnackbar(error.message);
                 }
             }
@@ -146,7 +146,7 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
             const workflowData = get(response, "data.apw.workflow.data");
 
             if (!isUpdate) {
-                history.push(`${BASE_URL}?id=${encodeURIComponent(workflowData.id)}&app=${app}`);
+                navigate(`${BASE_URL}?id=${encodeURIComponent(workflowData.id)}&app=${app}`);
             }
 
             showSnackbar(t`Workflow saved successfully.`);
@@ -158,9 +158,9 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
 
     const showEmptyView = !newEntry && !loading && isEmpty(workflow);
 
-    const createPublishingWorkflow = useCallback(() => history.push(BASE_URL + "?new=true"), []);
+    const createPublishingWorkflow = useCallback(() => navigate(BASE_URL + "?new=true"), []);
 
-    const cancelEditing = useCallback(() => history.push(BASE_URL), []);
+    const cancelEditing = useCallback(() => navigate(BASE_URL), []);
 
     return {
         workflow: isEmpty(workflow) ? newFormData : workflow,

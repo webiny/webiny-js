@@ -5,8 +5,8 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
-import { PublishingWorkflowsView } from "../views/publishingWorkflows";
-import { ContentReviewDashboard } from "../views/contentReviewDashboard";
+import { PublishingWorkflowsView } from "~/views/publishingWorkflows";
+import { ContentReviewDashboard } from "~/views/contentReviewDashboard";
 
 const ContentReviewEditor = lazy(
     () => import("~/views/contentReviewDashboard/ContentReviewEditor")

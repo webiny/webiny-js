@@ -18,7 +18,7 @@ import {
     DeleteChangeRequestMutationVariables
 } from "~/graphql/changeRequest.gql";
 import { useSnackbar } from "@webiny/app-admin";
-import { useRouter } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import { useContentReviewId, useCurrentStepId } from "~/hooks/useContentReviewId";
 import { ApwChangeRequest } from "~/types";
 import { GET_CONTENT_REVIEW_QUERY } from "~/graphql/contentReview.gql";
@@ -38,7 +38,7 @@ interface UseChangeRequestResult {
 
 export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeRequestResult => {
     const { showSnackbar } = useSnackbar();
-    const { history } = useRouter();
+    const navigate = useNavigate();
     const { encodedId: stepId } = useCurrentStepId();
     const { encodedId, id: contentReviewId } = useContentReviewId() || { encodedId: "", id: "" };
 
@@ -58,7 +58,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
                 const error = get(response, "apw.changeRequest.error");
                 if (error) {
                     showSnackbar(error.message);
-                    history.push(`/apw/content-reviews/${encodedId}/${stepId}`);
+                    navigate(`/apw/content-reviews/${encodedId}/${stepId}`);
                 }
             }
         }
@@ -83,7 +83,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
             }
             const { id } = get(response, "apw.changeRequest.data");
             showSnackbar("Change request created successfully!");
-            history.push(`/apw/content-reviews/${encodedId}/${stepId}/${encodeURIComponent(id)}`);
+            navigate(`/apw/content-reviews/${encodedId}/${stepId}/${encodeURIComponent(id)}`);
         }
     });
 
@@ -151,7 +151,7 @@ export const useChangeRequest = ({ id }: UseChangeRequestParams): UseChangeReque
             }
             showSnackbar("Change request deleted successfully!");
 
-            history.push(`/apw/content-reviews/${encodedId}/${stepId}`);
+            navigate(`/apw/content-reviews/${encodedId}/${stepId}`);
         }
     });
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route, useRouteMatch } from "@webiny/react-router";
+import { Routes, Route } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { List } from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
@@ -67,7 +67,6 @@ const CreateChangeRequest: React.FC<CreateChangeRequestProps> = ({ create, disab
 export const CenterPanel = () => {
     const { setOpen } = useChangeRequestDialog();
     const { changeRequests, loading } = useChangeRequestsList({ sorters: [] });
-    const { path } = useRouteMatch();
     const { currentStep, changeRequestsPending } = useCurrentStep();
 
     if (loading) {
@@ -92,18 +91,18 @@ export const CenterPanel = () => {
                     />
                 )}
             </PanelBox>
-            <Switch>
-                <Route exact path={path}>
+            <Routes>
+                <Route path={"/"}>
                     <PanelBox flex={"1 1 52%"}>
                         <PlaceholderBox
                             text={`Click on the left side list to display change request details or create one.`}
                         />
                     </PanelBox>
                 </Route>
-                <Route path={`${path}/:changeRequestId`}>
+                <Route path={`:changeRequestId`}>
                     <RightPanel />
                 </Route>
-            </Switch>
+            </Routes>
         </>
     );
 };

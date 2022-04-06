@@ -1,4 +1,4 @@
-import { useParams, useRouter } from "@webiny/react-router";
+import { useParams, useLocation } from "@webiny/react-router";
 
 export const useCurrentChangeRequestId = (): string | null => {
     const { changeRequestId } = useParams() as { changeRequestId: string };
@@ -6,7 +6,7 @@ export const useCurrentChangeRequestId = (): string | null => {
 };
 
 export const useActiveChangeRequestId = (): string => {
-    const { location } = useRouter();
+    const location = useLocation();
     /**
      * Get active "changeRequestId" from pathname.
      */

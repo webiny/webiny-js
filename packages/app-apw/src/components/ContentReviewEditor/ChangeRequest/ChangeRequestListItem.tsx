@@ -1,5 +1,5 @@
 import React from "react";
-import { useRouteMatch, useRouter } from "@webiny/react-router";
+import { useLocation, useNavigate } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { Box, Columns, Stack } from "~/components/Layout";
@@ -34,8 +34,8 @@ type ChangeRequestItemProps = ApwChangeRequest;
 
 export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => {
     const { createdOn, createdBy, title, id, body, resolved } = props;
-    const { history, location } = useRouter();
-    const { url } = useRouteMatch();
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const status = resolved ? ApwChangeRequestStatus.RESOLVED : ApwChangeRequestStatus.ACTIVE;
     /**
@@ -46,7 +46,7 @@ export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => 
 
     return (
         <ChangeRequestItem
-            onClick={() => history.push(`${url}/${encodeURIComponent(id)}`)}
+            onClick={() => navigate(encodeURIComponent(id))}
             selected={encodeURIComponent(id) === activeChangeRequestId}
         >
             <Stack space={1} width={"100%"}>

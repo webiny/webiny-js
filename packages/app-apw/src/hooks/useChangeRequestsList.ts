@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { useRouter } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import {
     LIST_CHANGE_REQUESTS_QUERY,
@@ -40,7 +40,7 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
     const defaultSorter = config.sorters.length ? config.sorters[0].sorters : null;
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(serializeSorters(defaultSorter));
-    const { history } = useRouter();
+    const navigate = useNavigate();
     const step = useChangeRequestStep();
 
     const variables = {
@@ -59,7 +59,7 @@ export const useChangeRequestsList: UseChangeRequestsListHook = (config: Config)
     const changeRequests = data ? data.apw.listChangeRequests.data : [];
 
     const editContentReview = useCallback((id: string) => {
-        history.push(`${BASE_URL}/${encodeURIComponent(id)}`);
+        navigate(`${BASE_URL}/${encodeURIComponent(id)}`);
     }, []);
 
     return {

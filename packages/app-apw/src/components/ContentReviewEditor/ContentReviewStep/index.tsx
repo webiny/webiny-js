@@ -10,7 +10,7 @@ import {
     TypographySecondary,
     TypographyTitle
 } from "../Styled";
-import { useRouteMatch, useRouter } from "@webiny/react-router";
+import { useNavigate } from "@webiny/react-router";
 import { useActiveStepId } from "~/hooks/useContentReviewId";
 
 const t = i18n.ns("app-apw/admin/content-reviews/editor");
@@ -63,15 +63,14 @@ interface ContentReviewStepProps {
 
 export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
     const { step, createdOn, createdBy, disabled } = props;
-    const { history } = useRouter();
-    const { url } = useRouteMatch();
+    const navigate = useNavigate();
     const activeStepId = useActiveStepId();
 
     const onClick = useMemo(() => {
         if (disabled) {
             return noop;
         }
-        return () => history.push(`${url}/${encodeURIComponent(step.id)}`);
+        return () => navigate(`${encodeURIComponent(step.id)}`);
     }, [disabled]);
 
     return (
