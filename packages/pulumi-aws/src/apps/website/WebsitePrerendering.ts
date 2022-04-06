@@ -23,37 +23,39 @@ interface PreRenderingServiceParams {
 
 export function createPrerenderingService(app: PulumiApp, params: PreRenderingServiceParams) {
     const queue = app.addResource(aws.sqs.Queue, {
-        name: "render-queue",
+        name: "ps-render-queue",
         config: {
             visibilityTimeoutSeconds: 300,
             fifoQueue: true
         }
     });
 
-    const subscriber = createRenderSubscriber(app, queue.output, params);
-    const renderer = createRenderer(app, queue.output, params);
+    const policy = createLambdaPolicy(app, queue.output, params);
+    const subscriber = createRenderSubscriber(app, queue.output, policy.output, params);
+    const renderer = createRenderer(app, queue.output, policy.output, params);
+    const flush = createFlushService(app, policy.output, params);
 
     return {
         subscriber,
-        renderer
+        renderer,
+        flush
     };
 }
 
 function createRenderSubscriber(
     app: PulumiApp,
     queue: pulumi.Output<aws.sqs.Queue>,
+    policy: pulumi.Output<aws.iam.Policy>,
     params: PreRenderingServiceParams
 ) {
-    const policy = createSubscriberLambdaPolicy(app, queue, params);
-
     const role = createLambdaRole(app, {
-        name: "render-subscriber-lambda",
-        policy: policy.output,
+        name: "ps-render-subscriber-role",
+        policy: policy,
         executionRole: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
     });
 
     const lambda = app.addResource(aws.lambda.Function, {
-        name: "render-subscriber-lambda",
+        name: "ps-render-subscriber-lambda",
         config: {
             role: role.output.arn,
             runtime: "nodejs14.x",
@@ -79,7 +81,7 @@ function createRenderSubscriber(
     });
 
     const eventRule = app.addResource(aws.cloudwatch.EventRule, {
-        name: "render-subscriber-event-rule",
+        name: "ps-render-subscriber-event-rule",
         config: {
             eventBusName: params.eventBusArn,
             eventPattern: JSON.stringify({
@@ -89,7 +91,7 @@ function createRenderSubscriber(
     });
 
     const eventPermission = app.addResource(aws.lambda.Permission, {
-        name: "render-subscriber-event-permission",
+        name: "ps-render-subscriber-event-permission",
         config: {
             action: "lambda:InvokeFunction",
             function: lambda.output.arn,
@@ -99,7 +101,7 @@ function createRenderSubscriber(
     });
 
     const eventTarget = app.addResource(aws.cloudwatch.EventTarget, {
-        name: "render-subscriber-event-target",
+        name: "ps-render-subscriber-event-target",
         config: {
             rule: eventRule.output.name,
             eventBusName: params.eventBusArn,
@@ -117,54 +119,20 @@ function createRenderSubscriber(
     };
 }
 
-function createSubscriberLambdaPolicy(
-    app: PulumiApp,
-    queue: pulumi.Output<aws.sqs.Queue>,
-    params: PreRenderingServiceParams
-) {
-    return app.addResource(aws.iam.Policy, {
-        name: "render-subscriber-lambda-policy",
-        config: {
-            description: "This policy enables access to SQS and Dynamodb",
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "PermissionForDynamodb",
-                        Effect: "Allow",
-                        Action: ["dynamodb:BatchGetItem", "dynamodb:GetItem", "dynamodb:Query"],
-                        Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
-                        ]
-                    },
-                    {
-                        Sid: "PermissionForSQS",
-                        Effect: "Allow",
-                        Action: ["sqs:SendMessage", "sqs:SendMessageBatch"],
-                        Resource: queue.arn
-                    }
-                ]
-            }
-        }
-    });
-}
-
 function createRenderer(
     app: PulumiApp,
     queue: pulumi.Output<aws.sqs.Queue>,
+    policy: pulumi.Output<aws.iam.Policy>,
     params: PreRenderingServiceParams
 ) {
-    const policy = createRendererLambdaPolicy(app, params);
-
     const role = createLambdaRole(app, {
-        name: "render-lambda-role",
-        policy: policy.output,
+        name: "ps-render-lambda-role",
+        policy: policy,
         executionRole: aws.iam.ManagedPolicy.AWSLambdaSQSQueueExecutionRole
     });
 
     const lambda = app.addResource(aws.lambda.Function, {
-        name: "render-lambda",
+        name: "ps-render-lambda",
         config: {
             role: role.output.arn,
             runtime: "nodejs14.x",
@@ -193,7 +161,7 @@ function createRenderer(
     });
 
     const eventSourceMapping = app.addResource(aws.lambda.EventSourceMapping, {
-        name: "render-event-source-mapping",
+        name: "ps-render-event-source-mapping",
         config: {
             functionName: lambda.output.arn,
             eventSourceArn: queue.arn,
@@ -209,11 +177,93 @@ function createRenderer(
     };
 }
 
-function createRendererLambdaPolicy(app: PulumiApp, params: PreRenderingServiceParams) {
-    return app.addResource(aws.iam.Policy, {
-        name: "render-lambda-policy",
+function createFlushService(
+    app: PulumiApp,
+    policy: pulumi.Output<aws.iam.Policy>,
+    params: PreRenderingServiceParams
+) {
+    const role = createLambdaRole(app, {
+        name: "ps-flush-lambda-role",
+        policy: policy,
+        executionRole: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+    });
+
+    const lambda = app.addResource(aws.lambda.Function, {
+        name: "ps-flush-lambda",
         config: {
-            description: "This policy enables access to Lambda, S3, Cloudfront and Dynamodb",
+            role: role.output.arn,
+            runtime: "nodejs14.x",
+            handler: "handler.handler",
+            timeout: 30,
+            memorySize: 512,
+            environment: {
+                variables: {
+                    // Among other things, this determines the amount of information we reveal on runtime errors.
+                    // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
+                    DEBUG: String(process.env.DEBUG),
+                    DB_TABLE: params.primaryDynamodbTableName,
+                    DELIVERY_BUCKET: params.deliveryBucket.bucket,
+                    DELIVERY_CLOUDFRONT: params.deliveryCloudfront.id,
+                    APP_URL: pulumi.interpolate`https://${params.appCloudfront.domainName}`
+                }
+            },
+            description: "Subscribes to fluhs events on event bus",
+            code: new pulumi.asset.AssetArchive({
+                ".": new pulumi.asset.FileArchive(
+                    path.join(app.ctx.appDir, "prerendering/flush/build")
+                )
+            })
+        }
+    });
+
+    const eventRule = app.addResource(aws.cloudwatch.EventRule, {
+        name: "ps-flush-event-rule",
+        config: {
+            eventBusName: params.eventBusArn,
+            eventPattern: JSON.stringify({
+                "detail-type": ["FlushPages"]
+            })
+        }
+    });
+
+    const eventPermission = app.addResource(aws.lambda.Permission, {
+        name: "ps-flush-event-permission",
+        config: {
+            action: "lambda:InvokeFunction",
+            function: lambda.output.arn,
+            principal: "events.amazonaws.com",
+            sourceArn: eventRule.output.arn
+        }
+    });
+
+    const eventTarget = app.addResource(aws.cloudwatch.EventTarget, {
+        name: "ps-flush-event-target",
+        config: {
+            rule: eventRule.output.name,
+            eventBusName: params.eventBusArn,
+            arn: lambda.output.arn
+        }
+    });
+
+    return {
+        policy,
+        role,
+        lambda,
+        eventRule,
+        eventPermission,
+        eventTarget
+    };
+}
+
+function createLambdaPolicy(
+    app: PulumiApp,
+    queue: pulumi.Output<aws.sqs.Queue>,
+    params: PreRenderingServiceParams
+) {
+    return app.addResource(aws.iam.Policy, {
+        name: "ps-lambda-policy",
+        config: {
+            description: "This policy enables access to Lambda, S3, Cloudfront, SQS and Dynamodb",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -234,12 +284,6 @@ function createRendererLambdaPolicy(app: PulumiApp, params: PreRenderingServiceP
                             pulumi.interpolate`${params.primaryDynamodbTableArn}`,
                             pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
                         ]
-                    },
-                    {
-                        Sid: "PermissionForLambda",
-                        Effect: "Allow",
-                        Action: "lambda:InvokeFunction",
-                        Resource: pulumi.interpolate`arn:aws:lambda:${params.awsRegion}:${params.awsAccountId}:function:*`
                     },
                     {
                         Sid: "PermissionForS3",
@@ -266,6 +310,12 @@ function createRendererLambdaPolicy(app: PulumiApp, params: PreRenderingServiceP
                         Effect: "Allow",
                         Action: "cloudfront:CreateInvalidation",
                         Resource: pulumi.interpolate`arn:aws:cloudfront::${params.awsAccountId}:distribution/*`
+                    },
+                    {
+                        Sid: "PermissionForSQS",
+                        Effect: "Allow",
+                        Action: ["sqs:SendMessage", "sqs:SendMessageBatch"],
+                        Resource: queue.arn
                     }
                 ]
             }

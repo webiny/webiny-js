@@ -49,10 +49,7 @@ export default (params: HandlerConfig): HandlerPlugin => {
 
                     for (const render of renders) {
                         if (render.args) {
-                            const args = normalizeArgs(render.args);
-                            if (args.path) {
-                                toRender.set(args.path, args);
-                            }
+                            addRender(render.args);
                         }
                     }
                 } else if (event.tag) {
@@ -65,17 +62,11 @@ export default (params: HandlerConfig): HandlerPlugin => {
 
                     for (const render of renders) {
                         if (render.args) {
-                            const args = normalizeArgs(render.args);
-                            if (args.path) {
-                                toRender.set(args.path, args);
-                            }
+                            addRender(render.args);
                         }
                     }
                 } else {
-                    const args = normalizeArgs(event);
-                    if (args.path) {
-                        toRender.set(args.path, args);
-                    }
+                    addRender(event);
                 }
             }
 
@@ -83,8 +74,7 @@ export default (params: HandlerConfig): HandlerPlugin => {
             // TODO chunk splitting in case of big amount of events
 
             let i = 0;
-            for (const render of toRender.values()) {
-                const id = `${render.configuration?.db?.namespace}/${render.path}`;
+            for (const [id, render] of toRender.entries()) {
                 entries.push({
                     Id: i.toString(),
                     MessageBody: JSON.stringify(render),
@@ -105,19 +95,22 @@ export default (params: HandlerConfig): HandlerPlugin => {
                 console.error("Failed to deliver some of messages");
                 console.error(JSON.stringify(result.Failed));
             }
+
+            function addRender(args: Args) {
+                const namespace = args.configuration?.db?.namespace || "";
+                const id = `${namespace}/${args.path}`;
+
+                toRender.set(id, {
+                    path: args.path,
+                    configuration: {
+                        db: args.configuration?.db,
+                        meta: {
+                            locale: args.configuration?.meta?.locale,
+                            tenant: args.configuration?.meta?.tenant
+                        }
+                    }
+                });
+            }
         }
     };
-
-    function normalizeArgs(args: Args): Args {
-        return {
-            path: args.path,
-            configuration: {
-                db: args.configuration?.db,
-                meta: {
-                    locale: args.configuration?.meta?.locale,
-                    tenant: args.configuration?.meta?.tenant
-                }
-            }
-        };
-    }
 };
