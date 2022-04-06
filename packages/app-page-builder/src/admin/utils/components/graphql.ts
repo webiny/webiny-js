@@ -30,7 +30,7 @@ export const DELETE_PAGE_ELEMENT = gql`
 `;
 
 export const UPDATE_PAGE_ELEMENT = gql`
-    mutation PbUpdatePageElement($id: ID!, $data: PbPageElementInput!) {
+    mutation PbUpdatePageElement($id: ID!, $data: PbUpdatePageElementInput!) {
         pageBuilder {
             updatePageElement(id: $id, data: $data) {
                 data ${PAGE_ELEMENT_FIELDS}

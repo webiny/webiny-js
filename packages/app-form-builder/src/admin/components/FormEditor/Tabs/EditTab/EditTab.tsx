@@ -7,11 +7,60 @@ import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
 import { ReactComponent as HandleIcon } from "../../../../icons/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
-import { useFormEditor } from "../../Context";
+import { FormEditorFieldError, useFormEditor } from "../../Context";
 import { FbFormModelField, FieldLayoutPositionType } from "~/types";
 import { i18n } from "@webiny/app/i18n";
+import { Alert } from "@webiny/ui/Alert";
+import styled from "@emotion/styled";
 
 const t = i18n.namespace("FormsApp.Editor.EditTab");
+
+const Block = styled("span")({
+    display: "block"
+});
+
+const keyNames: Record<string, string> = {
+    label: "Label",
+    fieldId: "Field ID",
+    helpText: "Help Text",
+    placeholderText: "Placeholder Text",
+    ["settings.defaultValue"]: "Default value"
+};
+
+interface FieldErrorsProps {
+    errors: FormEditorFieldError[] | null;
+}
+interface FieldErrorProps {
+    error: FormEditorFieldError;
+}
+const FieldError: React.FC<FieldErrorProps> = ({ error }) => {
+    return (
+        <>
+            <Block>
+                <strong>{error.label}</strong>
+            </Block>
+            {Object.keys(error.errors).map(key => {
+                return (
+                    <Block key={key}>
+                        {keyNames[key] || "unknown"}: {error.errors[key]}
+                    </Block>
+                );
+            })}
+        </>
+    );
+};
+const FieldErrors: React.FC<FieldErrorsProps> = ({ errors }) => {
+    if (!errors) {
+        return null;
+    }
+    return (
+        <Alert title={"Error while saving form!"} type="warning">
+            {errors.map(error => {
+                return <FieldError error={error} key={`${error.fieldId}`} />;
+            })}
+        </Alert>
+    );
+};
 
 export const EditTab: React.FC = () => {
     const {
@@ -20,6 +69,7 @@ export const EditTab: React.FC = () => {
         updateField,
         deleteField,
         data,
+        errors,
         moveField,
         moveRow,
         getFieldPlugin
@@ -85,6 +135,7 @@ export const EditTab: React.FC = () => {
 
     return (
         <EditContainer>
+            <FieldErrors errors={errors} />
             {fields.length === 0 && (
                 <Center
                     onDrop={item => {
@@ -201,7 +252,9 @@ export const EditTab: React.FC = () => {
 
             <EditFieldDialog
                 field={editingField}
-                onClose={editField}
+                onClose={() => {
+                    editField(null);
+                }}
                 onSubmit={initialData => {
                     const data = initialData as unknown as FbFormModelField;
 
