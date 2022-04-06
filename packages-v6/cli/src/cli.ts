@@ -34,8 +34,10 @@ export const runCli = () => {
             global: true,
             type: "boolean"
         })
-        .command("watch admin", "Watch admin app", {}, async () => {
-            return webiny.buildAdmin({ watch: true });
+        .command("watch", "Watch [admin|website]", yargs => {
+            yargs.command("admin", "Watch the admin app", {}, async () => {
+                await webiny.buildAdmin({ watch: true });
+            });
         })
         .command("build", "Build [package|api|admin|website]", yargs => {
             yargs.command("package", "Build a package", {}, async () => {

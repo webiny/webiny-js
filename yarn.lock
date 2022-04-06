@@ -8532,7 +8532,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^8.5.1":
+"@types/ws@npm:^8.2.2, @types/ws@npm:^8.5.1":
   version: 8.5.3
   resolution: "@types/ws@npm:8.5.3"
   dependencies:
@@ -11741,7 +11741,7 @@ __metadata:
     fs-extra: ^10.0.1
     get-yarn-workspaces: 1.0.2
     html-webpack-plugin: ^5.5.0
-    is-root: ^3.0.0
+    is-root: ^2.1.0
     mini-css-extract-plugin: 2.4.5
     postcss-flexbugs-fixes: 5.0.2
     postcss-loader: 6.2.1
@@ -11770,7 +11770,7 @@ __metadata:
     url-loader: 4.1.1
     webpack: 5.68.0
     webpack-bundle-analyzer: ^4.5.0
-    webpack-dev-server: ^4.7.4
+    webpack-dev-server: 4.7.4
     webpack-manifest-plugin: 4.0.2
     webpackbar: 5.0.2
   languageName: unknown
@@ -24721,13 +24721,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-root@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "is-root@npm:3.0.0"
-  checksum: 4b9f39193951a701ce3b2957b83ce00a80455971b09d6e99ca829c7b9504bf2e0f26b4a1586dd066cb519a92dfefce5f447f3ecc61cf69e7c861826c48682317
-  languageName: node
-  linkType: hard
-
 "is-set@npm:^2.0.1, is-set@npm:^2.0.2":
   version: 2.0.2
   resolution: "is-set@npm:2.0.2"
@@ -34653,7 +34646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"selfsigned@npm:^2.0.1":
+"selfsigned@npm:^2.0.0, selfsigned@npm:^2.0.1":
   version: 2.0.1
   resolution: "selfsigned@npm:2.0.1"
   dependencies:
@@ -38345,7 +38338,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-dev-server@npm:*, webpack-dev-server@npm:^4.7.4":
+"webpack-dev-server@npm:*":
   version: 4.8.0
   resolution: "webpack-dev-server@npm:4.8.0"
   dependencies:
@@ -38426,6 +38419,51 @@ __metadata:
   bin:
     webpack-dev-server: bin/webpack-dev-server.js
   checksum: 941ecdc7bff9021afa5dc28a0e89c6e11fa5eb3778c6dced2c2a58ccdca45e2324b4792dc21fdcbf684b0fd88c8840b622230d57663377c5b25e215f4b0029de
+  languageName: node
+  linkType: hard
+
+"webpack-dev-server@npm:4.7.4":
+  version: 4.7.4
+  resolution: "webpack-dev-server@npm:4.7.4"
+  dependencies:
+    "@types/bonjour": ^3.5.9
+    "@types/connect-history-api-fallback": ^1.3.5
+    "@types/express": ^4.17.13
+    "@types/serve-index": ^1.9.1
+    "@types/sockjs": ^0.3.33
+    "@types/ws": ^8.2.2
+    ansi-html-community: ^0.0.8
+    bonjour: ^3.5.0
+    chokidar: ^3.5.3
+    colorette: ^2.0.10
+    compression: ^1.7.4
+    connect-history-api-fallback: ^1.6.0
+    default-gateway: ^6.0.3
+    del: ^6.0.0
+    express: ^4.17.1
+    graceful-fs: ^4.2.6
+    html-entities: ^2.3.2
+    http-proxy-middleware: ^2.0.0
+    ipaddr.js: ^2.0.1
+    open: ^8.0.9
+    p-retry: ^4.5.0
+    portfinder: ^1.0.28
+    schema-utils: ^4.0.0
+    selfsigned: ^2.0.0
+    serve-index: ^1.9.1
+    sockjs: ^0.3.21
+    spdy: ^4.0.2
+    strip-ansi: ^7.0.0
+    webpack-dev-middleware: ^5.3.1
+    ws: ^8.4.2
+  peerDependencies:
+    webpack: ^4.37.0 || ^5.0.0
+  peerDependenciesMeta:
+    webpack-cli:
+      optional: true
+  bin:
+    webpack-dev-server: bin/webpack-dev-server.js
+  checksum: 58a7664e32144bdc4a720a044e685d6b4c030290875a06440d3f2471163d636a2be02b8b85168d554ecf3b0a41e7ba9fa3cd16f3bbdfee87b02fbb5329a8efa3
   languageName: node
   linkType: hard
 

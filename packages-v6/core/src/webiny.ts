@@ -64,7 +64,7 @@ export async function initializeWebiny(options: WebinyOptions) {
         },
         async buildAdmin({ watch }) {
             const { buildAdmin } = await import("./artifacts/admin");
-            return buildAdmin({ watch });
+            await buildAdmin({ watch });
         },
         buildApi(): Promise<void> {
             return Promise.resolve(undefined);

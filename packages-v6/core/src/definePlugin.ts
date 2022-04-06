@@ -9,8 +9,8 @@ export interface PluginAdminConfig {
     plugin?: string;
     config?: string;
     define?: Record<string, string>;
-    webpack?(config: Configuration): Configuration;
-    babel?(config: BabelConfig): BabelConfig;
+    webpack?: (config: Configuration) => Configuration;
+    babel?: (config: BabelConfig) => BabelConfig;
 }
 
 export enum FunctionHandlerTemplate {

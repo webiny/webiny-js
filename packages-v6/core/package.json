@@ -5,8 +5,8 @@
   "types": "./lib/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js"
+      "import": "./src/index.ts",
+      "require": "./src/index.ts"
     }
   },
   "dependencies": {
@@ -40,7 +40,7 @@
     "fs-extra": "^10.0.1",
     "get-yarn-workspaces": "1.0.2",
     "html-webpack-plugin": "^5.5.0",
-    "is-root": "^3.0.0",
+    "is-root": "^2.1.0",
     "mini-css-extract-plugin": "2.4.5",
     "postcss-flexbugs-fixes": "5.0.2",
     "postcss-loader": "6.2.1",
@@ -68,7 +68,7 @@
     "url-loader": "4.1.1",
     "webpack": "5.68.0",
     "webpack-bundle-analyzer": "^4.5.0",
-    "webpack-dev-server": "^4.7.4",
+    "webpack-dev-server": "4.7.4",
     "webpack-manifest-plugin": "4.0.2",
     "webpackbar": "5.0.2"
   },
