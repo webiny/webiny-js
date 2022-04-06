@@ -1,11 +1,11 @@
 import { FormElasticsearchIndexTemplatePlugin } from "~/plugins/FormElasticsearchIndexTemplatePlugin";
 
 export const base = new FormElasticsearchIndexTemplatePlugin({
-    template: {
-        name: "form-builder-forms-index-default",
-        order: 50,
-        body: {
-            index_patterns: ["*-form-builder"],
+    name: "form-builder-forms-index-default",
+    body: {
+        priority: 150,
+        index_patterns: ["*-form-builder"],
+        template: {
             /**
              * need this part for sorting to work on text fields
              */

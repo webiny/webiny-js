@@ -28,7 +28,7 @@ export class FileManagerInstallationPlugin extends InstallationPlugin {
          */
         for (const plugin of plugins) {
             try {
-                await elasticsearch.indices.putTemplate(plugin.template);
+                await elasticsearch.indices.putIndexTemplate(plugin.template);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message ||

@@ -1,72 +1,74 @@
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { IndicesPutTemplate } from "@elastic/elasticsearch/api/requestParams";
+import { IndicesPutIndexTemplate } from "@elastic/elasticsearch/api/requestParams";
 
 interface RequestBodyParams {
     /**
      * Must be defined and must contain at least one index pattern.
      */
     index_patterns: string[];
-    [key: string]: any;
+    priority: number;
+    template: {
+        settings?: {
+            [key: string]: any;
+        };
+        mappings?: {
+            properties?: {
+                [key: string]: any;
+            };
+            [key: string]: any;
+        };
+        // [key: string]: any;
+    };
 }
 
-interface ElasticsearchIndexTemplatePluginConfigTemplate extends IndicesPutTemplate {
-    order: number;
-    body: RequestBodyParams;
-}
-export interface ElasticsearchIndexTemplatePluginConfig {
-    template: ElasticsearchIndexTemplatePluginConfigTemplate;
-}
+export type ElasticsearchIndexTemplatePluginConfig = IndicesPutIndexTemplate<RequestBodyParams>;
 
 export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
-    private readonly _config: ElasticsearchIndexTemplatePluginConfig;
-
-    public get template(): IndicesPutTemplate {
-        return this._config.template;
-    }
+    public readonly template: ElasticsearchIndexTemplatePluginConfig;
 
     public constructor(config: ElasticsearchIndexTemplatePluginConfig) {
         super();
-        this._config = config;
-        this.validateTemplate(config.template);
+        this.template = config;
+        this.validateTemplate();
     }
 
-    private validateTemplate(template: ElasticsearchIndexTemplatePluginConfigTemplate): void {
+    private validateTemplate(): void {
         /**
          * Name cannot contain anything other than a-z, 0-9 and -.
          */
-        const name = template.name;
+        const name = this.template.name;
         if (name.match(/^([a-z0-9\-]+)$/) === null) {
             throw new WebinyError(
                 `Index template name not supported.`,
                 "INVALID_ES_TEMPLATE_DEFINITION",
                 {
-                    template
+                    config: this.template
                 }
             );
         }
         /**
          * Must have at least one pattern.
          */
-        const patterns = (template.body.index_patterns || []).filter(Boolean);
+        const patterns = (this.template.body.index_patterns || []).filter(Boolean);
         if (patterns.length === 0) {
             throw new WebinyError(
                 `Missing "index_patterns" in template "${name}" body.`,
                 "INVALID_ES_TEMPLATE_DEFINITION",
                 {
-                    template
+                    config: this.template
                 }
             );
         }
         /**
          * Order must be greater than 0.
          */
-        if (template.order <= 0) {
+        if (this.template.body.priority <= 0) {
             throw new WebinyError(
-                `Order must be greater than 0 in template "${name}".`,
+                `Priority must be greater than 0 in template "${name}".`,
                 "INVALID_ES_TEMPLATE_DEFINITION",
                 {
-                    template
+                    config: this.template
                 }
             );
         }

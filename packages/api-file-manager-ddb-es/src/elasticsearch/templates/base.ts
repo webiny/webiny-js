@@ -1,12 +1,11 @@
 import { FileElasticsearchIndexTemplatePlugin } from "~/plugins/FileElasticsearchIndexTemplatePlugin";
 
 export const base = new FileElasticsearchIndexTemplatePlugin({
-    template: {
-        name: "file-manager-files-index-default",
-        order: 50,
-        body: {
-            index_patterns: ["*-file-manager"],
-            // need this part for sorting to work on text fields
+    name: "file-manager-files-index-default",
+    body: {
+        index_patterns: ["*-file-manager"],
+        priority: 50,
+        template: {
             settings: {
                 analysis: {
                     analyzer: {

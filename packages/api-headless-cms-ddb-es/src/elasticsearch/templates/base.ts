@@ -1,11 +1,11 @@
 import { CmsEntryElasticsearchIndexTemplatePlugin } from "~/plugins/CmsEntryElasticsearchIndexTemplatePlugin";
 
 export const base = new CmsEntryElasticsearchIndexTemplatePlugin({
-    template: {
-        name: "headless-cms-entries-index-default",
-        order: 50,
-        body: {
-            index_patterns: ["*headless-cms*"],
+    name: "headless-cms-entries-index-default",
+    body: {
+        index_patterns: ["*-headless-cms-*"],
+        priority: 250,
+        template: {
             settings: {
                 analysis: {
                     analyzer: {

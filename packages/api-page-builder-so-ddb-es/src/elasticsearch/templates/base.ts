@@ -1,11 +1,11 @@
 import { PageElasticsearchIndexTemplatePlugin } from "~/plugins/definitions/PageElasticsearchIndexTemplatePlugin";
 
 export const base = new PageElasticsearchIndexTemplatePlugin({
-    template: {
-        name: "page-builder-pages-index-default",
-        order: 50,
-        body: {
-            index_patterns: ["*-page-builder"],
+    name: "page-builder-pages-index-default",
+    body: {
+        priority: 350,
+        index_patterns: ["*-page-builder"],
+        template: {
             // need this part for sorting to work on text fields
             settings: {
                 analysis: {

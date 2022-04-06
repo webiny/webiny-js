@@ -23,7 +23,7 @@ export const createElasticsearchIndexTemplate = async (params: CreateElasticsear
      */
     for (const plugin of plugins) {
         try {
-            await elasticsearch.indices.putTemplate(plugin.template);
+            await elasticsearch.indices.putIndexTemplate(plugin.template);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create Elasticsearch index template for the Form Builder.",
