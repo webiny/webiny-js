@@ -4,7 +4,7 @@ import { createMorphProject, getSourceFile } from "../../utils";
 import { useWebiny } from "../../webiny";
 import { injectSourceFromPlugins } from "./injectSourceFromPlugins";
 import { BabelConfigModifier, WebpackConfigModifier } from "../bundle/config/webpack.config";
-import { Plugin, PluginAdminConfig } from "~/definePlugin";
+import { Plugin, PluginAdminConfig } from "../../definePlugin";
 
 interface Options {
     watch: boolean;
