@@ -1,6 +1,6 @@
 import { Client } from "@elastic/elasticsearch";
 import { listTemplatePlugins } from "@webiny/api-elasticsearch/templates";
-import { FbFormElasticsearchIndexTemplatePlugin } from "~/plugins/FormElasticsearchIndexTemplatePlugin";
+import { FormElasticsearchIndexTemplatePlugin } from "~/plugins/FormElasticsearchIndexTemplatePlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
 
@@ -12,9 +12,9 @@ interface CreateElasticsearchIndexParams {
 export const createElasticsearchIndexTemplate = async (params: CreateElasticsearchIndexParams) => {
     const { elasticsearch, plugins: container } = params;
 
-    const plugins = listTemplatePlugins<FbFormElasticsearchIndexTemplatePlugin>(
+    const plugins = listTemplatePlugins<FormElasticsearchIndexTemplatePlugin>(
         container,
-        FbFormElasticsearchIndexTemplatePlugin.type
+        FormElasticsearchIndexTemplatePlugin.type
     );
     /**
      * We need to add all the templates to the Elasticsearch.
