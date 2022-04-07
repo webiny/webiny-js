@@ -481,6 +481,7 @@ export interface CreateApwParams {
     storageOperations: ApwStorageOperations;
     scheduler: ApwScheduleActionCrud;
     handlerClient: HandlerClient;
+    getInvokedFunctionArn: () => string;
 }
 
 interface StorageOperationsGetReviewerParams {

@@ -14,6 +14,14 @@ const getIsoStringTillMinutes = (datetime: string): string => {
     return datetime.slice(0, datetime.lastIndexOf(TIME_SEPARATOR));
 };
 
+const EXPECTED_APW_SCHEDULED_ACTION_DATA = expect.objectContaining({
+    datetime: expect.stringMatching(/^20/),
+    type: "page",
+    action: "publish",
+    entryId: expect.any(String),
+    mainGraphqlFunctionArn: expect.any(String)
+});
+
 describe("Schedule action CRUD Test", () => {
     const { handler } = useHandler();
 
@@ -27,7 +35,8 @@ describe("Schedule action CRUD Test", () => {
             datetime: new Date().toISOString(),
             action: ApwScheduleActionTypes.PUBLISH,
             type: ApwContentTypes.PAGE,
-            entryId: "62303be79cfe6e0009d8d9cf#0001"
+            entryId: "62303be79cfe6e0009d8d9cf#0001",
+            mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
         });
         expect(scheduledAction).toEqual({
             id: expect.any(String),
@@ -36,12 +45,7 @@ describe("Schedule action CRUD Test", () => {
             createdBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
-            data: {
-                datetime: expect.stringMatching(/^20/),
-                type: "page",
-                action: "publish",
-                entryId: expect.any(String)
-            }
+            data: EXPECTED_APW_SCHEDULED_ACTION_DATA
         });
 
         /**
@@ -55,12 +59,7 @@ describe("Schedule action CRUD Test", () => {
             createdBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
-            data: {
-                datetime: expect.stringMatching(/^20/),
-                type: "page",
-                action: "publish",
-                entryId: expect.any(String)
-            }
+            data: EXPECTED_APW_SCHEDULED_ACTION_DATA
         });
 
         /**
@@ -75,12 +74,7 @@ describe("Schedule action CRUD Test", () => {
                 createdBy: expect.any(Object),
                 tenant: expect.any(String),
                 locale: expect.any(String),
-                data: {
-                    datetime: expect.stringMatching(/^20/),
-                    type: "page",
-                    action: "publish",
-                    entryId: expect.any(String)
-                }
+                data: EXPECTED_APW_SCHEDULED_ACTION_DATA
             }
         ]);
         expect(meta).toEqual({
@@ -110,7 +104,8 @@ describe("Schedule action CRUD Test", () => {
             datetime: new Date().toISOString(),
             action: ApwScheduleActionTypes.UNPUBLISH,
             type: ApwContentTypes.PAGE,
-            entryId: "62303be79cfe6e0009d8d9cf#0001"
+            entryId: "62303be79cfe6e0009d8d9cf#0001",
+            mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
         });
         expect(updateItemResult).toEqual({
             id: expect.any(String),
@@ -119,12 +114,7 @@ describe("Schedule action CRUD Test", () => {
             createdBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
-            data: {
-                datetime: expect.stringMatching(/^20/),
-                type: "page",
-                action: "publish",
-                entryId: expect.any(String)
-            }
+            data: EXPECTED_APW_SCHEDULED_ACTION_DATA
         });
 
         /**
@@ -164,7 +154,8 @@ describe("Schedule action CRUD Test", () => {
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
                 type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001"
+                entryId: "62303be79cfe6e0009d8d9cf#0001",
+                mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
             });
             scheduledActions.push(scheduledAction);
         }
@@ -182,12 +173,7 @@ describe("Schedule action CRUD Test", () => {
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
-                    data: {
-                        datetime: expect.stringMatching(/^20/),
-                        type: "page",
-                        action: "publish",
-                        entryId: expect.any(String)
-                    }
+                    data: EXPECTED_APW_SCHEDULED_ACTION_DATA
                 })
             ])
         );
@@ -221,12 +207,7 @@ describe("Schedule action CRUD Test", () => {
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
-                    data: {
-                        datetime: expect.stringMatching(/^20/),
-                        type: "page",
-                        action: "publish",
-                        entryId: expect.any(String)
-                    }
+                    data: EXPECTED_APW_SCHEDULED_ACTION_DATA
                 })
             ])
         );
@@ -262,7 +243,8 @@ describe("Schedule action CRUD Test", () => {
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
                 type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001"
+                entryId: "62303be79cfe6e0009d8d9cf#0001",
+                mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
             });
             scheduledActions.push(scheduledAction);
         }
@@ -286,12 +268,7 @@ describe("Schedule action CRUD Test", () => {
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
-                    data: {
-                        datetime: expect.stringMatching(/^20/),
-                        type: "page",
-                        action: "publish",
-                        entryId: expect.any(String)
-                    }
+                    data: EXPECTED_APW_SCHEDULED_ACTION_DATA
                 })
             ])
         );
@@ -312,12 +289,7 @@ describe("Schedule action CRUD Test", () => {
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
-                    data: {
-                        datetime: expect.stringMatching(/^20/),
-                        type: "page",
-                        action: "publish",
-                        entryId: expect.any(String)
-                    }
+                    data: EXPECTED_APW_SCHEDULED_ACTION_DATA
                 })
             ])
         );
@@ -341,7 +313,8 @@ describe("Schedule action CRUD Test", () => {
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
                 type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001"
+                entryId: "62303be79cfe6e0009d8d9cf#0001",
+                mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
             });
             scheduledActions.push(scheduledAction);
         }
@@ -361,12 +334,7 @@ describe("Schedule action CRUD Test", () => {
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
-                    data: {
-                        datetime: expect.stringMatching(/^20/),
-                        type: "page",
-                        action: "publish",
-                        entryId: expect.any(String)
-                    }
+                    data: EXPECTED_APW_SCHEDULED_ACTION_DATA
                 })
             ])
         );

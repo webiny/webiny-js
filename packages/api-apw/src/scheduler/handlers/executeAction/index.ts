@@ -18,19 +18,14 @@ export type HandlerArgs = {
 };
 
 interface Configuration {
-    cwClient: any;
     storageOperations: ApwScheduleActionStorageOperations;
-    handlers: {
-        mainGQL: string;
-    };
 }
 
 /**
  * Handler that execute the provided action(s) for the schedule action workflow.
  */
 export default ({
-    storageOperations,
-    handlers
+    storageOperations
 }: Configuration): HandlerPlugin<ArgsContext<HandlerArgs>, ClientContext> => ({
     type: "handler",
     async handle(context): Promise<void> {
@@ -73,8 +68,7 @@ export default ({
                     );
                     // Perform the actual action call.
                     const response = await context.handlerClient.invoke({
-                        // TODO: Fetch function name from settings.
-                        name: handlers.mainGQL,
+                        name: item.data.mainGraphqlFunctionArn,
                         payload: {
                             httpMethod: "POST",
                             headers: {

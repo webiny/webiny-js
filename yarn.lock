@@ -13693,7 +13693,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-apw-scheduler-execute-action@workspace:api/code/apw/executeAction"
   dependencies:
-    "@aws-sdk/client-cloudwatch-events": latest
     "@webiny/api-apw": ^5.24.0
     "@webiny/api-apw-scheduler-so-ddb": ^5.24.0
     "@webiny/cli": ^5.24.0

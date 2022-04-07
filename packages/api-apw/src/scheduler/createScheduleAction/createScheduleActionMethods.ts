@@ -27,6 +27,9 @@ const CreateDataModel = withFields({
     }),
     entryId: string({
         validation: validation.create(`required`)
+    }),
+    mainGraphqlFunctionArn: string({
+        validation: validation.create("required")
     })
 })();
 
