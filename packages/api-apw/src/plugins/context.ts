@@ -152,5 +152,5 @@ export default (params: CreateApwContextParams) => [
         apwPageBuilderPlugins({ pageBuilder: context.pageBuilder, apw: context.apw, getIdentity });
     }),
     apwHooks(),
-    createCustomAuth()
+    createCustomAuth(params)
 ];

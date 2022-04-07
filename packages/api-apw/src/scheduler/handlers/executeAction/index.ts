@@ -6,7 +6,7 @@ import {
     ApwScheduleActionStorageOperations,
     ApwScheduleActionTypes
 } from "~/scheduler/types";
-import { getIsoStringTillMinutes } from "~/scheduler/handlers/utils";
+import { getIsoStringTillMinutes, encodeToken } from "~/scheduler/handlers/utils";
 import { ClientContext } from "@webiny/handler-client/types";
 import { PUBLISH_PAGE, UNPUBLISH_PAGE } from "./graphql";
 
@@ -48,8 +48,8 @@ export default ({
              */
             const [items] = await storageOperations.list({
                 where: {
-                    tenant: args.tenant || "root",
-                    locale: args.locale || "en-US",
+                    tenant: args.tenant,
+                    locale: args.locale,
                     datetime_startsWith: getIsoStringTillMinutes(datetime)
                 },
                 sort: "datetime_ASC",
@@ -72,8 +72,11 @@ export default ({
                         payload: {
                             httpMethod: "POST",
                             headers: {
-                                // TODO: Use real token - even if it's hard coded using plugins.
-                                Authorization: "ben"
+                                Authorization: encodeToken({
+                                    id: item.id,
+                                    locale: item.locale,
+                                    tenant: item.tenant
+                                })
                             },
                             body: getGqlBody(item.data)
                         },
