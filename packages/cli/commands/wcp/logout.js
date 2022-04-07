@@ -21,7 +21,7 @@ module.exports = () => ({
             },
             async () => {
                 setWcpPat(null);
-                context.info(`You've successfully logged out from Webiny Control Panel.`);
+                console.log(`You've successfully logged out from Webiny Control Panel.`);
             }
         );
     }
