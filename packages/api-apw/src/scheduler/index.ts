@@ -1,15 +1,10 @@
-import { createApwScheduleAction } from "./createScheduleAction";
-import { ApwScheduleActionCrud, CreateApwContextParams } from "./types";
-import { CreateApwParams } from "~/types";
+import { createScheduleActionMethods } from "./createScheduleActionMethods";
+import { ApwScheduleActionCrud, CreateScheduleActionParams } from "./types";
 
-interface CreateSchedulerParams
-    extends Pick<CreateApwParams, "getLocale" | "getTenant" | "getIdentity" | "getPermission">,
-        CreateApwContextParams {}
-
-export const createScheduler = (params: CreateSchedulerParams): ApwScheduleActionCrud => {
+export const createScheduler = (params: CreateScheduleActionParams): ApwScheduleActionCrud => {
     const { getLocale, getIdentity, getTenant, getPermission, storageOperations } = params;
 
-    return createApwScheduleAction({
+    return createScheduleActionMethods({
         getLocale,
         getIdentity,
         getTenant,
