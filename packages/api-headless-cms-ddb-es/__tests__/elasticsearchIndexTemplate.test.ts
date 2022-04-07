@@ -21,7 +21,9 @@ describe("Elasticsearch Index Template", () => {
         try {
             client = createElasticsearchClient({
                 node: `http://localhost:${ELASTICSEARCH_PORT}`,
-                auth: {} as any
+                auth: {} as any,
+                maxRetries: 10,
+                pingTimeout: 500
             });
             await clearTemplate();
         } catch (ex) {
