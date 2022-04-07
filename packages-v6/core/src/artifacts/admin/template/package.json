@@ -1,0 +1,17 @@
+{
+  "name": "admin",
+  "version": "0.1.0",
+  "private": true,
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  }
+}

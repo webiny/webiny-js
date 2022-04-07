@@ -1,0 +1,32 @@
+{
+  "private": true,
+  "name": "@webiny/preset-aws",
+  "version": "5.25.0",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
+  "dependencies": {
+    "@webiny/core": "^5.25.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.0",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@babel/runtime": "^7.17.2"
+  },
+  "scripts": {
+    "build": "wby build package"
+  },
+  "webiny": {
+    "moduleTypes": [
+      "cjs",
+      "esm"
+    ]
+  }
+}

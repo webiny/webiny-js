@@ -1,0 +1,68 @@
+{
+  "private": true,
+  "name": "@webiny/pulumi-sdk-v6",
+  "version": "5.25.0",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A simple Node.js Pulumi SDK.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@pulumi/aws": "^4.10.0",
+    "@pulumi/pulumi": "^3.25.0",
+    "decompress": "^4.2.1",
+    "download": "^5.0.3",
+    "execa": "^4.0.3",
+    "lodash": "^4.17.4",
+    "semver": "^7.3.5",
+    "tar": "^6.0.5",
+    "trim-newlines": "^3.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@babel/runtime": "^7.17.2",
+    "@types/lodash": "^4.14.178",
+    "@types/node": "^10.0.0",
+    "@webiny/project-utils": "^5.24.0",
+    "rimraf": "^3.0.2",
+    "typescript": "4.5.5"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@babel/runtime",
+        "@pulumi/pulumi",
+        "@pulumi/aws"
+      ]
+    }
+  },
+  "scripts": {
+    "build:esm": "cross-env BABEL_ENV=esm babel src --extensions '.ts,.tsx' --out-dir 'lib/esm' --source-maps --ignore='**/template/**' --copy-files",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts,.tsx' --out-dir 'lib/cjs' --source-maps --ignore='**/template/**' --copy-files",
+    "build": "yarn build:cjs && yarn build:esm && yarn declarations",
+    "declarations": "ttsc -p tsconfig.build.json"
+  },
+  "webiny": {
+    "moduleTypes": [
+      "cjs",
+      "esm"
+    ]
+  }
+}
