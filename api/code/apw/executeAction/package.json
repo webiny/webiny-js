@@ -6,7 +6,6 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudwatch-events": "latest",
     "@webiny/api-apw": "^5.24.0",
     "@webiny/api-apw-scheduler-so-ddb": "^5.24.0",
     "@webiny/cli": "^5.24.0",

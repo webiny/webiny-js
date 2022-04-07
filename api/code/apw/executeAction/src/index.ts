@@ -1,4 +1,3 @@
-const { CloudWatchEventsClient } = require("@aws-sdk/client-cloudwatch-events");
 import { createHandler } from "@webiny/handler-aws";
 import executeActionHandlerPlugins from "@webiny/api-apw/scheduler/handlers/executeAction";
 import { createStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
@@ -26,13 +25,9 @@ export const handler = createHandler({
             })
         }),
         executeActionHandlerPlugins({
-            cwClient: new CloudWatchEventsClient({ region: process.env.AWS_REGION }),
             storageOperations: createStorageOperations({
                 documentClient
-            }),
-            handlers: {
-                mainGQL: String(process.env.MAIN_GQL_HANDLER)
-            }
+            })
         })
     ],
     http: { debug }
