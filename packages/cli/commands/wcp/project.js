@@ -1,5 +1,6 @@
 const open = require("open");
 const inquirer = require("inquirer");
+const chalk = require("chalk");
 const { getUser, WCP_APP_URL, setProjectId, sleep } = require("./utils");
 
 module.exports.command = () => [
@@ -26,7 +27,7 @@ module.exports.command = () => [
                             });
                             command.example("$0 project init");
                         },
-                        async () => {
+                        async ({ context }) => {
                             // Check login.
                             const user = await getUser();
 
@@ -35,7 +36,7 @@ module.exports.command = () => [
                             if (id) {
                                 const project = user.projects.find(item => item.id === id);
                                 if (project) {
-                                    context.info(
+                                    console.log(
                                         `It seems this project was already initialized (project name: ${context.info.hl(
                                             project.name
                                         )}).`
@@ -57,7 +58,7 @@ module.exports.command = () => [
 
                             // Get user's organizations.
                             if (!user.orgs.length) {
-                                context.info(
+                                console.log(
                                     "It seems you're not part of any organization. Please log in to Webiny Control Panel and create one."
                                 );
 
@@ -79,7 +80,7 @@ module.exports.command = () => [
                             if (user.orgs.length === 1) {
                                 selectedOrg = user.orgs[0];
                             } else {
-                                context.info("It seems you're part of multiple organizations. ");
+                                console.log("It seems you're part of multiple organizations. ");
                                 const choices = user.orgs.map(item => ({
                                     name: item.name,
                                     value: item
@@ -95,13 +96,11 @@ module.exports.command = () => [
                                 }).then(result => result.org);
                             }
 
-                            const orgProjects = user.projects.filter(
-                                item => item.org.id === selectedOrg.id
-                            );
+                            const orgProjects = user.projects.filter(item => item.org.id === selectedOrg.id);
 
                             // Get user's projects.
                             if (!orgProjects.length) {
-                                context.info(
+                                console.log(
                                     `It seems there are no projects created within the ${context.info.hl(
                                         selectedOrg.name
                                     )} organization.`
@@ -125,7 +124,7 @@ module.exports.command = () => [
                             if (orgProjects.length === 1) {
                                 selectedProject = user.projects[0];
                             } else {
-                                context.info(
+                                console.log(
                                     `It seems there are multiple projects created within the ${context.info.hl(
                                         selectedOrg.name
                                     )} organization.`
@@ -150,11 +149,7 @@ module.exports.command = () => [
                             await sleep();
                             console.log();
 
-                            context.info(
-                                `Initializing ${context.success.hl(
-                                    selectedProject.name
-                                )} project...`
-                            );
+                            console.log(`Initializing ${context.success.hl(selectedProject.name)} project...`);
 
                             await sleep();
 
@@ -165,16 +160,19 @@ module.exports.command = () => [
                                 projectId
                             });
 
-                            context.success(
-                                `Project ${context.success.hl(
+                            console.log(
+                                `${chalk.green("✔")} Project ${context.success.hl(
                                     selectedProject.name
                                 )} initialized successfully.`
                             );
 
                             await sleep();
+
                             console.log();
-                            context.info(
-                                `If you've just created this project, you might want to deploy it via the ${context.info.hl(
+                            console.log(chalk.bold("Next Steps"));
+
+                            console.log(
+                                `‣ if you've just created this project, you might want to deploy it via the ${context.info.hl(
                                     "yarn webiny deploy"
                                 )} command.`
                             );
