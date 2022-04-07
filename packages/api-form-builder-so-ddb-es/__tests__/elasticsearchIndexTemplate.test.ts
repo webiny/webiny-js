@@ -18,11 +18,16 @@ describe("Elasticsearch Index Template", () => {
     };
 
     beforeEach(async () => {
-        client = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {} as any
-        });
-        await clearTemplate();
+        try {
+            client = createElasticsearchClient({
+                node: `http://localhost:${ELASTICSEARCH_PORT}`,
+                auth: {} as any
+            });
+            await clearTemplate();
+        } catch (ex) {
+            console.log(JSON.stringify(ex));
+            throw ex;
+        }
     });
 
     afterEach(async () => {
