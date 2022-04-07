@@ -2,7 +2,7 @@ const open = require("open");
 const inquirer = require("inquirer");
 const { getUser, WCP_APP_URL, setProjectId, sleep } = require("./utils");
 
-module.exports = () => [
+module.exports.command = () => [
     {
         type: "cli-command",
         name: "cli-command-wcp-project",

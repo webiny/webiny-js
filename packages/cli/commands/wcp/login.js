@@ -48,7 +48,7 @@ const CREATE_USER_PAT = /* GraphQL */ `
     }
 `;
 
-module.exports = () => ({
+module.exports.command = () => ({
     type: "cli-command",
     name: "cli-command-wcp-login",
     create({ yargs, context }) {
