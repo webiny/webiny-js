@@ -1,6 +1,7 @@
 import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 import { Client } from "@elastic/elasticsearch";
 import { base } from "~/elasticsearch/templates/base";
+import { ElasticsearchIndexTemplatePluginConfig } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchIndexTemplatePlugin";
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
 
@@ -14,7 +15,30 @@ describe("Elasticsearch Index Template", () => {
             await client.indices.deleteTemplate({
                 name: templateName
             });
-        } catch {}
+        } catch (ex) {
+            console.log("Could not delete template.");
+            console.log(JSON.stringify(ex));
+        }
+    };
+
+    const putTemplate = async (template: ElasticsearchIndexTemplatePluginConfig) => {
+        try {
+            return await client.indices.putTemplate(template);
+        } catch (ex) {
+            console.log("Could not put template.");
+            console.log(JSON.stringify(ex));
+            throw ex;
+        }
+    };
+
+    const getTemplate = async () => {
+        try {
+            return await client.indices.getTemplate();
+        } catch (ex) {
+            console.log("Could not get templates.");
+            console.log(JSON.stringify(ex));
+            throw ex;
+        }
     };
 
     beforeEach(async () => {
@@ -37,7 +61,7 @@ describe("Elasticsearch Index Template", () => {
     });
 
     it("should insert default index template", async () => {
-        const insert = await client.indices.putTemplate(base.template);
+        const insert = await putTemplate(base.template);
 
         expect(insert).toMatchObject({
             body: {
@@ -46,7 +70,7 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await client.indices.getTemplate();
+        const response = await getTemplate();
 
         expect(response).toMatchObject({
             body: {
