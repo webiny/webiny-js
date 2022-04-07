@@ -11,7 +11,7 @@ describe("Elasticsearch Index Template", () => {
 
     const clearTemplate = async () => {
         try {
-            await client.indices.deleteIndexTemplate({
+            await client.indices.deleteTemplate({
                 name: templateName
             });
         } catch {}
