@@ -23,10 +23,14 @@ export default (params: Params): HandlerPlugin => {
                 return;
             }
 
+            const args = context.invocationArgs.detail;
+
+            console.log(JSON.stringify(args));
+
             return flush.handle(
                 {
                     ...context,
-                    invocationArgs: context.invocationArgs.detail
+                    invocationArgs: args
                 },
                 async () => void 0
             );

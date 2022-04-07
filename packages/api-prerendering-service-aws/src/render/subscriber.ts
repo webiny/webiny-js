@@ -84,6 +84,8 @@ export default (params: HandlerConfig): HandlerPlugin => {
                 i++;
             }
 
+            // console.log(JSON.stringify([...toRender.values()]));
+
             const result = await sqsClient
                 .sendMessageBatch({
                     QueueUrl: params.sqsQueueUrl,

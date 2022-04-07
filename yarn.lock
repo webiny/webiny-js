@@ -9733,7 +9733,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-aws@^5.24.0, @webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
+"@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws"
   dependencies:
@@ -9755,7 +9755,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-so-ddb@^5.24.0, @webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
+"@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb"
   dependencies:
@@ -13058,56 +13058,6 @@ __metadata:
   dependencies:
     "@webiny/api-page-builder": ^5.24.0
     "@webiny/api-page-builder-so-ddb": ^5.24.0
-    "@webiny/cli": ^5.24.0
-    "@webiny/handler-aws": ^5.24.0
-    "@webiny/project-utils": ^5.24.0
-  languageName: unknown
-  linkType: soft
-
-"api-prerendering-service-flush@workspace:api/code/prerenderingService/flush":
-  version: 0.0.0-use.local
-  resolution: "api-prerendering-service-flush@workspace:api/code/prerenderingService/flush"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.24.0
-    "@webiny/api-prerendering-service-aws": ^5.24.0
-    "@webiny/api-prerendering-service-so-ddb": ^5.24.0
-    "@webiny/cli": ^5.24.0
-    "@webiny/handler-aws": ^5.24.0
-    "@webiny/project-utils": ^5.24.0
-  languageName: unknown
-  linkType: soft
-
-"api-prerendering-service-queue-add@workspace:api/code/prerenderingService/queue/add":
-  version: 0.0.0-use.local
-  resolution: "api-prerendering-service-queue-add@workspace:api/code/prerenderingService/queue/add"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.24.0
-    "@webiny/api-prerendering-service-so-ddb": ^5.24.0
-    "@webiny/cli": ^5.24.0
-    "@webiny/handler-aws": ^5.24.0
-    "@webiny/project-utils": ^5.24.0
-  languageName: unknown
-  linkType: soft
-
-"api-prerendering-service-queue-process@workspace:api/code/prerenderingService/queue/process":
-  version: 0.0.0-use.local
-  resolution: "api-prerendering-service-queue-process@workspace:api/code/prerenderingService/queue/process"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.24.0
-    "@webiny/api-prerendering-service-so-ddb": ^5.24.0
-    "@webiny/cli": ^5.24.0
-    "@webiny/handler-aws": ^5.24.0
-    "@webiny/project-utils": ^5.24.0
-  languageName: unknown
-  linkType: soft
-
-"api-prerendering-service-render@workspace:api/code/prerenderingService/render":
-  version: 0.0.0-use.local
-  resolution: "api-prerendering-service-render@workspace:api/code/prerenderingService/render"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.24.0
-    "@webiny/api-prerendering-service-aws": ^5.24.0
-    "@webiny/api-prerendering-service-so-ddb": ^5.24.0
     "@webiny/cli": ^5.24.0
     "@webiny/handler-aws": ^5.24.0
     "@webiny/project-utils": ^5.24.0

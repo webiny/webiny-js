@@ -11,6 +11,7 @@ interface GraphqlParams {
     primaryDynamodbTableArn: pulumi.Input<string>;
     fileManagerBucketId: pulumi.Input<string>;
     cognitoUserPoolArn: pulumi.Input<string>;
+    eventBusArn: pulumi.Input<string>;
     awsAccountId: pulumi.Input<string>;
     awsRegion: pulumi.Input<string>;
     vpc: Vpc | undefined;
@@ -150,7 +151,13 @@ function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
                         Sid: "PermissionForCognitoIdp",
                         Effect: "Allow",
                         Action: "cognito-idp:*",
-                        Resource: pulumi.interpolate`${params.cognitoUserPoolArn}`
+                        Resource: params.cognitoUserPoolArn
+                    },
+                    {
+                        Sid: "PermissionForEventBus",
+                        Effect: "Allow",
+                        Action: "events:PutEvents",
+                        Resource: params.eventBusArn
                     }
                 ]
             }
