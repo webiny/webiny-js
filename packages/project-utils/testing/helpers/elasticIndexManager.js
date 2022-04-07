@@ -1,4 +1,4 @@
-module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, template = null }) => {
+module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, template }) => {
     const clearEsIndices = async () => {
         await elasticsearchClient.indices.delete({
             index: "_all"
@@ -8,20 +8,11 @@ module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, tem
     const clearEsIndexTemplates = async () => {
         const templates = [];
         try {
-            const response = await elasticsearchClient.indices.getIndexTemplate();
-            if (
-                !response ||
-                !response.body ||
-                Array.isArray(response.body.index_templates) === false
-            ) {
+            const response = await elasticsearchClient.indices.getTemplate();
+            if (!response || !response.body) {
                 return;
             }
-            for (const tpl of response.body.index_templates) {
-                if (!tpl.name) {
-                    continue;
-                }
-                templates.push(tpl.name);
-            }
+            templates.push(...Object.keys(response.body));
         } catch (ex) {
             console.log(ex);
             console.log(ex.meta.body.error);
@@ -31,7 +22,7 @@ module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, tem
         }
         for (const name of templates) {
             try {
-                await elasticsearchClient.indices.deleteIndexTemplate({
+                await elasticsearchClient.indices.deleteTemplate({
                     name
                 });
             } catch (ex) {
@@ -43,10 +34,10 @@ module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, tem
     global.__beforeEach = async () => {
         await clearEsIndices();
         if (!template) {
-            return;
+            throw new Error("Missing Elasticsearch Index template.");
         }
         try {
-            await elasticsearchClient.indices.putIndexTemplate(template);
+            await elasticsearchClient.indices.putTemplate(template);
         } catch (ex) {
             console.log(ex);
             throw ex;

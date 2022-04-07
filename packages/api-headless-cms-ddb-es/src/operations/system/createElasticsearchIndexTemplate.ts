@@ -26,7 +26,7 @@ export const createElasticsearchIndexTemplate = async (
      */
     for (const plugin of plugins) {
         try {
-            await elasticsearch.indices.putIndexTemplate(plugin.template);
+            await elasticsearch.indices.putTemplate(plugin.template);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create Elasticsearch index template for the Headless CMS.",

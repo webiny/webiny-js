@@ -46,7 +46,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
         }
 
         try {
-            await elasticsearch.indices.putIndexTemplate({
+            await elasticsearch.indices.putTemplate({
                 name: "headless-cms-entries-index",
                 body: {
                     index_patterns: ["*headless-cms*"],

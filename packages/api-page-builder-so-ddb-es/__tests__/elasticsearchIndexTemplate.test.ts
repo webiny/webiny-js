@@ -30,7 +30,7 @@ describe("Elasticsearch Index Template", () => {
     });
 
     it("should insert default index template", async () => {
-        const insert = await client.indices.putIndexTemplate(base.template);
+        const insert = await client.indices.putTemplate(base.template);
 
         expect(insert).toMatchObject({
             body: {
@@ -39,16 +39,13 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await client.indices.getIndexTemplate();
+        const response = await client.indices.getTemplate();
 
         expect(response).toMatchObject({
             body: {
-                index_templates: expect.arrayContaining([
-                    {
-                        name: templateName,
-                        index_template: expect.any(Object)
-                    }
-                ])
+                [templateName]: {
+                    index_patterns: ["*-page-builder"]
+                }
             },
             statusCode: 200
         });

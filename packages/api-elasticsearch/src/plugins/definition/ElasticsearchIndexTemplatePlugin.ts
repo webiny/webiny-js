@@ -1,37 +1,35 @@
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { IndicesPutIndexTemplate } from "@elastic/elasticsearch/api/requestParams";
+import { IndicesPutTemplate } from "@elastic/elasticsearch/api/requestParams";
 
 interface RequestBodyParams {
     /**
      * Must be defined and must contain at least one index pattern.
      */
     index_patterns: string[];
-    priority: number;
-    template: {
-        settings?: {
-            [key: string]: any;
-        };
-        mappings?: {
-            properties?: {
-                [key: string]: any;
-            };
+    settings?: {
+        [key: string]: any;
+    };
+    mappings?: {
+        properties?: {
             [key: string]: any;
         };
         [key: string]: any;
     };
+    [key: string]: any;
 }
 
-export type ElasticsearchIndexTemplatePluginConfig = IndicesPutIndexTemplate<RequestBodyParams>;
+export type ElasticsearchIndexTemplatePluginConfig = IndicesPutTemplate<RequestBodyParams> & {
+    order: number;
+};
 
 export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
     public readonly template: ElasticsearchIndexTemplatePluginConfig;
 
-    public constructor(config: ElasticsearchIndexTemplatePluginConfig) {
+    public constructor(template: ElasticsearchIndexTemplatePluginConfig) {
         super();
         this.template = {
-            ...config,
-            method: config.method || "POST"
+            ...template
         };
         this.validateTemplate();
     }
@@ -66,9 +64,9 @@ export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
         /**
          * Order must be greater than 0.
          */
-        if (this.template.body.priority <= 0) {
+        if (this.template.order <= 0) {
             throw new WebinyError(
-                `Priority must be greater than 0 in template "${name}".`,
+                `Order must be greater than 0 in template "${name}".`,
                 "INVALID_ES_TEMPLATE_DEFINITION",
                 {
                     config: this.template
