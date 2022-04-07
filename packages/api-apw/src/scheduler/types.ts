@@ -98,6 +98,10 @@ export interface ApwScheduleActionData {
     mainGraphqlFunctionArn: string;
 }
 
+export enum InvocationTypes {
+    SCHEDULED = "scheduled"
+}
+
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
     get(id: string): Promise<TEntry | null>;
 

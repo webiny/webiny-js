@@ -1,4 +1,14 @@
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import { InvocationTypes } from "~/scheduler/types";
+
+/**
+ * https://day.js.org/docs/en/plugin/utc
+ */
+dayjs.extend(utc);
+
 const TIME_SEPARATOR = ":";
+const ELAPSED_CRON_EXPRESSION = "* * * * ? 2000";
 
 export const getIsoStringTillMinutes = (datetime: string): string => {
     /**
@@ -14,36 +24,50 @@ export const getIsoStringTillMinutes = (datetime: string): string => {
 
 export const dateTimeToCronExpression = (datetime: string): string => {
     if (!datetime) {
-        return "* * * * ? 2000";
+        return ELAPSED_CRON_EXPRESSION;
     }
-    const date = new Date(datetime);
-    const min = date.getUTCMinutes();
-    const hour = date.getUTCHours();
-    const dayOfMonth = date.getUTCDate();
     /**
-     * Cron expressions expect month in range of 1-12
+     * You can't specify the Day-of-month and Day-of-week fields in the same cron expression.
+     * If you specify a value (or a *) in one of the fields, you must use a ? (question mark) in the other.
+     *
+     *  https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
      */
-    const month = date.getUTCMonth() + 1;
-    const year = date.getUTCFullYear();
     const dayOfWeek = "?";
 
-    return `${min} ${hour} ${dayOfMonth} ${month} ${dayOfWeek} ${year}`;
+    return dayjs.utc(datetime).format(`mm H D M [${dayOfWeek}] YYYY`);
 };
 
-export const getFutureDate = (datetime: string): string => {
-    const date = new Date(datetime);
-    const year = date.getUTCFullYear();
-    const next = year + 100;
-
-    date.setUTCFullYear(next);
-    return date.toISOString();
+export const moveDateTimeToNextCentury = (datetime: string): string => {
+    return dayjs.utc(datetime).add(100, "year").toISOString();
 };
 
-export const updateYear = (datetime: string, setValue: (current: number) => number): string => {
-    const date = new Date(datetime);
-    const year = date.getUTCFullYear();
-    const next = setValue(year);
+export const moveDateTimeToCurrentCentury = (datetime: string): string => {
+    return dayjs.utc(datetime).subtract(100, "year").toISOString();
+};
 
-    date.setUTCFullYear(next);
-    return date.toISOString();
+export const isDateTimeInNextCentury = (datetime: string): boolean => {
+    return dayjs.utc(datetime).isAfter("2100-01-01", "year");
+};
+
+interface ShouldRestoreDatetimeParams {
+    invocationType?: InvocationTypes;
+    datetime: string;
+}
+
+export const shouldRestoreDatetime = ({
+    invocationType,
+    datetime
+}: ShouldRestoreDatetimeParams): boolean => {
+    /**
+     * "invocationType" will not be SCHEDULED when the lambda is called from Main GQL handler.
+     *
+     * Which means a new content is scheduled for "publish"/"unpublish" therefore, we need to restore the previously
+     * scheduled action if it has not been executed already.
+     */
+    const selfInvoked = invocationType === InvocationTypes.SCHEDULED;
+
+    const today = dayjs.utc();
+    const isExecutionPending = dayjs.utc(datetime).isAfter(today);
+
+    return !selfInvoked && isExecutionPending;
 };

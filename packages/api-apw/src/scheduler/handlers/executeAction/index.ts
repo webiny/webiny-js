@@ -14,7 +14,7 @@ export type HandlerArgs = {
     datetime: string;
     tenant: string;
     locale: string;
-    futureDateTime: string;
+    futureDatetime: string;
 };
 
 interface Configuration {
@@ -32,10 +32,9 @@ export default ({
         const log = console.log;
 
         try {
-            log("RUNNING ScheduleAction ExecuteAction Handler");
             const { invocationArgs: args } = context;
 
-            const { futureDateTime: datetime } = args;
+            const { futureDatetime: datetime } = args;
             /**
              * If there is no datetime we bail out early.
              */
@@ -53,7 +52,8 @@ export default ({
                     locale: args.locale || "en-US",
                     datetime_startsWith: getIsoStringTillMinutes(datetime)
                 },
-                sort: "datetime_ASC"
+                sort: "datetime_ASC",
+                limit: 1000
             });
 
             /**

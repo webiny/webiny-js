@@ -1,13 +1,19 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { ApwScheduleActionStorageOperations } from "~/scheduler/types";
+import { ApwScheduleAction, ApwScheduleActionStorageOperations } from "~/scheduler/types";
 import {
     DeleteRuleCommand,
     RemoveTargetsCommand,
     PutTargetsCommand,
     PutRuleCommand
 } from "@aws-sdk/client-cloudwatch-events";
-import { dateTimeToCronExpression, updateYear } from "../utils";
+import {
+    dateTimeToCronExpression,
+    isDateTimeInNextCentury,
+    moveDateTimeToCurrentCentury,
+    moveDateTimeToNextCentury,
+    shouldRestoreDatetime
+} from "../utils";
 import { ClientContext } from "@webiny/handler-client/types";
 
 export enum InvocationTypes {
@@ -19,7 +25,7 @@ export type HandlerArgs = {
     tenant: string;
     locale: string;
     invocationType?: InvocationTypes;
-    futureDateTime?: string;
+    futureDatetime?: string;
 };
 
 interface Configuration {
@@ -29,6 +35,8 @@ interface Configuration {
         executeAction: string;
     };
 }
+
+const log = console.log;
 
 /**
  * Handler that creates a cloudwatch event rule for the schedule action workflow.
@@ -40,44 +48,21 @@ export default ({
 }: Configuration): HandlerPlugin<ArgsContext<HandlerArgs>, ClientContext> => ({
     type: "handler",
     async handle(context): Promise<void> {
-        const log = console.log;
-
         try {
-            log("RUNNING ScheduleAction CreateRule Handler");
             const { invocationArgs: args, handlerClient, args: originalArgs } = context;
-            console.log("args ", args);
+
             const [, eventContext] = originalArgs;
 
             /**
-             * If invocationType in args is "scheduled", execute the action.
+             * If invocationType is "scheduled", execute the action.
              */
             if (args.invocationType === InvocationTypes.SCHEDULED) {
-                log(`Executing task at: `, new Date().toISOString());
-
-                if (typeof handlerClient.invoke === "function") {
-                    await handlerClient.invoke({
-                        name: handlers.executeAction,
-                        payload: {
-                            futureDateTime: args.futureDateTime,
-                            datetime: args.datetime,
-                            tenant: args.tenant,
-                            locale: args.locale
-                        },
-                        await: false
-                    });
-                }
-
-                /**
-                 * Delete current schedule Task.
-                 */
-                try {
-                    await storageOperations.deleteCurrentTask({
-                        tenant: args.tenant,
-                        locale: args.locale
-                    });
-                } catch (e) {
-                    console.error(e);
-                }
+                await executeTask({
+                    args,
+                    lambdaName: handlers.executeAction,
+                    handlerClient,
+                    storageOperations
+                });
             }
 
             /**
@@ -104,73 +89,67 @@ export default ({
 
             if (!nextItem) {
                 log(`No item found.`);
+                return;
             }
 
+            const nextTaskDatetime = nextItem.data.datetime;
+            const currentTaskDatetime = currentTask && currentTask.data.datetime;
+
+            if (isDateTimeInNextCentury(nextTaskDatetime)) {
+                log(`Already processed the task.`);
+                return;
+            }
+
+            if (!shouldScheduleTask(nextTaskDatetime, currentTaskDatetime)) {
+                log(`Already scheduled the task.`);
+                return;
+            }
+
+            const futureDatetime = moveDateTimeToNextCentury(nextItem.data.datetime);
             /**
-             * Same year.
+             * Update "datetime" to a future date to mark it as scheduled.
+             */
+            log(`Update task's datetime to `, futureDatetime);
+            await storageOperations.update({
+                item: {
+                    ...nextItem,
+                    data: { ...nextItem.data, datetime: futureDatetime }
+                },
+                input: { ...nextItem.data, datetime: futureDatetime }
+            });
+            /**
+             * Restore "datetime" of current task so that it can be schedule in next cycle.
              */
             if (
-                performCheck({
+                currentTaskDatetime &&
+                shouldRestoreDatetime({
                     invocationType: args.invocationType,
-                    nextDateTime: nextItem.data.datetime,
-                    currentDateTime: currentTask && currentTask.data.datetime
+                    datetime: currentTaskDatetime
                 })
             ) {
-                const futureDateTime = updateYear(nextItem.data.datetime, value => value + 100);
-                /**
-                 * Update GSI1_SK
-                 */
-                console.log(`Updating record's datetime to `, futureDateTime);
-                await storageOperations.update({
-                    item: {
-                        ...nextItem,
-                        data: { ...nextItem.data, datetime: futureDateTime }
-                    },
-                    input: { ...nextItem.data, datetime: futureDateTime }
+                await restoreDateTime({
+                    tenant: args.tenant,
+                    locale: args.locale,
+                    task: currentTask,
+                    storageOperations
                 });
-                /**
-                 * Mark current scheduled task as undone.
-                 */
-                if (
-                    args.invocationType !== "scheduled" &&
-                    currentTask &&
-                    currentTask.data.datetime > new Date().toISOString()
-                ) {
-                    console.log(`Marking Task "${currentTask.id}" as undone...`);
-                    const item = await storageOperations.get({
-                        where: {
-                            tenant: args.tenant,
-                            locale: args.locale,
-                            id: currentTask.id
-                        }
-                    });
-                    if (item) {
-                        const newDateTime = updateYear(item.data.datetime, value => value - 100);
-                        console.log(`newDateTime `, newDateTime);
-                        await storageOperations.update({
-                            item: {
-                                ...item,
-                                data: { ...item.data, datetime: newDateTime }
-                            },
-                            input: { ...item.data, datetime: newDateTime }
-                        });
-                    }
-                }
-                /**
-                 * Schedule Lambda
-                 */
-                log(`Schedule Lambda Execution...`);
-                await scheduleLambdaExecution({
-                    cloudWatchEventClient,
-                    invokedFunctionArn: eventContext.invokedFunctionArn,
-                    datetime: nextItem.data.datetime,
-                    futureDateTime
-                });
-                /**
-                 * Update current task.
-                 */
-                await storageOperations.updateCurrentTask({ item: nextItem });
             }
+            /**
+             * Schedule Lambda
+             */
+            log(`Schedule Lambda Execution...`);
+            await scheduleLambdaExecution({
+                cloudWatchEventClient,
+                invokedFunctionArn: eventContext.invokedFunctionArn,
+                datetime: nextItem.data.datetime,
+                futureDatetime: futureDatetime,
+                tenant: args.tenant,
+                locale: args.locale
+            });
+            /**
+             * Update current task.
+             */
+            await storageOperations.updateCurrentTask({ item: nextItem });
         } catch (e) {
             log("[HANDLER_CREATE_RULE] Error => ", e);
             // TODO: Handler error. Maybe save it into DB.
@@ -178,11 +157,9 @@ export default ({
     }
 });
 
-interface ScheduleLambdaExecutionParams {
-    datetime: string;
+interface ScheduleLambdaExecutionParams extends Omit<HandlerArgs, "invocationType"> {
     cloudWatchEventClient: any;
     invokedFunctionArn: string;
-    futureDateTime: string;
 }
 
 /**
@@ -197,7 +174,9 @@ async function scheduleLambdaExecution({
     cloudWatchEventClient,
     invokedFunctionArn,
     datetime,
-    futureDateTime
+    futureDatetime,
+    tenant,
+    locale
 }: ScheduleLambdaExecutionParams) {
     /**
      * Remove the target
@@ -231,7 +210,6 @@ async function scheduleLambdaExecution({
      * 20   10  10  03  *   2022
      */
     const cronExpression = dateTimeToCronExpression(datetime);
-    console.log(JSON.stringify({ cronExpression, datetime }, null, 2));
 
     const ruleParams = {
         Name: RULE_NAME,
@@ -239,8 +217,7 @@ async function scheduleLambdaExecution({
         State: "ENABLED"
     };
 
-    const { RuleArn } = await cloudWatchEventClient.send(new PutRuleCommand(ruleParams));
-    console.log("Created new Rule ARN:", RuleArn);
+    await cloudWatchEventClient.send(new PutRuleCommand(ruleParams));
     /**
      * Add lambda as target for the rule.
      */
@@ -253,10 +230,10 @@ async function scheduleLambdaExecution({
                     Id: TARGET_ID,
                     Input: JSON.stringify({
                         datetime: datetime,
-                        tenant: "root",
-                        locale: "en-US",
+                        tenant: tenant,
+                        locale: locale,
                         invocationType: InvocationTypes.SCHEDULED,
-                        futureDateTime
+                        futureDatetime: futureDatetime
                     } as HandlerArgs)
                 }
             ]
@@ -264,31 +241,82 @@ async function scheduleLambdaExecution({
     );
 }
 
-const isLatest = (nextDateTime: string, currentDateTime: string | null) => {
-    if (!currentDateTime) {
-        return true;
-    }
-    return nextDateTime < currentDateTime;
+const shouldScheduleTask = (
+    nextTaskDatetime: string,
+    currentTaskDatetime: string | null
+): boolean => {
+    return !currentTaskDatetime || nextTaskDatetime < currentTaskDatetime;
 };
 
-const performCheck = ({
-    invocationType,
-    nextDateTime,
-    currentDateTime
-}: {
-    invocationType: "scheduled" | undefined;
-    nextDateTime: string;
-    currentDateTime: string | null;
-}) => {
-    /**
-     * TODO: Make it dynamic
-     */
-    if (!nextDateTime.startsWith("2022")) {
-        return false;
+interface RestoreDateTimeParams
+    extends Pick<Configuration, "storageOperations">,
+        Pick<HandlerArgs, "tenant" | "locale"> {
+    task: ApwScheduleAction;
+}
+
+const restoreDateTime = async ({
+    locale,
+    tenant,
+    task: currentTask,
+    storageOperations
+}: RestoreDateTimeParams): Promise<void> => {
+    log(`Mark task "${currentTask.id}" as undone by restoring original "datetime".`);
+    const item = await storageOperations.get({
+        where: {
+            tenant,
+            locale,
+            id: currentTask.id
+        }
+    });
+    if (item) {
+        const newDateTime = moveDateTimeToCurrentCentury(item.data.datetime);
+        await storageOperations.update({
+            item: {
+                ...item,
+                data: { ...item.data, datetime: newDateTime }
+            },
+            input: { ...item.data, datetime: newDateTime }
+        });
+    }
+};
+
+interface ExecuteTaskParams {
+    args: HandlerArgs;
+    handlerClient: ClientContext["handlerClient"];
+    lambdaName: string;
+    storageOperations: Configuration["storageOperations"];
+}
+
+const executeTask = async ({
+    args,
+    lambdaName,
+    handlerClient,
+    storageOperations
+}: ExecuteTaskParams): Promise<void> => {
+    log(`Executing task at: `, new Date().toISOString());
+
+    if (typeof handlerClient.invoke === "function") {
+        await handlerClient.invoke({
+            name: lambdaName,
+            payload: {
+                futureDatetime: args.futureDatetime,
+                datetime: args.datetime,
+                tenant: args.tenant,
+                locale: args.locale
+            },
+            await: false
+        });
     }
 
-    if (invocationType === "scheduled") {
-        return true;
+    /**
+     * Delete current schedule Task. So that, we can schedule a new one later.
+     */
+    try {
+        await storageOperations.deleteCurrentTask({
+            tenant: args.tenant,
+            locale: args.locale
+        });
+    } catch (e) {
+        console.error(e);
     }
-    return isLatest(nextDateTime, currentDateTime);
 };
