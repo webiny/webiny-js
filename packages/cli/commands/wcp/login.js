@@ -187,7 +187,7 @@ module.exports.command = () => ({
                     const { orgId, projectId } = pat.meta;
 
                     const id = `${orgId}/${projectId}`;
-                    console.log(`${chalk.green(id)} project detected. Initializing...`);
+                    console.log(`Project ${chalk.green(id)} detected. Initializing...`);
 
                     await sleep();
 
