@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "name": "@webiny/admin",
+  "sideEffects": false,
+  "main": "./src/index.tsx",
+  "dependencies": {
+    "react": "^16.14.0"
+  }
+}

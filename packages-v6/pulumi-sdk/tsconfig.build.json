@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./lib/types",
+    "declarationDir": "./lib/types",
+    "emitDeclarationOnly": true,
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
+  }
+}

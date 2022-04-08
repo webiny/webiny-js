@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
+
+
+### Features
+
+* **api-headless-cms:** get published or latest revision via manage api ([#2266](https://github.com/webiny/webiny-js/issues/2266)) ([7a1806d](https://github.com/webiny/webiny-js/commit/7a1806db84c24c2d80588d5d2b611aea74614d65))
+
+
+
+
+
+# [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* **v5:** page builder ([#2275](https://github.com/webiny/webiny-js/issues/2275)) ([6fead56](https://github.com/webiny/webiny-js/commit/6fead5669bcc630851786b1095760c6e05933a4d))
+
+
+
+
+
+# [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
+
+
+### Features
+
+* enable sourcemaps for lambda functions ([#2272](https://github.com/webiny/webiny-js/issues/2272)) ([0694711](https://github.com/webiny/webiny-js/commit/0694711dca6b3c8f9f91858f97871d1660ad30df))
+* strict typescript ([#2235](https://github.com/webiny/webiny-js/issues/2235)) ([c7c49e7](https://github.com/webiny/webiny-js/commit/c7c49e744667112a0013ea5370644f4df7eb800a))
+* ts no property access from index ([#2258](https://github.com/webiny/webiny-js/issues/2258)) ([7510c75](https://github.com/webiny/webiny-js/commit/7510c7549bf8587c21aca9cfb71dd45d0d22b892))
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package @webiny/ui

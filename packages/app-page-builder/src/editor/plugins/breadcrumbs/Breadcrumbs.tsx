@@ -68,7 +68,7 @@ const Breadcrumbs: React.FC = () => {
     const createBreadCrumbs = useCallback(async (activeElement: PbEditorElement) => {
         const list: ItemsState[] = [];
         let element = activeElement;
-        while (element.parent) {
+        while (element) {
             list.push({
                 id: element.id,
                 type: element.type

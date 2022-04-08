@@ -491,13 +491,13 @@ export const createFormStorageOperations = (
         const { form } = params;
         let items: any[];
         /**
-         * This will find all form and submission records.
+         * This will find all form records.
          */
-        const queryAllParams = {
+        const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createFormPartitionKey(form),
             options: {
-                gte: " "
+                beginsWith: form.formId
             }
         };
         try {

@@ -760,6 +760,7 @@ describe("fieldValidations", () => {
                 createFruit: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "12345678",
@@ -812,6 +813,7 @@ describe("fieldValidations", () => {
                 getFruit: {
                     data: {
                         id: apple.id,
+                        entryId: apple.entryId,
                         createdOn: apple.createdOn,
                         createdBy: {
                             id: "12345678",

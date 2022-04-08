@@ -3,6 +3,7 @@ import { GQLHandlerCallableParams } from "./useGqlHandler";
 
 const fruitFields = `
     id
+    entryId
     createdOn
     createdBy {
         id

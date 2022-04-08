@@ -750,13 +750,21 @@ export const createEntriesStorageOperations = (
         );
 
         /**
-         * We need the latest entry to check if it neds to be updated as well in the Elasticsearch.
+         * We need the latest entry to check if it needs to be updated as well in the Elasticsearch.
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
             ids: [entry.id]
         });
 
+        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    ...latestKeys
+                })
+            );
+        }
         /**
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
          */

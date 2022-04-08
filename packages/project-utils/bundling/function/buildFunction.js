@@ -3,7 +3,7 @@ const { getDuration } = require("../../utils");
 const chalk = require("chalk");
 const fs = require("fs-extra");
 const { getProject } = require("@webiny/cli/utils");
-const { injectHandlerTelemetry } = require("./utils");
+const { injectHandlerTelemetry } = require("./telemetry");
 
 module.exports = async options => {
     const duration = getDuration();
@@ -77,14 +77,13 @@ module.exports = async options => {
         return result;
     }
 
-    const handlerFile = await fs.readFile(path.join(options.cwd, "/build/handler.js"), {
+    const handlerFile = await fs.readFile(path.join(options.cwd, "build", "handler.js"), {
         encoding: "utf8",
         flag: "r"
     });
 
-    // TODO this wont include the headless CMS functions
-    const includesGraphQl = handlerFile.includes("handler-graphql");
-    if (includesGraphQl) {
+    const isTracked = handlerFile.includes("wcp-telemetry-tracker");
+    if (isTracked) {
         await injectHandlerTelemetry(cwd);
     }
 
