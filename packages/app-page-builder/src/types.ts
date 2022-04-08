@@ -127,7 +127,9 @@ export interface PbElementDataSettingsType {
     margin?: PbElementDataSettingsMarginType;
     padding?: PbElementDataSettingsPaddingType;
     height?: {
-        value?: number;
+        [key: string]: {
+            value?: number;
+        };
     };
     background?: PbElementDataSettingsBackgroundType;
     border?: PbElementDataSettingsBorderType;
@@ -167,6 +169,9 @@ export type PbElementDataType = {
     link?: {
         href?: string;
         newTab?: boolean;
+    };
+    iframe?: {
+        url?: string;
     };
     type?: string;
     icon?: PbElementDataIconType;
