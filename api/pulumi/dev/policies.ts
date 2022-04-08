@@ -491,7 +491,7 @@ class Policies {
                     {
                         Sid: "PermissionDynamoDB",
                         Effect: "Allow",
-                        Action: ["dynamodb:Query", "dynamodb:DeleteItem"],
+                        Action: ["dynamodb:Query", "dynamodb:GetItem", "dynamodb:DeleteItem"],
                         Resource: [
                             pulumi.interpolate`${primaryDynamodbTable.arn}`,
                             pulumi.interpolate`${primaryDynamodbTable.arn}/*`

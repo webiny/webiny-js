@@ -67,6 +67,22 @@ class Graphql {
                 }
             })
         };
+        /**
+         * Store meta information like "mainGraphqlFunctionArn" in APW settings at deploy time.
+         *
+         * Note: We can't pass "mainGraphqlFunctionArn" as env variable due to circular dependency between
+         * "graphql" lambda and "api-apw-scheduler-execute-action" lambda.
+         */
+        new aws.dynamodb.TableItem("apwSettings", {
+            tableName: primaryDynamodbTable.name,
+            hashKey: primaryDynamodbTable.hashKey,
+            rangeKey: primaryDynamodbTable.rangeKey.apply(key => key || "SK"),
+            item: pulumi.interpolate`{
+              "PK": {"S": "APW#SETTINGS"},
+              "SK": {"S": "A"},
+              "mainGraphqlFunctionArn": {"S": "${this.functions.api.arn}"}
+            }`
+        });
     }
 }
 
