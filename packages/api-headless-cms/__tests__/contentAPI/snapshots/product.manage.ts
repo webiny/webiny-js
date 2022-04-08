@@ -229,7 +229,7 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getProduct(revision: ID!): ProductResponse
+        getProduct(revision: ID, entryId: ID, status: CmsEntryStatusType): ProductResponse
         
         getProductRevisions(id: ID!): ProductArrayResponse
         

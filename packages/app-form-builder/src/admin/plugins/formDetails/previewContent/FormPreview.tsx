@@ -19,7 +19,7 @@ interface GetFormQueryVariables {
     revision: string;
 }
 const GET_FORM = gql`
-    query FbGetForm($revision: ID!) {
+    query FbGetFullForm($revision: ID!) {
         formBuilder {
             getForm(revision: $revision) {
                 data {

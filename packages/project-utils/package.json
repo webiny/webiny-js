@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "5.24.0",
+  "version": "5.25.0",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
@@ -28,9 +28,9 @@
     "@rollup/plugin-virtual": "^2.1.0",
     "@svgr/webpack": "6.1.1",
     "@types/webpack-env": "1.16.3",
-    "@webiny/cli": "^5.24.0",
-    "@webiny/global-config": "^5.24.0",
-    "@webiny/telemetry": "^5.24.0",
+    "@webiny/cli": "^5.25.0",
+    "@webiny/global-config": "^5.25.0",
+    "@webiny/telemetry": "^5.25.0",
     "babel-loader": "8.2.3",
     "babel-plugin-lodash": "3.3.4",
     "buffer": "^6.0.3",
@@ -51,6 +51,7 @@
     "html-webpack-plugin": "5.5.0",
     "lodash": "^4.6.2",
     "mini-css-extract-plugin": "2.4.5",
+    "node-fetch": "^2.6.1",
     "path-browserify": "^1.0.1",
     "postcss-flexbugs-fixes": "5.0.2",
     "postcss-loader": "6.2.1",

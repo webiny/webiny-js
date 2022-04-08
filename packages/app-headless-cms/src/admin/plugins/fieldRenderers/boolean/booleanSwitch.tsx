@@ -25,7 +25,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    {(bindProps: any) => (
+                    {bindProps => (
                         <Switch {...bindProps} label={field.label} description={field.helpText} />
                     )}
                 </Bind>

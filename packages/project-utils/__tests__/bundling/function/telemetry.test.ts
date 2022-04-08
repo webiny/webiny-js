@@ -1,17 +1,14 @@
-const { updateTelemetryFunction } = require("../../../bundling/function/telemetry");
-const fs = require("fs");
-const path = require("path");
+import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
+import { getTelemetryFunctionDownloadPath } from "../../../bundling/function/utils";
+import * as fs from "fs";
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip("updateTelemetryFunction()", () => {
+describe("downloadTelemetryFunction()", () => {
     test("The telemetry function file has been updated", async () => {
         const now = Date.now();
 
-        await updateTelemetryFunction();
+        await downloadTelemetryFunction();
 
-        const pathToProjectUtilsRoot = path.join(__dirname, "../../../bundling/function");
-
-        const telemetryFunctionPath = fs.statSync(pathToProjectUtilsRoot + "/telemetryFunction.js");
+        const telemetryFunctionPath = fs.statSync(getTelemetryFunctionDownloadPath());
 
         const lastModified = new Date(telemetryFunctionPath.mtime).getTime();
 

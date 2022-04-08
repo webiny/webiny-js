@@ -42,8 +42,8 @@ const errorFields = `
 `;
 
 const getCategoryQuery = /* GraphQL */ `
-    query GetCategory($revision: ID!) {
-        getCategory(revision: $revision) {
+    query GetCategory($revision: ID, $entryId: ID, $status: CmsEntryStatusType) {
+        getCategory(revision: $revision, entryId: $entryId, status: $status) {
             data {
                 ${categoryFields}
             }
@@ -190,7 +190,10 @@ export const useCategoryManageHandler = (
         ...contentHandler,
         async getCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getCategoryQuery, variables },
+                body: {
+                    query: getCategoryQuery,
+                    variables
+                },
                 headers
             });
         },

@@ -8,6 +8,7 @@ import {
 
 import { createCognitoResources } from "./StorageCognito";
 import { createDynamoTable } from "./StorageDynamo";
+import { createEventBus } from "./StorageEventBus";
 import { createFileManagerBucket } from "./StorageFileManager";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
@@ -34,6 +35,9 @@ export const StorageApp = defineApp({
             useEmailAsUsername: legacyConfig.useEmailAsUsername ?? false
         });
 
+        // Setup event bus
+        const eventBus = createEventBus(app);
+
         // Setup file storage bucket
         const fileManagerBucket = createFileManagerBucket(app, { protect });
 
@@ -44,12 +48,14 @@ export const StorageApp = defineApp({
             cognitoUserPoolId: cognito.userPool.output.id,
             cognitoUserPoolArn: cognito.userPool.output.arn,
             cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
-            cognitoAppClientId: cognito.userPoolClient.output.id
+            cognitoAppClientId: cognito.userPoolClient.output.id,
+            eventBusArn: eventBus.output.arn
         });
 
         return {
             table,
             ...cognito,
+            eventBus,
             fileManagerBucket
         };
     }

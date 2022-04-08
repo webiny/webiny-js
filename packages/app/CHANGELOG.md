@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+# [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+# [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
+
+
+### Features
+
+* **headless-cms:** comment on the field properties ([#2287](https://github.com/webiny/webiny-js/issues/2287)) ([a430979](https://github.com/webiny/webiny-js/commit/a4309799b3e883b757de3eee727d59a2c70159c6))
+
+
+
+
+
+# [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
+
+
+### Bug Fixes
+
+* ts build and react-router v6 ([#2277](https://github.com/webiny/webiny-js/issues/2277)) ([da4e0b8](https://github.com/webiny/webiny-js/commit/da4e0b8e05c97f1163a1f836e243c687037370ac))
+
+
+
+
+
+# [5.25.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.0...v5.25.0-beta.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* **v5:** page builder ([#2275](https://github.com/webiny/webiny-js/issues/2275)) ([6fead56](https://github.com/webiny/webiny-js/commit/6fead5669bcc630851786b1095760c6e05933a4d))
+
+
+
+
+
+# [5.25.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.24.0...v5.25.0-beta.0) (2022-03-14)
+
+
+### Features
+
+* strict typescript ([#2235](https://github.com/webiny/webiny-js/issues/2235)) ([c7c49e7](https://github.com/webiny/webiny-js/commit/c7c49e744667112a0013ea5370644f4df7eb800a))
+* ts no property access from index ([#2258](https://github.com/webiny/webiny-js/issues/2258)) ([7510c75](https://github.com/webiny/webiny-js/commit/7510c7549bf8587c21aca9cfb71dd45d0d22b892))
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package @webiny/app

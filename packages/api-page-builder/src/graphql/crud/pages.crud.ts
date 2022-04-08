@@ -493,7 +493,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     page
                 });
 
-                await onBeforePageUpdate.publish({
+                await onAfterPageUpdate.publish({
                     original,
                     page: result,
                     input
@@ -1359,6 +1359,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                         tenant: getTenantId(),
                         locale: getLocaleCode()
                     },
+                    sort: ["version_ASC"],
                     /**
                      * Let's hope there will be no more than 10000 revisions.
                      * Need to implement "after" option if required.

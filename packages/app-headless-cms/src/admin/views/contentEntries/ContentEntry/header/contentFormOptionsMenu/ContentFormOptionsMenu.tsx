@@ -87,6 +87,7 @@ const ContentFormOptionsMenu: React.FC = () => {
                         return;
                     }
 
+                    setLoading(false);
                     removeEntryFromListCache(contentModel, cache, entry, listQueryVariables);
 
                     showSnackbar(

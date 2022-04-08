@@ -1,57 +1,27 @@
 const fs = require("fs");
-const { https } = require("follow-redirects");
-const telemetry = require("./telemetry");
 const path = require("path");
+const fetch = require("node-fetch");
+const { getTelemetryFunctionDownloadPath } = require("./utils");
 
-const TELEMETRY_BUCKET_URL = process.env.WCP_API_CLIENTS_URL || "d16ix00y8ek390.cloudfront.net";
+const WCP_API_CLIENTS_URL = `${process.env.WCP_API_URL}/clients/latest.js`;
 
-function requestTelemetryCode() {
-    const options = {
-        method: "GET",
-        hostname: TELEMETRY_BUCKET_URL,
-        path: "/clients/latest",
-        maxRedirects: 20
-    };
+async function downloadTelemetryFunction() {
+    const response = await fetch(WCP_API_CLIENTS_URL);
 
-    return new Promise((resolve, reject) => {
-        https
-            .request(options, function (res) {
-                const chunks = [];
+    const telemetryCode = await response.text();
 
-                res.on("data", chunk => chunks.push(chunk));
-
-                res.on("error", error => reject(error));
-
-                res.on("end", () => {
-                    const body = Buffer.concat(chunks);
-                    resolve(body.toString());
-                });
-            })
-            .end();
-    });
-}
-
-async function updateTelemetryFunction() {
-    const telemetryCode = await requestTelemetryCode();
-
-    fs.writeFileSync(__dirname + "/telemetryFunction.js", telemetryCode);
+    fs.writeFileSync(getTelemetryFunctionDownloadPath(), telemetryCode);
 }
 
 async function injectHandlerTelemetry(cwd) {
-    await telemetry.updateTelemetryFunction();
+    await downloadTelemetryFunction();
 
-    fs.copyFileSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
+    fs.renameSync(path.join(cwd, "build", "handler.js"), path.join(cwd, "build", "_handler.js"));
 
-    // Create a new handler.js.
-    const telemetryFunction = await fs.readFile(path.join(__dirname, "/telemetryFunction.js"), {
-        encoding: "utf8",
-        flag: "r"
-    });
-
-    fs.writeFileSync(path.join(cwd, "build", "handler.js"), telemetryFunction);
+    fs.copyFileSync(getTelemetryFunctionDownloadPath(), path.join(cwd, "build", "handler.js"));
 }
 
 module.exports = {
-    updateTelemetryFunction,
+    downloadTelemetryFunction,
     injectHandlerTelemetry
 };
