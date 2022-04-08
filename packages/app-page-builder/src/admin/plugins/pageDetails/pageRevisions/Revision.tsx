@@ -28,12 +28,12 @@ import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
 import { ReactComponent as AddIcon } from "~/admin/assets/add.svg";
 import { ReactComponent as EditIcon } from "~/admin/assets/edit.svg";
-import { ReactComponent as PublishIcon } from "~/admin/assets/round-publish-24px.svg";
 import { ReactComponent as UnpublishIcon } from "~/admin/assets/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
 import { PbPageData, PbPageRevision } from "~/types";
 import usePermission from "~/hooks/usePermission";
+import { PublishPageMenuOption } from "./PublishPageMenuOption";
 
 type RevisionProps = {
     revision: PbPageRevision;
@@ -89,7 +89,7 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
         refreshSiteStatus
     );
 
-    const { canPublish, canUnpublish, canDelete } = usePermission();
+    const { canUnpublish, canDelete } = usePermission();
 
     return (
         <ConfirmationDialog
@@ -130,14 +130,10 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
                                 </MenuItem>
                             )}
 
-                            {revision.status !== "published" && canPublish() && (
-                                <MenuItem onClick={() => publishRevision(revision)}>
-                                    <ListItemGraphic>
-                                        <Icon icon={<PublishIcon />} />
-                                    </ListItemGraphic>
-                                    Publish
-                                </MenuItem>
-                            )}
+                            <PublishPageMenuOption
+                                revision={revision}
+                                publishRevision={publishRevision}
+                            />
 
                             {revision.status === "published" && canUnpublish() && (
                                 <MenuItem onClick={() => unpublishRevision(revision)}>

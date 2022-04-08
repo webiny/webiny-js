@@ -6,11 +6,16 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import usePermission from "~/hooks/usePermission";
-import { pageAtom } from "~/editor/recoil/modules";
+import { pageAtom, PageAtomType } from "~/editor/recoil/modules";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
+import { makeComposable } from "@webiny/app-admin";
 
-const PublishPageButton: React.FC = () => {
-    const page = useRecoilValue(pageAtom);
+export interface PublishPageButtonProps {
+    page: PageAtomType;
+}
+
+const PublishPageButton: React.FC<PublishPageButtonProps> = props => {
+    const { page } = props;
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
@@ -65,4 +70,11 @@ const PublishPageButton: React.FC = () => {
     );
 };
 
-export default PublishPageButton;
+export const PublishPageButtonComposable = makeComposable("PublishPageButton", PublishPageButton);
+
+const DefaultPublishPageButton = () => {
+    const page = useRecoilValue(pageAtom);
+    return <PublishPageButtonComposable page={page} />;
+};
+
+export default DefaultPublishPageButton;
