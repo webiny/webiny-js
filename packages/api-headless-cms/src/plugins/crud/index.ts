@@ -15,6 +15,10 @@ export interface CreateAdminCrudsParams {
 export const createAdminCruds = (params: CreateAdminCrudsParams) => {
     const { storageOperations } = params;
     return new ContextPlugin<CmsContext>(async context => {
+        if (context.http?.request?.method === "OPTIONS") {
+            return;
+        }
+
         /**
          * This should never happen in the actual project.
          * It is to make sure that we load setup context before the CRUD init in our internal code.

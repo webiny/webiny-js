@@ -72,7 +72,7 @@ const renderContent = (
     return React.createElement(layout.component, null, content);
 };
 
-const Content = () => {
+const Content: React.FC = () => {
     const rootElementId = useRecoilValue(rootElementAtom);
     const rootElement = useRecoilValue(elementsAtom(rootElementId)) as PbEditorElement;
     const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));

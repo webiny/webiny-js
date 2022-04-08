@@ -1,6 +1,7 @@
 .idea
 .webpack
 .webiny
+.artifacts
 .env*
 .npmrc
 htpasswd
@@ -15,7 +16,8 @@ yarn-debug.log*
 yarn-error.log*
 dist/
 lib/
-build/
+api/**/build/
+apps/**/build/
 .files/
 .changelog
 .verdaccio

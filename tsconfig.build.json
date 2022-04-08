@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "esnext",
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "module": "esnext",
-    "lib": ["esnext", "dom", "dom.iterable"],
+    "lib": ["esnext", "dom"],
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,
@@ -16,7 +16,12 @@
     "baseUrl": ".",
     "paths": {},
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
-    "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }],
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      }
+    ],
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitUseStrict": false,
@@ -32,7 +37,7 @@
     "strictFunctionTypes": true,
     "noImplicitOverride": true,
     "strict": true,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "suppressImplicitAnyIndexErrors": false,
     "suppressExcessPropertyErrors": false,
     "keyofStringsOnly": false,
@@ -60,7 +65,6 @@
     "./packages/create-webiny-project",
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",
-    "./packages/tracking",
-    "./packages-v6/pb-editor"
+    "./packages/tracking"
   ]
 }

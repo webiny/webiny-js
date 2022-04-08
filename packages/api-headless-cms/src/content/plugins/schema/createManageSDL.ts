@@ -118,7 +118,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }
 
         extend type Query {
-            get${typeName}(revision: ID!): ${mTypeName}Response
+            get${typeName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${mTypeName}Response
             
             get${typeName}Revisions(id: ID!): ${mTypeName}ArrayResponse
             

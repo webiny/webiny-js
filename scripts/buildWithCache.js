@@ -28,6 +28,18 @@ const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
     }
 })();
 
+function getBuildOutputFolder({ packageJson, packageFolder }) {
+    const webinyConfig = packageJson.webiny;
+    // `dist` is the default output folder for v5 packages.
+    let buildFolder = "dist";
+    if (webinyConfig) {
+        // Until the need arises, let's just use the default `lib` folder.
+        buildFolder = "lib";
+    }
+
+    return path.join(packageFolder, buildFolder);
+}
+
 async function build() {
     let metaJson = { packages: {} };
     try {
@@ -85,7 +97,7 @@ async function build() {
         for (let i = 0; i < packagesUseCache.length; i++) {
             const workspacePackage = packagesUseCache[i];
             const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
-            fs.copySync(cacheFolderPath, path.join(workspacePackage.packageFolder, "dist"));
+            fs.copySync(cacheFolderPath, getBuildOutputFolder(workspacePackage));
         }
     } else {
         if (useCache) {
@@ -191,36 +203,49 @@ async function build() {
                     const configPath = path
                         .join(currentPackage.packageFolder, "webiny.config")
                         .replace(/\\/g, "/");
-                    const config = require(configPath);
-                    try {
-                        await config.commands.build({
-                            // We don't want debug nor regular logs logged within the build command.
-                            logs: false,
-                            debug: false,
-                            overrides: buildOverrides
-                        });
 
-                        // Copy and paste built code into the cache folder.
-                        const cacheFolderPath = path.join(
-                            CACHE_FOLDER_PATH,
-                            currentPackage.packageJson.name
-                        );
-                        fs.copySync(
-                            path.join(currentPackage.packageFolder, "dist"),
-                            cacheFolderPath
-                        );
-
-                        const sourceHash = await getPackageSourceHash(currentPackage);
-                        metaJson.packages[currentPackage.packageJson.name] = { sourceHash };
-
-                        writeJson.sync(META_FILE_PATH, metaJson);
-                        resolve();
-                    } catch (e) {
-                        reject({
-                            error: e,
-                            package: currentPackage
-                        });
+                    // There are two options:
+                    // 1) use webiny.config.js for v5 packages
+                    // 2) run build script for v6 packages
+                    if (fs.existsSync(configPath + ".js") || fs.existsSync(configPath + ".ts")) {
+                        const config = require(configPath);
+                        try {
+                            await config.commands.build({
+                                // We don't want debug nor regular logs logged within the build command.
+                                logs: false,
+                                debug: false,
+                                overrides: buildOverrides
+                            });
+                        } catch (e) {
+                            console.log(e.message);
+                            reject({
+                                error: e,
+                                package: currentPackage
+                            });
+                        }
+                    } else {
+                        // Run build script using execa
+                        await execa("yarn", ["build"], { cwd: currentPackage.packageFolder });
                     }
+
+                    // Copy and paste built code into the cache folder.
+                    // Take packageJson.webiny config into consideration:
+                    // - for v5 packages, use the `dist` folder.
+                    // - for v6 packages, get destination from packageJson.webiny config object.
+                    const cacheFolderPath = path.join(
+                        CACHE_FOLDER_PATH,
+                        currentPackage.packageJson.name
+                    );
+
+                    const buildFolder = getBuildOutputFolder(currentPackage);
+                    fs.copySync(buildFolder, cacheFolderPath);
+
+                    // Store package hash
+                    const sourceHash = await getPackageSourceHash(currentPackage);
+                    metaJson.packages[currentPackage.packageJson.name] = { sourceHash };
+
+                    writeJson.sync(META_FILE_PATH, metaJson);
+                    resolve();
                 })
             );
         }
@@ -259,7 +284,7 @@ function getPackageCacheFolderPath(workspacePackage) {
 
 async function getPackageSourceHash(workspacePackage) {
     const { hash } = await hashElement(workspacePackage.packageFolder, {
-        folders: { exclude: ["dist"] },
+        folders: { exclude: ["dist", "lib"] },
         files: { exclude: ["tsconfig.build.tsbuildinfo"] }
     });
 

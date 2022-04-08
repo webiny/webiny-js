@@ -131,7 +131,7 @@ const SaveAction: React.FC = ({ children }) => {
             variables: formData.overwrite
                 ? {
                       id: element.source,
-                      data: pick(formData, ["content", "id", "preview"])
+                      data: pick(formData, ["content", "preview"])
                   }
                 : { data: pick(formData, ["type", "category", "preview", "name", "content"]) }
         });

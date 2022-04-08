@@ -1,9 +1,6 @@
-const { getUser } = require("./api");
-const { WCP_APP_URL } = require("./api");
 const open = require("open");
 const inquirer = require("inquirer");
-const path = require("path");
-const tsMorph = require("ts-morph");
+const { getUser, WCP_APP_URL, setProjectId, sleep } = require("./utils");
 
 module.exports = () => [
     {
@@ -147,61 +144,44 @@ module.exports = () => [
                                 }).then(result => result.project);
                             }
 
+                            const orgId = selectedOrg.id,
+                                projectId = selectedProject.id;
+
+                            await sleep();
+                            console.log();
+
+                            context.info(
+                                `Initializing ${context.success.hl(
+                                    selectedProject.name
+                                )} project...`
+                            );
+
+                            await sleep();
+
                             // Assign the necessary IDs into root `webiny.project.ts` project file.
-                            const webinyProjectPath = path.join(
-                                context.project.root,
-                                "webiny.project.ts"
-                            );
-
-                            const tsMorphProject = new tsMorph.Project();
-                            tsMorphProject.addSourceFileAtPath(webinyProjectPath);
-
-                            const source = tsMorphProject.getSourceFile(webinyProjectPath);
-
-                            const defaultExport = source.getFirstDescendant(node => {
-                                if (tsMorph.Node.isExportAssignment(node) === false) {
-                                    return false;
-                                }
-                                return node.getText().startsWith("export default ");
+                            await setProjectId({
+                                project: context.project,
+                                orgId,
+                                projectId
                             });
 
-                            if (!defaultExport) {
-                                throw new Error(
-                                    `Could not find the default export in ${context.error.hl(
-                                        "webiny.project.ts"
-                                    )}.`
-                                );
-                            }
-
-                            // Get ObjectLiteralExpression within the default export and assign the `id` property to it.
-                            const exportedObjectLiteral = defaultExport.getFirstDescendant(
-                                node => tsMorph.Node.isObjectLiteralExpression(node) === true
+                            context.success(
+                                `Project ${context.success.hl(
+                                    selectedProject.name
+                                )} initialized successfully.`
                             );
 
-                            const existingIdProperty = exportedObjectLiteral.getProperty(node => {
-                                return (
-                                    tsMorph.Node.isPropertyAssignment(node) &&
-                                    node.getName() === "id"
-                                );
-                            });
-
-                            if (tsMorph.Node.isPropertyAssignment(existingIdProperty)) {
-                                existingIdProperty.setInitializer(`"${selectedProject.id}"`);
-                            } else {
-                                exportedObjectLiteral.insertProperty(
-                                    0,
-                                    `id: "${selectedOrg.id}/${selectedProject.id}"`
-                                );
-                            }
-
-                            await tsMorphProject.save();
+                            await sleep();
+                            console.log();
+                            context.info(
+                                `If you've just created this project, you might want to deploy it via the ${context.info.hl(
+                                    "yarn webiny deploy"
+                                )} command.`
+                            );
                         }
                     );
                 }
             );
         }
-    },
-    {
-        type: "cli-plugi"
     }
 ];

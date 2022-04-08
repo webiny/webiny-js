@@ -6,8 +6,7 @@ export interface ApolloCacheObject {
 }
 
 interface ApolloCacheObjectIdPluginCallable<T> {
-    // TODO @ts-refactor probably a string but @pavel check it out
-    (data: T): any;
+    (data: T): string | null;
 }
 
 export class ApolloCacheObjectIdPlugin<

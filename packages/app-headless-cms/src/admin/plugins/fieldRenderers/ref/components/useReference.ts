@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient } from "~/admin/hooks";
-import * as GQL from "./graphql";
-import { getOptions, OptionItem } from "./getOptions";
+import {
+    SEARCH_CONTENT_ENTRIES,
+    GET_CONTENT_ENTRY,
+    CmsEntryGetQueryResponse,
+    CmsEntryGetQueryVariables,
+    CmsEntrySearchQueryResponse,
+    CmsEntrySearchQueryVariables
+} from "./graphql";
 import { CmsEditorField, CmsModel } from "~/types";
-import { CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables } from "./graphql";
 import { BindComponentRenderProp } from "@webiny/form";
-
-interface DataEntry {
-    id: string;
-    model: {
-        modelId: string;
-        name: string;
-    };
-    status: "published" | "draft";
-    title: string;
-}
+import { OptionItem, OptionItemCollection } from "./types";
+import {
+    convertReferenceEntriesToOptionCollection,
+    convertReferenceEntryToOption
+} from "./helpers";
 
 interface UseReferenceHookArgs {
     bind: BindComponentRenderProp;
@@ -31,61 +31,32 @@ interface UseReferenceHookValue {
 
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
-type EntryCollection = Record<string, DataEntry>;
-
-const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
-    return data.reduce((collection, entry) => {
-        collection[entry.id] = entry;
-        return collection;
-    }, {} as EntryCollection);
-};
-
-const convertValueEntryToData = (entry: OptionItem): DataEntry => {
-    return {
-        id: entry.id,
-        model: {
-            modelId: entry.modelId,
-            name: entry.modelName
-        },
-        status: entry.published ? "published" : "draft",
-        title: entry.name
-    };
-};
-
-const convertDataEntryToValue = (entry: DataEntry): OptionItem => {
-    return {
-        id: entry.id,
-        modelId: entry.model.modelId,
-        modelName: entry.model.name,
-        published: entry.status === "published",
-        name: entry.title
-    };
-};
-
-const assignValueEntry = (entry: OptionItem | null, collection: EntryCollection): void => {
-    if (!entry) {
-        return;
+const getValueHash = (value: any): string | null => {
+    if (!value || (!value.id && !value.entryId)) {
+        return null;
+    } else if (value.entryId) {
+        return value.entryId;
     }
-    collection[entry.id] = convertValueEntryToData(entry);
+    return value.id.split("#").shift();
 };
 
 export const useReference: UseReferenceHook = ({ bind, field }) => {
-    const allEntries = useRef<EntryCollection>({});
+    const allEntries = useRef<OptionItemCollection>({});
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const [entries, setEntries] = useState<EntryCollection>({});
-    const [latestEntries, setLatestEntries] = useState<EntryCollection>({});
+    const [entries, setEntries] = useState<OptionItemCollection>({});
+    const [latestEntries, setLatestEntries] = useState<OptionItemCollection>({});
     const [valueEntry, setValueEntry] = useState<OptionItem | null>(null);
 
     const models = (field.settings ? field.settings.models || [] : []) as Pick<
         CmsModel,
         "modelId" | "name"
     >[];
-    const modelsHash = models.join(",");
+    const modelsHash = models.map(model => model.modelId).join(",");
 
     const value = bind.value;
-    const valueHash = value ? value.id : null;
+    const valueHash = getValueHash(value);
 
     const searchEntries = async () => {
         if (!search) {
@@ -93,18 +64,29 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         }
 
         setLoading(true);
-        const { data } = await client.query({
-            query: GQL.SEARCH_CONTENT_ENTRIES,
-            variables: { modelIds: models.map(m => m.modelId), query: search }
+        const { data } = await client.query<
+            CmsEntrySearchQueryResponse,
+            CmsEntrySearchQueryVariables
+        >({
+            query: SEARCH_CONTENT_ENTRIES,
+            variables: {
+                modelIds: models.map(m => m.modelId),
+                query: search,
+                limit: 10
+            }
         });
-
         setLoading(false);
 
-        const searchEntries = convertQueryDataToEntryList(data.content.data);
-        assignValueEntry(valueEntry, searchEntries);
-        Object.assign(allEntries.current, searchEntries);
+        const collection = convertReferenceEntriesToOptionCollection(data.content.data);
+        if (valueEntry) {
+            collection[valueEntry.entryId] = valueEntry;
+        }
+        allEntries.current = {
+            ...allEntries.current,
+            ...collection
+        };
 
-        setEntries(searchEntries);
+        setEntries(collection);
     };
 
     useEffect(() => {
@@ -112,12 +94,14 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     }, [search]);
 
     useEffect(() => {
+        if (models.length === 0) {
+            return;
+        }
         client
             .query<CmsEntrySearchQueryResponse, CmsEntrySearchQueryVariables>({
-                query: GQL.SEARCH_CONTENT_ENTRIES,
+                query: SEARCH_CONTENT_ENTRIES,
                 variables: {
                     modelIds: models.map(m => m.modelId),
-                    query: "__latest__",
                     limit: 10
                 },
                 /**
@@ -127,11 +111,18 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                 fetchPolicy: "network-only"
             })
             .then(({ data }) => {
-                const latestEntryData = convertQueryDataToEntryList(data.content.data);
-                assignValueEntry(valueEntry, latestEntryData);
+                const latestEntryData = convertReferenceEntriesToOptionCollection(
+                    data.content.data
+                );
+                if (valueEntry) {
+                    latestEntryData[valueEntry.entryId] = valueEntry;
+                }
 
                 setLatestEntries(latestEntryData);
-                Object.assign(allEntries.current, latestEntryData);
+                allEntries.current = {
+                    ...allEntries.current,
+                    ...latestEntryData
+                };
             });
     }, [modelsHash]);
 
@@ -141,37 +132,57 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             return;
         }
 
-        const entry = allEntries.current[valueHash];
+        const entry = valueHash ? allEntries.current[valueHash] : null;
         if (entry) {
-            // if entry exists set valueEntry to that one so we do not load new one
+            /**
+             * if entry exists set valueEntry to that one so we do not load new one
+             */
             setValueEntry(() => {
-                return convertDataEntryToValue(entry);
+                return entry;
             });
             return;
         }
 
         setLoading(true);
+        /**
+         * Query loads both latest and published entries.
+         * We do this in a single query because there might not be a published entry so we can use the latest one.
+         */
         client
-            .query({
-                query: GQL.GET_CONTENT_ENTRY,
-                variables: { entry: { modelId: value.modelId, id: value.id } }
+            .query<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>({
+                query: GET_CONTENT_ENTRY,
+                variables: {
+                    entry: {
+                        modelId: value.modelId,
+                        id: value.id
+                    }
+                }
             })
             .then(res => {
                 setLoading(false);
-                const dataEntry: DataEntry | null = res.data.content.data;
+                const dataEntry = res.data.latest.data;
                 if (!dataEntry) {
                     return;
                 }
-                allEntries.current[dataEntry.id] = dataEntry;
+                const option: OptionItem = {
+                    ...convertReferenceEntryToOption(dataEntry),
+                    latest: dataEntry.id,
+                    published: res.data.published.data ? res.data.published.data.id : null
+                };
+                allEntries.current[option.entryId] = option;
                 setLatestEntries(prev => {
                     return {
                         ...prev,
-                        [dataEntry.id]: dataEntry
+                        [option.entryId]: {
+                            ...option
+                        }
                     };
                 });
-                // Calculate a couple of props for the Autocomplete component.
+                /**
+                 * Calculate a couple of props for the Autocomplete component.
+                 */
                 setValueEntry(() => {
-                    return convertDataEntryToValue(dataEntry);
+                    return option;
                 });
             });
     }, [valueHash, modelsHash]);
@@ -183,7 +194,10 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             setValueEntry(() => {
                 return entry;
             });
-            bind.onChange({ modelId: entry.modelId, id: entry.id });
+            bind.onChange({
+                modelId: entry.modelId,
+                id: entry.id
+            });
             return;
         }
 
@@ -191,17 +205,21 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         bind.onChange(null);
     }, []);
 
-    // Format options for the Autocomplete component.
-    const options = useMemo(() => getOptions(Object.values(entries)), [entries]);
+    /**
+     * Format options for the Autocomplete component.
+     */
+    const options = useMemo(() => Object.values(entries), [valueHash, entries]);
 
-    // Format default options for the Autocomplete component.
+    /**
+     * Format default options for the Autocomplete component.
+     */
     const defaultOptions = useMemo(() => {
-        return getOptions(Object.values(latestEntries));
-    }, [latestEntries]);
+        return Object.values(latestEntries);
+    }, [valueHash, latestEntries]);
 
     const outputOptions: OptionItem[] = (search && options ? options : defaultOptions) || [];
 
-    if (valueEntry && outputOptions.some(opt => opt.id === valueEntry.id) === false) {
+    if (valueEntry && outputOptions.some(opt => opt.entryId === valueEntry.entryId) === false) {
         outputOptions.push(valueEntry);
     }
 

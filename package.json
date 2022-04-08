@@ -148,15 +148,16 @@
     "validate-packages": "node scripts/validatePackages.js",
     "lerna:version:latest": "yarn lerna version --force-publish --conventional-graduate --yes",
     "lerna:publish:latest": "yarn lerna publish from-package --yes",
-    "lerna:version:beta": "yarn lerna version --conventional-prerelease --force-publish --preid beta --yes",
+    "lerna:version:beta": "yarn lerna version prerelease --conventional-prerelease --force-publish --preid beta --yes",
     "lerna:publish:beta": "yarn lerna publish from-package --dist-tag beta --yes",
-    "lerna:version:verdaccio": "yarn lerna version --conventional-prerelease --force-publish --preid next --no-push --no-changelog --yes",
+    "lerna:version:verdaccio": "yarn lerna version prerelease --conventional-prerelease --force-publish --preid next --no-push --no-changelog --yes",
     "lerna:publish:verdaccio": "yarn lerna publish from-package --dist-tag next --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry --yes",
-    "lerna:version:experimental": "yarn lerna version --conventional-prerelease --preid experimental --force-publish --no-push --no-changelog --yes",
+    "lerna:version:experimental": "yarn lerna version prerelease --conventional-prerelease --preid experimental --force-publish --no-push --no-changelog --yes",
     "lerna:publish:experimental": "yarn lerna publish from-package --dist-tag experimental --yes",
     "verdaccio:start": "yarn verdaccio -c ./.verdaccio.yaml",
     "verdaccio:start:detached": "yarn pm2 start \"yarn verdaccio:start\"",
     "webiny": "./node_modules/.bin/webiny",
+    "wby": "./node_modules/.bin/wby",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "husky": {
@@ -212,6 +213,7 @@
     "@rmwc/base": "link:./packages/ui/rmwc/base",
     "@types/react": "16.14.2",
     "@typescript/lib-dom": "npm:@types/web@*",
+    "@types/webpack": "^5.28.0",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
@@ -219,7 +221,8 @@
     "codex-tooltip": "1.0.2",
     "@pulumi/pulumi": "3.25.0",
     "@pulumi/aws": "4.28.0",
-    "@types/eslint": "8.2.1"
+    "@types/eslint": "8.2.1",
+    "yargs": "^17.3.1"
   },
   "packageManager": "yarn@3.1.0"
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { ApolloProvider } from "@apollo/react-components";
-import { BrowserRouter, Switch, Route } from "@webiny/react-router";
+import { BrowserRouter, Routes, Route } from "@webiny/react-router";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { createApolloClient } from "./components/apolloClient";
 import Page from "./components/Page";
@@ -9,9 +9,9 @@ export const App: React.FC = () => (
     <ApolloProvider client={createApolloClient()}>
         <BrowserRouter basename={process.env.PUBLIC_URL}>
             <PageBuilderProvider>
-                <Switch>
+                <Routes>
                     <Route path={"*"} component={Page} />
-                </Switch>
+                </Routes>
             </PageBuilderProvider>
         </BrowserRouter>
     </ApolloProvider>

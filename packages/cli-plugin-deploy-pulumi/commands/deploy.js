@@ -107,9 +107,9 @@ module.exports = async (inputs, context) => {
 
     const duration = getDuration();
     if (inputs.preview) {
-        context.success(`Done! Preview finished in ${green(duration + "s")}.`);
+        context.success(`Done! Preview finished in ${green(duration)}.`);
     } else {
-        context.success(`Done! Deploy finished in ${green(duration + "s")}.`);
+        context.success(`Done! Deploy finished in ${green(duration)}.`);
     }
 
     console.log();
@@ -122,7 +122,7 @@ module.exports = async (inputs, context) => {
         context
     });
 
-    notify({ message: `"${folder}" stack deployed in ${duration}s.` });
+    notify({ message: `"${folder}" stack deployed in ${duration}.` });
 };
 
 async function runHook({ hookName, hookFn, skip, args, context }) {

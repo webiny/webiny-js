@@ -1,5 +1,11 @@
-const path = require("path");
-const fs = require("fs");
+import * as fs from "fs";
+import { getProject } from "@webiny/cli/utils";
+import { getTelemetryFunctionDownloadPath } from "../../../bundling/function/utils";
+import { downloadTelemetryFunction } from "../../../bundling/function/telemetry";
+import * as path from "path";
+
+// This environment API key has been previously created via a test WCP account created at https://app.webiny.com. Consult internal documentation for more information on the used account.
+const VALID_API_KEY = "f79af720-958a-474d-8150-a2618e0380a3";
 
 interface TelemetryDataLogs {
     error: boolean;
@@ -20,30 +26,38 @@ interface TelemetryDataResult {
     };
 }
 let postTelemetryData: (data: TelemetryData) => Promise<TelemetryDataResult>;
-let localData: TelemetryData;
+let telemetryData: TelemetryData;
 let handler: () => Promise<any>;
 
-const pathToProjectUtilsRoot = path.join(__dirname, "../../../bundling/function");
+const handlerPath = path.join(getProject().root, ".webiny", "_handler.js");
 
-const handlerPath = pathToProjectUtilsRoot + "/_handler.js";
-
-function waitForMilliSeconds(ms: number): Promise<unknown> {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
-}
+beforeAll(async () => {
+    // Make sure the latest Telemetry code is in the local storage
+    await downloadTelemetryFunction();
+});
 
 beforeEach(() => {
     // The telemetry function is being injected into the folder where the clients handler function is, so it
     // expects there to be a _hander.js file to be in the folder it is placed in, so lets mock a _handler.js
-    // file in this test folder so it wont throw an error it is not important what is in the file so lets put in an
-    // empty string
-    fs.writeFileSync(handlerPath, "");
+    // file in this test folder so it wont throw an error it is not important what is in function just that it
+    // returns something so lets return true
+    fs.writeFileSync(
+        handlerPath,
+        `
+        function handler() {
+            return true;
+        }
+
+        module.exports = {
+            handler
+        }
+    `
+    );
 
     // Now we can export the telemetry functions
-    const telemetry = require("../../../bundling/function/telemetryFunction");
+    const telemetry = require(getTelemetryFunctionDownloadPath());
     postTelemetryData = telemetry.postTelemetryData;
-    localData = telemetry.localData;
+    telemetryData = telemetry.telemetryData;
     handler = telemetry.handler;
 });
 
@@ -52,14 +66,12 @@ afterEach(() => {
     fs.unlinkSync(handlerPath);
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip("Telemetry functions", () => {
+describe("Telemetry functions", () => {
     describe("postTelemetryData()", () => {
         test("Can post telemetry data", async () => {
             const now = Date.now();
-            const validApiKey = "beb3f14e-141f-427d-9923-755112e35eef";
             const mockSchema: TelemetryData = {
-                apiKey: validApiKey,
+                apiKey: VALID_API_KEY,
                 version: "5.20.0",
                 logs: [
                     {
@@ -95,7 +107,7 @@ describe.skip("Telemetry functions", () => {
             const result = await postTelemetryData(mockSchema);
 
             const { message } = result.error || {};
-            expect(message).toEqual('project.env "undefined" not found.');
+            expect(message).toEqual("Internal Server Error");
         });
     });
 
@@ -105,28 +117,22 @@ describe.skip("Telemetry functions", () => {
 
             await Promise.all(thousandHandlerFunctions);
 
-            expect(localData.logs.length).toEqual(0);
+            expect(telemetryData.logs.length).toEqual(0);
         });
 
         test("Posts telemetry if it has been more than 5 minutes since data was sent", async () => {
-            const thousandHandlerFunctions = Array.from({ length: 5 }).map(() => handler());
-
-            // Load 5 logs into the telemetry data
-            await Promise.all(thousandHandlerFunctions);
-
-            expect(localData.logs.length).toEqual(5);
+            await handler();
 
             const minutesToFireRequest = 5;
-            const timeInFiveMinutes = Date.now() + minutesToFireRequest * 60000;
+            const timeInFiveMinutesAndOneMillisecond = Date.now() + minutesToFireRequest * 60001;
 
-            // Set time forward 5 minutes
-            Date.now = jest.fn(() => timeInFiveMinutes);
+            // Set time forward 5 minutes and one millisecond
+            Date.now = jest.fn(() => timeInFiveMinutesAndOneMillisecond);
 
-            // Wait a second to let the function fire if 5 minutes have passed
-            await waitForMilliSeconds(2000);
+            await handler();
 
             // The timer should have fired and clears the logs
-            expect(localData.logs.length).toEqual(0);
+            expect(telemetryData.logs.length).toEqual(0);
 
             jest.clearAllMocks();
         });
