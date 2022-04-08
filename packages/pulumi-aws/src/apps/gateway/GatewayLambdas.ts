@@ -33,14 +33,14 @@ export function createLambdas(app: PulumiApp) {
 
         const viewerRequest = createCloudfrontFunction("viewerRequest");
         const viewerResponse = createCloudfrontFunction("viewerResponse");
-        const pageOriginRequest = createLambdaEdge("pageOriginRequest", awsUsEast1, role.output);
-        const apiOriginRequest = createLambdaEdge("apiOriginRequest", awsUsEast1, role.output);
+        const originRequest = createLambdaEdge("originRequest", awsUsEast1, role.output);
+        const adminOriginRequest = createLambdaEdge("adminOriginRequest", awsUsEast1, role.output);
 
         return {
             viewerRequest,
             viewerResponse,
-            pageOriginRequest,
-            apiOriginRequest
+            originRequest,
+            adminOriginRequest
         };
     });
 

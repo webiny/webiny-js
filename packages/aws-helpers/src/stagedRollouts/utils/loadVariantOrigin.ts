@@ -2,6 +2,7 @@ import { CloudFrontRequestEvent, getHeader, notFoundResponse } from "~/lambdaEdg
 
 import { variantFixedKey, variantRandomKey, configPath } from "../utils/common";
 import { GatewayConfig, loadConfig } from "../utils/loadConfig";
+import { logDebug } from "./log";
 
 export async function loadVariantOrigin(event: CloudFrontRequestEvent) {
     const cf = event.Records[0].cf;
@@ -26,15 +27,19 @@ export async function loadVariantOrigin(event: CloudFrontRequestEvent) {
 
     const variantRandom = Number(getHeader(request.headers, variantRandomKey));
     if (isNaN(variantRandom)) {
+        logDebug("No random variant passed, passing the request");
         // Random variant header should be always present.
         // It it's not, something bad happened, so we just pass request further.
         return request;
     }
 
+    logDebug(`Variant random ${variantRandom}`);
+
     const variantConfig = getRandomVariant(config, variantRandom);
     if (!variantConfig) {
         // If no variant is matching the random value, just return 404.
         // This should happen only if there is really not a single variant serving traffic.
+        logDebug(`No variant is found`);
         return notFoundResponse(`No variant is found`);
     }
 
@@ -67,6 +72,7 @@ function getRandomVariant(config: GatewayConfig, random: number) {
         }
 
         if (random <= versionConfig.weight) {
+            logDebug(`Variant ${version} selected`);
             return config[version];
         } else {
             random -= versionConfig.weight;

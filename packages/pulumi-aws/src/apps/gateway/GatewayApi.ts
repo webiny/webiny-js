@@ -2,7 +2,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import { ApplicationContext, loadGatewayConfig, PulumiApp } from "@webiny/pulumi-sdk";
-import { createLambdas } from "./GatewayLambdas";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
 export interface GatewayApiConfig {
@@ -12,8 +11,10 @@ export interface GatewayApiConfig {
 
 export interface GatewayApiParams {
     name: string;
-    lambdas: ReturnType<typeof createLambdas>;
     config: GatewayApiConfig;
+    viewerRequest: pulumi.Output<aws.cloudfront.Function>;
+    viewerResponse: pulumi.Output<aws.cloudfront.Function>;
+    originRequest: pulumi.Output<aws.lambda.Function>;
 }
 
 export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
@@ -86,17 +87,17 @@ export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
                 functionAssociations: [
                     {
                         eventType: "viewer-request",
-                        functionArn: params.lambdas.functions.viewerRequest.arn
+                        functionArn: params.viewerRequest.arn
                     },
                     {
                         eventType: "viewer-response",
-                        functionArn: params.lambdas.functions.viewerResponse.arn
+                        functionArn: params.viewerResponse.arn
                     }
                 ],
                 lambdaFunctionAssociations: [
                     {
                         eventType: "origin-request",
-                        lambdaArn: params.lambdas.functions.apiOriginRequest.qualifiedArn
+                        lambdaArn: params.originRequest.qualifiedArn
                     }
                 ]
             },
@@ -121,17 +122,17 @@ export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
                     functionAssociations: [
                         {
                             eventType: "viewer-request",
-                            functionArn: params.lambdas.functions.viewerRequest.arn
+                            functionArn: params.viewerRequest.arn
                         },
                         {
                             eventType: "viewer-response",
-                            functionArn: params.lambdas.functions.viewerResponse.arn
+                            functionArn: params.viewerResponse.arn
                         }
                     ],
                     lambdaFunctionAssociations: [
                         {
                             eventType: "origin-request",
-                            lambdaArn: params.lambdas.functions.apiOriginRequest.qualifiedArn
+                            lambdaArn: params.originRequest.qualifiedArn
                         }
                     ]
                 }

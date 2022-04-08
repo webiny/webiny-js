@@ -2,7 +2,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import { ApplicationContext, loadGatewayConfig, PulumiApp } from "@webiny/pulumi-sdk";
-import { createLambdas } from "./GatewayLambdas";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
 export interface GatewayReactAppConfig {
@@ -12,8 +11,10 @@ export interface GatewayReactAppConfig {
 
 export interface GatewayReactAppParams {
     name: string;
-    lambdas: ReturnType<typeof createLambdas>;
     config: GatewayReactAppConfig;
+    viewerRequest: pulumi.Output<aws.cloudfront.Function>;
+    viewerResponse: pulumi.Output<aws.cloudfront.Function>;
+    originRequest: pulumi.Output<aws.lambda.Function>;
 }
 
 export function createReactAppGateway(app: PulumiApp, params: GatewayReactAppParams) {
@@ -84,17 +85,17 @@ export function createReactAppGateway(app: PulumiApp, params: GatewayReactAppPar
                 functionAssociations: [
                     {
                         eventType: "viewer-request",
-                        functionArn: params.lambdas.functions.viewerRequest.arn
+                        functionArn: params.viewerRequest.arn
                     },
                     {
                         eventType: "viewer-response",
-                        functionArn: params.lambdas.functions.viewerResponse.arn
+                        functionArn: params.viewerResponse.arn
                     }
                 ],
                 lambdaFunctionAssociations: [
                     {
                         eventType: "origin-request",
-                        lambdaArn: params.lambdas.functions.pageOriginRequest.qualifiedArn
+                        lambdaArn: params.originRequest.qualifiedArn
                     }
                 ]
             },

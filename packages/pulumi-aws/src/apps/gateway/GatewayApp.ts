@@ -17,20 +17,28 @@ export const GatewayApp = defineApp({
 
         const api = createApiAppGateway(app, {
             name: "api",
-            lambdas,
-            config: config.api || {}
+            config: config.api || {},
+            viewerRequest: lambdas.functions.viewerRequest,
+            viewerResponse: lambdas.functions.viewerResponse,
+            originRequest: lambdas.functions.originRequest
         });
 
         const admin = createReactAppGateway(app, {
             name: "admin",
-            lambdas,
-            config: config.admin || {}
+            config: config.admin || {},
+            viewerRequest: lambdas.functions.viewerRequest,
+            viewerResponse: lambdas.functions.viewerResponse,
+            // We use a special lambda function for admin origin request.
+            // It's rewriting asset urls to absolute on the fly
+            originRequest: lambdas.functions.adminOriginRequest
         });
 
         const website = createReactAppGateway(app, {
             name: "website",
-            lambdas,
-            config: config.website || {}
+            config: config.website || {},
+            viewerRequest: lambdas.functions.viewerRequest,
+            viewerResponse: lambdas.functions.viewerResponse,
+            originRequest: lambdas.functions.originRequest
         });
 
         return {

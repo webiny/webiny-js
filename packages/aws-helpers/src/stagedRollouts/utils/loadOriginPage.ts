@@ -2,9 +2,11 @@ import { CloudFrontResponse } from "aws-lambda";
 import { get } from "https";
 import { load, Element } from "cheerio";
 import { isHeaderBlacklisted } from "./headerBlacklist";
+import { logDebug } from "./log";
 
 export function loadOriginPage(domain: string, path: string) {
     return new Promise<CloudFrontResponse>((resolve, reject) => {
+        logDebug(`Pulling page from ${domain}${path}`);
         let responseBody = "";
         const req = get(
             {
@@ -15,6 +17,7 @@ export function loadOriginPage(domain: string, path: string) {
             res => {
                 res.on("data", chunk => (responseBody += chunk));
                 res.on("end", () => {
+                    logDebug(`Parsing page`);
                     const html = parseHtml(responseBody, domain);
                     const response: CloudFrontResponse & { body: string } = {
                         body: html,
@@ -47,6 +50,7 @@ export function loadOriginPage(domain: string, path: string) {
                         }
                     }
 
+                    logDebug(`Page parsed`);
                     resolve(response);
                 });
             }
@@ -73,11 +77,13 @@ function parseHtml(html: string, domain: string) {
         prefixUrl(el, "src", host);
     });
 
-    doc("img").each((_i, el) => {
-        prefixUrl(el, "src", host);
+    doc("body")
+        .find("img")
+        .each((_i, el) => {
+            prefixUrl(el, "src", host);
 
-        // TODO handle srcset
-    });
+            // TODO handle srcset
+        });
 
     return doc.html();
 }

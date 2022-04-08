@@ -146,9 +146,10 @@ function createRenderer(
                     // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
                     DEBUG: String(process.env.DEBUG),
                     DB_TABLE: params.primaryDynamodbTableName,
+                    APP_URL: pulumi.interpolate`https://${params.appCloudfront.domainName}`,
                     DELIVERY_BUCKET: params.deliveryBucket.bucket,
                     DELIVERY_CLOUDFRONT: params.deliveryCloudfront.id,
-                    APP_URL: pulumi.interpolate`https://${params.appCloudfront.domainName}`
+                    DELIVERY_URL: pulumi.interpolate`https://${params.deliveryCloudfront.domainName}`
                 }
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
@@ -202,9 +203,10 @@ function createFlushService(
                     // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
                     DEBUG: String(process.env.DEBUG),
                     DB_TABLE: params.primaryDynamodbTableName,
+                    APP_URL: pulumi.interpolate`https://${params.appCloudfront.domainName}`,
                     DELIVERY_BUCKET: params.deliveryBucket.bucket,
                     DELIVERY_CLOUDFRONT: params.deliveryCloudfront.id,
-                    APP_URL: pulumi.interpolate`https://${params.appCloudfront.domainName}`
+                    DELIVERY_URL: pulumi.interpolate`https://${params.deliveryCloudfront.domainName}`
                 }
             },
             description: "Subscribes to fluhs events on event bus",

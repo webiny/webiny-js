@@ -6,57 +6,62 @@ const { babel } = require("@rollup/plugin-babel");
 const json = require("@rollup/plugin-json");
 
 module.exports = async function (file) {
-    const inputOptions = {
-        input: file,
-        plugins: [
-            nodeResolve(),
-            commonjs(),
-            json(),
-            esbuild.default({
-                define: {
-                    "process.env": JSON.stringify(process.env)
-                }
-            }),
-            babel({
-                babelHelpers: "bundled",
-                extensions: [".ts", ".js", ".cjs", ".mjs"],
-                presets: [
-                    [
-                        "@babel/preset-env",
-                        {
-                            targets: {
-                                node: 12
+    try {
+        const inputOptions = {
+            input: file,
+            plugins: [
+                nodeResolve(),
+                commonjs(),
+                json(),
+                esbuild.default({
+                    define: {
+                        "process.env.DEBUG": JSON.stringify(process.env.DEBUG)
+                    }
+                }),
+                babel({
+                    babelHelpers: "bundled",
+                    extensions: [".ts", ".js", ".cjs", ".mjs"],
+                    presets: [
+                        [
+                            "@babel/preset-env",
+                            {
+                                targets: {
+                                    node: 12
+                                }
                             }
-                        }
+                        ]
                     ]
-                ]
-            })
-        ],
-        onwarn: warning => {
-            // this warning we can safely ignore
-            // https://stackoverflow.com/a/43556986/2202583
-            if (warning.code === "THIS_IS_UNDEFINED") {
-                return;
+                })
+            ],
+            onwarn: warning => {
+                // this warning we can safely ignore
+                // https://stackoverflow.com/a/43556986/2202583
+                if (warning.code === "THIS_IS_UNDEFINED") {
+                    return;
+                }
+
+                // console.warn everything else
+                console.warn(warning.message);
             }
+        };
 
-            // console.warn everything else
-            console.warn(warning.message);
-        }
-    };
+        const outputOptions = {
+            format: "cjs",
+            exports: "named"
+        };
 
-    const outputOptions = {
-        format: "cjs",
-        exports: "named"
-    };
+        // create a bundle
+        const bundle = await rollup.rollup(inputOptions);
 
-    // create a bundle
-    const bundle = await rollup.rollup(inputOptions);
+        // generate output specific code in-memory
+        // you can call this function multiple times on the same bundle object
+        const { output } = await bundle.generate(outputOptions);
 
-    // generate output specific code in-memory
-    // you can call this function multiple times on the same bundle object
-    const { output } = await bundle.generate(outputOptions);
+        await bundle.close();
 
-    await bundle.close();
-
-    return output[0];
+        return output[0];
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
 };

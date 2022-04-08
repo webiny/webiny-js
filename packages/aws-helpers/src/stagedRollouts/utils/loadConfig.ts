@@ -1,6 +1,7 @@
 import { get } from "https";
 import { CloudFrontRequestEvent } from "~/lambdaEdge";
 import { configPath } from "./common";
+import { logDebug } from "./log";
 
 // Config must be cached per domain.
 // Otherwise cache will spill over different apps, because we may share this lambda.
@@ -23,6 +24,7 @@ export async function loadConfig(event: CloudFrontRequestEvent) {
 
     let config = configCache.get(domain);
     if (!config || isCacheExpired(config.timestamp)) {
+        logDebug("No config in cache");
         config = {
             config: await loadConfigCore(domain),
             timestamp: Date.now()
