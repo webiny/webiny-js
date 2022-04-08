@@ -38,7 +38,7 @@ yargs
     .recommendCommands()
     .scriptName("webiny")
     .epilogue(
-        `To find more information, docs and tutorials, see ${blue("https://docs.webiny.com")}.`
+        `To find more information, docs and tutorials, see ${blue("https://www.webiny.com/docs")}.`
     )
     .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
     .fail(function (msg, error, yargs) {

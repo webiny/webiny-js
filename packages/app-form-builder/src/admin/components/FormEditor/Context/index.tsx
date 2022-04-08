@@ -8,8 +8,17 @@ export interface FormEditorProviderProps {
     defaultLayoutRenderer: string;
     apollo: ApolloClient<any>;
 }
+export interface FormEditorFieldError {
+    label: string;
+    fieldId: string;
+    index: string;
+    errors: {
+        [key: string]: string;
+    };
+}
 export interface FormEditorReducerState extends FormEditorProviderProps {
     data: FbFormModel;
+    errors: FormEditorFieldError[] | null;
 }
 
 const reducerInit = (props: FormEditorReducerState) => {
@@ -19,8 +28,9 @@ const reducerInit = (props: FormEditorReducerState) => {
 };
 
 export interface FormEditorReducerAction {
-    data: FbFormModel;
-    type: string;
+    data?: FbFormModel;
+    errors?: FormEditorFieldError[];
+    type: "data" | "errors";
 }
 
 export interface FormEditorReducer {
@@ -33,7 +43,12 @@ const formEditorReducer: FormEditorReducer = (state, action) => {
     };
     switch (action.type) {
         case "data": {
-            next.data = action.data;
+            next.errors = null;
+            next.data = action.data as FbFormModel;
+            break;
+        }
+        case "errors": {
+            next.errors = action.errors || [];
             break;
         }
     }
@@ -59,7 +74,8 @@ export const FormEditorProvider: React.FC<FormEditorProviderProps> = props => {
         formEditorReducer,
         {
             ...props,
-            data: null
+            data: null,
+            errors: null
         },
         reducerInit
     );
@@ -69,7 +85,7 @@ export const FormEditorProvider: React.FC<FormEditorProviderProps> = props => {
             state,
             dispatch
         };
-    }, [state, state.data]);
+    }, [state, state.data, state.errors]);
 
     return <FormEditorContext.Provider value={value} {...props} />;
 };

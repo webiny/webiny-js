@@ -41,15 +41,12 @@ const ImageContainer: React.FC<ImageContainerType> = ({ element }) => {
     // Use per-device style
     const align = getHorizontalAlignFlexAlign(element, displayMode);
 
-    const imgStyle: PbElementDataImageType = {
-        width: 0,
-        height: 0
-    };
-    if (image.width) {
+    const imgStyle: PbElementDataImageType = {};
+    if (!!image.width) {
         const { width } = image;
         imgStyle.width = width;
     }
-    if (image.height) {
+    if (!!image.height) {
         const { height } = image;
         imgStyle.height = height;
     }

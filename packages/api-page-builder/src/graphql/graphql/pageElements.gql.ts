@@ -18,8 +18,15 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     preview: JSON
                 }
 
-                input PbPageElementInput {
-                    id: ID
+                input PbCreatePageElementInput {
+                    name: String!
+                    type: String!
+                    category: String!
+                    content: JSON!
+                    preview: JSON!
+                }
+
+                input PbUpdatePageElementInput {
                     name: String
                     type: String
                     category: String
@@ -44,8 +51,11 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 }
 
                 extend type PbMutation {
-                    createPageElement(data: PbPageElementInput!): PbPageElementResponse
-                    updatePageElement(id: ID!, data: PbPageElementInput!): PbPageElementResponse
+                    createPageElement(data: PbCreatePageElementInput!): PbPageElementResponse
+                    updatePageElement(
+                        id: ID!
+                        data: PbUpdatePageElementInput!
+                    ): PbPageElementResponse
                     deletePageElement(id: ID!): PbPageElementResponse
                 }
             `,

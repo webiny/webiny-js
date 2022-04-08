@@ -40,6 +40,7 @@ import { assignBeforeModelDelete } from "./contentModel/beforeDelete";
 import { assignAfterModelCreate } from "./contentModel/afterCreate";
 import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
 import { assignAfterModelDelete } from "./contentModel/afterDelete";
+import { assignAfterModelCreateFrom } from "~/content/plugins/crud/contentModel/afterCreateFrom";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -215,6 +216,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         context,
         onAfterModelUpdate
     });
+    assignAfterModelCreateFrom({
+        context,
+        onAfterModelCreateFrom
+    });
     assignBeforeModelDelete({
         onBeforeModelDelete,
         plugins: context.plugins,
@@ -384,8 +389,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                createdOn: new Date().toISOString() as any,
-                savedOn: new Date().toISOString() as any,
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
                 lockedFields: [],
                 webinyVersion: context.WEBINY_VERSION
             };

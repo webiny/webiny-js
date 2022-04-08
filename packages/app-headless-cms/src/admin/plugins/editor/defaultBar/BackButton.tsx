@@ -9,13 +9,13 @@ const backStyles = css({
 });
 
 const BackButton: React.FC = React.memo(() => {
-    const router = useRouter();
+    const { history } = useRouter();
 
     return (
         <IconButton
             data-testid="cms-editor-back-button"
             className={backStyles}
-            onClick={() => router.history.push(`/cms/content-models`)}
+            onClick={() => history.push(`/cms/content-models`)}
             icon={<BackIcon />}
         />
     );

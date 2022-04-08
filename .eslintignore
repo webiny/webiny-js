@@ -1,5 +1,6 @@
 **/node_modules/
 **/dist/
+**/lib/
 **/build/
 **/.out/
 **/*.d.ts
@@ -8,3 +9,4 @@ scripts
 packages/ui/src/RichTextEditor/editorjs/**
 packages/ui/rmwc/**
 packages-v6/pb-editor/**
+packages-v6/core/**/artifacts/**

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo } from "react";
 import debounce from "lodash.debounce";
 import { useAdmin } from "./admin";
 import { ComponentType } from "react";
+import { ComposableFC } from "./components/core/Compose";
 
 const useComponent = (Component: ComponentType<any>): ComponentType<any> => {
     const { wrappers } = useAdmin();
@@ -45,11 +46,6 @@ const createEmptyRenderer = (name: string): React.FC => {
         return null;
     };
 };
-
-export interface ComposableFC<TProps> extends React.FC<TProps> {
-    original: React.FC<TProps>;
-    originalName: string;
-}
 
 export function makeComposable<TProps>(name: string, Component?: React.FC<TProps>) {
     if (!Component) {

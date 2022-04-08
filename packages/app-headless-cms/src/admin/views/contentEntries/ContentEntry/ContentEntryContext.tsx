@@ -127,7 +127,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
     const tabsRef = useRef<Tabs | null>(null);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     const contentEntryProviderProps = useContentEntryProviderProps();
 
@@ -139,7 +139,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
             : contentEntryProviderProps.getContentId();
 
     const revisionId = contentId ? decodeURIComponent(contentId) : null;
-    let entryId = null;
+    let entryId: string | null = null;
     if (revisionId) {
         const result = parseIdentifier(revisionId);
         entryId = result ? result.id : null;
@@ -177,9 +177,9 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
 
     const getEntry = useQuery<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>(READ_CONTENT, {
         variables: {
-            revision: contentId ? decodeURIComponent(contentId) : ""
+            revision: revisionId || ""
         },
-        skip: !contentId,
+        skip: !revisionId,
         onCompleted: data => {
             if (!data) {
                 return;
@@ -207,7 +207,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
     const loading = isLoading || getEntry.loading || getRevisions.loading;
     const entry: CmsEditorContentEntry = get(getEntry, "data.content.data") || {};
 
-    const value = {
+    const value: ContentEntryContext = {
         canCreate,
         contentModel,
         createEntry,
@@ -217,7 +217,7 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
         entry,
         form: formRef,
         loading,
-        revisions: get(getRevisions, "data.revisions.data") || {},
+        revisions: get(getRevisions, "data.revisions.data") || [],
         refetchContent: getEntry.refetch,
         setFormRef,
         setLoading,

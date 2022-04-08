@@ -74,6 +74,9 @@ const plugin = new StorageTransformPlugin({
         try {
             return jsonpack.unpack(value);
         } catch (ex) {
+            if (process.env.DEBUG !== "true") {
+                return null;
+            }
             console.log("Error while decompressing rich-text.");
             console.log(ex.message);
             return null;
@@ -93,6 +96,9 @@ const plugin = new StorageTransformPlugin({
         try {
             jsonValue = jsonpack.pack(value);
         } catch (ex) {
+            if (process.env.DEBUG !== "true") {
+                return null;
+            }
             console.log("Error while compressing rich-text.");
             console.log(ex.message);
         }
