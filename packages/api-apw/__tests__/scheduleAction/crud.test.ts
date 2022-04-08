@@ -18,8 +18,7 @@ const EXPECTED_APW_SCHEDULED_ACTION_DATA = expect.objectContaining({
     datetime: expect.stringMatching(/^20/),
     type: "page",
     action: "publish",
-    entryId: expect.any(String),
-    mainGraphqlFunctionArn: expect.any(String)
+    entryId: expect.any(String)
 });
 
 describe("Schedule action CRUD Test", () => {
@@ -35,8 +34,7 @@ describe("Schedule action CRUD Test", () => {
             datetime: new Date().toISOString(),
             action: ApwScheduleActionTypes.PUBLISH,
             type: ApwContentTypes.PAGE,
-            entryId: "62303be79cfe6e0009d8d9cf#0001",
-            mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
+            entryId: "62303be79cfe6e0009d8d9cf#0001"
         });
         expect(scheduledAction).toEqual({
             id: expect.any(String),
@@ -104,8 +102,7 @@ describe("Schedule action CRUD Test", () => {
             datetime: new Date().toISOString(),
             action: ApwScheduleActionTypes.UNPUBLISH,
             type: ApwContentTypes.PAGE,
-            entryId: "62303be79cfe6e0009d8d9cf#0001",
-            mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
+            entryId: "62303be79cfe6e0009d8d9cf#0001"
         });
         expect(updateItemResult).toEqual({
             id: expect.any(String),
@@ -154,8 +151,7 @@ describe("Schedule action CRUD Test", () => {
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
                 type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001",
-                mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
+                entryId: "62303be79cfe6e0009d8d9cf#0001"
             });
             scheduledActions.push(scheduledAction);
         }
@@ -243,8 +239,7 @@ describe("Schedule action CRUD Test", () => {
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
                 type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001",
-                mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
+                entryId: "62303be79cfe6e0009d8d9cf#0001"
             });
             scheduledActions.push(scheduledAction);
         }
@@ -313,8 +308,7 @@ describe("Schedule action CRUD Test", () => {
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
                 type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001",
-                mainGraphqlFunctionArn: "SUDO_invokedFunctionArn"
+                entryId: "62303be79cfe6e0009d8d9cf#0001"
             });
             scheduledActions.push(scheduledAction);
         }

@@ -15,19 +15,7 @@ import { createCustomAuth } from "~/scheduler/handlers/executeAction/security";
 
 export default (params: CreateApwContextParams) => [
     new ContextPlugin<ApwContext>(async context => {
-        const { tenancy, security, i18nContent, handlerClient, args } = context;
-        const [, eventContext] = args;
-
-        const getInvokedFunctionArn = () => {
-            /**
-             * "eventContext" doesn't exists in case of tests that is why we're
-             *  mocking it here to get tests working.
-             */
-            if (process.env.NODE_ENV === "test") {
-                return "invokedFunctionArn";
-            }
-            return eventContext.invokedFunctionArn;
-        };
+        const { tenancy, security, i18nContent, handlerClient } = context;
 
         const contentHeadlessCmsContextPlugins = createContentHeadlessCmsContext({
             storageOperations: context.cms.storageOperations
@@ -81,8 +69,7 @@ export default (params: CreateApwContextParams) => [
                 getCmsContext: () => context
             }),
             scheduler,
-            handlerClient,
-            getInvokedFunctionArn
+            handlerClient
         });
         /**
          * TODO: @ashutosh

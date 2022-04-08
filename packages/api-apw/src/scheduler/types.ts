@@ -95,7 +95,6 @@ export interface ApwScheduleActionData {
     type: ApwContentTypes;
     datetime: string;
     entryId: string;
-    mainGraphqlFunctionArn: string;
 }
 
 export enum InvocationTypes {

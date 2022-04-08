@@ -53,8 +53,7 @@ export function createContentReviewMethods(
         scheduler,
         handlerClient,
         getTenant,
-        getLocale,
-        getInvokedFunctionArn
+        getLocale
     } = params;
 
     const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
@@ -418,10 +417,7 @@ export function createContentReviewMethods(
         },
         async scheduleAction(data) {
             // Save input in DB
-            const scheduledAction = await scheduler.create({
-                ...data,
-                mainGraphqlFunctionArn: getInvokedFunctionArn()
-            });
+            const scheduledAction = await scheduler.create(data);
             /**
              * This function contains logic of lambda invocation.
              * Current we're not mocking it, therefore, we're just returning true.
