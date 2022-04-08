@@ -1,6 +1,7 @@
 const open = require("open");
 const { GraphQLClient } = require("graphql-request");
 const { WCP_GRAPHQL_API_URL, WCP_APP_URL, setProjectId, setWcpPat, sleep } = require("./utils");
+const chalk = require("chalk");
 
 // 120 retries * 2000ms interval = 4 minutes until the command returns an error.
 const LOGIN_RETRIES_COUNT = 30;
@@ -171,40 +172,51 @@ module.exports.command = () => ({
 
                 setWcpPat(pat.token);
 
-                context.success(`You've successfully logged in to Webiny Control Panel.`);
+                console.log(
+                    `${chalk.green("✔")} You've successfully logged in to Webiny Control Panel.`
+                );
+
+                let projectInitialized = Boolean(context.project.config.id);
 
                 // If we have `orgId` and `projectId` in PAT's meta data, let's immediately activate the project.
-                if (pat.meta) {
+                if (pat.meta && pat.meta.orgId && pat.meta.projectId) {
+                    await sleep();
+
+                    console.log();
+
                     const { orgId, projectId } = pat.meta;
-                    if (orgId && projectId) {
-                        await sleep();
 
-                        console.log();
+                    const id = `${orgId}/${projectId}`;
+                    console.log(`${chalk.green(id)} project detected. Initializing...`);
 
-                        const id = `${orgId}/${projectId}`;
-                        context.info(`${context.info.hl(id)} project detected. Initializing...`);
+                    await sleep();
 
-                        await sleep();
+                    await setProjectId({
+                        project: context.project,
+                        orgId,
+                        projectId
+                    });
 
-                        await setProjectId({
-                            project: context.project,
-                            orgId,
-                            projectId
-                        });
-
-                        context.success(
-                            `Project ${context.success.hl(id)} initialized successfully.`
-                        );
-
-                        await sleep();
-                        console.log();
-                        context.info(
-                            `If you've just created this project, you might want to deploy it via the ${context.info.hl(
-                                "yarn webiny deploy"
-                            )} command.`
-                        );
-                    }
+                    console.log(`Project ${context.success.hl(id)} initialized successfully.`);
+                    projectInitialized = true;
                 }
+
+                await sleep();
+
+                console.log();
+                console.log(chalk.bold("Next Steps"));
+
+                if (!projectInitialized) {
+                    console.log(
+                        `‣ initialize your project via the ${chalk.green(
+                            "yarn webiny project init"
+                        )} command`
+                    );
+                }
+
+                console.log(
+                    `‣ deploy your project via the ${chalk.green("yarn webiny deploy")} command`
+                );
             }
         );
     }

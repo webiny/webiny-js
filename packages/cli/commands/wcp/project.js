@@ -40,14 +40,13 @@ const handler = async ({ context }) => {
     const user = await getUser();
 
     // User already initialized a project?
-    const { id } = context.project.config;
-    if (id) {
-        const project = user.projects.find(item => item.id === id);
+    const { id: orgProjectId } = context.project.config;
+    if (orgProjectId) {
+        const [, projectId] = orgProjectId.split("/");
+        const project = user.projects.find(item => item.id === projectId);
         if (project) {
             console.log(
-                `It seems this project was already initialized (project name: ${context.info.hl(
-                    project.name
-                )}).`
+                `Your ${chalk.green(orgProjectId)} project has already been initialized.`
             );
 
             const prompt = inquirer.createPromptModule();
@@ -61,6 +60,8 @@ const handler = async ({ context }) => {
             if (!proceed) {
                 return;
             }
+
+            console.log()
         }
     }
 
@@ -109,7 +110,7 @@ const handler = async ({ context }) => {
     // Get user's projects.
     if (!orgProjects.length) {
         console.log(
-            `It seems there are no projects created within the ${context.info.hl(
+            `It seems there are no projects created within the ${chalk.green(
                 selectedOrg.name
             )} organization.`
         );
@@ -133,7 +134,7 @@ const handler = async ({ context }) => {
         selectedProject = user.projects[0];
     } else {
         console.log(
-            `It seems there are multiple projects created within the ${context.info.hl(
+            `It seems there are multiple projects created within the ${chalk.green(
                 selectedOrg.name
             )} organization.`
         );
@@ -179,11 +180,7 @@ const handler = async ({ context }) => {
     console.log();
     console.log(chalk.bold("Next Steps"));
 
-    console.log(
-        `‣ if you've just created this project, you might want to deploy it via the ${context.info.hl(
-            "yarn webiny deploy"
-        )} command.`
-    );
+    console.log(`‣ deploy your project via the ${chalk.green("yarn webiny deploy")} command`);
 };
 
 module.exports.handler = handler;
