@@ -79,13 +79,13 @@ interface EncodeTokenParams {
 }
 
 export const encodeToken = ({ id, tenant, locale }: EncodeTokenParams) => {
-    return `apw-${id}__${tenant}__${locale}`;
+    return `${TOKEN_PREFIX}${id}__${tenant}__${locale}`;
 };
 
 export const TOKEN_PREFIX = "apw-";
 
 export const decodeToken = (token: string): EncodeTokenParams => {
-    const [auth] = token.slice(TOKEN_PREFIX.length);
+    const auth = token.slice(TOKEN_PREFIX.length);
     const [id, tenant, locale] = auth.split("__");
 
     return {

@@ -1,3 +1,4 @@
+const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import {
@@ -33,7 +34,7 @@ export default ({
 
         try {
             const { invocationArgs: args } = context;
-
+            const apwSettings = await getApwSettings();
             const { futureDatetime: datetime } = args;
             /**
              * If there is no datetime we bail out early.
@@ -68,7 +69,7 @@ export default ({
                     );
                     // Perform the actual action call.
                     const response = await context.handlerClient.invoke({
-                        name: item.data.mainGraphqlFunctionArn,
+                        name: apwSettings.mainGraphqlFunctionArn,
                         payload: {
                             httpMethod: "POST",
                             headers: {
@@ -108,4 +109,32 @@ const getGqlBody = (data: ApwScheduleActionData): string => {
     }
 
     return JSON.stringify(body);
+};
+
+/**
+ * Get APW settings record from DDB.
+ */
+const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.COGNITO_REGION
+});
+
+interface ApwSettings {
+    mainGraphqlFunctionArn: string;
+}
+
+const getApwSettings = async (): Promise<ApwSettings> => {
+    const params = {
+        TableName: process.env.DB_TABLE,
+        Key: {
+            PK: `APW#SETTINGS`,
+            SK: "A"
+        }
+    };
+
+    const { Item } = await documentClient.get(params).promise();
+
+    return {
+        mainGraphqlFunctionArn: Item.mainGraphqlFunctionArn
+    };
 };
