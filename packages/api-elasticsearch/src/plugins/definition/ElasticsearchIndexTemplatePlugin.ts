@@ -26,8 +26,11 @@ export type ElasticsearchIndexTemplatePluginConfig = IndicesPutTemplate<RequestB
 export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
     public readonly template: ElasticsearchIndexTemplatePluginConfig;
 
-    public constructor(template: ElasticsearchIndexTemplatePluginConfig) {
+    private pattern: string;
+
+    public constructor(pattern: string, template: ElasticsearchIndexTemplatePluginConfig) {
         super();
+        this.pattern = pattern;
         this.template = {
             ...template
         };
@@ -51,13 +54,29 @@ export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
         /**
          * Must have at least one pattern.
          */
-        const patterns = (this.template.body.index_patterns || []).filter(Boolean);
+        const patterns = this.template.body.index_patterns.filter(Boolean);
         if (patterns.length === 0) {
             throw new WebinyError(
                 `Missing "index_patterns" in template "${name}" body.`,
                 "INVALID_ES_TEMPLATE_DEFINITION",
                 {
                     config: this.template
+                }
+            );
+        }
+        /**
+         * All patterns must contain the target check pattern.
+         */
+        for (const pattern of this.template.body.index_patterns) {
+            if (pattern.match(new RegExp(`${this.pattern}`)) !== null) {
+                continue;
+            }
+            throw new WebinyError(
+                `Wrong pattern in "index_patterns" in template "${name}" body.`,
+                "INVALID_ES_TEMPLATE_DEFINITION",
+                {
+                    config: this.template,
+                    pattern
                 }
             );
         }
