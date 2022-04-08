@@ -9,6 +9,9 @@ interface PulumiArgs {
     [key: string]: string | boolean;
 }
 interface ExecaArgs {
+    env?: {
+        [key: string]: string | undefined;
+    };
     [key: string]: any;
 }
 
@@ -101,7 +104,7 @@ export class Pulumi {
         const execaArgs = {
             ...args.execa,
             env: {
-                ...(args.execa["env"] || {}),
+                ...(args.execa.env || {}),
                 /**
                  * Due to an issue with Pulumi https://github.com/pulumi/pulumi/issues/8374, and even though this
                  * commit suggests it should already work like that https://github.com/pulumi/pulumi/commit/c878916901a997a9c0ffcbed23560e19e224a6f1,

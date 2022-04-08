@@ -3,8 +3,6 @@ import { PulumiApp } from "./PulumiApp";
 
 export interface ApplicationContext {
     env: string;
-    appDir: string;
-    projectDir: string;
 }
 
 export interface ApplicationHooks {
