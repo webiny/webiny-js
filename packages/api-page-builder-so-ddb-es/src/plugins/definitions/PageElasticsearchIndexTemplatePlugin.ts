@@ -7,6 +7,10 @@ export class PageElasticsearchIndexTemplatePlugin extends ElasticsearchIndexTemp
     public static override readonly type: string = "pageBuilder.page.elasticsearch.index.template";
 
     public constructor(template: ElasticsearchIndexTemplatePluginConfig) {
-        super("-page-builder", template);
+        super({
+            pattern: new RegExp(/-page-builder$/),
+            template,
+            start: 300
+        });
     }
 }

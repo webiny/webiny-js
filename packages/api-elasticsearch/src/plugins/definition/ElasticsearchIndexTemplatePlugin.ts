@@ -16,28 +16,74 @@ interface RequestBodyParams {
         };
         [key: string]: any;
     };
-    [key: string]: any;
+    aliases?: {
+        [key: string]: {
+            filter?: {
+                [key: string]: any;
+            };
+            index_routing?: string;
+            is_hidden?: boolean;
+            is_write_index?: boolean;
+            routing?: string;
+            search_routing?: string;
+        };
+    };
+    version?: number;
 }
 
 export type ElasticsearchIndexTemplatePluginConfig = IndicesPutTemplate<RequestBodyParams> & {
     order: number;
 };
 
+export interface ElasticsearchIndexTemplatePluginParams {
+    pattern: RegExp;
+    template: ElasticsearchIndexTemplatePluginConfig;
+    start: number;
+}
+
 export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
     public readonly template: ElasticsearchIndexTemplatePluginConfig;
+    private readonly pattern: RegExp;
+    private readonly start: number;
 
-    private pattern: string;
-
-    public constructor(pattern: string, template: ElasticsearchIndexTemplatePluginConfig) {
+    public constructor(params: ElasticsearchIndexTemplatePluginParams) {
         super();
+        const { pattern, template, start } = params;
         this.pattern = pattern;
         this.template = {
             ...template
         };
+        this.start = start;
         this.validateTemplate();
     }
 
     private validateTemplate(): void {
+        const min = this.start;
+        /**
+         * We allow only start + 99 order values.
+         */
+        const max = min + 99;
+        if (this.template.order < min) {
+            throw new WebinyError(
+                "Invalid index template order value.",
+                "INVALID_ES_TEMPLATE_DEFINITION",
+                {
+                    config: this.template,
+                    value: this.template.order,
+                    min
+                }
+            );
+        } else if (this.template.order > max) {
+            throw new WebinyError(
+                "Invalid index template order value.",
+                "INVALID_ES_TEMPLATE_DEFINITION",
+                {
+                    config: this.template,
+                    value: this.template.order,
+                    max
+                }
+            );
+        }
         /**
          * Name cannot contain anything other than a-z, 0-9 and -.
          */
@@ -68,7 +114,7 @@ export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
          * All patterns must contain the target check pattern.
          */
         for (const pattern of this.template.body.index_patterns) {
-            if (pattern.match(new RegExp(`${this.pattern}`)) !== null) {
+            if (pattern.match(this.pattern) !== null) {
                 continue;
             }
             throw new WebinyError(

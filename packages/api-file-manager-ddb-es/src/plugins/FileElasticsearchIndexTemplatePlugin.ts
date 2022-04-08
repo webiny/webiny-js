@@ -7,6 +7,10 @@ export class FileElasticsearchIndexTemplatePlugin extends ElasticsearchIndexTemp
     public static override readonly type: string = "fileManager.file.elasticsearch.index.template";
 
     public constructor(template: ElasticsearchIndexTemplatePluginConfig) {
-        super("-file-manager", template);
+        super({
+            pattern: new RegExp(/-file-manager$/),
+            template,
+            start: 0
+        });
     }
 }

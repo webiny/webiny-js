@@ -7,6 +7,10 @@ export class FormElasticsearchIndexTemplatePlugin extends ElasticsearchIndexTemp
     public static override readonly type: string = "formBuilder.form.elasticsearch.index.template";
 
     public constructor(template: ElasticsearchIndexTemplatePluginConfig) {
-        super("-form-builder", template);
+        super({
+            pattern: new RegExp(/-form-builder$/),
+            template,
+            start: 100
+        });
     }
 }

@@ -7,6 +7,10 @@ export class CmsEntryElasticsearchIndexTemplatePlugin extends ElasticsearchIndex
     public static override readonly type: string = "cms.entry.elasticsearch.index.template";
 
     public constructor(template: ElasticsearchIndexTemplatePluginConfig) {
-        super("-headless-cms-", template);
+        super({
+            pattern: new RegExp(/-headless-cms-/),
+            template,
+            start: 200
+        });
     }
 }
