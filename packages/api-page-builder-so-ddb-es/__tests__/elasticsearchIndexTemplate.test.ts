@@ -31,6 +31,9 @@ const disableSourceIndex = new PageElasticsearchIndexTemplatePlugin({
     order: 352,
     body: {
         index_patterns: ["*test-page-builder"],
+        aliases: {
+            ["testable-page-builder"]: {}
+        },
         mappings: {
             _source: {
                 enabled: false
@@ -185,15 +188,72 @@ describe("Elasticsearch Index Template", () => {
         await putTemplate(noPropertyIndex.template);
         await putTemplate(disableSourceIndex.template);
 
-        const response = await client.indices.create({
+        const createResponse = await client.indices.create({
+            index: testPageBuilderIndexName
+        });
+
+        expect(createResponse).toMatchObject({
+            body: {
+                acknowledged: true,
+                index: testPageBuilderIndexName,
+                shards_acknowledged: true
+            },
+            meta: {
+                aborted: false
+            },
+            statusCode: 200
+        });
+
+        const response = await client.indices.get({
             index: testPageBuilderIndexName
         });
 
         expect(response).toMatchObject({
             body: {
-                acknowledged: true,
-                index: testPageBuilderIndexName,
-                shards_acknowledged: true
+                [testPageBuilderIndexName]: {
+                    aliases: {},
+                    mappings: {
+                        _source: {
+                            enabled: false
+                        },
+                        properties: {
+                            property: {
+                                analyzer: "lowercase_analyzer",
+                                fields: {
+                                    keyword: {
+                                        ignore_above: 256,
+                                        type: "keyword"
+                                    }
+                                },
+                                type: "text"
+                            },
+                            rawValues: {
+                                enabled: false,
+                                type: "object"
+                            }
+                        }
+                    },
+                    settings: {
+                        index: {
+                            analysis: {
+                                analyzer: {
+                                    lowercase_analyzer: {
+                                        filter: ["lowercase", "trim"],
+                                        tokenizer: "keyword",
+                                        type: "custom"
+                                    }
+                                }
+                            },
+                            creation_date: expect.stringMatching(/^([0-9]+)$/),
+                            number_of_replicas: "1",
+                            number_of_shards: "1",
+                            provided_name: "test-page-builder",
+                            version: {
+                                created: expect.stringMatching(/^([0-9]+)$/)
+                            }
+                        }
+                    }
+                }
             },
             meta: {
                 aborted: false
