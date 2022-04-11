@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as IFrameIcon } from "./iframe-icon.svg";
 import { PbEditorElement } from "~/types";
-import { PageBuilderContext } from "../../../../../contexts/PageBuilder";
+import { PageBuilderContext } from "~/contexts/PageBuilder";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
