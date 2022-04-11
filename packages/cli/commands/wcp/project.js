@@ -45,9 +45,7 @@ const handler = async ({ context }) => {
         const [, projectId] = orgProjectId.split("/");
         const project = user.projects.find(item => item.id === projectId);
         if (project) {
-            console.log(
-                `Your ${chalk.green(orgProjectId)} project has already been initialized.`
-            );
+            console.log(`Your ${chalk.green(orgProjectId)} project has already been initialized.`);
 
             const prompt = inquirer.createPromptModule();
             const { proceed } = await prompt({
@@ -61,7 +59,7 @@ const handler = async ({ context }) => {
                 return;
             }
 
-            console.log()
+            console.log();
         }
     }
 
