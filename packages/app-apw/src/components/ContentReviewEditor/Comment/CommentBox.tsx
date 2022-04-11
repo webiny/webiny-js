@@ -16,6 +16,12 @@ import { FileManager } from "@webiny/app-admin/components";
 import { richTextWrapperStyles } from "../Styled";
 
 const richTextStyles = css`
+    /**
+    * Make comment text only as high as comment box.
+    */
+    max-height: 56px;
+    overflow: auto;
+
     & .ce-inline-toolbar {
         display: none;
     }
