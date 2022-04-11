@@ -12,10 +12,13 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { CreateApwContextParams } from "~/scheduler/types";
 import { createScheduler } from "~/scheduler";
 import { createCustomAuth } from "~/scheduler/handlers/executeAction/security";
+import { checkInstallation } from "./utils";
 
 export default (params: CreateApwContextParams) => [
     new ContextPlugin<ApwContext>(async context => {
         const { tenancy, security, i18nContent, handlerClient } = context;
+
+        checkInstallation({ tenancy, i18nContent });
 
         const contentHeadlessCmsContextPlugins = createContentHeadlessCmsContext({
             storageOperations: context.cms.storageOperations

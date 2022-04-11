@@ -8,6 +8,7 @@ import {
     ApwContentReviewCrud,
     ApwContentReviewStep,
     ApwContentReviewStepStatus,
+    ApwContext,
     ApwReviewerCrud,
     ApwWorkflowStep,
     ApwWorkflowStepTypes
@@ -156,4 +157,21 @@ export const updateContentReviewStep = (
         }
         return step;
     });
+};
+
+type CheckInstallationParams = Pick<ApwContext, "tenancy" | "i18nContent">;
+
+export const checkInstallation = ({ tenancy, i18nContent }: CheckInstallationParams) => {
+    /**
+     * In case of a fresh webiny project "tenant" and "locale" won't be there until
+     * installation is completed. So, we need to skip "APW" creation till then.
+     */
+    const tenant = tenancy.getCurrentTenant();
+    if (!tenant) {
+        return;
+    }
+    const locale = i18nContent.getCurrentLocale();
+    if (!locale) {
+        return;
+    }
 };
