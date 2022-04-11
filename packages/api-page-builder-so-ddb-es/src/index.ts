@@ -25,6 +25,7 @@ import {
     createPagesDynamoDbFields
 } from "~/operations/pages/fields";
 import { createPageStorageOperations } from "~/operations/pages";
+import { base as baseElasticsearchIndexTemplate } from "~/elasticsearch/templates/base";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -77,7 +78,11 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Page fields required for filtering/sorting when using dynamodb.
          */
-        createPagesDynamoDbFields()
+        createPagesDynamoDbFields(),
+        /**
+         * Default Elasticsearch index template
+         */
+        baseElasticsearchIndexTemplate
     ]);
 
     const entities = {
@@ -120,10 +125,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     return {
         init: async context => {
-            context.pageBuilder.onBeforeInstall.subscribe(async ({ tenant }) => {
+            context.pageBuilder.onBeforeInstall.subscribe(async () => {
                 await execOnBeforeInstall({
-                    tenant,
-                    elasticsearch
+                    elasticsearch,
+                    plugins
                 });
             });
         },
