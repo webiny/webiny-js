@@ -11,8 +11,7 @@ import { usePublishContent } from "~/hooks/usePublishContent";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useScheduleActionDialog } from "./useScheduleActionDialog";
 import { Typography } from "@webiny/ui/Typography";
-import { useContentReview } from "~/hooks/useContentReview";
-import { useContentReviewId } from "~/hooks/useContentReviewId";
+import { useCurrentContentReview } from "~/hooks/useContentReview";
 import { formatDatetime } from "~/utils";
 
 const t = i18n.ns("app-apw/content-reviews/editor/steps/publishContent");
@@ -33,13 +32,7 @@ const defaultButtonStyles = { width: "217px" };
 const activeButtonStyles = { backgroundColor: "var(--mdc-theme-secondary)" };
 
 export const ChangeContentStatusButton: React.FC = () => {
-    // TODO: Maybe we can write this better.
-    const { id } = useContentReviewId() || { id: null };
-    if (!id) {
-        return null;
-    }
-
-    const { contentReview } = useContentReview({ id });
+    const { contentReview } = useCurrentContentReview();
     const { loading, deleteScheduledAction } = usePublishContent();
     const { setAction, setOpenPublishNowDialog } = useScheduleActionDialog();
     const disabledButtonTooltip = t`Content can only be published once all sign offs have been provided.`;

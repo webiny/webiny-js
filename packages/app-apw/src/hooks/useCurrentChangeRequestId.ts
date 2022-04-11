@@ -11,5 +11,5 @@ export const useActiveChangeRequestId = (): string => {
      * Get active "changeRequestId" from pathname.
      */
     const tokens = location.pathname.split("/");
-    return tokens[tokens.length - 1];
+    return encodeURIComponent(tokens[tokens.length - 1]);
 };

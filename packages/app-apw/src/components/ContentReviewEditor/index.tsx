@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { useParams, Routes, Route } from "@webiny/react-router";
+import { Routes, Route } from "@webiny/react-router";
 import { Box, Columns } from "~/components/Layout";
-import { useContentReview } from "~/hooks/useContentReview";
+import { useCurrentContentReview } from "~/hooks/useContentReview";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 /**
@@ -22,8 +22,7 @@ const EditorColumns = styled(Columns)`
 `;
 
 export const ContentReviewEditor: React.FC = () => {
-    const { contentReviewId } = useParams() as { contentReviewId: string };
-    const { loading, contentReview } = useContentReview({ id: contentReviewId });
+    const { loading, contentReview } = useCurrentContentReview();
 
     if (loading) {
         return <CircularProgress label={"Loading content review..."} />;

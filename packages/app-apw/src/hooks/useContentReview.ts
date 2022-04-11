@@ -6,7 +6,7 @@ import {
     GetContentReviewQueryVariables
 } from "~/graphql/contentReview.gql";
 import { ApwContentReview } from "~/types";
-import { useParams } from "@webiny/react-router";
+import { useContentReviewId } from "./useContentReviewId";
 
 interface UseContentReviewParams {
     id: string;
@@ -34,6 +34,6 @@ export function useContentReview(params: UseContentReviewParams): UseContentRevi
 }
 
 export const useCurrentContentReview = (): UseContentReviewResult => {
-    const { contentReviewId } = useParams() as { contentReviewId: string };
-    return useContentReview({ id: contentReviewId });
+    const { encodedId } = useContentReviewId() || { encodedId: "" };
+    return useContentReview({ id: encodedId });
 };

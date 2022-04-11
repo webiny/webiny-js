@@ -12,7 +12,7 @@ export const useContentReviewId = (): UseContentReviewIdResult | null => {
     }
     return {
         id: decodeURIComponent(contentReviewId),
-        encodedId: contentReviewId
+        encodedId: encodeURIComponent(contentReviewId)
     };
 };
 
@@ -25,7 +25,7 @@ export const useCurrentStepId = (): UseCurrentStepIdResult => {
     const { stepId } = useParams() as { stepId: string };
     return {
         id: decodeURIComponent(stepId),
-        encodedId: stepId
+        encodedId: encodeURIComponent(stepId)
     };
 };
 
@@ -36,5 +36,5 @@ export const useActiveStepId = (): string => {
      * Where pathname will be "/apw/content-reviews/:contentReviewId/:stepId/:changeRequestId"
      */
     const tokens = location.pathname.split("/").filter(token => token.length !== 0);
-    return tokens[3];
+    return encodeURIComponent(tokens[3]);
 };
