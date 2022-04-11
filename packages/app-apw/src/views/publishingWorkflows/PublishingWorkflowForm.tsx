@@ -137,6 +137,11 @@ const PublishingWorkflowForm = () => {
                                     >{t`Cancel`}</ButtonDefault>
                                     <ButtonPrimary
                                         onClick={event => {
+                                            /**
+                                             *  We are resetting "isDirty" when saving the form data,
+                                             *  so that it won't prevent the navigation after the changes has been saved.
+                                             */
+                                            setIsDirty(false);
                                             form.submit(event);
                                         }}
                                     >{t`Save`}</ButtonPrimary>
