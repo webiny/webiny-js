@@ -15,6 +15,7 @@ import { routePaths } from "~/utils";
 import { PublishRevisionProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
 import { PublishPageMenuOptionProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
 import { PublishPageButtonProps } from "@webiny/app-page-builder/editor/plugins/defaultBar/components/PublishPageButton";
+import { PageRevisionListItemGraphicProps } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
 
 const t = i18n.ns("app-apw/page-builder/publish-page");
 
@@ -105,5 +106,25 @@ export const PageRequestReviewHoc: HigherOrderComponent = () => {
 export const PageRequestChangesHoc: HigherOrderComponent = () => {
     return function PageReview() {
         return null;
+    };
+};
+
+export const PageRevisionListItemGraphicHoc: HigherOrderComponent<
+    PageRevisionListItemGraphicProps
+> = OriginalRenderer => {
+    return function PageReview(props) {
+        const contentReviewId = useContentReviewId(props.revision.id);
+
+        if (contentReviewId && props.revision.status === "draft") {
+            return (
+                <ListItemGraphic>
+                    <Tooltip content={t`Under Review`} placement={"bottom"}>
+                        <AddTaskIcon />
+                    </Tooltip>
+                </ListItemGraphic>
+            );
+        }
+
+        return <OriginalRenderer {...props} />;
     };
 };
