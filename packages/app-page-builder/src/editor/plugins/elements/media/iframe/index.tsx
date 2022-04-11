@@ -40,6 +40,10 @@ export default () => {
             settings: [
                 "pb-editor-page-element-settings-delete",
                 "pb-editor-page-element-style-settings-height",
+                "pb-editor-page-element-style-settings-border",
+                "pb-editor-page-element-style-settings-shadow",
+                "pb-editor-page-element-style-settings-padding",
+                "pb-editor-page-element-style-settings-margin",
                 "pb-editor-page-element-style-settings-iframe"
             ],
             target: ["cell", "block"],
@@ -50,8 +54,7 @@ export default () => {
                     elements: [],
                     data: {
                         iframe: {
-                            url: "",
-                            height: 380
+                            url: ""
                         },
                         settings: {
                             height: createInitialPerDeviceSettingValue(

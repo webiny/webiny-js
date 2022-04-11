@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as IFrameIcon } from "./iframe-icon.svg";
 import { PbEditorElement } from "~/types";
+import { PageBuilderContext } from "../../../../../contexts/PageBuilder";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -17,8 +18,14 @@ interface IFrameProps {
     element: PbEditorElement;
 }
 
-const Iframe: React.FC<IFrameProps> = props => {
-    const { element } = props;
+const Iframe: React.FC<IFrameProps> = ({ element }) => {
+    const { data } = element;
+
+    const {
+        responsiveDisplayMode: { displayMode }
+    } = React.useContext(PageBuilderContext);
+
+    const elementHeight = data?.settings?.height?.[displayMode]?.value || "initial";
 
     if (!element?.data?.iframe?.url) {
         return (
@@ -28,7 +35,7 @@ const Iframe: React.FC<IFrameProps> = props => {
         );
     }
 
-    return <iframe src={element.data.iframe.url} width="100%" height="100%" />;
+    return <iframe src={element.data.iframe.url} style={{ height: elementHeight }} width="100%" />;
 };
 
 export default Iframe;
