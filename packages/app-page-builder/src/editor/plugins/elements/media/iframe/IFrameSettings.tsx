@@ -63,7 +63,7 @@ const LinkSettingsComponent: React.FC<
             <Form data={{ url }} onChange={updateSettings}>
                 {({ Bind }) => (
                     <>
-                        <Wrapper label={"Url"} containerClassName={classes.gridClass}>
+                        <Wrapper label={"URL"} containerClassName={classes.gridClass}>
                             <Bind name={"url"} validators={validation.create("url:allowHref")}>
                                 <DelayedOnChange>
                                     {props => (
