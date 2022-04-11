@@ -102,7 +102,7 @@ module.exports.command = () => ({
                         }
 
                         throw new Error(
-                            `Invalid PAT received. Please try again or try removing the PAT and perform a manual login.`
+                            `Invalid PAT received. Please try again or login manually via the ${context.error.hl("yarn webiny login")} command.`
                         );
                     }
                 } else {
