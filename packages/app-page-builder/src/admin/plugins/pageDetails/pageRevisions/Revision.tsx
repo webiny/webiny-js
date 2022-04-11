@@ -17,11 +17,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem, Menu, MenuDivider } from "@webiny/ui/Menu";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
-import { ReactComponent as LockIcon } from "~/admin/assets/lock.svg";
-import { ReactComponent as BeenHereIcon } from "~/admin/assets/beenhere.svg";
-import { ReactComponent as GestureIcon } from "~/admin/assets/gesture.svg";
 import { useRevisionHandlers } from "./useRevisionHandlers";
 import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
@@ -34,13 +30,12 @@ import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
 import { PbPageData, PbPageRevision } from "~/types";
 import usePermission from "~/hooks/usePermission";
 import { PublishPageMenuOption } from "./PublishPageMenuOption";
+import { PageRevisionListItemGraphic } from "./PageRevisionListItemGraphic";
 
 type RevisionProps = {
     revision: PbPageRevision;
     page: PbPageData;
 };
-
-const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
 const revisionsMenu = css({
     width: 250,
@@ -48,33 +43,11 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = (rev: PbPageRevision) => {
-    const published = rev.status === "published";
-    switch (true) {
-        case rev.locked && !published:
-            return {
-                icon: <Icon icon={<LockIcon />} />,
-                text: "This revision is locked (it has already been published)"
-            };
-        case published:
-            return {
-                icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
-                text: "This revision is currently published!"
-            };
-        default:
-            return {
-                icon: <Icon icon={<GestureIcon />} />,
-                text: "This is a draft"
-            };
-    }
-};
-
 const Div: React.FC = ({ children }) => {
     return <div>{children}</div>;
 };
 
 const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
-    const { icon, text: tooltipText } = getIcon(revision);
     const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
@@ -98,11 +71,7 @@ const Revision: React.FC<RevisionProps> = ({ revision, page }) => {
         >
             {({ showConfirmation }) => (
                 <ListItem>
-                    <ListItemGraphic>
-                        <Tooltip content={tooltipText} placement={"bottom"}>
-                            {icon}
-                        </Tooltip>
-                    </ListItemGraphic>
+                    <PageRevisionListItemGraphic revision={revision} />
                     <ListItemText>
                         <ListItemTextPrimary>{revision.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
