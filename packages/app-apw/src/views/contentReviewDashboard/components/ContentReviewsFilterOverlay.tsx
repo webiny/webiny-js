@@ -7,6 +7,8 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist/modal");
 
+const REQUIRES_MY_ATTENTION = "requiresMyAttention";
+
 interface ContentReviewsFilterModalProps {
     status: string;
     setStatus: (value: any) => void;
@@ -36,6 +38,7 @@ export const ContentReviewsFilterModal = (props: ContentReviewsFilterModalProps)
                             value={ApwContentReviewStatus.READY_TO_BE_PUBLISHED}
                         >{t`Ready to be published`}</option>
                         <option value={ApwContentReviewStatus.PUBLISHED}>{t`Published`}</option>
+                        <option value={REQUIRES_MY_ATTENTION}>{t`Requires my attention`}</option>
                     </Select>
                 </Cell>
                 <Cell span={12}>
