@@ -42,7 +42,7 @@ export interface ListWhere {
 }
 
 export interface ListParams {
-    where: ListWhere;
+    where?: ListWhere;
     sort?: string[];
     limit?: number;
     after?: string | null;
@@ -202,6 +202,8 @@ export enum ApwContentReviewStatus {
     READY_TO_BE_PUBLISHED = "readyToBePublished",
     PUBLISHED = "published"
 }
+
+export type ApwContentReviewListFilter = ApwContentReviewStatus | "requiresMyAttention";
 
 export interface ApwWorkflowStep<TReviewer = ApwReviewer> {
     title: string;
@@ -539,8 +541,8 @@ type StorageOperationsDeleteWorkflowParams = StorageOperationsDeleteParams;
 type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
 
 export interface ApwContentReviewListParams extends ListParams {
-    where: ListWhere & {
-        status?: ApwContentReviewStatus;
+    where?: ListWhere & {
+        status?: ApwContentReviewListFilter;
         title?: string;
         title_contains?: string;
     };

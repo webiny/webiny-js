@@ -29,11 +29,12 @@ import {
 import { ApwScheduleActionTypes } from "~/scheduler/types";
 import {
     checkValidDateTime,
+    filterContentReviewsByRequiresMyAttention,
     getPendingRequiredSteps,
     INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META
 } from "./helpers";
 
-interface CreateContentReviewMethodsParams extends CreateApwParams {
+export interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
     getContentGetter: AdvancedPublishingWorkflow["getContentGetter"];
     getContentPublisher: AdvancedPublishingWorkflow["getContentPublisher"];
@@ -76,6 +77,15 @@ export function createContentReviewMethods(
             return storageOperations.getContentReview({ id });
         },
         async list(params) {
+            if (params.where && params.where.status === "requiresMyAttention") {
+                return filterContentReviewsByRequiresMyAttention({
+                    listParams: params,
+                    listContentReviews: storageOperations.listContentReviews,
+                    getReviewer,
+                    getIdentity
+                });
+            }
+
             return storageOperations.listContentReviews(params);
         },
         async create(data) {

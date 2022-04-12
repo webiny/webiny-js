@@ -63,6 +63,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             underReview
             readyToBePublished
             published
+            requiresMyAttention
         }
 
         type ApwContentReviewStep {
