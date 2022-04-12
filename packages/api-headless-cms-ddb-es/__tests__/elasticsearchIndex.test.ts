@@ -58,4 +58,20 @@ describe("Elasticsearch index", () => {
             `Missing "locale" parameter when trying to create Elasticsearch index name.`
         );
     });
+
+    it.each(withLocaleItems)(
+        "should be root tenant in the index, no matter which one is sent",
+        async (tenant, locale) => {
+            process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
+
+            const { index: noLocaleIndex } = configurations.es({
+                model: {
+                    tenant,
+                    locale,
+                    modelId: "testModel"
+                } as CmsModel
+            });
+            expect(noLocaleIndex).toEqual(`root-headless-cms-${locale}-testModel`.toLowerCase());
+        }
+    );
 });

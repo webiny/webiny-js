@@ -62,4 +62,31 @@ describe("Elasticsearch index", () => {
             `Missing "locale" parameter when trying to create Elasticsearch index name.`
         );
     });
+
+    it.each(withLocaleItems)(
+        "should be root tenant in the index, no matter which one is sent",
+        async (tenant, locale) => {
+            process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
+
+            const { index: noLocaleIndex } = configurations.es({
+                tenant,
+                locale
+            });
+            expect(noLocaleIndex).toEqual("root-page-builder");
+        }
+    );
+
+    it.each(withLocaleItems)(
+        "should be root tenant in the index, no matter which one is sent",
+        async (tenant, locale) => {
+            process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
+            process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
+
+            const { index: noLocaleIndex } = configurations.es({
+                tenant,
+                locale
+            });
+            expect(noLocaleIndex).toEqual(`root-${locale}-page-builder`.toLowerCase());
+        }
+    );
 });
