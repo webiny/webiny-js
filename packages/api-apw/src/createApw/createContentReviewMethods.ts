@@ -32,7 +32,7 @@ import {
     filterContentReviewsByRequiresMyAttention,
     getPendingRequiredSteps,
     INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META
-} from "./helpers";
+} from "./utils";
 
 export interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];

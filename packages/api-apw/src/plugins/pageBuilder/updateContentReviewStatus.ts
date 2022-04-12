@@ -1,7 +1,7 @@
 import get from "lodash/get";
 import { ApwContentReviewStatus, ApwOnBeforePagePublishTopicParams } from "~/types";
 import { InitiateContentReviewParams } from ".";
-import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/createApw/helpers";
+import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/createApw/utils";
 
 export const updateContentReviewStatus = ({
     pageBuilder,
