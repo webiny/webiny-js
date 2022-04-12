@@ -1,4 +1,3 @@
-import set from "lodash/set";
 import get from "lodash/get";
 import WebinyError from "@webiny/error";
 import {
@@ -9,7 +8,7 @@ import {
     PageWithWorkflow,
     WorkflowScopeTypes
 } from "~/types";
-import { PageMethods } from "./index";
+import { ApwPageBuilderMethods } from ".";
 
 const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.DEFAULT]: 0,
@@ -165,32 +164,7 @@ export const getPagesDiff = (
     };
 };
 
-interface SetPageWorkflowIdParams {
-    getPage: PageMethods["getPage"];
-    updatePage: PageMethods["updatePage"];
-    uniquePageId: string;
-    workflowId: string | null;
-}
-
-export const setPageWorkflowId = async ({
-    getPage,
-    updatePage,
-    uniquePageId,
-    workflowId
-}: SetPageWorkflowIdParams) => {
-    await updatePageSettings({
-        getPage,
-        updatePage,
-        uniquePageId,
-        getNewSettings: settings => {
-            return set(settings, "apw.workflowId", workflowId);
-        }
-    });
-};
-
-interface UpdatePageSettingsParams {
-    getPage: PageMethods["getPage"];
-    updatePage: PageMethods["updatePage"];
+interface UpdatePageSettingsParams extends Pick<ApwPageBuilderMethods, "getPage" | "updatePage"> {
     uniquePageId: string;
     getNewSettings: (settings: PageWithWorkflow["settings"]) => PageWithWorkflow["settings"];
 }

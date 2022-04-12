@@ -4,7 +4,7 @@ import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 import { createApw } from "~/createApw";
-import { apwPageBuilderPlugins } from "./pageBuilder";
+import { apwPageBuilderHooks } from "./pageBuilder";
 import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
 import { SecurityPermission } from "@webiny/api-security/types";
@@ -13,8 +13,10 @@ import { CreateApwContextParams } from "~/scheduler/types";
 import { createScheduler } from "~/scheduler";
 import { createCustomAuth } from "~/scheduler/handlers/executeAction/security";
 import { checkInstallation } from "./utils";
+import { extendPbPageSettingsSchema } from "~/plugins/pageBuilder/extendPbPageSettingsSchema";
 
 export default (params: CreateApwContextParams) => [
+    extendPbPageSettingsSchema(),
     new ContextPlugin<ApwContext>(async context => {
         const { tenancy, security, i18nContent, handlerClient } = context;
 
@@ -139,7 +141,7 @@ export default (params: CreateApwContextParams) => [
             return true;
         });
 
-        apwPageBuilderPlugins({ pageBuilder: context.pageBuilder, apw: context.apw, getIdentity });
+        apwPageBuilderHooks({ pageBuilder: context.pageBuilder, apw: context.apw, getIdentity });
     }),
     apwHooks(),
     createCustomAuth(params)

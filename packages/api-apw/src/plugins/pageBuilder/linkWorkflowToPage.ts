@@ -1,28 +1,30 @@
 import get from "lodash/get";
+import set from "lodash/set";
 import {
     LifeCycleHookCallbackParams,
     ApwOnBeforePageCreateTopicParams,
     ApwOnBeforePageCreateFromTopicParams,
     ApwOnBeforePageUpdateTopicParams
 } from "~/types";
-import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 import {
     getPagesDiff,
     hasPages,
-    setPageWorkflowId,
+    updatePageSettings,
     shouldUpdatePages,
     assignWorkflowToPage
 } from "./utils";
+import { ApwPageBuilderMethods } from "~/plugins/pageBuilder/index";
 
-export interface PageMethods {
-    getPage: PageBuilderContextObject["getPage"];
-    updatePage: PageBuilderContextObject["updatePage"];
-    onBeforePageCreate: PageBuilderContextObject["onBeforePageCreate"];
-    onBeforePageCreateFrom: PageBuilderContextObject["onBeforePageCreateFrom"];
-    onBeforePageUpdate: PageBuilderContextObject["onBeforePageUpdate"];
-}
-
-interface LinkWorkflowToPageParams extends Pick<LifeCycleHookCallbackParams, "apw">, PageMethods {}
+interface LinkWorkflowToPageParams
+    extends Pick<LifeCycleHookCallbackParams, "apw">,
+        Pick<
+            ApwPageBuilderMethods,
+            | "getPage"
+            | "updatePage"
+            | "onBeforePageCreate"
+            | "onBeforePageCreateFrom"
+            | "onBeforePageUpdate"
+        > {}
 
 export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
     const {
@@ -98,11 +100,13 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
             const pages = get(scope, "data.pages");
 
             for (const pid of pages) {
-                await setPageWorkflowId({
+                await updatePageSettings({
                     getPage,
                     updatePage,
                     uniquePageId: pid,
-                    workflowId: workflow.id
+                    getNewSettings: settings => {
+                        return set(settings, "apw.workflowId", workflow.id);
+                    }
                 });
             }
         }
@@ -123,19 +127,23 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
 
             const { removedPages, addedPages } = getPagesDiff(currentPages, previousPages);
             for (const pid of addedPages) {
-                await setPageWorkflowId({
+                await updatePageSettings({
                     getPage,
                     updatePage,
                     uniquePageId: pid,
-                    workflowId: workflow.id
+                    getNewSettings: settings => {
+                        return set(settings, "apw.workflowId", workflow.id);
+                    }
                 });
             }
             for (const pid of removedPages) {
-                await setPageWorkflowId({
+                await updatePageSettings({
                     getPage,
                     updatePage,
                     uniquePageId: pid,
-                    workflowId: null
+                    getNewSettings: settings => {
+                        return set(settings, "apw.workflowId", null);
+                    }
                 });
             }
         }
