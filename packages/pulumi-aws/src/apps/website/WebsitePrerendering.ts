@@ -9,16 +9,11 @@ import { getLayerArn } from "@webiny/aws-layers";
 import { createLambdaRole } from "./WebsiteLambdaUtils";
 
 interface PreRenderingServiceParams {
-    primaryDynamodbTableArn: pulumi.Input<string>;
-    primaryDynamodbTableName: pulumi.Input<string>;
-    fileManagerBucketId: pulumi.Input<string>;
-    cognitoUserPoolArn: pulumi.Input<string>;
-    eventBusArn: pulumi.Input<string>;
     awsAccountId: pulumi.Input<string>;
-    awsRegion: pulumi.Input<string>;
-    appCloudfront: pulumi.Output<aws.cloudfront.Distribution>;
-    deliveryBucket: pulumi.Output<aws.s3.Bucket>;
-    deliveryCloudfront: pulumi.Output<aws.cloudfront.Distribution>;
+    envVariables: Record<string, pulumi.Input<string>>;
+    primaryDynamodbTableArn: pulumi.Input<string>;
+    fileManagerBucketId: pulumi.Input<string>;
+    eventBusArn: pulumi.Input<string>;
 }
 
 export function createPrerenderingService(app: PulumiApp, params: PreRenderingServiceParams) {
@@ -64,10 +59,7 @@ function createRenderSubscriber(
             memorySize: 512,
             environment: {
                 variables: {
-                    // Among other things, this determines the amount of information we reveal on runtime errors.
-                    // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-                    DEBUG: String(process.env.DEBUG),
-                    DB_TABLE: params.primaryDynamodbTableName,
+                    ...params.envVariables,
                     SQS_QUEUE: queue.url
                 }
             },
@@ -142,14 +134,7 @@ function createRenderer(
             layers: [getLayerArn("shelf-io-chrome-aws-lambda-layer")],
             environment: {
                 variables: {
-                    // Among other things, this determines the amount of information we reveal on runtime errors.
-                    // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-                    DEBUG: String(process.env.DEBUG),
-                    DB_TABLE: params.primaryDynamodbTableName,
-                    APP_URL: pulumi.interpolate`https://${params.appCloudfront.domainName}`,
-                    DELIVERY_BUCKET: params.deliveryBucket.bucket,
-                    DELIVERY_CLOUDFRONT: params.deliveryCloudfront.id,
-                    DELIVERY_URL: pulumi.interpolate`https://${params.deliveryCloudfront.domainName}`
+                    ...params.envVariables
                 }
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
@@ -199,14 +184,7 @@ function createFlushService(
             memorySize: 512,
             environment: {
                 variables: {
-                    // Among other things, this determines the amount of information we reveal on runtime errors.
-                    // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-                    DEBUG: String(process.env.DEBUG),
-                    DB_TABLE: params.primaryDynamodbTableName,
-                    APP_URL: pulumi.interpolate`https://${params.appCloudfront.domainName}`,
-                    DELIVERY_BUCKET: params.deliveryBucket.bucket,
-                    DELIVERY_CLOUDFRONT: params.deliveryCloudfront.id,
-                    DELIVERY_URL: pulumi.interpolate`https://${params.deliveryCloudfront.domainName}`
+                    ...params.envVariables
                 }
             },
             description: "Subscribes to fluhs events on event bus",

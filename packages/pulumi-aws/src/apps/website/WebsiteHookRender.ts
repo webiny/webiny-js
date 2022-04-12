@@ -27,6 +27,7 @@ export const websiteRender = defineAppHook(async (params, context) => {
                         DetailType: "RenderPages",
                         Detail: JSON.stringify({
                             path: "*",
+                            variant: params.variant,
                             configuration: {
                                 db: {
                                     namespace: "T#root"

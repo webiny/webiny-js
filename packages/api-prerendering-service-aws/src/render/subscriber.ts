@@ -1,5 +1,6 @@
 import { EventBridgeEvent } from "aws-lambda";
 import SqsClient, { SendMessageBatchRequestEntry } from "aws-sdk/clients/sqs";
+import lodashChunk from "lodash/chunk";
 
 import {
     Args,
@@ -9,7 +10,7 @@ import {
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Context, HandlerPlugin as DefaultHandlerPlugin } from "@webiny/handler/types";
 
-export type HandlerArgs = EventBridgeEvent<"RenderPages", RenderPagesEvent | RenderPagesEvent[]>;
+export type HandlerArgs = EventBridgeEvent<"RenderPages", RenderPagesEvent>;
 
 export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
     //
@@ -33,41 +34,43 @@ export default (params: HandlerConfig): HandlerPlugin => {
                 return;
             }
 
-            let events = context.invocationArgs.detail;
-            if (!Array.isArray(events)) {
-                events = [events];
+            const event = context.invocationArgs.detail;
+            const namespace = event.configuration?.db?.namespace ?? "";
+            const variant = event.variant;
+
+            // Check if there is only specific variant rerender is requested.
+            // TODO: pass VARIANT variable in some other way
+            if (variant && variant !== process.env.VARIANT) {
+                return;
             }
 
             const toRender = new Map<string, Args>();
 
-            for (const event of events) {
-                const namespace = event.configuration?.db?.namespace ?? "";
-                if (event.path === "*") {
-                    const renders = await storageOperations.listRenders({
-                        where: { namespace }
-                    });
+            if (event.path === "*") {
+                const renders = await storageOperations.listRenders({
+                    where: { namespace }
+                });
 
-                    for (const render of renders) {
-                        if (render.args) {
-                            addRender(render.args);
-                        }
+                for (const render of renders) {
+                    if (render.args) {
+                        addRender(render.args);
                     }
-                } else if (event.tag) {
-                    const renders = await storageOperations.listRenders({
-                        where: {
-                            namespace,
-                            tag: event.tag
-                        }
-                    });
-
-                    for (const render of renders) {
-                        if (render.args) {
-                            addRender(render.args);
-                        }
-                    }
-                } else {
-                    addRender(event);
                 }
+            } else if (event.tag) {
+                const renders = await storageOperations.listRenders({
+                    where: {
+                        namespace,
+                        tag: event.tag
+                    }
+                });
+
+                for (const render of renders) {
+                    if (render.args) {
+                        addRender(render.args);
+                    }
+                }
+            } else {
+                addRender(event);
             }
 
             const entries: SendMessageBatchRequestEntry[] = [];
@@ -86,16 +89,19 @@ export default (params: HandlerConfig): HandlerPlugin => {
 
             // console.log(JSON.stringify([...toRender.values()]));
 
-            const result = await sqsClient
-                .sendMessageBatch({
-                    QueueUrl: params.sqsQueueUrl,
-                    Entries: entries
-                })
-                .promise();
+            const entriesChunked = lodashChunk(entries, 10);
+            for (const chunk of entriesChunked) {
+                const result = await sqsClient
+                    .sendMessageBatch({
+                        QueueUrl: params.sqsQueueUrl,
+                        Entries: chunk
+                    })
+                    .promise();
 
-            if (result.Failed.length) {
-                console.error("Failed to deliver some of messages");
-                console.error(JSON.stringify(result.Failed));
+                if (result.Failed.length) {
+                    console.error("Failed to deliver some of messages");
+                    console.error(JSON.stringify(result.Failed));
+                }
             }
 
             function addRender(args: Args) {
