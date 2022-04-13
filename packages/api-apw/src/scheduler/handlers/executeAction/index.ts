@@ -84,7 +84,6 @@ export default ({
                         await: true
                     });
                     console.log(JSON.stringify({ body: response.body }, null, 2));
-                    // const body = JSON.parse(response.body);
 
                     // TODO: Maybe update the status like error in original item in DB.
                 }

@@ -7,6 +7,7 @@ import { createReviewerModelDefinition } from "./reviewer.model";
 import { createCommentModelDefinition } from "./comment.model";
 import { createChangeRequestModelDefinition } from "./changeRequest.model";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import { isInstallationPending } from "~/plugins/utils";
 
 export const createApwModels = (context: CmsContext) => {
     /**
@@ -17,6 +18,11 @@ export const createApwModels = (context: CmsContext) => {
         console.warn("Creating model before cms init.");
         return;
     }
+
+    if (isInstallationPending({ tenancy: context.tenancy, i18nContent: context.i18nContent })) {
+        return;
+    }
+
     context.security.disableAuthorization();
 
     const locale = context.i18nContent.locale;

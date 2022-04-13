@@ -9,7 +9,7 @@ import { updateTotalCommentsCount, updateLatestCommentId } from "./updateTotalCo
 import { validateChangeRequest } from "./validateChangeRequest";
 import { validateContentReview } from "./validateContentReview";
 import { validateComment } from "./validateComment";
-import { checkInstallation } from "../utils";
+import { isInstallationPending } from "../utils";
 
 export default () => [
     /**
@@ -18,7 +18,9 @@ export default () => [
     new ContextPlugin<ApwContext>(async context => {
         const { security, apw, tenancy, i18nContent } = context;
 
-        checkInstallation({ tenancy, i18nContent });
+        if (isInstallationPending({ tenancy, i18nContent })) {
+            return;
+        }
 
         validateContentReview({ apw });
 

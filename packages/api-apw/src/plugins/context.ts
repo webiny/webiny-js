@@ -12,7 +12,7 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { CreateApwContextParams } from "~/scheduler/types";
 import { createScheduler } from "~/scheduler";
 import { createCustomAuth } from "~/scheduler/handlers/executeAction/security";
-import { checkInstallation } from "./utils";
+import { isInstallationPending } from "./utils";
 import { extendPbPageSettingsSchema } from "~/plugins/pageBuilder/extendPbPageSettingsSchema";
 
 export default (params: CreateApwContextParams) => [
@@ -20,7 +20,9 @@ export default (params: CreateApwContextParams) => [
     new ContextPlugin<ApwContext>(async context => {
         const { tenancy, security, i18nContent, handlerClient } = context;
 
-        checkInstallation({ tenancy, i18nContent });
+        if (isInstallationPending({ tenancy, i18nContent })) {
+            return;
+        }
 
         const contentHeadlessCmsContextPlugins = createContentHeadlessCmsContext({
             storageOperations: context.cms.storageOperations
@@ -78,7 +80,7 @@ export default (params: CreateApwContextParams) => [
         });
         /**
          * TODO: @ashutosh
-         * Move these call into a separate package let say "ap-apw-page-builder"
+         * Move these call into a separate package let say "app-apw-page-builder"
          */
         context.apw.addContentGetter(ApwContentTypes.PAGE, async id => {
             return context.pageBuilder.getPage<PageWithWorkflow>(id);
