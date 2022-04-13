@@ -7,16 +7,18 @@ interface RequestBodyParams {
      * Must be defined and must contain at least one index pattern.
      */
     index_patterns: string[];
-    settings?: {
-        [key: string]: any;
+    settings: {
+        index: {
+            [key: string]: any;
+        };
     };
-    mappings?: {
+    mappings: {
         properties?: {
             [key: string]: any;
         };
         [key: string]: any;
     };
-    aliases?: {
+    aliases: {
         [key: string]: {
             filter?: {
                 [key: string]: any;
