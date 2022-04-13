@@ -18,7 +18,8 @@
     "@webiny/handler": "^5.25.0",
     "@webiny/handler-args": "^5.25.0",
     "@webiny/handler-client": "^5.25.0",
-    "@webiny/plugins": "^5.25.0"
+    "@webiny/plugins": "^5.25.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

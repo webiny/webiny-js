@@ -1,3 +1,4 @@
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import {
@@ -14,7 +15,7 @@ import { websiteRender } from "./WebsiteHookRender";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { getStorageOutput } from "../getStorageOutput";
-import { getAwsAccountId, getAwsRegion } from "../awsUtils";
+import { getAwsAccountId } from "../awsUtils";
 
 export interface WebsiteAppConfig {
     /** Custom domain configuration */
@@ -26,7 +27,6 @@ export const WebsiteApp = defineApp({
     config(app, config: WebsiteAppConfig) {
         const storage = getStorageOutput(app);
         const awsAccountId = getAwsAccountId(app);
-        const awsRegion = getAwsRegion(app);
 
         const appBucket = createPublicAppBucket(app, "app");
 
@@ -132,17 +132,23 @@ export const WebsiteApp = defineApp({
             }
         });
 
+        const envVariables = {
+            // Among other things, this determines the amount of information we reveal on runtime errors.
+            // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
+            DEBUG: String(process.env.DEBUG),
+            DB_TABLE: storage.primaryDynamodbTableName,
+            APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
+            DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
+            DELIVERY_CLOUDFRONT: deliveryCloudfront.output.id,
+            DELIVERY_URL: pulumi.interpolate`https://${deliveryCloudfront.output.domainName}`
+        };
+
         const prerendering = createPrerenderingService(app, {
-            awsRegion,
             awsAccountId,
-            primaryDynamodbTableName: storage.primaryDynamodbTableName,
+            envVariables,
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
             fileManagerBucketId: storage.fileManagerBucketId,
-            cognitoUserPoolArn: storage.cognitoUserPoolArn,
-            eventBusArn: storage.eventBusArn,
-            appCloudfront: appCloudfront.output,
-            deliveryBucket: deliveryBucket.bucket.output,
-            deliveryCloudfront: deliveryCloudfront.output
+            eventBusArn: storage.eventBusArn
         });
 
         const domain = config.domain?.(app.ctx);
