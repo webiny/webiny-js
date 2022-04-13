@@ -17,7 +17,7 @@ import submissionElasticsearchFields from "./operations/submission/elasticsearch
 import formElasticsearchFields from "./operations/form/elasticsearchFields";
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
-import { base as baseElasticsearchIndexTemplate } from "~/elasticsearch/templates/base";
+import { elasticsearchIndexTemplates } from "~/elasticsearch/templates";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -37,7 +37,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         esTable: esTableName,
         documentClient,
         elasticsearch,
-        plugins: pluginsInput
+        plugins: userPlugins
     } = params;
 
     if (attributes) {
@@ -50,7 +50,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         /**
          * User defined plugins.
          */
-        pluginsInput || [],
+        userPlugins || [],
         /**
          * Elasticsearch field definitions for the submission record.
          */
@@ -68,9 +68,9 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
          */
         getElasticsearchOperators(),
         /**
-         * Base Elasticsearch index template.
+         * Built-in Elasticsearch index templates
          */
-        baseElasticsearchIndexTemplate
+        elasticsearchIndexTemplates()
     ]);
 
     const table = createTable({
@@ -123,11 +123,12 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
     };
 
     return {
-        init: async formBuilder => {
-            formBuilder.onAfterInstall.subscribe(async () => {
+        init: async context => {
+            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale }) => {
                 await createElasticsearchIndexTemplate({
                     elasticsearch,
-                    plugins
+                    plugins,
+                    locale: locale.code
                 });
             });
         },

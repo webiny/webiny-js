@@ -1,6 +1,6 @@
 import { Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "~/operations/utils";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { FileManagerContext } from "~/types";
 
 export interface TableParams {
     context: FileManagerContext;

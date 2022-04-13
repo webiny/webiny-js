@@ -1,22 +1,23 @@
 import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
-import { PluginsContainer } from "@webiny/plugins";
-import { CmsEntryElasticsearchIndexTemplatePlugin } from "~/plugins/CmsEntryElasticsearchIndexTemplatePlugin";
 import { listTemplatePlugins } from "@webiny/api-elasticsearch/templates";
+import { PluginsContainer } from "@webiny/plugins";
+import { PageElasticsearchIndexTemplatePlugin } from "~/plugins/definitions/PageElasticsearchIndexTemplatePlugin";
 
-export interface CreateElasticsearchTemplateParams {
+export interface ExecOnBeforeInstallParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
+    locale: string;
 }
+export const createElasticsearchIndexTemplates = async (
+    params: ExecOnBeforeInstallParams
+): Promise<void> => {
+    const { elasticsearch, plugins: container, locale } = params;
 
-export const createElasticsearchIndexTemplate = async (
-    params: CreateElasticsearchTemplateParams
-) => {
-    const { elasticsearch, plugins: container } = params;
-
-    const plugins = listTemplatePlugins<CmsEntryElasticsearchIndexTemplatePlugin>(
+    const plugins = listTemplatePlugins<PageElasticsearchIndexTemplatePlugin>(
         container,
-        CmsEntryElasticsearchIndexTemplatePlugin.type
+        PageElasticsearchIndexTemplatePlugin.type,
+        locale
     );
 
     /**
@@ -29,8 +30,9 @@ export const createElasticsearchIndexTemplate = async (
             await elasticsearch.indices.putTemplate(plugin.template);
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not create Elasticsearch index template for the Headless CMS.",
-                ex.code || "CMS_ELASTICSEARCH_TEMPLATE_ERROR",
+                ex.message ||
+                    "Could not create Elasticsearch index template for the Page Builder Pages.",
+                ex.code || "PB_ELASTICSEARCH_TEMPLATE_ERROR",
                 {
                     error: ex,
                     options: plugin.template

@@ -22,9 +22,13 @@ const validateTemplates = (plugins: ElasticsearchIndexTemplatePlugin[], type: st
 
 export const listTemplatePlugins = <T extends ElasticsearchIndexTemplatePlugin>(
     container: PluginsContainer,
-    type: string
+    type: string,
+    locale: string
 ): T[] => {
-    const plugins = container.byType<T>(type);
+    const code = locale.toLowerCase();
+    const plugins = container.byType<T>(type).filter(plugin => {
+        return plugin.canUse(code);
+    });
     validateTemplates(plugins, type);
     return plugins;
 };

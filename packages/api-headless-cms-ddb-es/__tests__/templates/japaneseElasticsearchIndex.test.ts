@@ -7,7 +7,7 @@ import {
     deleteIndex
 } from "../helpers";
 import { base as baseTemplate } from "~/elasticsearch/templates/base";
-import { jp as japaneseTemplate } from "~/elasticsearch/templates/jp";
+import { japanese as japaneseTemplate } from "~/elasticsearch/templates/japanese";
 import lodashCloneDeep from "lodash/cloneDeep";
 
 const baseTemplateName = baseTemplate.template.name;
@@ -64,7 +64,7 @@ describe("Japanese Elasticsearch Index and Templates", () => {
         const response = await getTemplate(client);
 
         const japaneseTemplateSettings = lodashCloneDeep(japaneseTemplate.template.body.settings);
-        delete japaneseTemplateSettings.index.analysis.analyzer.lowercase_analyzer;
+        delete (japaneseTemplateSettings as any).index.analysis.analyzer.lowercase_analyzer;
 
         expect(response).toMatchObject({
             body: {

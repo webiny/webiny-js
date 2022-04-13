@@ -1,7 +1,4 @@
-import {
-    FileManagerContext,
-    FileManagerFilesStorageOperationsListParamsWhere
-} from "@webiny/api-file-manager/types";
+import { FileManagerFilesStorageOperationsListParamsWhere } from "@webiny/api-file-manager/types";
 import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
 import {
     ElasticsearchBoolQueryConfig,
@@ -16,6 +13,7 @@ import { FileElasticsearchSortModifierPlugin } from "~/plugins/FileElasticsearch
 import { FileElasticsearchBodyModifierPlugin } from "~/plugins/FileElasticsearchBodyModifierPlugin";
 import { FileElasticsearchQueryModifierPlugin } from "~/plugins/FileElasticsearchQueryModifierPlugin";
 import { applyWhere } from "@webiny/api-elasticsearch/where";
+import { FileManagerContext } from "~/types";
 
 interface CreateElasticsearchBodyParams {
     context: FileManagerContext;

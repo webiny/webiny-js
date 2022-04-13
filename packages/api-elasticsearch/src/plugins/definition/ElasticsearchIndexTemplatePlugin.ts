@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
 import { IndicesPutTemplate } from "@elastic/elasticsearch/api/requestParams";
 
-interface RequestBodyParams {
+export interface RequestBodyParams {
     /**
      * Must be defined and must contain at least one index pattern.
      */
@@ -94,6 +94,13 @@ export type ElasticsearchIndexTemplatePluginConfig = IndicesPutTemplate<RequestB
 };
 
 export interface ElasticsearchIndexTemplatePluginParams {
+    /**
+     * For which locales are we applying this plugin.
+     * Options:
+     *  - locale codes to target specific locale
+     *  - null for all
+     */
+    locales?: string[];
     pattern: RegExp;
     template: ElasticsearchIndexTemplatePluginConfig;
     start: number;
@@ -103,16 +110,34 @@ export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
     public readonly template: ElasticsearchIndexTemplatePluginConfig;
     private readonly pattern: RegExp;
     private readonly start: number;
+    private readonly locales: string[] | undefined;
 
     public constructor(params: ElasticsearchIndexTemplatePluginParams) {
         super();
-        const { pattern, template, start } = params;
+        const { locales, pattern, template, start } = params;
         this.pattern = pattern;
         this.template = {
             ...template
         };
+        this.locales = locales ? locales.map(locale => locale.toLowerCase()) : undefined;
         this.start = start;
         this.validateTemplate();
+    }
+
+    public canUse(locale: string): boolean {
+        if (!this.locales) {
+            return true;
+        } else if (this.locales.length === 0) {
+            throw new WebinyError(
+                "Cannot have Elasticsearch Index Template plugin with no locales defined.",
+                "LOCALES_ERROR",
+                {
+                    pattern: this.pattern,
+                    template: this.template
+                }
+            );
+        }
+        return this.locales.includes(locale.toLowerCase());
     }
 
     private validateTemplate(): void {

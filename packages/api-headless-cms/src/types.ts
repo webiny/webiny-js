@@ -748,10 +748,12 @@ export interface CmsSettingsContext {
 
 export interface BeforeInstallTopicParams {
     tenant: string;
+    locale: string;
 }
 
 export interface AfterInstallTopicParams {
     tenant: string;
+    locale: string;
 }
 
 export type CmsSystemContext = {
@@ -2448,12 +2450,11 @@ export interface HeadlessCmsStorageOperations {
     groups: CmsGroupStorageOperations;
     models: CmsModelStorageOperations;
     entries: CmsEntryStorageOperations;
-
-    init?: (cms: HeadlessCms) => Promise<void>;
     /**
-     * Plugins to be attached to the main context.
+     * Either attach something from the storage operations or run something in it.
      */
-    plugins?: Plugin[] | Plugin[][];
+    beforeInit?: (context: CmsContext) => Promise<void>;
+    init?: (context: CmsContext) => Promise<void>;
     /**
      * An upgrade to run if necessary.
      */

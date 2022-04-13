@@ -6,8 +6,9 @@ import {
 export class PageElasticsearchIndexTemplatePlugin extends ElasticsearchIndexTemplatePlugin {
     public static override readonly type: string = "pageBuilder.page.elasticsearch.index.template";
 
-    public constructor(template: ElasticsearchIndexTemplatePluginConfig) {
+    public constructor(template: ElasticsearchIndexTemplatePluginConfig, locales?: string[]) {
         super({
+            locales,
             pattern: new RegExp(/-page-builder$/),
             template,
             start: 300

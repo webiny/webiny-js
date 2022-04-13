@@ -7,14 +7,16 @@ import WebinyError from "@webiny/error";
 interface CreateElasticsearchIndexParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
+    locale: string;
 }
 
 export const createElasticsearchIndexTemplate = async (params: CreateElasticsearchIndexParams) => {
-    const { elasticsearch, plugins: container } = params;
+    const { elasticsearch, plugins: container, locale } = params;
 
     const plugins = listTemplatePlugins<FormElasticsearchIndexTemplatePlugin>(
         container,
-        FormElasticsearchIndexTemplatePlugin.type
+        FormElasticsearchIndexTemplatePlugin.type,
+        locale
     );
     /**
      * We need to add all the templates to the Elasticsearch.

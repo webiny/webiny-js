@@ -1,19 +1,24 @@
 import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
-import { listTemplatePlugins } from "@webiny/api-elasticsearch/templates";
 import { PluginsContainer } from "@webiny/plugins";
-import { PageElasticsearchIndexTemplatePlugin } from "~/plugins/definitions/PageElasticsearchIndexTemplatePlugin";
+import { CmsEntryElasticsearchIndexTemplatePlugin } from "~/plugins/CmsEntryElasticsearchIndexTemplatePlugin";
+import { listTemplatePlugins } from "@webiny/api-elasticsearch/templates";
 
-export interface ExecOnBeforeInstallParams {
+export interface CreateElasticsearchTemplateParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
+    locale: string;
 }
-export const execOnBeforeInstall = async (params: ExecOnBeforeInstallParams): Promise<void> => {
-    const { elasticsearch, plugins: container } = params;
 
-    const plugins = listTemplatePlugins<PageElasticsearchIndexTemplatePlugin>(
+export const createElasticsearchIndexTemplate = async (
+    params: CreateElasticsearchTemplateParams
+) => {
+    const { elasticsearch, plugins: container, locale } = params;
+
+    const plugins = listTemplatePlugins<CmsEntryElasticsearchIndexTemplatePlugin>(
         container,
-        PageElasticsearchIndexTemplatePlugin.type
+        CmsEntryElasticsearchIndexTemplatePlugin.type,
+        locale
     );
 
     /**
@@ -26,9 +31,8 @@ export const execOnBeforeInstall = async (params: ExecOnBeforeInstallParams): Pr
             await elasticsearch.indices.putTemplate(plugin.template);
         } catch (ex) {
             throw new WebinyError(
-                ex.message ||
-                    "Could not create Elasticsearch index template for the Page Builder Pages.",
-                ex.code || "PB_ELASTICSEARCH_TEMPLATE_ERROR",
+                ex.message || "Could not create Elasticsearch index template for the Headless CMS.",
+                ex.code || "CMS_ELASTICSEARCH_TEMPLATE_ERROR",
                 {
                     error: ex,
                     options: plugin.template
