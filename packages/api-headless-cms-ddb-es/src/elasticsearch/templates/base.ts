@@ -5,13 +5,16 @@ export const base = new CmsEntryElasticsearchIndexTemplatePlugin({
     order: 250,
     body: {
         index_patterns: ["*-headless-cms-*"],
+        aliases: {},
         settings: {
-            analysis: {
-                analyzer: {
-                    lowercase_analyzer: {
-                        type: "custom",
-                        filter: ["lowercase", "trim"],
-                        tokenizer: "keyword"
+            index: {
+                analysis: {
+                    analyzer: {
+                        lowercase_analyzer: {
+                            type: "custom",
+                            filter: ["lowercase", "trim"],
+                            tokenizer: "keyword"
+                        }
                     }
                 }
             }
