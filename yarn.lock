@@ -6639,15 +6639,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-virtual@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@rollup/plugin-virtual@npm:2.1.0"
-  peerDependencies:
-    rollup: ^1.20.0||^2.0.0
-  checksum: 85ce90f3f30f20d6ada01909e905e7c7627af51d710f94d5677b37434fb62f2bee9aab50c4068c68c5626fbf481f7d32281b3af54f628f1f96a381523da31be8
-  languageName: node
-  linkType: hard
-
 "@rollup/pluginutils@npm:^3.0.8, @rollup/pluginutils@npm:^3.1.0":
   version: 3.1.0
   resolution: "@rollup/pluginutils@npm:3.1.0"
@@ -10267,7 +10258,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
+"@webiny/api-prerendering-service-aws@^5.25.0, @webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws"
   dependencies:
@@ -10280,8 +10271,10 @@ __metadata:
     "@types/aws-lambda": ^8.10.93
     "@webiny/api-prerendering-service": ^5.25.0
     "@webiny/cli": ^5.25.0
+    "@webiny/error": ^5.25.0
     "@webiny/handler": ^5.25.0
     "@webiny/handler-args": ^5.25.0
+    "@webiny/handler-client": ^5.25.0
     "@webiny/plugins": ^5.25.0
     "@webiny/project-utils": ^5.25.0
     lodash: ^4.17.21
@@ -12386,7 +12379,6 @@ __metadata:
     "@rollup/plugin-commonjs": ^21.0.2
     "@rollup/plugin-json": ^4.1.0
     "@rollup/plugin-node-resolve": ^13.1.3
-    "@rollup/plugin-virtual": ^2.1.0
     "@svgr/webpack": 6.1.1
     "@types/webpack-env": 1.16.3
     "@webiny/cli": ^5.25.0
@@ -13617,6 +13609,7 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.25.0
     "@webiny/api-page-builder-so-ddb": ^5.25.0
     "@webiny/api-prerendering-service": ^5.25.0
+    "@webiny/api-prerendering-service-aws": ^5.25.0
     "@webiny/api-security": ^5.25.0
     "@webiny/api-security-cognito": ^5.25.0
     "@webiny/api-security-okta": ^5.25.0

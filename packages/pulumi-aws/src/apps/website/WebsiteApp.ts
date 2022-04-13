@@ -186,6 +186,8 @@ export const WebsiteApp = defineApp({
         const variant = app.ctx.variant;
         if (variant) {
             app.onDeploy(async ({ outputs }) => {
+                // After deployment is made we update a static JSON file with a variant configuration.
+                // TODO: We should update WCP config instead of a static file here
                 await updateGatewayConfig({
                     app: "website",
                     cwd: app.ctx.projectDir,

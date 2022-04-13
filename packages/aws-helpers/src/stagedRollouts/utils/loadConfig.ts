@@ -3,6 +3,7 @@ import { CloudFrontRequestEvent } from "~/lambdaEdge";
 import { configPath } from "./common";
 import { logDebug } from "./log";
 
+// Config is locally cached within live lambda for a short time (1 minute).
 // Config must be cached per domain.
 // Otherwise cache will spill over different apps, because we may share this lambda.
 const configCache = new Map<string, GatewayConfigCache>();

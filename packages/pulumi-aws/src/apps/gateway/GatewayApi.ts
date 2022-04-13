@@ -18,6 +18,10 @@ export interface GatewayApiParams {
 }
 
 export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
+    // Currently we have an S3 bucket serving as cloudfront origin.
+    // This bucket has only a single _config.json file containing variants configuration.
+
+    // TODO: With WCP bucket is not needed, but we will need some placeholder for a default cloudfront behavior.
     const bucket = app.addResource(aws.s3.Bucket, {
         name: `${params.name}-gateway`,
         config: {
@@ -30,6 +34,7 @@ export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
         }
     });
 
+    // TODO: With WCP we will not need the config file. Config should be loaded from WCP API.
     app.addResource(aws.s3.BucketObject, {
         name: `${params.name}-gateway-config`,
         config: {
