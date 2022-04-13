@@ -12,9 +12,9 @@ import {
 } from "./helpers";
 
 import { paginateBatch } from "../utils";
-import { CmsIndexEntry } from "../../types";
+import { CmsIndexEntry } from "~/types";
 import { CmsModel, CmsContext } from "@webiny/api-headless-cms/types";
-import configurations from "../../configurations";
+import { configurations } from "~/configurations";
 import { Client } from "@elastic/elasticsearch";
 
 interface Hit {

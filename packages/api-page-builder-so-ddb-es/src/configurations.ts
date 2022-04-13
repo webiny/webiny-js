@@ -1,16 +1,12 @@
 import WebinyError from "@webiny/error";
 
-export interface ElasticsearchConfigParams {
+export interface ElasticsearchParams {
     tenant: string;
     locale: string;
 }
 
-interface ElasticsearchConfig {
-    index: string;
-}
-
 export const configurations = {
-    es(params: ElasticsearchConfigParams): ElasticsearchConfig {
+    es: (params: ElasticsearchParams) => {
         const { tenant, locale } = params;
         if (!tenant) {
             throw new WebinyError(
@@ -18,7 +14,6 @@ export const configurations = {
                 "TENANT_ERROR"
             );
         }
-
         const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
 
         const tenantId = sharedIndex ? "root" : tenant;
@@ -33,7 +28,7 @@ export const configurations = {
             localeCode = locale;
         }
 
-        const index = [tenantId, localeCode, "form-builder"]
+        const index = [tenantId, localeCode, "page-builder"]
             .filter(Boolean)
             .join("-")
             .toLowerCase();

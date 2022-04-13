@@ -1,17 +1,13 @@
 import WebinyError from "@webiny/error";
 
-export interface ElasticsearchConfigParams {
+export interface ElasticsearchConfigurationParams {
     tenant: string;
     locale: string;
 }
-
-interface ElasticsearchConfig {
-    index: string;
-}
-
 export const configurations = {
-    es(params: ElasticsearchConfigParams): ElasticsearchConfig {
+    es(params: ElasticsearchConfigurationParams) {
         const { tenant, locale } = params;
+
         if (!tenant) {
             throw new WebinyError(
                 `Missing "tenant" parameter when trying to create Elasticsearch index name.`,
@@ -33,7 +29,7 @@ export const configurations = {
             localeCode = locale;
         }
 
-        const index = [tenantId, localeCode, "form-builder"]
+        const index = [tenantId, localeCode, "file-manager"]
             .filter(Boolean)
             .join("-")
             .toLowerCase();
