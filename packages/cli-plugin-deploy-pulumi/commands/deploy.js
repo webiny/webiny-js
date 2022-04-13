@@ -83,6 +83,17 @@ module.exports = async (inputs, context) => {
         pulumi: pulumi
     });
 
+    if (stack.app) {
+        // This is basically a hack to fix issue with pulumi context changing during deploy.
+        // If we run getStackOutput inside pulumi app it changes current pulumi context to other app.
+        // That causes errors on deploy.
+        // Legit fix would be to have a single pulumi login for all the apps, instead of logging to each app separately.
+        // Currently we just add logging back to the app we deploy as a last handler in the app.
+        stack.app.addHandler(async () => {
+            await login(projectApplication);
+        });
+    }
+
     await runHook({
         hookName: "hook-before-deploy",
         hookFn: application.beforeDeploy,
