@@ -16,6 +16,7 @@ import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { getStorageOutput } from "../getStorageOutput";
 import { getAwsAccountId } from "../awsUtils";
+import { websiteRender } from "./WebsiteHookRender";
 
 export interface WebsiteAppConfig {
     /** Custom domain configuration */
@@ -231,6 +232,6 @@ export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<We
         beforeBuild: config.beforeBuild,
         afterBuild: config.afterBuild,
         beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(websiteUpload, config.afterDeploy)
+        afterDeploy: mergeAppHooks(websiteRender, config.afterDeploy)
     });
 }
