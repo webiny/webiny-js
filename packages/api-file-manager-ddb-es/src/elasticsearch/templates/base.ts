@@ -5,13 +5,16 @@ export const base = new FileElasticsearchIndexTemplatePlugin({
     order: 50,
     body: {
         index_patterns: ["*-file-manager"],
+        aliases: {},
         settings: {
-            analysis: {
-                analyzer: {
-                    lowercase_analyzer: {
-                        type: "custom",
-                        filter: ["lowercase", "trim"],
-                        tokenizer: "keyword"
+            index: {
+                analysis: {
+                    analyzer: {
+                        lowercase_analyzer: {
+                            type: "custom",
+                            filter: ["lowercase", "trim"],
+                            tokenizer: "keyword"
+                        }
                     }
                 }
             }

@@ -5,13 +5,16 @@ export const base = new PageElasticsearchIndexTemplatePlugin({
     order: 350,
     body: {
         index_patterns: ["*-page-builder"],
+        aliases: {},
         settings: {
-            analysis: {
-                analyzer: {
-                    lowercase_analyzer: {
-                        type: "custom",
-                        filter: ["lowercase", "trim"],
-                        tokenizer: "keyword"
+            index: {
+                analysis: {
+                    analyzer: {
+                        lowercase_analyzer: {
+                            type: "custom",
+                            filter: ["lowercase", "trim"],
+                            tokenizer: "keyword"
+                        }
                     }
                 }
             }

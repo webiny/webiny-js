@@ -5,13 +5,16 @@ export const base = new FormElasticsearchIndexTemplatePlugin({
     order: 150,
     body: {
         index_patterns: ["*-form-builder"],
+        aliases: {},
         settings: {
-            analysis: {
-                analyzer: {
-                    lowercase_analyzer: {
-                        type: "custom",
-                        filter: ["lowercase", "trim"],
-                        tokenizer: "keyword"
+            index: {
+                analysis: {
+                    analyzer: {
+                        lowercase_analyzer: {
+                            type: "custom",
+                            filter: ["lowercase", "trim"],
+                            tokenizer: "keyword"
+                        }
                     }
                 }
             }
