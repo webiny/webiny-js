@@ -27,6 +27,7 @@ const Iframe: React.FC<IFrameProps> = ({ element }) => {
     } = React.useContext(PageBuilderContext);
 
     const elementHeight = get(data, `settings.height.${displayMode}.value`);
+    const elementWidth = get(data, `settings.width.${displayMode}.value`);
 
     if (!element?.data?.iframe?.url) {
         return (
@@ -36,7 +37,12 @@ const Iframe: React.FC<IFrameProps> = ({ element }) => {
         );
     }
 
-    return <iframe src={element.data.iframe.url} style={{ height: elementHeight }} width="100%" />;
+    return (
+        <iframe
+            src={element.data.iframe.url}
+            style={{ height: elementHeight, width: elementWidth }}
+        />
+    );
 };
 
 export default Iframe;

@@ -40,6 +40,7 @@ export default () => {
             settings: [
                 "pb-editor-page-element-settings-delete",
                 "pb-editor-page-element-style-settings-height",
+                "pb-editor-page-element-style-settings-width",
                 "pb-editor-page-element-style-settings-border",
                 "pb-editor-page-element-style-settings-shadow",
                 "pb-editor-page-element-style-settings-padding",
@@ -59,6 +60,10 @@ export default () => {
                         settings: {
                             height: createInitialPerDeviceSettingValue(
                                 { value: "380px" },
+                                DisplayMode.DESKTOP
+                            ),
+                            width: createInitialPerDeviceSettingValue(
+                                { value: "auto" },
                                 DisplayMode.DESKTOP
                             )
                         }

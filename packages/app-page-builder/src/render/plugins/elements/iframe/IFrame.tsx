@@ -2,7 +2,7 @@ import React from "react";
 import { get } from "dot-prop-immutable";
 import { ElementRoot } from "../../../components/ElementRoot";
 import { PbElement } from "~/types";
-import { PageBuilderContext } from "../../../../contexts/PageBuilder";
+import { PageBuilderContext } from "~/contexts/PageBuilder";
 
 interface IFrameProps {
     element: PbElement;
@@ -15,6 +15,7 @@ const IFrame: React.FC<IFrameProps> = ({ element }) => {
     } = React.useContext(PageBuilderContext);
 
     const elementHeight = get(data, `settings.height.${displayMode}.value`);
+    const elementWidth = get(data, `settings.width.${displayMode}.value`);
 
     return (
         <ElementRoot
@@ -22,7 +23,7 @@ const IFrame: React.FC<IFrameProps> = ({ element }) => {
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-iframe"}
         >
             <iframe
-                style={{ height: elementHeight }}
+                style={{ height: elementHeight, width: elementWidth }}
                 id={element.id}
                 src={get(element, "data.iframe.url") || ""}
             />
