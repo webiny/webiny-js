@@ -52,6 +52,7 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
             ...createSystemCrud({
                 context,
                 getTenant,
+                getLocale,
                 getIdentity,
                 storageOperations
             }),

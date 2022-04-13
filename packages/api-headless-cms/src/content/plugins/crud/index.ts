@@ -53,6 +53,7 @@ export const createContentCruds = (params: CreateContentCrudsParams) => {
             ...createSystemCrud({
                 context,
                 getTenant,
+                getLocale,
                 getIdentity,
                 storageOperations
             }),
