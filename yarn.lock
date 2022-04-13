@@ -10158,7 +10158,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
+"@webiny/api-prerendering-service-aws@^5.25.0, @webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws"
   dependencies:
@@ -10171,8 +10171,10 @@ __metadata:
     "@types/aws-lambda": ^8.10.93
     "@webiny/api-prerendering-service": ^5.25.0
     "@webiny/cli": ^5.25.0
+    "@webiny/error": ^5.25.0
     "@webiny/handler": ^5.25.0
     "@webiny/handler-args": ^5.25.0
+    "@webiny/handler-client": ^5.25.0
     "@webiny/plugins": ^5.25.0
     "@webiny/project-utils": ^5.25.0
     rimraf: ^3.0.2
@@ -13487,6 +13489,7 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.25.0
     "@webiny/api-page-builder-so-ddb": ^5.25.0
     "@webiny/api-prerendering-service": ^5.25.0
+    "@webiny/api-prerendering-service-aws": ^5.25.0
     "@webiny/api-security": ^5.25.0
     "@webiny/api-security-cognito": ^5.25.0
     "@webiny/api-security-okta": ^5.25.0
