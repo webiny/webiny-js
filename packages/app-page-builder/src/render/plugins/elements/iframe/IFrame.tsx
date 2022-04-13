@@ -14,7 +14,7 @@ const IFrame: React.FC<IFrameProps> = ({ element }) => {
         responsiveDisplayMode: { displayMode }
     } = React.useContext(PageBuilderContext);
 
-    const elementHeight = data?.settings?.height?.[displayMode]?.value || "initial";
+    const elementHeight = get(data, `settings.height.${displayMode}.value`);
 
     return (
         <ElementRoot

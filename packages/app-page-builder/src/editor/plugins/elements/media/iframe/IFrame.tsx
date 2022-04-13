@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { get } from "dot-prop-immutable";
 import { ReactComponent as IFrameIcon } from "./iframe-icon.svg";
 import { PbEditorElement } from "~/types";
 import { PageBuilderContext } from "~/contexts/PageBuilder";
@@ -25,7 +26,7 @@ const Iframe: React.FC<IFrameProps> = ({ element }) => {
         responsiveDisplayMode: { displayMode }
     } = React.useContext(PageBuilderContext);
 
-    const elementHeight = data?.settings?.height?.[displayMode]?.value || "initial";
+    const elementHeight = get(data, `settings.height.${displayMode}.value`);
 
     if (!element?.data?.iframe?.url) {
         return (
