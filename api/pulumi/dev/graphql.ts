@@ -7,6 +7,8 @@ interface GraphqlParams {
     primaryDynamodbTable: aws.dynamodb.Table;
     bucket: aws.s3.Bucket;
     cognitoUserPool: aws.cognito.UserPool;
+    apwSchedulerEventRule: aws.cloudwatch.EventRule;
+    apwSchedulerEventTarget: aws.cloudwatch.EventTarget;
 }
 
 class Graphql {
@@ -15,7 +17,14 @@ class Graphql {
     };
     role: aws.iam.Role;
 
-    constructor({ env, primaryDynamodbTable, bucket, cognitoUserPool }: GraphqlParams) {
+    constructor({
+        env,
+        primaryDynamodbTable,
+        bucket,
+        cognitoUserPool,
+        apwSchedulerEventRule,
+        apwSchedulerEventTarget
+    }: GraphqlParams) {
         const roleName = "api-lambda-role";
         this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
@@ -80,7 +89,9 @@ class Graphql {
             item: pulumi.interpolate`{
               "PK": {"S": "APW#SETTINGS"},
               "SK": {"S": "A"},
-              "mainGraphqlFunctionArn": {"S": "${this.functions.api.arn}"}
+              "mainGraphqlFunctionArn": {"S": "${this.functions.api.arn}"},
+              "eventRuleName": {"S": "${apwSchedulerEventRule.name}"},
+              "eventTargetId": {"S": "${apwSchedulerEventTarget.targetId}"}
             }`
         });
     }

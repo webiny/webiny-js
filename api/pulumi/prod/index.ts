@@ -85,7 +85,9 @@ export default () => {
         },
         primaryDynamodbTable: dynamoDb.table,
         bucket: fileManager.bucket,
-        cognitoUserPool: cognito.userPool
+        cognitoUserPool: cognito.userPool,
+        apwSchedulerEventRule: apwScheduler.eventRule,
+        apwSchedulerEventTarget: apwScheduler.eventTarget
     });
 
     const headlessCms = new HeadlessCMS({

@@ -137,8 +137,7 @@ class ApwScheduler {
          * Create event rule.
          */
         this.eventRule = new aws.cloudwatch.EventRule(EVENT_RULE_NAME, {
-            name: EVENT_RULE_NAME,
-            description: `Enable us to schedule an action in publishing workflow`,
+            description: `Enable us to schedule an action in publishing workflow at a particular datetime`,
             scheduleExpression: "cron(* * * * ? 2000)",
             isEnabled: true
         });
@@ -150,7 +149,7 @@ class ApwScheduler {
             action: "lambda:InvokeFunction",
             function: this.functions.scheduleAction.arn,
             principal: "events.amazonaws.com",
-            statementId: "allow-rule-invoke-" + "apw-schedule-action-event-rule"
+            statementId: "allow-rule-invoke-" + EVENT_RULE_NAME
         });
 
         /**
@@ -158,8 +157,7 @@ class ApwScheduler {
          */
         this.eventTarget = new aws.cloudwatch.EventTarget(EVENT_RULE_TARGET, {
             rule: this.eventRule.name,
-            arn: this.functions.scheduleAction.arn,
-            targetId: `${EVENT_RULE_TARGET}-id`
+            arn: this.functions.scheduleAction.arn
         });
     }
 }
