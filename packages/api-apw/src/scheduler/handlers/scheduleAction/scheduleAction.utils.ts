@@ -12,6 +12,7 @@ import {
     PutRuleCommand
 } from "@aws-sdk/client-cloudwatch-events";
 import { ClientContext } from "@webiny/handler-client/types";
+import { getApwSettings } from "~/scheduler/handlers/utils";
 
 const log = console.log;
 
@@ -19,14 +20,6 @@ interface ScheduleLambdaExecutionParams extends Omit<HandlerArgs, "invocationTyp
     cloudWatchEventClient: any;
     invokedFunctionArn: string;
 }
-
-/**
- * Here we're using the hardcoded values for editing cloudwatch event rule.
- * To use dynamic value of these resources we need to somehow get these values from pulumi state file.
- * Maybe by saving them as APW settings in DB using CLI's "after-deploy-hook".
- */
-const RULE_NAME = "apw-scheduler-event-rule";
-const TARGET_ID = "apw-scheduler-event-rule-target-id";
 
 export async function scheduleLambdaExecution({
     cloudWatchEventClient,
@@ -36,12 +29,13 @@ export async function scheduleLambdaExecution({
     tenant,
     locale
 }: ScheduleLambdaExecutionParams) {
+    const { eventTargetId, eventRuleName } = await getApwSettings();
     /**
      * Remove the target
      */
     const removeTargetsCommand = new RemoveTargetsCommand({
-        Rule: RULE_NAME,
-        Ids: [TARGET_ID]
+        Rule: eventRuleName,
+        Ids: [eventTargetId]
     });
     const removeTargetsResponse = await cloudWatchEventClient.send(removeTargetsCommand);
     /**
@@ -58,7 +52,7 @@ export async function scheduleLambdaExecution({
      * Delete the Rule
      */
     const deleteRuleCommand = new DeleteRuleCommand({
-        Name: RULE_NAME
+        Name: eventRuleName
     });
     await cloudWatchEventClient.send(deleteRuleCommand);
 
@@ -70,9 +64,10 @@ export async function scheduleLambdaExecution({
     const cronExpression = dateTimeToCronExpression(datetime);
 
     const ruleParams = {
-        Name: RULE_NAME,
+        Name: eventRuleName,
         ScheduleExpression: `cron(${cronExpression})`,
-        State: "ENABLED"
+        State: "ENABLED",
+        Description: `Enable us to schedule an action in publishing workflow at a particular datetime`
     };
 
     await cloudWatchEventClient.send(new PutRuleCommand(ruleParams));
@@ -81,11 +76,11 @@ export async function scheduleLambdaExecution({
      */
     await cloudWatchEventClient.send(
         new PutTargetsCommand({
-            Rule: RULE_NAME,
+            Rule: eventRuleName,
             Targets: [
                 {
                     Arn: invokedFunctionArn,
-                    Id: TARGET_ID,
+                    Id: eventTargetId,
                     Input: JSON.stringify({
                         datetime: datetime,
                         tenant: tenant,

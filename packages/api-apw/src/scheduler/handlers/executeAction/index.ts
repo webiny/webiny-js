@@ -3,8 +3,8 @@ import { ArgsContext } from "@webiny/handler-args/types";
 import { ApwScheduleActionStorageOperations } from "~/scheduler/types";
 import { getIsoStringTillMinutes, encodeToken, basePlugins } from "~/scheduler/handlers/utils";
 import { ClientContext } from "@webiny/handler-client/types";
-
-import { getGqlBody, getApwSettings } from "./executeAction.utils";
+import { getApwSettings } from "~/scheduler/handlers/utils";
+import { getGqlBody } from "./executeAction.utils";
 
 export type HandlerArgs = {
     datetime: string;

@@ -115,3 +115,30 @@ export const basePlugins = () => [
         })
     })
 ];
+
+/**
+ * Get APW settings record from DDB.
+ */
+export interface ApwSettings {
+    mainGraphqlFunctionArn: string;
+    eventRuleName: string;
+    eventTargetId: string;
+}
+
+export const getApwSettings = async (): Promise<ApwSettings> => {
+    const params = {
+        TableName: process.env.DB_TABLE as string,
+        Key: {
+            PK: `APW#SETTINGS`,
+            SK: "A"
+        }
+    };
+
+    const { Item } = await documentClient.get(params).promise();
+
+    return {
+        mainGraphqlFunctionArn: Item ? Item["mainGraphqlFunctionArn"] : "mainGraphqlFunctionArn",
+        eventRuleName: Item ? Item["eventRuleName"] : "eventRuleName",
+        eventTargetId: Item ? Item["eventTargetId"] : "eventTargetId"
+    };
+};
