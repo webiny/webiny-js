@@ -1,0 +1,4 @@
+name: website
+runtime: nodejs
+description: Represents cloud infrastructure that hosts your project's public website.
+main: pulumi/
