@@ -1,4 +1,3 @@
-import { Client } from "@elastic/elasticsearch";
 import { base } from "~/indexConfiguration/base";
 import { japanese } from "~/indexConfiguration/japanese";
 import { ElasticsearchIndexRequestBody } from "~/types";
@@ -25,10 +24,9 @@ const createIndexPattern = (name: string): string => {
 };
 
 describe("Elasticsearch Templates", () => {
-    let client: Client;
+    const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        client = createElasticsearchClient();
         await deleteAllIndices(client);
         await deleteAllTemplates(client);
     });

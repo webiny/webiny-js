@@ -1,4 +1,3 @@
-import { Client } from "@elastic/elasticsearch";
 import { japanese } from "~/indexConfiguration/japanese";
 import { createElasticsearchClient, deleteAllIndices, deleteTemplate } from "../helpers";
 
@@ -8,10 +7,9 @@ const indexTemplateTestName = "japanese-index-template-test";
 const order = 73;
 
 describe("Elasticsearch Japanese", () => {
-    let client: Client;
+    const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        client = createElasticsearchClient();
         await deleteAllIndices(client);
         await deleteTemplate(client, indexTemplateTestName);
     });

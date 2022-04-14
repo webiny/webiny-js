@@ -1,4 +1,3 @@
-import { Client } from "@elastic/elasticsearch";
 import {
     clearTemplate,
     createElasticsearchClient,
@@ -17,11 +16,10 @@ const testJaJpIndexName = "root-ja-jp-headless-cms-articles";
 const testJaIndexName = "root-ja-headless-cms-articles";
 
 describe("Japanese Elasticsearch Index and Templates", () => {
-    let client: Client;
+    const client = createElasticsearchClient();
 
     beforeEach(async () => {
         try {
-            client = createElasticsearchClient();
             await clearTemplate(client, [baseTemplateName, jpTemplateName]);
             await deleteIndex(client, [testJaJpIndexName, testJaIndexName]);
         } catch (ex) {

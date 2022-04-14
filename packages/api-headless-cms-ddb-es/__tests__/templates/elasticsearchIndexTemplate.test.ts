@@ -1,15 +1,13 @@
-import { Client } from "@elastic/elasticsearch";
 import { base } from "~/elasticsearch/templates/base";
 import { clearTemplate, getTemplate, putTemplate, createElasticsearchClient } from "../helpers";
 
 const templateName = base.template.name;
 
 describe("Elasticsearch Index Template", () => {
-    let client: Client;
+    const client = createElasticsearchClient();
 
     beforeEach(async () => {
         try {
-            client = createElasticsearchClient();
             await clearTemplate(client, templateName);
         } catch (ex) {
             console.log(JSON.stringify(ex));

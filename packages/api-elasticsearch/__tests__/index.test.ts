@@ -1,4 +1,3 @@
-import { Client } from "@elastic/elasticsearch";
 import { base } from "~/indexConfiguration/base";
 import { japanese } from "~/indexConfiguration/japanese";
 import { ElasticsearchIndexRequestBody } from "~/types";
@@ -14,10 +13,9 @@ const settings: [string, ElasticsearchIndexRequestBody][] = [
 ];
 
 describe("Elasticsearch Index Mapping And Settings", () => {
-    let client: Client;
+    const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        client = createElasticsearchClient();
         await deleteAllIndices(client);
     });
 

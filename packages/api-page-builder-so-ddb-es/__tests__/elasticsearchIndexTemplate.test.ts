@@ -1,10 +1,13 @@
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
-import { Client } from "@elastic/elasticsearch";
 import { base } from "~/elasticsearch/templates/base";
-import { ElasticsearchIndexTemplatePluginConfig } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchIndexTemplatePlugin";
 import { PageElasticsearchIndexTemplatePlugin } from "~/plugins/definitions/PageElasticsearchIndexTemplatePlugin";
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
+import {
+    createElasticsearchClient,
+    deleteAllTemplates,
+    getTemplate,
+    putTemplate,
+    deleteAllIndices
+} from "../../api-elasticsearch/__tests__/helpers";
 
 const defaultTemplateName = "page-builder-pages-index-default";
 const defaultTemplateOrder = 350;
@@ -49,85 +52,20 @@ const disableSourceIndex = new PageElasticsearchIndexTemplatePlugin({
 });
 
 describe("Elasticsearch Index Template", () => {
-    let client: Client;
-
-    const clearTemplate = async (debug = true) => {
-        try {
-            await client.indices.deleteTemplate({
-                name: defaultTemplateName
-            });
-        } catch (ex) {
-            if (!debug) {
-                return;
-            }
-            console.log("Could not delete template.");
-            console.log(JSON.stringify(ex));
-        }
-    };
-
-    const putTemplate = async (template: ElasticsearchIndexTemplatePluginConfig) => {
-        try {
-            return await client.indices.putTemplate(template);
-        } catch (ex) {
-            console.log("Could not put template.");
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
-    };
-
-    const getTemplate = async () => {
-        try {
-            return await client.indices.getTemplate();
-        } catch (ex) {
-            console.log("Could not get templates.");
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
-    };
-
-    const clearIndex = async () => {
-        const { body } = await client.indices.exists({
-            index: testPageBuilderIndexName
-        });
-
-        if (!body) {
-            return;
-        }
-        await client.indices.delete({
-            index: testPageBuilderIndexName
-        });
-    };
-
-    beforeAll(async () => {
-        try {
-            client = createElasticsearchClient({
-                node: `http://localhost:${ELASTICSEARCH_PORT}`,
-                auth: {} as any,
-                maxRetries: 10,
-                pingTimeout: 500
-            });
-            await clearIndex();
-        } catch (ex) {
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
-    });
+    const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        try {
-            await clearTemplate(false);
-        } catch (ex) {
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
+        await deleteAllIndices(client);
+        await deleteAllTemplates(client);
     });
 
     afterEach(async () => {
-        await clearTemplate();
+        await deleteAllIndices(client);
+        await deleteAllTemplates(client);
     });
 
     it("should insert default index template", async () => {
-        const insert = await putTemplate(base.template);
+        const insert = await putTemplate(client, base.template);
 
         expect(insert).toMatchObject({
             body: {
@@ -136,7 +74,7 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await getTemplate();
+        const response = await getTemplate(client);
 
         expect(response).toMatchObject({
             body: {
@@ -150,9 +88,9 @@ describe("Elasticsearch Index Template", () => {
     });
 
     it("should insert default template and add few more", async () => {
-        await putTemplate(base.template);
+        await putTemplate(client, base.template);
 
-        const insertPropertyNoIndexResult = await putTemplate(noPropertyIndex.template);
+        const insertPropertyNoIndexResult = await putTemplate(client, noPropertyIndex.template);
         expect(insertPropertyNoIndexResult).toMatchObject({
             body: {
                 acknowledged: true
@@ -160,7 +98,10 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const insertDisableSourceIndexResult = await putTemplate(disableSourceIndex.template);
+        const insertDisableSourceIndexResult = await putTemplate(
+            client,
+            disableSourceIndex.template
+        );
         expect(insertDisableSourceIndexResult).toMatchObject({
             body: {
                 acknowledged: true
@@ -168,7 +109,7 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await getTemplate();
+        const response = await getTemplate(client);
 
         expect(response).toMatchObject({
             body: {
@@ -190,9 +131,9 @@ describe("Elasticsearch Index Template", () => {
     });
 
     it("should insert templates and create index that will have those mappings", async () => {
-        await putTemplate(base.template);
-        await putTemplate(noPropertyIndex.template);
-        await putTemplate(disableSourceIndex.template);
+        await putTemplate(client, base.template);
+        await putTemplate(client, noPropertyIndex.template);
+        await putTemplate(client, disableSourceIndex.template);
 
         const createResponse = await client.indices.create({
             index: testPageBuilderIndexName

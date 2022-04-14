@@ -1,55 +1,20 @@
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
-import { Client } from "@elastic/elasticsearch";
 import { base } from "~/elasticsearch/templates/base";
-import { ElasticsearchIndexTemplatePluginConfig } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchIndexTemplatePlugin";
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
+import {
+    createElasticsearchClient,
+    deleteAllTemplates,
+    getTemplate,
+    putTemplate
+} from "../../api-elasticsearch/__tests__/helpers";
 
 const templateName = "file-manager-files-index-default";
 
 describe("Elasticsearch Index Template", () => {
-    let client: Client;
-
-    const clearTemplate = async () => {
-        try {
-            await client.indices.deleteTemplate({
-                name: templateName
-            });
-        } catch (ex) {
-            console.log("Could not delete template.");
-            console.log(JSON.stringify(ex));
-        }
-    };
-
-    const putTemplate = async (template: ElasticsearchIndexTemplatePluginConfig) => {
-        try {
-            return await client.indices.putTemplate(template);
-        } catch (ex) {
-            console.log("Could not put template.");
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
-    };
-
-    const getTemplate = async () => {
-        try {
-            return await client.indices.getTemplate();
-        } catch (ex) {
-            console.log("Could not get templates.");
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
-    };
+    const client = createElasticsearchClient();
 
     beforeEach(async () => {
         try {
-            client = createElasticsearchClient({
-                node: `http://localhost:${ELASTICSEARCH_PORT}`,
-                auth: {} as any,
-                maxRetries: 10,
-                pingTimeout: 500
-            });
-            await clearTemplate();
+            await deleteAllTemplates(client);
         } catch (ex) {
             console.log(JSON.stringify(ex));
             throw ex;
@@ -57,11 +22,11 @@ describe("Elasticsearch Index Template", () => {
     });
 
     afterEach(async () => {
-        await clearTemplate();
+        await deleteAllTemplates(client);
     });
 
     it("should insert default index template", async () => {
-        const insert = await putTemplate(base.template);
+        const insert = await putTemplate(client, base.template);
 
         expect(insert).toMatchObject({
             body: {
@@ -70,7 +35,7 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await getTemplate();
+        const response = await getTemplate(client);
 
         expect(response).toMatchObject({
             body: {
