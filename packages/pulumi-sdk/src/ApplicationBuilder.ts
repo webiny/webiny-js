@@ -1,6 +1,7 @@
-import { Pulumi } from "./Pulumi";
 import { ApplicationHooks } from "./ApplicationConfig";
 import { ApplicationHook } from "./ApplicationHook";
+import { Pulumi } from "./Pulumi";
+import { PulumiApp } from "./PulumiApp";
 
 export interface ApplicationStackArgs {
     /** Root path of the application */
@@ -20,6 +21,7 @@ export interface ApplicationBuilderConfig extends Partial<ApplicationHooks> {
 }
 
 export interface ApplicationStack {
+    app?: PulumiApp;
     refresh(): Promise<any>;
     preview(): Promise<any>;
     up(): Promise<any>;

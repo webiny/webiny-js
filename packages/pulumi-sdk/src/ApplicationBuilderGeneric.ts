@@ -69,6 +69,7 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
         };
 
         return {
+            app,
             async refresh() {
                 return await stack.refresh(options);
             },

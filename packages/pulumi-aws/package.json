@@ -17,7 +17,8 @@
     "@pulumi/aws": "^4.10.0",
     "@pulumi/pulumi": "^3.25.0",
     "@webiny/cli-plugin-deploy-pulumi": "^5.25.0",
-    "@webiny/pulumi-sdk": "^5.24.0"
+    "@webiny/pulumi-sdk": "^5.24.0",
+    "chalk": "^4.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
