@@ -1,8 +1,6 @@
-import { createElasticsearchClient } from "~/client";
 import { Client } from "@elastic/elasticsearch";
 import { japanese } from "~/indexConfiguration/japanese";
-
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
+import { createElasticsearchClient, deleteAllIndices, deleteTemplate } from "../helpers";
 
 const indexTestName = "japanese-index-test";
 const indexTemplateTestName = "japanese-index-template-test";
@@ -13,31 +11,14 @@ describe("Elasticsearch Japanese", () => {
     let client: Client;
 
     beforeEach(async () => {
-        client = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {} as any,
-            maxRetries: 10,
-            pingTimeout: 500
-        });
-        await client.indices.delete({
-            index: "_all"
-        });
-        try {
-            await client.indices.deleteTemplate({
-                name: indexTemplateTestName
-            });
-        } catch {}
+        client = createElasticsearchClient();
+        await deleteAllIndices(client);
+        await deleteTemplate(client, indexTemplateTestName);
     });
 
     afterEach(async () => {
-        await client.indices.delete({
-            index: "_all"
-        });
-        try {
-            await client.indices.deleteTemplate({
-                name: indexTemplateTestName
-            });
-        } catch {}
+        await deleteAllIndices(client);
+        await deleteTemplate(client, indexTemplateTestName);
     });
 
     it("should create index", async () => {

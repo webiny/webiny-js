@@ -25,6 +25,10 @@ export const base: ElasticsearchIndexRequestBody = {
                     }
                 },
                 analyzer: "lowercase_analyzer"
+            },
+            rawValues: {
+                type: "object",
+                enabled: false
             }
         }
     }
