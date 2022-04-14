@@ -2,7 +2,7 @@ import apwHooks from "./hooks";
 import WebinyError from "@webiny/error";
 import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
+import { ApwContext } from "~/types";
 import { createApw } from "~/createApw";
 import { apwPageBuilderHooks } from "./pageBuilder";
 import { createStorageOperations } from "~/storageOperations";
@@ -14,9 +14,9 @@ import { createScheduler } from "~/scheduler";
 import { createCustomAuth } from "~/scheduler/handlers/executeAction/security";
 import { isInstallationPending } from "./utils";
 import { extendPbPageSettingsSchema } from "~/plugins/pageBuilder/extendPbPageSettingsSchema";
+import { apwContentPagePlugins } from "~/plugins/pageBuilder/apwContentPagePlugins";
 
-export default (params: CreateApwContextParams) => [
-    extendPbPageSettingsSchema(),
+const setupApwContext = (params: CreateApwContextParams) =>
     new ContextPlugin<ApwContext>(async context => {
         const { tenancy, security, i18nContent, handlerClient } = context;
 
@@ -78,73 +78,14 @@ export default (params: CreateApwContextParams) => [
             scheduler,
             handlerClient
         });
-        /**
-         * TODO: @ashutosh
-         * Move these call into a separate package let say "app-apw-page-builder"
-         */
-        context.apw.addContentGetter(ApwContentTypes.PAGE, async id => {
-            return context.pageBuilder.getPage<PageWithWorkflow>(id);
-        });
-        context.apw.addContentGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
-            if (!settings.modelId) {
-                return null;
-            }
-            const model = await context.cms.getModel(settings.modelId);
-            if (!model) {
-                return null;
-            }
-            const entry = await context.cms.getEntry(model, {
-                where: { id: id, tenant: model.tenant }
-            });
-            if (!entry) {
-                return null;
-            }
-            return { ...entry, title: `Extract "title" form entity.` };
-        });
-        context.apw.addContentPublisher(ApwContentTypes.PAGE, async id => {
-            await context.pageBuilder.publishPage<PageWithWorkflow>(id);
-            return true;
-        });
-        context.apw.addContentPublisher(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
-            if (!settings.modelId) {
-                return null;
-            }
-            const model = await context.cms.getModel(settings.modelId);
-
-            if (!model) {
-                return null;
-            }
-            const publishedEntry = await context.cms.publishEntry(model, id);
-
-            if (!publishedEntry) {
-                return null;
-            }
-
-            return true;
-        });
-        context.apw.addContentUnPublisher(ApwContentTypes.PAGE, async id => {
-            await context.pageBuilder.unpublishPage<PageWithWorkflow>(id);
-            return true;
-        });
-        context.apw.addContentUnPublisher(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
-            if (!settings.modelId) {
-                return null;
-            }
-            const model = await context.cms.getModel(settings.modelId);
-            if (!model) {
-                return null;
-            }
-            const unpublishedEntry = await context.cms.unpublishEntry(model, id);
-
-            if (!unpublishedEntry) {
-                return null;
-            }
-
-            return true;
-        });
 
         apwPageBuilderHooks({ pageBuilder: context.pageBuilder, apw: context.apw, getIdentity });
-    }),
+    });
+
+export default (params: CreateApwContextParams) => [
+    extendPbPageSettingsSchema(),
+    setupApwContext(params),
+    apwContentPagePlugins(),
     apwHooks(),
     createCustomAuth(params)
 ];
