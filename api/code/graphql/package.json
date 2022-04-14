@@ -23,7 +23,6 @@
     "@webiny/api-page-builder-import-export-so-ddb": "^5.25.0",
     "@webiny/api-page-builder-so-ddb": "^5.25.0",
     "@webiny/api-prerendering-service": "^5.25.0",
-    "@webiny/api-prerendering-service-aws": "^5.25.0",
     "@webiny/api-security": "^5.25.0",
     "@webiny/api-security-cognito": "^5.25.0",
     "@webiny/api-security-okta": "^5.25.0",
