@@ -16,6 +16,9 @@ const noPropertyIndex = new PageElasticsearchIndexTemplatePlugin({
     order: 351,
     body: {
         index_patterns: ["*test-page-builder"],
+        settings: {
+            index: {}
+        },
         mappings: {
             properties: {
                 rawValues: {
@@ -33,6 +36,9 @@ const disableSourceIndex = new PageElasticsearchIndexTemplatePlugin({
         index_patterns: ["*test-page-builder"],
         aliases: {
             ["testable-page-builder"]: {}
+        },
+        settings: {
+            index: {}
         },
         mappings: {
             _source: {

@@ -1,97 +1,19 @@
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
 import { IndicesPutTemplate } from "@elastic/elasticsearch/api/requestParams";
+import { ElasticsearchIndexRequestBody } from "~/types";
 
-export interface RequestBodyParams {
+interface RequestBody extends ElasticsearchIndexRequestBody {
     /**
      * Must be defined and must contain at least one index pattern.
      */
     index_patterns: string[];
-    settings: {
-        index: {
-            analysis?: {
-                [key: string]: any;
-            };
-            number_of_shards?: number;
-            number_of_routing_shards?: number;
-            codec?: string;
-            routing_partition_size?: number;
-            soft_deletes?: {
-                enabled?: boolean;
-                retention_lease?: {
-                    period?: string;
-                };
-            };
-            load_fixed_bitset_filters_eagerly?: boolean;
-            shard?: {
-                check_on_startup?: boolean | "checksum";
-            };
-            number_of_replicas?: number;
-            auto_expand_replicas?: string | "all" | false;
-            search?: {
-                idle?: {
-                    after?: string;
-                };
-            };
-            refresh_interval?: string;
-            max_result_window?: number;
-            max_inner_result_window?: number;
-            max_rescore_window?: number;
-            max_docvalue_fields_search?: number;
-            max_script_fields?: number;
-            max_ngram_diff?: number;
-            max_shingle_diff?: number;
-            max_refresh_listeners?: number;
-            analyze?: {
-                max_token_count?: number;
-            };
-            highlight?: {
-                max_analyzed_offset?: number;
-            };
-            max_terms_count?: number;
-            max_regex_length?: number;
-            query?: {
-                default_field?: string;
-            };
-            routing?: {
-                allocation?: {
-                    enable?: "all" | "primaries" | "new_primaries" | "none";
-                };
-                rebalance?: {
-                    enable?: "all" | "primaries" | "new_primaries" | "none";
-                };
-            };
-            gc_deletes?: string;
-            default_pipeline?: string;
-            final_pipeline?: string;
-            hidden?: boolean;
-            [key: string]: any;
-        };
-    };
-    mappings: {
-        properties?: {
-            [key: string]: any;
-        };
-        [key: string]: any;
-    };
-    aliases: {
-        [key: string]: {
-            filter?: {
-                [key: string]: any;
-            };
-            index_routing?: string;
-            is_hidden?: boolean;
-            is_write_index?: boolean;
-            routing?: string;
-            search_routing?: string;
-        };
-    };
     version?: number;
 }
 
-export type ElasticsearchIndexTemplatePluginConfig = IndicesPutTemplate<RequestBodyParams> & {
+export interface ElasticsearchIndexTemplatePluginConfig extends IndicesPutTemplate<RequestBody> {
     order: number;
-};
+}
 
 export interface ElasticsearchIndexTemplatePluginParams {
     /**

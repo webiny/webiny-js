@@ -1,6 +1,6 @@
-import { RequestBodyParams } from "~/plugins/definition/ElasticsearchIndexTemplatePlugin";
+import { ElasticsearchIndexRequestBody } from "~/types";
 
-export const japanese: Pick<RequestBodyParams, "settings" | "mappings"> = {
+export const japanese: ElasticsearchIndexRequestBody = {
     settings: {
         index: {
             analysis: {
