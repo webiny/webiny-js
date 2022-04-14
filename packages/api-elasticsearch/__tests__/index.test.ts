@@ -4,7 +4,7 @@ import { japanese } from "~/indexConfiguration/japanese";
 import { ElasticsearchIndexRequestBody } from "~/types";
 import { createElasticsearchClient, deleteAllIndices } from "./helpers";
 
-const indexTestName = "dummy-index-test";
+const testIndexName = "dummy-index-test";
 /**
  * Add configurations when added to the code.
  */
@@ -30,7 +30,7 @@ describe("Elasticsearch Index Mapping And Settings", () => {
         // @ts-ignore
         async (name: string, setting: ElasticsearchIndexRequestBody) => {
             const createResponse = await client.indices.create({
-                index: indexTestName,
+                index: testIndexName,
                 body: {
                     ...setting
                 }
@@ -39,17 +39,17 @@ describe("Elasticsearch Index Mapping And Settings", () => {
             expect(createResponse).toMatchObject({
                 body: {
                     acknowledged: true,
-                    index: indexTestName
+                    index: testIndexName
                 },
                 statusCode: 200
             });
 
             const mappingResponse = await client.indices.getMapping({
-                index: indexTestName
+                index: testIndexName
             });
 
             expect(mappingResponse.body).toEqual({
-                [indexTestName]: {
+                [testIndexName]: {
                     mappings: {
                         ...setting.mappings
                     }
@@ -57,11 +57,11 @@ describe("Elasticsearch Index Mapping And Settings", () => {
             });
 
             const settingsResponse = await client.indices.getSettings({
-                index: indexTestName
+                index: testIndexName
             });
 
             expect(settingsResponse.body).toEqual({
-                [indexTestName]: {
+                [testIndexName]: {
                     settings: {
                         ...setting.settings,
                         index: {
@@ -69,7 +69,7 @@ describe("Elasticsearch Index Mapping And Settings", () => {
                             creation_date: expect.stringMatching(/^([0-9]+)$/),
                             number_of_replicas: expect.stringMatching(/^([0-9]+)$/),
                             number_of_shards: expect.stringMatching(/^([0-9]+)$/),
-                            provided_name: indexTestName,
+                            provided_name: testIndexName,
                             uuid: expect.stringMatching(/^([a-zA-Z0-9_-]+)$/),
                             version: {
                                 created: expect.stringMatching(/^([0-9]+)$/)

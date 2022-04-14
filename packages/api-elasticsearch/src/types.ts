@@ -156,6 +156,7 @@ export interface ElasticsearchIndexRequestBody {
             hidden?: boolean;
             [key: string]: any;
         };
+        [key: string]: any;
     };
     mappings: {
         properties?: {

@@ -21,7 +21,7 @@ const settings: [string, ElasticsearchIndexRequestBody][] = [
 const order = 75;
 
 const createIndexPattern = (name: string): string => {
-    return `pattern-${name}`;
+    return `test-index-${name}-*`;
 };
 
 describe("Elasticsearch Templates", () => {
@@ -42,8 +42,10 @@ describe("Elasticsearch Templates", () => {
         "should create template with correct settings - %s",
         // @ts-ignore
         async (name: string, setting: ElasticsearchIndexRequestBody) => {
+            /**
+             * First we need to create the template.
+             */
             const templateName = `template-${name}`;
-
             const index_patterns: string[] = [createIndexPattern(name)];
 
             const createResponse = await putTemplate(client, {
@@ -55,7 +57,9 @@ describe("Elasticsearch Templates", () => {
                     ...setting
                 }
             });
-
+            /**
+             * ... verify that everything is ok.
+             */
             expect(createResponse).toMatchObject({
                 body: {
                     acknowledged: true
@@ -82,6 +86,48 @@ describe("Elasticsearch Templates", () => {
                 order,
                 aliases: {},
                 index_patterns
+            });
+
+            const testIndexName = `test-index-${name}-locale-code`;
+            /**
+             * Then create the index with given pattern...
+             */
+            const createIndexResponse = await client.indices.create({
+                index: testIndexName
+            });
+            expect(createIndexResponse).toMatchObject({
+                body: {
+                    acknowledged: true,
+                    index: testIndexName
+                },
+                statusCode: 200
+            });
+            /**
+             * And finally verify that index has correct configuration
+             */
+            const mappings = await client.indices.getMapping({
+                index: testIndexName
+            });
+            expect(mappings.body[testIndexName].mappings).toEqual({
+                ...setting.mappings
+            });
+
+            const settings = await client.indices.getSettings({
+                index: testIndexName
+            });
+            expect(settings.body[testIndexName].settings).toEqual({
+                ...setting.settings,
+                index: {
+                    ...setting.settings.index,
+                    creation_date: expect.stringMatching(/^([0-9]+)$/),
+                    number_of_replicas: expect.stringMatching(/^([0-9]+)$/),
+                    number_of_shards: expect.stringMatching(/^([0-9]+)$/),
+                    provided_name: testIndexName,
+                    uuid: expect.stringMatching(/^([a-zA-Z0-9_-]+)$/),
+                    version: {
+                        created: expect.stringMatching(/^([0-9]+)$/)
+                    }
+                }
             });
         }
     );
