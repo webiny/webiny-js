@@ -36,6 +36,13 @@ export default (params: HandlerConfig): HandlerPlugin => {
 
             const event = context.invocationArgs.detail;
             const namespace = event.configuration?.db?.namespace ?? "";
+            const variant = event.variant;
+
+            // Check if there is only specific variant rerender is requested.
+            // TODO: pass VARIANT variable in some other way
+            if (variant && variant !== process.env.VARIANT) {
+                return;
+            }
 
             const toRender = new Map<string, Args>();
 
