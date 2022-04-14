@@ -24,6 +24,7 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
+    "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/cli": "^5.25.0",
     "@webiny/project-utils": "^5.25.0",
     "rimraf": "^3.0.2",
