@@ -1,4 +1,4 @@
-import { tagResources } from "@webiny/pulumi-sdk";
+import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 // By default, we only deploy "prod" stack when the WEBINY_ENV environment variable is equal to "prod".
 // But do note that it's recommended the same application code and cloud infrastructure resources are
