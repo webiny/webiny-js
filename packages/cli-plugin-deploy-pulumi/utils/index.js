@@ -1,3 +1,4 @@
+const { tagResources } = require("@webiny/pulumi-sdk");
 const getPulumi = require("./getPulumi");
 const getStackOutput = require("./getStackOutput");
 const crawlDirectory = require("./crawlDirectory");
@@ -9,6 +10,7 @@ const loadEnvVariables = require("./loadEnvVariables");
 const getRandomColorForString = require("./getRandomColorForString");
 
 module.exports = {
+    tagResources,
     getPulumi,
     getStackOutput,
     crawlDirectory,
