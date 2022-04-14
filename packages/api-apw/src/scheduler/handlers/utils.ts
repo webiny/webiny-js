@@ -1,5 +1,10 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
+import logsPlugins from "@webiny/handler-logs";
 import { InvocationTypes } from "~/scheduler/types";
 
 /**
@@ -94,3 +99,19 @@ export const decodeToken = (token: string): EncodeTokenParams => {
         locale
     };
 };
+
+export const documentClient = new DocumentClient({
+    convertEmptyValues: true,
+    region: process.env.AWS_REGION
+});
+
+export const basePlugins = () => [
+    dynamoDbPlugins(),
+    logsPlugins(),
+    dbPlugins({
+        table: process.env.DB_TABLE,
+        driver: new DynamoDbDriver({
+            documentClient
+        })
+    })
+];

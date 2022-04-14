@@ -1,15 +1,10 @@
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import {
-    ApwContentTypes,
-    ApwScheduleActionData,
-    ApwScheduleActionStorageOperations,
-    ApwScheduleActionTypes
-} from "~/scheduler/types";
-import { getIsoStringTillMinutes, encodeToken } from "~/scheduler/handlers/utils";
+import { ApwScheduleActionStorageOperations } from "~/scheduler/types";
+import { getIsoStringTillMinutes, encodeToken, basePlugins } from "~/scheduler/handlers/utils";
 import { ClientContext } from "@webiny/handler-client/types";
-import { PUBLISH_PAGE, UNPUBLISH_PAGE } from "./graphql";
+
+import { getGqlBody, getApwSettings } from "./executeAction.utils";
 
 export type HandlerArgs = {
     datetime: string;
@@ -25,7 +20,7 @@ interface Configuration {
 /**
  * Handler that execute the provided action(s) for the schedule action workflow.
  */
-export default ({
+const executeActionLambda = ({
     storageOperations
 }: Configuration): HandlerPlugin<ArgsContext<HandlerArgs>, ClientContext> => ({
     type: "handler",
@@ -95,45 +90,7 @@ export default ({
     }
 });
 
-const getGqlBody = (data: ApwScheduleActionData): string => {
-    let body = {};
-
-    if (data.type === ApwContentTypes.PAGE) {
-        if (data.action === ApwScheduleActionTypes.PUBLISH) {
-            body = { query: PUBLISH_PAGE, variables: { id: data.entryId } };
-        }
-        if (data.action === ApwScheduleActionTypes.UNPUBLISH) {
-            body = { query: UNPUBLISH_PAGE, variables: { id: data.entryId } };
-        }
-    }
-
-    return JSON.stringify(body);
-};
-
-/**
- * Get APW settings record from DDB.
- */
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
-    region: process.env.COGNITO_REGION
-});
-
-interface ApwSettings {
-    mainGraphqlFunctionArn: string;
-}
-
-const getApwSettings = async (): Promise<ApwSettings> => {
-    const params = {
-        TableName: process.env.DB_TABLE,
-        Key: {
-            PK: `APW#SETTINGS`,
-            SK: "A"
-        }
-    };
-
-    const { Item } = await documentClient.get(params).promise();
-
-    return {
-        mainGraphqlFunctionArn: Item.mainGraphqlFunctionArn
-    };
-};
+export const executeActionHandlerPlugins = (config: Configuration) => [
+    basePlugins(),
+    executeActionLambda(config)
+];

@@ -30,10 +30,19 @@
       "path": "../api-tenancy"
     },
     {
+      "path": "../db-dynamodb"
+    },
+    {
       "path": "../error"
     },
     {
       "path": "../handler"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../handler-logs"
     },
     {
       "path": "../handler-aws"
@@ -89,10 +98,16 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/handler-logs/*": ["../handler-logs/src/*"],
+      "@webiny/handler-logs": ["../handler-logs/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
