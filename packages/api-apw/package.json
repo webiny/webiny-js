@@ -1,6 +1,7 @@
 {
   "name": "@webiny/api-apw",
   "version": "5.25.0",
+  "private": true,
   "keywords": [
     "apw:base"
   ],
@@ -11,11 +12,7 @@
     "directory": "packages/api-apw"
   },
   "description": "GraphQL API for Webiny Advanced Publishing Workflow.",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
+  "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-cloudwatch-events": "^3.54.1",
