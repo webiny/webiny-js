@@ -9375,6 +9375,7 @@ __metadata:
     "@webiny/cli": ^5.25.0
     "@webiny/db-dynamodb": ^5.25.0
     "@webiny/error": ^5.25.0
+    "@webiny/handler": ^5.25.0
     "@webiny/handler-db": ^5.25.0
     "@webiny/plugins": ^5.25.0
     "@webiny/project-utils": ^5.25.0
