@@ -1,7 +1,7 @@
-import { ElasticsearchBoolQueryConfig } from "~/types";
+import { ElasticsearchBoolQueryConfig } from "../src/types";
 import { Client } from "@elastic/elasticsearch";
-import { ElasticsearchIndexTemplatePluginConfig } from "~/plugins/definition/ElasticsearchIndexTemplatePlugin";
-import { createElasticsearchClient as createClient } from "~/client";
+import { ElasticsearchIndexTemplatePluginConfig } from "../src/plugins/definition/ElasticsearchIndexTemplatePlugin";
+import { createElasticsearchClient as createClient } from "../src/client";
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
 
