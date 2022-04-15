@@ -58,6 +58,14 @@ const searchParameters: SearchParams[] = [
     {
         search: "ロトコル設定検索サイト",
         positions: [1, 4]
+    },
+    {
+        search: "Search Radiologyー症",
+        positions: [1, 2]
+    },
+    {
+        search: "告やプロトコル設定",
+        positions: [0, 1, 3, 4]
     }
 ];
 
