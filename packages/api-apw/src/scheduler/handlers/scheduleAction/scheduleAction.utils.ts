@@ -21,6 +21,11 @@ interface ScheduleLambdaExecutionParams extends Omit<HandlerArgs, "invocationTyp
     invokedFunctionArn: string;
 }
 
+/**
+ * Current API limit/quota for Cloudwatch events is sufficient for now. But, we should watch for it;
+ * in case of scheduling becoming the most frequently used feature.
+ * https://aws.amazon.com/about-aws/whats-new/2017/07/cloudwatch-events-increases-rules-and-api-requests-limits/
+ */
 export async function scheduleLambdaExecution({
     cloudWatchEventClient,
     invokedFunctionArn,
