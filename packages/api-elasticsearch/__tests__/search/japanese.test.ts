@@ -1,4 +1,10 @@
-import { createElasticsearchClient, deleteAllTemplates, deleteAllIndices } from "../helpers";
+import {
+    createElasticsearchClient,
+    deleteAllTemplates,
+    deleteAllIndices,
+    putTemplate
+} from "../helpers";
+import { base as baseIndexConfiguration } from "~/indexConfiguration/base";
 import { japanese as japaneseIndexConfiguration } from "~/indexConfiguration/japanese";
 
 const items = [
@@ -116,8 +122,36 @@ describe("Japanese search", () => {
         });
     };
 
-    const prepare = async () => {
+    const createIndexTemplate = async () => {
+        await putTemplate(client, {
+            name: "base-index-template",
+            order: 50,
+            body: {
+                index_patterns: ["*-index-*"],
+                aliases: {},
+                ...baseIndexConfiguration
+            }
+        });
+        await putTemplate(client, {
+            name: "japanese-index-template",
+            order: 51,
+            body: {
+                index_patterns: ["japanese-index-*"],
+                aliases: {},
+                ...japaneseIndexConfiguration
+            }
+        });
+    };
+
+    const prepareWithIndex = async () => {
         await createIndex();
+        await insertAllData();
+        await refreshIndex();
+        await fetchAllData();
+    };
+
+    const prepareWithTemplate = async () => {
+        await createIndexTemplate();
         await insertAllData();
         await refreshIndex();
         await fetchAllData();
@@ -133,7 +167,7 @@ describe("Japanese search", () => {
         await deleteAllTemplates(client);
     });
 
-    it("should prepare all the data", async () => {
+    it("should verify that all data is prepared", async () => {
         /**
          * first we need to create an index with japanese configuration
          */
@@ -211,64 +245,130 @@ describe("Japanese search", () => {
         });
     });
 
-    it.each(searchParameters)("should get proper search results for - %s", async options => {
-        await prepare();
+    it.each(searchParameters)(
+        "pre-created index - should get proper search results for - %s",
+        async options => {
+            await prepareWithIndex();
 
-        const response = await client.search({
-            index: indexName,
-            body: {
-                query: {
-                    bool: {
-                        must: [
-                            {
-                                query_string: {
-                                    allow_leading_wildcard: true,
-                                    fields: ["title"],
-                                    query: options.search,
-                                    default_operator: "and"
+            const response = await client.search({
+                index: indexName,
+                body: {
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    query_string: {
+                                        allow_leading_wildcard: true,
+                                        fields: ["title"],
+                                        query: options.search,
+                                        default_operator: "and"
+                                    }
                                 }
+                            ]
+                        }
+                    },
+                    sort: [
+                        {
+                            id: {
+                                order: "asc"
                             }
-                        ]
-                    }
-                },
-                sort: [
-                    {
-                        id: {
-                            order: "asc"
+                        }
+                    ],
+                    size: 100,
+                    search_after: undefined,
+                    track_total_hits: true
+                }
+            });
+
+            expect(response).toMatchObject({
+                body: {
+                    hits: {
+                        hits: options.positions.map(index => {
+                            const title = items[index];
+                            const id = Number(index) + 1;
+                            return {
+                                _id: `itemId${index}`,
+                                _index: indexName,
+                                _source: {
+                                    id,
+                                    title
+                                },
+                                _score: null,
+                                _type: "_doc",
+                                sort: [id]
+                            };
+                        }),
+                        total: {
+                            relation: "eq",
+                            value: options.positions.length
                         }
                     }
-                ],
-                size: 100,
-                search_after: undefined,
-                track_total_hits: true
-            }
-        });
+                },
+                statusCode: 200
+            });
+        }
+    );
+    it.each(searchParameters)(
+        "template index - should get proper search results for - %s",
+        async options => {
+            await prepareWithTemplate();
 
-        expect(response).toMatchObject({
-            body: {
-                hits: {
-                    hits: options.positions.map(index => {
-                        const title = items[index];
-                        const id = Number(index) + 1;
-                        return {
-                            _id: `itemId${index}`,
-                            _index: indexName,
-                            _source: {
-                                id,
-                                title
-                            },
-                            _score: null,
-                            _type: "_doc",
-                            sort: [id]
-                        };
-                    }),
-                    total: {
-                        relation: "eq",
-                        value: options.positions.length
-                    }
+            const response = await client.search({
+                index: indexName,
+                body: {
+                    query: {
+                        bool: {
+                            must: [
+                                {
+                                    query_string: {
+                                        allow_leading_wildcard: true,
+                                        fields: ["title"],
+                                        query: options.search,
+                                        default_operator: "and"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    sort: [
+                        {
+                            id: {
+                                order: "asc"
+                            }
+                        }
+                    ],
+                    size: 100,
+                    search_after: undefined,
+                    track_total_hits: true
                 }
-            },
-            statusCode: 200
-        });
-    });
+            });
+
+            expect(response).toMatchObject({
+                body: {
+                    hits: {
+                        hits: options.positions.map(index => {
+                            const title = items[index];
+                            const id = Number(index) + 1;
+                            return {
+                                _id: `itemId${index}`,
+                                _index: indexName,
+                                _source: {
+                                    id,
+                                    title
+                                },
+                                _score: null,
+                                _type: "_doc",
+                                sort: [id]
+                            };
+                        }),
+                        total: {
+                            relation: "eq",
+                            value: options.positions.length
+                        }
+                    }
+                },
+                statusCode: 200
+            });
+        }
+    );
 });
