@@ -4,7 +4,7 @@
 
 This file contains a high-level overview of the process of integrating CMS with Advanced Publishing Workflow (APW). We
 will only discuss _API_ side of things here but if you are interested in _APP_ side please feel free to check
-out [this file](../app-apw/src/plugins/cms/README.md).
+out [this file](/packages/app-apw/src/plugins/cms/README.md).
 
 We have already integrated the Page Builder application. The [pageBuilder](../pageBuilder) folder contains all the
 source code (plugins, methods) for integrating it with APW.
@@ -27,13 +27,13 @@ We will briefly discuss each of those files:
   logic that hooks into `onAfterPagePublish` and `onAfterPageUnPublish` lifecycle events to update __content review__
   status and metadata accordingly.
 - [utils.ts](../pageBuilder/utils.ts) - It contains various helper functions that are used in the above-mentioned files.
-  I would like to highlight [`assignWorkflowToPage`](packages/api-apw/src/plugins/pageBuilder/utils.ts:70) function
+  I would like to highlight [`assignWorkflowToPage`](../pageBuilder/utils.ts#L70) function
   which is responsible for assigning the most suitable workflow to a page. We need to implement a similar function that
   will work with CMS.
 
 As you may have already noticed we are heavily using lifecycle events
-from [`AdvancedPublishingWorkflow`](packages/api-apw/src/types.ts:467)
-and [`PageBuilderContextObject`](packages/api-page-builder/src/graphql/types.ts:505)
+from [`AdvancedPublishingWorkflow`](/packages/api-apw/src/types.ts#L467)
+and [`PageBuilderContextObject`](/packages/api-page-builder/src/graphql/types.ts#L505)
 to executing various business logic which makes it modular and easy to understand.
 
 One can follow a similar approach when building the APW integration for CMS. A good amount of code can be taken
