@@ -15,64 +15,22 @@ const items = [
     "例報告やプロトコル設定検索サイト"
 ];
 
-interface SearchParams {
-    search: string;
-    positions: number[];
-}
+type SearchParams = [string, number[]];
 
 const searchParameters: SearchParams[] = [
-    {
-        search: "躯",
-        positions: [0, 2]
-    },
-    {
-        search: "例",
-        positions: [0, 1, 2, 3, 4]
-    },
-    {
-        search: "定",
-        positions: [0, 1, 3, 4]
-    },
-    {
-        search: "際",
-        positions: [0, 1]
-    },
-    {
-        search: "躯幹",
-        positions: [0, 2]
-    },
-    {
-        search: "症例報告",
-        positions: [0, 1, 2, 3]
-    },
-    {
-        search: "Radiology",
-        positions: [1, 2, 3]
-    },
-    {
-        search: "検索サイト",
-        positions: [1, 2, 4]
-    },
-    {
-        search: "告やプロトコル設",
-        positions: [0, 1, 2, 3, 4]
-    },
-    {
-        search: "Radiologyー症例報告やプロトコル設",
-        positions: [1, 2, 3]
-    },
-    {
-        search: "ロトコル設定検索サイト",
-        positions: [1, 4]
-    },
-    {
-        search: "Search Radiologyー症",
-        positions: [1, 2]
-    },
-    {
-        search: "告やプロトコル設定",
-        positions: [0, 1, 3, 4]
-    }
+    ["躯", [0, 2]],
+    ["例", [0, 1, 2, 3, 4]],
+    ["定", [0, 1, 3, 4]],
+    ["際", [0, 1]],
+    ["躯幹", [0, 2]],
+    ["症例報告", [0, 1, 2, 3]],
+    ["Radiology", [1, 2, 3]],
+    ["検索サイト", [1, 2, 4]], // not working yet - finds one extra (0)
+    ["告やプロトコル設", [0, 1, 2, 3, 4]],
+    ["Radiologyー症例報告やプロトコル設", [1, 2, 3]],
+    ["ロトコル設定検索サイト", [1, 4]], // not working yet - finds none
+    ["Search Radiologyー症", [1, 2]],
+    ["告やプロトコル設定", [0, 1, 3, 4]]
 ];
 
 const indexName = "japanese-index-test";
@@ -247,7 +205,7 @@ describe("Japanese search", () => {
 
     it.each(searchParameters)(
         "pre-created index - should get proper search results for - %s",
-        async options => {
+        async (search, positions) => {
             await prepareWithIndex();
 
             const response = await client.search({
@@ -260,7 +218,7 @@ describe("Japanese search", () => {
                                     query_string: {
                                         allow_leading_wildcard: true,
                                         fields: ["title"],
-                                        query: options.search,
+                                        query: search,
                                         default_operator: "and"
                                     }
                                 }
@@ -283,7 +241,7 @@ describe("Japanese search", () => {
             expect(response).toMatchObject({
                 body: {
                     hits: {
-                        hits: options.positions.map(index => {
+                        hits: positions.map(index => {
                             const title = items[index];
                             const id = Number(index) + 1;
                             return {
@@ -300,7 +258,7 @@ describe("Japanese search", () => {
                         }),
                         total: {
                             relation: "eq",
-                            value: options.positions.length
+                            value: positions.length
                         }
                     }
                 },
@@ -310,7 +268,7 @@ describe("Japanese search", () => {
     );
     it.each(searchParameters)(
         "template index - should get proper search results for - %s",
-        async options => {
+        async (search, positions) => {
             await prepareWithTemplate();
 
             const response = await client.search({
@@ -323,7 +281,7 @@ describe("Japanese search", () => {
                                     query_string: {
                                         allow_leading_wildcard: true,
                                         fields: ["title"],
-                                        query: options.search,
+                                        query: search,
                                         default_operator: "and"
                                     }
                                 }
@@ -346,7 +304,7 @@ describe("Japanese search", () => {
             expect(response).toMatchObject({
                 body: {
                     hits: {
-                        hits: options.positions.map(index => {
+                        hits: positions.map(index => {
                             const title = items[index];
                             const id = Number(index) + 1;
                             return {
@@ -363,7 +321,7 @@ describe("Japanese search", () => {
                         }),
                         total: {
                             relation: "eq",
-                            value: options.positions.length
+                            value: positions.length
                         }
                     }
                 },
