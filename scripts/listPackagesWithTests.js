@@ -43,8 +43,11 @@ const CUSTOM_HANDLERS = {
     // Split "api-apw" tests into batches of
     "api-apw": () => {
         return [
-            "packages/api-apw/* --keyword=cms:ddb --keyword=apw:base",
-            "packages/api-apw/* --keyword=cms:ddb-es --keyword=apw:base"
+            // TODO: APW tests currently only work with DynamoDB-only (it's hard-coded in the tests).
+            //  That is because we currently have no way to load multiple storage operations at the same time.
+            "packages/api-apw/*"
+            // "packages/api-apw/* --keyword=cms:ddb --keyword=apw:base",
+            // "packages/api-apw/* --keyword=cms:ddb-es --keyword=apw:base"
         ];
     }
 };
