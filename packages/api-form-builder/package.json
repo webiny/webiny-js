@@ -51,6 +51,7 @@
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@types/got": "^9.6.12",
     "@types/json2csv": "^4.5.1",
+    "@types/node-fetch": "^2.6.1",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.25.0",
     "@webiny/api-file-manager-ddb": "^5.25.0",
     "@webiny/api-security-so-ddb": "^5.25.0",

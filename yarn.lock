@@ -8786,6 +8786,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node-fetch@npm:^2.6.1":
+  version: 2.6.1
+  resolution: "@types/node-fetch@npm:2.6.1"
+  dependencies:
+    "@types/node": "*"
+    form-data: ^3.0.0
+  checksum: a3e5d7f413d1638d795dff03f7b142b1b0e0c109ed210479000ce7b3ea11f9a6d89d9a024c96578d9249570c5fe5287a5f0f4aaba98199222230196ff2d6b283
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:>=6":
   version: 17.0.21
   resolution: "@types/node@npm:17.0.21"
@@ -10043,6 +10053,7 @@ __metadata:
     "@babel/core": ^7.16.0
     "@types/jsonwebtoken": 8.5.1
     "@types/jwk-to-pem": ^2.0.1
+    "@types/node-fetch": ^2.6.1
     "@webiny/cli": ^5.25.0
     "@webiny/project-utils": ^5.25.0
     jsonwebtoken: ^8.5.1
@@ -10195,6 +10206,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
+    "@types/node-fetch": ^2.6.1
     "@webiny/api-file-manager": ^5.25.0
     "@webiny/cli": ^5.25.0
     "@webiny/error": ^5.25.0
@@ -10329,6 +10341,7 @@ __metadata:
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/got": ^9.6.12
     "@types/json2csv": ^4.5.1
+    "@types/node-fetch": ^2.6.1
     "@webiny/api-dynamodb-to-elasticsearch": ^5.25.0
     "@webiny/api-file-manager": ^5.25.0
     "@webiny/api-file-manager-ddb": ^5.25.0
@@ -10450,6 +10463,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@types/node-fetch": ^2.6.1
     "@webiny/api-dynamic-pages": ^5.25.0
     "@webiny/api-headless-cms": ^5.25.0
     "@webiny/cli": ^5.25.0
@@ -10645,6 +10659,7 @@ __metadata:
     "@elastic/elasticsearch": 7.12.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/archiver": ^5.3.1
+    "@types/node-fetch": ^2.6.1
     "@types/puppeteer": ^5.4.2
     "@types/yauzl": ^2.9.2
     "@webiny/api-dynamodb-to-elasticsearch": ^5.25.0
@@ -10772,6 +10787,7 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@commodo/fields": beta
     "@types/extract-zip": ^1.6.2
+    "@types/node-fetch": ^2.6.1
     "@types/puppeteer": ^5.4.2
     "@types/rimraf": ^3.0.2
     "@webiny/api-file-manager": ^5.25.0
@@ -10925,6 +10941,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
+    "@types/node-fetch": ^2.6.1
     "@webiny/api-security": ^5.25.0
     "@webiny/api-tenancy": ^5.25.0
     "@webiny/api-tenant-manager": ^5.25.0
@@ -12843,6 +12860,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@types/node-fetch": ^2.6.1
     "@webiny/cli": ^5.25.0
     "@webiny/handler": ^5.25.0
     "@webiny/project-utils": ^5.25.0
