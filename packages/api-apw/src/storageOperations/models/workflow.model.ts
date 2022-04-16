@@ -209,7 +209,9 @@ interface CreateWorkflowModelDefinitionParams {
     reviewerModelId: string;
 }
 
-export const createWorkflowModelDefinition = ({ reviewerModelId }: CreateWorkflowModelDefinitionParams): WorkflowModelDefinition => ({
+export const createWorkflowModelDefinition = ({
+    reviewerModelId
+}: CreateWorkflowModelDefinitionParams): WorkflowModelDefinition => ({
     name: "APW - Workflow",
     /**
      * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.

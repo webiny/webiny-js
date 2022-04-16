@@ -137,7 +137,7 @@ const FileManagerProvider: React.FC = ({ children, ...props }) => {
      * Figure out how to type the rest of the types.
      */
     // @ts-ignore
-    const [state, dispatch] = React.useReducer(fileManagerReducer, {...props, identity}, init);
+    const [state, dispatch] = React.useReducer(fileManagerReducer, { ...props, identity }, init);
 
     const value = React.useMemo(() => {
         return {

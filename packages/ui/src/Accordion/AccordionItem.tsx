@@ -116,7 +116,7 @@ export interface AccordionItemProps {
      * Append a class name to Icon
      */
     iconClassName?: string;
-};
+}
 
 const AccordionItem: React.FC<AccordionItemProps> = props => {
     const [open, setState] = useState<boolean>(props.open ? props.open : false);

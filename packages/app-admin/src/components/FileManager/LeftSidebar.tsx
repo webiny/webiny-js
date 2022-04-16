@@ -98,7 +98,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = props => {
                             >
                                 <Icon icon={<TagIcon />} /> {formatTagAsLabel(item, scope)}
                             </Tag>
-                        )
+                        );
                     })}
             </TagList>
         </div>
