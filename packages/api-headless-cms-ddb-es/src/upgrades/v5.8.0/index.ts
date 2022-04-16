@@ -4,7 +4,7 @@
 // @ts-nocheck
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { CmsEntry, CmsModel, CmsContext } from "@webiny/api-headless-cms/types";
-import configurations from "../../configurations";
+import { configurations } from "~/configurations";
 import { TYPE_ENTRY_LATEST } from "../../operations/entry/CmsContentEntryDynamoElastic";
 import WebinyError from "@webiny/error";
 import lodashChunk from "lodash/chunk";

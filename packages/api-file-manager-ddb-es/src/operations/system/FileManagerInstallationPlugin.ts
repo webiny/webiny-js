@@ -1,8 +1,9 @@
 import WebinyError from "@webiny/error";
 import { InstallationPlugin } from "@webiny/api-file-manager/plugins/definitions/InstallationPlugin";
-import { configurations } from "~/operations/configurations";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import { listTemplatePlugins } from "@webiny/api-elasticsearch/templates";
+import { FileElasticsearchIndexTemplatePlugin } from "~/plugins/FileElasticsearchIndexTemplatePlugin";
 
 // TODO @ts-refactor remove when extracting context from this package
 interface FileManagerInstallationPluginBeforeInstallParams {
@@ -14,72 +15,31 @@ export class FileManagerInstallationPlugin extends InstallationPlugin {
     public override async beforeInstall({
         context
     }: FileManagerInstallationPluginBeforeInstallParams): Promise<void> {
-        const { elasticsearch, tenancy } = context;
-        const esIndex = configurations.es({
-            tenant: tenancy.getCurrentTenant().id
-        });
-        try {
-            const { body: exists } = await elasticsearch.indices.exists(esIndex);
-            if (exists) {
-                return;
-            }
-        } catch (ex) {
-            throw new WebinyError(
-                "Could not check for existing Elasticsearch index.",
-                "ELASTICSEARCH_INDEX_ERROR",
-                {
-                    error: ex,
-                    index: esIndex.index
-                }
-            );
-        }
-        const request = {
-            ...esIndex,
-            body: {
-                // need this part for sorting to work on text fields
-                settings: {
-                    analysis: {
-                        analyzer: {
-                            lowercase_analyzer: {
-                                type: "custom",
-                                filter: ["lowercase", "trim"],
-                                tokenizer: "keyword"
-                            }
-                        }
+        const { elasticsearch, plugins: container } = context;
+
+        const plugins = listTemplatePlugins<FileElasticsearchIndexTemplatePlugin>(
+            container,
+            FileElasticsearchIndexTemplatePlugin.type
+        );
+        /**
+         * We need to add all the templates to the Elasticsearch.
+         * Order of template plugins does not matter. Use order in the template definition.
+         * TODO figure if we need to delete index templates on error
+         */
+        for (const plugin of plugins) {
+            try {
+                await elasticsearch.indices.putTemplate(plugin.template);
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message ||
+                        "Could not create Elasticsearch index template for the File Manager.",
+                    ex.code || "FM_ELASTICSEARCH_TEMPLATE_ERROR",
+                    {
+                        error: ex,
+                        options: plugin.template
                     }
-                },
-                mappings: {
-                    properties: {
-                        property: {
-                            type: "text",
-                            fields: {
-                                keyword: {
-                                    type: "keyword",
-                                    ignore_above: 256
-                                }
-                            },
-                            analyzer: "lowercase_analyzer"
-                        },
-                        rawValues: {
-                            type: "object",
-                            enabled: false
-                        }
-                    }
-                }
+                );
             }
-        };
-        try {
-            await elasticsearch.indices.create(request);
-        } catch (ex) {
-            throw new WebinyError(
-                "Could not create FileManager Elasticsearch index.",
-                "ELASTICSEARCH_INDEX_CREATE_ERROR",
-                {
-                    error: ex,
-                    index: esIndex.index,
-                    request
-                }
-            );
         }
     }
 }
