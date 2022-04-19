@@ -1,6 +1,6 @@
 const { getUser } = require("./utils");
 
-module.exports = () => ({
+module.exports.command = () => ({
     type: "cli-command",
     name: "cli-command-wcp-whoami",
     create({ yargs, context }) {
@@ -22,7 +22,7 @@ module.exports = () => ({
             async ({ debug }) => {
                 try {
                     const user = await getUser();
-                    context.info(
+                    console.log(
                         `You are logged in to Webiny Control Panel as ${context.info.hl(
                             user.email
                         )}.`

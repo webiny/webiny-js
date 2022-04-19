@@ -14,11 +14,8 @@ const getDataFields = (fields = "") => `{
         type
     }
     body
-    changeRequest {
-        id
-        entryId
-        modelId
-    }
+    changeRequest
+    media
     ${fields}
 }`;
 
@@ -38,16 +35,14 @@ export const LIST_COMMENTS_QUERY = /* GraphQL */ `
         $where: ApwListCommentsWhereInput,
         $limit: Int,
         $after: String,
-        $sort: [ApwListCommentsSort!],
-        $search: ApwListCommentsSearchInput
+        $sort: [ApwListCommentsSort!]
     ) {
         apw {
             listComments(
                 where: $where,
                 limit: $limit,
                 after: $after,
-                sort: $sort,
-                search: $search
+                sort: $sort
             ) {
                 data ${getDataFields()}
                 error ${ERROR_FIELDS}

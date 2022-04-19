@@ -7,6 +7,7 @@ import Cloudfront from "./cloudfront";
 import FileManager from "./fileManager";
 import PageBuilder from "./pageBuilder";
 import PrerenderingService from "./prerenderingService";
+import ApwScheduler from "./apwScheduler";
 
 // Among other things, this determines the amount of information we reveal on runtime errors.
 // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
@@ -51,6 +52,19 @@ export default () => {
         cognitoUserPool: cognito.userPool
     });
 
+    const apwScheduler = new ApwScheduler({
+        env: {
+            COGNITO_REGION: String(process.env.AWS_REGION),
+            COGNITO_USER_POOL_ID: cognito.userPool.id,
+            DB_TABLE: dynamoDb.table.name,
+
+            S3_BUCKET: fileManager.bucket.id,
+            DEBUG,
+            WEBINY_LOGS_FORWARD_URL
+        },
+        primaryDynamodbTable: dynamoDb.table
+    });
+
     const api = new Graphql({
         env: {
             COGNITO_REGION: String(process.env.AWS_REGION),
@@ -63,13 +77,17 @@ export default () => {
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             IMPORT_PAGES_CREATE_HANDLER: pageBuilder.functions.importPages.create.arn,
             EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.functions.exportPages.process.arn,
+            APW_SCHEDULER_SCHEDULE_ACTION_HANDLER: apwScheduler.functions.scheduleAction.arn,
+            APW_SCHEDULER_EXECUTE_ACTION_HANDLER: apwScheduler.functions.executeAction.arn,
             S3_BUCKET: fileManager.bucket.id,
             DEBUG,
             WEBINY_LOGS_FORWARD_URL
         },
         primaryDynamodbTable: dynamoDb.table,
         bucket: fileManager.bucket,
-        cognitoUserPool: cognito.userPool
+        cognitoUserPool: cognito.userPool,
+        apwSchedulerEventRule: apwScheduler.eventRule,
+        apwSchedulerEventTarget: apwScheduler.eventTarget
     });
 
     const headlessCms = new HeadlessCMS({
@@ -130,6 +148,10 @@ export default () => {
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
         psQueueProcess: prerenderingService.functions.queue.process.arn,
+        apwSchedulerScheduleAction: apwScheduler.functions.scheduleAction.arn,
+        apwSchedulerExecuteAction: apwScheduler.functions.executeAction.arn,
+        apwSchedulerEventRule: apwScheduler.eventRule.name,
+        apwSchedulerEventTargetId: apwScheduler.eventTarget.targetId,
         dynamoDbTable: dynamoDb.table.name
     };
 };

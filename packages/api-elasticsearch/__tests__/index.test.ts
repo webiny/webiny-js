@@ -23,7 +23,9 @@ const operators = [
     "not",
     "not_between",
     "not_contains",
-    "not_in"
+    "not_in",
+    "startsWith",
+    "not_startsWith"
 ];
 
 describe("ElasticsearchContext", () => {

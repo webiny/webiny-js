@@ -84,10 +84,11 @@ export const SimpleFormHeader: React.FC<SimpleFormHeaderProps> = props => {
 
 interface SimpleFormFooterProps {
     children: React.ReactNode;
+    className?: string;
 }
 export const SimpleFormFooter: React.FC<SimpleFormFooterProps> = props => {
     return (
-        <Grid className={footer}>
+        <Grid className={classNames(footer, props.className)}>
             <Cell span={12}>{props.children}</Cell>
         </Grid>
     );

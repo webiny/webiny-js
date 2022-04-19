@@ -23,6 +23,8 @@ import {
 } from "../../viewsGraphql";
 import { CmsGroup } from "~/types";
 import { CmsGroupOption } from "./types";
+import lodashUpperFirst from "lodash/upperFirst";
+import lodashCamelCase from "lodash/camelCase";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -141,7 +143,9 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
 
             const types = data.__schema.types.map(t => t.name);
 
-            if (types.includes(name)) {
+            const modelId = lodashUpperFirst(lodashCamelCase(name));
+
+            if (types.includes(modelId)) {
                 throw new Error(
                     `"${name}" type already exists in the GraphQL schema. Please pick a different name.`
                 );

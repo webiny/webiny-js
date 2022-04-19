@@ -1,10 +1,11 @@
 import { useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
-import { CREATE_PAGE, DELETE_PAGE } from "~/admin/graphql/pages";
+import { CREATE_PAGE } from "~/admin/graphql/pages";
 import { usePublishRevisionHandler } from "./usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as GQLCache from "~/admin/views/Pages/cache";
+import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { PbPageData, PbPageRevision } from "~/types";
 
 interface UseRevisionHandlersProps {
@@ -17,6 +18,7 @@ export function useRevisionHandlers(props: UseRevisionHandlersProps) {
     const client = useApolloClient();
     const { page, revision } = props;
     const { publishRevision, unpublishRevision } = usePublishRevisionHandler({ page });
+    const pageBuilder = useAdminPageBuilder();
 
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
@@ -44,29 +46,38 @@ export function useRevisionHandlers(props: UseRevisionHandlersProps) {
     }, [revision]);
 
     const deleteRevision = useCallback(async () => {
-        const { data: res } = await client.mutate({
-            mutation: DELETE_PAGE,
-            variables: { id: revision.id },
-            update(cache, response) {
-                if (response.data.pageBuilder.deletePage.error) {
-                    return;
-                }
+        const response = await pageBuilder.deletePage(revision, {
+            client: pageBuilder.client,
+            mutationOptions: {
+                update(_, response) {
+                    if (response.data.pageBuilder.deletePage.error) {
+                        return;
+                    }
 
-                // We have other revisions, update entry's cache
-                const revisions = GQLCache.removeRevisionFromEntryCache(cache, revision);
-
-                if (revision.id === page.id) {
-                    GQLCache.updateLatestRevisionInListCache(cache, revisions[0]);
-                    // Redirect to the first revision in the list of all entry revisions.
-                    return history.push(
-                        `/page-builder/pages?id=` + encodeURIComponent(revisions[0].id)
+                    // We have other revisions, update entry's cache
+                    const revisions = GQLCache.removeRevisionFromEntryCache(
+                        pageBuilder.client.cache,
+                        revision
                     );
+
+                    if (revision.id === page.id) {
+                        GQLCache.updateLatestRevisionInListCache(
+                            pageBuilder.client.cache,
+                            revisions[0]
+                        );
+                        // Redirect to the first revision in the list of all entry revisions.
+                        return history.push(
+                            `/page-builder/pages?id=` + encodeURIComponent(revisions[0].id)
+                        );
+                    }
                 }
             }
         });
-        const { error } = res.pageBuilder.deletePage;
-        if (error) {
-            return showSnackbar(error.message);
+        if (response) {
+            const { error } = response;
+            if (error) {
+                return showSnackbar(error.message);
+            }
         }
     }, [revision, page]);
 

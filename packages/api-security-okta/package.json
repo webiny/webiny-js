@@ -23,6 +23,7 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
+    "@types/node-fetch": "^2.6.1",
     "@webiny/cli": "^5.25.0",
     "@webiny/project-utils": "^5.25.0",
     "rimraf": "^3.0.2",
