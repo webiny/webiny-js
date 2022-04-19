@@ -6,6 +6,8 @@ import {
 } from "../helpers";
 import { base as baseIndexConfiguration } from "~/indexConfiguration/base";
 import { japanese as japaneseIndexConfiguration } from "~/indexConfiguration/japanese";
+import { ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin } from "~/plugins/operator/japanese/contains";
+import { ElasticsearchBoolQueryConfig } from "~/types";
 
 const items = [
     "躯幹部広範囲CT検査の実際 (2) | Search ー症例報告やプロトコル設定索サイト",
@@ -30,13 +32,17 @@ const searchParameters: SearchParams[] = [
     ["Radiologyー症例報告やプロトコル設", [1, 2, 3]],
     ["ロトコル設定検索サイト", [1, 4]], // not working yet - finds none
     ["Search Radiologyー症", [1, 2]],
-    ["告やプロトコル設定", [0, 1, 3, 4]]
+    ["告やプロトコル設定", [0, 1, 3, 4]],
+    ["実際 (2) | Search ー症例報", [0]],
+    ["ogyー症例報告やプロトコル設定検サイト", [3]]
 ];
 
 const indexName = "japanese-index-test";
 
 describe("Japanese search", () => {
     const client = createElasticsearchClient();
+
+    const searchPlugin = new ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin();
 
     const createIndex = async () => {
         return client.indices.create({
@@ -129,7 +135,12 @@ describe("Japanese search", () => {
         /**
          * first we need to create an index with japanese configuration
          */
-        const createIndexResponse = await createIndex();
+        let createIndexResponse;
+        try {
+            createIndexResponse = await createIndex();
+        } catch (ex) {
+            throw ex;
+        }
         expect(createIndexResponse).toMatchObject({
             body: {
                 acknowledged: true
@@ -271,21 +282,42 @@ describe("Japanese search", () => {
         async (search, positions) => {
             await prepareWithTemplate();
 
+            const query: ElasticsearchBoolQueryConfig = {
+                must: [
+                    {
+                        multi_match: {
+                            query: search,
+                            type: "phrase",
+                            fields: [`title.ngram^1`]
+                        }
+                    }
+                ],
+                should: [
+                    {
+                        multi_match: {
+                            query: search,
+                            type: "phrase",
+                            fields: [`title^1`]
+                        }
+                    }
+                ],
+                filter: [],
+                must_not: []
+            };
+
+            searchPlugin.apply(query, {
+                basePath: "title",
+                path: "title",
+                value: search,
+                keyword: false
+            });
+
             const response = await client.search({
                 index: indexName,
                 body: {
                     query: {
                         bool: {
-                            must: [
-                                {
-                                    query_string: {
-                                        allow_leading_wildcard: true,
-                                        fields: ["title"],
-                                        query: search,
-                                        default_operator: "and"
-                                    }
-                                }
-                            ]
+                            ...query
                         }
                     },
                     sort: [

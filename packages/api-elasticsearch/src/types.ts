@@ -95,6 +95,30 @@ export interface ElasticsearchSearchResponse<T = any> {
     };
 }
 
+interface ElasticsearchIndexRequestBodyMappingsDynamicTemplate {
+    [key: string]: {
+        match_mapping_type?: string;
+        match?: string;
+        unmatch?: string;
+        mapping?: {
+            type?: string;
+            search_analyzer?: string;
+            analyzer?: string;
+            fields?: {
+                [key: string]: {
+                    type: string;
+                    search_analyzer?: string;
+                    analyzer?: string;
+                    ignore_above?: number;
+                    [key: string]: any;
+                };
+            };
+            [key: string]: any;
+        };
+        [key: string]: any;
+    };
+}
+
 export interface ElasticsearchIndexRequestBody {
     settings: {
         index: {
@@ -159,8 +183,24 @@ export interface ElasticsearchIndexRequestBody {
         [key: string]: any;
     };
     mappings: {
+        dynamic_templates?: ElasticsearchIndexRequestBodyMappingsDynamicTemplate[];
         properties?: {
-            [key: string]: any;
+            [key: string]: {
+                analyzer?: string;
+                type: string;
+                normalizer?: string;
+                index?: string;
+                fields?: {
+                    [key: string]: {
+                        type: string;
+                        ignore_above?: number;
+                        search_analyzer?: string;
+                        analyzer?: string;
+                        [key: string]: any;
+                    };
+                };
+                [key: string]: any;
+            };
         };
         [key: string]: any;
     };

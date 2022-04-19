@@ -16,7 +16,7 @@ export const base: ElasticsearchIndexRequestBody = {
     },
     mappings: {
         properties: {
-            property: {
+            title: {
                 type: "text",
                 fields: {
                     keyword: {

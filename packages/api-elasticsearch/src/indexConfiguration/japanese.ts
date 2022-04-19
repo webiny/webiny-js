@@ -80,24 +80,57 @@ export const japanese: ElasticsearchIndexRequestBody = {
                         tokenizer: "ja_ngram_tokenizer",
                         filter: ["ja_search_synonym", "lowercase"]
                     }
+                },
+                default: {
+                    type: "ja_kuromoji_index_analyzer"
+                },
+                default_search: {
+                    type: "ja_kuromoji_search_analyzer"
                 }
             }
         }
     },
     mappings: {
-        properties: {
-            property: {
-                type: "text",
-                search_analyzer: "ja_kuromoji_search_analyzer",
-                analyzer: "ja_kuromoji_index_analyzer",
-                fields: {
-                    ngram: {
+        dynamic_templates: [
+            {
+                strings: {
+                    match_mapping_type: "string",
+                    mapping: {
                         type: "text",
-                        search_analyzer: "ja_ngram_search_analyzer",
-                        analyzer: "ja_ngram_index_analyzer"
+                        search_analyzer: "ja_kuromoji_search_analyzer",
+                        analyzer: "ja_kuromoji_index_analyzer",
+                        fields: {
+                            ngram: {
+                                type: "text",
+                                search_analyzer: "ja_ngram_search_analyzer",
+                                analyzer: "ja_ngram_index_analyzer"
+                            },
+                            keyword: {
+                                type: "keyword",
+                                ignore_above: 256
+                            }
+                        }
                     }
                 }
-            },
+            }
+        ],
+        properties: {
+            // title: {
+            //     type: "text",
+            //     search_analyzer: "ja_kuromoji_search_analyzer",
+            //     analyzer: "ja_kuromoji_index_analyzer",
+            //     fields: {
+            //         ngram: {
+            //             type: "text",
+            //             search_analyzer: "ja_ngram_search_analyzer",
+            //             analyzer: "ja_ngram_index_analyzer"
+            //         },
+            //         keyword: {
+            //             type: "keyword",
+            //             ignore_above: 256
+            //         }
+            //     }
+            // },
             rawValues: {
                 type: "object",
                 enabled: false
