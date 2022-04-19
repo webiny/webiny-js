@@ -81,8 +81,6 @@ export const ApiApp = defineApp({
         });
 
         const fileManager = createFileManager(app, {
-            awsRegion,
-            awsAccountId,
             fileManagerBucketId: storage.fileManagerBucketId,
             vpc
         });

@@ -51,7 +51,7 @@ export abstract class PulumiApp<TConfig = unknown> {
     public readonly name: string;
     public readonly ctx: ApplicationContext;
     private readonly resourceHandlers: ResourceHandler[] = [];
-    private readonly deployHandlers: DeployEventHandler[] = [];
+    private readonly afterDeployHandlers: DeployEventHandler[] = [];
     private readonly handlers: (() => void | Promise<void>)[] = [];
     private readonly outputs: Record<string, any> = {};
     private readonly modules = new Map<symbol, unknown>();
@@ -67,8 +67,8 @@ export abstract class PulumiApp<TConfig = unknown> {
         this.resourceHandlers.push(handler);
     }
 
-    public onDeploy(handler: DeployEventHandler) {
-        this.deployHandlers.push(handler);
+    public onAfterDeploy(handler: DeployEventHandler) {
+        this.afterDeployHandlers.push(handler);
     }
 
     public addResource<T extends ResourceConstructor>(ctor: T, params: CreateResourceParams<T>) {
@@ -174,7 +174,7 @@ export abstract class PulumiApp<TConfig = unknown> {
     }
 
     private async deployFinished(params: DeployEventParams) {
-        for (const handler of this.deployHandlers) {
+        for (const handler of this.afterDeployHandlers) {
             await handler(params);
         }
     }
