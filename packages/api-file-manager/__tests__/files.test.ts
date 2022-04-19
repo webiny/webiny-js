@@ -347,7 +347,11 @@ describe("Files CRUD test", () => {
             { name: "bulk list all tags", tries: 10 }
         );
 
-        const [response] = await listTags({ where: { tag_not_startsWith: "scope:apw" } });
+        const [response] = await listTags({
+            where: {
+                tag_not_startsWith: "scope:apw"
+            }
+        });
 
         expect(response).toEqual({
             data: {
@@ -357,7 +361,11 @@ describe("Files CRUD test", () => {
             }
         });
 
-        const [scopedListTagsResponse] = await listTags({ where: { tag_startsWith: "scope:apw" } });
+        const [scopedListTagsResponse] = await listTags({
+            where: {
+                tag_startsWith: "scope:apw"
+            }
+        });
 
         expect(scopedListTagsResponse).toEqual({
             data: {
