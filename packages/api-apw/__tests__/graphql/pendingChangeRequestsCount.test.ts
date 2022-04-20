@@ -18,6 +18,7 @@ describe(`Pending change requests count test`, () => {
         listContentReviewsQuery,
         updateChangeRequestMutation,
         listChangeRequestsQuery,
+        deleteChangeRequestMutation,
         until
     } = gqlHandler;
 
@@ -31,6 +32,17 @@ describe(`Pending change requests count test`, () => {
             }
         });
         return createContentReviewResponse.data.apw.createContentReview.data;
+    };
+
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
     };
 
     test(`should able to update "pendingChangeRequests" count in a content review`, async () => {
@@ -54,7 +66,7 @@ describe(`Pending change requests count test`, () => {
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequestMock.createChangeRequestInput({
-                step: `${contentReview.id}#${step1.slug}`
+                step: `${contentReview.id}#${step1.id}`
             })
         });
         const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
@@ -73,9 +85,10 @@ describe(`Pending change requests count test`, () => {
         await until(
             () => listContentReviewsQuery({}).then(([data]) => data),
             (response: any) => {
-                const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
+                const [entry] = response.data.apw.listContentReviews.data;
                 return (
-                    entry.steps.find(step => step.slug === step1.slug)?.pendingChangeRequests === 1
+                    entry.steps.find((step: any) => step.id === step1.id)?.pendingChangeRequests ===
+                    1
                 );
             },
             {
@@ -101,28 +114,25 @@ describe(`Pending change requests count test`, () => {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 1,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
@@ -143,7 +153,7 @@ describe(`Pending change requests count test`, () => {
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
                 data: changeRequestMock.createChangeRequestInput({
-                    step: `${contentReview.id}#${step2.slug}`,
+                    step: `${contentReview.id}#${step2.id}`,
                     title: "Please make change in heading-" + i
                 })
             });
@@ -155,10 +165,9 @@ describe(`Pending change requests count test`, () => {
                 (response: any) => {
                     const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
                     return (
-                        entry.steps.find(step => step.slug === step1.slug)
-                            ?.pendingChangeRequests === 1 &&
-                        entry.steps.find(step => step.slug === step2.slug)
-                            ?.pendingChangeRequests ===
+                        entry.steps.find(step => step.id === step1.id)?.pendingChangeRequests ===
+                            1 &&
+                        entry.steps.find(step => step.id === step2.id)?.pendingChangeRequests ===
                             i + 1
                     );
                 },
@@ -186,28 +195,25 @@ describe(`Pending change requests count test`, () => {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 1,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 2,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
@@ -249,28 +255,25 @@ describe(`Pending change requests count test`, () => {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 2,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
@@ -312,28 +315,25 @@ describe(`Pending change requests count test`, () => {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 2,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
@@ -352,6 +352,73 @@ describe(`Pending change requests count test`, () => {
          */
         await updateChangeRequestMutation({
             id: changeRequested.id,
+            data: {
+                resolved: false
+            }
+        });
+
+        /**
+         * Should have 1 pending change requests for step 1 and 2 pending change requests for step 2.
+         */
+        [getContentReviewResponse] = await getContentReviewQuery({ id: contentReview.id });
+        expect(getContentReviewResponse).toEqual({
+            data: {
+                apw: {
+                    getContentReview: {
+                        data: {
+                            id: expect.any(String),
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
+                            createdBy: {
+                                id: expect.any(String),
+                                displayName: expect.any(String),
+                                type: "admin"
+                            },
+                            status: "underReview",
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
+                            steps: [
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 1,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                },
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 2,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                },
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 0,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                }
+                            ]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const [changeRequest1, changeRequest2] = changeRequests;
+        /**
+         * Mark both change requests for step 2 as resolved.
+         */
+        await updateChangeRequestMutation({
+            id: changeRequest1.id,
+            data: {
+                resolved: true
+            }
+        });
+
+        await updateChangeRequestMutation({
+            id: changeRequest2.id,
             data: {
                 resolved: true
             }
@@ -375,28 +442,122 @@ describe(`Pending change requests count test`, () => {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 1,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                },
+                                {
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
-                                    pendingChangeRequests: 2,
+                                    pendingChangeRequests: 0,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                }
+                            ]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Let's delete all these change requests.
+         */
+        let [deleteChangeRequestResponse] = await deleteChangeRequestMutation({
+            id: changeRequest1.id
+        });
+        expect(deleteChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    deleteChangeRequest: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        [deleteChangeRequestResponse] = await deleteChangeRequestMutation({
+            id: changeRequest2.id
+        });
+        expect(deleteChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    deleteChangeRequest: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        [deleteChangeRequestResponse] = await deleteChangeRequestMutation({
+            id: changeRequested.id
+        });
+        expect(deleteChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    deleteChangeRequest: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Deleting marked "change requests" should not effect "pendingChangeRequests" count.
+         *
+         * Should have 0 pending change requests for step 1 and 0 pending change requests for step 2.
+         */
+        [getContentReviewResponse] = await getContentReviewQuery({ id: contentReview.id });
+        expect(getContentReviewResponse).toEqual({
+            data: {
+                apw: {
+                    getContentReview: {
+                        data: {
+                            id: expect.any(String),
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
+                            createdBy: {
+                                id: expect.any(String),
+                                displayName: expect.any(String),
+                                type: "admin"
+                            },
+                            status: "underReview",
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
+                            steps: [
+                                {
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
+                                    status: expect.any(String),
+                                    pendingChangeRequests: 0,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                },
+                                {
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,

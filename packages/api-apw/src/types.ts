@@ -1,11 +1,28 @@
-import { Page, OnBeforePageCreateFromTopicParams } from "@webiny/api-page-builder/types";
-import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import {
+    Page,
+    OnBeforePageCreateTopicParams,
+    OnBeforePageCreateFromTopicParams,
+    OnBeforePageUpdateTopicParams,
+    OnBeforePagePublishTopicParams,
+    OnBeforePageRequestReviewTopicParams
+} from "@webiny/api-page-builder/types";
 import { Context } from "@webiny/handler/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
+import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types";
+import HandlerClient from "@webiny/handler-client/HandlerClient";
+
+export interface ApwFile {
+    id: string;
+    key: string;
+    size: number;
+    type: string;
+    name: string;
+}
 
 export interface ListWhere {
     /**
@@ -25,7 +42,7 @@ export interface ListWhere {
 }
 
 export interface ListParams {
-    where: ListWhere;
+    where?: ListWhere;
     sort?: string[];
     limit?: number;
     after?: string | null;
@@ -55,13 +72,22 @@ export interface PageWithWorkflow extends Page {
     settings: Page["settings"] & {
         apw: {
             workflowId: string;
+            contentReviewId: string | null;
         };
     };
 }
 
-export interface CustomEventParams extends OnBeforePageCreateFromTopicParams {
-    page: PageWithWorkflow;
-}
+export type ApwOnBeforePageCreateTopicParams = OnBeforePageCreateTopicParams<PageWithWorkflow>;
+
+export type ApwOnBeforePageCreateFromTopicParams =
+    OnBeforePageCreateFromTopicParams<PageWithWorkflow>;
+
+export type ApwOnBeforePageUpdateTopicParams = OnBeforePageUpdateTopicParams<PageWithWorkflow>;
+
+export type ApwOnBeforePagePublishTopicParams = OnBeforePagePublishTopicParams<PageWithWorkflow>;
+
+export type ApwOnBeforePageRequestReviewTopicParams =
+    OnBeforePageRequestReviewTopicParams<PageWithWorkflow>;
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
@@ -115,11 +141,9 @@ export interface ApwReviewer extends ApwBaseFields {
 
 export interface ApwComment extends ApwBaseFields {
     body: Record<string, any>;
-    changeRequest: {
-        id: string;
-        entryId: string;
-        modelId: string;
-    };
+    changeRequest: string;
+    step: string;
+    media: ApwFile;
 }
 
 export interface ApwChangeRequest extends ApwBaseFields {
@@ -127,7 +151,7 @@ export interface ApwChangeRequest extends ApwBaseFields {
     title: string;
     resolved: boolean;
     step: string;
-    media: File;
+    media: ApwFile;
 }
 
 export interface ApwContentReviewStep {
@@ -137,28 +161,27 @@ export interface ApwContentReviewStep {
     reviewers: ApwReviewer[];
     status: ApwContentReviewStepStatus;
     pendingChangeRequests: number;
+    totalComments: number;
     signOffProvidedOn: string | null;
     signOffProvidedBy: CreatedBy | null;
 }
 
 export interface ApwContentReview extends ApwBaseFields {
+    title: string;
     status: ApwContentReviewStatus;
-    content: {
-        id: string;
-        type: string;
-        settings: Record<string, any>;
-    };
+    content: ApwContentReviewContent;
     steps: Array<ApwContentReviewStep>;
+    latestCommentId: string | null;
 }
 
 export interface ApwWorkflow extends ApwBaseFields {
     title: string;
     steps: ApwWorkflowStep[];
     scope: ApwWorkflowScope;
-    app: string;
+    app: ApwWorkflowApplications;
 }
 
-interface ApwWorkflowScope {
+export interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
     data: {
         categories?: string[];
@@ -180,11 +203,13 @@ export enum ApwContentReviewStatus {
     PUBLISHED = "published"
 }
 
-export interface ApwWorkflowStep {
+export type ApwContentReviewListFilter = ApwContentReviewStatus | "requiresMyAttention";
+
+export interface ApwWorkflowStep<TReviewer = ApwReviewer> {
     title: string;
     type: ApwWorkflowStepTypes;
-    reviewers: ApwReviewer[];
-    slug: string;
+    reviewers: TReviewer[];
+    id: string;
 }
 
 export interface ApwContentReviewStep extends ApwWorkflowStep {
@@ -192,17 +217,17 @@ export interface ApwContentReviewStep extends ApwWorkflowStep {
     pendingChangeRequests: number;
 }
 
-interface CreateApwWorkflowParams {
+export interface CreateApwWorkflowParams<TReviewer = string> {
     app: ApwWorkflowApplications;
     title: string;
     scope: ApwWorkflowScope;
-    steps: ApwWorkflowStep[];
+    steps: ApwWorkflowStep<TReviewer>[];
 }
 
-interface UpdateApwWorkflowParams {
+export interface UpdateApwWorkflowParams<TReviewer = string> {
     title?: string;
     scope?: ApwWorkflowScope;
-    steps?: ApwWorkflowStep[];
+    steps?: ApwWorkflowStep<TReviewer>[];
 }
 
 export interface ListWorkflowsParams extends ListParams {
@@ -219,9 +244,9 @@ interface CreateReviewerParams {
 
 interface CreateApwCommentParams {
     body: Record<string, any>;
-    changeRequest: {
-        id: string;
-    };
+    changeRequest: string;
+    step: string;
+    media: ApwFile;
 }
 
 interface UpdateApwCommentParams {
@@ -230,6 +255,7 @@ interface UpdateApwCommentParams {
 
 interface CreateApwChangeRequestParams {
     title: string;
+    step: string;
     body: Record<string, any>;
     resolved: boolean;
     media: Record<string, any>;
@@ -242,21 +268,39 @@ interface UpdateApwChangeRequestParams {
     media: Record<string, any>;
 }
 
+enum ApwScheduleActionTypes {
+    PUBLISH = "publish",
+    UNPUBLISH = "unpublish"
+}
+
+export interface ApwScheduleActionData {
+    action: ApwScheduleActionTypes;
+    type: ApwContentTypes;
+    datetime: string;
+    entryId: string;
+}
+
 export interface ApwContentReviewContent {
     id: string;
     type: ApwContentTypes;
-    settings: Record<string, any>;
+    settings: {
+        modelId?: string;
+    };
+    scheduledOn?: string | null;
+    scheduledBy?: string | null;
+    scheduledActionId?: string | null;
+    publishedBy?: string | null;
 }
 
 export interface CreateApwContentReviewParams {
     content: ApwContentReviewContent;
-    workflow: string;
-    steps: ApwContentReviewStep[];
-    status: ApwContentReviewStatus;
 }
 
 interface UpdateApwContentReviewParams {
-    steps: ApwContentReviewStep[];
+    title?: string;
+    steps?: ApwContentReviewStep[];
+    status?: ApwContentReviewStatus;
+    content?: ApwContentReviewContent;
 }
 
 interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
@@ -359,11 +403,24 @@ export interface ApwContentReviewCrud
         CreateApwContentReviewParams,
         UpdateApwContentReviewParams
     > {
-    list(params: ListParams): Promise<[ApwContentReview[], ListMeta]>;
+    list(params: ApwContentReviewListParams): Promise<[ApwContentReview[], ListMeta]>;
 
     provideSignOff(id: string, step: string): Promise<Boolean>;
 
     retractSignOff(id: string, step: string): Promise<Boolean>;
+
+    isReviewRequired(data: ApwContentReviewContent): Promise<{
+        isReviewRequired: boolean;
+        contentReviewId?: string;
+    }>;
+
+    publishContent(id: string, datetime?: string): Promise<Boolean>;
+
+    unpublishContent(id: string, datetime?: string): Promise<Boolean>;
+
+    scheduleAction(data: ApwScheduleActionData): Promise<string>;
+
+    deleteScheduledAction(id: string): Promise<boolean>;
 
     /**
      * Lifecycle events
@@ -376,21 +433,40 @@ export interface ApwContentReviewCrud
     onAfterContentReviewDelete: Topic<OnAfterContentReviewDeleteTopicParams>;
 }
 
-export type WorkflowGetter = (id: string, settings: { modelId?: string }) => Promise<string | null>;
+export type ContentGetter = (
+    id: string,
+    settings: { modelId?: string }
+) => Promise<PageWithWorkflow | (CmsEntry & { title: string }) | null>;
+
+export type ContentPublisher = (
+    id: string,
+    settings: { modelId?: string }
+) => Promise<Boolean | null>;
+
+export type ContentUnPublisher = (
+    id: string,
+    settings: { modelId?: string }
+) => Promise<Boolean | null>;
 
 export interface AdvancedPublishingWorkflow {
-    addWorkflowGetter: (type: ApwContentTypes, func: WorkflowGetter) => void;
-    getWorkflowGetter: (type: ApwContentTypes) => WorkflowGetter;
+    addContentGetter: (type: ApwContentTypes, func: ContentGetter) => void;
+    getContentGetter: (type: ApwContentTypes) => ContentGetter;
+    addContentPublisher: (type: ApwContentTypes, func: ContentPublisher) => void;
+    getContentPublisher: (type: ApwContentTypes) => ContentPublisher;
+    addContentUnPublisher: (type: ApwContentTypes, func: ContentUnPublisher) => void;
+    getContentUnPublisher: (type: ApwContentTypes) => ContentUnPublisher;
     workflow: ApwWorkflowCrud;
     reviewer: ApwReviewerCrud;
     comment: ApwCommentCrud;
     changeRequest: ApwChangeRequestCrud;
     contentReview: ApwContentReviewCrud;
+    scheduleAction: ApwScheduleActionCrud;
 }
 
 export interface ApwContext extends Context, CmsContext {
     apw: AdvancedPublishingWorkflow;
     pageBuilder: PageBuilderContextObject;
+    scheduleAction: ScheduleActionContext["scheduleAction"];
 }
 
 export interface LifeCycleHookCallbackParams {
@@ -405,6 +481,8 @@ export interface CreateApwParams {
     getTenant: () => Tenant;
     getPermission: (name: string) => Promise<SecurityPermission | null>;
     storageOperations: ApwStorageOperations;
+    scheduler: ApwScheduleActionCrud;
+    handlerClient: HandlerClient;
 }
 
 interface StorageOperationsGetReviewerParams {
@@ -461,7 +539,16 @@ interface StorageOperationsUpdateWorkflowParams {
 
 type StorageOperationsDeleteWorkflowParams = StorageOperationsDeleteParams;
 type StorageOperationsGetContentReviewParams = StorageOperationsGetParams;
-type StorageOperationsListContentReviewsParams = ListParams;
+
+export interface ApwContentReviewListParams extends ListParams {
+    where?: ListWhere & {
+        status?: ApwContentReviewListFilter;
+        title?: string;
+        title_contains?: string;
+    };
+}
+
+type StorageOperationsListContentReviewsParams = ApwContentReviewListParams;
 
 interface StorageOperationsCreateContentReviewParams {
     data: CreateApwContentReviewParams;

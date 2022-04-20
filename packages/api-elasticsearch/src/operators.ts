@@ -12,7 +12,9 @@ import {
     ElasticsearchQueryBuilderOperatorNotContainsPlugin,
     ElasticsearchQueryBuilderOperatorNotPlugin,
     ElasticsearchQueryBuilderOperatorNotInPlugin,
-    ElasticsearchQueryBuilderOperatorEqualPlugin
+    ElasticsearchQueryBuilderOperatorEqualPlugin,
+    ElasticsearchQueryBuilderOperatorStartsWithPlugin,
+    ElasticsearchQueryBuilderOperatorNotStartsWithPlugin
 } from "~/plugins/operator";
 // import { ElasticsearchQueryBuilderOperatorNotBetweenPlugin } from "~/plugins/operator/notBetween";
 // import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains";
@@ -43,6 +45,8 @@ const operators = [
     new ElasticsearchQueryBuilderOperatorInPlugin(),
     new ElasticsearchQueryBuilderOperatorAndInPlugin(),
     new ElasticsearchQueryBuilderOperatorNotInPlugin(),
+    new ElasticsearchQueryBuilderOperatorStartsWithPlugin(),
+    new ElasticsearchQueryBuilderOperatorNotStartsWithPlugin(),
     /**
      * Japanese
      */

@@ -1,7 +1,12 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { ApwContext } from "~/types";
+import {
+    ApwContentReviewStep,
+    ApwContentReviewStepStatus,
+    ApwContext,
+    ApwContentReviewListParams,
+    ApwContentReviewContent
+} from "~/types";
 import resolve from "~/utils/resolve";
 
 const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -13,9 +18,14 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ContentReview specific fields
+            title: String
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             status: ApwContentReviewStatus
+            activeStep: ApwContentReviewStep
+            totalComments: Int
+            latestCommentId: String
+            reviewers: [ID!]!
         }
 
         type ApwListContentReviewsResponse {
@@ -53,11 +63,13 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             underReview
             readyToBePublished
             published
+            requiresMyAttention
         }
 
         type ApwContentReviewStep {
             status: ApwContentReviewStepStatus
-            slug: String
+            id: String
+            title: String
             pendingChangeRequests: Int
             signOffProvidedOn: DateTime
             signOffProvidedBy: ApwCreatedBy
@@ -70,6 +82,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdOn: DateTime
             createdBy: ApwCreatedBy
             # ContentReview specific fields
+            title: String
             steps: [ApwContentReviewStep]
             content: ApwContentReviewContent
             workflow: ID
@@ -93,8 +106,6 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             savedOn_DESC
             createdOn_ASC
             createdOn_DESC
-            publishedOn_ASC
-            publishedOn_DESC
             title_ASC
             title_DESC
         }
@@ -127,16 +138,29 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             cms_entry
         }
 
+        type ApwContentReviewContentSettings {
+            modelId: String
+        }
+
+        input ApwContentReviewContentSettingsInput {
+            modelId: String
+        }
+
         type ApwContentReviewContent {
-            id: ID
-            type: ApwContentReviewContentTypes
-            settings: String
+            id: ID!
+            type: ApwContentReviewContentTypes!
+            version: Int!
+            settings: ApwContentReviewContentSettings
+            publishedOn: String
+            publishedBy: ApwCreatedBy
+            scheduledOn: DateTime
+            scheduledBy: ApwCreatedBy
         }
 
         input ApwContentReviewContentInput {
             id: ID!
             type: ApwContentReviewContentTypes!
-            settings: String
+            settings: ApwContentReviewContentSettingsInput
         }
 
         input ApwCreateContentReviewInput {
@@ -145,16 +169,46 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
 
         input ApwListContentReviewsWhereInput {
             id: ID
-        }
-
-        input ApwListContentReviewsSearchInput {
-            # By specifying "query", the search will be performed against workflow' "title" field.
-            query: String
+            status: ApwContentReviewStatus
+            title: String
+            title_contains: String
         }
 
         type ApwProvideSignOffResponse {
             data: Boolean
             error: ApwError
+        }
+
+        type ApwIsReviewRequiredData {
+            isReviewRequired: Boolean
+            contentReviewId: ID
+        }
+
+        type ApwIsReviewRequiredResponse {
+            data: ApwIsReviewRequiredData
+            error: ApwError
+        }
+
+        type ApwPublishContentResponse {
+            data: Boolean
+            error: ApwError
+        }
+
+        enum ApwContentActions {
+            publish
+            unpublish
+        }
+
+        type ApwScheduleActionResponse {
+            data: Boolean
+            error: ApwError
+        }
+
+        input ApwScheduleActionInput {
+            action: ApwContentActions!
+            datetime: String!
+            type: ApwContentReviewContentTypes!
+            entryId: ID!
         }
 
         extend type ApwQuery {
@@ -165,8 +219,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 limit: Int
                 after: String
                 sort: [ApwListContentReviewsSort!]
-                search: ApwListContentReviewsSearchInput
             ): ApwListContentReviewsResponse
+
+            isReviewRequired(data: ApwContentReviewContentInput!): ApwIsReviewRequiredResponse
         }
 
         extend type ApwMutation {
@@ -177,9 +232,87 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             provideSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
 
             retractSignOff(id: ID!, step: String!): ApwProvideSignOffResponse
+
+            publishContent(id: ID!, datetime: String): ApwPublishContentResponse
+
+            unpublishContent(id: ID!, datetime: String): ApwPublishContentResponse
+
+            scheduleAction(data: ApwScheduleActionInput!): ApwScheduleActionResponse
+
+            deleteScheduledAction(id: ID!): ApwScheduleActionResponse
         }
     `,
     resolvers: {
+        ApwContentReviewContent: {
+            version: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
+                const getContent = context.apw.getContentGetter(parent.type);
+                const content = await getContent(parent.id, parent.settings);
+                if (!content) {
+                    return null;
+                }
+                return content.version;
+            },
+            publishedOn: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
+                const getContent = context.apw.getContentGetter(parent.type);
+                const content = await getContent(parent.id, parent.settings);
+                if (!content) {
+                    return null;
+                }
+                return content.publishedOn;
+            },
+            publishedBy: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
+                const id = parent.publishedBy;
+                if (id) {
+                    const [[reviewer]] = await context.apw.reviewer.list({
+                        where: { identityId: id }
+                    });
+                    return reviewer;
+                }
+                return null;
+            },
+            scheduledBy: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
+                const id = parent.scheduledBy;
+                if (id) {
+                    const [[reviewer]] = await context.apw.reviewer.list({
+                        where: { identityId: id }
+                    });
+                    return reviewer;
+                }
+                return null;
+            }
+        },
+        ApwContentReviewListItem: {
+            activeStep: async parent => {
+                const steps: ApwContentReviewStep[] = parent.steps;
+                return steps.find(step => step.status === ApwContentReviewStepStatus.ACTIVE);
+            },
+            totalComments: async parent => {
+                const steps: ApwContentReviewStep[] = parent.steps;
+                return steps.reduce((count, step) => {
+                    /**
+                     * Aggregate totalComments from each step.
+                     */
+                    if (!isNaN(step.totalComments)) {
+                        count += step.totalComments;
+                    }
+
+                    return count;
+                }, 0);
+            },
+            reviewers: async parent => {
+                const steps: ApwContentReviewStep[] = parent.steps;
+                const reviewerIds: string[] = [];
+
+                for (const step of steps) {
+                    for (const reviewer of step.reviewers) {
+                        if (!reviewerIds.includes(reviewer.id)) {
+                            reviewerIds.push(reviewer.id);
+                        }
+                    }
+                }
+                return reviewerIds;
+            }
+        },
         ApwQuery: {
             getContentReview: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.get(args.id));
@@ -187,15 +320,18 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             listContentReviews: async (_, args: any, context) => {
                 try {
                     /**
-                     * We know that args is CmsEntryListParams.
+                     * We know that args is ApwContentReviewListParams.
                      */
                     const [entries, meta] = await context.apw.contentReview.list(
-                        args as unknown as CmsEntryListParams
+                        args as unknown as ApwContentReviewListParams
                     );
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            },
+            isReviewRequired: async (_, args: any, context) => {
+                return resolve(() => context.apw.contentReview.isReviewRequired(args.data));
             }
         },
         ApwMutation: {
@@ -210,6 +346,19 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             },
             retractSignOff: async (_, args: any, context) => {
                 return resolve(() => context.apw.contentReview.retractSignOff(args.id, args.step));
+            },
+            publishContent: async (_, args: any, context) => {
+                return resolve(() =>
+                    context.apw.contentReview.publishContent(args.id, args.datetime)
+                );
+            },
+            unpublishContent: async (_, args: any, context) => {
+                return resolve(() =>
+                    context.apw.contentReview.unpublishContent(args.id, args.datetime)
+                );
+            },
+            deleteScheduledAction: async (_, args: any, context) => {
+                return resolve(() => context.apw.contentReview.deleteScheduledAction(args.id));
             }
         }
     }
