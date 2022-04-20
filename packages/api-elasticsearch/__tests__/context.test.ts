@@ -23,7 +23,9 @@ const operators = [
     "not",
     "not_between",
     "not_contains",
-    "not_in"
+    "not_in",
+    "startsWith",
+    "not_startsWith"
 ];
 
 describe("ElasticsearchContext", () => {
@@ -65,11 +67,22 @@ describe("ElasticsearchContext", () => {
                 ElasticsearchQueryBuilderOperatorPlugin.type
             );
 
-        expect(registeredOperatorPlugins).toHaveLength(operators.length);
+        const uniqueRegisteredOperatorPlugins = registeredOperatorPlugins.reduce((acc, item) => {
+            if (acc.includes(item.getOperator())) {
+                return acc;
+            }
+            acc.push(item.getOperator());
+            return acc;
+        }, [] as string[]);
+
+        expect(uniqueRegisteredOperatorPlugins).toHaveLength(operators.length);
         const operatorPlugins = registeredOperatorPlugins.filter(pl => {
             return pl.getOperator() === operator;
         });
-        expect(operatorPlugins).toHaveLength(1);
+        /**
+         * There is a possibility that we have multiple operators for single operation, depending on the locale.
+         */
+        expect(operatorPlugins.length).toBeGreaterThan(0);
         /**
          * The operator plugin name must end with the .default so it can be overridden later.
          */
