@@ -41,6 +41,8 @@ export const StorageApp = defineApp({
             fileManagerBucketId: fileManagerBucket.output.id,
             primaryDynamodbTableArn: dynamoDbTable.output.arn,
             primaryDynamodbTableName: dynamoDbTable.output.name,
+            primaryDynamodbTableHashKey: dynamoDbTable.output.hashKey,
+            primaryDynamodbTableRangeKey: dynamoDbTable.output.rangeKey,
             cognitoUserPoolId: cognito.userPool.output.id,
             cognitoUserPoolArn: cognito.userPool.output.arn,
             cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
