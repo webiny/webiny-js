@@ -13,19 +13,26 @@ export const base: ElasticsearchIndexRequestBody = {
                 }
             }
         }
-    },
+    } as any,
     mappings: {
-        properties: {
-            title: {
-                type: "text",
-                fields: {
-                    keyword: {
-                        type: "keyword",
-                        ignore_above: 256
+        dynamic_templates: [
+            {
+                strings: {
+                    match_mapping_type: "string",
+                    mapping: {
+                        type: "text",
+                        fields: {
+                            keyword: {
+                                type: "keyword",
+                                ignore_above: 256
+                            }
+                        },
+                        analyzer: "lowercase_analyzer"
                     }
-                },
-                analyzer: "lowercase_analyzer"
-            },
+                }
+            }
+        ],
+        properties: {
             rawValues: {
                 type: "object",
                 enabled: false

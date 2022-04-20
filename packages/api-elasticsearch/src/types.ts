@@ -105,13 +105,15 @@ interface ElasticsearchIndexRequestBodyMappingsDynamicTemplate {
             search_analyzer?: string;
             analyzer?: string;
             fields?: {
-                [key: string]: {
-                    type: string;
-                    search_analyzer?: string;
-                    analyzer?: string;
-                    ignore_above?: number;
-                    [key: string]: any;
-                };
+                [key: string]:
+                    | {
+                          type: string;
+                          search_analyzer?: string;
+                          analyzer?: string;
+                          ignore_above?: number;
+                          [key: string]: any;
+                      }
+                    | undefined;
             };
             [key: string]: any;
         };

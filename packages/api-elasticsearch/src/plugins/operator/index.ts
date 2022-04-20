@@ -11,3 +11,4 @@ export * from "./not";
 export * from "./notBetween";
 export * from "./notContains";
 export * from "./notIn";
+export * from "./japanese/contains";

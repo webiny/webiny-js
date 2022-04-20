@@ -105,32 +105,13 @@ export const japanese: ElasticsearchIndexRequestBody = {
                                 search_analyzer: "ja_ngram_search_analyzer",
                                 analyzer: "ja_ngram_index_analyzer"
                             },
-                            keyword: {
-                                type: "keyword",
-                                ignore_above: 256
-                            }
+                            keyword: undefined
                         }
                     }
                 }
             }
         ],
         properties: {
-            // title: {
-            //     type: "text",
-            //     search_analyzer: "ja_kuromoji_search_analyzer",
-            //     analyzer: "ja_kuromoji_index_analyzer",
-            //     fields: {
-            //         ngram: {
-            //             type: "text",
-            //             search_analyzer: "ja_ngram_search_analyzer",
-            //             analyzer: "ja_ngram_index_analyzer"
-            //         },
-            //         keyword: {
-            //             type: "keyword",
-            //             ignore_above: 256
-            //         }
-            //     }
-            // },
             rawValues: {
                 type: "object",
                 enabled: false

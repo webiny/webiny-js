@@ -6,6 +6,9 @@ export class ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin extends Ela
     public override name = "elasticsearch.queryBuilder.operator.contains.japanese";
 
     public override isLocaleSupported(code: string): boolean {
+        if (!code) {
+            return false;
+        }
         return ["ja", "ja-jp"].includes(code.toLowerCase());
     }
 

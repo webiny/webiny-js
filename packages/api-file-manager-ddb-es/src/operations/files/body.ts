@@ -4,7 +4,6 @@ import {
     ElasticsearchBoolQueryConfig,
     SearchBody as ElasticTsSearchBody
 } from "@webiny/api-elasticsearch/types";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { normalizeValue } from "@webiny/api-elasticsearch/normalize";
@@ -14,6 +13,7 @@ import { FileElasticsearchBodyModifierPlugin } from "~/plugins/FileElasticsearch
 import { FileElasticsearchQueryModifierPlugin } from "~/plugins/FileElasticsearchQueryModifierPlugin";
 import { applyWhere } from "@webiny/api-elasticsearch/where";
 import { FileManagerContext } from "~/types";
+import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
 
 interface CreateElasticsearchBodyParams {
     context: FileManagerContext;
@@ -38,14 +38,10 @@ const createElasticsearchQuery = (
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins = context.plugins
-        .byType<ElasticsearchQueryBuilderOperatorPlugin>(
-            ElasticsearchQueryBuilderOperatorPlugin.type
-        )
-        .reduce((acc, plugin) => {
-            acc[plugin.getOperator()] = plugin;
-            return acc;
-        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
+    const operatorPlugins = getElasticsearchOperatorPluginsByLocale(
+        context.plugins,
+        initialWhere.locale
+    );
 
     const where = {
         ...initialWhere

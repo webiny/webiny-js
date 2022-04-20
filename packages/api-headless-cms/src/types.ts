@@ -1449,7 +1449,7 @@ export interface CmsEntryListWhere {
      * Search for exact locale.
      * This will most likely be populated, but leave it as optional.
      */
-    locale?: string;
+    locale: string;
     /**
      * Exact tenant. No multi-tenancy search.
      */

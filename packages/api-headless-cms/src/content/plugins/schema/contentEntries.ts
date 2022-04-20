@@ -290,7 +290,8 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         .map(async model => {
                             const modelManager = await context.cms.getModelManager(model.modelId);
                             const where: CmsEntryListWhere = {
-                                tenant: model.tenant
+                                tenant: model.tenant,
+                                locale: model.locale
                             };
                             if (!!query) {
                                 where[`${model.titleFieldId}_contains`] = query;

@@ -313,6 +313,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         getEntryById: async (model, id) => {
             const where: CmsEntryListWhere = {
                 id,
+                locale: model.locale,
                 tenant: model.tenant
             };
             await onBeforeEntryGet.publish({
