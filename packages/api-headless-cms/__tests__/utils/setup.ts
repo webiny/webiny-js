@@ -34,12 +34,11 @@ const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name
     });
 
     if (createResponse.errors) {
-        console.error(`[setupContentModel] ${createResponse.errors[0].message}`);
+        console.log(`[setupContentModel] ${createResponse.errors[0].message}`);
         process.exit(1);
     } else if (createResponse.data.createContentModel.error) {
-        console.error(
-            `[setupContentModel] ${createResponse.data.createContentModel.error.message}`
-        );
+        console.log(`[setupContentModel] ${createResponse.data.createContentModel.error.message}`);
+        console.log(createResponse.data.createContentModel.error.message);
         process.exit(1);
     }
 
@@ -52,12 +51,10 @@ const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name
     });
 
     if (updateResponse.errors) {
-        console.error(`[setupContentModel] ${updateResponse.errors[0].message}`);
+        console.log(`[setupContentModel] ${updateResponse.errors[0].message}`);
         process.exit();
     } else if (updateResponse.data.updateContentModel.error) {
-        console.error(
-            `[setupContentModel] ${updateResponse.data.updateContentModel.error.message}`
-        );
+        console.log(`[setupContentModel] ${updateResponse.data.updateContentModel.error.message}`);
         process.exit();
     }
     return updateResponse.data.updateContentModel.data;
