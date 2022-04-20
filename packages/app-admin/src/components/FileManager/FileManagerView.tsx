@@ -125,6 +125,9 @@ export interface FileManagerViewProps {
     multipleMaxCount: number;
     multipleMaxSize: number | string;
     onUploadCompletion?: Function;
+    tags?: string[];
+    scope?: string;
+    own?: boolean;
 }
 
 interface RenderFileProps extends Omit<FileProps, "children"> {
@@ -388,7 +391,17 @@ const FileManagerView: React.FC<FileManagerViewProps> = props => {
             list.map(async file => {
                 try {
                     const response = await getFileUploader()(file, { apolloClient });
-                    const createFileResponse = await createFile({ variables: { data: response } });
+                    /**
+                     * Add "tags" while creating the new file.
+                     */
+                    const createFileResponse = await createFile({
+                        variables: {
+                            data: {
+                                ...response,
+                                tags: queryParams.scope ? [queryParams.scope] : []
+                            }
+                        }
+                    });
                     // Save create file data for later
                     uploadedFiles.push(get(createFileResponse, "data.fileManager.createFile.data"));
                 } catch (e) {

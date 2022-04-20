@@ -47,6 +47,7 @@
     "@elastic/elasticsearch": "7.12.0",
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@types/archiver": "^5.3.1",
+    "@types/node-fetch": "^2.6.1",
     "@types/puppeteer": "^5.4.2",
     "@types/yauzl": "^2.9.2",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.25.0",

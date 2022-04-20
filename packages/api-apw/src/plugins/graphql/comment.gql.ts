@@ -1,7 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { ApwContext } from "~/types";
+import { ApwContext, ApwCommentListParams } from "~/types";
 import resolve from "~/utils/resolve";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -14,7 +13,9 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # Comment specific fields
             body: JSON
-            changeRequest: ApwRefField
+            changeRequest: ID
+            # TODO: Remove ApwRefField
+            media: JSON
         }
 
         type ApwListCommentsResponse {
@@ -31,7 +32,8 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             createdBy: ApwCreatedBy
             # Comment specific fields
             body: JSON
-            changeRequest: ApwRefField
+            changeRequest: ID
+            media: JSON
         }
 
         type ApwCommentResponse {
@@ -51,15 +53,12 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             savedOn_DESC
             createdOn_ASC
             createdOn_DESC
-            publishedOn_ASC
-            publishedOn_DESC
-            title_ASC
-            title_DESC
         }
 
         input ApwCreateCommentInput {
             body: JSON!
-            changeRequest: ApwRefFieldInput!
+            changeRequest: ID!
+            media: JSON
         }
 
         input ApwUpdateCommentInput {
@@ -71,10 +70,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             id_not: ID
             id_in: [ID!]
             id_not_in: [ID!]
-            entryId: String
-            entryId_not: String
-            entryId_in: [String!]
-            entryId_not_in: [String!]
             createdOn: DateTime
             createdOn_gt: DateTime
             createdOn_gte: DateTime
@@ -100,10 +95,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             changeRequest: ApwRefFieldWhereInput
         }
 
-        input ApwListCommentsSearchInput {
-            query: String
-        }
-
         extend type ApwQuery {
             getComment(id: ID!): ApwCommentResponse
 
@@ -112,7 +103,6 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
                 limit: Int
                 after: String
                 sort: [ApwListCommentsSort!]
-                search: ApwListCommentsSearchInput
             ): ApwListCommentsResponse
         }
 
@@ -132,10 +122,10 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             listComments: async (_, args: any, context) => {
                 try {
                     /**
-                     * We know that args is CmsEntryListParams.
+                     * We know that args is ApwCommentListParams.
                      */
                     const [entries, meta] = await context.apw.comment.list(
-                        args as unknown as CmsEntryListParams
+                        args as unknown as ApwCommentListParams
                     );
                     return new ListResponse(entries, meta);
                 } catch (e) {

@@ -11,6 +11,7 @@ import {
 import { FormElementMessage } from "~/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
+import { FormComponentProps } from "@webiny/form";
 
 const classes = {
     wrapper: css({
@@ -53,6 +54,8 @@ export interface RichTextEditorProps {
     label?: string;
     description?: string;
     disabled?: boolean;
+    validation?: FormComponentProps["validation"];
+    className?: string;
 }
 
 export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
@@ -110,11 +113,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         };
     }, []);
 
-    const { label, description, disabled } = props;
+    const { label, description, disabled, validation, className } = props;
 
     return (
         <Fragment>
-            <div className={classNames(classes.wrapper, { [classes.disable]: disabled })}>
+            <div
+                className={classNames(classes.wrapper, className, { [classes.disable]: disabled })}
+            >
                 {label && (
                     <div
                         className={classNames(
@@ -127,7 +132,12 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = props => {
                 )}
                 <div id={elementId.current} />
             </div>
-            {description && <FormElementMessage>{description}</FormElementMessage>}
+            {validation && validation.isValid === false && (
+                <FormElementMessage error>{validation.message}</FormElementMessage>
+            )}
+            {validation && validation.isValid !== false && description && (
+                <FormElementMessage>{description}</FormElementMessage>
+            )}
         </Fragment>
     );
 };

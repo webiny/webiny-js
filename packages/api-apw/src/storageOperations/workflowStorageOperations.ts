@@ -1,10 +1,29 @@
-import { ApwWorkflowStorageOperations } from "./types";
+import { CreateApwWorkflowParams } from "~/types";
+import { ApwStorageOperations, ApwWorkflowStorageOperations } from "./types";
 import {
     baseFields,
     CreateApwStorageOperationsParams,
     getFieldValues
 } from "~/storageOperations/index";
 import WebinyError from "@webiny/error";
+
+type ReviewersRefInput = CreateApwWorkflowParams<{ modelId: string; id: string }>;
+
+const formatReviewersForRefInput = (
+    data: CreateApwWorkflowParams,
+    modelId: string
+): ReviewersRefInput => {
+    return {
+        ...data,
+        steps: data.steps.map(step => ({
+            ...step,
+            reviewers: step.reviewers.map(id => ({
+                id,
+                modelId
+            }))
+        }))
+    };
+};
 
 export const createWorkflowStorageOperations = ({
     cms
@@ -38,23 +57,32 @@ export const createWorkflowStorageOperations = ({
             });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
-        async createWorkflow(params) {
+        async createWorkflow(this: ApwStorageOperations, params) {
             const model = await getWorkflowModel();
-            const entry = await cms.createEntry(model, params.data);
+            const reviewerModel = await this.getReviewerModel();
+
+            const data = formatReviewersForRefInput(params.data, reviewerModel.modelId);
+            const entry = await cms.createEntry(model, data);
+
             return getFieldValues(entry, baseFields);
         },
-        async updateWorkflow(params) {
+        async updateWorkflow(this: ApwStorageOperations, params) {
             const model = await getWorkflowModel();
+            const reviewerModel = await this.getReviewerModel();
             /**
              * We're fetching the existing entry here because we're not accepting "app" field as input,
              * but, we still need to retain its value after the "update" operation.
              */
             const existingEntry = await getWorkflow({ id: params.id });
-
-            const entry = await cms.updateEntry(model, params.id, {
+            const input = {
                 ...existingEntry,
                 ...params.data
-            });
+            };
+            const data = formatReviewersForRefInput(
+                input as CreateApwWorkflowParams,
+                reviewerModel.modelId
+            );
+            const entry = await cms.updateEntry(model, params.id, data);
             return getFieldValues(entry, baseFields);
         },
         async deleteWorkflow(params) {

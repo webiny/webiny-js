@@ -52,9 +52,23 @@ export interface ListFilesQueryVariables {
     after?: string;
 }
 export const LIST_FILES = gql`
-     query ListFiles($types: [String], $tags: [String], $limit: Int, $search: String, $after: String) {
+    query ListFiles(
+        $types: [String],
+        $tags: [String],
+        $limit: Int,
+        $search: String,
+        $after: String,
+        $where: FileWhereInput
+    ) {
         fileManager {
-            listFiles(types: $types, limit: $limit, search: $search, tags: $tags, after: $after) {
+            listFiles(
+                types: $types,
+                limit: $limit,
+                search: $search,
+                tags: $tags,
+                after: $after,
+                where: $where
+            ) {
                 data ${FILE_FIELDS}
                 meta {
                     cursor
@@ -75,9 +89,9 @@ export interface ListFileTagsQueryResponse {
     };
 }
 export const LIST_TAGS = gql`
-    query ListTags {
+    query ListTags($where: TagWhereInput) {
         fileManager {
-            listTags
+            listTags(where: $where)
         }
     }
 `;

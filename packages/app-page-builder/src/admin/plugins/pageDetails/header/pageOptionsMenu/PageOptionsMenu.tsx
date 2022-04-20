@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as MoreVerticalIcon } from "../../../../assets/more_vert.svg";
-import { ReactComponent as PreviewIcon } from "../../../../assets/visibility.svg";
-import { ReactComponent as HomeIcon } from "../../../../assets/round-home-24px.svg";
+import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
+import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
+import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
@@ -15,28 +15,8 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 import { plugins } from "@webiny/plugins";
 import { PbPageData, PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "~/types";
-import gql from "graphql-tag";
-import { useMutation } from "@apollo/react-hooks";
 import { SecureView } from "@webiny/app-security";
-
-const PUBLISH_PAGE = gql`
-    mutation PbPublishPage($id: ID!) {
-        pageBuilder {
-            publishPage(id: $id) {
-                data {
-                    id
-                    path
-                    status
-                    locked
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
+import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 
 const menuStyles = css({
     width: 250,
@@ -62,7 +42,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
         refreshSiteStatus
     );
 
-    const publishPageMutation = useMutation(PUBLISH_PAGE);
+    const pageBuilder = useAdminPageBuilder();
 
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
@@ -116,10 +96,20 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
                     onClick={() => {
                         showConfirmation(async () => {
                             if (!page.locked) {
-                                const [publish] = publishPageMutation;
-                                await publish({
-                                    variables: { id: page.id }
+                                const response = await pageBuilder.publishPage(page, {
+                                    client: pageBuilder.client
                                 });
+                                /**
+                                 * In case of exit in "publishPage" lifecycle, "publishPage" hook will return undefined,
+                                 * indicating an immediate exit.
+                                 */
+                                if (!response) {
+                                    return;
+                                }
+                                const { error } = response;
+                                if (error) {
+                                    return showSnackbar(error.message);
+                                }
                             }
 
                             const [updateSettings] = updateSettingsMutation;

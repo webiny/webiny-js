@@ -11,3 +11,5 @@ export * from "./not";
 export * from "./notBetween";
 export * from "./notContains";
 export * from "./notIn";
+export * from "./startsWith";
+export * from "./notStartsWith";

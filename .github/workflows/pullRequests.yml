@@ -184,21 +184,12 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
-          
-      - name: Git status
-        run: git status
 
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Git status
-        run: git status && git diff packages-v6/cli/src/bin.js
-        
       - name: Build packages
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
-        
-      - name: Git status
-        run: git status
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -214,15 +205,9 @@ jobs:
 
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-        
-      - name: Git status
-        run: git status
 
       - name: Version packages (no push, no changelog)
         run: yarn lerna:version:verdaccio
-        
-      - name: Git status
-        run: git status
 
       - name: Release to Verdaccio
         run: yarn lerna:publish:verdaccio

@@ -25,6 +25,7 @@ export const DATA_FIELD = /* GraphQL */ `
         settings {
             apw {
                 workflowId
+                contentReviewId
             }
             general {
                 snippet

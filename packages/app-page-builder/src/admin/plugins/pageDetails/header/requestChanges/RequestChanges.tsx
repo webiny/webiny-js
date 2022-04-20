@@ -1,14 +1,15 @@
 import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as RequestChangesIcon } from "../../../../assets/rule-24px.svg";
+import { ReactComponent as RequestChangesIcon } from "~/admin/assets/rule-24px.svg";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import usePermission from "../../../../../hooks/usePermission";
+import usePermission from "~/hooks/usePermission";
 import { PbPageData } from "~/types";
+import { makeComposable } from "@webiny/app-admin";
 
 const t = i18n.ns("app-page-builder/page-details/header/request-changes");
 
@@ -30,9 +31,11 @@ const REQUEST_CHANGES = gql`
         }
     }
 `;
-interface RequestChangesProps {
+
+export interface RequestChangesProps {
     page: PbPageData;
 }
+
 const RequestChanges: React.FC<RequestChangesProps> = props => {
     const { page } = props;
     const { canRequestChange } = usePermission();
@@ -86,4 +89,4 @@ const RequestChanges: React.FC<RequestChangesProps> = props => {
     );
 };
 
-export default RequestChanges;
+export default makeComposable("RequestChanges", RequestChanges);

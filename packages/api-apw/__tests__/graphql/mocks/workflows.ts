@@ -1,4 +1,5 @@
 import { ApwReviewer, ApwWorkflowStepTypes } from "~/types";
+import { getNanoid } from "~/plugins/utils";
 
 interface CreateWorkflowParams {
     title?: string;
@@ -11,33 +12,28 @@ interface CreateWorkflowParams {
 
 interface CreateWorkflowStepParams {
     title: string;
-    slug: string;
     type: ApwWorkflowStepTypes;
     reviewers: Array<{ id: string }>;
 }
 
+const createWorkflowStep = (params: CreateWorkflowStepParams) => ({
+    ...params,
+    id: getNanoid(),
+    reviewers: params.reviewers.map(reviewer => reviewer.id)
+});
+
 export default {
     reviewerModelId: "apwReviewerModelDefinition",
-    createWorkflowStep: (params: CreateWorkflowStepParams) => ({
-        ...params,
-        reviewers: params.reviewers.map(reviewer => ({
-            modelId: "apwReviewerModelDefinition",
-            id: reviewer.id
-        }))
-    }),
+    createWorkflowStep,
     createWorkflow: (params: CreateWorkflowParams, reviewers: ApwReviewer[]) => ({
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
-            {
+            createWorkflowStep({
                 title: "Legal Review",
-                slug: "legal-review",
-                type: "mandatoryBlocking",
-                reviewers: reviewers.map(reviewer => ({
-                    modelId: "apwReviewerModelDefinition",
-                    id: reviewer.id
-                }))
-            }
+                type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                reviewers
+            })
         ],
         scope: {
             type: "default",
@@ -49,33 +45,21 @@ export default {
         app: "pageBuilder",
         title: "Main workflow",
         steps: [
-            {
+            createWorkflowStep({
                 title: "Legal Review",
-                slug: "legal-review",
-                type: "mandatoryBlocking",
-                reviewers: reviewers.map(reviewer => ({
-                    modelId: "apwReviewerModelDefinition",
-                    id: reviewer.id
-                }))
-            },
-            {
+                type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                reviewers
+            }),
+            createWorkflowStep({
                 title: "Design Review",
-                slug: "design-review",
-                type: "mandatoryNonBlocking",
-                reviewers: reviewers.map(reviewer => ({
-                    modelId: "apwReviewerModelDefinition",
-                    id: reviewer.id
-                }))
-            },
-            {
+                type: ApwWorkflowStepTypes.MANDATORY_NON_BLOCKING,
+                reviewers
+            }),
+            createWorkflowStep({
                 title: "Copy Review",
-                slug: "copy-review",
-                type: "notMandatory",
-                reviewers: reviewers.map(reviewer => ({
-                    modelId: "apwReviewerModelDefinition",
-                    id: reviewer.id
-                }))
-            }
+                type: ApwWorkflowStepTypes.NON_MANDATORY,
+                reviewers
+            })
         ],
         scope: {
             type: "default",
@@ -133,18 +117,16 @@ export default {
         app: "pageBuilder",
         title: "Main review workflow",
         steps: [
-            {
+            createWorkflowStep({
                 title: "Legal Review",
-                slug: "legal-review",
-                type: "mandatoryBlocking",
-                reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
-            },
-            {
+                type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                reviewers: [{ id: "12345678#0001" }]
+            }),
+            createWorkflowStep({
                 title: "Design Review",
-                slug: "design-review",
-                type: "mandatoryBlocking",
-                reviewers: [{ id: "12345678#0001", modelId: "apwReviewerModelDefinition" }]
-            }
+                type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
+                reviewers: [{ id: "12345678#0001" }]
+            })
         ],
         scope: {
             type: "pb",

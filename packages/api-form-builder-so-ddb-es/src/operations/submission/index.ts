@@ -22,7 +22,7 @@ import {
     FormBuilderSubmissionStorageOperations,
     FormBuilderSubmissionStorageOperationsCreatePartitionKeyParams
 } from "~/types";
-import configurations from "~/configurations";
+import { configurations } from "~/configurations";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { parseIdentifier } from "@webiny/utils";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
@@ -87,7 +87,8 @@ export const createSubmissionStorageOperations = (
 
         try {
             const { index } = configurations.es({
-                tenant: form.tenant
+                tenant: form.tenant,
+                locale: form.locale
             });
             await esEntity.put({
                 index,
@@ -267,7 +268,8 @@ export const createSubmissionStorageOperations = (
         });
 
         const esConfig = configurations.es({
-            tenant: where.tenant
+            tenant: where.tenant,
+            locale: where.locale
         });
 
         const query = {
