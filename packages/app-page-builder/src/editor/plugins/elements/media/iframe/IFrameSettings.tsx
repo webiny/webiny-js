@@ -49,7 +49,7 @@ const LinkSettingsComponent: React.FC<
     };
 
     const updateSettings = (data: LinkSettingsFormData) => {
-        // Skip update if nothing is change.
+        // Skip update if nothing is changed.
         if (data.url === url) {
             return;
         }
