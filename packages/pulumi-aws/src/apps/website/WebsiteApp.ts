@@ -175,7 +175,7 @@ export const WebsiteApp = defineApp({
             deliveryUrl: deliveryCloudfront.output.domainName.apply(value => `https://${value}`)
         });
 
-        app.onDeploy(async ({ outputs }) => {
+        app.onAfterDeploy(async ({ outputs }) => {
             await websiteUpload({
                 appDir: app.ctx.appDir,
                 bucket: outputs["appStorage"]
@@ -185,7 +185,7 @@ export const WebsiteApp = defineApp({
         // Update variant gateway configuration.
         const variant = app.ctx.variant;
         if (variant) {
-            app.onDeploy(async ({ outputs }) => {
+            app.onAfterDeploy(async ({ outputs }) => {
                 // After deployment is made we update a static JSON file with a variant configuration.
                 // TODO: We should update WCP config instead of a static file here
                 await updateGatewayConfig({
@@ -231,9 +231,9 @@ export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<We
             await config.config?.(app, ctx);
             return app;
         },
-        beforeBuild: config.beforeBuild,
-        afterBuild: config.afterBuild,
-        beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(websiteRender, config.afterDeploy)
+        onBeforeBuild: config.onBeforeBuild,
+        onAfterBuild: config.onAfterBuild,
+        onBeforeDeploy: config.onBeforeDeploy,
+        onAfterDeploy: mergeAppHooks(websiteRender, config.onAfterDeploy)
     });
 }

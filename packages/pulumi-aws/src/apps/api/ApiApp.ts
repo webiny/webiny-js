@@ -167,7 +167,7 @@ export const ApiApp = defineApp({
         // Update variant gateway configuration.
         const variant = app.ctx.variant;
         if (variant) {
-            app.onDeploy(async ({ outputs }) => {
+            app.onAfterDeploy(async ({ outputs }) => {
                 // After deployment is made we update a static JSON file with a variant configuration.
                 // TODO: We should update WCP config instead of a static file here
                 await updateGatewayConfig({
@@ -212,9 +212,9 @@ export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
             await config.config?.(app, ctx);
             return app;
         },
-        beforeBuild: config.beforeBuild,
-        afterBuild: config.afterBuild,
-        beforeDeploy: config.beforeDeploy,
-        afterDeploy: config.afterDeploy
+        onBeforeBuild: config.onBeforeBuild,
+        onAfterBuild: config.onAfterBuild,
+        onBeforeDeploy: config.onBeforeDeploy,
+        onAfterDeploy: config.onAfterDeploy
     });
 }
