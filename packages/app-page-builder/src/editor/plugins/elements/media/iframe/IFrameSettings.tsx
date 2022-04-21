@@ -25,6 +25,9 @@ const classes = {
     })
 };
 
+const urlRegex =
+    /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
+
 interface LinkSettingsFormData {
     url?: string;
 }
@@ -53,6 +56,13 @@ const LinkSettingsComponent: React.FC<
         if (data.url === url) {
             return;
         }
+
+        const isValidUrl = data.url && urlRegex.test(data.url);
+
+        if (!isValidUrl) {
+            return;
+        }
+
         const attrKey = `data.iframe`;
         const newElement: PbEditorElement = merge(element, attrKey, data);
         updateElement(newElement);
