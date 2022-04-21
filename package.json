@@ -226,5 +226,8 @@
     "@types/eslint": "8.2.1",
     "yargs": "^17.3.1"
   },
-  "packageManager": "yarn@3.1.0"
+  "packageManager": "yarn@3.1.0",
+  "dependencies": {
+    "cypress-mailosaur": "^2.7.0"
+  }
 }

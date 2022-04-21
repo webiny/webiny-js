@@ -18894,6 +18894,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cypress-mailosaur@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "cypress-mailosaur@npm:2.7.0"
+  peerDependencies:
+    cypress: ">= 2.1.0"
+  checksum: 37236239b528bcb1554a29535c13e5b961e0df442788e2ac472cf69ffa3891c2c675b4dbb877a0435141e34b28f6cf62e6308522a3494a56c8b83d6de1a2513d
+  languageName: node
+  linkType: hard
+
 "cypress-wait-until@npm:^1.7.1":
   version: 1.7.2
   resolution: "cypress-wait-until@npm:1.7.2"
@@ -35074,6 +35083,7 @@ __metadata:
     cross-env: ^5.2.0
     cypress: ^6.0.1
     cypress-image-snapshot: ^4.0.1
+    cypress-mailosaur: ^2.7.0
     cypress-wait-until: ^1.7.1
     cz-customizable: ^5.2.0
     del: ^6.0.0
