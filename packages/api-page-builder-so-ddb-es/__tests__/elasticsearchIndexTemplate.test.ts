@@ -1,13 +1,14 @@
 import { base } from "~/elasticsearch/templates/base";
 import { PageElasticsearchIndexTemplatePlugin } from "~/plugins/definitions/PageElasticsearchIndexTemplatePlugin";
 
+import { createElasticsearchClient } from "../../api-elasticsearch/__tests__/helpers";
+
 import {
-    createElasticsearchClient,
-    deleteAllTemplates,
-    getTemplate,
+    deleteTemplates,
     putTemplate,
-    deleteAllIndices
-} from "../../api-elasticsearch/__tests__/helpers";
+    getTemplates
+} from "@webiny/project-utils/testing/elasticsearch/templates";
+import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
 const defaultTemplateName = "page-builder-pages-index-default";
 const defaultTemplateOrder = 350;
@@ -51,17 +52,26 @@ describe("Elasticsearch Index Template", () => {
     const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        await deleteAllIndices(client);
-        await deleteAllTemplates(client);
+        await deleteIndexes({
+            client
+        });
+        await deleteTemplates({
+            client
+        });
     });
 
     afterEach(async () => {
-        await deleteAllIndices(client);
-        await deleteAllTemplates(client);
+        await deleteIndexes({
+            client
+        });
+        await deleteTemplates({ client });
     });
 
     it("should insert default index template", async () => {
-        const insert = await putTemplate(client, base.template);
+        const insert = await putTemplate({
+            client,
+            template: base.template
+        });
 
         expect(insert).toMatchObject({
             body: {
@@ -70,7 +80,9 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await getTemplate(client);
+        const response = await getTemplates({
+            client
+        });
 
         expect(response).toMatchObject({
             body: {
@@ -84,9 +96,15 @@ describe("Elasticsearch Index Template", () => {
     });
 
     it("should insert default template and add few more", async () => {
-        await putTemplate(client, base.template);
+        await putTemplate({
+            client,
+            template: base.template
+        });
 
-        const insertPropertyNoIndexResult = await putTemplate(client, noPropertyIndex.template);
+        const insertPropertyNoIndexResult = await putTemplate({
+            client,
+            template: noPropertyIndex.template
+        });
         expect(insertPropertyNoIndexResult).toMatchObject({
             body: {
                 acknowledged: true
@@ -94,10 +112,10 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const insertDisableSourceIndexResult = await putTemplate(
+        const insertDisableSourceIndexResult = await putTemplate({
             client,
-            disableSourceIndex.template
-        );
+            template: disableSourceIndex.template
+        });
         expect(insertDisableSourceIndexResult).toMatchObject({
             body: {
                 acknowledged: true
@@ -105,7 +123,9 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await getTemplate(client);
+        const response = await getTemplates({
+            client
+        });
 
         expect(response).toMatchObject({
             body: {
@@ -127,9 +147,18 @@ describe("Elasticsearch Index Template", () => {
     });
 
     it("should insert templates and create index that will have those mappings", async () => {
-        await putTemplate(client, base.template);
-        await putTemplate(client, noPropertyIndex.template);
-        await putTemplate(client, disableSourceIndex.template);
+        await putTemplate({
+            client,
+            template: base.template
+        });
+        await putTemplate({
+            client,
+            template: noPropertyIndex.template
+        });
+        await putTemplate({
+            client,
+            template: disableSourceIndex.template
+        });
 
         const createResponse = await client.indices.create({
             index: testPageBuilderIndexName

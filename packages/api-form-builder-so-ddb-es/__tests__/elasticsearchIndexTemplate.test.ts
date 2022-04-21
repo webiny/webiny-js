@@ -6,6 +6,7 @@ import {
     putTemplate,
     getTemplates
 } from "@webiny/project-utils/testing/elasticsearch/templates";
+
 const templateName = "form-builder-forms-index-default";
 
 describe("Elasticsearch Index Template", () => {

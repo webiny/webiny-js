@@ -7,7 +7,7 @@ import {
     getTemplates
 } from "@webiny/project-utils/testing/elasticsearch/templates";
 
-const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || ";";
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
 const templateName = `${prefix}${base.template.name}`;
 

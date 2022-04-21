@@ -189,7 +189,7 @@ export interface ElasticsearchIndexRequestBody {
         properties?: {
             [key: string]: {
                 analyzer?: string;
-                type: string;
+                type?: string;
                 normalizer?: string;
                 index?: string;
                 fields?: {

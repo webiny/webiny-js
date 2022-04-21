@@ -158,7 +158,7 @@ describe("Japanese Elasticsearch Index and Templates", () => {
             statusCode: 200
         });
         const jaJpIndexConfig = jaJpGetIndex.body[testJaJpIndexName];
-        expect(jaJpIndexConfig).toEqual({
+        expect(jaJpIndexConfig).toMatchObject({
             aliases: {},
             settings: {
                 index: {
