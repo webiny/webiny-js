@@ -1,6 +1,6 @@
+import { ApwWorkflowStepTypes } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import mocks from "./mocks/workflows";
-import { ApwWorkflowStepTypes } from "~/types";
 
 describe("Workflow crud test", () => {
     const options = {
@@ -43,6 +43,8 @@ describe("Workflow crud test", () => {
         return reviewer;
     };
 
+    const expectedReviewers = expect.arrayContaining([expect.any(String)]);
+
     test("should able to create, update, get, list and delete a workflow", async () => {
         const reviewer = await setupReviewer();
         /*
@@ -68,7 +70,20 @@ describe("Workflow crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            ...workflowData
+                            app: expect.any(String),
+                            title: expect.any(String),
+                            steps: [
+                                {
+                                    title: expect.any(String),
+                                    id: expect.any(String),
+                                    type: expect.any(String),
+                                    reviewers: expectedReviewers
+                                }
+                            ],
+                            scope: {
+                                type: expect.any(String),
+                                data: null
+                            }
                         },
                         error: null
                     }
@@ -101,7 +116,20 @@ describe("Workflow crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            ...workflow
+                            app: expect.any(String),
+                            title: expect.any(String),
+                            steps: [
+                                {
+                                    title: expect.any(String),
+                                    id: expect.any(String),
+                                    type: expect.any(String),
+                                    reviewers: expectedReviewers
+                                }
+                            ],
+                            scope: {
+                                type: expect.any(String),
+                                data: null
+                            }
                         },
                         error: null
                     }
@@ -132,7 +160,6 @@ describe("Workflow crud test", () => {
          */
         const designReviewStep = mocks.createWorkflowStep({
             title: "Design review",
-            slug: "design-review",
             type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
             reviewers: [
                 {
@@ -151,7 +178,6 @@ describe("Workflow crud test", () => {
                 apw: {
                     updateWorkflow: {
                         data: {
-                            ...workflow,
                             id: expect.any(String),
                             createdOn: expect.stringMatching(/^20/),
                             savedOn: expect.stringMatching(/^20/),
@@ -160,7 +186,26 @@ describe("Workflow crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            steps: [...workflow.steps, designReviewStep]
+                            app: expect.any(String),
+                            title: expect.any(String),
+                            steps: [
+                                {
+                                    title: expect.any(String),
+                                    id: expect.any(String),
+                                    type: expect.any(String),
+                                    reviewers: expectedReviewers
+                                },
+                                {
+                                    title: expect.any(String),
+                                    id: expect.any(String),
+                                    type: expect.any(String),
+                                    reviewers: expectedReviewers
+                                }
+                            ],
+                            scope: {
+                                type: expect.any(String),
+                                data: null
+                            }
                         },
                         error: null
                     }

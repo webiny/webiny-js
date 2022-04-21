@@ -1,5 +1,6 @@
 import React from "react";
 import { FileItem } from "./types";
+import { useSecurity } from "@webiny/app-security";
 
 enum ListFilesSort {
     CREATED_ON_ASC,
@@ -8,13 +9,33 @@ enum ListFilesSort {
     SIZE_DESC
 }
 
+const DEFAULT_SCOPE = "scope:";
+
+export const getWhere = (scope: string | undefined) => {
+    if (!scope) {
+        return {
+            tag_not_startsWith: DEFAULT_SCOPE
+        };
+    }
+    return {
+        tag_startsWith: scope
+    };
+};
+
 interface InitParams {
     accept: string[];
+    tags: string[];
+    scope: string;
+    own: boolean;
+    identity: any;
 }
 interface StateQueryParams {
     types: string[];
     limit: number;
     sort: number;
+    tags: string[];
+    scope: string;
+    where: Record<string, any>;
 }
 interface State {
     showingFileDetails: string | null;
@@ -24,15 +45,19 @@ interface State {
     dragging: boolean;
     uploading: boolean;
 }
-const init = ({ accept }: InitParams): State => {
+const init = ({ accept, tags, scope, own, identity }: InitParams): State => {
+    const initialWhere = own ? { createdBy: identity.id } : {};
     return {
         showingFileDetails: null,
         selected: [],
         hasPreviouslyUploadedFiles: null,
         queryParams: {
+            scope,
+            tags,
             types: accept,
             limit: 50,
-            sort: ListFilesSort.CREATED_ON_DESC
+            sort: ListFilesSort.CREATED_ON_DESC,
+            where: { ...initialWhere, ...getWhere(scope) }
         },
         dragging: false,
         uploading: false
@@ -106,12 +131,13 @@ const fileManagerReducer: Reducer = (state: State, action) => {
 const FileManagerContext = React.createContext({});
 
 const FileManagerProvider: React.FC = ({ children, ...props }) => {
+    const { identity } = useSecurity();
     /**
      * TODO @ts-refactor
      * Figure out how to type the rest of the types.
      */
     // @ts-ignore
-    const [state, dispatch] = React.useReducer(fileManagerReducer, props, init);
+    const [state, dispatch] = React.useReducer(fileManagerReducer, { ...props, identity }, init);
 
     const value = React.useMemo(() => {
         return {

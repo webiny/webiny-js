@@ -4,6 +4,16 @@ import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperation
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 import WebinyError from "@webiny/error";
 import { ApwComment } from "~/types";
+import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
+
+const pickIdFromChangeRequest = (obj: Record<string, any>): ApwComment => {
+    const rawValue = obj["changeRequest"];
+    if (!rawValue) {
+        return obj as unknown as ApwComment;
+    }
+    obj["changeRequest"] = rawValue.id;
+    return obj as unknown as ApwComment;
+};
 
 export const createCommentStorageOperations = ({
     cms,
@@ -31,17 +41,17 @@ export const createCommentStorageOperations = ({
     };
     return {
         getCommentModel,
-        getComment,
+        getComment: async params => {
+            const values = await getComment(params);
+            return pickIdFromChangeRequest(values);
+        },
         async listComments(params) {
             const model = await getCommentModel();
-            const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params,
-                where: {
-                    ...params.where,
-                    tenant: model.tenant
-                }
-            });
-            const all = await Promise.all(
+            const [entries, meta] = await cms.listLatestEntries(
+                model,
+                params as CmsEntryListParams
+            );
+            const values = await Promise.all(
                 entries.map(entry =>
                     getFieldValues<ApwComment>({
                         entry,
@@ -51,6 +61,7 @@ export const createCommentStorageOperations = ({
                     })
                 )
             );
+            const all = values.map(value => pickIdFromChangeRequest(value));
             return [all, meta];
         },
         async createComment(this: ApwStorageOperations, params) {
@@ -59,17 +70,18 @@ export const createCommentStorageOperations = ({
             const entry = await cms.createEntry(model, {
                 ...params.data,
                 changeRequest: {
-                    ...params.data.changeRequest,
+                    id: params.data.changeRequest,
                     modelId: refModel.modelId
                 }
             });
 
-            return getFieldValues({
+            const values = await getFieldValues({
                 entry,
                 fields: baseFields,
                 context: getCmsContext(),
                 transformers: [getTransformer(model, "body")]
             });
+            return pickIdFromChangeRequest(values);
         },
         async updateComment(params) {
             const model = await getCommentModel();
@@ -83,12 +95,13 @@ export const createCommentStorageOperations = ({
                 ...existingEntry,
                 ...params.data
             });
-            return getFieldValues({
+            const values = await getFieldValues({
                 entry,
                 fields: baseFields,
                 context: getCmsContext(),
                 transformers: [getTransformer(model, "body")]
             });
+            return pickIdFromChangeRequest(values);
         },
         async deleteComment(params) {
             const model = await getCommentModel();

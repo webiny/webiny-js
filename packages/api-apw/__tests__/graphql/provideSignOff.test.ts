@@ -1,6 +1,7 @@
 import { ApwContentReviewStepStatus } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { createSetupForContentReview } from "../utils/helpers";
+import { mocks as changeRequestMock } from "./mocks/changeRequest";
 
 describe("Provide sign off for a step in content review process", function () {
     const options = {
@@ -10,11 +11,27 @@ describe("Provide sign off for a step in content review process", function () {
     const gqlHandler = useContentGqlHandler({
         ...options
     });
-    const { getContentReviewQuery, createContentReviewMutation, provideSignOffMutation, until } =
-        gqlHandler;
+    const {
+        getContentReviewQuery,
+        createContentReviewMutation,
+        provideSignOffMutation,
+        createChangeRequestMutation,
+        until
+    } = gqlHandler;
 
     const setup = async () => {
         return createSetupForContentReview(gqlHandler);
+    };
+
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
     };
 
     test(`should able to provide sign-off`, async () => {
@@ -48,7 +65,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         let [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step3.slug
+            step: step3.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -70,7 +87,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -121,15 +138,12 @@ describe("Provide sign off for a step in content review process", function () {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.DONE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: expect.stringMatching(/^20/),
                                     signOffProvidedBy: {
@@ -139,14 +153,14 @@ describe("Provide sign off for a step in content review process", function () {
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
@@ -204,7 +218,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         const [provideSignOffResponse] = await gqlHandlerForIdentityA.provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -254,7 +268,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         let [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step2.slug
+            step: step2.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -275,7 +289,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
 
         await until(
@@ -301,7 +315,7 @@ describe("Provide sign off for a step in content review process", function () {
 
         [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step3.slug
+            step: step3.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -319,7 +333,7 @@ describe("Provide sign off for a step in content review process", function () {
          */
         [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step2.slug
+            step: step2.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -327,6 +341,119 @@ describe("Provide sign off for a step in content review process", function () {
                     provideSignOff: {
                         data: true,
                         error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should throw error when trying to create new "Change Request" once sign off has been provided`, async () => {
+        const { page } = await setup();
+
+        /*
+         Create a content review entry.
+        */
+        const [createContentReviewResponse] = await createContentReviewMutation({
+            data: {
+                content: {
+                    id: page.id,
+                    type: "page"
+                }
+            }
+        });
+        const createdContentReview = createContentReviewResponse.data.apw.createContentReview.data;
+
+        const [step1, step2, step3] = createdContentReview.steps;
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            (response: any) => response.data.apw.getContentReview.data !== null,
+            {
+                name: "Wait for entry to be available in get query"
+            }
+        );
+        let previousSavedOn = createdContentReview.savedOn;
+
+        /**
+         * Let's providing sign off for "mandatory_blocking" step.
+         */
+        let [provideSignOffResponse] = await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step1.id
+        });
+
+        await until(
+            () => getContentReviewQuery({ id: createdContentReview.id }).then(([data]) => data),
+            (response: any) => {
+                const entry = response.data.apw.getContentReview.data;
+                const hasChanged = entry && entry.savedOn !== previousSavedOn;
+                if (hasChanged) {
+                    previousSavedOn = entry.savedOn;
+                    return true;
+                }
+                return false;
+            },
+            {
+                name: "Wait for updated entry to be available in get query"
+            }
+        );
+
+        /**
+         * Should able to providing sign off even if previous step is not done;
+         * given it is of "mandatory_non_blocking" type.
+         */
+
+        [provideSignOffResponse] = await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step3.id
+        });
+        expect(provideSignOffResponse).toEqual({
+            data: {
+                apw: {
+                    provideSignOff: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Should able to providing sign off after completing "mandatory_blocking" step.
+         */
+        [provideSignOffResponse] = await provideSignOffMutation({
+            id: createdContentReview.id,
+            step: step2.id
+        });
+        expect(provideSignOffResponse).toEqual({
+            data: {
+                apw: {
+                    provideSignOff: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        /**
+         * Should return error when creating a new change request after sign-off has been provided.
+         */
+
+        const changeRequestStep = `${createdContentReview.id}#${createdContentReview.steps[0].id}`;
+        const [createChangeRequestResponse] = await createChangeRequestMutation({
+            data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
+        });
+        expect(createChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    createChangeRequest: {
+                        data: null,
+                        error: {
+                            code: "SIGN_OFF_PROVIDED",
+                            message: expect.any(String),
+                            data: expect.any(Object)
+                        }
                     }
                 }
             }

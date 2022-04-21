@@ -12,16 +12,15 @@ export const deleteChangeRequestsWithContentReview = ({
          * For each step get associated change requests and delete them.
          */
         for (let i = 0; i < steps.length; i++) {
-            const { slug } = steps[i];
+            const { id: stepId } = steps[i];
 
-            let meta: Omit<ListMeta, "totalCount"> = {
-                hasMoreItems: true,
-                cursor: null
+            let meta: Pick<ListMeta, "totalCount"> = {
+                totalCount: 1
             };
             /**
              * Paginate through change requests.
              */
-            while (meta.hasMoreItems) {
+            while (meta.totalCount > 0) {
                 let changeRequests: ApwChangeRequest[] = [];
                 /**
                  * Get all change requests.
@@ -29,15 +28,15 @@ export const deleteChangeRequestsWithContentReview = ({
                 try {
                     [changeRequests, meta] = await apw.changeRequest.list({
                         where: {
-                            step: `${contentReview.id}#${slug}`
-                        },
-                        after: meta.cursor
+                            step: `${contentReview.id}#${stepId}`
+                        }
                     });
                 } catch (e) {
-                    meta.hasMoreItems = false;
+                    meta.totalCount = 0;
                     if (e.message !== "index_not_found_exception") {
                         throw e;
                     }
+                    console.log(e);
                 }
 
                 /**

@@ -23,6 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
+    "@webiny/api-elasticsearch": "^5.25.0",
     "@webiny/api-headless-cms": "^5.25.0",
     "@webiny/api-upgrade": "^5.25.0",
     "@webiny/db-dynamodb": "^5.25.0",
@@ -46,7 +47,6 @@
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@types/jsonpack": "^1.1.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.25.0",
-    "@webiny/api-elasticsearch": "^5.25.0",
     "@webiny/cli": "^5.25.0",
     "@webiny/project-utils": "^5.25.0",
     "jest": "^26.6.3",

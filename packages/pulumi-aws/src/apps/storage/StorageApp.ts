@@ -27,7 +27,7 @@ export const StorageApp = defineApp({
         const legacyConfig = config?.legacy?.(app.ctx) ?? {};
 
         // Setup DynamoDB table
-        const table = createDynamoTable(app, { protect });
+        const dynamoDbTable = createDynamoTable(app, { protect });
 
         // Setup Cognito
         const cognito = createCognitoResources(app, {
@@ -43,8 +43,10 @@ export const StorageApp = defineApp({
 
         app.addOutputs({
             fileManagerBucketId: fileManagerBucket.output.id,
-            primaryDynamodbTableArn: table.output.arn,
-            primaryDynamodbTableName: table.output.name,
+            primaryDynamodbTableArn: dynamoDbTable.output.arn,
+            primaryDynamodbTableName: dynamoDbTable.output.name,
+            primaryDynamodbTableHashKey: dynamoDbTable.output.hashKey,
+            primaryDynamodbTableRangeKey: dynamoDbTable.output.rangeKey,
             cognitoUserPoolId: cognito.userPool.output.id,
             cognitoUserPoolArn: cognito.userPool.output.arn,
             cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
@@ -53,7 +55,7 @@ export const StorageApp = defineApp({
         });
 
         return {
-            table,
+            dynamoDbTable,
             ...cognito,
             eventBus,
             fileManagerBucket

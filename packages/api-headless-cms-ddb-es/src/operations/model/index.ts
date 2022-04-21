@@ -8,7 +8,7 @@ import {
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types";
 import { Entity } from "dynamodb-toolbox";
-import configurations from "~/configurations";
+import { configurations } from "~/configurations";
 import WebinyError from "@webiny/error";
 import { Client } from "@elastic/elasticsearch";
 import { get as getRecord } from "@webiny/db-dynamodb/utils/get";

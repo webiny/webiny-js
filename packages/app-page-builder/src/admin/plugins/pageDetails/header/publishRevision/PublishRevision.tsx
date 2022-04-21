@@ -10,12 +10,14 @@ import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisio
 import usePermission from "../../../../../hooks/usePermission";
 import { PbPageData } from "~/types";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { makeComposable } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
 
-interface PublishRevisionProps {
+export interface PublishRevisionProps {
     page: PbPageData;
 }
+
 const PublishRevision: React.FC<PublishRevisionProps> = props => {
     const { identity, getPermission } = useSecurity();
     const { canPublish, canUnpublish } = usePermission();
@@ -87,4 +89,4 @@ const PublishRevision: React.FC<PublishRevisionProps> = props => {
     return null;
 };
 
-export default PublishRevision;
+export default makeComposable("PublishRevision", PublishRevision);

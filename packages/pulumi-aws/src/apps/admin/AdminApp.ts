@@ -70,7 +70,7 @@ export const AdminApp = defineApp({
             appUrl: cloudfront.output.domainName.apply(value => `https://${value}`)
         });
 
-        app.onDeploy(async ({ outputs }) => {
+        app.onAfterDeploy(async ({ outputs }) => {
             await adminUpload({
                 appDir: app.ctx.appDir,
                 bucket: outputs["appStorage"]

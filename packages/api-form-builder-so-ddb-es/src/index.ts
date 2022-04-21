@@ -9,7 +9,7 @@ import { createSystemStorageOperations } from "~/operations/system";
 import { createSubmissionStorageOperations } from "~/operations/submission";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createFormStorageOperations } from "~/operations/form";
-import { createElasticsearchIndex } from "~/operations/system/createElasticsearchIndex";
+import { createElasticsearchIndexTemplate } from "~/operations/system/createElasticsearchIndexTemplate";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { createElasticsearchEntity } from "~/definitions/elasticsearch";
@@ -17,8 +17,7 @@ import submissionElasticsearchFields from "./operations/submission/elasticsearch
 import formElasticsearchFields from "./operations/form/elasticsearchFields";
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
-
-import upgrade5160 from "./upgrades/5.16.0";
+import { base as baseElasticsearchIndexTemplate } from "~/elasticsearch/templates/base";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -67,7 +66,11 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         /**
          * Elasticsearch operators.
          */
-        getElasticsearchOperators()
+        getElasticsearchOperators(),
+        /**
+         * Base Elasticsearch index template.
+         */
+        baseElasticsearchIndexTemplate
     ]);
 
     const table = createTable({
@@ -121,14 +124,14 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
 
     return {
         init: async formBuilder => {
-            formBuilder.onAfterInstall.subscribe(async ({ tenant }) => {
-                await createElasticsearchIndex({
+            formBuilder.onAfterInstall.subscribe(async () => {
+                await createElasticsearchIndexTemplate({
                     elasticsearch,
-                    tenant
+                    plugins
                 });
             });
         },
-        upgrade: upgrade5160(),
+        upgrade: null,
         getTable: () => table,
         getEsTable: () => esTable,
         getEntities: () => entities,

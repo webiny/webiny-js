@@ -27,6 +27,8 @@ module.exports = {
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-var-requires": 0,
         "@typescript-eslint/no-explicit-any": 0,
+        // Temporarily disable this rule
+        "@typescript-eslint/no-non-null-assertion": 0,
         curly: ["error"],
         "jest/expect-expect": 0,
         // Sometimes we have to use expect() inside try/catch clause (for async calls).
