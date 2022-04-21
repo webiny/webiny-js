@@ -12,7 +12,9 @@ const { ContextPlugin } = require("@webiny/handler");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
-const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
+const {
+    createElasticsearchClient
+} = require("@webiny/project-utils/testing/elasticsearch/createClient");
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -23,16 +25,11 @@ if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
 class FileManagerTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClient = createElasticsearchClient();
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",

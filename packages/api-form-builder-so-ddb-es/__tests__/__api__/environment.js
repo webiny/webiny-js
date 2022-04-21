@@ -10,7 +10,9 @@ const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler");
 const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
-const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
+const {
+    createElasticsearchClient
+} = require("@webiny/project-utils/testing/elasticsearch/createClient");
 const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
 /**
  * For this to work it must load plugins that have already been built
@@ -27,16 +29,11 @@ if (typeof createFormBuilderStorageOperations !== "function") {
     );
 }
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
 class FormBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClient = createElasticsearchClient();
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
