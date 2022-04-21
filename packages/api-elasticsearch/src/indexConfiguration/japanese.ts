@@ -104,8 +104,7 @@ export const japanese: ElasticsearchIndexRequestBody = {
                                 type: "text",
                                 search_analyzer: "ja_ngram_search_analyzer",
                                 analyzer: "ja_ngram_index_analyzer"
-                            },
-                            keyword: undefined
+                            }
                         }
                     }
                 }

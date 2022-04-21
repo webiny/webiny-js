@@ -13,7 +13,7 @@ export const base: ElasticsearchIndexRequestBody = {
                 }
             }
         }
-    } as any,
+    },
     mappings: {
         dynamic_templates: [
             {

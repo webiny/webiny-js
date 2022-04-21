@@ -1,43 +1,55 @@
-import {
-    clearTemplate,
-    createElasticsearchClient,
-    putTemplate,
-    getTemplate,
-    deleteIndex
-} from "../helpers";
+import { createElasticsearchClient } from "../helpers";
 import { base as baseTemplate } from "~/elasticsearch/templates/base";
 import { japanese as japaneseTemplate } from "~/elasticsearch/templates/japanese";
 import lodashCloneDeep from "lodash/cloneDeep";
+import {
+    deleteTemplates,
+    putTemplate,
+    getTemplates
+} from "@webiny/project-utils/testing/elasticsearch/templates";
+import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
-const baseTemplateName = baseTemplate.template.name;
-const jpTemplateName = japaneseTemplate.template.name;
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-const testJaJpIndexName = "root-ja-jp-headless-cms-articles";
-const testJaIndexName = "root-ja-headless-cms-articles";
+const baseTemplateName = `${prefix}${baseTemplate.template.name}`;
+const jpTemplateName = `${prefix}${japaneseTemplate.template.name}`;
+
+const testJaJpIndexName = `${prefix}root-ja-jp-headless-cms-articles`;
+const testJaIndexName = `${prefix}root-ja-headless-cms-articles`;
 
 describe("Japanese Elasticsearch Index and Templates", () => {
     const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        try {
-            await clearTemplate(client, [baseTemplateName, jpTemplateName]);
-            await deleteIndex(client, [testJaJpIndexName, testJaIndexName]);
-        } catch (ex) {
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
+        await deleteTemplates({
+            client,
+            templates: [baseTemplateName, jpTemplateName]
+        });
+        await deleteIndexes({
+            client,
+            indices: [testJaJpIndexName, testJaIndexName]
+        });
     });
 
     afterEach(async () => {
-        await clearTemplate(client, [baseTemplateName, jpTemplateName]);
-        await deleteIndex(client, [testJaJpIndexName, testJaIndexName]);
+        await deleteTemplates({
+            client,
+            templates: [baseTemplateName, jpTemplateName]
+        });
+        await deleteIndexes({
+            client,
+            indices: [testJaJpIndexName, testJaIndexName]
+        });
     });
 
     it("should add Japanese template after the default one", async () => {
         /**
          * Insert the base and the Japanese templates
          */
-        const baseInsert = await putTemplate(client, baseTemplate.template);
+        const baseInsert = await putTemplate({
+            client,
+            template: baseTemplate.template
+        });
 
         expect(baseInsert).toMatchObject({
             body: {
@@ -46,7 +58,10 @@ describe("Japanese Elasticsearch Index and Templates", () => {
             statusCode: 200
         });
 
-        const japaneseInsert = await putTemplate(client, japaneseTemplate.template);
+        const japaneseInsert = await putTemplate({
+            client,
+            template: japaneseTemplate.template
+        });
 
         expect(japaneseInsert).toMatchObject({
             body: {
@@ -59,10 +74,16 @@ describe("Japanese Elasticsearch Index and Templates", () => {
          * Verify that both of the templates are in
          */
 
-        const response = await getTemplate(client);
+        const response = await getTemplates({ client });
 
-        const japaneseTemplateSettings = lodashCloneDeep(japaneseTemplate.template.body.settings);
-        delete (japaneseTemplateSettings as any).index.analysis.analyzer.lowercase_analyzer;
+        const japaneseTemplateSettings = lodashCloneDeep(
+            japaneseTemplate.template.body.settings
+        ) as any;
+        delete japaneseTemplateSettings.index.analysis.analyzer.lowercase_analyzer;
+        const japaneseTemplateMappings = lodashCloneDeep(
+            japaneseTemplate.template.body.mappings
+        ) as any;
+        delete japaneseTemplateMappings.dynamic_templates[0].strings.mapping.fields.keyword;
 
         expect(response).toMatchObject({
             body: {
@@ -83,7 +104,7 @@ describe("Japanese Elasticsearch Index and Templates", () => {
                         ...japaneseTemplateSettings
                     },
                     mappings: {
-                        ...japaneseTemplate.template.body.mappings
+                        ...japaneseTemplateMappings
                     }
                 }
             },
@@ -130,7 +151,7 @@ describe("Japanese Elasticsearch Index and Templates", () => {
                         ...japaneseTemplate.template.body.settings
                     },
                     mappings: {
-                        ...japaneseTemplate.template.body.mappings
+                        ...japaneseTemplateMappings
                     }
                 }
             },
@@ -153,7 +174,7 @@ describe("Japanese Elasticsearch Index and Templates", () => {
                 }
             },
             mappings: {
-                ...japaneseTemplate.template.body.mappings
+                ...japaneseTemplateMappings
             }
         });
     });

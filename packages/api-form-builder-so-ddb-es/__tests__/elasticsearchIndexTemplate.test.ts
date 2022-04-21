@@ -1,12 +1,11 @@
 import { base } from "~/elasticsearch/templates/base";
 
+import { createElasticsearchClient } from "../../api-elasticsearch/__tests__/helpers";
 import {
-    createElasticsearchClient,
-    deleteAllTemplates,
-    getTemplate,
-    putTemplate
-} from "../../api-elasticsearch/__tests__/helpers";
-
+    deleteTemplates,
+    putTemplate,
+    getTemplates
+} from "@webiny/project-utils/testing/elasticsearch/templates";
 const templateName = "form-builder-forms-index-default";
 
 describe("Elasticsearch Index Template", () => {
@@ -14,7 +13,7 @@ describe("Elasticsearch Index Template", () => {
 
     beforeEach(async () => {
         try {
-            await deleteAllTemplates(client);
+            await deleteTemplates({ client });
         } catch (ex) {
             console.log(JSON.stringify(ex));
             throw ex;
@@ -22,11 +21,14 @@ describe("Elasticsearch Index Template", () => {
     });
 
     afterEach(async () => {
-        await deleteAllTemplates(client);
+        await deleteTemplates({ client });
     });
 
     it("should insert default index template", async () => {
-        const insert = await putTemplate(client, base.template);
+        const insert = await putTemplate({
+            client,
+            template: base.template
+        });
 
         expect(insert).toMatchObject({
             body: {
@@ -35,7 +37,7 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await getTemplate(client);
+        const response = await getTemplates({ client });
 
         expect(response).toMatchObject({
             body: {

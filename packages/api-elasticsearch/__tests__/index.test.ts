@@ -1,9 +1,12 @@
 import { base } from "~/indexConfiguration/base";
 import { japanese } from "~/indexConfiguration/japanese";
 import { ElasticsearchIndexRequestBody } from "~/types";
-import { createElasticsearchClient, deleteAllIndices } from "./helpers";
+import { createElasticsearchClient } from "./helpers";
+import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
-const testIndexName = "dummy-index-test";
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
+const testIndexName = `${prefix}dummy-index-test`;
 /**
  * Add configurations when added to the code.
  */
@@ -16,11 +19,17 @@ describe("Elasticsearch Index Mapping And Settings", () => {
     const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        await deleteAllIndices(client);
+        await deleteIndexes({
+            client,
+            indices: [testIndexName]
+        });
     });
 
     afterEach(async () => {
-        await deleteAllIndices(client);
+        await deleteIndexes({
+            client,
+            indices: [testIndexName]
+        });
     });
 
     it.each(settings)(

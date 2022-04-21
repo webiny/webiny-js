@@ -1,26 +1,38 @@
 import { base } from "~/elasticsearch/templates/base";
-import { clearTemplate, getTemplate, putTemplate, createElasticsearchClient } from "../helpers";
+import { createElasticsearchClient } from "../helpers";
 
-const templateName = base.template.name;
+import {
+    deleteTemplates,
+    putTemplate,
+    getTemplates
+} from "@webiny/project-utils/testing/elasticsearch/templates";
+
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || ";";
+
+const templateName = `${prefix}${base.template.name}`;
 
 describe("Elasticsearch Index Template", () => {
     const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        try {
-            await clearTemplate(client, templateName);
-        } catch (ex) {
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
+        await deleteTemplates({
+            client,
+            templates: [templateName]
+        });
     });
 
     afterEach(async () => {
-        await clearTemplate(client, templateName);
+        await deleteTemplates({
+            client,
+            templates: [templateName]
+        });
     });
 
     it("should insert default index template", async () => {
-        const insert = await putTemplate(client, base.template);
+        const insert = await putTemplate({
+            client,
+            template: base.template
+        });
 
         expect(insert).toMatchObject({
             body: {
@@ -29,7 +41,9 @@ describe("Elasticsearch Index Template", () => {
             statusCode: 200
         });
 
-        const response = await getTemplate(client);
+        const response = await getTemplates({
+            client
+        });
 
         expect(response).toMatchObject({
             body: {

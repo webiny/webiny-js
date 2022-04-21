@@ -1,5 +1,7 @@
 import { japanese } from "~/indexConfiguration/japanese";
-import { createElasticsearchClient, deleteAllIndices, deleteTemplate } from "../helpers";
+import { createElasticsearchClient } from "../helpers";
+import { deleteTemplates } from "@webiny/project-utils/testing/elasticsearch/templates";
+import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
 const indexTestName = "japanese-index-test";
 const indexTemplateTestName = "japanese-index-template-test";
@@ -10,13 +12,23 @@ describe("Elasticsearch Japanese", () => {
     const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        await deleteAllIndices(client);
-        await deleteTemplate(client, indexTemplateTestName);
+        await deleteIndexes({
+            client
+        });
+        await deleteTemplates({
+            client,
+            templates: [indexTemplateTestName]
+        });
     });
 
     afterEach(async () => {
-        await deleteAllIndices(client);
-        await deleteTemplate(client, indexTemplateTestName);
+        await deleteIndexes({
+            client
+        });
+        await deleteTemplates({
+            client,
+            templates: [indexTemplateTestName]
+        });
     });
 
     it("should create index", async () => {
