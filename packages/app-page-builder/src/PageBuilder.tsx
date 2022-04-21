@@ -10,13 +10,18 @@ import {
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
+import { AdminPageBuilderContextProvider } from "~/admin/contexts/AdminPageBuilder";
+import { DefaultOnPagePublish } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPagePublish";
+import { DefaultOnPageDelete } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPageDelete";
 import { EditorProps, EditorRenderer } from "./admin/components/Editor";
 
 const PageBuilderProviderHOC = (Component: React.FC): React.FC => {
     return function PageBuilderProvider({ children }) {
         return (
             <ContextProvider>
-                <Component>{children}</Component>
+                <AdminPageBuilderContextProvider>
+                    <Component>{children}</Component>
+                </AdminPageBuilderContextProvider>
             </ContextProvider>
         );
     };
@@ -93,6 +98,8 @@ export const PageBuilder: React.FC = () => {
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />
+                <DefaultOnPagePublish />
+                <DefaultOnPageDelete />
             </Plugins>
         </Fragment>
     );

@@ -1,41 +1,21 @@
 import React from "react";
-import gql from "graphql-tag";
-import { pageAtom, PageAtomType } from "../../../recoil/modules";
+import { useRecoilValue } from "recoil";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
+import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as HomeIcon } from "../../../../admin/assets/round-home-24px.svg";
-import { useMutation } from "@apollo/react-hooks";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { useRecoilValue } from "recoil";
+import { pageAtom, PageAtomType } from "~/editor/recoil/modules";
+import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
-
-const PUBLISH_PAGE = gql`
-    mutation PbPublishPage($id: ID!) {
-        pageBuilder {
-            publishPage(id: $id) {
-                data {
-                    id
-                    path
-                    status
-                    locked
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
+import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 
 const SetAsHomepageButton: React.FC = () => {
     const page = useRecoilValue(pageAtom) as Required<PageAtomType>;
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const publishPageMutation = useMutation(PUBLISH_PAGE);
+    const pageBuilder = useAdminPageBuilder();
 
     const { settings, updateSettingsMutation, isSpecialPage } = usePageBuilderSettings();
 
@@ -53,10 +33,22 @@ const SetAsHomepageButton: React.FC = () => {
                     disabled={isSpecialPage(page, "home")}
                     onClick={() => {
                         showConfirmation(async () => {
-                            const [publish] = publishPageMutation;
-                            await publish({
-                                variables: { id: page.id }
-                            });
+                            const publishPageResult = await pageBuilder.publishPage(
+                                page as { id: string },
+                                {
+                                    client: pageBuilder.client
+                                }
+                            );
+                            /**
+                             * In case of exit in "publishPage" lifecycle, "publishPage" hook will return undefined,
+                             * indicating an immediate exit.
+                             */
+                            if (!publishPageResult) {
+                                return;
+                            }
+                            if (publishPageResult.error) {
+                                return showSnackbar(publishPageResult.error.message);
+                            }
 
                             const [updateSettings] = updateSettingsMutation;
                             const response = await updateSettings({

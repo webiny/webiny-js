@@ -22,6 +22,17 @@ describe("Retract sign off for a step in content review process", function () {
         return createSetupForContentReview(gqlHandler);
     };
 
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
+    };
+
     test(`should able to retract sign-off`, async () => {
         const { page } = await setup();
         /*
@@ -54,7 +65,7 @@ describe("Retract sign off for a step in content review process", function () {
          */
         let [retractSignOffResponse] = await retractSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(retractSignOffResponse).toEqual({
             data: {
@@ -76,7 +87,7 @@ describe("Retract sign off for a step in content review process", function () {
          */
         const [provideSignOffResponse] = await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(provideSignOffResponse).toEqual({
             data: {
@@ -127,15 +138,12 @@ describe("Retract sign off for a step in content review process", function () {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.DONE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: expect.stringMatching(/^20/),
                                     signOffProvidedBy: {
@@ -145,14 +153,14 @@ describe("Retract sign off for a step in content review process", function () {
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
@@ -170,7 +178,7 @@ describe("Retract sign off for a step in content review process", function () {
          */
         [retractSignOffResponse] = await retractSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(retractSignOffResponse).toEqual({
             data: {
@@ -220,29 +228,26 @@ describe("Retract sign off for a step in content review process", function () {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
                                     status: ApwContentReviewStepStatus.ACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.INACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
                                     status: ApwContentReviewStepStatus.INACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
@@ -294,7 +299,7 @@ describe("Retract sign off for a step in content review process", function () {
 
         await provideSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
 
         /**
@@ -302,7 +307,7 @@ describe("Retract sign off for a step in content review process", function () {
          */
         const [retractSignOffResponse] = await gqlHandlerForIdentityA.retractSignOffMutation({
             id: createdContentReview.id,
-            step: step1.slug
+            step: step1.id
         });
         expect(retractSignOffResponse).toEqual({
             data: {

@@ -12,6 +12,8 @@ export function getStorageOutput(app: PulumiApp) {
             fileManagerBucketId: output["fileManagerBucketId"] as string,
             primaryDynamodbTableArn: output["primaryDynamodbTableArn"] as string,
             primaryDynamodbTableName: output["primaryDynamodbTableName"] as string,
+            primaryDynamodbTableHashKey: output["primaryDynamodbTableHashKey"] as string,
+            primaryDynamodbTableRangeKey: output["primaryDynamodbTableRangeKey"] as string,
             cognitoUserPoolId: output["cognitoUserPoolId"] as string,
             cognitoUserPoolArn: output["cognitoUserPoolArn"] as string,
             cognitoUserPoolPasswordPolicy: output["cognitoUserPoolPasswordPolicy"],

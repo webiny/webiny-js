@@ -5,6 +5,7 @@ import { PulumiAppResource } from "@webiny/pulumi-sdk";
 export interface CustomDomainParams {
     domain: Input<string>;
     acmCertificateArn: Input<string>;
+    sslSupportMethod?: Input<string>;
 }
 
 export function applyCustomDomain(
@@ -14,6 +15,6 @@ export function applyCustomDomain(
     cloudfront.config.aliases([params.domain]);
     cloudfront.config.viewerCertificate({
         acmCertificateArn: params.acmCertificateArn,
-        sslSupportMethod: params.acmCertificateArn
+        sslSupportMethod: params.sslSupportMethod ?? "sni-only"
     });
 }

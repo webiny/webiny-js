@@ -24,7 +24,7 @@ import {
     ElasticsearchBoolQueryConfig,
     ElasticsearchSearchResponse
 } from "@webiny/api-elasticsearch/types";
-import configurations from "~/operations/configurations";
+import { configurations } from "~/configurations";
 import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { createElasticsearchQueryBody } from "./elasticsearchQueryBody";

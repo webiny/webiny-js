@@ -1,5 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
+import { createContentReviewSetup } from "../utils/helpers";
 
 const richTextMock = [
     {
@@ -56,6 +57,10 @@ describe("Comment crud test", () => {
         path: "manage/en-US"
     };
 
+    const gqlHandler = useContentGqlHandler({
+        ...options
+    });
+
     const {
         getCommentQuery,
         listCommentsQuery,
@@ -64,16 +69,16 @@ describe("Comment crud test", () => {
         deleteCommentMutation,
         createChangeRequestMutation,
         until
-    } = useContentGqlHandler({
-        ...options
-    });
+    } = gqlHandler;
 
     const setupChangeRequest = async () => {
+        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new entry.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
-            data: changeRequestMock.changeRequestA
+            data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
         });
         return createChangeRequestResponse.data.apw.createChangeRequest.data;
     };
@@ -86,8 +91,9 @@ describe("Comment crud test", () => {
         const [createCommentResponse] = await createCommentMutation({
             data: {
                 body: richTextMock,
-                changeRequest: {
-                    id: changeRequest.id
+                changeRequest: changeRequest.id,
+                media: {
+                    src: "cloudfront.net/my-file"
                 }
             }
         });
@@ -107,11 +113,8 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: {
-                                id: changeRequest.id,
-                                entryId: expect.any(String),
-                                modelId: expect.any(String)
-                            }
+                            changeRequest: changeRequest.id,
+                            media: expect.any(Object)
                         },
                         error: null
                     }
@@ -145,11 +148,8 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: {
-                                id: changeRequest.id,
-                                entryId: expect.any(String),
-                                modelId: expect.any(String)
-                            }
+                            changeRequest: changeRequest.id,
+                            media: expect.any(Object)
                         },
                         error: null
                     }
@@ -199,11 +199,8 @@ describe("Comment crud test", () => {
                                 type: "admin"
                             },
                             body: updatedRichText,
-                            changeRequest: {
-                                id: changeRequest.id,
-                                entryId: expect.any(String),
-                                modelId: expect.any(String)
-                            }
+                            changeRequest: changeRequest.id,
+                            media: expect.any(Object)
                         },
                         error: null
                     }
@@ -241,11 +238,8 @@ describe("Comment crud test", () => {
                                     type: "admin"
                                 },
                                 body: updatedRichText,
-                                changeRequest: {
-                                    id: changeRequest.id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changeRequest.id,
+                                media: expect.any(Object)
                             }
                         ],
                         error: null,

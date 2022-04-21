@@ -7,9 +7,17 @@ describe("Content Review crud test", () => {
         path: "manage/en-US"
     };
 
+    const identityRoot = { id: "root", displayName: "root", type: "admin" };
+
     const gqlHandler = useContentGqlHandler({
         ...options
     });
+
+    const rootGqlHandler = useContentGqlHandler({
+        ...options,
+        identity: identityRoot
+    });
+
     const {
         getContentReviewQuery,
         createContentReviewMutation,
@@ -20,6 +28,17 @@ describe("Content Review crud test", () => {
 
     const setup = async () => {
         return createSetupForContentReview(gqlHandler);
+    };
+
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
     };
 
     test(`should able to create, update, get, list and delete "Content Review"`, async () => {
@@ -51,22 +70,19 @@ describe("Content Review crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            title: expect.any(String),
                             status: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
                                         ? ApwContentReviewStepStatus.ACTIVE
                                         : ApwContentReviewStepStatus.INACTIVE,
-                                slug: expect.any(String),
+                                id: expect.any(String),
                                 pendingChangeRequests: 0,
                                 signOffProvidedOn: null,
                                 signOffProvidedBy: null
                             })),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                settings: null
-                            }
+                            content: expect.objectContaining(expectedContent)
                         },
                         error: null
                     }
@@ -101,22 +117,19 @@ describe("Content Review crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
+                            title: expect.any(String),
                             status: "underReview",
                             steps: workflow.steps.map((_, index) => ({
                                 status:
                                     index === 0
                                         ? ApwContentReviewStepStatus.ACTIVE
                                         : ApwContentReviewStepStatus.INACTIVE,
-                                slug: expect.any(String),
+                                id: expect.any(String),
                                 pendingChangeRequests: 0,
                                 signOffProvidedOn: null,
                                 signOffProvidedBy: null
                             })),
-                            content: {
-                                id: expect.any(String),
-                                type: expect.any(String),
-                                settings: null
-                            }
+                            content: expect.objectContaining(expectedContent)
                         },
                         error: null
                     }
@@ -153,22 +166,25 @@ describe("Content Review crud test", () => {
                                     displayName: "John Doe",
                                     type: "admin"
                                 },
+                                title: expect.any(String),
                                 status: "underReview",
                                 steps: workflow.steps.map((_, index) => ({
                                     status:
                                         index === 0
                                             ? ApwContentReviewStepStatus.ACTIVE
                                             : ApwContentReviewStepStatus.INACTIVE,
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 })),
-                                content: {
-                                    id: expect.any(String),
-                                    type: expect.any(String),
-                                    settings: null
-                                }
+                                totalComments: 0,
+                                content: expect.objectContaining(expectedContent),
+                                activeStep: {
+                                    title: expect.any(String)
+                                },
+                                latestCommentId: null,
+                                reviewers: expect.arrayContaining([expect.any(String)])
                             }
                         ],
                         error: null,
@@ -211,7 +227,7 @@ describe("Content Review crud test", () => {
         );
 
         /*
-         Now that we've deleted the only entry we had, we should get empty list as response from "listWorkflows"
+         Now that we've deleted the only entry we had, we should get empty list as response from "listContentReviewsQuery"
         */
         const [listContentReviewsAgainResponse] = await listContentReviewsQuery({ where: {} });
         expect(listContentReviewsAgainResponse).toEqual({
@@ -223,6 +239,148 @@ describe("Content Review crud test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 0,
+                            cursor: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should able to filter "Content Review" list by "requiresMyAttention" status`, async () => {
+        const { page, workflow } = await setup();
+        /*
+         Create a content review entry.
+        */
+        await createContentReviewMutation({
+            data: {
+                content: {
+                    id: page.id,
+                    type: "page"
+                }
+            }
+        });
+
+        /*
+         * List all the content reviews that requires the current logged in user's attention.
+         */
+        const [listContentReviewsResponse] = await listContentReviewsQuery({
+            where: {
+                status: "requiresMyAttention"
+            }
+        });
+        expect(listContentReviewsResponse).toEqual({
+            data: {
+                apw: {
+                    listContentReviews: {
+                        data: [
+                            {
+                                id: expect.any(String),
+                                createdOn: expect.stringMatching(/^20/),
+                                savedOn: expect.stringMatching(/^20/),
+                                createdBy: {
+                                    id: "12345678",
+                                    displayName: "John Doe",
+                                    type: "admin"
+                                },
+                                title: expect.any(String),
+                                status: "underReview",
+                                steps: workflow.steps.map((_, index) => ({
+                                    status:
+                                        index === 0
+                                            ? ApwContentReviewStepStatus.ACTIVE
+                                            : ApwContentReviewStepStatus.INACTIVE,
+                                    id: expect.any(String),
+                                    pendingChangeRequests: 0,
+                                    signOffProvidedOn: null,
+                                    signOffProvidedBy: null
+                                })),
+                                totalComments: 0,
+                                content: expect.objectContaining(expectedContent),
+                                activeStep: {
+                                    title: expect.any(String)
+                                },
+                                latestCommentId: null,
+                                reviewers: expect.arrayContaining([expect.any(String)])
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: null
+                        }
+                    }
+                }
+            }
+        });
+
+        /*
+         * List all the content reviews that requires the root user's attention.
+         */
+        const [listContentReviewsRootResponse] = await rootGqlHandler.listContentReviewsQuery({
+            where: {
+                status: "requiresMyAttention"
+            }
+        });
+        expect(listContentReviewsRootResponse).toEqual({
+            data: {
+                apw: {
+                    listContentReviews: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 0,
+                            cursor: null
+                        }
+                    }
+                }
+            }
+        });
+
+        /*
+         * Should be able to get created content reviews when using "listContentReviewsQuery" without filters .
+         */
+        const [listContentReviewsResponse2] = await rootGqlHandler.listContentReviewsQuery({});
+        expect(listContentReviewsResponse2).toEqual({
+            data: {
+                apw: {
+                    listContentReviews: {
+                        data: [
+                            {
+                                id: expect.any(String),
+                                createdOn: expect.stringMatching(/^20/),
+                                savedOn: expect.stringMatching(/^20/),
+                                createdBy: {
+                                    id: "12345678",
+                                    displayName: "John Doe",
+                                    type: "admin"
+                                },
+                                title: expect.any(String),
+                                status: "underReview",
+                                steps: expect.arrayContaining([
+                                    expect.objectContaining({
+                                        status: expect.any(String),
+                                        id: expect.any(String),
+                                        pendingChangeRequests: 0,
+                                        signOffProvidedOn: null,
+                                        signOffProvidedBy: null
+                                    })
+                                ]),
+                                totalComments: 0,
+                                content: expect.objectContaining(expectedContent),
+                                activeStep: {
+                                    title: expect.any(String)
+                                },
+                                latestCommentId: null,
+                                reviewers: expect.arrayContaining([expect.any(String)])
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
                             cursor: null
                         }
                     }

@@ -9,9 +9,14 @@ import { createLambdaRole } from "./ApiLambdaUtils";
 interface GraphqlParams {
     env: Record<string, any>;
     primaryDynamodbTableArn: pulumi.Input<string>;
+    primaryDynamodbTableName: pulumi.Input<string>;
+    primaryDynamodbTableHashKey: pulumi.Input<string>;
+    primaryDynamodbTableRangeKey: pulumi.Input<string>;
     fileManagerBucketId: pulumi.Input<string>;
     cognitoUserPoolArn: pulumi.Input<string>;
     eventBusArn: pulumi.Input<string>;
+    apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
+    apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
     awsAccountId: pulumi.Input<string>;
     awsRegion: pulumi.Input<string>;
     vpc: Vpc | undefined;
@@ -49,6 +54,28 @@ export function createGraphql(app: PulumiApp, params: GraphqlParams) {
                       securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
                   }
                 : undefined
+        }
+    });
+
+    /**
+     * Store meta information like "mainGraphqlFunctionArn" in APW settings at deploy time.
+     *
+     * Note: We can't pass "mainGraphqlFunctionArn" as env variable due to circular dependency between
+     * "graphql" lambda and "api-apw-scheduler-execute-action" lambda.
+     */
+    app.addResource(aws.dynamodb.TableItem, {
+        name: "apwSettings",
+        config: {
+            tableName: params.primaryDynamodbTableName,
+            hashKey: params.primaryDynamodbTableHashKey,
+            rangeKey: pulumi.output(params.primaryDynamodbTableRangeKey).apply(key => key || "SK"),
+            item: pulumi.interpolate`{
+              "PK": {"S": "APW#SETTINGS"},
+              "SK": {"S": "A"},
+              "mainGraphqlFunctionArn": {"S": "${graphql.output.arn}"},
+              "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
+              "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}
+            }`
         }
     });
 

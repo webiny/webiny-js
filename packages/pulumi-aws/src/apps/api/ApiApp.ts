@@ -15,6 +15,7 @@ import { createApiGateway } from "./ApiGateway";
 import { createCloudfront } from "./ApiCloudfront";
 import { getStorageOutput } from "../getStorageOutput";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
+import { createApwScheduler } from "./ApiApwScheduler";
 
 export interface ApiAppConfig {
     vpc?(app: PulumiApp, ctx: ApplicationContext): boolean | Vpc;
@@ -57,10 +58,20 @@ export const ApiApp = defineApp({
         });
 
         const fileManager = createFileManager(app, {
-            awsRegion,
-            awsAccountId,
             fileManagerBucketId: storage.fileManagerBucketId,
             vpc
+        });
+
+        const apwScheduler = createApwScheduler(app, {
+            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+            env: {
+                COGNITO_REGION: String(process.env.AWS_REGION),
+                COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
+                DB_TABLE: storage.primaryDynamodbTableName,
+                S3_BUCKET: storage.fileManagerBucketId,
+                DEBUG,
+                WEBINY_LOGS_FORWARD_URL
+            }
         });
 
         const graphql = createGraphql(app, {
@@ -80,9 +91,14 @@ export const ApiApp = defineApp({
             awsRegion,
             awsAccountId,
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+            primaryDynamodbTableName: storage.primaryDynamodbTableName,
+            primaryDynamodbTableHashKey: storage.primaryDynamodbTableHashKey,
+            primaryDynamodbTableRangeKey: storage.primaryDynamodbTableRangeKey,
             fileManagerBucketId: storage.fileManagerBucketId,
             cognitoUserPoolArn: storage.cognitoUserPoolArn,
             eventBusArn: storage.eventBusArn,
+            apwSchedulerEventRule: apwScheduler.eventRule.output,
+            apwSchedulerEventTarget: apwScheduler.eventTarget.output,
             vpc
         });
 
@@ -139,6 +155,10 @@ export const ApiApp = defineApp({
             cognitoUserPoolId: storage.cognitoUserPoolId,
             cognitoAppClientId: storage.cognitoAppClientId,
             cognitoUserPoolPasswordPolicy: storage.cognitoUserPoolPasswordPolicy,
+            apwSchedulerScheduleAction: apwScheduler.scheduleAction.lambda.output.arn,
+            apwSchedulerExecuteAction: apwScheduler.executeAction.lambda.output.arn,
+            apwSchedulerEventRule: apwScheduler.eventRule.output.name,
+            apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
             dynamoDbTable: storage.primaryDynamodbTableName
         });
 
@@ -147,7 +167,8 @@ export const ApiApp = defineApp({
             graphql,
             headlessCms,
             apiGateway,
-            cloudfront
+            cloudfront,
+            apwScheduler
         };
     }
 });

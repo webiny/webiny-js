@@ -11,8 +11,6 @@ import { createLambdaRole } from "./ApiLambdaUtils";
 
 interface FileManagerParams {
     fileManagerBucketId: pulumi.Input<string>;
-    awsAccountId: pulumi.Input<string>;
-    awsRegion: pulumi.Input<string>;
     vpc: Vpc | undefined;
 }
 

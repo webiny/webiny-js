@@ -1,9 +1,9 @@
 const { setWcpPat } = require("./utils");
 
-module.exports = () => ({
+module.exports.command = () => ({
     type: "cli-command",
     name: "cli-command-wcp-logout",
-    create({ yargs, context }) {
+    create({ yargs }) {
         yargs.command(
             "logout",
             `Log out from the Webiny Control Panel`,
@@ -21,7 +21,7 @@ module.exports = () => ({
             },
             async () => {
                 setWcpPat(null);
-                context.info(`You've successfully logged out from Webiny Control Panel.`);
+                console.log(`You've successfully logged out from Webiny Control Panel.`);
             }
         );
     }

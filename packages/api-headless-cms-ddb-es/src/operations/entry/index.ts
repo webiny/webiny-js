@@ -27,7 +27,7 @@ import {
     extractEntriesFromIndex,
     prepareEntryToIndex
 } from "~/helpers";
-import configurations from "~/configurations";
+import { configurations } from "~/configurations";
 import WebinyError from "@webiny/error";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashOmit from "lodash/omit";

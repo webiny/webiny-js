@@ -20,6 +20,7 @@ const modelFieldToGraphQLPlugins =
  * For this to work it must load plugins that have already been built
  */
 const { createStorageOperations } = require("../../dist/index");
+const { base: baseElasticsearchIndexTemplate } = require("../../dist/elasticsearch/templates/base");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -47,46 +48,6 @@ class CmsTestEnvironment extends NodeEnvironment {
 
         const plugins = [
             elasticsearchDataGzipCompression(),
-            {
-                type: "context",
-                async apply() {
-                    await elasticsearchClient.indices.putTemplate({
-                        name: "headless-cms-entries-index",
-                        body: {
-                            index_patterns: ["*headless-cms*"],
-                            settings: {
-                                analysis: {
-                                    analyzer: {
-                                        lowercase_analyzer: {
-                                            type: "custom",
-                                            filter: ["lowercase", "trim"],
-                                            tokenizer: "keyword"
-                                        }
-                                    }
-                                }
-                            },
-                            mappings: {
-                                properties: {
-                                    property: {
-                                        type: "text",
-                                        fields: {
-                                            keyword: {
-                                                type: "keyword",
-                                                ignore_above: 256
-                                            }
-                                        },
-                                        analyzer: "lowercase_analyzer"
-                                    },
-                                    rawValues: {
-                                        type: "object",
-                                        enabled: false
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-            },
             /**
              * TODO remove when all apps are created with their own storage operations factory and drivers.
              */
@@ -129,7 +90,11 @@ class CmsTestEnvironment extends NodeEnvironment {
             };
         };
 
-        elasticIndexManager(this.global, elasticsearchClient);
+        elasticIndexManager({
+            global: this.global,
+            client: elasticsearchClient,
+            template: baseElasticsearchIndexTemplate.template
+        });
     }
 }
 
