@@ -216,9 +216,9 @@ export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
             await config.config?.(app, ctx);
             return app;
         },
-        beforeBuild: config.beforeBuild,
-        afterBuild: config.afterBuild,
-        beforeDeploy: config.beforeDeploy,
-        afterDeploy: config.afterDeploy
+        onBeforeBuild: config.onBeforeBuild,
+        onAfterBuild: config.onAfterBuild,
+        onBeforeDeploy: config.onBeforeDeploy,
+        onAfterDeploy: config.onAfterDeploy
     });
 }

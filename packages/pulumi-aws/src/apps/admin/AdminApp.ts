@@ -102,9 +102,9 @@ export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminA
             await config.config?.(app, ctx);
             return app;
         },
-        beforeBuild: config.beforeBuild,
-        afterBuild: config.afterBuild,
-        beforeDeploy: config.beforeDeploy,
-        afterDeploy: config.afterDeploy
+        onBeforeBuild: config.onBeforeBuild,
+        onAfterBuild: config.onAfterBuild,
+        onBeforeDeploy: config.onBeforeDeploy,
+        onAfterDeploy: config.onAfterDeploy
     });
 }
