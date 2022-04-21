@@ -35,20 +35,20 @@ export abstract class ApplicationBuilder<
     public readonly name: string;
     public readonly description?: string;
     public readonly cli?: Record<string, any>;
-    public readonly beforeBuild?: ApplicationHook;
-    public readonly afterBuild?: ApplicationHook;
-    public readonly beforeDeploy?: ApplicationHook;
-    public readonly afterDeploy?: ApplicationHook;
+    public readonly onBeforeBuild?: ApplicationHook;
+    public readonly onAfterBuild?: ApplicationHook;
+    public readonly onBeforeDeploy?: ApplicationHook;
+    public readonly onAfterDeploy?: ApplicationHook;
 
     constructor(public readonly config: TConfig) {
         this.id = config.id;
         this.name = config.name;
         this.description = config.description;
         this.cli = config.cli;
-        this.beforeBuild = config.beforeBuild;
-        this.afterBuild = config.afterBuild;
-        this.beforeDeploy = config.beforeDeploy;
-        this.afterDeploy = config.afterDeploy;
+        this.onBeforeBuild = config.onBeforeBuild;
+        this.onAfterBuild = config.onAfterBuild;
+        this.onBeforeDeploy = config.onBeforeDeploy;
+        this.onAfterDeploy = config.onAfterDeploy;
     }
 
     public abstract createOrSelectStack(args: ApplicationStackArgs): Promise<ApplicationStack>;

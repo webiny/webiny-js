@@ -177,14 +177,14 @@ export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<We
             config.config?.(app, ctx);
             return app;
         },
-        beforeBuild: config.beforeBuild,
-        afterBuild: config.afterBuild,
-        beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(
+        onBeforeBuild: config.onBeforeBuild,
+        onAfterBuild: config.onAfterBuild,
+        onBeforeDeploy: config.onBeforeDeploy,
+        onAfterDeploy: mergeAppHooks(
             websiteUpload,
             websiteRender,
             websiteUpdatePbSettings,
-            config.afterDeploy
+            config.onAfterDeploy
         )
     });
 }
