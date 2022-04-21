@@ -61,10 +61,6 @@ export default () => {
                             height: createInitialPerDeviceSettingValue(
                                 { value: "380px" },
                                 DisplayMode.DESKTOP
-                            ),
-                            width: createInitialPerDeviceSettingValue(
-                                { value: "auto" },
-                                DisplayMode.DESKTOP
                             )
                         }
                     },

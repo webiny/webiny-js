@@ -15,7 +15,6 @@ const IFrame: React.FC<IFrameProps> = ({ element }) => {
     } = React.useContext(PageBuilderContext);
 
     const elementHeight = get(data, `settings.height.${displayMode}.value`);
-    const elementWidth = get(data, `settings.width.${displayMode}.value`);
 
     return (
         <ElementRoot
@@ -23,7 +22,7 @@ const IFrame: React.FC<IFrameProps> = ({ element }) => {
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-iframe"}
         >
             <iframe
-                style={{ height: elementHeight, width: elementWidth }}
+                style={{ height: elementHeight, width: "100%" }}
                 id={element.id}
                 src={get(element, "data.iframe.url") || ""}
             />
