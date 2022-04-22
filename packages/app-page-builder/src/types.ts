@@ -473,7 +473,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         child: PbEditorElement;
     }) => PbEditorElement | undefined;
     // Executed after element was created
-    onCreate?: string;
+    onCreate?: "open-settings" | "skip";
     // Render element preview (used when creating element screenshots; not all elements have a simple DOM representation
     // so this callback is used to customize the look of the element in a PNG image)
     renderElementPreview?: (params: {

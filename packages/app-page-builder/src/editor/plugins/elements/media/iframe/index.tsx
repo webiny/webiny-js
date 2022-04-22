@@ -48,7 +48,6 @@ export default () => {
                 "pb-editor-page-element-style-settings-iframe"
             ],
             target: ["cell", "block"],
-            onCreate: "open-settings",
             create(options) {
                 return {
                     type: "iframe",
