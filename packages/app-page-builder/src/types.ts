@@ -473,7 +473,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         child: PbEditorElement;
     }) => PbEditorElement | undefined;
     // Executed after element was created
-    onCreate?: "open-settings" | "skip";
+    onCreate?: OnCreateActions;
     // Render element preview (used when creating element screenshots; not all elements have a simple DOM representation
     // so this callback is used to customize the look of the element in a PNG image)
     renderElementPreview?: (params: {
@@ -482,6 +482,8 @@ export type PbEditorPageElementPlugin = Plugin & {
         height: number;
     }) => ReactElement;
 };
+
+export type OnCreateActions = "open-settings" | "skip" | "skipElementHighlight";
 
 export type PbEditorPageElementActionPlugin = Plugin & {
     type: "pb-editor-page-element-action";
