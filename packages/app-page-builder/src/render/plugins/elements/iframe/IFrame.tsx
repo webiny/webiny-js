@@ -2,19 +2,16 @@ import React from "react";
 import { get } from "dot-prop-immutable";
 import { ElementRoot } from "../../../components/ElementRoot";
 import { PbElement } from "~/types";
-import { PageBuilderContext } from "~/contexts/PageBuilder";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
 
 interface IFrameProps {
     element: PbElement;
 }
 
 const IFrame: React.FC<IFrameProps> = ({ element }) => {
-    const { data } = element;
-    const {
-        responsiveDisplayMode: { displayMode }
-    } = React.useContext(PageBuilderContext);
+    const { displayMode } = useDisplayMode();
 
-    const elementHeight = get(data, `settings.height.${displayMode}.value`);
+    const elementHeight = element.data?.settings?.height?.[displayMode]?.value || "380px";
 
     return (
         <ElementRoot

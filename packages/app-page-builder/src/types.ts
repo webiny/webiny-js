@@ -127,7 +127,9 @@ export interface PbElementDataSettingsType {
     margin?: PbElementDataSettingsMarginType;
     padding?: PbElementDataSettingsPaddingType;
     height?: {
-        value?: number;
+        [key in DisplayMode]?: {
+            value: number;
+        };
     };
     background?: PbElementDataSettingsBackgroundType;
     border?: PbElementDataSettingsBorderType;
