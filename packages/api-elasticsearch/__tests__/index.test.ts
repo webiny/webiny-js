@@ -15,21 +15,25 @@ const settings: [string, ElasticsearchIndexRequestBody][] = [
 describe("Elasticsearch Index Mapping And Settings", () => {
     const client = createElasticsearchClient();
 
-    const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || createPrefixId(10);
+    let prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+    if (!prefix) {
+        prefix = createPrefixId(10);
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
+    }
 
     const testIndexName = `${prefix}dummy-index-test`;
 
     beforeEach(async () => {
         await deleteIndexes({
             client,
-            indices: [testIndexName]
+            prefix
         });
     });
 
     afterEach(async () => {
         await deleteIndexes({
             client,
-            indices: [testIndexName]
+            prefix
         });
     });
 

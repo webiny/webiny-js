@@ -13,7 +13,11 @@ import { entries, searchTargets } from "./japanese.entries";
 describe("Japanese search", () => {
     const client = createElasticsearchClient();
 
-    const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || createPrefixId(10);
+    let prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+    if (!prefix) {
+        prefix = createPrefixId(10);
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
+    }
 
     const baseIndexTemplateName = `${prefix}base-index-template`;
     const japaneseIndexTemplateName = `${prefix}japanese-index-template`;
@@ -72,6 +76,7 @@ describe("Japanese search", () => {
         try {
             await putTemplate({
                 client,
+                prefix,
                 template: {
                     name: baseIndexTemplateName,
                     order: 50,
@@ -84,6 +89,7 @@ describe("Japanese search", () => {
             });
             await putTemplate({
                 client,
+                prefix,
                 template: {
                     name: japaneseIndexTemplateName,
                     order: 51,
@@ -115,18 +121,18 @@ describe("Japanese search", () => {
     };
 
     beforeEach(async () => {
-        await deleteIndexes({ client, indices: [indexName] });
+        await deleteIndexes({ client, prefix });
         await deleteTemplates({
             client,
-            templates: [baseIndexTemplateName, japaneseIndexTemplateName]
+            prefix
         });
     });
 
     afterEach(async () => {
-        await deleteIndexes({ client, indices: [indexName] });
+        await deleteIndexes({ client, prefix });
         await deleteTemplates({
             client,
-            templates: [baseIndexTemplateName, japaneseIndexTemplateName]
+            prefix
         });
     });
 

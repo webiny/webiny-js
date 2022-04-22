@@ -10,7 +10,11 @@ import { createPrefixId } from "../helpers";
 describe("Elasticsearch Base Search", () => {
     const client = createElasticsearchClient();
 
-    const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || createPrefixId(10);
+    let prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+    if (!prefix) {
+        prefix = createPrefixId(10);
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
+    }
 
     const indexTestName = `${prefix}base-index-test`;
     const indexTemplateTestName = `${prefix}base-index-template-test`;
@@ -75,22 +79,22 @@ describe("Elasticsearch Base Search", () => {
     beforeEach(async () => {
         await deleteIndexes({
             client,
-            indices: [indexTestName]
+            prefix
         });
         await deleteTemplates({
             client,
-            templates: [indexTemplateTestName]
+            prefix
         });
     });
 
     afterEach(async () => {
         await deleteIndexes({
             client,
-            indices: [indexTestName]
+            prefix
         });
         await deleteTemplates({
             client,
-            templates: [indexTemplateTestName]
+            prefix
         });
     });
 

@@ -27,21 +27,20 @@ const createIndexPattern = (name: string): string => {
 describe("Elasticsearch Templates", () => {
     const client = createElasticsearchClient();
 
-    const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || createPrefixId(10);
-
-    let indexNames: string[] = [];
-    let templateNames: string[] = [];
+    let prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+    if (!prefix) {
+        prefix = createPrefixId(10);
+        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
+    }
 
     beforeEach(async () => {
-        await deleteIndexes({ client, indices: indexNames });
-        await deleteTemplates({ client, templates: templateNames });
-        indexNames = [];
-        templateNames = [];
+        await deleteIndexes({ client, prefix });
+        await deleteTemplates({ client, prefix });
     });
 
     afterEach(async () => {
-        await deleteIndexes({ client, indices: indexNames });
-        await deleteTemplates({ client, templates: templateNames });
+        await deleteIndexes({ client, prefix });
+        await deleteTemplates({ client, prefix });
     });
 
     it.each(settings)(
@@ -53,12 +52,11 @@ describe("Elasticsearch Templates", () => {
              */
             const templateName = `${prefix}templates-test-template-${name}`;
 
-            templateNames.push(templateName);
-
             const index_patterns: string[] = [createIndexPattern(name)];
 
             const createResponse = await putTemplate({
                 client,
+                prefix,
                 template: {
                     name: templateName,
                     order,
@@ -105,7 +103,6 @@ describe("Elasticsearch Templates", () => {
 
             const indexName = `${prefix}test-index-${name}-locale-code`;
 
-            indexNames.push(indexName);
             /**
              * Then create the index with given pattern...
              */

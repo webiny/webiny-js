@@ -2,10 +2,10 @@ import { Client } from "@elastic/elasticsearch";
 
 interface DeleteIndexesParams {
     client: Client;
-    indices: string[];
+    prefix: string;
 }
 export const deleteIndexes = async (params: DeleteIndexesParams) => {
-    const { client, indices } = params;
+    const { client, prefix } = params;
 
     const response = await client.cat.indices({
         format: "json"
@@ -13,12 +13,13 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
     if (!response.body) {
         return;
     }
+    const re = new RegExp(`^${prefix}`);
     const items: string[] = Object.values(response.body)
         .map(item => {
             return item.index;
         })
         .filter(index => {
-            return indices.includes(index);
+            return index.match(re) !== null;
         });
     if (items.length === 0) {
         return;

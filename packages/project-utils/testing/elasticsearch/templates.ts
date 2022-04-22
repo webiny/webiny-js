@@ -3,14 +3,18 @@ import { ElasticsearchIndexTemplatePluginConfig } from "../../../api-elasticsear
 
 interface PutTemplateParams {
     client: Client;
+    prefix: string;
     template: ElasticsearchIndexTemplatePluginConfig;
 }
 export const putTemplate = async (params: PutTemplateParams) => {
-    const { client, template } = params;
+    const { client, template, prefix } = params;
     try {
         return await client.indices.putTemplate({
             ...template,
-            name: `${template.name}`
+            name:
+                template.name.match(new RegExp(`^${prefix}`)) === null
+                    ? `${prefix}${template.name}`
+                    : template.name
         });
     } catch (ex) {
         console.log("Could not put template.");
@@ -35,17 +39,18 @@ export const getTemplates = async (params: GetTemplatesParams) => {
 
 interface DeleteTemplatesParams {
     client: Client;
-    templates: string[];
+    prefix: string;
 }
 export const deleteTemplates = async (params: DeleteTemplatesParams) => {
-    const { client, templates } = params;
+    const { client, prefix } = params;
 
     const response = await client.indices.getTemplate();
     if (!response.body) {
         return;
     }
+    const re = new RegExp(`^${prefix}`);
     const items: string[] = Object.keys(response.body).filter(name => {
-        return templates.includes(name);
+        return name.match(re) !== null;
     });
     if (items.length === 0) {
         return;
