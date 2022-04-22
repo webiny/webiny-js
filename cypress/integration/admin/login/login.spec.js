@@ -73,9 +73,9 @@ context("Login Page", () => {
     });
 
     it('recover password E2E for "full-access" user', () => {
-        const serverId = 'xxi0btmi';
+        const serverId = 'z1fihlo8';
         let passwordResetCode;
-        const newUserAccountEmail = uniqid("cypress_", "@xxi0btmi.mailosaur.net");
+        const newUserAccountEmail = uniqid("cypress_", "@z1fihlo8.mailosaur.net");
 
         let fullAccessGroupUser;
         let password = "12345678";
