@@ -1,19 +1,23 @@
 import { ElasticsearchIndexRequestBody } from "~/types";
 
 export const base: ElasticsearchIndexRequestBody = {
-    settings: {
-        index: {
-            analysis: {
-                analyzer: {
-                    lowercase_analyzer: {
-                        type: "custom",
-                        filter: ["lowercase", "trim"],
-                        tokenizer: "keyword"
-                    }
-                }
-            }
-        }
-    },
+    // settings: {
+    //     analysis: {
+    //         analyzer: {
+    //             lowercase_analyzer: {
+    //                 type: "custom",
+    //                 filter: ["up_to_256_chars", "lowercase", "trim"],
+    //                 tokenizer: "keyword"
+    //             }
+    //         },
+    //         filter: {
+    //             up_to_256_chars: {
+    //                 type: "length",
+    //                 max: 256
+    //             }
+    //         }
+    //     }
+    // },
     mappings: {
         dynamic_templates: [
             {
@@ -26,8 +30,9 @@ export const base: ElasticsearchIndexRequestBody = {
                                 type: "keyword",
                                 ignore_above: 256
                             }
-                        },
-                        analyzer: "lowercase_analyzer"
+                        }
+                        // search_analyzer: "standard_search_analyzer",
+                        // analyzer: "standard_search_analyzer"
                     }
                 }
             }

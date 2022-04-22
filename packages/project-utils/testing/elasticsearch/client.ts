@@ -11,7 +11,7 @@ const options: Partial<ElasticsearchClientOptions> = {
     node: `http://localhost:${ELASTICSEARCH_PORT}`,
     auth: {} as any
 };
-if (process.env.LOCAL_ELASTICSEARCH !== "true") {
+if (!!awsDomain) {
     options.node = awsDomain;
     options.auth = undefined;
 }

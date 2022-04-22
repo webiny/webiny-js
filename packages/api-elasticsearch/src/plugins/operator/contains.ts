@@ -19,7 +19,7 @@ export class ElasticsearchQueryBuilderOperatorContainsPlugin extends Elasticsear
                 allow_leading_wildcard: true,
                 fields: [basePath],
                 query: normalizeValue(value),
-                default_operator: "and"
+                default_operator: "or"
             }
         });
     }

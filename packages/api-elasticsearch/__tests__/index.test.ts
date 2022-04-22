@@ -34,8 +34,7 @@ describe("Elasticsearch Index Mapping And Settings", () => {
 
     it.each(settings)(
         "should create index with correct settings - %s",
-        // @ts-ignore
-        async (name: string, setting: ElasticsearchIndexRequestBody) => {
+        async (_: string, setting: ElasticsearchIndexRequestBody) => {
             const createResponse = await client.indices.create({
                 index: testIndexName,
                 body: {

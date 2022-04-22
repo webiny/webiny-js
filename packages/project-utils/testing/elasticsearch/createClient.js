@@ -1,4 +1,4 @@
-const { createElasticsearchClient } = require("../../../api-elasticsearch/src/client");
+const { createElasticsearchClient } = require("../../../api-elasticsearch/dist/client");
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
 const awsDomain = process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME;
