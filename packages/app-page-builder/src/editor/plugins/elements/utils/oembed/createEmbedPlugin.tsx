@@ -88,7 +88,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
 
             return <OEmbed element={props.element} {...(config.oembed || {})} />;
         },
-        onCreate: config.onCreate || "open-settings",
+        onCreate: config.onCreate || OnCreateActions.OPEN_SETTINGS,
         renderElementPreview: config.renderElementPreview
     };
 };

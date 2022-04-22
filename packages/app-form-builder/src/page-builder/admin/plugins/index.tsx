@@ -6,7 +6,8 @@ import FormElement from "./components/FormElement";
 import { ReactComponent as FormLogo } from "./components/icons/round-description-24px.svg";
 import {
     PbEditorPageElementAdvancedSettingsPlugin,
-    PbEditorPageElementPlugin
+    PbEditorPageElementPlugin,
+    OnCreateActions
 } from "@webiny/app-page-builder/types";
 
 const PreviewBox = styled("div")({
@@ -35,7 +36,7 @@ const pbFormElement: PbEditorPageElementPlugin = {
     },
     settings: ["pb-editor-page-element-settings-delete", "pb-editor-page-element-settings-height"],
     target: ["block", "cell"],
-    onCreate: "open-settings",
+    onCreate: OnCreateActions.OPEN_SETTINGS,
     render(props) {
         return <FormElement {...props} />;
     },

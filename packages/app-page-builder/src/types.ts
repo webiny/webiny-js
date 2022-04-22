@@ -483,7 +483,11 @@ export type PbEditorPageElementPlugin = Plugin & {
     }) => ReactElement;
 };
 
-export type OnCreateActions = "open-settings" | "skip" | "skipElementHighlight";
+export enum OnCreateActions {
+    OPEN_SETTINGS = "open-settings",
+    SKIP = "skip",
+    SKIP_ELEMENT_HEIGHT = "skipElementHighlight"
+}
 
 export type PbEditorPageElementActionPlugin = Plugin & {
     type: "pb-editor-page-element-action";
