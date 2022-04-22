@@ -15,6 +15,8 @@ interface PageBuilderParams {
     cognitoUserPoolArn: pulumi.Input<string>;
     awsAccountId: pulumi.Input<string>;
     awsRegion: pulumi.Input<string>;
+    elasticsearchDomainArn: pulumi.Input<string | undefined>;
+    elasticsearchDynamodbTableArn: pulumi.Input<string | undefined>;
     vpc: Vpc | undefined;
 }
 
@@ -327,7 +329,14 @@ function createImportPagesLambdaPolicy(app: PulumiApp, params: PageBuilderParams
                         ],
                         Resource: [
                             pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`,
+                            // Attach permissions for elastic search dynamo as well (if ES is enabled).
+                            ...(params.elasticsearchDynamodbTableArn
+                                ? [
+                                      pulumi.interpolate`${params.elasticsearchDynamodbTableArn}`,
+                                      pulumi.interpolate`${params.elasticsearchDynamodbTableArn}/*`
+                                  ]
+                                : [])
                         ]
                     },
                     {
@@ -358,7 +367,21 @@ function createImportPagesLambdaPolicy(app: PulumiApp, params: PageBuilderParams
                         Effect: "Allow",
                         Action: "cognito-idp:*",
                         Resource: pulumi.interpolate`${params.cognitoUserPoolArn}`
-                    }
+                    },
+                    // Attach permissions for elastic search domain as well (if ES is enabled).
+                    ...(params.elasticsearchDomainArn
+                        ? [
+                              {
+                                  Sid: "PermissionForES",
+                                  Effect: "Allow" as const,
+                                  Action: "es:*",
+                                  Resource: [
+                                      pulumi.interpolate`${params.elasticsearchDomainArn}`,
+                                      pulumi.interpolate`${params.elasticsearchDomainArn}/*`
+                                  ]
+                              }
+                          ]
+                        : [])
                 ]
             }
         }

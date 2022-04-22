@@ -36787,6 +36787,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"storage-dynamo-to-elastic@workspace:apps/storage/code/dynamoToElastic":
+  version: 0.0.0-use.local
+  resolution: "storage-dynamo-to-elastic@workspace:apps/storage/code/dynamoToElastic"
+  dependencies:
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.25.0
+    "@webiny/api-elasticsearch": ^5.25.0
+    "@webiny/cli": ^5.25.0
+    "@webiny/handler-aws": ^5.25.0
+    "@webiny/project-utils": ^5.25.0
+  languageName: unknown
+  linkType: soft
+
 "store2@npm:^2.7.1":
   version: 2.13.1
   resolution: "store2@npm:2.13.1"

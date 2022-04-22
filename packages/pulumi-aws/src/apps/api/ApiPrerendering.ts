@@ -16,6 +16,7 @@ interface PreRenderingServiceParams {
     cognitoUserPoolArn: pulumi.Input<string>;
     awsAccountId: pulumi.Input<string>;
     awsRegion: pulumi.Input<string>;
+    elasticsearchDynamodbTableArn: pulumi.Input<string | undefined>;
     vpc: Vpc | undefined;
 }
 
@@ -206,7 +207,14 @@ function createRenderingServiceLambdaPolicy(app: PulumiApp, params: PreRendering
                         ],
                         Resource: [
                             pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`,
+                            // Attach permissions for elastic search dynamo as well (if ES is enabled).
+                            ...(params.elasticsearchDynamodbTableArn
+                                ? [
+                                      pulumi.interpolate`${params.elasticsearchDynamodbTableArn}`,
+                                      pulumi.interpolate`${params.elasticsearchDynamodbTableArn}/*`
+                                  ]
+                                : [])
                         ]
                     },
                     {

@@ -1,18 +1,20 @@
 import {
     defineApp,
     createGenericApplication,
-    ApplicationContext,
     ApplicationHooks,
     ApplicationConfig
 } from "@webiny/pulumi-sdk";
+import { AppInput, getAppInput } from "../utils";
 
 import { createCognitoResources } from "./StorageCognito";
 import { createDynamoTable } from "./StorageDynamo";
+import { ElasticSearch } from "./StorageElasticSearch";
 import { createFileManagerBucket } from "./StorageFileManager";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
-    protect?(ctx: ApplicationContext): boolean;
-    legacy?(ctx: ApplicationContext): StorageAppLegacyConfig;
+    protect?: AppInput<boolean>;
+    legacy?: AppInput<StorageAppLegacyConfig>;
+    elasticSearch?: AppInput<boolean>;
 }
 
 export interface StorageAppLegacyConfig {
@@ -22,8 +24,8 @@ export interface StorageAppLegacyConfig {
 export const StorageApp = defineApp({
     name: "storage",
     config(app, config: StorageAppConfig) {
-        const protect = config.protect?.(app.ctx) ?? app.ctx.env !== "dev";
-        const legacyConfig = config?.legacy?.(app.ctx) ?? {};
+        const protect = getAppInput(app, config.protect) ?? app.ctx.env !== "dev";
+        const legacyConfig = getAppInput(app, config.legacy) ?? {};
 
         // Setup DynamoDB table
         const dynamoDbTable = createDynamoTable(app, { protect });
@@ -36,6 +38,10 @@ export const StorageApp = defineApp({
 
         // Setup file storage bucket
         const fileManagerBucket = createFileManagerBucket(app, { protect });
+
+        const elasticSearch = getAppInput(app, config.elasticSearch)
+            ? app.addModule(ElasticSearch, { protect: protect })
+            : null;
 
         app.addOutputs({
             fileManagerBucketId: fileManagerBucket.output.id,
@@ -52,7 +58,8 @@ export const StorageApp = defineApp({
         return {
             dynamoDbTable,
             ...cognito,
-            fileManagerBucket
+            fileManagerBucket,
+            elasticSearch
         };
     }
 });

@@ -46,6 +46,13 @@ export const ApiApp = defineApp({
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
                 DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: storage.elasticsearchDynamodbTableName,
+                ELASTIC_SEARCH_ENDPOINT: storage.elasticsearchDomainEndpoint,
+
+                // Not required. Useful for testing purposes / ephemeral environments.
+                // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+                ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+
                 S3_BUCKET: storage.fileManagerBucketId,
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
@@ -55,6 +62,8 @@ export const ApiApp = defineApp({
             fileManagerBucketId: storage.fileManagerBucketId,
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
             cognitoUserPoolArn: storage.cognitoUserPoolArn,
+            elasticsearchDomainArn: storage.elasticsearchDomainArn,
+            elasticsearchDynamodbTableArn: storage.elasticsearchDynamodbTableArn,
             vpc
         });
 
@@ -66,6 +75,7 @@ export const ApiApp = defineApp({
         const prerenderingService = createPrerenderingService(app, {
             env: {
                 DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: storage.elasticsearchDynamodbTableName,
                 DEBUG
             },
             awsRegion,
@@ -73,6 +83,7 @@ export const ApiApp = defineApp({
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
             fileManagerBucketId: storage.fileManagerBucketId,
             cognitoUserPoolArn: storage.cognitoUserPoolArn,
+            elasticsearchDynamodbTableArn: storage.elasticsearchDynamodbTableArn,
             vpc
         });
 
@@ -93,6 +104,13 @@ export const ApiApp = defineApp({
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
                 DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: storage.elasticsearchDynamodbTableName,
+                ELASTIC_SEARCH_ENDPOINT: storage.elasticsearchDomainEndpoint,
+
+                // Not required. Useful for testing purposes / ephemeral environments.
+                // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+                ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+
                 S3_BUCKET: storage.fileManagerBucketId,
 
                 PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.output.arn,
@@ -117,6 +135,8 @@ export const ApiApp = defineApp({
             cognitoUserPoolArn: storage.cognitoUserPoolArn,
             apwSchedulerEventRule: apwScheduler.eventRule.output,
             apwSchedulerEventTarget: apwScheduler.eventTarget.output,
+            elasticsearchDomainArn: storage.elasticsearchDomainArn,
+            elasticsearchDynamodbTableArn: storage.elasticsearchDynamodbTableArn,
             vpc
         });
 
@@ -125,6 +145,13 @@ export const ApiApp = defineApp({
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
                 DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: storage.elasticsearchDynamodbTableName,
+                ELASTIC_SEARCH_ENDPOINT: storage.elasticsearchDomainEndpoint,
+
+                // Not required. Useful for testing purposes / ephemeral environments.
+                // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+                ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+
                 S3_BUCKET: storage.fileManagerBucketId,
                 // TODO: move to okta plugin
                 OKTA_ISSUER: process.env["OKTA_ISSUER"],
@@ -132,6 +159,8 @@ export const ApiApp = defineApp({
                 WEBINY_LOGS_FORWARD_URL
             },
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+            elasticsearchDomainArn: storage.elasticsearchDomainArn,
+            elasticsearchDynamodbTableArn: storage.elasticsearchDynamodbTableArn,
             vpc
         });
 
@@ -180,7 +209,8 @@ export const ApiApp = defineApp({
             apwSchedulerExecuteAction: apwScheduler.executeAction.lambda.output.arn,
             apwSchedulerEventRule: apwScheduler.eventRule.output.name,
             apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
-            dynamoDbTable: storage.primaryDynamodbTableName
+            dynamoDbTable: storage.primaryDynamodbTableName,
+            dynamoDbElasticsearchTable: storage.elasticsearchDynamodbTableName
         });
 
         return {

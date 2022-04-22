@@ -18,7 +18,17 @@ export function getStorageOutput(app: PulumiApp) {
             cognitoUserPoolArn: output["cognitoUserPoolArn"] as string,
             cognitoUserPoolPasswordPolicy: output["cognitoUserPoolPasswordPolicy"],
             cognitoAppClientId: output["cognitoAppClientId"] as string,
-            eventBusArn: output["eventBusArn"] as string
+            eventBusArn: output["eventBusArn"] as string,
+            elasticsearchDomainArn: output["elasticsearchDomainArn"] as string | undefined,
+            elasticsearchDomainEndpoint: output["elasticsearchDomainEndpoint"] as
+                | string
+                | undefined,
+            elasticsearchDynamodbTableArn: output["elasticsearchDynamodbTableArn"] as
+                | string
+                | undefined,
+            elasticsearchDynamodbTableName: output["elasticsearchDynamodbTableName"] as
+                | string
+                | undefined
         };
     });
 }
