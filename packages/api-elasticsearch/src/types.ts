@@ -182,7 +182,7 @@ interface ElasticsearchIndexRequestBodySettings {
 }
 
 export interface ElasticsearchIndexRequestBody {
-    settings?: Partial<ElasticsearchIndexRequestBodySettings> & {
+    settings?: {
         index?: Partial<ElasticsearchIndexRequestBodySettings>;
     };
     mappings: {

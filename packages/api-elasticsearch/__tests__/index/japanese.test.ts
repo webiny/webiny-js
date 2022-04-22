@@ -1,19 +1,22 @@
 import { japanese } from "~/indexConfiguration/japanese";
-import { createElasticsearchClient } from "../helpers";
+import { createElasticsearchClient, createPrefixId } from "../helpers";
 import { deleteTemplates } from "@webiny/project-utils/testing/elasticsearch/templates";
 import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
-
-const indexTestName = "japanese-index-test";
-const indexTemplateTestName = "japanese-index-template-test";
 
 const order = 73;
 
 describe("Elasticsearch Japanese", () => {
     const client = createElasticsearchClient();
 
+    const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || createPrefixId(10);
+
+    const indexTestName = `${prefix}japanese-index-test`;
+    const indexTemplateTestName = `${prefix}japanese-index-template-test`;
+
     beforeEach(async () => {
         await deleteIndexes({
-            client
+            client,
+            indices: [indexTestName]
         });
         await deleteTemplates({
             client,
@@ -23,7 +26,8 @@ describe("Elasticsearch Japanese", () => {
 
     afterEach(async () => {
         await deleteIndexes({
-            client
+            client,
+            indices: [indexTestName]
         });
         await deleteTemplates({
             client,
@@ -68,7 +72,7 @@ describe("Elasticsearch Japanese", () => {
                 settings: {
                     ...japanese.settings,
                     index: {
-                        ...japanese.settings.index,
+                        ...(japanese.settings?.index || {}),
                         creation_date: expect.stringMatching(/^([0-9]+)$/),
                         number_of_replicas: expect.stringMatching(/^([0-9]+)$/),
                         number_of_shards: expect.stringMatching(/^([0-9]+)$/),
@@ -90,7 +94,7 @@ describe("Elasticsearch Japanese", () => {
         const createResponse = await client.indices.putTemplate({
             name: indexTemplateTestName,
             body: {
-                index_patterns: ["japanese-index-*"],
+                index_patterns: ["*japanese-index-*"],
                 order,
                 ...japanese
             }
@@ -110,7 +114,7 @@ describe("Elasticsearch Japanese", () => {
         expect(getTemplateResponse).toMatchObject({
             body: {
                 [indexTemplateTestName]: {
-                    index_patterns: ["japanese-index-*"],
+                    index_patterns: ["*japanese-index-*"],
                     aliases: {},
                     order,
                     ...japanese
@@ -153,7 +157,7 @@ describe("Elasticsearch Japanese", () => {
                 settings: {
                     ...japanese.settings,
                     index: {
-                        ...japanese.settings.index,
+                        ...(japanese.settings?.index || {}),
                         creation_date: expect.stringMatching(/^([0-9]+)$/),
                         number_of_replicas: expect.stringMatching(/^([0-9]+)$/),
                         number_of_shards: expect.stringMatching(/^([0-9]+)$/),

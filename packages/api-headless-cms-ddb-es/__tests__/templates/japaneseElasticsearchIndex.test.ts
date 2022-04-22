@@ -3,11 +3,11 @@ import { base as baseTemplate } from "~/elasticsearch/templates/base";
 import { japanese as japaneseTemplate } from "~/elasticsearch/templates/japanese";
 import lodashCloneDeep from "lodash/cloneDeep";
 import {
-    deleteTemplates,
+    // deleteTemplates,
     putTemplate,
     getTemplates
 } from "@webiny/project-utils/testing/elasticsearch/templates";
-import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
+// import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
 const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
@@ -21,25 +21,25 @@ describe("Japanese Elasticsearch Index and Templates", () => {
     const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        await deleteTemplates({
-            client,
-            templates: [baseTemplateName, jpTemplateName]
-        });
-        await deleteIndexes({
-            client,
-            indices: [testJaJpIndexName, testJaIndexName]
-        });
+        // await deleteTemplates({
+        //     client,
+        //     templates: [baseTemplateName, jpTemplateName]
+        // });
+        // await deleteIndexes({
+        //     client,
+        //     indices: [testJaJpIndexName, testJaIndexName]
+        // });
     });
 
     afterEach(async () => {
-        await deleteTemplates({
-            client,
-            templates: [baseTemplateName, jpTemplateName]
-        });
-        await deleteIndexes({
-            client,
-            indices: [testJaJpIndexName, testJaIndexName]
-        });
+        // await deleteTemplates({
+        //     client,
+        //     templates: [baseTemplateName, jpTemplateName]
+        // });
+        // await deleteIndexes({
+        //     client,
+        //     indices: [testJaJpIndexName, testJaIndexName]
+        // });
     });
 
     it("should add Japanese template after the default one", async () => {

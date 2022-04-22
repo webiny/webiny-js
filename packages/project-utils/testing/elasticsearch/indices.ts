@@ -1,16 +1,12 @@
 import { Client } from "@elastic/elasticsearch";
 
-const defaultPrefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-
 interface DeleteIndexesParams {
     client: Client;
-    indices?: string[];
-    prefix?: string;
+    indices: string[];
 }
 export const deleteIndexes = async (params: DeleteIndexesParams) => {
-    const { client, indices, prefix = defaultPrefix } = params;
+    const { client, indices } = params;
 
-    const re = prefix ? new RegExp(`^${prefix}`) : null;
     const response = await client.cat.indices({
         format: "json"
     });
@@ -22,12 +18,7 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
             return item.index;
         })
         .filter(index => {
-            if (indices) {
-                return indices.includes(index);
-            } else if (!re) {
-                return true;
-            }
-            return index.match(re) !== null;
+            return indices.includes(index);
         });
     if (items.length === 0) {
         return;

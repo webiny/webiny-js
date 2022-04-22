@@ -1,50 +1,23 @@
-import { createElasticsearchClient } from "../helpers";
+import { createElasticsearchClient, createPrefixId } from "../helpers";
 import { base as baseIndexConfiguration } from "~/indexConfiguration/base";
 import { japanese as japaneseIndexConfiguration } from "~/indexConfiguration/japanese";
 import { ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin } from "~/plugins/operator/japanese/contains";
 import { ElasticsearchBoolQueryConfig } from "~/types";
-
 import {
     deleteTemplates,
     putTemplate
 } from "@webiny/project-utils/testing/elasticsearch/templates";
 import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
-
-const searchItems = [
-    "躯幹部広範囲CT検査の実際 (2) | Search ー症例報告やプロトコル設定索サイト",
-    "検査の実際 (2) | Search Radiologyー症例報告やプロトコル設定検索サイト",
-    "躯幹部広範囲CT (2) | Search Radiologyー症例報告やプロトコル設検索サイト",
-    "Radiologyー症例報告やプロトコル設定検サイト",
-    "例報告やプロトコル設定検索サイト"
-];
-
-type SearchParams = [string, number[]];
-
-const searchParameters: SearchParams[] = [
-    /**
-     * TODO figure out why these items are not producing results
-     */
-    // ["躯", [0, 2]], // finds none
-    // ["例", [0, 1, 2, 3, 4]], // finds none
-    // ["定", [0, 1, 3, 4]], // finds none
-    // ["際", [0, 1]], // finds none
-    ["躯幹", [0, 2]],
-    ["症例報告", [0, 1, 2, 3]],
-    ["Radiology", [1, 2, 3]],
-    ["検索サイト", [1, 2, 4]],
-    ["告やプロトコル設", [0, 1, 2, 3, 4]],
-    ["Radiologyー症例報告やプロトコル設", [1, 2, 3]],
-    ["ロトコル設定検索サイト", [1, 4]],
-    ["Search Radiologyー症", [1, 2]],
-    ["告やプロトコル設定", [0, 1, 3, 4]],
-    ["実際 (2) | Search ー症例報", [0]],
-    ["ogyー症例報告やプロトコル設定検サイト", [3]]
-];
-
-const indexName = "japanese-index-test";
+import { entries, searchTargets } from "./japanese.entries";
 
 describe("Japanese search", () => {
     const client = createElasticsearchClient();
+
+    const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || createPrefixId(10);
+
+    const baseIndexTemplateName = `${prefix}base-index-template`;
+    const japaneseIndexTemplateName = `${prefix}japanese-index-template`;
+    const indexName = `${prefix}japanese-index-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin();
 
@@ -100,7 +73,7 @@ describe("Japanese search", () => {
             await putTemplate({
                 client,
                 template: {
-                    name: "base-index-template",
+                    name: baseIndexTemplateName,
                     order: 50,
                     body: {
                         index_patterns: ["*-index-*"],
@@ -112,10 +85,10 @@ describe("Japanese search", () => {
             await putTemplate({
                 client,
                 template: {
-                    name: "japanese-index-template",
+                    name: japaneseIndexTemplateName,
                     order: 51,
                     body: {
-                        index_patterns: ["japanese-index-*"],
+                        index_patterns: ["*japanese-index-*"],
                         aliases: {},
                         ...japaneseIndexConfiguration
                     }
@@ -142,13 +115,19 @@ describe("Japanese search", () => {
     };
 
     beforeEach(async () => {
-        await deleteIndexes({ client });
-        await deleteTemplates({ client });
+        await deleteIndexes({ client, indices: [indexName] });
+        await deleteTemplates({
+            client,
+            templates: [baseIndexTemplateName, japaneseIndexTemplateName]
+        });
     });
 
     afterEach(async () => {
-        await deleteIndexes({ client });
-        await deleteTemplates({ client });
+        await deleteIndexes({ client, indices: [indexName] });
+        await deleteTemplates({
+            client,
+            templates: [baseIndexTemplateName, japaneseIndexTemplateName]
+        });
     });
 
     it("should verify that all data is prepared", async () => {
@@ -171,11 +150,11 @@ describe("Japanese search", () => {
          * Then insert some data...
          */
 
-        const bulkInsertResponse = await insertAllData(searchItems);
+        const bulkInsertResponse = await insertAllData(entries);
         expect(bulkInsertResponse).toMatchObject({
             body: {
                 errors: false,
-                items: searchItems.map((_, index) => {
+                items: entries.map((_, index) => {
                     const id = `itemId${index}`;
 
                     return {
@@ -212,7 +191,7 @@ describe("Japanese search", () => {
         expect(fetchAllResponse).toMatchObject({
             body: {
                 hits: {
-                    hits: searchItems.map((title, index) => {
+                    hits: entries.map((title, index) => {
                         const id = `itemId${index}`;
 
                         return {
@@ -234,10 +213,10 @@ describe("Japanese search", () => {
         });
     });
 
-    it.each(searchParameters)(
+    it.each(searchTargets)(
         "pre-created index - should get proper search results for - %s",
         async (search, positions) => {
-            await prepareWithIndex(searchItems);
+            await prepareWithIndex(entries);
 
             const query: ElasticsearchBoolQueryConfig = {
                 must: [],
@@ -278,7 +257,7 @@ describe("Japanese search", () => {
                 body: {
                     hits: {
                         hits: positions.map(index => {
-                            const title = searchItems[index];
+                            const title = entries[index];
                             const id = Number(index) + 1;
                             return {
                                 _id: `itemId${index}`,
@@ -302,10 +281,10 @@ describe("Japanese search", () => {
             });
         }
     );
-    it.each(searchParameters)(
+    it.each(searchTargets)(
         "template index - should get proper search results for - %s",
         async (search, positions) => {
-            await prepareWithTemplate(searchItems);
+            await prepareWithTemplate(entries);
 
             const query: ElasticsearchBoolQueryConfig = {
                 must: [],
@@ -346,7 +325,7 @@ describe("Japanese search", () => {
                 body: {
                     hits: {
                         hits: positions.map(index => {
-                            const title = searchItems[index];
+                            const title = entries[index];
                             const id = Number(index) + 1;
                             return {
                                 _id: `itemId${index}`,

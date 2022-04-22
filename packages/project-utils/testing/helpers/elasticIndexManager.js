@@ -1,8 +1,59 @@
+const characters = "abcdefghijklmnopqrstuvwxyz";
+
+const createPrefixId = (length = 10) => {
+    const output = [];
+    const total = characters.length;
+    for (let i = 0; i < length; i++) {
+        output.push(characters.charAt(Math.floor(Math.random() * total)));
+    }
+    output.push("-");
+    return output.join("");
+};
+let prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
+if (!prefix) {
+    const id = createPrefixId(10);
+    process.env.ELASTIC_SEARCH_INDEX_PREFIX = id;
+    prefix = id;
+}
+
 module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, template }) => {
+    /**
+     * Prefix MUST exist. we cannot allow going further without the prefix.
+     */
+    if (!prefix) {
+        throw new Error("process.env.ELASTIC_SEARCH_INDEX_PREFIX is not set!");
+    }
+    /**
+     *
+     * The regex to match all the indexes or templates used by this tests.
+     */
+    const re = new RegExp(`^${prefix}`);
     const clearEsIndices = async () => {
-        await elasticsearchClient.indices.delete({
-            index: "_all"
+        const response = await elasticsearchClient.cat.indices({
+            format: "json"
         });
+        if (!response.body) {
+            return;
+        }
+        const items = Object.values(response.body)
+            .map(item => {
+                return item.index;
+            })
+            .filter(index => {
+                return index.match(re) !== null;
+            });
+        if (items.length === 0) {
+            return;
+        }
+
+        try {
+            await elasticsearchClient.indices.delete({
+                index: items
+            });
+        } catch (ex) {
+            console.log(ex.message);
+            throw ex;
+        }
     };
 
     const clearEsIndexTemplates = async () => {
@@ -20,7 +71,11 @@ module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, tem
         if (templates.length === 0) {
             return;
         }
-        for (const name of templates) {
+
+        const filteredTemplates = templates.filter(tpl => {
+            return tpl.match(re) !== null;
+        });
+        for (const name of filteredTemplates) {
             try {
                 await elasticsearchClient.indices.deleteTemplate({
                     name
@@ -37,7 +92,10 @@ module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, tem
             throw new Error("Missing Elasticsearch Index template.");
         }
         try {
-            await elasticsearchClient.indices.putTemplate(template);
+            await elasticsearchClient.indices.putTemplate({
+                ...template,
+                name: template.name.match(re) === null ? `${prefix}${template.name}` : template.name
+            });
         } catch (ex) {
             console.log(ex);
             throw ex;

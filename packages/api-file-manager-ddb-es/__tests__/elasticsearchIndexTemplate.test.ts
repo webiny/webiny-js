@@ -2,7 +2,7 @@ import { base } from "~/elasticsearch/templates/base";
 
 import { createElasticsearchClient } from "../../api-elasticsearch/__tests__/helpers";
 import {
-    deleteTemplates,
+    // deleteTemplates,
     putTemplate,
     getTemplates
 } from "@webiny/project-utils/testing/elasticsearch/templates";
@@ -15,22 +15,22 @@ describe("Elasticsearch Index Template", () => {
     const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        try {
-            await deleteTemplates({
-                client,
-                templates: [templateName]
-            });
-        } catch (ex) {
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
+        // try {
+        //     await deleteTemplates({
+        //         client,
+        //         templates: [templateName]
+        //     });
+        // } catch (ex) {
+        //     console.log(JSON.stringify(ex));
+        //     throw ex;
+        // }
     });
 
     afterEach(async () => {
-        await deleteTemplates({
-            client,
-            templates: [templateName]
-        });
+        // await deleteTemplates({
+        //     client,
+        //     templates: [templateName]
+        // });
     });
 
     it("should insert default index template", async () => {

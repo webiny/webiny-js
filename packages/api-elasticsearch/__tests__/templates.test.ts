@@ -1,7 +1,7 @@
 import { base } from "~/indexConfiguration/base";
 import { japanese } from "~/indexConfiguration/japanese";
 import { ElasticsearchIndexRequestBody } from "~/types";
-import { createElasticsearchClient } from "./helpers";
+import { createElasticsearchClient, createPrefixId } from "./helpers";
 
 import {
     deleteTemplates,
@@ -9,8 +9,6 @@ import {
     getTemplates
 } from "@webiny/project-utils/testing/elasticsearch/templates";
 import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
-
-const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
 /**
  * Add configurations when added to the code.
@@ -23,20 +21,27 @@ const settings: [string, ElasticsearchIndexRequestBody][] = [
 const order = 75;
 
 const createIndexPattern = (name: string): string => {
-    return `test-index-${name}-*`;
+    return `*test-index-${name}-*`;
 };
 
 describe("Elasticsearch Templates", () => {
     const client = createElasticsearchClient();
 
+    const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || createPrefixId(10);
+
+    let indexNames: string[] = [];
+    let templateNames: string[] = [];
+
     beforeEach(async () => {
-        await deleteIndexes({ client });
-        await deleteTemplates({ client });
+        await deleteIndexes({ client, indices: indexNames });
+        await deleteTemplates({ client, templates: templateNames });
+        indexNames = [];
+        templateNames = [];
     });
 
     afterEach(async () => {
-        await deleteIndexes({ client });
-        await deleteTemplates({ client });
+        await deleteIndexes({ client, indices: indexNames });
+        await deleteTemplates({ client, templates: templateNames });
     });
 
     it.each(settings)(
@@ -46,8 +51,10 @@ describe("Elasticsearch Templates", () => {
             /**
              * First we need to create the template.
              */
-            const templateName = `template-${name}`;
-            const prefixedTemplateName = `${prefix}${templateName}`;
+            const templateName = `${prefix}templates-test-template-${name}`;
+
+            templateNames.push(templateName);
+
             const index_patterns: string[] = [createIndexPattern(name)];
 
             const createResponse = await putTemplate({
@@ -78,7 +85,7 @@ describe("Elasticsearch Templates", () => {
 
             expect(response).toMatchObject({
                 body: {
-                    [prefixedTemplateName]: {
+                    [templateName]: {
                         ...setting,
                         order,
                         aliases: {},
@@ -88,25 +95,27 @@ describe("Elasticsearch Templates", () => {
                 statusCode: 200
             });
 
-            expect(response.body[prefixedTemplateName]).toEqual({
+            expect(response.body[templateName]).toEqual({
+                settings: {},
                 ...setting,
                 order,
                 aliases: {},
                 index_patterns
             });
 
-            const testIndexName = `test-index-${name}-locale-code`;
-            const prefixedTestIndexName = `${prefix}${testIndexName}`;
+            const indexName = `${prefix}test-index-${name}-locale-code`;
+
+            indexNames.push(indexName);
             /**
              * Then create the index with given pattern...
              */
             const createIndexResponse = await client.indices.create({
-                index: prefixedTestIndexName
+                index: indexName
             });
             expect(createIndexResponse).toMatchObject({
                 body: {
                     acknowledged: true,
-                    index: prefixedTestIndexName
+                    index: indexName
                 },
                 statusCode: 200
             });
@@ -114,23 +123,23 @@ describe("Elasticsearch Templates", () => {
              * And finally verify that index has correct configuration
              */
             const mappings = await client.indices.getMapping({
-                index: prefixedTestIndexName
+                index: indexName
             });
-            expect(mappings.body[prefixedTestIndexName].mappings).toEqual({
+            expect(mappings.body[indexName].mappings).toEqual({
                 ...setting.mappings
             });
 
             const settings = await client.indices.getSettings({
-                index: prefixedTestIndexName
+                index: indexName
             });
-            expect(settings.body[prefixedTestIndexName].settings).toEqual({
+            expect(settings.body[indexName].settings).toEqual({
                 ...setting.settings,
                 index: {
-                    ...setting.settings.index,
+                    ...(setting.settings?.index || {}),
                     creation_date: expect.stringMatching(/^([0-9]+)$/),
                     number_of_replicas: expect.stringMatching(/^([0-9]+)$/),
                     number_of_shards: expect.stringMatching(/^([0-9]+)$/),
-                    provided_name: prefixedTestIndexName,
+                    provided_name: indexName,
                     uuid: expect.stringMatching(/^([a-zA-Z0-9_-]+)$/),
                     version: {
                         created: expect.stringMatching(/^([0-9]+)$/)

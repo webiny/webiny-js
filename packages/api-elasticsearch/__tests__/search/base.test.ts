@@ -5,14 +5,15 @@ import { people } from "./base.entries";
 import { base } from "~/indexConfiguration/base";
 import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains";
-
-const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-
-const indexTestName = `${prefix}base-index-test`;
-const indexTemplateTestName = "base-index-template-test";
+import { createPrefixId } from "../helpers";
 
 describe("Elasticsearch Base Search", () => {
     const client = createElasticsearchClient();
+
+    const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || createPrefixId(10);
+
+    const indexTestName = `${prefix}base-index-test`;
+    const indexTemplateTestName = `${prefix}base-index-template-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderOperatorContainsPlugin();
 
@@ -52,7 +53,7 @@ describe("Elasticsearch Base Search", () => {
         return client.indices.putTemplate({
             name: indexTemplateTestName,
             body: {
-                index_patterns: ["*-index-test"],
+                index_patterns: ["*index-test"],
                 order: 50,
                 ...base
             }
