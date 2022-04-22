@@ -1,8 +1,6 @@
 name: Pull Requests
 
-on:
-  pull_request:
-    branches: [next, v5]
+on: [pull_request]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
