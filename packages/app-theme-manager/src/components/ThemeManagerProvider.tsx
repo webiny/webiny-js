@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useMemo, useState } from "react";
+import { HigherOrderComponent } from "@webiny/app-admin";
 import { ThemeSource } from "~/types";
 
 export interface ThemeManagerContext {
@@ -14,7 +15,7 @@ export const ThemeManagerContext = createContext<ThemeManagerContext>({
 });
 ThemeManagerContext.displayName = "ThemeManagerContext";
 
-export const ThemeManagerProviderHOC = (PreviousProvider: React.FC): React.FC => {
+export const ThemeManagerProviderHOC: HigherOrderComponent<unknown> = PreviousProvider => {
     return function ThemeProvider({ children }) {
         const [themes, setThemes] = useState<ThemeSource[]>([]);
 
