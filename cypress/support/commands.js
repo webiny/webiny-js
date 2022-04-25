@@ -30,7 +30,7 @@ import "./security/securityDeleteApiKey";
 import "./fileManager/fmListFiles";
 import "./fileManager/fmDeleteFile";
 import "./fileManager/fmListTags";
-import 'cypress-mailosaur';
+import "cypress-mailosaur";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });
