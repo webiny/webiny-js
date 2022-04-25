@@ -180,7 +180,7 @@ context("Login Page", () => {
                     cy.mailosaurGetMessage("z1fihlo8", {
                         sentTo: newUserAccountEmail
                     }).then(email => {
-                        expect(email.subject).to.equal("Your verification code");
+                        expect(email.subject).equals("Your verification code")
                         passwordResetCode = email.html.body.match(/(\d+)/)[0];
 
                         cy.log(passwordResetCode);
