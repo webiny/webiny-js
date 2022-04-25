@@ -9,7 +9,7 @@ const defaultOptions = {
     maxRetries: 10,
     pingTimeout: 500
 };
-if (process.env.LOCAL_ELASTICSEARCH !== "true") {
+if (!!awsDomain) {
     defaultOptions.node = awsDomain;
     defaultOptions.auth = undefined;
 }
