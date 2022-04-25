@@ -26,6 +26,18 @@ export const AppInstaller: React.FC = ({ children }) => {
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
 
+    const openWelcomeScreen = () => {
+        if (localStorage.get(lsKey)) {
+            // new version welcome screen
+            window.open(
+                `https://site.webiny.com/thank-you/upgrade?version=${wbyVersion}`,
+                "_blank"
+            );
+        }
+        // new installation welcome screen
+        window.open(`https://site.webiny.com/thank-you/installation`, "_blank");
+    };
+
     const markInstallerAsCompleted = () => {
         localStorage.set(lsKey, wbyVersion);
     };
@@ -161,6 +173,7 @@ export const AppInstaller: React.FC = ({ children }) => {
                     <ButtonPrimary
                         data-testid={"open-webiny-cms-admin-button"}
                         onClick={() => {
+                            openWelcomeScreen();
                             markInstallerAsCompleted();
                             setFinished(true);
                         }}
