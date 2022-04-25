@@ -41,7 +41,7 @@ import { until } from "@webiny/project-utils/testing/helpers/until";
 import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePhysicalStoragePlugin";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -62,11 +62,7 @@ interface InvokeParams {
 export default (params?: UseGqlHandlerParams) => {
     const { permissions, identity } = params || {};
 
-    const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-    const elasticsearchClient = createElasticsearchClient({
-        node: `http://localhost:${ELASTICSEARCH_PORT}`,
-        auth: {} as any
-    });
+    const elasticsearchClient = createElasticsearchClient();
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
