@@ -347,19 +347,19 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
         fields
     });
 
-    const fuzzyPlugin = plugins
+    const fullTextSearchPlugin = plugins
         .byType<ValueFilterPlugin>(ValueFilterPlugin.type)
-        .find(plugin => plugin.getOperation() === "fuzzy");
-    if (!fuzzyPlugin) {
+        .find(plugin => plugin.getOperation() === "contains");
+    if (!fullTextSearchPlugin) {
         throw new WebinyError(
-            `Missing "fuzzy" plugin to run the full-text search.`,
+            `Missing "contains" plugin to run the full-text search.`,
             "MISSING_PLUGIN"
         );
     }
 
     const search = createFullTextSearch({
         ...fullTextSearch,
-        plugin: fuzzyPlugin
+        plugin: fullTextSearchPlugin
     });
 
     const promises: Promise<CmsEntry | null>[] = records.map(async record => {

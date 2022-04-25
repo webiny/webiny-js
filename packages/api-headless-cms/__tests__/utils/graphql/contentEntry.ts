@@ -99,8 +99,18 @@ export interface SearchContentEntriesVariables {
     limit?: number;
 }
 export const SEARCH_CONTENT_ENTRIES_QUERY = /* GraphQL */ `
-    query CmsSearchContentEntries($modelsIds: [ID!]!, $query: String, $limit: Int) {
-        entries: searchContentEntries(modelIds: $modelsIds, query: $query, limit: $limit) {
+    query CmsSearchContentEntries(
+        $modelsIds: [ID!]!
+        $query: String
+        $limit: Int
+        $fields: [String!]
+    ) {
+        entries: searchContentEntries(
+            modelIds: $modelsIds
+            query: $query
+            limit: $limit
+            fields: $fields
+        ) {
             data {
                 id
                 entryId
