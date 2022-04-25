@@ -107,13 +107,21 @@ context("Login Page", () => {
                     );
 
                     cy.findByTestId("logged-in-user-menu-avatar").click();
+
+                    cy.intercept({
+                        method: "POST",
+                        url: "https://cognito-idp.us-east-1.amazonaws.com/"
+                    }).as("amazon_aws_request");
+
                     cy.findByText(/Sign out/i).click();
                     cy.findByText(/sign in/i).should("exist");
                     cy.findByText(/forgot password?/i).should("exist");
 
-                    // cy.visit("/page-builder/pages");
-                    // cy.findByText(/sign in/i).should("exist");
-                    // cy.findByText(/forgot password?/i).should("exist");
+                    cy.wait("@amazon_aws_request");
+                    cy.visit("/page-builder/pages");
+
+                    cy.findByText(/sign in/i).should("exist");
+                    cy.findByText(/forgot password?/i).should("exist");
                 });
         });
     });
@@ -180,7 +188,7 @@ context("Login Page", () => {
                     cy.mailosaurGetMessage("z1fihlo8", {
                         sentTo: newUserAccountEmail
                     }).then(email => {
-                        expect(email.subject).equals("Your verification code")
+                        expect(email.subject).equals("Your verification code");
                         passwordResetCode = email.html.body.match(/(\d+)/)[0];
 
                         cy.log(passwordResetCode);
