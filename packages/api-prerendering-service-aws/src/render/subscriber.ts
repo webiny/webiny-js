@@ -67,7 +67,6 @@ export default (params: HandlerConfig): HandlerPlugin => {
             }
 
             const entries: SendMessageBatchRequestEntry[] = [];
-            // TODO chunk splitting in case of big amount of events
 
             let i = 0;
             for (const [id, render] of toRender.entries()) {
