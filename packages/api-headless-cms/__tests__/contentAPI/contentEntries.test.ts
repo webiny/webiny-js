@@ -626,7 +626,7 @@ describe("Content entries", () => {
 
     const searchQueries: [string, string[]][] = [
         ["webiny", ["Banana", "Strawberry"]],
-        ["cms", ["Apple", "Strawberry"]]
+        ["cms", ["Banana", "Apple"]]
     ];
 
     it.each(searchQueries)(

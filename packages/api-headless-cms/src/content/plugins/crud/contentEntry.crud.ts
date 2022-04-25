@@ -208,7 +208,7 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
             const plugin = fieldPluginMap[field.type];
             if (!plugin) {
                 return false;
-            } else if (!plugin.isSearchable || !plugin.fullTextSearch) {
+            } else if (!plugin.fullTextSearch) {
                 return false;
             } else if (!fields || fields.length === 0) {
                 return true;
