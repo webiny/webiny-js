@@ -16,7 +16,7 @@ const appleData: Fruit = {
     dateTime: new Date("2020-12-15T12:12:21").toISOString(),
     dateTimeZ: "2020-12-15T14:52:41+01:00",
     time: "11:39:58",
-    description: "fruit named apple"
+    description: "fruit named apple cms"
 };
 
 const strawberryData: Fruit = {
@@ -32,7 +32,7 @@ const strawberryData: Fruit = {
     dateTime: new Date("2020-12-19T12:12:21").toISOString(),
     dateTimeZ: "2020-12-25T14:52:41+01:00",
     time: "12:44:55",
-    description: "strawberry named fruit"
+    description: "strawberry named fruit webiny"
 };
 
 const bananaData: Fruit = {
@@ -48,7 +48,7 @@ const bananaData: Fruit = {
     dateTime: new Date("2020-12-03T12:12:21").toISOString(),
     dateTimeZ: "2020-12-03T14:52:41+01:00",
     time: "11:59:01",
-    description: "fruit banana named"
+    description: "fruit banana named cms webiny"
 };
 
 type CmsEntry<T = Record<string, any>> = T & {
@@ -556,4 +556,116 @@ describe("Content entries", () => {
             }
         });
     });
+
+    it(`should search for latest entries containing "e" in given models`, async () => {
+        const { apple, banana, strawberry } = await setupFruits();
+
+        await waitFruits("should be second banana as draft", [
+            {
+                id: apple.id as string,
+                status: "published"
+            },
+            {
+                id: banana.id as string,
+                status: "published"
+            },
+            {
+                id: strawberry.id as string,
+                status: "published"
+            }
+        ]);
+
+        const [response] = await searchContentEntries({
+            modelsIds: ["fruit"],
+            query: "e"
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                entries: {
+                    data: [
+                        {
+                            id: banana.id,
+                            entryId: banana.entryId,
+                            title: banana.name,
+                            status: banana.meta.status,
+                            published: {
+                                id: banana.id,
+                                entryId: banana.entryId,
+                                title: banana.name
+                            }
+                        },
+                        {
+                            id: strawberry.id,
+                            entryId: strawberry.entryId,
+                            title: strawberry.name,
+                            status: strawberry.meta.status,
+                            published: {
+                                id: strawberry.id,
+                                entryId: strawberry.entryId,
+                                title: strawberry.name
+                            }
+                        },
+                        {
+                            id: apple.id,
+                            entryId: apple.entryId,
+                            title: apple.name,
+                            status: apple.meta.status,
+                            published: {
+                                id: apple.id,
+                                entryId: apple.entryId,
+                                title: apple.name
+                            }
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+    });
+
+    const searchQueries: [string, string[]][] = [
+        ["webiny", ["Banana", "Strawberry"]],
+        ["cms", ["Apple", "Strawberry"]]
+    ];
+
+    it.each(searchQueries)(
+        `should search for latest entries containing "%s" in given models`,
+        async (query, titles) => {
+            const { apple, banana, strawberry } = await setupFruits();
+
+            await waitFruits("should be second banana as draft", [
+                {
+                    id: apple.id as string,
+                    status: "published"
+                },
+                {
+                    id: banana.id as string,
+                    status: "published"
+                },
+                {
+                    id: strawberry.id as string,
+                    status: "published"
+                }
+            ]);
+
+            const [response] = await searchContentEntries({
+                modelsIds: ["fruit"],
+                query
+            });
+
+            expect(response).toMatchObject({
+                data: {
+                    entries: {
+                        data: titles.map(title => {
+                            return {
+                                title
+                            };
+                        }),
+                        error: null
+                    }
+                }
+            });
+        }
+    );
 });

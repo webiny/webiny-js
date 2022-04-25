@@ -94,6 +94,7 @@ export const GET_PUBLISHED_CONTENT_ENTRIES_QUERY = /* GraphQL */ `
 
 export interface SearchContentEntriesVariables {
     modelsIds: string[];
+    fields?: string[];
     query?: string;
     limit?: number;
 }
