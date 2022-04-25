@@ -11,16 +11,16 @@ export default createAdminApp({
             enabled: false
         });
     },
-    beforeBuild() {
+    onBeforeBuild() {
         console.log("BEFORE BUILD");
     },
-    afterBuild() {
+    onAfterBuild() {
         console.log("AFTER BUILD");
     },
-    beforeDeploy() {
+    onBeforeDeploy() {
         console.log("BEFORE DEPLOY");
     },
-    afterDeploy() {
+    onAfterDeploy() {
         console.log("AFTER DEPLOY");
     }
 });

@@ -204,9 +204,9 @@ export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<We
             await config.config?.(app, ctx);
             return app;
         },
-        beforeBuild: config.beforeBuild,
-        afterBuild: config.afterBuild,
-        beforeDeploy: config.beforeDeploy,
-        afterDeploy: mergeAppHooks(websiteUpload, websiteRender, config.afterDeploy)
+        onBeforeBuild: config.onBeforeBuild,
+        onAfterBuild: config.onAfterBuild,
+        onBeforeDeploy: config.onBeforeDeploy,
+        onAfterDeploy: mergeAppHooks(websiteUpload, websiteRender, config.onAfterDeploy)
     });
 }

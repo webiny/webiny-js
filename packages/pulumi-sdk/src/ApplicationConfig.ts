@@ -9,10 +9,10 @@ export interface ApplicationContext {
 
 export interface ApplicationHooks {
     // TODO add typing to deploy hooks
-    beforeBuild: ApplicationHook;
-    afterBuild: ApplicationHook;
-    beforeDeploy: ApplicationHook;
-    afterDeploy: ApplicationHook;
+    onBeforeBuild: ApplicationHook;
+    onAfterBuild: ApplicationHook;
+    onBeforeDeploy: ApplicationHook;
+    onAfterDeploy: ApplicationHook;
 }
 
 export interface ApplicationConfig<TApp extends PulumiApp> extends Partial<ApplicationHooks> {

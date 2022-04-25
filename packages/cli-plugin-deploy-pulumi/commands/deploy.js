@@ -45,7 +45,7 @@ module.exports = async (inputs, context) => {
     if (build) {
         await runHook({
             hookName: "hook-before-build",
-            hookFn: application.beforeBuild,
+            hookFn: application.onBeforeBuild,
             args: hookArgs,
             context
         });
@@ -54,7 +54,7 @@ module.exports = async (inputs, context) => {
 
         await runHook({
             hookName: "hook-after-build",
-            hookFn: application.afterBuild,
+            hookFn: application.onAfterBuild,
             args: hookArgs,
             context
         });
@@ -95,7 +95,7 @@ module.exports = async (inputs, context) => {
 
     await runHook({
         hookName: "hook-before-deploy",
-        hookFn: application.beforeDeploy,
+        hookFn: application.onBeforeDeploy,
         skip: inputs.preview,
         args: hookArgs,
         context
@@ -127,7 +127,7 @@ module.exports = async (inputs, context) => {
 
     await runHook({
         hookName: "hook-after-deploy",
-        hookFn: application.afterDeploy,
+        hookFn: application.onAfterDeploy,
         skip: inputs.preview,
         args: hookArgs,
         context
