@@ -165,7 +165,6 @@ export abstract class PulumiApp<TConfig = unknown> {
             WbyEnvironment: String(process.env["WEBINY_ENV"])
         });
 
-        // TODO: run concurrently?
         for (const handler of this.handlers) {
             await handler();
         }
