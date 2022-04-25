@@ -63,7 +63,7 @@ const SetNewPassword: React.FC = () => {
                                     )}
 
                                     <Grid>
-                                        <Cell span={12}>
+                                        <Cell span={12} data-testid="password-reset-code">
                                             <Bind
                                                 name="code"
                                                 validators={validation.create("required")}
