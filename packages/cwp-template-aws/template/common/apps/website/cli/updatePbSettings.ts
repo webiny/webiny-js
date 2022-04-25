@@ -18,6 +18,10 @@ export default {
 
         // 2. Get exports from `api` stack, again, for `args.env` environment.
         const apiOutput = getStackOutput({ folder: "api", env: args.env });
+        if (!apiOutput) {
+            context.warning(`API was not deployed yet. Could not update page builder settings.`);
+            return;
+        }
 
         // 3. Let's update relevant Page Builder app's URLs, by invoking the `updateSettings` function,
         // which has been exported from the `api` stack for this exact purpose.
