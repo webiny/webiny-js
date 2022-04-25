@@ -314,7 +314,7 @@ interface FullTextSearchParams {
     fields: ModelFieldRecords;
 }
 /**
- * Unfortunately we must use the fuzzy plugin directly as plugins do not support multi field searching.
+ * Unfortunately we must use the contains plugin directly as plugins do not support multi field searching.
  */
 const createFullTextSearch = ({
     term,
