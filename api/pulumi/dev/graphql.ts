@@ -7,6 +7,8 @@ interface GraphqlParams {
     primaryDynamodbTable: aws.dynamodb.Table;
     bucket: aws.s3.Bucket;
     cognitoUserPool: aws.cognito.UserPool;
+    apwSchedulerEventRule: aws.cloudwatch.EventRule;
+    apwSchedulerEventTarget: aws.cloudwatch.EventTarget;
 }
 
 class Graphql {
@@ -15,7 +17,14 @@ class Graphql {
     };
     role: aws.iam.Role;
 
-    constructor({ env, primaryDynamodbTable, bucket, cognitoUserPool }: GraphqlParams) {
+    constructor({
+        env,
+        primaryDynamodbTable,
+        bucket,
+        cognitoUserPool,
+        apwSchedulerEventRule,
+        apwSchedulerEventTarget
+    }: GraphqlParams) {
         const roleName = "api-lambda-role";
         this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
@@ -67,6 +76,24 @@ class Graphql {
                 }
             })
         };
+        /**
+         * Store meta information like "mainGraphqlFunctionArn" in APW settings at deploy time.
+         *
+         * Note: We can't pass "mainGraphqlFunctionArn" as env variable due to circular dependency between
+         * "graphql" lambda and "api-apw-scheduler-execute-action" lambda.
+         */
+        new aws.dynamodb.TableItem("apwSettings", {
+            tableName: primaryDynamodbTable.name,
+            hashKey: primaryDynamodbTable.hashKey,
+            rangeKey: primaryDynamodbTable.rangeKey.apply(key => key || "SK"),
+            item: pulumi.interpolate`{
+              "PK": {"S": "APW#SETTINGS"},
+              "SK": {"S": "A"},
+              "mainGraphqlFunctionArn": {"S": "${this.functions.api.arn}"},
+              "eventRuleName": {"S": "${apwSchedulerEventRule.name}"},
+              "eventTargetId": {"S": "${apwSchedulerEventTarget.targetId}"}
+            }`
+        });
     }
 }
 

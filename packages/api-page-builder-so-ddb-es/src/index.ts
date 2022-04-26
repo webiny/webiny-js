@@ -20,8 +20,12 @@ import { createMenuDynamoDbFields } from "~/operations/menu/fields";
 import { createMenuStorageOperations } from "~/operations/menu";
 import { createPageElementDynamoDbFields } from "~/operations/pageElement/fields";
 import { createPageElementStorageOperations } from "~/operations/pageElement";
-import { createPagesElasticsearchFields } from "~/operations/pages/fields";
+import {
+    createPagesElasticsearchFields,
+    createPagesDynamoDbFields
+} from "~/operations/pages/fields";
 import { createPageStorageOperations } from "~/operations/pages";
+import { base as baseElasticsearchIndexTemplate } from "~/elasticsearch/templates/base";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -70,7 +74,15 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Page fields required for filtering/sorting.
          */
-        createPagesElasticsearchFields()
+        createPagesElasticsearchFields(),
+        /**
+         * Page fields required for filtering/sorting when using dynamodb.
+         */
+        createPagesDynamoDbFields(),
+        /**
+         * Default Elasticsearch index template
+         */
+        baseElasticsearchIndexTemplate
     ]);
 
     const entities = {
@@ -113,10 +125,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     return {
         init: async context => {
-            context.pageBuilder.onBeforeInstall.subscribe(async ({ tenant }) => {
+            context.pageBuilder.onBeforeInstall.subscribe(async () => {
                 await execOnBeforeInstall({
-                    tenant,
-                    elasticsearch
+                    elasticsearch,
+                    plugins
                 });
             });
         },

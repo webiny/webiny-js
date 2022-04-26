@@ -49,7 +49,7 @@ const createElasticsearchQuery = (
             return acc;
         }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
 
-    const where = {
+    const where: Partial<FileManagerFilesStorageOperationsListParamsWhere> = {
         ...initialWhere
     };
     /**
@@ -61,13 +61,14 @@ const createElasticsearchQuery = (
     if (sharedIndex) {
         const tenant = context.tenancy.getCurrentTenant();
         query.must.push({ term: { "tenant.keyword": tenant.id } });
-        /**
-         * Remove so it is not applied again later.
-         * Possibly tenant is not defined, but just in case, remove it.
-         */
-        // cast as any because TS is complaining about deleting non-optional property
-        delete (where as any).tenant;
     }
+    /**
+     * Remove so it is not applied again later.
+     * Possibly tenant is not defined, but just in case, remove it.
+     *
+     * cast as any because TS is complaining about deleting non-optional property
+     */
+    delete where.tenant;
     /**
      * If there is a search value passed in where, it is treated a bit differently.
      * The search value is pushed to search in file name and file tags, where for tags.

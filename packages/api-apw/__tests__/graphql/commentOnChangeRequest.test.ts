@@ -1,5 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
+import { createContentReviewSetup } from "../utils/helpers";
 
 const richTextMock = [
     {
@@ -26,10 +27,27 @@ const richTextMock = [
     }
 ];
 
+const expectedComment = expect.objectContaining({
+    id: expect.any(String),
+    createdOn: expect.stringMatching(/^20/),
+    savedOn: expect.stringMatching(/^20/),
+    createdBy: {
+        id: expect.any(String),
+        displayName: expect.any(String),
+        type: "admin"
+    },
+    body: richTextMock,
+    changeRequest: expect.any(String)
+});
+
 describe("Comment on a change request test", () => {
     const options = {
         path: "manage/en-US"
     };
+
+    const gqlHandler = useContentGqlHandler({
+        ...options
+    });
 
     const {
         createChangeRequestMutation,
@@ -37,15 +55,21 @@ describe("Comment on a change request test", () => {
         listCommentsQuery,
         deleteChangeRequestMutation,
         until
-    } = useContentGqlHandler({
-        ...options
-    });
+    } = gqlHandler;
+
+    const getChangeRequestStep = async () => {
+        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        return `${contentReview.id}#${contentReview.steps[0].id}`;
+    };
+
     test("should able to comment on a change request", async () => {
+        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new change request entry.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
-            data: changeRequestMock.changeRequestA
+            data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
         });
         const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
@@ -55,9 +79,7 @@ describe("Comment on a change request test", () => {
         const [createCommentResponse] = await createCommentMutation({
             data: {
                 body: richTextMock,
-                changeRequest: {
-                    id: changeRequested.id
-                }
+                changeRequest: changeRequested.id
             }
         });
         const firstComment = createCommentResponse.data.apw.createComment.data;
@@ -75,11 +97,8 @@ describe("Comment on a change request test", () => {
                                 type: "admin"
                             },
                             body: richTextMock,
-                            changeRequest: {
-                                id: changeRequested.id,
-                                entryId: expect.any(String),
-                                modelId: expect.any(String)
-                            }
+                            changeRequest: changeRequested.id,
+                            media: null
                         },
                         error: null
                     }
@@ -120,11 +139,8 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changeRequested.id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changeRequested.id,
+                                media: null
                             }
                         ],
                         error: null,
@@ -144,9 +160,7 @@ describe("Comment on a change request test", () => {
         const [anotherCreateCommentResponse] = await createCommentMutation({
             data: {
                 body: richTextMock,
-                changeRequest: {
-                    id: changeRequested.id
-                }
+                changeRequest: changeRequested.id
             }
         });
         const secondComment = anotherCreateCommentResponse.data.apw.createComment.data;
@@ -185,11 +199,8 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changeRequested.id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changeRequested.id,
+                                media: null
                             },
                             {
                                 id: firstComment.id,
@@ -201,11 +212,8 @@ describe("Comment on a change request test", () => {
                                     type: "admin"
                                 },
                                 body: richTextMock,
-                                changeRequest: {
-                                    id: changeRequested.id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
+                                changeRequest: changeRequested.id,
+                                media: null
                             }
                         ],
                         error: null,
@@ -221,29 +229,30 @@ describe("Comment on a change request test", () => {
     });
 
     test("should able to delete all comments when a change request gets deleted", async () => {
+        const changeRequestStep = await getChangeRequestStep();
         /*
          * Create two new change request entries.
          */
         const changesRequested: { id: string }[] = [];
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
-                data: changeRequestMock.changeRequestA
+                data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
             });
             changesRequested.push(createChangeRequestResponse.data.apw.createChangeRequest.data);
         }
-
+        const totalChangeRequest = 2;
+        const commentsPerChangeRequest = 20;
+        const totalComments = totalChangeRequest * commentsPerChangeRequest;
         /**
          * Add two comments on each change request.
          */
         const comments = [];
         for (let i = 0; i < changesRequested.length; i++) {
-            for (let j = 0; j < 2; j++) {
+            for (let j = 0; j < commentsPerChangeRequest; j++) {
                 const [createCommentResponse] = await createCommentMutation({
                     data: {
                         body: richTextMock,
-                        changeRequest: {
-                            id: changesRequested[i].id
-                        }
+                        changeRequest: changesRequested[i].id
                     }
                 });
                 comments.push(createCommentResponse.data.apw.createComment.data);
@@ -252,7 +261,9 @@ describe("Comment on a change request test", () => {
 
         await until(
             () => listCommentsQuery({}).then(([data]) => data),
-            (response: any) => response.data.apw.listComments.data.length === 4,
+            (response: any) => {
+                return response.data.apw.listComments.meta.totalCount === totalComments;
+            },
             {
                 name: "Wait for entry to be available via list query"
             }
@@ -266,77 +277,12 @@ describe("Comment on a change request test", () => {
             data: {
                 apw: {
                     listComments: {
-                        data: [
-                            {
-                                id: comments[3].id,
-                                createdOn: expect.stringMatching(/^20/),
-                                savedOn: expect.stringMatching(/^20/),
-                                createdBy: {
-                                    id: expect.any(String),
-                                    displayName: expect.any(String),
-                                    type: "admin"
-                                },
-                                body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[1].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
-                            },
-                            {
-                                id: comments[2].id,
-                                createdOn: expect.stringMatching(/^20/),
-                                savedOn: expect.stringMatching(/^20/),
-                                createdBy: {
-                                    id: expect.any(String),
-                                    displayName: expect.any(String),
-                                    type: "admin"
-                                },
-                                body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[1].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
-                            },
-                            {
-                                id: comments[1].id,
-                                createdOn: expect.stringMatching(/^20/),
-                                savedOn: expect.stringMatching(/^20/),
-                                createdBy: {
-                                    id: expect.any(String),
-                                    displayName: expect.any(String),
-                                    type: "admin"
-                                },
-                                body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[0].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
-                            },
-                            {
-                                id: comments[0].id,
-                                createdOn: expect.stringMatching(/^20/),
-                                savedOn: expect.stringMatching(/^20/),
-                                createdBy: {
-                                    id: expect.any(String),
-                                    displayName: expect.any(String),
-                                    type: "admin"
-                                },
-                                body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[0].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
-                            }
-                        ],
+                        data: expect.arrayContaining([expectedComment]),
                         error: null,
                         meta: {
-                            hasMoreItems: false,
-                            totalCount: 4,
-                            cursor: null
+                            hasMoreItems: true,
+                            totalCount: totalComments,
+                            cursor: expect.any(String)
                         }
                     }
                 }
@@ -368,7 +314,9 @@ describe("Comment on a change request test", () => {
                         }
                     }
                 }).then(([data]) => data),
-            (response: any) => response.data.apw.listComments.data.length === 0,
+            (response: any) => {
+                return response.data.apw.listComments.meta.totalCount === 0;
+            },
             {
                 name: "Wait for entry to be removed from list query"
             }
@@ -404,51 +352,66 @@ describe("Comment on a change request test", () => {
          * List all the comments without any filters.
          */
         [listCommentsResponse] = await listCommentsQuery({
-            sort: ["createdOn_DESC"]
+            sort: ["createdOn_DESC"],
+            limit: commentsPerChangeRequest
         });
         expect(listCommentsResponse).toEqual({
             data: {
                 apw: {
                     listComments: {
-                        data: [
-                            {
-                                id: comments[3].id,
-                                createdOn: expect.stringMatching(/^20/),
-                                savedOn: expect.stringMatching(/^20/),
-                                createdBy: {
-                                    id: expect.any(String),
-                                    displayName: expect.any(String),
-                                    type: "admin"
-                                },
-                                body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[1].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
-                            },
-                            {
-                                id: comments[2].id,
-                                createdOn: expect.stringMatching(/^20/),
-                                savedOn: expect.stringMatching(/^20/),
-                                createdBy: {
-                                    id: expect.any(String),
-                                    displayName: expect.any(String),
-                                    type: "admin"
-                                },
-                                body: richTextMock,
-                                changeRequest: {
-                                    id: changesRequested[1].id,
-                                    entryId: expect.any(String),
-                                    modelId: expect.any(String)
-                                }
-                            }
-                        ],
+                        data: expect.arrayContaining([expectedComment]),
                         error: null,
                         meta: {
                             hasMoreItems: false,
-                            totalCount: 2,
+                            totalCount: commentsPerChangeRequest,
                             cursor: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should return error when trying commenting on non-existing change request`, async () => {
+        /**
+         * Try adding a comment to a non-existing change request.
+         */
+        let [createCommentResponse] = await createCommentMutation({
+            data: {
+                body: richTextMock,
+                changeRequest: ""
+            }
+        });
+        expect(createCommentResponse).toEqual({
+            data: {
+                apw: {
+                    createComment: {
+                        data: null,
+                        error: {
+                            code: "MALFORMED_CHANGE_REQUEST_ID",
+                            message: expect.any(String),
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+
+        [createCommentResponse] = await createCommentMutation({
+            data: {
+                body: richTextMock,
+                changeRequest: "6205072093e05300095591a2#0001"
+            }
+        });
+        expect(createCommentResponse).toEqual({
+            data: {
+                apw: {
+                    createComment: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            message: expect.any(String),
+                            data: expect.any(Object)
                         }
                     }
                 }

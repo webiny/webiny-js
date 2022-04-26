@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.25.0-beta.6](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.5...v5.25.0-beta.6) (2022-04-01)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** entry references not loading ([509d306](https://github.com/webiny/webiny-js/commit/509d3060b84b5c5884edf4468aba03a38b64a4a0))
+* **app-headless-cms:** handle setState on unmounted component ([a25394b](https://github.com/webiny/webiny-js/commit/a25394b594e0584ed46a82576407b81aba33dd36))
+* **app-headless-cms:** unnecessary rerendering breaks mounting editorjs ([4436962](https://github.com/webiny/webiny-js/commit/4436962ac84dafffa58a14f9d5fb7b0c296cde63))
+
+
+
+
+
+# [5.25.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.4...v5.25.0-beta.5) (2022-04-01)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** reference field value not changed on entry change ([#2311](https://github.com/webiny/webiny-js/issues/2311)) ([394ca22](https://github.com/webiny/webiny-js/commit/394ca22185990ad152c2146d4d5837b877f79889))
+
+
+
+
+
+# [5.25.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.3...v5.25.0-beta.4) (2022-03-31)
+
+
+### Bug Fixes
+
+* **api-form-builder:** wrong partition key when deleting ([#2295](https://github.com/webiny/webiny-js/issues/2295)) ([d4522d2](https://github.com/webiny/webiny-js/commit/d4522d2010eef76f55ed6389624e35b8cb29d836))
+
+
+
+
+
+# [5.25.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.2...v5.25.0-beta.3) (2022-03-28)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** multi ref field status on initial load ([67ba0ad](https://github.com/webiny/webiny-js/commit/67ba0ad62d680056323ddeb76e2037797bfd1aa8))
+
+
+### Features
+
+* **api-headless-cms:** clear scheme cache after model clone ([#2288](https://github.com/webiny/webiny-js/issues/2288)) ([6f3f2a7](https://github.com/webiny/webiny-js/commit/6f3f2a70720d96842c1f2d64c0dc7283cf451895))
+* **api-headless-cms:** get published or latest revision via manage api ([#2266](https://github.com/webiny/webiny-js/issues/2266)) ([7a1806d](https://github.com/webiny/webiny-js/commit/7a1806db84c24c2d80588d5d2b611aea74614d65))
+* **app-headless-cms:** block navigation on cms entry form error ([#2285](https://github.com/webiny/webiny-js/issues/2285)) ([48cd11b](https://github.com/webiny/webiny-js/commit/48cd11b4a381221f9b86b4062ff451cb67883883))
+* **headless-cms:** comment on the field properties ([#2287](https://github.com/webiny/webiny-js/issues/2287)) ([a430979](https://github.com/webiny/webiny-js/commit/a4309799b3e883b757de3eee727d59a2c70159c6))
+
+
+
+
+
 # [5.25.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.1...v5.25.0-beta.2) (2022-03-21)
 
 

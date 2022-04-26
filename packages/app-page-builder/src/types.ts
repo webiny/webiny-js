@@ -11,6 +11,14 @@ import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
 
+export enum PageStatus {
+    PUBLISHED = "published",
+    UNPUBLISHED = "unpublished",
+    REVIEW_REQUESTED = "reviewRequested",
+    CHANGES_REQUESTED = "changesRequested",
+    DRAFT = "draft"
+}
+
 export enum PageImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",

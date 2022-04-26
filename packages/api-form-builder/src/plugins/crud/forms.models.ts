@@ -18,14 +18,14 @@ export const FormFieldsModel = withFields({
     /**
      * Note: We've replaced "i18nString()" with "string()"
      */
-    label: string({ validation: validation.create("maxLength:100") }),
-    helpText: string({ validation: validation.create("maxLength:100") }),
-    placeholderText: string({ validation: validation.create("maxLength:100") }),
+    label: string({ validation: validation.create("required") }),
+    helpText: string({}),
+    placeholderText: string({}),
     options: fields({
         list: true,
         value: [],
         instanceOf: withFields({
-            label: string({ validation: validation.create("maxLength:100") }),
+            label: string({}),
             value: string({ value: "" })
         })()
     }),
@@ -34,7 +34,7 @@ export const FormFieldsModel = withFields({
         value: [],
         instanceOf: withFields({
             name: string({ validation: validation.create("required") }),
-            message: string({ validation: validation.create("maxLength:100") }),
+            message: string({}),
             settings: object({ value: {} })
         })()
     }),
@@ -51,7 +51,7 @@ export const FormSettingsModel = withFields({
     /**
      * Note: We've replaced "i18nString()" with "string()"
      */
-    submitButtonLabel: string({ validation: validation.create("maxLength:100") }),
+    submitButtonLabel: string({}),
     /**
      * Note: We've replaced "i18nObject()" with "object()"
      */
@@ -59,7 +59,7 @@ export const FormSettingsModel = withFields({
     termsOfServiceMessage: fields({
         instanceOf: withFields({
             message: object(),
-            errorMessage: string({ validation: validation.create("maxLength:100") }),
+            errorMessage: string({}),
             enabled: boolean()
         })()
     }),
@@ -71,19 +71,18 @@ export const FormSettingsModel = withFields({
              * Note: We've replaced "i18nString()" with "string()"
              */
             errorMessage: string({
-                value: "Please verify that you are not a robot.",
-                validation: validation.create("maxLength:100")
+                value: "Please verify that you are not a robot."
             })
         })()
     })
 })();
 
 export const FormCreateDataModel = withFields({
-    name: string({ validation: validation.create("required,maxLength:100") })
+    name: string({ validation: validation.create("required") })
 })();
 
 export const FormUpdateDataModel = withFields({
-    name: string({ validation: validation.create("maxLength:100") }),
+    name: string({}),
     fields: fields({
         list: true,
         value: [],
@@ -99,10 +98,9 @@ export const FormSubmissionCreateDataModel = withFields({
     meta: fields({
         value: {},
         instanceOf: withFields({
-            ip: string({ validation: validation.create("required,maxLength:100") }),
+            ip: string({}),
             submittedOn: string({
-                value: new Date().toISOString(),
-                validation: validation.create("maxLength:100")
+                value: new Date().toISOString()
             })
         })()
     }),
@@ -123,7 +121,7 @@ export const FormSubmissionCreateDataModel = withFields({
 })();
 
 export const FormSubmissionUpdateDataModel = withFields({
-    id: string({ validation: validation.create("required,maxLength:100") }),
+    id: string({ validation: validation.create("required") }),
     logs: fields({
         list: true,
         value: [],

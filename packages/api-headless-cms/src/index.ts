@@ -18,11 +18,49 @@ import { createParametersPlugins, CreateParametersPluginsParams } from "~/conten
 import { CmsParametersPlugin } from "~/content/plugins/CmsParametersPlugin";
 import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
+import { ContextPlugin } from "@webiny/handler";
+import { CmsContext } from "~/types";
+import { getWebinyVersionHeaders } from "@webiny/utils";
 
 export type AdminContextParams = CreateAdminCrudsParams;
 
+const DEFAULT_HEADERS: Record<string, string> = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST",
+    "Content-Type": "application/json",
+    ...getWebinyVersionHeaders()
+};
+
+const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
+
+const OPTIONS_HEADERS: Record<string, string> = {
+    "Access-Control-Max-Age": `${DEFAULT_CACHE_MAX_AGE}`,
+    "Cache-Control": `public, max-age=${DEFAULT_CACHE_MAX_AGE}`
+};
+
+const breakOptionsRequestContextPlugin = (): ContextPlugin<CmsContext> => {
+    const plugin = new ContextPlugin<CmsContext>(async context => {
+        const method = (context.http?.request?.method || "").toLowerCase();
+        if (method !== "options") {
+            return;
+        }
+        context.setResult({
+            statusCode: 204,
+            body: "",
+            headers: {
+                ...DEFAULT_HEADERS,
+                ...OPTIONS_HEADERS
+            }
+        });
+    });
+    plugin.name = "break-options-request";
+
+    return plugin;
+};
+
 export const createAdminHeadlessCmsContext = (params: AdminContextParams) => {
-    return [context(), createAdminCruds(params), upgrades()];
+    return [breakOptionsRequestContextPlugin(), context(), createAdminCruds(params), upgrades()];
 };
 
 export const createAdminHeadlessCmsGraphQL = () => {
@@ -34,6 +72,7 @@ export interface ContentContextParams
         CreateParametersPluginsParams {}
 export const createContentHeadlessCmsContext = (params: ContentContextParams) => {
     return [
+        breakOptionsRequestContextPlugin(),
         createParametersPlugins(params),
         contextSetup(),
         modelManager(),

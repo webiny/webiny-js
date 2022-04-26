@@ -371,11 +371,11 @@ export interface CmsModel {
     /**
      * Date created
      */
-    createdOn?: Date;
+    createdOn?: string;
     /**
      * Date saved. Changes on both save and create.
      */
-    savedOn?: Date;
+    savedOn?: string;
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */
@@ -462,6 +462,15 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
      * ```
      */
     isSearchable: boolean;
+    /**
+     * Is the field searchable via full text search?
+     *
+     * Field is not full text searchable by default.
+     * ```ts
+     * fullTextSearch: false
+     * ```
+     */
+    fullTextSearch?: boolean;
     /**
      * Is the field sortable via the GraphQL?
      *
@@ -1486,6 +1495,8 @@ export interface CmsEntryGetParams {
 export interface CmsEntryListParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
+    search?: string;
+    fields?: string[];
     limit?: number;
     after?: string | null;
 }
@@ -1990,6 +2001,8 @@ export interface CmsEntryStorageOperationsGetParams {
 export interface CmsEntryStorageOperationsListParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
+    search?: string;
+    fields?: string[];
     limit?: number;
     after?: string | null;
 }

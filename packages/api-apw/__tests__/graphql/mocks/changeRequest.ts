@@ -1,4 +1,4 @@
-const richTextMock = [
+export const richTextMock = [
     {
         tag: "h1",
         content: "Testing H1 tags"
@@ -24,14 +24,6 @@ const richTextMock = [
 ];
 
 export const mocks = {
-    changeRequestA: {
-        step: "61af1a60f04e49226e6cc17e#design_review",
-        title: "Please replace this heading",
-        body: richTextMock,
-        media: {
-            src: "cloudfront.net/my-file"
-        }
-    },
     createChangeRequestInput: ({ step, title }: { step: string; title?: string }) => ({
         step: step,
         title: title || "Please replace this heading",

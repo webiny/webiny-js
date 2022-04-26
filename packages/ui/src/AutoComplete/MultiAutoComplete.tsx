@@ -130,7 +130,8 @@ function paginateMultipleSelection(
     multipleSelection: MultiAutoCompletePropsValue,
     limit: number,
     page: number,
-    search: string
+    search: string,
+    textProp: keyof SelectionItem
 ) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
@@ -140,8 +141,8 @@ function paginateMultipleSelection(
     if (typeof search === "string" && search) {
         data = data.filter(item => {
             return (
-                typeof item.name === "string" &&
-                item.name.toLowerCase().includes(search.toLowerCase())
+                typeof item[textProp] === "string" &&
+                item[textProp].toLowerCase().includes(search.toLowerCase())
             );
         });
     }
@@ -398,7 +399,8 @@ export class MultiAutoComplete extends React.Component<
             useMultipleSelectionList,
             description,
             renderListItemLabel,
-            renderListItemOptions
+            renderListItemOptions,
+            textProp
         } = this.props;
 
         if (useMultipleSelectionList) {
@@ -406,7 +408,8 @@ export class MultiAutoComplete extends React.Component<
                 value as SelectionItem[],
                 DEFAULT_PER_PAGE,
                 this.state.multipleSelectionPage,
-                this.state.multipleSelectionSearch
+                this.state.multipleSelectionSearch,
+                textProp as keyof SelectionItem
             );
 
             return (

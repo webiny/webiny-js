@@ -91,6 +91,8 @@ interface FilesCrudListTagsWhere {
     tag?: string;
     tag_contains?: string;
     tag_in?: string[];
+    tag_not_startsWith?: string;
+    tag_startsWith?: string;
 }
 interface FilesCrudListTagsParams {
     where?: FilesCrudListTagsWhere;

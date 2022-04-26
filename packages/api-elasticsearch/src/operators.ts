@@ -11,6 +11,8 @@ import { ElasticsearchQueryBuilderOperatorLesserThanOrEqualToPlugin } from "~/pl
 import { ElasticsearchQueryBuilderOperatorInPlugin } from "~/plugins/operator/in";
 import { ElasticsearchQueryBuilderOperatorAndInPlugin } from "~/plugins/operator/andIn";
 import { ElasticsearchQueryBuilderOperatorNotInPlugin } from "~/plugins/operator/notIn";
+import { ElasticsearchQueryBuilderOperatorStartsWithPlugin } from "~/plugins/operator/startsWith";
+import { ElasticsearchQueryBuilderOperatorNotStartsWithPlugin } from "~/plugins/operator/notStartsWith";
 
 const operators = [
     new ElasticsearchQueryBuilderOperatorBetweenPlugin(),
@@ -25,7 +27,9 @@ const operators = [
     new ElasticsearchQueryBuilderOperatorLesserThanOrEqualToPlugin(),
     new ElasticsearchQueryBuilderOperatorInPlugin(),
     new ElasticsearchQueryBuilderOperatorAndInPlugin(),
-    new ElasticsearchQueryBuilderOperatorNotInPlugin()
+    new ElasticsearchQueryBuilderOperatorNotInPlugin(),
+    new ElasticsearchQueryBuilderOperatorStartsWithPlugin(),
+    new ElasticsearchQueryBuilderOperatorNotStartsWithPlugin()
 ];
 /**
  * We export as a function because there might be something to be sent to the operators at some point.

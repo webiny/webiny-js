@@ -1,7 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { ApwContext } from "~/types";
+import { ApwContext, ApwReviewerListParams } from "~/types";
 import resolve from "~/utils/resolve";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -88,10 +87,10 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
             listReviewers: async (_, args: any, context) => {
                 try {
                     /**
-                     * We know that args is CmsEntryListParams.
+                     * We know that args is ApwReviewerListParams.
                      */
                     const [entries, meta] = await context.apw.reviewer.list(
-                        args as unknown as CmsEntryListParams
+                        args as unknown as ApwReviewerListParams
                     );
                     return new ListResponse(entries, meta);
                 } catch (e) {

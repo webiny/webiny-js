@@ -19,7 +19,7 @@ import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import configurations from "~/configurations";
+import { configurations } from "~/configurations";
 import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import fields from "./fields";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
@@ -154,7 +154,8 @@ export const createFormStorageOperations = (
         }
         try {
             const { index } = configurations.es({
-                tenant: form.tenant
+                tenant: form.tenant,
+                locale: form.locale
             });
             await esEntity.put({
                 index,
@@ -225,7 +226,8 @@ export const createFormStorageOperations = (
 
         try {
             const { index } = configurations.es({
-                tenant: form.tenant
+                tenant: form.tenant,
+                locale: form.locale
             });
             await esEntity.put({
                 index,
@@ -318,7 +320,8 @@ export const createFormStorageOperations = (
 
         try {
             const { index } = configurations.es({
-                tenant: form.tenant
+                tenant: form.tenant,
+                locale: form.locale
             });
             await esEntity.put({
                 index,
@@ -409,7 +412,8 @@ export const createFormStorageOperations = (
         });
 
         const esConfig = configurations.es({
-            tenant: where.tenant
+            tenant: where.tenant,
+            locale: where.locale
         });
 
         const query = {
@@ -647,7 +651,8 @@ export const createFormStorageOperations = (
                 );
 
                 const { index } = configurations.es({
-                    tenant: previous.tenant
+                    tenant: previous.tenant,
+                    locale: previous.locale
                 });
 
                 esDataItem = {
@@ -790,7 +795,8 @@ export const createFormStorageOperations = (
             return form;
         }
         const { index } = configurations.es({
-            tenant: form.tenant
+            tenant: form.tenant,
+            locale: form.locale
         });
         const esData = getESDataForLatestRevision(form);
         try {
@@ -933,7 +939,8 @@ export const createFormStorageOperations = (
             return form;
         }
         const { index } = configurations.es({
-            tenant: form.tenant
+            tenant: form.tenant,
+            locale: form.locale
         });
         try {
             await esEntity.put({

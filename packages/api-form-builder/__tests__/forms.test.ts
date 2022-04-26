@@ -371,4 +371,336 @@ describe('Form Builder "Form" Test', () => {
         expect(json[1].sort()).toEqual(Object.values(formSubmissionDataA.data).sort());
         fs.unlinkSync(csvFile);
     });
+
+    it("should create multiple forms and delete a single one - rest should be visible", async () => {
+        /**
+         * First we create three forms.
+         */
+        const [createForm1Response] = await createForm({
+            data: {
+                name: "form 1"
+            }
+        });
+        expect(createForm1Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    createForm: {
+                        data: {
+                            name: "form 1"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const form1 = createForm1Response.data.formBuilder.createForm.data;
+        const [createForm2Response] = await createForm({
+            data: {
+                name: "form 2"
+            }
+        });
+        expect(createForm2Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    createForm: {
+                        data: {
+                            name: "form 2"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const form2 = createForm2Response.data.formBuilder.createForm.data;
+        const [createForm3Response] = await createForm({
+            data: {
+                name: "form 3"
+            }
+        });
+        expect(createForm3Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    createForm: {
+                        data: {
+                            name: "form 3"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const form3 = createForm3Response.data.formBuilder.createForm.data;
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => {
+                return (data.formBuilder.listForms.data as any[]).every(form => {
+                    return [form1.id, form2.id, form3.id].includes(form.id);
+                });
+            }
+        );
+        /**
+         * Publish form 2 so we can create new revision.
+         */
+        const [publishForm2Response] = await publishRevision({
+            revision: form2.id
+        });
+        expect(publishForm2Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    publishRevision: {
+                        data: {
+                            name: "form 2",
+                            published: true,
+                            stats: {
+                                submissions: 0,
+                                views: 0
+                            },
+                            status: "published",
+                            version: 1
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * We need a new revision of form 2
+         */
+        const [createRevisionForm2Response] = await createRevisionFrom({
+            revision: form2.id
+        });
+        expect(createRevisionForm2Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    createRevisionFrom: {
+                        data: {
+                            id: `${form2.formId}#0002`,
+                            version: 2,
+                            published: false,
+                            status: "draft"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [deleteForm2Response] = await deleteForm({
+            id: form2.id
+        });
+        expect(deleteForm2Response).toEqual({
+            data: {
+                formBuilder: {
+                    deleteForm: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * We must have form 1 and form 3
+         */
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => {
+                return (data.formBuilder.listForms.data as any[]).every(form => {
+                    return [form1.id, form3.id].includes(form.id);
+                });
+            }
+        );
+        /**
+         * Publish form 1 so we can create new revision.
+         */
+        const [publishForm1Response] = await publishRevision({
+            revision: form1.id
+        });
+        expect(publishForm1Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    publishRevision: {
+                        data: {
+                            name: "form 1",
+                            published: true,
+                            stats: {
+                                submissions: 0,
+                                views: 0
+                            },
+                            status: "published",
+                            version: 1
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Create new revision of the first form.
+         */
+        const [createRevisionForm1Response] = await createRevisionFrom({
+            revision: form1.id
+        });
+        expect(createRevisionForm1Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    createRevisionFrom: {
+                        data: {
+                            id: `${form1.formId}#0002`,
+                            version: 2,
+                            published: false,
+                            status: "draft"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Publish it and then create new revision again.
+         */
+        const [publishForm1ResponseSecond] = await publishRevision({
+            revision: `${form1.formId}#0002`
+        });
+        expect(publishForm1ResponseSecond).toMatchObject({
+            data: {
+                formBuilder: {
+                    publishRevision: {
+                        data: {
+                            name: "form 1",
+                            published: true,
+                            stats: {
+                                submissions: 0,
+                                views: 0
+                            },
+                            status: "published",
+                            version: 2
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const [createRevisionForm1ResponseSecond] = await createRevisionFrom({
+            revision: `${form1.formId}#0002`
+        });
+        expect(createRevisionForm1ResponseSecond).toMatchObject({
+            data: {
+                formBuilder: {
+                    createRevisionFrom: {
+                        data: {
+                            id: `${form1.formId}#0003`,
+                            version: 3,
+                            published: false,
+                            status: "draft"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Delete the last revision of the form.
+         */
+        const [deleteRevisionForm1Response] = await deleteRevision({
+            revision: `${form1.formId}#0003`
+        });
+        expect(deleteRevisionForm1Response).toMatchObject({
+            data: {
+                formBuilder: {
+                    deleteRevision: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * We must have form 1 and form 3
+         */
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }: any) => {
+                return (data.formBuilder.listForms.data as any[]).every(form => {
+                    return [`${form1.formId}#0002`, form3.id].includes(form.id);
+                });
+            }
+        );
+    });
+
+    it("should properly sort form revisions", async () => {
+        const name = "test form";
+        const [formResponse] = await createForm({
+            data: {
+                name
+            }
+        });
+        expect(formResponse).toMatchObject({
+            data: {
+                formBuilder: {
+                    createForm: {
+                        data: {
+                            name
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        const form = formResponse.data.formBuilder.createForm.data;
+        const revisions: string[] = [form.id];
+        const total = 25;
+        /**
+         * Now we need to create 20+ revisions
+         */
+        for (let i = revisions.length; i < total; i++) {
+            const prev = revisions[i - 1];
+            const [createRevisionResponse] = await createRevisionFrom({
+                revision: prev
+            });
+            expect(createRevisionResponse).toMatchObject({
+                data: {
+                    formBuilder: {
+                        createRevisionFrom: {
+                            data: {
+                                name,
+                                version: i + 1
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
+            revisions.push(createRevisionResponse.data.formBuilder.createRevisionFrom.data.id);
+        }
+        expect(revisions).toHaveLength(total);
+
+        await until(
+            () =>
+                getFormRevisions({
+                    id: form.id
+                }).then(([data]) => data),
+            ({ data }: any) => {
+                return data.formBuilder.getFormRevisions.data.length === revisions.length;
+            }
+        );
+
+        const [listRevisionsResponse] = await getFormRevisions({
+            id: form.id
+        });
+        expect(listRevisionsResponse).toMatchObject({
+            data: {
+                formBuilder: {
+                    getFormRevisions: {
+                        data: revisions.map(rev => {
+                            return {
+                                id: rev
+                            };
+                        }),
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });

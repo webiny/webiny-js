@@ -20,9 +20,30 @@ interface ContentEntryFormProps extends UseContentEntryFormParams {
     onForm?: (form: FormAPI) => void;
 }
 
+function omitTypename(key: string, value: string): string | undefined {
+    return key === "__typename" ? undefined : value;
+}
+
+const stringify = (value: any): string => {
+    return JSON.stringify(value || {}, omitTypename);
+};
+
+const isDifferent = (value: any, compare: any): boolean => {
+    if (!value && !compare) {
+        return false;
+    }
+    return stringify(value) !== stringify(compare);
+};
+
 export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
     const { contentModel } = props;
-    const { loading, data, onChange, onSubmit, invalidFields } = useContentEntryForm(props);
+    const {
+        loading,
+        data: initialData,
+        onChange,
+        onSubmit,
+        invalidFields
+    } = useContentEntryForm(props);
 
     const [isDirty, setIsDirty] = React.useState<boolean>(false);
     /**
@@ -33,7 +54,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
             return;
         }
         setIsDirty(false);
-    }, [data]);
+    }, [initialData]);
 
     const { showSnackbar } = useSnackbar();
 
@@ -87,14 +108,17 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
     return (
         <Form
             onChange={(data, form) => {
-                setIsDirty(true);
+                const different = isDifferent(data, initialData);
+                if (isDirty !== different) {
+                    setIsDirty(different);
+                }
                 return onChange(data, form);
             }}
             onSubmit={(data, form) => {
                 setIsDirty(false);
                 return onSubmit(data, form);
             }}
-            data={data}
+            data={initialData}
             ref={ref}
             invalidFields={invalidFields}
             onInvalid={() => {

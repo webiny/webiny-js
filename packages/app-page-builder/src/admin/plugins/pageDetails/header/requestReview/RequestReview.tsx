@@ -1,14 +1,15 @@
 import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as RequestReviewIcon } from "../../../../assets/emoji_people-24px.svg";
+import { ReactComponent as RequestReviewIcon } from "~/admin/assets/emoji_people-24px.svg";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import usePermission from "../../../../../hooks/usePermission";
+import usePermission from "~/hooks/usePermission";
 import { PbPageData } from "~/types";
+import { makeComposable } from "@webiny/app-admin";
 
 const t = i18n.ns("app-page-builder/page-details/header/request-review");
 
@@ -30,9 +31,11 @@ const REQUEST_REVIEW = gql`
         }
     }
 `;
-interface RequestReviewProps {
+
+export interface RequestReviewProps {
     page: PbPageData;
 }
+
 const RequestReview: React.FC<RequestReviewProps> = props => {
     const { page } = props;
 
@@ -87,4 +90,4 @@ const RequestReview: React.FC<RequestReviewProps> = props => {
     );
 };
 
-export default RequestReview;
+export default makeComposable("RequestReview", RequestReview);

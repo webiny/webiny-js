@@ -15,11 +15,12 @@ import { createEntryElasticsearchEntity } from "~/definitions/entryElasticsearch
 import { createSystemEntity } from "~/definitions/system";
 import { createSettingsEntity } from "~/definitions/settings";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
-import { createElasticsearchTemplate } from "~/operations/system/createElasticsearchTemplate";
+import { createElasticsearchIndexTemplate } from "~/operations/system/createElasticsearchIndexTemplate";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
+import { base as baseElasticsearchIndexTemplate } from "~/elasticsearch/templates/base";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -102,14 +103,19 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Field plugins for Elasticsearch.
          */
-        elasticsearchPlugins()
+        elasticsearchPlugins(),
+        /**
+         * Base index template plugin.
+         */
+        baseElasticsearchIndexTemplate
     ]);
 
     return {
         init: async (cms: HeadlessCms) => {
             cms.onBeforeSystemInstall.subscribe(async () => {
-                await createElasticsearchTemplate({
-                    elasticsearch
+                await createElasticsearchIndexTemplate({
+                    elasticsearch,
+                    plugins
                 });
             });
         },

@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "name": "@webiny/cli2",
+  "version": "5.25.0",
+  "sideEffects": false,
+  "bin": {
+    "wby": "./src/bin.js"
+  },
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "yarn wby build package"
+  },
+  "dependencies": {
+    "@webiny/core": "^5.25.0",
+    "execa": "^5.1.1",
+    "load-json-file": "^6.2.0",
+    "ts-morph": "^14.0.0",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.8",
+    "ts-node": "^10.5.0"
+  },
+  "webiny": {
+    "moduleTypes": [
+      "cjs"
+    ]
+  }
+}

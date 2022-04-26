@@ -20,17 +20,20 @@ import defineTable from "~/definitions/table";
 import defineEsTable from "~/definitions/tableElasticsearch";
 import defineFilesEntity from "~/definitions/filesEntity";
 import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
-import { configurations } from "~/operations/configurations";
-import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { configurations } from "~/configurations";
+import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { compress } from "@webiny/api-elasticsearch/compression";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { ElasticsearchSearchResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import {
+    ElasticsearchSearchResponse,
+    ElasticsearchContext,
+    SearchBody as ElasticsearchSearchBody
+} from "@webiny/api-elasticsearch/types";
 
 interface FileItem extends File {
     PK: string;
@@ -61,17 +64,6 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     private readonly esTable: Table;
     private readonly entity: Entity<any>;
     private readonly esEntity: Entity<any>;
-    private _esIndex?: string;
-
-    private get esIndex(): string {
-        if (!this._esIndex) {
-            const { index: esIndex } = configurations.es({
-                tenant: this.context.tenancy.getCurrentTenant().id
-            });
-            this._esIndex = esIndex;
-        }
-        return this._esIndex;
-    }
 
     private get esClient() {
         const ctx = this.context;
@@ -148,7 +140,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const esCompressedData = await compress(this.context.plugins, esData);
         const esItem: EsFileItem = {
             ...keys,
-            index: this.esIndex,
+            index: this.getElasticsearchIndex(),
             data: esCompressedData
         };
         try {
@@ -188,7 +180,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const esCompressedData = await compress(this.context.plugins, esData);
         const esItem: EsFileItem = {
             ...keys,
-            index: this.esIndex,
+            index: this.getElasticsearchIndex(),
             data: esCompressedData
         };
         try {
@@ -256,7 +248,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             esItems.push(
                 this.esEntity.putBatch({
                     ...keys,
-                    index: this.esIndex,
+                    index: this.getElasticsearchIndex(),
                     data: esCompressedData
                 })
             );
@@ -313,9 +305,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         let response: ElasticsearchSearchResponse<File>;
         try {
             response = await this.esClient.search({
-                ...configurations.es({
-                    tenant: this.context.tenancy.getCurrentTenant().id
-                }),
+                index: this.getElasticsearchIndex(),
                 body
             });
         } catch (ex) {
@@ -357,46 +347,32 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
-        const { where, limit: initialLimit } = params;
+        const { where, limit } = params;
 
-        const esDefaults = configurations.es({
-            tenant: this.context.tenancy.getCurrentTenant().id
+        const initialBody = createElasticsearchBody({
+            context: this.context,
+            where,
+            limit,
+            sort: [],
+            after: undefined
         });
 
-        const must: any[] = [];
-        if (where.locale) {
-            must.push({ term: { "locale.keyword": where.locale } });
-        }
-
-        // When ES index is shared between tenants, we need to filter records by tenant ID
-        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-        if (sharedIndex) {
-            const tenant = this.context.tenancy.getCurrentTenant();
-            must.push({ term: { "tenant.keyword": tenant.id } });
-        }
-
-        const limit = createLimit(initialLimit);
-
-        const body = {
-            query: {
-                bool: {
-                    must
-                }
-            },
-            size: limit + 1,
+        const body: ElasticsearchSearchBody = {
+            ...initialBody,
             aggs: {
                 listTags: {
-                    terms: { field: "tags.keyword" }
+                    terms: {
+                        field: "tags.keyword"
+                    }
                 }
-            },
-            search_after: decodeCursor(null)
+            }
         };
 
         let response: ElasticsearchSearchResponse<string> | undefined = undefined;
 
         try {
             response = await this.esClient.search({
-                ...esDefaults,
+                index: this.getElasticsearchIndex(),
                 body
             });
         } catch (ex) {
@@ -423,7 +399,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const meta: FileManagerFilesStorageOperationsListResponseMeta = {
             hasMoreItems,
             totalCount,
-            cursor: null //tags.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null
+            cursor: null
         };
 
         return [tags, meta];
@@ -440,5 +416,17 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
     private getFileIndexTransformPlugins(): FileIndexTransformPlugin[] {
         return this.context.plugins.byType<FileIndexTransformPlugin>(FileIndexTransformPlugin.type);
+    }
+
+    private getElasticsearchIndex(): string {
+        const locale = this.context.i18nContent.getCurrentLocale();
+        if (!locale) {
+            throw new WebinyError("Missing locale in FilesStorageOperations.", "LOCALE_ERROR");
+        }
+        const { index } = configurations.es({
+            tenant: this.context.tenancy.getCurrentTenant().id,
+            locale: locale.code
+        });
+        return index;
     }
 }

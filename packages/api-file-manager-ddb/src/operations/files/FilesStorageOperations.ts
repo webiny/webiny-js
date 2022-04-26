@@ -11,6 +11,7 @@ import {
     FileManagerFilesStorageOperationsListResponse,
     FileManagerFilesStorageOperationsListResponseMeta,
     FileManagerFilesStorageOperationsTagsParams,
+    FileManagerFilesStorageOperationsTagsParamsWhere,
     FileManagerFilesStorageOperationsTagsResponse,
     FileManagerFilesStorageOperationsUpdateParams
 } from "@webiny/api-file-manager/types";
@@ -299,14 +300,15 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
         return [files, meta];
     }
+
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
-        const { where } = params;
+        const { where: initialWhere } = params;
 
         const queryAllParams = {
             entity: this.entity,
-            partitionKey: this.createPartitionKey(where),
+            partitionKey: this.createPartitionKey(initialWhere),
             options: {
                 gte: " ",
                 reverse: false
@@ -325,10 +327,33 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 }
             );
         }
+
+        const fields = this.context.plugins.byType<FileDynamoDbFieldPlugin>(
+            FileDynamoDbFieldPlugin.type
+        );
+
+        const where: Partial<FileManagerFilesStorageOperationsTagsParamsWhere> = {
+            ...initialWhere
+        };
+
+        delete where["tenant"];
+        delete where["locale"];
+
         /**
-         * Aggregate all the tags from all the items in the database.
+         * Filter the read items via the code.
+         * It will build the filters out of the where input and transform the values it is using.
          */
-        const tagsObject = results.reduce((collection, item) => {
+        const filteredItems = filterItems({
+            plugins: this.context.plugins,
+            items: results,
+            where,
+            fields
+        });
+
+        /**
+         * Aggregate all the tags from all the filtered items.
+         */
+        const tagsObject = filteredItems.reduce((collection, item) => {
             const tags = Array.isArray(item.tags) ? item.tags : [];
             for (const tag of tags) {
                 if (!collection[tag]) {

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "5.25.0-beta.2",
+  "version": "5.25.0",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js"
@@ -13,7 +13,7 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/telemetry": "^5.25.0-beta.2",
+    "@webiny/telemetry": "^5.25.0",
     "boolean": "3.1.4",
     "camelcase": "5.3.1",
     "chalk": "4.1.2",
@@ -29,7 +29,7 @@
     "ts-morph": "^11.0.0",
     "typescript": "4.5.5",
     "uniqid": "5.4.0",
-    "yargs": "14.2.3"
+    "yargs": "^17.4.0"
   },
   "license": "MIT",
   "publishConfig": {

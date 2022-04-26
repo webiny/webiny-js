@@ -1,6 +1,6 @@
+import WebinyError from "@webiny/error";
 import { ElasticsearchContext } from "~/types";
 import { ContextPlugin } from "@webiny/handler";
-import WebinyError from "@webiny/error";
 import { createElasticsearchClient, ElasticsearchClientOptions } from "~/client";
 import { getElasticsearchOperators } from "~/operators";
 import { Client } from "@elastic/elasticsearch";
