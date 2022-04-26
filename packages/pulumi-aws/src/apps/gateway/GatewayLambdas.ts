@@ -28,7 +28,11 @@ export function createLambdas(app: PulumiApp) {
     });
 
     const functions = app.addHandler(() => {
-        // Some resources _must_ be put in us-east-1, such as Lambda at Edge.
+        // Some resources _must_ be put in us-east-1, such as Lambda at Edge,
+        // so we need to pass provider to resource options.
+        // The problem is, pulumi does not allow to pass provider as `pulumi.Output`,
+        // it has to be a created instance.
+        // This is why we run the code inside `app.addHandler` wrapper.
         const awsUsEast1 = new aws.Provider("us-east-1", { region: "us-east-1" });
 
         const viewerRequest = createCloudfrontFunction("viewerRequest");

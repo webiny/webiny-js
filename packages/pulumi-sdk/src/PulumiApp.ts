@@ -71,6 +71,14 @@ export abstract class PulumiApp<TConfig = unknown> {
         this.afterDeployHandlers.push(handler);
     }
 
+    /**
+     * Adds a resource to pulumi app.
+     * It's not running the script immadietely, but enqueues the call.
+     * This way we are still able to modify the config of the resource.
+     * @param ctor Resource to be added, ie aws.s3.Bucket
+     * @param params Parameters to configure the resource
+     * @returns Object giving access to both resource outputs and its config.
+     */
     public addResource<T extends ResourceConstructor>(ctor: T, params: CreateResourceParams<T>) {
         const config = params.config ?? ({} as ResourceArgs<T>);
         const opts = params.opts ?? {};
@@ -93,15 +101,38 @@ export abstract class PulumiApp<TConfig = unknown> {
         return resource;
     }
 
+    /**
+     * Registers output value within pulumi app.
+     * @param name Name of the output value
+     * @param output Value of the output
+     */
     public addOutput<T>(name: string, output: T) {
         this.outputs[name] = output;
     }
 
+    /**
+     * Registers one or more output values.
+     * @param outputs Dictionary containg output values.
+     */
     public addOutputs(outputs: Record<string, unknown>) {
         Object.assign(this.outputs, outputs);
     }
 
+    /**
+     * Registers an app module witin app.
+     * Allows to decompose application into smaller pieces.
+     * Added module can be then retrieved with `getModule`.
+     * @param def Module definition
+     */
     public addModule<TModule>(def: PulumiAppModuleDefinition<TModule, void>): TModule;
+
+    /**
+     * Registers an app module witin app.
+     * Allows to decompose application into smaller pieces.
+     * Added module can be then retrieved with `getModule`.
+     * @param def Module definition
+     * @param config Module config
+     */
     public addModule<TModule, TConfig>(
         def: PulumiAppModuleDefinition<TModule, TConfig>,
         config: TConfig
@@ -116,6 +147,13 @@ export abstract class PulumiApp<TConfig = unknown> {
         return module;
     }
 
+    /**
+     * Schedules a handler to be executed when running pulumi script.
+     * Anything, that is returned from handler will be wrapped in pulumi.Output
+     * so it can be used in other places.
+     * @param handler Handler to be executed.
+     * @returns Result of the handler wrapped with pulumi.Output
+     */
     public addHandler<T>(handler: () => Promise<T> | T) {
         const promise = new Promise<T>(resolve => {
             this.handlers.push(async () => {
@@ -126,6 +164,10 @@ export abstract class PulumiApp<TConfig = unknown> {
         return pulumi.output(promise);
     }
 
+    /**
+     * Returns a module by its definition
+     * @param def Module definition
+     */
     public getModule<TConfig, TModule>(def: PulumiAppModuleDefinition<TModule, TConfig>): TModule;
     public getModule<TConfig, TModule>(
         def: PulumiAppModuleDefinition<TModule, TConfig>,
@@ -152,6 +194,7 @@ export abstract class PulumiApp<TConfig = unknown> {
         return module;
     }
 
+    /** Internal usage only. */
     public createController() {
         return {
             run: this.runProgram.bind(this),
