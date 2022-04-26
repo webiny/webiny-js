@@ -1,15 +1,15 @@
 {
-  "name": "api-apw-scheduler-execute-action",
-  "version": "0.1.0",
-  "scripts": {
-    "build": "yarn webiny run build",
-    "watch": "yarn webiny run watch"
-  },
-  "dependencies": {
-    "@webiny/api-apw": "^5.24.0",
-    "@webiny/api-apw-scheduler-so-ddb": "^5.24.0",
-    "@webiny/cli": "^5.24.0",
-    "@webiny/handler-aws": "^5.24.0",
-    "@webiny/project-utils": "^5.24.0"
-  }
+	"name": "api-apw-scheduler-execute-action",
+	"version": "0.1.0",
+	"scripts": {
+		"build": "yarn webiny run build",
+		"watch": "yarn webiny run watch"
+	},
+	"dependencies": {
+		"@webiny/api-apw": "^5.25.0",
+		"@webiny/api-apw-scheduler-so-ddb": "^5.25.0",
+		"@webiny/cli": "^5.25.0",
+		"@webiny/handler-aws": "^5.25.0",
+		"@webiny/project-utils": "^5.25.0"
+	}
 }
