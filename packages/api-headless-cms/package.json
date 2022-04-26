@@ -34,6 +34,7 @@
     "@webiny/handler-db": "^5.25.0",
     "@webiny/handler-graphql": "^5.25.0",
     "@webiny/handler-http": "^5.25.0",
+    "@webiny/models": "^5.25.0",
     "@webiny/plugins": "^5.25.0",
     "@webiny/pubsub": "^5.25.0",
     "@webiny/utils": "^5.25.0",

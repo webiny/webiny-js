@@ -20,7 +20,8 @@
     { "path": "../utils" },
     { "path": "../validation" },
     { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy-so-ddb" }
+    { "path": "../api-tenancy-so-ddb" },
+    { "path": "../models" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -65,7 +66,9 @@
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
       "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/models/*": ["../models/src/*"],
+      "@webiny/models": ["../models/src"]
     },
     "baseUrl": "."
   }

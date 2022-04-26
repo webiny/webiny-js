@@ -36,4 +36,8 @@ export class Model {
     public removeAttribute(attr: Attribute | string): void {
         this.attributes.removeAttribute(attr);
     }
+
+    public getAttribute(name: string): Attribute | null {
+        return this.attributes.getAttribute(name);
+    }
 }
