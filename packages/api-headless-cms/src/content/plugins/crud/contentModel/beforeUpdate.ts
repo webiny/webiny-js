@@ -149,13 +149,23 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
             "cms-model-field-to-graphql"
         );
 
+        const aliases: string[] = [];
+
         for (let i = 0; i < fields.length; i++) {
             const field = fields[i];
             if (!fieldTypePlugins.find(item => item.fieldType === field.type)) {
-                throw new Error(
+                throw new WebinyError(
                     `Cannot update content model because of the unknown "${field.type}" field.`
                 );
             }
+            if (!field.alias) {
+                continue;
+            } else if (aliases.includes(field.alias)) {
+                throw new WebinyError(
+                    `Cannot update content model because field "${field.fieldId}" has alias "${field.alias}", which is already used.`
+                );
+            }
+            aliases.push(field.alias);
         }
 
         if (fields.length) {
