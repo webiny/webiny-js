@@ -11,7 +11,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@webiny/project-utils": "^5.21.0"
+    "@webiny/project-utils": "^5.25.0"
   },
   "publishConfig": {
     "access": "public",

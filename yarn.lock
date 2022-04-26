@@ -9966,17 +9966,17 @@ __metadata:
     "@types/jsonwebtoken": 8.5.1
     "@types/md5": ^2.3.2
     "@webiny/api-security": ^5.25.0
-    "@webiny/api-security-so-ddb": ^5.17.0-beta.1
+    "@webiny/api-security-so-ddb": ^5.25.0
     "@webiny/api-tenancy": ^5.25.0
-    "@webiny/api-tenancy-so-ddb": ^5.17.0-beta.1
+    "@webiny/api-tenancy-so-ddb": ^5.25.0
     "@webiny/cli": ^5.25.0
     "@webiny/db-dynamodb": ^5.25.0
     "@webiny/error": ^5.25.0
     "@webiny/handler": ^5.25.0
-    "@webiny/handler-aws": ^5.17.0-beta.1
+    "@webiny/handler-aws": ^5.25.0
     "@webiny/handler-graphql": ^5.25.0
-    "@webiny/handler-http": ^5.17.0-beta.1
-    "@webiny/plugins": ^5.17.0-beta.1
+    "@webiny/handler-http": ^5.25.0
+    "@webiny/plugins": ^5.25.0
     "@webiny/project-utils": ^5.25.0
     "@webiny/pubsub": ^5.25.0
     "@webiny/validation": ^5.25.0
@@ -9991,7 +9991,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-apw-scheduler-so-ddb@^5.24.0, @webiny/api-apw-scheduler-so-ddb@workspace:packages/api-apw-scheduler-so-ddb":
+"@webiny/api-apw-scheduler-so-ddb@^5.25.0, @webiny/api-apw-scheduler-so-ddb@workspace:packages/api-apw-scheduler-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-apw-scheduler-so-ddb@workspace:packages/api-apw-scheduler-so-ddb"
   dependencies:
@@ -10021,7 +10021,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-apw@^5.24.0, @webiny/api-apw@^5.25.0, @webiny/api-apw@workspace:packages/api-apw":
+"@webiny/api-apw@^5.25.0, @webiny/api-apw@workspace:packages/api-apw":
   version: 0.0.0-use.local
   resolution: "@webiny/api-apw@workspace:packages/api-apw"
   dependencies:
@@ -10659,9 +10659,9 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@types/accept-language-parser": ^1.5.3
     "@webiny/api-security": ^5.25.0
-    "@webiny/api-security-so-ddb": ^5.17.0-beta.1
+    "@webiny/api-security-so-ddb": ^5.25.0
     "@webiny/api-tenancy": ^5.25.0
-    "@webiny/api-tenancy-so-ddb": ^5.17.0-beta.1
+    "@webiny/api-tenancy-so-ddb": ^5.25.0
     "@webiny/cli": ^5.25.0
     "@webiny/error": ^5.25.0
     "@webiny/handler": ^5.25.0
@@ -11023,7 +11023,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-so-ddb@^5.17.0-beta.1, @webiny/api-security-so-ddb@^5.25.0, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
+"@webiny/api-security-so-ddb@^5.25.0, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb"
   dependencies:
@@ -11060,7 +11060,7 @@ __metadata:
     "@webiny/cli": ^5.25.0
     "@webiny/error": ^5.25.0
     "@webiny/handler": ^5.25.0
-    "@webiny/handler-aws": ^5.17.0-beta.1
+    "@webiny/handler-aws": ^5.25.0
     "@webiny/handler-graphql": ^5.25.0
     "@webiny/handler-http": ^5.25.0
     "@webiny/plugins": ^5.25.0
@@ -11077,7 +11077,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy-so-ddb@^5.17.0-beta.1, @webiny/api-tenancy-so-ddb@^5.25.0, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
+"@webiny/api-tenancy-so-ddb@^5.25.0, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb"
   dependencies:
@@ -12555,7 +12555,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.24.0, @webiny/cli@^5.25.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.25.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -12805,7 +12805,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@^5.17.0-beta.1, @webiny/handler-aws@^5.24.0, @webiny/handler-aws@^5.25.0, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@^5.25.0, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -12895,7 +12895,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-http@^5.17.0-beta.1, @webiny/handler-http@^5.25.0, @webiny/handler-http@workspace:packages/handler-http":
+"@webiny/handler-http@^5.25.0, @webiny/handler-http@workspace:packages/handler-http":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-http@workspace:packages/handler-http"
   dependencies:
@@ -13006,11 +13006,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/ioc@workspace:packages/ioc"
   dependencies:
-    "@webiny/project-utils": ^5.21.0
+    "@webiny/project-utils": ^5.25.0
   languageName: unknown
   linkType: soft
 
-"@webiny/plugins@^5.17.0-beta.1, @webiny/plugins@^5.25.0, @webiny/plugins@workspace:packages/plugins":
+"@webiny/plugins@^5.25.0, @webiny/plugins@workspace:packages/plugins":
   version: 0.0.0-use.local
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
@@ -13040,7 +13040,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.21.0, @webiny/project-utils@^5.24.0, @webiny/project-utils@^5.25.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.24.0, @webiny/project-utils@^5.25.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -13141,7 +13141,7 @@ __metadata:
     "@webiny/cli": ^5.25.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.25.0
     "@webiny/project-utils": ^5.25.0
-    "@webiny/pulumi-sdk": ^5.24.0
+    "@webiny/pulumi-sdk": ^5.25.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.5.5
@@ -13176,7 +13176,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pulumi-sdk@^5.24.0, @webiny/pulumi-sdk@^5.25.0, @webiny/pulumi-sdk@workspace:packages/pulumi-sdk":
+"@webiny/pulumi-sdk@^5.25.0, @webiny/pulumi-sdk@workspace:packages/pulumi-sdk":
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
   dependencies:
@@ -14216,11 +14216,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-apw-scheduler-execute-action@workspace:api/code/apw/executeAction"
   dependencies:
-    "@webiny/api-apw": ^5.24.0
-    "@webiny/api-apw-scheduler-so-ddb": ^5.24.0
-    "@webiny/cli": ^5.24.0
-    "@webiny/handler-aws": ^5.24.0
-    "@webiny/project-utils": ^5.24.0
+    "@webiny/api-apw": ^5.25.0
+    "@webiny/api-apw-scheduler-so-ddb": ^5.25.0
+    "@webiny/cli": ^5.25.0
+    "@webiny/handler-aws": ^5.25.0
+    "@webiny/project-utils": ^5.25.0
   languageName: unknown
   linkType: soft
 
@@ -14229,11 +14229,11 @@ __metadata:
   resolution: "api-apw-scheduler-schedule-action@workspace:api/code/apw/scheduleAction"
   dependencies:
     "@aws-sdk/client-cloudwatch-events": latest
-    "@webiny/api-apw": ^5.24.0
-    "@webiny/api-apw-scheduler-so-ddb": ^5.24.0
-    "@webiny/cli": ^5.24.0
-    "@webiny/handler-aws": ^5.24.0
-    "@webiny/project-utils": ^5.24.0
+    "@webiny/api-apw": ^5.25.0
+    "@webiny/api-apw-scheduler-so-ddb": ^5.25.0
+    "@webiny/cli": ^5.25.0
+    "@webiny/handler-aws": ^5.25.0
+    "@webiny/project-utils": ^5.25.0
   languageName: unknown
   linkType: soft
 
@@ -14277,7 +14277,7 @@ __metadata:
     "@webiny/api-admin-users-cognito": ^5.25.0
     "@webiny/api-admin-users-cognito-so-ddb": ^5.25.0
     "@webiny/api-apw": ^5.25.0
-    "@webiny/api-apw-scheduler-so-ddb": ^5.24.0
+    "@webiny/api-apw-scheduler-so-ddb": ^5.25.0
     "@webiny/api-file-manager": ^5.25.0
     "@webiny/api-file-manager-ddb": ^5.25.0
     "@webiny/api-file-manager-s3": ^5.25.0
