@@ -10,9 +10,9 @@ interface Config {
  */
 export abstract class DataSource<TLoadData = any, TContext = any> {
     abstract loadData(
-        /**
-         * Variables parsed from the requested URL
-         */
+    /**
+     * Variables parsed from the requested URL
+     */
         variables: Record<string, any>,
         /**
          * Data source config that was created via Page Builder settings UI

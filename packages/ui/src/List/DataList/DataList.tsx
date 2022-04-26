@@ -194,6 +194,8 @@ interface DataListProps {
     modalOverlay?: React.ReactElement;
     // Provide an action element that handle toggling the "Modal overlay".
     modalOverlayAction?: React.ReactElement;
+    // Provide additional UI for list sub-header.
+    subHeader?: React.ReactElement;
 
     meta?: Record<string, any> | null;
 
@@ -375,17 +377,22 @@ export const DataList: React.FC<DataListProps> = props => {
 
     const showOptions = props.showOptions || {};
 
+    const listHeaderActionsCellSpan = props.actions ? 7 : 0;
+    const listHeaderTitleCellSpan = 12 - listHeaderActionsCellSpan;
+
     return (
         <DataListModalOverlayProvider>
             <ListContainer className={"webiny-data-list"} data-testid={"ui.list.data-list"}>
                 {(props.title || props.actions) && (
                     <Grid className={listHeader}>
-                        <Cell span={5} className={listTitle}>
+                        <Cell span={listHeaderTitleCellSpan} className={listTitle}>
                             <Typography use="headline5">{props.title}</Typography>
                         </Cell>
-                        <Cell span={7} className={listActions}>
-                            {props.actions}
-                        </Cell>
+                        {props.actions && (
+                            <Cell span={listHeaderActionsCellSpan} className={listActions}>
+                                {props.actions}
+                            </Cell>
+                        )}
                     </Grid>
                 )}
 
@@ -407,6 +414,7 @@ export const DataList: React.FC<DataListProps> = props => {
                 )}
 
                 <div className={classNames(dataListContent, "webiny-data-list__content")}>
+                    {props.subHeader}
                     {render}
                     {props.modalOverlay}
                 </div>
@@ -450,7 +458,7 @@ export interface ScrollListProps extends ListProps {
 
 export const ScrollList: React.FC<ScrollListProps> = props => {
     return (
-        <List {...props} className={scrollList}>
+        <List {...props} className={classNames(props.className, scrollList)}>
             {props.children}
         </List>
     );

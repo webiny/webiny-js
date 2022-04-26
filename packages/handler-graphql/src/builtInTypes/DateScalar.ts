@@ -8,10 +8,10 @@ export const DateScalar = new GraphQLScalarType({
         }
         try {
             const date = new Date(value);
-            return date.toISOString().substr(0, 10);
+            return date.toISOString().slice(0, 10);
         } catch (ex) {
             if (value.toISOString) {
-                return value.toISOString().substr(0, 10);
+                return value.toISOString().slice(0, 10);
             }
             throw ex;
         }

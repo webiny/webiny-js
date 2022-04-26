@@ -55,7 +55,7 @@ module.exports.getUser = async () => {
     if (!pat) {
         throw new Error(
             `It seems you are not logged in. Please login using the ${log.error.hl(
-                "webiny login"
+                "yarn webiny login"
             )} command.`
         );
     }

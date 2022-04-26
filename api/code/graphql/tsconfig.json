@@ -2,37 +2,111 @@
   "extends": "../../tsconfig.json",
   "include": ["src"],
   "references": [
-    { "path": "../../../packages/api-admin-users-cognito/tsconfig.build.json" },
-    { "path": "../../../packages/api-admin-users-cognito-so-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/api-file-manager/tsconfig.build.json" },
-    { "path": "../../../packages/api-file-manager-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/api-file-manager-s3/tsconfig.build.json" },
-    { "path": "../../../packages/api-form-builder/tsconfig.build.json" },
-    { "path": "../../../packages/api-form-builder-so-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/api-headless-cms/tsconfig.build.json" },
-    { "path": "../../../packages/api-headless-cms-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/api-i18n/tsconfig.build.json" },
-    { "path": "../../../packages/api-i18n-content/tsconfig.build.json" },
-    { "path": "../../../packages/api-i18n-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/api-page-builder/tsconfig.build.json" },
-    { "path": "../../../packages/api-page-builder-import-export/tsconfig.build.json" },
-    { "path": "../../../packages/api-page-builder-import-export-so-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/api-page-builder-so-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/api-prerendering-service/tsconfig.build.json" },
-    { "path": "../../../packages/api-security/tsconfig.build.json" },
-    { "path": "../../../packages/api-security-cognito/tsconfig.build.json" },
-    { "path": "../../../packages/api-security-okta/tsconfig.build.json" },
-    { "path": "../../../packages/api-security-so-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/api-tenancy/tsconfig.build.json" },
-    { "path": "../../../packages/api-tenancy-so-ddb/tsconfig.build.json" },
-    { "path": "../../../packages/db-dynamodb/tsconfig.build.json" },
-    { "path": "../../../packages/handler-args/tsconfig.build.json" },
-    { "path": "../../../packages/handler-aws/tsconfig.build.json" },
-    { "path": "../../../packages/handler-client/tsconfig.build.json" },
-    { "path": "../../../packages/handler-db/tsconfig.build.json" },
-    { "path": "../../../packages/handler-graphql/tsconfig.build.json" },
-    { "path": "../../../packages/handler-http/tsconfig.build.json" },
-    { "path": "../../../packages/handler-logs/tsconfig.build.json" }
+    {
+      "path": "../../../packages/api-admin-users-cognito/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-admin-users-cognito-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-apw/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-file-manager/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-file-manager-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-file-manager-s3/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-form-builder/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-form-builder-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-headless-cms/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-headless-cms-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-i18n/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-i18n-content/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-i18n-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-page-builder/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-page-builder-import-export/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-page-builder-import-export-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-page-builder-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-prerendering-service/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-security/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-security-cognito/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-security-okta/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-security-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-tenancy/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-tenancy-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/db-dynamodb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-args/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-aws/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-client/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-db/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-graphql/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-http/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-logs/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-apw-scheduler-so-ddb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-apw"
+    },
+    {
+      "path": "../../../packages/api-apw-scheduler-so-ddb"
+    }
   ],
   "compilerOptions": {
     "paths": {
@@ -45,6 +119,8 @@
       "@webiny/api-admin-users-cognito-so-ddb": [
         "../../../packages/api-admin-users-cognito-so-ddb/src"
       ],
+      "@webiny/api-apw/*": ["../../../packages/api-apw/src/*"],
+      "@webiny/api-apw": ["../../../packages/api-apw/src"],
       "@webiny/api-file-manager/*": ["../../../packages/api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../../../packages/api-file-manager/src"],
       "@webiny/api-file-manager-ddb/*": ["../../../packages/api-file-manager-ddb/src/*"],

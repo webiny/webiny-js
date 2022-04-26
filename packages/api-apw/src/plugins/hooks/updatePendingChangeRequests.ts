@@ -1,52 +1,35 @@
+import { ApwChangeRequest, ApwContentReviewCrud, LifeCycleHookCallbackParams } from "~/types";
 import {
-    ApwChangeRequest,
-    ApwContentReview,
-    ApwContentReviewCrud,
-    LifeCycleHookCallbackParams
-} from "~/types";
+    extractContentReviewIdAndStep,
+    updateContentReview,
+    updateContentReviewStep
+} from "../utils";
 
 interface UpdatePendingChangeRequestsParams {
     contentReviewMethods: ApwContentReviewCrud;
-    changeRequest: ApwChangeRequest;
     delta: number;
+    step: ApwChangeRequest["step"];
 }
 
 const updatePendingChangeRequests = async ({
     contentReviewMethods,
-    changeRequest,
+    step,
     delta
 }: UpdatePendingChangeRequestsParams): Promise<void> => {
-    const { step: stepSlug } = changeRequest;
-    /*
-     * Get associated content review entry.
-     */
-    const [entryId, version, slug] = stepSlug.split("#");
-    const revisionId = `${entryId}#${version}`;
+    const { id, stepId } = extractContentReviewIdAndStep(step);
 
-    let contentReviewEntry: ApwContentReview | null = null;
-    try {
-        contentReviewEntry = await contentReviewMethods.get(revisionId);
-    } catch (e) {
-        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
-            throw e;
-        }
-    }
-    if (!contentReviewEntry) {
-        return;
-    }
-    /**
-     * Update "pendingChangeRequests" count of corresponding step in content review entry.
-     */
-    await contentReviewMethods.update(contentReviewEntry.id, {
-        steps: contentReviewEntry.steps.map(step => {
-            if (step.slug === slug) {
-                return {
+    await updateContentReview({
+        contentReviewMethods,
+        id,
+        getNewContentReviewData: data => {
+            return {
+                ...data,
+                steps: updateContentReviewStep(data.steps, stepId, step => ({
                     ...step,
                     pendingChangeRequests: step.pendingChangeRequests + delta
-                };
-            }
-            return step;
-        })
+                }))
+            };
+        }
     });
 };
 
@@ -55,12 +38,19 @@ export const updatePendingChangeRequestsCount = ({
 }: Pick<LifeCycleHookCallbackParams, "apw">) => {
     apw.changeRequest.onAfterChangeRequestDelete.subscribe(async ({ changeRequest }) => {
         /**
+         * If the deleted changeRequest was marked as resolved. We don't need to do anything here,
+         * because "pendingChangeRequests has been already updated in "onAfterChangeRequestUpdate" hook.
+         */
+        if (changeRequest.resolved === true) {
+            return;
+        }
+        /**
          * After a "changeRequest" is deleted, decrement the "pendingChangeRequests" count
          * in the corresponding step of the content review entry.
          */
         await updatePendingChangeRequests({
             contentReviewMethods: apw.contentReview,
-            changeRequest: changeRequest,
+            step: changeRequest.step,
             delta: -1
         });
     });
@@ -72,7 +62,7 @@ export const updatePendingChangeRequestsCount = ({
          */
         await updatePendingChangeRequests({
             contentReviewMethods: apw.contentReview,
-            changeRequest,
+            step: changeRequest.step,
             delta: 1
         });
     });
@@ -88,7 +78,7 @@ export const updatePendingChangeRequestsCount = ({
 
             await updatePendingChangeRequests({
                 contentReviewMethods: apw.contentReview,
-                changeRequest,
+                step: changeRequest.step,
                 delta
             });
         }

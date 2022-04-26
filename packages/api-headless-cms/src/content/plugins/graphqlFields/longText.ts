@@ -17,6 +17,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     fieldType: "long-text",
     isSortable: false,
     isSearchable: true,
+    fullTextSearch: true,
     read: {
         createTypeField({ field }) {
             if (field.multipleValues) {

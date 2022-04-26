@@ -422,6 +422,85 @@ class Policies {
             }
         });
     }
+
+    getApwSchedulerScheduleActionLambdaPolicy({
+        primaryDynamodbTable
+    }: {
+        primaryDynamodbTable: aws.dynamodb.Table;
+    }): aws.iam.Policy {
+        return new aws.iam.Policy("ApwSchedulerScheduleActionLambdaPolicy", {
+            description: "This policy enables access to cloudwatch event and lambda invocation",
+            policy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Sid: "PermissionLambda",
+                        Effect: "Allow",
+                        Action: ["lambda:InvokeFunction"],
+                        Resource: ["*"]
+                    },
+                    {
+                        Sid: "PermissionDynamoDB",
+                        Effect: "Allow",
+                        Action: [
+                            "dynamodb:PutItem",
+                            "dynamodb:Query",
+                            "dynamodb:GetItem",
+                            "dynamodb:UpdateItem",
+                            "dynamodb:DeleteItem"
+                        ],
+                        Resource: [
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                        ]
+                    },
+                    {
+                        Sid: "PermissionEvents",
+                        Effect: "Allow",
+                        Action: [
+                            "events:DeleteRule",
+                            "events:PutTargets",
+                            "events:PutRule",
+                            "events:ListRules",
+                            "events:RemoveTargets",
+                            "events:ListTargetsByRule"
+                        ],
+                        Resource: ["*"]
+                    }
+                ]
+            }
+        });
+    }
+
+    getApwSchedulerExecuteActionLambdaPolicy({
+        primaryDynamodbTable
+    }: {
+        primaryDynamodbTable: aws.dynamodb.Table;
+    }): aws.iam.Policy {
+        return new aws.iam.Policy("ApwSchedulerExecuteActionLambdaPolicy", {
+            description: "This policy enables access to cloudwatch event and lambda invocation",
+            policy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Sid: "PermissionLambda",
+                        Effect: "Allow",
+                        Action: ["lambda:InvokeFunction"],
+                        Resource: ["*"]
+                    },
+                    {
+                        Sid: "PermissionDynamoDB",
+                        Effect: "Allow",
+                        Action: ["dynamodb:Query", "dynamodb:GetItem", "dynamodb:DeleteItem"],
+                        Resource: [
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                        ]
+                    }
+                ]
+            }
+        });
+    }
 }
 
 const policies = new Policies();

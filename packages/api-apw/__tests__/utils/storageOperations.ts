@@ -1,37 +1,28 @@
 /**
- * We use @ts-ignore because __getCreateStorageOperations and __getCreateStorageOperations are attached from other projects directly to JEST context.
+ * We use @ts-ignore because __getStorageOperations is attached from other projects directly to JEST context.
  */
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 
 interface GetStorageOperationsParams {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    documentClient: any;
 }
 export const getStorageOperations = (params: GetStorageOperationsParams) => {
     // @ts-ignore
-    if (typeof __getCreateStorageOperations !== "function") {
-        throw new Error(`There is no global "__getCreateStorageOperations" function.`);
+    if (typeof __getStorageOperations !== "function") {
+        throw new Error(`There is no global "__getStorageOperations" function.`);
     }
     // @ts-ignore
-    const storageOperations = __getCreateStorageOperations();
+    const storageOperations = __getStorageOperations();
     if (!storageOperations) {
-        throw new Error(
-            `"__getCreateStorageOperations" does not produce a factory function or plugins.`
-        );
+        throw new Error(`"__getStorageOperations" does not produce a factory function or plugins.`);
     }
-    const { createStorageOperations, getPlugins } = storageOperations;
-    if (typeof createStorageOperations !== "function") {
-        throw new Error(
-            `"__getCreateStorageOperations" does not produce a factory function "createStorageOperations".`
-        );
-    } else if (typeof getPlugins !== "function") {
-        throw new Error(
-            `"__getCreateStorageOperations" does not produce a plugins function "getPlugins".`
-        );
-    }
+
     return {
-        storageOperations: createStorageOperations({
-            plugins: params.plugins || []
-        }),
-        plugins: getPlugins()
+        ...storageOperations,
+        plugins: [
+            ...storageOperations.plugins,
+            ...(Array.isArray(params.plugins) ? params.plugins : [])
+        ]
     };
 };

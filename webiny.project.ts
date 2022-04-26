@@ -1,7 +1,5 @@
 // @ts-nocheck
 export default {
-    // Uncomment to apply WCP telemetry
-    // id: "webiny-js",
     name: "webiny-js",
     cli: {
         // No need to track anything when developing Webiny.
@@ -24,9 +22,7 @@ export default {
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
                     import("@webiny/cli-plugin-scaffold-react-app"),
                     import("@webiny/cli-plugin-scaffold-react-component"),
-                    import("@webiny/cli-plugin-scaffold-ci"),
-                    import("./apps/admin/cli"),
-                    import("./apps/website/cli")
+                    import("@webiny/cli-plugin-scaffold-ci")
                 ]);
 
                 return modules
