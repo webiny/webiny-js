@@ -1,0 +1,35 @@
+{
+  "name": "@webiny/models",
+  "version": "5.21.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/models"
+  },
+  "description": "A simple implementation of models.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "dependencies": {
+    "@webiny/error": "^5.21.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.8.3",
+    "@babel/runtime": "^7.5.5",
+    "@webiny/cli": "^5.21.0",
+    "@webiny/project-utils": "^5.21.0",
+    "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.1.3"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  }
+}
