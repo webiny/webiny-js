@@ -36,8 +36,6 @@ context("Login Page", () => {
 
     it("try to access non-existing page as logged user", () => {
         const newUserAccountEmail = uniqid("cypress_", "@z1fihlo8.mailosaur.net");
-
-        let fullAccessGroupUser;
         const password = "12345678";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
@@ -53,10 +51,7 @@ context("Login Page", () => {
                     }
                 })
                 .then(user => {
-                    fullAccessGroupUser = user;
-                    cy.login({ username: fullAccessGroupUser.email, password });
-                    cy.log("email:" + fullAccessGroupUser.email);
-                    cy.log("psw:" + password);
+                    cy.login({ username: user.email, password });
                     cy.visit("/");
 
                     cy.findByText(`Hi ${user.firstName} ${user.lastName}!`).should("be.visible");
@@ -78,8 +73,6 @@ context("Login Page", () => {
 
     it("authenticated user must logout successfully", () => {
         const newUserAccountEmail = uniqid("cypress_", "@z1fihlo8.mailosaur.net");
-
-        let fullAccessGroupUser;
         const password = "12345678";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
@@ -95,10 +88,7 @@ context("Login Page", () => {
                     }
                 })
                 .then(user => {
-                    fullAccessGroupUser = user;
-                    cy.login({ username: fullAccessGroupUser.email, password });
-                    cy.log("email:" + fullAccessGroupUser.email);
-                    cy.log("psw:" + password);
+                    cy.login({ username: user.email, password });
                     cy.visit("/");
 
                     cy.findByText(`Hi ${user.firstName} ${user.lastName}!`).should("be.visible");
@@ -130,9 +120,8 @@ context("Login Page", () => {
         let passwordResetCode;
         const newUserAccountEmail = uniqid("cypress_", "@z1fihlo8.mailosaur.net");
 
-        let fullAccessGroupUser;
-        let password = "12345678";
-        let newPassword = "12345678910";
+        const password = "12345678";
+        const newPassword = "12345678910";
 
         // eslint-disable-next-line jest/valid-expect-in-promise
         cy.securityReadGroup({ slug: "full-access" }).then(group => {
@@ -147,13 +136,11 @@ context("Login Page", () => {
                     }
                 })
                 .then(user => {
-                    fullAccessGroupUser = user;
                     // Login with new user.
-                    cy.login({ username: fullAccessGroupUser.email, password });
-                    cy.log("email:" + fullAccessGroupUser.email);
-                    cy.log("psw:" + password);
+                    cy.login({ username: user.email, password });
+
                     cy.visit("/");
-                    // Verify the access
+                    // Verify the access.
                     cy.findByText(`Hi ${user.firstName} ${user.lastName}!`).should("be.visible");
                     cy.findByText(/To get started - pick one of the actions below:/i).should(
                         "be.visible"
