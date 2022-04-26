@@ -29,7 +29,7 @@ module.exports = async (inputs, context) => {
     const { env = "dev" } = inputs;
 
     // 0. Let's just make sure Pulumi is installed. But, let skip installation starting internally.
-    const pulumi = await getPulumi({}, { install: false });
+    const pulumi = await getPulumi({ install: false });
 
     // 0.1 Calling the install manually here, we get to know if the installation was initiated or not.
     const installed = await pulumi.install();
