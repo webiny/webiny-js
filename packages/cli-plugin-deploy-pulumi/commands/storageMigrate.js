@@ -3,6 +3,13 @@ const fs = require("fs");
 const { getPulumi, login } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 
+// In general , storage may have different resource names than API.
+// We are replacing it, so it will be recognized by pulumi code.
+// Also, users may have their resource name customized, so after migrating to new pulumi application may break.
+// This allows to customize a way in which resources are migrated from API to storage.
+// `oldName` - name that is currently used in pulumi code
+// `newName` - name used inside new pulumi code for storage
+// If user has customized names, you should modify `oldName`
 const storageResources = [
     {
         type: "aws:dynamodb/table:Table",
@@ -31,21 +38,26 @@ module.exports = async inputs => {
         folder: "api"
     });
 
+    // First we export API stack into variable as JSON
     const stackJson = await exportStack({
         pulumi: apiPulumi,
         env: inputs.env
     });
 
+    // From exported JSON we retrieve state for storage app.
     const storageState = processStorageState({
         state: JSON.parse(stackJson),
         env: inputs.env
     });
 
+    // Also we need to update API stack state.
     const apiState = processApiState({
+        // We parse JSON twice to make sure we are operating on different objects.
         state: JSON.parse(stackJson),
         env: inputs.env
     });
 
+    // Now we can import API and storage.
     await importStack({
         app: "api",
         pulumi: apiPulumi,
@@ -74,6 +86,7 @@ async function exportStack({ pulumi, env }) {
 }
 
 async function importStack({ pulumi, env, state, app }) {
+    // Importing stack can be made only using some file, so we save one.
     const stackFile = path.join(process.cwd(), `.${app}.stack.json`);
     const stackJson = JSON.stringify(state, null, 4);
 
@@ -86,6 +99,7 @@ async function importStack({ pulumi, env, state, app }) {
         command: ["stack", "import", "-s", env, "--file", stackFile]
     });
 
+    // Cleanup the temp file
     await fs.promises.rm(stackFile);
 }
 
@@ -124,16 +138,21 @@ async function getAppPulumi({ folder }) {
 // }
 
 function processStorageState({ state, env }) {
+    // From API state we need to extract only some resources.
     const resources = state.deployment.resources.filter(resource => {
         return (
+            // Stack resource is always required
             resource.type === "pulumi:pulumi:Stack" ||
+            // Same goes to pulumi provider
             resource.type === "pulumi:providers:aws" ||
             isStorageResource(resource)
         );
     });
 
     const stack = resources.find(r => r.type === "pulumi:pulumi:Stack");
-    // clear the stack outputs
+
+    // Clear the stack outputs, storage will have slightly different outputs.
+    // This will be fixed once storage is deployed.
     stack.outputs = {};
 
     // We will operate on a JSON string, because some URNs are nested deep inside state JSON.
@@ -142,6 +161,7 @@ function processStorageState({ state, env }) {
 
     // Stack name is generated from pulumi config, must be in a proper format.
     const storageStackUrn = `urn:pulumi:${env}::storage::pulumi:pulumi:Stack::storage-${env}`;
+    // There are multiple references to the stack URN (every resource has it as its parent).
     resourcesJson = replaceAll(resourcesJson, stack.urn, storageStackUrn);
 
     // The same goes for provider resource
@@ -150,6 +170,8 @@ function processStorageState({ state, env }) {
     const storageProviderUrn = `urn:pulumi:${env}::storage::pulumi:providers:aws::${apiProviderName}`;
     resourcesJson = replaceAll(resourcesJson, provider.urn, storageProviderUrn);
 
+    // Storage has a little bit different resource names than API.
+    // We are replacing it, so it will be recognized by pulumi code.
     for (const resource of storageResources) {
         const apiResourceUrn = getResourceUrn({
             app: "api",
@@ -180,8 +202,10 @@ function processApiState({ state, env }) {
         }
 
         return (
+            // We leave stack and provider untouched.
             resource.type === "pulumi:pulumi:Stack" ||
             resource.type === "pulumi:providers:aws" ||
+            // All resources that are belonging to storage will be removed from API
             !isStorageResource(resource)
         );
     });
@@ -195,6 +219,7 @@ function processApiState({ state, env }) {
         });
 
         // Remove any resource that is direct child of any storage resource
+        // This may be for example S3 object that sits inside fm-bucket
         resources = resources.filter(r => r.parent !== resourceUrn);
 
         // Do the same with dependencies (recursively)
