@@ -1517,7 +1517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/cli@npm:^7.16.0, @babel/cli@npm:^7.17.0, @babel/cli@npm:^7.5.5":
+"@babel/cli@npm:^7.12.10, @babel/cli@npm:^7.16.0, @babel/cli@npm:^7.17.0, @babel/cli@npm:^7.5.5":
   version: 7.17.6
   resolution: "@babel/cli@npm:7.17.6"
   dependencies:
@@ -13007,6 +13007,24 @@ __metadata:
   resolution: "@webiny/ioc@workspace:packages/ioc"
   dependencies:
     "@webiny/project-utils": ^5.25.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/models@workspace:packages/models":
+  version: 0.0.0-use.local
+  resolution: "@webiny/models@workspace:packages/models"
+  dependencies:
+    "@babel/cli": ^7.12.10
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.25.0
+    "@webiny/error": ^5.25.0
+    "@webiny/project-utils": ^5.25.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: 4.5.5
   languageName: unknown
   linkType: soft
 
