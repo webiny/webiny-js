@@ -39,8 +39,8 @@ export default (params: HandlerConfig): HandlerPlugin => {
             const variant = event.variant;
 
             // Check if there is only specific variant rerender is requested.
-            // TODO: pass VARIANT variable in some other way
-            if (variant && variant !== process.env.VARIANT) {
+            // TODO: pass STAGED_ROLLOUTS_VARIANT variable in some other way
+            if (variant && variant !== process.env.STAGED_ROLLOUTS_VARIANT) {
                 return;
             }
 

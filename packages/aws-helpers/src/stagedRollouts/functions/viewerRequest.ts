@@ -31,12 +31,16 @@ defineCloudfrontFunctionRequestHandler(event => {
     let variantRandom = Number(request.cookies?.[variantRandomKey]?.value);
     if (isNaN(variantRandom) || variantRandom < 1 || variantRandom > 100) {
         // If no value is present we simply randomize one.
+        // This formula gives you an integer 1-100 (inclusive).
+        // This way we have exactly 100 possible values.
+        // Math.random() return values in range [0, 1) - 0 inclusive, 1 exclusive.
+        // So we need to adjust it a litte bit to achieve what we want.
         variantRandom = Math.floor(Math.random() * 100 + 1);
     }
 
-    // TODO take interval from config
     // Adjust random value to a specific interval optimize caching.
     // Less possible values means less separate cache entries in CDN an better cache hit ratio.
+    // TODO this value can set during deployment, to allow users to decide on trade-off between better caching and finer traffic splitting
     variantRandom -= variantRandom % 5;
 
     request.headers[variantRandomKey] = {

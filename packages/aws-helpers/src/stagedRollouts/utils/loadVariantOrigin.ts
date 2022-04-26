@@ -1,7 +1,7 @@
 import { CloudFrontRequestEvent, getHeader, notFoundResponse } from "~/lambdaEdge";
 
 import { variantFixedKey, variantRandomKey, configPath } from "../utils/common";
-import { GatewayConfig, loadConfig } from "../utils/loadConfig";
+import { GatewayConfig, loadTrafficSplittingConfig } from "../utils/loadTrafficSplittingConfig";
 import { logDebug } from "./log";
 
 export async function loadVariantOrigin(event: CloudFrontRequestEvent) {
@@ -13,7 +13,7 @@ export async function loadVariantOrigin(event: CloudFrontRequestEvent) {
         return request;
     }
 
-    const config = await loadConfig(event);
+    const config = await loadTrafficSplittingConfig(event);
 
     const variantFixed = getHeader(request.headers, variantFixedKey);
     if (variantFixed) {
@@ -49,12 +49,12 @@ export async function loadVariantOrigin(event: CloudFrontRequestEvent) {
 function getRandomVariant(config: GatewayConfig, random: number) {
     let totalWeight = 0;
 
-    const stages = Object.keys(config);
-    for (const stage of stages) {
-        const stageConfig = config[stage];
-        if (stageConfig.weight) {
+    const variants = Object.keys(config);
+    for (const variant of variants) {
+        const variantConfig = config[variant];
+        if (variantConfig.weight) {
             // do not count bad or negative weights
-            totalWeight += stageConfig.weight;
+            totalWeight += variantConfig.weight;
         }
     }
 
@@ -65,17 +65,17 @@ function getRandomVariant(config: GatewayConfig, random: number) {
     // Normalize random value to total weight of traffic splitting rates.
     random = (random * totalWeight) / 100;
 
-    for (const version of stages) {
-        const versionConfig = config[version];
-        if (!versionConfig.weight) {
+    for (const variant of variants) {
+        const variantConfig = config[variant];
+        if (!variantConfig.weight) {
             continue;
         }
 
-        if (random <= versionConfig.weight) {
-            logDebug(`Variant ${version} selected`);
-            return config[version];
+        if (random <= variantConfig.weight) {
+            logDebug(`Variant ${variant} selected`);
+            return config[variant];
         } else {
-            random -= versionConfig.weight;
+            random -= variantConfig.weight;
         }
     }
 

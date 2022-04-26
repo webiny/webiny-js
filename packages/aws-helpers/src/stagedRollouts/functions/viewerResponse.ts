@@ -1,4 +1,4 @@
-import { defineCloudfrontFunctionResponseHandler, setCookie } from "~/cloudfrontFunctions";
+import { defineCloudfrontFunctionResponseHandler, setResponseCookie } from "~/cloudfrontFunctions";
 
 import { variantRandomKey, configPath } from "../utils/common";
 
@@ -13,7 +13,7 @@ defineCloudfrontFunctionResponseHandler(event => {
 
     const variantRandom = request.headers[variantRandomKey]?.value;
     if (variantRandom) {
-        setCookie(response, {
+        setResponseCookie(response, {
             name: variantRandomKey,
             value: variantRandom
         });

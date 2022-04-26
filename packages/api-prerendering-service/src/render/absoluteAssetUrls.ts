@@ -1,7 +1,17 @@
 import { NodeAPI, Node } from "posthtml";
+import { parseSrcset, stringifySrcset, SrcSetDefinition } from "srcset";
 
 export default () => async (tree: NodeAPI) => {
-    // TODO pass this via params or IoC
+    // We are rewriting asset URLs from relative to absolute.
+    // This is mostly for stage-rollout setup in which we have additional intermediate gateway,
+    // that splits traffic between multiple variants.
+    // For specific variant we have website delivery URL and gateway URL, and they are different.
+    // If we had a script `/vendors.js`, because it's relative to gateway URL,
+    // it would have to go through whole traffic splitting logic (based on cookies), may lead to bugs.
+    // Assets for each variant need to have a well defined URL to make sure everything works fine.
+    // By rewriting asset URLs we basically tell application to retrieve assets directly from variant,
+    // without traffic splitting logic in between.
+
     const baseUrl = process.env["DELIVERY_URL"];
     if (!baseUrl) {
         return;
@@ -19,7 +29,25 @@ export default () => async (tree: NodeAPI) => {
                 break;
             case "img":
                 prefixUrl(node, "src", baseUrl);
-                // TODO handle srcset
+
+                // Handle also srcset property for responsive images.
+                if (node.attrs && node.attrs["srcset"]) {
+                    const srcsetParsed = parseSrcset(node.attrs["srcset"]);
+                    const srcsetRebased = srcsetParsed.map<SrcSetDefinition>(src => {
+                        if (src.url.startsWith("/")) {
+                            return {
+                                url: baseUrl + src.url,
+                                density: src.density,
+                                width: src.width
+                            };
+                        }
+
+                        return src;
+                    });
+
+                    node.attrs["srcset"] = stringifySrcset(srcsetRebased);
+                }
+
                 break;
         }
 

@@ -1,9 +1,16 @@
 import { CloudFrontResponse } from "aws-lambda";
 import { get } from "https";
 import { load, Element } from "cheerio";
+import { parseSrcset, stringifySrcset, SrcSetDefinition } from "srcset";
 import { isHeaderBlacklisted } from "./headerBlacklist";
 import { logDebug } from "./log";
 
+/**
+ * Load HTML from origin and perform transformation of URLs to absolute
+ * @param domain Domain of the origin cloudfront
+ * @param path Path of the file we want to retrieve
+ * @returns Response object
+ */
 export function loadOriginPage(domain: string, path: string) {
     return new Promise<CloudFrontResponse>((resolve, reject) => {
         logDebug(`Pulling page from ${domain}${path}`);
@@ -59,7 +66,7 @@ export function loadOriginPage(domain: string, path: string) {
         req.on("error", e => {
             reject({
                 statusCode: 500,
-                body: e.message.substring(0, 100)
+                body: e.message
             });
         });
     });
@@ -82,7 +89,24 @@ function parseHtml(html: string, domain: string) {
         .each((_i, el) => {
             prefixUrl(el, "src", host);
 
-            // TODO handle srcset
+            // Handle also srcset property for responsive images.
+            const srcset = el.attribs["srcset"];
+            if (srcset) {
+                const srcsetParsed = parseSrcset(srcset);
+                const srcsetRebased = srcsetParsed.map<SrcSetDefinition>(src => {
+                    if (src.url.startsWith("/")) {
+                        return {
+                            url: host + src.url,
+                            density: src.density,
+                            width: src.width
+                        };
+                    }
+
+                    return src;
+                });
+
+                el.attribs["srcset"] = stringifySrcset(srcsetRebased);
+            }
         });
 
     return doc.html();

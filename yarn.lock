@@ -11131,6 +11131,7 @@ __metadata:
     puppeteer: ^5.5.0
     rimraf: ^3.0.2
     shortid: ^2.2.16
+    srcset: ^5.0.0
     ttypescript: ^1.5.12
     typescript: 4.5.5
   languageName: unknown
@@ -12413,6 +12414,7 @@ __metadata:
     "@types/aws-lambda": ^8.10.93
     "@webiny/project-utils": ^5.24.0
     cheerio: ^1.0.0-rc.10
+    srcset: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -37136,6 +37138,13 @@ __metadata:
   version: 1.0.3
   resolution: "sprintf-js@npm:1.0.3"
   checksum: 19d79aec211f09b99ec3099b5b2ae2f6e9cdefe50bc91ac4c69144b6d3928a640bb6ae5b3def70c2e85a2c3d9f5ec2719921e3a59d3ca3ef4b2fd1a4656a0df3
+  languageName: node
+  linkType: hard
+
+"srcset@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "srcset@npm:5.0.0"
+  checksum: 589a809739d94954b12a3244b29361b4a23cb72777343ab820264c6668966c74399032c5cc8cf2b1fb536edbce2a54436a1de6e51b61e2a02e8bf3ba60cca9b7
   languageName: node
   linkType: hard
 

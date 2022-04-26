@@ -20,7 +20,16 @@ export interface VariantConfig {
 
 export type GatewayConfig = Record<string, VariantConfig>;
 
-export async function loadConfig(event: CloudFrontRequestEvent) {
+/**
+ * Loads traffic splitting config.
+ * It will, however not call WCP directly, but serve it from a locally cached file,
+ * as explained here https://www.notion.so/webiny/How-traffic-config-is-cached-2c8db57ca2b547a2b2fb1adf378cd191
+ */
+export async function loadTrafficSplittingConfig(event: CloudFrontRequestEvent) {
+    // Retrieve domain of the CloudFront distribution.
+    // We need it to make sure we cache config per application.
+    // For example API and website could share the same lambda instance.
+    // So we cache it separately for each domain (each CloudFront).
     const domain = event.Records[0].cf.config.distributionDomainName;
 
     let config = configCache.get(domain);
@@ -60,7 +69,7 @@ function loadConfigCore(domain: string) {
         req.on("error", e => {
             reject({
                 statusCode: 500,
-                body: e.message.substring(0, 100)
+                body: e.message
             });
         });
     });
