@@ -80,7 +80,7 @@ const DeletePage: React.FC<DeletePageProps> = props => {
                                     </strong>
                                 )
                             })}
-                      </span>
+                        </span>
                     );
 
                     history.push("/page-builder/pages");
