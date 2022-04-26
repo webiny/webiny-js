@@ -494,7 +494,14 @@ export const createEntriesStorageOperations = (
     };
 
     const list = async (model: CmsModel, params: CmsEntryStorageOperationsListParams) => {
-        const { limit: initialLimit = 10, where: originalWhere, after, sort } = params;
+        const {
+            limit: initialLimit = 10,
+            where: originalWhere,
+            after,
+            sort,
+            fields,
+            search
+        } = params;
         const limit = initialLimit <= 0 || initialLimit >= 10000 ? 10000 : initialLimit;
 
         const type = originalWhere.published ? "P" : "L";
@@ -549,7 +556,11 @@ export const createEntriesStorageOperations = (
             where,
             plugins,
             fields: modelFields,
-            fromStorage: createStorageTransformCallable(model)
+            fromStorage: createStorageTransformCallable(model),
+            fullTextSearch: {
+                term: search,
+                fields: fields || []
+            }
         });
 
         const totalCount = filteredItems.length;
