@@ -75,12 +75,12 @@ const DeletePage: React.FC<DeletePageProps> = props => {
                             {t`The page {title} was deleted successfully.`({
                                 title: (
                                     <strong>
-                                        {page.title.substr(0, 20)}
+                                        {page.title.slice(0, 20)}
                                         ...
                                     </strong>
                                 )
                             })}
-                        </span>
+                      </span>
                     );
 
                     history.push("/page-builder/pages");
