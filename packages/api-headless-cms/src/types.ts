@@ -134,6 +134,13 @@ export interface CmsModelField {
      */
     fieldId: string;
     /**
+     * Alias for the model field that will be available to the outside world.
+     * `fileId` is still used as path (or column) to store the data.
+     *
+     * This value MUST be unique in the CmsModel.
+     */
+    alias: string | null;
+    /**
      * A label for the field
      */
     label: string;
