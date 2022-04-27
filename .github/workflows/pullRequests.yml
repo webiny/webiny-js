@@ -22,6 +22,7 @@ jobs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
+      fork: ${{ steps.get-fork.outputs.fork }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -37,9 +38,18 @@ jobs:
         id: get-timestamp
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
+      - name: Get PR fork name
+        id: get-fork
+        run: echo "::set-output name=fork::${{ github.event.pull_request.head.repo.fork }}"
+
+      - name: Jest packages filter
+        id: get-jest-packages-filter
+        if: steps.get-fork.outputs.fork
+        run: echo "::set-output name=jest-packages-filter::ddb-es"
+
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js --ignore-packages={{ steps.get-jest-packages-filter.output.jest-packages-filter }})"
 
       - uses: actions/cache@v2
         id: yarn-cache
@@ -159,7 +169,7 @@ jobs:
         run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
-    if: ${{ !github.event.pull_request.head.repo.fork }}
+    if: ${{ !github.event.pull_request.head.repo.fork }} # Do not run this job if a PR has been submitted from a fork.
     needs: init
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
