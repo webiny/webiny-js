@@ -25,18 +25,7 @@ export const AppInstaller: React.FC = ({ children }) => {
 
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
-
-    const openWelcomeScreen = () => {
-        if (localStorage.get(lsKey)) {
-            // new version welcome screen
-            window.open(
-                `https://site.webiny.com/thank-you/upgrade?version=${wbyVersion}`,
-                "_blank"
-            );
-        }
-        // new installation welcome screen
-        window.open(`https://site.webiny.com/thank-you/installation`, "_blank");
-    };
+    const isRootTenant = tenantId === "root";
 
     const markInstallerAsCompleted = () => {
         localStorage.set(lsKey, wbyVersion);
@@ -52,11 +41,22 @@ export const AppInstaller: React.FC = ({ children }) => {
         loading,
         installers,
         installer,
+        isFirstInstall,
         showNextInstaller,
         showLogin,
         onUser,
         skippingVersions
     } = useInstaller({ isInstalled: isInstallerCompleted() });
+
+    const openWelcomeScreen = () => {
+        if (!isRootTenant) {
+            return;
+        }
+        if (!isFirstInstall) {
+            window.location.href = `https://site.webiny.com/thank-you/upgrade?version=${wbyVersion}&returnUrl=${window.location.href}`;
+        }
+        window.location.href = `https://site.webiny.com/thank-you/installation?returnUrl=${window.location.href}`;
+    };
 
     useEffect(() => {
         if (identity) {
@@ -173,12 +173,12 @@ export const AppInstaller: React.FC = ({ children }) => {
                     <ButtonPrimary
                         data-testid={"open-webiny-cms-admin-button"}
                         onClick={() => {
-                            openWelcomeScreen();
                             markInstallerAsCompleted();
                             setFinished(true);
+                            openWelcomeScreen();
                         }}
                     >
-                        Open Admin Area
+                        Finish install
                     </ButtonPrimary>
                 </SuccessDialog>
             </Elevation>
