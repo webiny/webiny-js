@@ -164,13 +164,13 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn && git add yarn.lock && lint-staged",
+      "pre-commit": "yarn && git add yarn.lock && yarn lint-staged",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
-      "prettier --check",
+      "prettier --write",
       "eslint --max-warnings=0 --no-ignore",
       "adio",
       "npm run check-ts-configs"
