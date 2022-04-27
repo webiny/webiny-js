@@ -44,7 +44,7 @@ jobs:
 
       - name: Jest packages filter
         id: get-jest-packages-filter
-        if: steps.is-fork-pr.outputs.fork == "true"
+        if: steps.is-fork-pr.outputs.fork == 'true'
         run: echo "::set-output name=jest-packages-filter::ddb-es"
 
       - name: List packages with Jest tests
@@ -169,7 +169,7 @@ jobs:
         run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
-    if: needs.init.outputs.is-fork-pr != "true" # Do not run this job if a PR has been submitted from a fork.
+    if: needs.init.outputs.is-fork-pr != 'true' # Do not run this job if a PR has been submitted from a fork.
     needs: init
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
