@@ -36,7 +36,8 @@ import {
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
     CmsModelField,
-    CreatedBy
+    CreatedBy,
+    CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -52,6 +53,7 @@ import {
 } from "~/content/plugins/utils/entryStorage";
 import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afterDelete";
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
+import { PluginsContainer } from "@webiny/plugins";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -184,6 +186,36 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
             version: version + 1
         })
     };
+};
+
+interface GetSearchableFieldsParams {
+    plugins: PluginsContainer;
+    model: CmsModel;
+    fields?: string[];
+}
+const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
+    const { plugins, model, fields } = params;
+
+    const fieldPluginMap = plugins
+        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
+        .reduce((collection, field) => {
+            collection[field.fieldType] = field;
+            return collection;
+        }, {} as Record<string, CmsModelFieldToGraphQLPlugin>);
+
+    return model.fields
+        .filter(field => {
+            const plugin = fieldPluginMap[field.type];
+            if (!plugin) {
+                return false;
+            } else if (!plugin.fullTextSearch) {
+                return false;
+            } else if (!fields || fields.length === 0) {
+                return true;
+            }
+            return fields.includes(field.fieldId);
+        })
+        .map(field => field.fieldId);
 };
 
 export interface CreateContentEntryCrudParams {
@@ -433,10 +465,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 model
             });
 
+            const fields = getSearchableFields({
+                model,
+                plugins: context.plugins,
+                fields: params.fields || []
+            });
+
             const { hasMoreItems, totalCount, cursor, items } =
                 await storageOperations.entries.list(model, {
                     ...params,
-                    where: listWhere
+                    where: listWhere,
+                    fields
                 });
 
             const meta = {
