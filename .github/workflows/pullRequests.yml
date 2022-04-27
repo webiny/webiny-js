@@ -38,13 +38,13 @@ jobs:
         id: get-timestamp
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
-      - name: Get PR fork name
-        id: get-fork
-        run: echo "::set-output name=fork::${{ github.event.pull_request.head.repo.fork }}"
+      - name: Is a PR from a fork
+        id: is-fork-pr
+        run: echo "::set-output name=is-fork-pr::${{ github.event.pull_request.head.repo.fork }}"
 
       - name: Jest packages filter
         id: get-jest-packages-filter
-        if: steps.get-fork.outputs.fork
+        if: steps.is-fork-pr.outputs.fork == true
         run: echo "::set-output name=jest-packages-filter::ddb-es"
 
       - name: List packages with Jest tests
@@ -169,7 +169,7 @@ jobs:
         run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
-    if: ${{ !github.event.pull_request.head.repo.fork }} # Do not run this job if a PR has been submitted from a fork.
+    if: ${{ needs.init.outputs.is-fork-pr == false }} # Do not run this job if a PR has been submitted from a fork.
     needs: init
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
