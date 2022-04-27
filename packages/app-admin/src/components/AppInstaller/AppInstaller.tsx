@@ -54,6 +54,7 @@ export const AppInstaller: React.FC = ({ children }) => {
         }
         if (!isFirstInstall) {
             window.location.href = `https://site.webiny.com/thank-you/upgrade?version=${wbyVersion}&returnUrl=${window.location.href}`;
+            return;
         }
         window.location.href = `https://site.webiny.com/thank-you/installation?returnUrl=${window.location.href}`;
     };
@@ -178,7 +179,7 @@ export const AppInstaller: React.FC = ({ children }) => {
                             openWelcomeScreen();
                         }}
                     >
-                        Finish install
+                        {isFirstInstall ? "Finish install" : "Finish upgrade"}
                     </ButtonPrimary>
                 </SuccessDialog>
             </Elevation>
