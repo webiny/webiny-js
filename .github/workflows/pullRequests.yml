@@ -159,6 +159,7 @@ jobs:
         run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     needs: init
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
