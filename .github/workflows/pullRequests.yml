@@ -49,7 +49,7 @@ jobs:
 
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js --ignore-packages={{ steps.get-jest-packages-filter.output.jest-packages-filter }})"
+        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-jest-packages-filter.output.jest-packages-filter }})"
 
       - uses: actions/cache@v2
         id: yarn-cache
