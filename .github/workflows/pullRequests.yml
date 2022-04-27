@@ -1,15 +1,12 @@
 name: Pull Requests
 
-on: [pull_request_target]
+on:
+  pull_request:
+    branches: [next, v5]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
   BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
-
-# Note #1: Within all jobs, we're checking out the head branch, not base.
-# Note #2: Because of potential security risks, this workflow is never run immediately for outside contributors.
-#          Once an outside contributor submits a PR, a team member must first check the code for potentially
-#          malicious code. Only if the code doesn't contain any malicious changes, the workflow run can be approved.
 
 jobs:
   validate-commits:
@@ -17,10 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
-
       - uses: webiny/action-conventional-commits@v1.0.3
 
   init:
@@ -36,9 +29,6 @@ jobs:
           node-version: 14
 
       - uses: actions/checkout@v2
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Get day of the month
         id: get-day
@@ -86,9 +76,6 @@ jobs:
           node-version: 14
 
       - uses: actions/checkout@v2
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/cache@v2
         with:
@@ -124,9 +111,6 @@ jobs:
           node-version: 14
 
       - uses: actions/checkout@v2
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/cache@v2
         with:
@@ -155,9 +139,6 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - uses: actions/checkout@v2
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/cache@v2
         with:
@@ -189,9 +170,10 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
+          # We want to make sure all commits are present and that the next release version is calculated correctly.
           fetch-depth: 0
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
+          # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/cache@v2
         with:
