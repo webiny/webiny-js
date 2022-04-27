@@ -22,7 +22,7 @@ jobs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
-      fork: ${{ steps.get-fork.outputs.fork }}
+      is-fork-pr: ${{ steps.get-fork.outputs.is-fork-pr }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -44,7 +44,7 @@ jobs:
 
       - name: Jest packages filter
         id: get-jest-packages-filter
-        if: steps.is-fork-pr.outputs.fork == 'true'
+        if: steps.is-fork-pr.outputs.is-fork-pr == 'true'
         run: echo "::set-output name=jest-packages-filter::ddb-es"
 
       - name: List packages with Jest tests
