@@ -11,6 +11,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@webiny/cli": "^5.25.0",
     "@webiny/project-utils": "^5.25.0"
   },
   "publishConfig": {

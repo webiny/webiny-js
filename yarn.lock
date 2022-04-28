@@ -13006,6 +13006,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/ioc@workspace:packages/ioc"
   dependencies:
+    "@webiny/cli": ^5.25.0
     "@webiny/project-utils": ^5.25.0
   languageName: unknown
   linkType: soft
