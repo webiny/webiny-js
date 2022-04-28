@@ -131,11 +131,15 @@ export interface CmsModelField {
      *
      * We generate a unique fieldId value when you're building a model via UI,
      * but when user is creating a model via a plugin it is up to them to be careful about this.
+     *
+     * This is used as path for the entry value.
      */
     fieldId: string;
     /**
      * Alias for the model field that will be available to the outside world.
      * `fileId` is still used as path (or column) to store the data.
+     *
+     * Must in form of a-zA-Z0-9.
      *
      * This value MUST be unique in the CmsModel.
      */
@@ -1040,9 +1044,15 @@ export interface CmsModelFieldInput {
     type: string;
     /**
      * A unique ID for the field. Values will be mapped via this value.
-     * This field MUST be in range of "a-zA-Z".
+     * This field MUST be in range of "a-zA-Z0-9".
+     *
+     * This is used as path for the entry value.
      */
     fieldId: string;
+    /**
+     * Alias for the field. Must be unique in the model.
+     */
+    alias: string | null;
     /**
      * Label for the field.
      */

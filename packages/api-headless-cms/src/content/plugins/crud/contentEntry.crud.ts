@@ -105,9 +105,15 @@ const getDefaultValue = (field: CmsModelField): any => {
 /**
  * Cleans and adds default values to create input data.
  */
-const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsEntryInput => {
+const mapAndCleanCreateInputData = (
+    model: CmsModel,
+    input: CreateCmsEntryInput
+): CreateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
-        const value = input[field.fieldId];
+        if (!field.alias) {
+            return acc;
+        }
+        const value = input[field.alias];
         /**
          * We set the default value on create input if value is not defined.
          */
@@ -118,18 +124,22 @@ const cleanInputData = (model: CmsModel, input: CreateCmsEntryInput): CreateCmsE
 /**
  * Cleans the update input entry data.
  */
-const cleanUpdatedInputData = (
+const mapAndCleanUpdatedInputData = (
     model: CmsModel,
     input: UpdateCmsEntryInput
 ): UpdateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
+        if (!field.alias) {
+            return acc;
+        }
         /**
          * We cannot set default value here because user might want to updated only certain field values.
          */
-        if (input[field.fieldId] === undefined) {
+        const value = input[field.alias];
+        if (value === undefined) {
             return acc;
         }
-        acc[field.fieldId] = input[field.fieldId];
+        acc[field.fieldId] = value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };
@@ -205,6 +215,9 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
 
     return model.fields
         .filter(field => {
+            if (!field.alias) {
+                return false;
+            }
             const plugin = fieldPluginMap[field.type];
             if (!plugin) {
                 return false;
@@ -213,7 +226,7 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
             } else if (!fields || fields.length === 0) {
                 return true;
             }
-            return fields.includes(field.fieldId);
+            return fields.includes(field.alias);
         })
         .map(field => field.fieldId);
 };
@@ -460,35 +473,48 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 listWhere.ownedBy = ownedBy;
             }
 
-            await onBeforeEntryList.publish({
-                where: listWhere,
-                model
-            });
-
-            const fields = getSearchableFields({
+            const searchableFields = getSearchableFields({
                 model,
                 plugins: context.plugins,
                 fields: params.fields || []
             });
 
-            const { hasMoreItems, totalCount, cursor, items } =
-                await storageOperations.entries.list(model, {
-                    ...params,
+            try {
+                await onBeforeEntryList.publish({
                     where: listWhere,
-                    fields
+                    model
                 });
 
-            const meta = {
-                hasMoreItems,
-                totalCount,
-                /**
-                 * Cursor should be null if there are no more items to load.
-                 * Just make sure of that, disregarding what is returned from the storageOperations.entries.list method.
-                 */
-                cursor: hasMoreItems ? cursor : null
-            };
+                const { hasMoreItems, totalCount, cursor, items } =
+                    await storageOperations.entries.list(model, {
+                        ...params,
+                        where: listWhere,
+                        fields: searchableFields
+                    });
 
-            return [items, meta];
+                const meta = {
+                    hasMoreItems,
+                    totalCount,
+                    /**
+                     * Cursor should be null if there are no more items to load.
+                     * Just make sure of that, disregarding what is returned from the storageOperations.entries.list method.
+                     */
+                    cursor: hasMoreItems ? cursor : null
+                };
+
+                return [items, meta];
+            } catch (ex) {
+                throw new WebinyError(
+                    "Error while fetching entries from storage.",
+                    "LIST_ENTRIES_ERROR",
+                    {
+                        params,
+                        error: ex,
+                        model,
+                        searchableFields
+                    }
+                );
+            }
         },
         listLatestEntries: async function (model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
@@ -527,7 +553,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const initialInput = cleanInputData(model, inputData);
+            const initialInput = mapAndCleanCreateInputData(model, inputData);
 
             await validateModelEntryData({
                 context,
@@ -613,7 +639,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const input = cleanUpdatedInputData(model, inputData);
+            const input = mapAndCleanUpdatedInputData(model, inputData);
 
             /**
              * Entries are identified by a common parent ID + Revision number.
@@ -742,7 +768,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * Make sure we only work with fields that are defined in the model.
              */
-            const input = cleanUpdatedInputData(model, inputData);
+            const input = mapAndCleanUpdatedInputData(model, inputData);
 
             /**
              * The entry we are going to update.

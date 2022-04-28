@@ -29,9 +29,11 @@ const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | nul
     const mTypeName = createManageTypeName(typeName);
 
     // `field` is an "object" field
-    const fields: CmsModelField[] = field.settings?.fields || [];
+    const fields: CmsModelField[] = (field.settings?.fields || []).filter(f => {
+        return !!f.alias;
+    });
 
-    const fieldTypeName = `${mTypeName}_${upperFirst(field.fieldId)}`;
+    const fieldTypeName = `${mTypeName}_${upperFirst(field.alias as string)}`;
 
     const typeFields = [];
     const nestedTypes = [];
@@ -95,20 +97,23 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             const { fieldType, typeDefs } = result;
 
             return {
-                fields: `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
+                fields: `${field.alias}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
                 typeDefs
             };
         },
         createResolver({ field, createFieldResolvers, graphQLType }) {
-            if (!field.settings?.fields || field.settings.fields.length === 0) {
+            const fields = (field.settings?.fields || []).filter(f => {
+                return !!f.alias;
+            });
+            if (fields.length === 0) {
                 return false;
             }
 
-            const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;
+            const fieldType = `${graphQLType}_${upperFirst(field.alias as string)}`;
 
             const typeResolvers = createFieldResolvers({
                 graphQLType: fieldType,
-                fields: field.settings.fields
+                fields
             });
             return {
                 resolver: null,
@@ -132,7 +137,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             const { fieldType, typeDefs } = result;
 
             return {
-                fields: `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
+                fields: `${field.alias}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
                 typeDefs
             };
         },
@@ -151,20 +156,23 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
 
             return {
                 fields: attachRequiredFieldValue(
-                    `${field.fieldId}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
+                    `${field.alias}: ${field.multipleValues ? `[${fieldType}!]` : fieldType}`,
                     field
                 ),
                 typeDefs
             };
         },
         createResolver({ graphQLType, field, createFieldResolvers }) {
-            if (!field.settings?.fields || field.settings.fields.length === 0) {
+            const fields = (field.settings?.fields || []).filter(f => {
+                return !!f.alias;
+            });
+            if (fields.length === 0) {
                 return false;
             }
-            const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;
+            const fieldType = `${graphQLType}_${upperFirst(field.alias as string)}`;
             const typeResolvers = createFieldResolvers({
                 graphQLType: fieldType,
-                fields: field.settings.fields
+                fields
             });
             return {
                 resolver: null,

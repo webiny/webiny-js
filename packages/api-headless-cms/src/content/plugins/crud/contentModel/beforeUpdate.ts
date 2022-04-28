@@ -24,17 +24,25 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
     // or if initial titleFieldId is the default one also try to find first available text field
     if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
         const titleField = fields.find(field => {
-            return field.type === "text" && !field.multipleValues;
+            return field.type === "text" && !field.multipleValues && field.alias;
         });
-        return titleField ? titleField.fieldId : defaultTitleFieldId;
+        return titleField ? (titleField.alias as string) : defaultTitleFieldId;
     }
-    // check existing titleFieldId for existence in the model
-    // for correct type
-    // and that it is not multiple values field
-    const target = fields.find(f => f.fieldId === titleFieldId);
+    /**
+     * check existing titleFieldId for existence in the model
+     * for correct type
+     * and that it is not multiple values field
+     *
+     * We check the alias along side the titleFieldId because of the old systems.
+     */
+    const target = fields.find(f => f.fieldId === titleFieldId || f.alias === titleFieldId);
     if (!target) {
         throw new WebinyError(`Field does not exist in the model.`, "VALIDATION_ERROR", {
             fieldId: titleFieldId
+        });
+    } else if (!target.alias) {
+        throw new WebinyError(`Field does not have an alias.`, "VALIDATION_ERROR", {
+            field: target
         });
     }
 
@@ -46,6 +54,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             "ENTRY_TITLE_FIELD_TYPE",
             {
                 fieldId: target.fieldId,
+                alias: target.alias,
                 type: target.type
             }
         );
@@ -57,12 +66,13 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
             "ENTRY_TITLE_FIELD_TYPE",
             {
                 fieldId: target.fieldId,
+                alias: target.alias,
                 type: target.type
             }
         );
     }
 
-    return target.fieldId;
+    return target.alias as string;
 };
 
 interface AssignBeforeModelUpdateParams {
@@ -158,6 +168,32 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
                     `Cannot update content model because of the unknown "${field.type}" field.`
                 );
             }
+            /**
+             * If fieldId does not match a certain pattern, add that pattern, but only if field is not locked (used) already.
+             * This is to avoid errors in the already installed systems.
+             *
+             * Why are we using the @?
+             *
+             * It is not part of special characters for the query syntax in the Lucene.
+             *
+             * Relevant links:
+             * https://lucene.apache.org/core/3_4_0/queryparsersyntax.html
+             * https://discuss.elastic.co/t/special-characters-in-field-names/10658/3
+             * https://discuss.elastic.co/t/illegal-characters-in-elasticsearch-field-names/17196/2
+             */
+            const isLocked = lockedFields.some(lockedField => {
+                return lockedField.fieldId === field.fieldId;
+            });
+            if (!isLocked) {
+                const pattern = new RegExp(`^([a-zA-Z0-9]+)@${field.type}@${field.id}$`);
+                if (field.fieldId.match(pattern) === null) {
+                    field.fieldId = `${field.fieldId}@${field.type}@${field.id}`;
+                }
+            }
+
+            /**
+             * Check the field alias against existing ones.
+             */
             if (!field.alias) {
                 continue;
             } else if (aliases.includes(field.alias)) {

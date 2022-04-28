@@ -40,6 +40,7 @@ export const ContentModelFieldModel = withFields({
         onSet((value?: string) => value && value.trim()),
         setOnce()
     )(string({ validation: idValidation })),
+    alias: string(),
     label: string({ validation: requiredShortString }),
     helpText: string({ validation: shortString }),
     placeholderText: string({ validation: shortString }),

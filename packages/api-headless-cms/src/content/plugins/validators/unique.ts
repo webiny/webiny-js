@@ -26,7 +26,7 @@ export default (): CmsModelFieldValidatorPlugin => {
                         where: {
                             entryId_not: entry ? entry.entryId : undefined,
                             tenant: model.tenant,
-                            [field.fieldId]: value
+                            [field.alias || field.fieldId]: value
                         },
                         limit: 1
                     });
@@ -36,6 +36,7 @@ export default (): CmsModelFieldValidatorPlugin => {
                         "Error while checking if the field value is unique.",
                         "UNIQUE_CHECK_ERROR",
                         {
+                            error: ex,
                             field,
                             value,
                             model

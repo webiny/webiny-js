@@ -14,19 +14,22 @@ const contentModelPlugin = new CmsModelPlugin({
     fields: [
         {
             id: "name",
-            fieldId: "name",
+            fieldId: "name@text@name",
+            alias: "name",
             type: "text",
             label: "Product Name"
         },
         {
             id: "sku",
-            fieldId: "sku",
+            fieldId: "sku@text@sku",
+            alias: "sku",
             type: "text",
             label: "SKU"
         },
         {
             id: "price",
-            fieldId: "price",
+            fieldId: "price@number@price",
+            alias: "price",
             type: "number",
             label: "Price"
         }
@@ -234,7 +237,8 @@ describe("content model plugins", () => {
                             description: null,
                             fields: [
                                 {
-                                    fieldId: "name",
+                                    fieldId: "name@text@name",
+                                    alias: "name",
                                     helpText: null,
                                     id: "name",
                                     label: "Product Name",
@@ -248,7 +252,8 @@ describe("content model plugins", () => {
                                     validation: null
                                 },
                                 {
-                                    fieldId: "sku",
+                                    fieldId: "sku@text@sku",
+                                    alias: "sku",
                                     helpText: null,
                                     id: "sku",
                                     label: "SKU",
@@ -262,7 +267,8 @@ describe("content model plugins", () => {
                                     validation: null
                                 },
                                 {
-                                    fieldId: "price",
+                                    fieldId: "price@number@price",
+                                    alias: "price",
                                     helpText: null,
                                     id: "price",
                                     label: "Price",
@@ -304,7 +310,8 @@ describe("content model plugins", () => {
                                 description: null,
                                 fields: [
                                     {
-                                        fieldId: "name",
+                                        fieldId: "name@text@name",
+                                        alias: "name",
                                         helpText: null,
                                         id: "name",
                                         label: "Product Name",
@@ -318,7 +325,8 @@ describe("content model plugins", () => {
                                         validation: null
                                     },
                                     {
-                                        fieldId: "sku",
+                                        fieldId: "sku@text@sku",
+                                        alias: "sku",
                                         helpText: null,
                                         id: "sku",
                                         label: "SKU",
@@ -332,7 +340,8 @@ describe("content model plugins", () => {
                                         validation: null
                                     },
                                     {
-                                        fieldId: "price",
+                                        fieldId: "price@number@price",
+                                        alias: "price",
                                         helpText: null,
                                         id: "price",
                                         label: "Price",

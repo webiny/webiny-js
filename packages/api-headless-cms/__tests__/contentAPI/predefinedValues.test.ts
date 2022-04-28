@@ -131,7 +131,7 @@ describe("predefined values", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
-                                fieldId: "bugType",
+                                fieldId: expect.stringMatching("bugType@text@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
                         ]
@@ -167,7 +167,7 @@ describe("predefined values", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
-                                fieldId: "bugValue",
+                                fieldId: expect.stringMatching("bugValue@number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
                         ]
@@ -203,11 +203,11 @@ describe("predefined values", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
-                                fieldId: "bugType",
+                                fieldId: expect.stringMatching("bugType@text@"),
                                 error: "Value sent does not match any of the available predefined values."
                             },
                             {
-                                fieldId: "bugValue",
+                                fieldId: expect.stringMatching("bugValue@number@"),
                                 error: "Value sent does not match any of the available predefined values."
                             }
                         ]
@@ -372,7 +372,7 @@ describe("predefined values", () => {
          */
         const fields = bugModel.fields.concat([]);
         for (const field of fields) {
-            if (field.fieldId !== "bugType") {
+            if (field.alias !== "bugType") {
                 continue;
             }
             if (!field.settings) {

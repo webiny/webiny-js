@@ -136,7 +136,7 @@ describe("Content model locked fields", () => {
                         error: {
                             code: "ENTRY_FIELD_USED",
                             data: null,
-                            message: `Cannot remove the field "${field.fieldId}" because it's already in use in created content.`
+                            message: `Cannot remove the field "${field.alias}@${field.type}@${field.id}" because it's already in use in created content.`
                         }
                     }
                 }
@@ -152,7 +152,7 @@ describe("Content model locked fields", () => {
         const group = await setupGroup();
         const model = await setupCategoryModel(group);
 
-        const slugField = model.fields.find(field => field.fieldId === "slug");
+        const slugField = model.fields.find(field => field.alias === "slug");
         if (!slugField) {
             throw new Error(`Could not find field "slug".`);
         }
@@ -203,7 +203,9 @@ describe("Content model locked fields", () => {
                     error: {
                         code: "ENTRY_FIELD_USED",
                         data: null,
-                        message: `Cannot remove the field "slug" because it's already in use in created content.`
+                        message: expect.stringMatching(
+                            `Cannot remove the field "slug@text@([a-zA-Z0-9_–]+)" because it's already in use in created content.`
+                        )
                     }
                 }
             }

@@ -69,17 +69,23 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
         return [];
     }
 
+    const aliasToIdMap: Record<string, string> = {};
+
     const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
         const searchPlugin = searchPlugins[modelField.type];
 
-        plugins[modelField.field.fieldId] = new CmsEntryElasticsearchFieldPlugin({
+        const { alias, fieldId } = modelField.field;
+        if (!!alias) {
+            aliasToIdMap[alias] = fieldId;
+        }
+        plugins[fieldId] = new CmsEntryElasticsearchFieldPlugin({
             unmappedType: modelField.unmappedType,
             keyword: hasKeyword(modelField),
             sortable: modelField.isSortable,
             searchable: modelField.isSearchable,
-            field: modelField.field.fieldId,
+            field: fieldId,
             path: createFieldPath({
-                key: modelField.field.fieldId,
+                key: fieldId,
                 parentPath,
                 modelField,
                 searchPlugin
@@ -88,9 +94,29 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
         return plugins;
     }, {} as Record<string, CmsEntryElasticsearchFieldPlugin>);
 
+    const transformedSort = sort
+        .map(value => {
+            const matched = value.match(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
+            if (!matched) {
+                return null;
+            }
+            const [, alias, order] = matched;
+            if (aliasToIdMap[alias]) {
+                return `${aliasToIdMap[alias]}_${order}`;
+            }
+
+            return value;
+        })
+        .filter(Boolean) as string[];
     return createSort({
         fieldPlugins: sortPlugins,
-        sort
+        sort: transformedSort
+    });
+};
+
+const findFieldByAliasOrFieldId = (model: CmsModel, id: string): CmsModelField | undefined => {
+    return model.fields.find(field => {
+        return field.alias === id || field.fieldId === id;
     });
 };
 /**
@@ -377,6 +403,7 @@ const applyFullTextSearch = (params: ApplyFullTextSearchParams): void => {
         }
     });
 };
+
 /*
  * Iterate through where keys and apply plugins where necessary
  */
@@ -389,7 +416,8 @@ const execElasticsearchBuildQueryPlugins = (
         parentPath,
         plugins,
         searchPlugins,
-        fullTextSearch
+        fullTextSearch,
+        model
     } = params;
 
     const where: CmsEntryListWhere = {
@@ -435,14 +463,29 @@ const execElasticsearchBuildQueryPlugins = (
             continue;
         }
         const { field, operator } = parseWhereKey(key);
-        const modelField = modelFields[field];
+        /**
+         * TODO This will be required until the storage operations receive the fieldId instead of field alias.
+         * TODO For this to work without field searching, we need to refactor how the query looks like.
+         *
+         * Storage operations should NEVER receive an field alias, only exact field path.
+         */
+
+        let fieldId = field;
+        const cmsModelField = findFieldByAliasOrFieldId(model, fieldId);
+        if (!cmsModelField && !modelFields[fieldId]) {
+            throw new WebinyError(`There is no CMS Model Field field "${fieldId}".`);
+        } else if (cmsModelField) {
+            fieldId = cmsModelField.fieldId;
+        }
+
+        const modelField = modelFields[fieldId];
 
         if (!modelField) {
-            throw new WebinyError(`There is no field "${field}".`);
+            throw new WebinyError(`There is no field "${fieldId}".`);
         }
         const { isSearchable = false, field: cmsField } = modelField;
         if (!isSearchable) {
-            throw new WebinyError(`Field "${field}" is not searchable.`);
+            throw new WebinyError(`Field "${fieldId}" is not searchable.`);
         }
         /**
          * There is a possibility that value is an object.

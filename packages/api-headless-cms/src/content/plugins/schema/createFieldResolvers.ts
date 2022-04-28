@@ -9,6 +9,7 @@ import {
 } from "~/types";
 import { entryFieldFromStorageTransform } from "~/content/plugins/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
+import WebinyError from "@webiny/error";
 
 interface CreateFieldResolvers {
     graphQLType: string;
@@ -52,6 +53,18 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             if (!fieldTypePlugins[field.type]) {
                 continue;
             }
+            /**
+             * Field that is passed into this factory MUST have alias, so filter it before the method call.
+             */
+            if (!field.alias) {
+                throw new WebinyError(
+                    "Field is missing an alias. Cannot process field without the alias in the resolvers.",
+                    "FIELD_ALIAS_ERROR",
+                    {
+                        field
+                    }
+                );
+            }
 
             const createResolver = getCreateResolver(fieldTypePlugins, field, endpointType);
 
@@ -61,7 +74,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                 : null;
 
             /**
-             * When fieldResolver is false it will completely skip adding fieldId into the resolvers.
+             * When fieldResolver is false it will completely skip adding field alias into the resolvers.
              * This is to fix the breaking of GraphQL schema.
              */
             if (fieldResolver === false) {
@@ -73,10 +86,10 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                 Object.assign(typeResolvers, fieldResolver.typeResolvers);
             }
 
-            const { fieldId } = field;
+            const { alias, fieldId } = field;
             // TODO @ts-refactor figure out types for parameters
             // @ts-ignore
-            fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
+            fieldResolvers[alias] = async (parent, args, context: CmsContext, info) => {
                 // Get transformed value (eg. data decompression)
                 const transformedValue = await entryFieldFromStorageTransform({
                     context,

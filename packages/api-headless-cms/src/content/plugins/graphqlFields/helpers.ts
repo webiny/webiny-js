@@ -26,12 +26,12 @@ export const attachRequiredFieldValue = (def: string, field: CmsModelField): str
 export const createGraphQLInputField = (field: CmsModelField, graphQlType: string): string => {
     const singleRequired = getIsRequired(field.validation) ? "!" : "";
     if (!field.multipleValues) {
-        return `${field.fieldId}: ${graphQlType}${singleRequired}`;
+        return `${field.alias}: ${graphQlType}${singleRequired}`;
     }
     const multipleRequired = getIsRequired(field.listValidation) ? "!" : "";
 
     const itemRequired =
         process.env.HEADLESS_CMS_GRAPHQL_INPUT_REQUIRE_ARRAY_ITEM === "false" ? "" : "!";
 
-    return `${field.fieldId}: [${graphQlType}${itemRequired}]${multipleRequired}`;
+    return `${field.alias}: [${graphQlType}${itemRequired}]${multipleRequired}`;
 };

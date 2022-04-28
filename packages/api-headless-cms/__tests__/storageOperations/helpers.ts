@@ -28,17 +28,24 @@ const baseGroup = new CmsGroupPlugin({
 
 const biography = crypto.randomBytes(65536).toString("hex");
 
+const nameId = shortId.generate();
+const dateOfBirthId = shortId.generate();
+const childrenId = shortId.generate();
+const marriedId = shortId.generate();
+const biographyId = shortId.generate();
 const personModelFields: Record<string, CmsModelField> = {
     name: {
-        id: shortId.generate(),
-        fieldId: "name",
+        id: nameId,
+        fieldId: `name@text@${nameId}`,
+        alias: "name",
         label: "Name",
         multipleValues: false,
         type: "text"
     },
     dateOfBirth: {
-        id: shortId.generate(),
-        fieldId: "dateOfBirth",
+        id: dateOfBirthId,
+        fieldId: `dateOfBirth@datetime@${dateOfBirthId}`,
+        alias: "dateOfBirth",
         label: "Date Of Birth",
         multipleValues: false,
         type: "datetime",
@@ -47,22 +54,25 @@ const personModelFields: Record<string, CmsModelField> = {
         }
     },
     children: {
-        id: shortId.generate(),
-        fieldId: "children",
+        id: childrenId,
+        fieldId: `children@number@${childrenId}`,
+        alias: "children",
         label: "Children",
         multipleValues: false,
         type: "number"
     },
     married: {
-        id: shortId.generate(),
+        id: marriedId,
         fieldId: "married",
+        alias: `married@boolean@${marriedId}`,
         label: "Married",
         multipleValues: false,
         type: "boolean"
     },
     biography: {
-        id: shortId.generate(),
+        id: biographyId,
         fieldId: "biography",
+        alias: `biography@text@${biographyId}`,
         label: "Biography",
         multipleValues: false,
         type: "text"

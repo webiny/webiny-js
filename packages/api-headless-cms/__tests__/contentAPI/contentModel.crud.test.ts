@@ -1,5 +1,3 @@
-// @ts-ignore
-import mdbid from "mdbid";
 import { CmsModelFieldInput, CmsGroup, CmsModelField } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
@@ -444,8 +442,9 @@ describe("content model test", () => {
         const contentModel = createResponse.data.createContentModel.data;
 
         const textField: CmsModelFieldInput = {
-            id: mdbid(),
-            fieldId: "textField",
+            id: "someRandomTextFieldId",
+            fieldId: "textField@text@someRandomTextFieldId",
+            alias: "textField",
             label: "Text field",
             helpText: "help text",
             multipleValues: false,
@@ -463,8 +462,9 @@ describe("content model test", () => {
             listValidation: []
         };
         const numberField: CmsModelFieldInput = {
-            id: mdbid(),
-            fieldId: "numberField",
+            id: "someRandomNumberFieldId",
+            fieldId: "numberField@number@someRandomNumberFieldId",
+            alias: "numberField",
             label: "Number field",
             helpText: "number help text",
             multipleValues: false,
@@ -502,7 +502,7 @@ describe("content model test", () => {
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
                         description: null,
-                        titleFieldId: "textField",
+                        titleFieldId: textField.alias,
                         fields: [textField, numberField],
                         group: {
                             id: contentModelGroup.id,
@@ -533,8 +533,9 @@ describe("content model test", () => {
         const contentModel = createResponse.data.createContentModel.data;
 
         const field: CmsModelFieldInput = {
-            id: mdbid(),
-            fieldId: "field1",
+            id: "someRandomField1Id",
+            fieldId: "field1@text@someRandomField1Id",
+            alias: "field1",
             label: "Field 1",
             helpText: "help text",
             multipleValues: false,

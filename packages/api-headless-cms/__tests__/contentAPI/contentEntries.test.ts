@@ -587,6 +587,8 @@ describe("Content entries", () => {
                 query
             });
 
+            expect(response.data.entries.data).toHaveLength(titles.length);
+
             expect(response).toMatchObject({
                 data: {
                     entries: {

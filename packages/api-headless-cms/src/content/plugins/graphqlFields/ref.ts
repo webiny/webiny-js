@@ -22,7 +22,7 @@ interface UnionField {
 }
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
+    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.alias as string)}`;
 };
 
 interface CreateListFilterParams {
@@ -30,7 +30,7 @@ interface CreateListFilterParams {
 }
 const createListFilters = ({ field }: CreateListFilterParams) => {
     return `
-        ${field.fieldId}: RefFieldWhereInput
+        ${field.alias}: RefFieldWhereInput
     `;
 };
 
@@ -84,7 +84,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     ? createUnionTypeName(model, field)
                     : createReadTypeName(models[0].modelId);
 
-            return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
+            return field.alias + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
         /**
          * TS is complaining about mixed types for createResolver.
@@ -102,7 +102,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return async (parent, _, context: CmsContext) => {
                 const { cms } = context;
 
-                // Get field value for this entry
+                /**
+                 * Get field value for this entry.
+                 */
                 const initialValue = parent[field.fieldId] as RefFieldValue | RefFieldValue[];
 
                 if (!initialValue) {
@@ -254,9 +256,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [RefField!]`;
+                return `${field.alias}: [RefField!]`;
             }
-            return `${field.fieldId}: RefField`;
+            return `${field.alias}: RefField`;
         },
         createInputField({ field }) {
             return createGraphQLInputField(field, "RefFieldInput");

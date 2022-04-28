@@ -6,6 +6,7 @@ import {
 import WebinyError from "@webiny/error";
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import { PluginsContainer } from "@webiny/plugins";
+import lodashCloneDeep from "lodash/cloneDeep";
 
 type ModelFieldPath = string | ((value: string) => string);
 export interface ModelField {
@@ -187,5 +188,5 @@ export const createModelFields = (plugins: PluginsContainer, model: CmsModel): M
         };
 
         return fields;
-    }, systemFields);
+    }, lodashCloneDeep(systemFields));
 };

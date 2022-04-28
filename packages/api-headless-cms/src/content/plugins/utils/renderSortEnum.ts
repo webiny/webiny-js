@@ -22,8 +22,8 @@ export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }): str
         if (!isSortable) {
             continue;
         }
-        sorters.push(`${field.fieldId}_ASC`);
-        sorters.push(`${field.fieldId}_DESC`);
+        sorters.push(`${field.alias}_ASC`);
+        sorters.push(`${field.alias}_DESC`);
     }
 
     return sorters.join("\n");

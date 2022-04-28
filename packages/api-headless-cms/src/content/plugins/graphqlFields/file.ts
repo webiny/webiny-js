@@ -10,18 +10,18 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [String]`;
+                return `${field.alias}: [String]`;
             }
 
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         }
     },
     manage: {
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [String]";
+                return field.alias + ": [String]";
             }
-            return field.fieldId + ": String";
+            return field.alias + ": String";
         },
         createInputField({ field }) {
             return createGraphQLInputField(field, "String");

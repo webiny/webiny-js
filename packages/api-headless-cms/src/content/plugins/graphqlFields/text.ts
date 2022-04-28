@@ -6,12 +6,12 @@ interface CreateListFiltersParams {
 }
 const createListFilters = ({ field }: CreateListFiltersParams) => {
     return `
-        ${field.fieldId}: String
-        ${field.fieldId}_not: String
-        ${field.fieldId}_in: [String]
-        ${field.fieldId}_not_in: [String]
-        ${field.fieldId}_contains: String
-        ${field.fieldId}_not_contains: String
+        ${field.alias}: String
+        ${field.alias}_not: String
+        ${field.alias}_in: [String]
+        ${field.alias}_not_in: [String]
+        ${field.alias}_contains: String
+        ${field.alias}_not_contains: String
     `;
 };
 
@@ -25,12 +25,12 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [String]`;
+                return `${field.alias}: [String]`;
             }
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         },
         createGetFilters({ field }) {
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         },
         createListFilters
     },
@@ -38,9 +38,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createListFilters,
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [String]`;
+                return `${field.alias}: [String]`;
             }
-            return `${field.fieldId}: String`;
+            return `${field.alias}: String`;
         },
         createInputField({ field }) {
             return createGraphQLInputField(field, "String");
