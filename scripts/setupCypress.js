@@ -49,6 +49,7 @@ const args = {
         cwd: args.projectFolder
     });
 
+    cypressConfig.chromeWebSecurity = false;
     cypressConfig.env.API_URL = apiOutput.apiUrl;
     cypressConfig.env.GRAPHQL_API_URL = apiOutput.apiUrl + "/graphql";
     cypressConfig.env.CMS_MANAGE_GRAPHQL_API_URL = apiOutput.apiUrl + "/cms/manage";
@@ -78,6 +79,7 @@ const args = {
             env: args.env,
             cwd: args.projectFolder
         });
+
         cypressConfig.baseUrl = adminOutput.appUrl;
         cypressConfig.env.ADMIN_URL = adminOutput.appUrl;
         cypressConfig.env.WEBSITE_URL = websiteOutput.deliveryUrl;
