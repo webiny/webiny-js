@@ -18,24 +18,28 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index } = configurations.es({
                 tenant,
                 locale
             });
 
-            expect(index).toEqual(`${tenant}-${locale}-page-builder`.toLowerCase());
+            expect(index).toEqual(`${prefix}${tenant}-${locale}-page-builder`.toLowerCase());
         }
     );
 
     it.each(withLocaleItems)(
         "should create index without locale code as part of the name",
         async (tenant, locale) => {
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index } = configurations.es({
                 tenant,
                 locale
             });
 
-            expect(index).toEqual(`${tenant}-page-builder`.toLowerCase());
+            expect(index).toEqual(`${prefix}${tenant}-page-builder`.toLowerCase());
         }
     );
 

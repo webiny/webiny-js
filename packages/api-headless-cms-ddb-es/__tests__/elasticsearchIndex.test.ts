@@ -19,6 +19,8 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index } = configurations.es({
                 model: {
                     tenant,
@@ -27,7 +29,9 @@ describe("Elasticsearch index", () => {
                 } as CmsModel
             });
 
-            expect(index).toEqual(`${tenant}-headless-cms-${locale}-testModel`.toLowerCase());
+            expect(index).toEqual(
+                `${prefix}${tenant}-headless-cms-${locale}-testModel`.toLowerCase()
+            );
         }
     );
 
