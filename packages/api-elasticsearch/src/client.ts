@@ -1,5 +1,6 @@
 import { Client, ClientOptions } from "@elastic/elasticsearch";
 import AWS from "aws-sdk";
+import WebinyError from "@webiny/error";
 /**
  * Package aws-elasticsearch-connector does not have types.
  */
@@ -25,5 +26,14 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions) =
         Object.assign(clientOptions, createAwsElasticsearchConnector(AWS.config));
     }
 
-    return new Client(clientOptions);
+    try {
+        return new Client(clientOptions);
+    } catch (ex) {
+        throw new WebinyError("Could not connect to Elasticsearch.", "ELASTICSEARCH_CLIENT_ERROR", {
+            error: ex,
+            node: endpoint || node,
+            ...rest,
+            auth: undefined
+        });
+    }
 };

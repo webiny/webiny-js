@@ -229,7 +229,7 @@ describe("Elasticsearch Index Template", () => {
                             creation_date: expect.stringMatching(/^([0-9]+)$/),
                             number_of_replicas: "1",
                             number_of_shards: "1",
-                            provided_name: "test-page-builder",
+                            provided_name: testPageBuilderIndexName,
                             version: {
                                 created: expect.stringMatching(/^([0-9]+)$/)
                             }
