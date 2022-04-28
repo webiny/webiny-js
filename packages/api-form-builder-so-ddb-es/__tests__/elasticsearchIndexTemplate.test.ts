@@ -7,7 +7,9 @@ import {
     getTemplates
 } from "@webiny/project-utils/testing/elasticsearch/templates";
 
-const templateName = "form-builder-forms-index-default";
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
+const templateName = `${prefix}form-builder-forms-index-default`;
 
 describe("Elasticsearch Index Template", () => {
     const client = createElasticsearchClient();
@@ -28,7 +30,8 @@ describe("Elasticsearch Index Template", () => {
     it("should insert default index template", async () => {
         const insert = await putTemplate({
             client,
-            template: base.template
+            template: base.template,
+            prefix
         });
 
         expect(insert).toMatchObject({

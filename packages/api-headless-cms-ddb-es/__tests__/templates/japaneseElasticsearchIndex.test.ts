@@ -48,7 +48,8 @@ describe("Japanese Elasticsearch Index and Templates", () => {
          */
         const baseInsert = await putTemplate({
             client,
-            template: baseTemplate.template
+            template: baseTemplate.template,
+            prefix
         });
 
         expect(baseInsert).toMatchObject({
@@ -60,7 +61,8 @@ describe("Japanese Elasticsearch Index and Templates", () => {
 
         const japaneseInsert = await putTemplate({
             client,
-            template: japaneseTemplate.template
+            template: japaneseTemplate.template,
+            prefix
         });
 
         expect(japaneseInsert).toMatchObject({
@@ -162,7 +164,7 @@ describe("Japanese Elasticsearch Index and Templates", () => {
             aliases: {},
             settings: {
                 index: {
-                    ...japaneseTemplate.template.body.settings.index,
+                    ...(japaneseTemplate.template.body.settings?.index || {}),
                     creation_date: expect.stringMatching(/^([0-9]+)$/),
                     number_of_replicas: expect.stringMatching(/^([0-9]+)$/),
                     number_of_shards: expect.stringMatching(/^([0-9]+)$/),

@@ -9,7 +9,7 @@ const createPrefixId = (length = 10) => {
     output.push("-");
     return output.join("");
 };
-let prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
+let prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 if (!prefix) {
     const id = createPrefixId(10);
     process.env.ELASTIC_SEARCH_INDEX_PREFIX = id;

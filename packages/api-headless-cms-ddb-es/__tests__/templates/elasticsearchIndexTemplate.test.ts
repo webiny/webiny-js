@@ -31,7 +31,8 @@ describe("Elasticsearch Index Template", () => {
     it("should insert default index template", async () => {
         const insert = await putTemplate({
             client,
-            template: base.template
+            template: base.template,
+            prefix
         });
 
         expect(insert).toMatchObject({

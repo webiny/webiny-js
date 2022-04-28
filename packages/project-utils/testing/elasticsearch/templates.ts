@@ -1,6 +1,22 @@
 import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchIndexTemplatePluginConfig } from "../../../api-elasticsearch/src/plugins/definition/ElasticsearchIndexTemplatePlugin";
 
+interface GetTemplateNameParams {
+    prefix: string;
+    template: ElasticsearchIndexTemplatePluginConfig;
+}
+const getTemplateName = (params: GetTemplateNameParams): string => {
+    const { template, prefix } = params;
+    if (!prefix) {
+        return template.name;
+    }
+    const re = new RegExp(`^${prefix}`);
+    if (template.name.match(re) !== null) {
+        return template.name;
+    }
+    return `${prefix}${template.name}`;
+};
+
 interface PutTemplateParams {
     client: Client;
     prefix: string;
@@ -11,10 +27,10 @@ export const putTemplate = async (params: PutTemplateParams) => {
     try {
         return await client.indices.putTemplate({
             ...template,
-            name:
-                template.name.match(new RegExp(`^${prefix}`)) === null
-                    ? `${prefix}${template.name}`
-                    : template.name
+            name: getTemplateName({
+                template,
+                prefix
+            })
         });
     } catch (ex) {
         console.log("Could not put template.");
@@ -50,6 +66,9 @@ export const deleteTemplates = async (params: DeleteTemplatesParams) => {
     }
     const re = new RegExp(`^${prefix}`);
     const items: string[] = Object.keys(response.body).filter(name => {
+        if (!prefix) {
+            return true;
+        }
         return name.match(re) !== null;
     });
     if (items.length === 0) {
