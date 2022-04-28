@@ -1,5 +1,6 @@
 export * from "./Pulumi";
 export * from "./PulumiApp";
+export * from "./PulumiAppModule";
 export * from "./PulumiResource";
 export * from "./ApplicationConfig";
 export * from "./ApplicationHook";

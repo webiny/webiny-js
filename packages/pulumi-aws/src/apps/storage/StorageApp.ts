@@ -6,10 +6,10 @@ import {
     ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
-import { createCognitoResources } from "./StorageCognito";
-import { createDynamoTable } from "./StorageDynamo";
-import { createEventBus } from "./StorageEventBus";
-import { createFileManagerBucket } from "./StorageFileManager";
+import { StorageCognito } from "./StorageCognito";
+import { StorageDynamo } from "./StorageDynamo";
+import { StorageEventBus } from "./StorageEventBus";
+import { StorageFileManger } from "./StorageFileManager";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
     protect?(ctx: ApplicationContext): boolean;
@@ -27,19 +27,19 @@ export const StorageApp = defineApp({
         const legacyConfig = config?.legacy?.(app.ctx) ?? {};
 
         // Setup DynamoDB table
-        const dynamoDbTable = createDynamoTable(app, { protect });
+        const dynamoDbTable = app.addModule(StorageDynamo, { protect });
 
         // Setup Cognito
-        const cognito = createCognitoResources(app, {
+        const cognito = app.addModule(StorageCognito, {
             protect,
             useEmailAsUsername: legacyConfig.useEmailAsUsername ?? false
         });
 
         // Setup event bus
-        const eventBus = createEventBus(app);
+        const eventBus = app.addModule(StorageEventBus);
 
         // Setup file storage bucket
-        const fileManagerBucket = createFileManagerBucket(app, { protect });
+        const fileManagerBucket = app.addModule(StorageFileManger, { protect });
 
         app.addOutputs({
             fileManagerBucketId: fileManagerBucket.output.id,
@@ -71,10 +71,12 @@ export function createStorageApp(config: StorageAppConfig & ApplicationConfig<St
         name: "storage",
         description: "Your project's persistent storages.",
         async app(ctx) {
+            // Create the app instance.
             const app = new StorageApp(ctx);
+            // Run the default application setup.
             await app.setup(config);
+            // Run the custom user config.
             await config.config?.(app, ctx);
-            config.config?.(app, ctx);
             return app;
         },
         onBeforeBuild: config.onBeforeBuild,

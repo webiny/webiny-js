@@ -1,7 +1,7 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { PulumiApp } from "@webiny/pulumi-sdk";
+import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
 interface ScheduleActionParams {
     env: Record<string, any>;
@@ -14,47 +14,52 @@ const EXECUTE_ACTION_LAMBDA = `${LAMBDA_NAME_PREFIX}-execute-action-lambda`;
 const EVENT_RULE_NAME = `${LAMBDA_NAME_PREFIX}-event-rule`;
 const EVENT_RULE_TARGET = `${LAMBDA_NAME_PREFIX}-event-rule-target`;
 
-export function createApwScheduler(app: PulumiApp, params: ScheduleActionParams) {
-    const executeAction = createExecuteActionLambda(app, params);
-    const scheduleAction = createScheduleActionLambda(app, executeAction.lambda.output, params);
+export type ApiApwScheduler = PulumiAppModule<typeof ApiApwScheduler>;
 
-    // Create event rule.
-    const eventRule = app.addResource(aws.cloudwatch.EventRule, {
-        name: EVENT_RULE_NAME,
-        config: {
-            description: `Enable us to schedule an action in publishing workflow at a particular datetime`,
-            scheduleExpression: "cron(* * * * ? 2000)",
-            isEnabled: true
-        }
-    });
+export const ApiApwScheduler = defineAppModule({
+    name: "ApiApwScheduler",
+    config(app: PulumiApp, params: ScheduleActionParams) {
+        const executeAction = createExecuteActionLambda(app, params);
+        const scheduleAction = createScheduleActionLambda(app, executeAction.lambda.output, params);
 
-    // Add required permission to the target lambda.
-    app.addResource(aws.lambda.Permission, {
-        name: "eventTargetPermission",
-        config: {
-            action: "lambda:InvokeFunction",
-            function: scheduleAction.lambda.output.arn,
-            principal: "events.amazonaws.com",
-            statementId: "allow-rule-invoke-" + EVENT_RULE_NAME
-        }
-    });
+        // Create event rule.
+        const eventRule = app.addResource(aws.cloudwatch.EventRule, {
+            name: EVENT_RULE_NAME,
+            config: {
+                description: `Enable us to schedule an action in publishing workflow at a particular datetime`,
+                scheduleExpression: "cron(* * * * ? 2000)",
+                isEnabled: true
+            }
+        });
 
-    // Add lambda as target to the event rule.
-    const eventTarget = app.addResource(aws.cloudwatch.EventTarget, {
-        name: EVENT_RULE_TARGET,
-        config: {
-            rule: eventRule.output.name,
-            arn: scheduleAction.lambda.output.arn
-        }
-    });
+        // Add required permission to the target lambda.
+        app.addResource(aws.lambda.Permission, {
+            name: "eventTargetPermission",
+            config: {
+                action: "lambda:InvokeFunction",
+                function: scheduleAction.lambda.output.arn,
+                principal: "events.amazonaws.com",
+                statementId: "allow-rule-invoke-" + EVENT_RULE_NAME
+            }
+        });
 
-    return {
-        executeAction,
-        scheduleAction,
-        eventRule,
-        eventTarget
-    };
-}
+        // Add lambda as target to the event rule.
+        const eventTarget = app.addResource(aws.cloudwatch.EventTarget, {
+            name: EVENT_RULE_TARGET,
+            config: {
+                rule: eventRule.output.name,
+                arn: scheduleAction.lambda.output.arn
+            }
+        });
+
+        return {
+            executeAction,
+            scheduleAction,
+            eventRule,
+            eventTarget
+        };
+    }
+});
 
 function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams) {
     const role = app.addResource(aws.iam.Role, {
