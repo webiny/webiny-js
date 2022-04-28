@@ -29,11 +29,19 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions) =
     try {
         return new Client(clientOptions);
     } catch (ex) {
-        throw new WebinyError("Could not connect to Elasticsearch.", "ELASTICSEARCH_CLIENT_ERROR", {
+        const data = {
             error: ex,
             node: endpoint || node,
             ...rest,
             auth: undefined
+        };
+        console.log({
+            ...data
         });
+        throw new WebinyError(
+            "Could not connect to Elasticsearch.",
+            "ELASTICSEARCH_CLIENT_ERROR",
+            data
+        );
     }
 };
