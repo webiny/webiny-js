@@ -10,7 +10,7 @@ const dateOnly: TransformerCallable<string> = value => {
     }
     try {
         const date = new Date(value).toISOString();
-        return date.substr(0, 10);
+        return date.slice(0, 10);
     } catch (error) {
         throw new WebinyError(`Could not transform value to a date.`, "TRANSFORM_ERROR", {
             error,
@@ -71,7 +71,7 @@ const dateTimeWithTimezone: TransformerCallable<string> = value => {
 
     try {
         const dateObj = new Date(initialDate);
-        date = dateObj.toISOString().substr(0, 10);
+        date = dateObj.toISOString().slice(0, 10);
     } catch (ex) {
         throw new WebinyError(
             "Could not transform received date into Date object.",

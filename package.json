@@ -164,13 +164,13 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn && git add yarn.lock && lint-staged",
+      "pre-commit": "yarn && git add yarn.lock && yarn lint-staged",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
-      "prettier --check",
+      "prettier --write",
       "eslint --max-warnings=0 --no-ignore",
       "adio",
       "npm run check-ts-configs"
@@ -221,7 +221,7 @@
     "pretty-format": "25.5.0",
     "typescript": "4.5.5",
     "codex-tooltip": "1.0.2",
-    "@pulumi/pulumi": "3.19.0",
+    "@pulumi/pulumi": "3.25.0",
     "@pulumi/aws": "4.28.0",
     "@types/eslint": "8.2.1",
     "yargs": "^17.3.1"

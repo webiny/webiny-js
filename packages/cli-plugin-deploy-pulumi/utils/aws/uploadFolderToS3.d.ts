@@ -14,15 +14,15 @@ export default function uploadFolderToS3(params: {
     path: string;
 
     // A callback that gets called every time a file has been uploaded successfully.
-    onFileUploadSuccess: (params: { paths: Paths }) => {};
+    onFileUploadSuccess: (params: { paths: Paths }) => void;
 
     // A callback that gets called every time a file has not been uploaded successfully.
-    onFileUploadError: (params: { paths: Paths; error: Error }) => {};
+    onFileUploadError: (params: { paths: Paths; error: Error }) => void;
 
     // A callback that gets called every time a file upload has been skipped.
-    onFileUploadSkip: (params: { paths: Paths }) => {};
+    onFileUploadSkip: (params: { paths: Paths }) => void;
 
     bucket: BucketName;
-    acl: ObjectCannedACL;
-    cacheControl: CacheControl | CacheControlMap;
-}): Promise<void>;
+    acl?: ObjectCannedACL;
+    cacheControl?: CacheControl | CacheControlMap;
+}): Promise<void> ;

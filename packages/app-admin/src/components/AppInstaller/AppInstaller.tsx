@@ -25,6 +25,7 @@ export const AppInstaller: React.FC = ({ children }) => {
 
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
+    const isRootTenant = tenantId === "root";
 
     const markInstallerAsCompleted = () => {
         localStorage.set(lsKey, wbyVersion);
@@ -40,11 +41,23 @@ export const AppInstaller: React.FC = ({ children }) => {
         loading,
         installers,
         installer,
+        isFirstInstall,
         showNextInstaller,
         showLogin,
         onUser,
         skippingVersions
     } = useInstaller({ isInstalled: isInstallerCompleted() });
+
+    const openWelcomeScreen = () => {
+        if (!isRootTenant) {
+            return;
+        }
+        if (!isFirstInstall) {
+            window.location.href = `https://site.webiny.com/thank-you/upgrade?version=${wbyVersion}&returnUrl=${window.location.href}`;
+            return;
+        }
+        window.location.href = `https://site.webiny.com/thank-you/installation?returnUrl=${window.location.href}`;
+    };
 
     useEffect(() => {
         if (identity) {
@@ -163,9 +176,10 @@ export const AppInstaller: React.FC = ({ children }) => {
                         onClick={() => {
                             markInstallerAsCompleted();
                             setFinished(true);
+                            openWelcomeScreen();
                         }}
                     >
-                        Open Admin Area
+                        {isFirstInstall ? "Finish install" : "Finish upgrade"}
                     </ButtonPrimary>
                 </SuccessDialog>
             </Elevation>

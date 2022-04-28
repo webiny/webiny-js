@@ -1,10 +1,10 @@
-const pulumi = require("@pulumi/pulumi");
+import * as pulumi from "@pulumi/pulumi";
 
 /**
  * Registers a global stack transformation that merges a set
  * of tags with whatever was explicitly set in the resource definition.
  */
-function tagResources(tags) {
+export function tagResources(tags: Record<string, string>) {
     pulumi.runtime.registerStackTransformation(args => {
         if (isTaggable(args.type)) {
             args.props["tags"] = { ...args.props["tags"], ...tags };
@@ -21,12 +21,12 @@ module.exports = {
 /**
  * Returns true if the given resource type is an AWS resource that supports tags.
  */
-const isTaggable = resourceType => {
-    return taggableResourceTypes.indexOf(resourceType) !== -1;
-};
+function isTaggable(resourceType: string) {
+    return taggableResourceTypes.has(resourceType);
+}
 
 // A list of known AWS type tokens that are taggable.
-const taggableResourceTypes = [
+const taggableResourceTypes = new Set([
     "aws:accessanalyzer/analyzer:Analyzer",
     "aws:acm/certificate:Certificate",
     "aws:acmpca/certificateAuthority:CertificateAuthority",
@@ -256,4 +256,4 @@ const taggableResourceTypes = [
     "aws:wafregional/webAcl:WebAcl",
     "aws:workspaces/directory:Directory",
     "aws:workspaces/ipGroup:IpGroup"
-];
+]);
