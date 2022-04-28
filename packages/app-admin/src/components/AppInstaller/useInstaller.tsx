@@ -242,9 +242,12 @@ export const useInstaller = (params: UseInstallerParams) => {
         })();
     }, []);
 
+    const isFirstInstall = installers.some(installer => installer.installed);
+
     return {
         loading,
         installers,
+        isFirstInstall,
         installer: installers[installerIndex],
         showNextInstaller,
         showLogin,

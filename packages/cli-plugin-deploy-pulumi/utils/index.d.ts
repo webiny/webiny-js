@@ -2,7 +2,7 @@ interface StackOutput {
     apiUrl: string;
     region: string;
     dynamoDbTable: string;
-    // [key: string]: any;
+    [key: string]: any;
 }
 
 export function tagResources(tags: Record<string, string>): void;

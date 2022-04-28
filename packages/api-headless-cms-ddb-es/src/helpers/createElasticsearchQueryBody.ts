@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import { OperatorPlugins, operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
 import {
@@ -29,6 +30,7 @@ import {
 } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
 import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
+import { normalizeValue } from "@webiny/api-elasticsearch/normalize";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;
@@ -53,6 +55,10 @@ interface CreateElasticsearchQueryArgs {
     modelFields: ModelFields;
     parentPath?: string | null;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
+    fullTextSearch: {
+        term?: string;
+        fields: string[];
+    };
 }
 
 const specialFields = ["published", "latest", "locale", "tenant"];
@@ -291,7 +297,7 @@ interface ApplyFilteringParams {
     operator: string;
     key: string;
     value: any;
-    operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin>;
+    operatorPlugins: OperatorPlugins;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
     parentPath?: string | null;
 }
@@ -340,13 +346,53 @@ const applyFiltering = (params: ApplyFilteringParams) => {
         keyword
     });
 };
+
+interface ApplyFullTextSearchParams {
+    query: ElasticsearchBoolQueryConfig;
+    modelFields: ModelFields;
+    term?: string;
+    fields: string[];
+}
+const applyFullTextSearch = (params: ApplyFullTextSearchParams): void => {
+    const { query, modelFields, term, fields } = params;
+    if (!term || term.length === 0 || fields.length === 0) {
+        return;
+    }
+
+    const fieldPaths = fields.reduce((collection, field) => {
+        const modelField = modelFields[field];
+        if (!modelField) {
+            return collection;
+        }
+
+        collection.push(`values.${field}`);
+
+        return collection;
+    }, [] as string[]);
+
+    query.must.push({
+        query_string: {
+            allow_leading_wildcard: true,
+            fields: fieldPaths,
+            query: normalizeValue(term),
+            default_operator: "or"
+        }
+    });
+};
 /*
  * Iterate through where keys and apply plugins where necessary
  */
 const execElasticsearchBuildQueryPlugins = (
     params: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where: initialWhere, modelFields, parentPath, plugins, searchPlugins } = params;
+    const {
+        where: initialWhere,
+        modelFields,
+        parentPath,
+        plugins,
+        searchPlugins,
+        fullTextSearch
+    } = params;
 
     const where: CmsEntryListWhere = {
         ...initialWhere
@@ -354,6 +400,16 @@ const execElasticsearchBuildQueryPlugins = (
     const query = createInitialQueryValue({
         ...params,
         where
+    });
+
+    /**
+     * Add full text search for requested fields.
+     */
+    applyFullTextSearch({
+        query,
+        modelFields,
+        term: fullTextSearch.term,
+        fields: fullTextSearch.fields
     });
 
     /**
@@ -430,7 +486,7 @@ const execElasticsearchBuildQueryPlugins = (
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
     const { plugins, model, args, parentPath = null } = params;
-    const { where, after, limit, sort: initialSort } = args;
+    const { where, after, limit, sort: initialSort, search, fields } = args;
 
     const modelFields = createModelFields(plugins, model);
     const searchPlugins = searchPluginsList(plugins);
@@ -441,7 +497,11 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
         where,
         modelFields,
         parentPath,
-        searchPlugins
+        searchPlugins,
+        fullTextSearch: {
+            term: search,
+            fields: fields || []
+        }
     });
 
     const queryPlugins = plugins
