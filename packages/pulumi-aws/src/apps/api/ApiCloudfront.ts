@@ -87,10 +87,10 @@ export const ApiCloudfront = defineAppModule({
                 ],
                 origins: [
                     {
-                        domainName: gateway.defaultStage.output.invokeUrl.apply(
+                        domainName: gateway.stage.output.invokeUrl.apply(
                             (url: string) => new URL(url).hostname
                         ),
-                        originPath: gateway.defaultStage.output.invokeUrl.apply(
+                        originPath: gateway.stage.output.invokeUrl.apply(
                             (url: string) => new URL(url).pathname
                         ),
                         originId: gateway.api.output.name,
