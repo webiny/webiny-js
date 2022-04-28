@@ -5,21 +5,23 @@ import {
 } from "../../../api-elasticsearch/src/client";
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
-const awsDomain = process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME;
 
-const options: Partial<ElasticsearchClientOptions> = {
+const esEndpoint: string | undefined = process.env.ELASTIC_SEARCH_ENDPOINT;
+
+const defaultOptions: Partial<ElasticsearchClientOptions> = {
     node: `http://localhost:${ELASTICSEARCH_PORT}`,
-    auth: {} as any
+    auth: {} as any,
+    maxRetries: 10,
+    pingTimeout: 500
 };
-if (!!awsDomain) {
-    options.node = awsDomain;
-    options.auth = undefined;
+if (!!esEndpoint) {
+    defaultOptions.node = esEndpoint.match(/^http/) === null ? `https://${esEndpoint}` : esEndpoint;
+    defaultOptions.auth = undefined;
 }
 
-export const createElasticsearchClient = (): Client => {
+export const createElasticsearchClient = (options: Partial<ElasticsearchClientOptions>): Client => {
     return createClient({
-        maxRetries: 10,
-        pingTimeout: 500,
+        ...defaultOptions,
         ...options
     });
 };

@@ -1,9 +1,8 @@
 const { createElasticsearchClient } = require("../../../api-elasticsearch/dist/client");
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
-const awsDomain = process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME;
 
-//const esEndpoint = process.env.ELASTIC_SEARCH_ENDPOINT;
+const esEndpoint = process.env.ELASTIC_SEARCH_ENDPOINT;
 
 const defaultOptions = {
     node: `http://localhost:${ELASTICSEARCH_PORT}`,
@@ -11,8 +10,8 @@ const defaultOptions = {
     maxRetries: 10,
     pingTimeout: 500
 };
-if (!!awsDomain) {
-    defaultOptions.node = awsDomain;
+if (!!esEndpoint) {
+    defaultOptions.node = esEndpoint.match(/^http/) === null ? `https://${esEndpoint}` : esEndpoint;
     defaultOptions.auth = undefined;
 }
 
