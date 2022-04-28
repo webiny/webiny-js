@@ -4,11 +4,11 @@ import { PageElasticsearchIndexTemplatePlugin } from "~/plugins/definitions/Page
 import { createElasticsearchClient } from "../../api-elasticsearch/__tests__/helpers";
 
 import {
-    // deleteTemplates,
+    deleteTemplates,
     putTemplate,
     getTemplates
 } from "@webiny/project-utils/testing/elasticsearch/templates";
-// import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
+import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
 const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
@@ -55,19 +55,25 @@ describe("Elasticsearch Index Template", () => {
     const client = createElasticsearchClient();
 
     beforeEach(async () => {
-        // await deleteIndexes({
-        //     client
-        // });
-        // await deleteTemplates({
-        //     client
-        // });
+        await deleteIndexes({
+            client,
+            prefix
+        });
+        await deleteTemplates({
+            client,
+            prefix
+        });
     });
 
     afterEach(async () => {
-        // await deleteIndexes({
-        //     client
-        // });
-        // await deleteTemplates({ client });
+        await deleteIndexes({
+            client,
+            prefix
+        });
+        await deleteTemplates({
+            client,
+            prefix
+        });
     });
 
     it("should insert default index template", async () => {
