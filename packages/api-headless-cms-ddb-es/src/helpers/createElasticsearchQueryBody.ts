@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import { OperatorPlugins, operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
 import {
@@ -29,8 +28,8 @@ import {
     CreatePathCallableParams
 } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
 import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { normalizeValue } from "@webiny/api-elasticsearch/normalize";
+import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;
@@ -297,7 +296,7 @@ interface ApplyFilteringParams {
     operator: string;
     key: string;
     value: any;
-    operatorPlugins: OperatorPlugins;
+    operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin>;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
     parentPath?: string | null;
 }
