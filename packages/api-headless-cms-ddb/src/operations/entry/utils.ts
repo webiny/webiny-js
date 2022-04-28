@@ -53,6 +53,10 @@ interface FilterItemsParams {
     plugins: PluginsContainer;
     fields: ModelFieldRecords;
     fromStorage: FilterItemFromStorage;
+    fullTextSearch?: {
+        term?: string;
+        fields?: string[];
+    };
 }
 
 const VALUES_ATTRIBUTE = "values";
@@ -298,13 +302,64 @@ const execFilter = (params: ExecFilterParams) => {
     return matched;
 };
 
+interface CreateFullTextSearchParams {
+    term?: string;
+    fields?: string[];
+    plugin: ValueFilterPlugin;
+}
+
+interface FullTextSearchParams {
+    item: CmsEntry;
+    fromStorage: FilterItemFromStorage;
+    fields: ModelFieldRecords;
+}
+/**
+ * Unfortunately we must use the contains plugin directly as plugins do not support multi field searching.
+ */
+const createFullTextSearch = ({
+    term,
+    fields: targetFields,
+    plugin
+}: CreateFullTextSearchParams) => {
+    if (!term || term.trim().length === 0 || !targetFields || targetFields.length === 0) {
+        return null;
+    }
+    return async ({ item, fromStorage, fields }: FullTextSearchParams) => {
+        for (const targetField of targetFields) {
+            const value = await fromStorage(fields[targetField].def, item.values[targetField]);
+            if (!value) {
+                continue;
+            }
+            if (plugin.matches({ value, compareValue: term }) === true) {
+                return true;
+            }
+        }
+        return false;
+    };
+};
+
 export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]> => {
-    const { items: records, where, plugins, fields, fromStorage } = params;
+    const { items: records, where, plugins, fields, fromStorage, fullTextSearch } = params;
 
     const filters = createFilters({
         plugins,
         where,
         fields
+    });
+
+    const fullTextSearchPlugin = plugins
+        .byType<ValueFilterPlugin>(ValueFilterPlugin.type)
+        .find(plugin => plugin.getOperation() === "contains");
+    if (!fullTextSearchPlugin) {
+        throw new WebinyError(
+            `Missing "contains" plugin to run the full-text search.`,
+            "MISSING_PLUGIN"
+        );
+    }
+
+    const search = createFullTextSearch({
+        ...fullTextSearch,
+        plugin: fullTextSearchPlugin
     });
 
     const promises: Promise<CmsEntry | null>[] = records.map(async record => {
@@ -375,6 +430,20 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
                 return null;
             }
         }
+        /**
+         * If we have full text search defined, run it. Otherwise just return the given record.
+         */
+        if (!search) {
+            return record;
+        }
+        const result = await search({
+            item: record,
+            fromStorage,
+            fields
+        });
+        if (!result) {
+            return null;
+        }
 
         return record;
     });
@@ -385,6 +454,7 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
     /**
      * And filter out the null values which are returned when filter is not satisfied.
      */
+
     return results.filter(Boolean) as CmsEntry[];
 };
 
