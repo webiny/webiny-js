@@ -68,11 +68,13 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index: noLocaleIndex } = configurations.es({
                 tenant,
                 locale
             });
-            expect(noLocaleIndex).toEqual("root-form-builder");
+            expect(noLocaleIndex).toEqual(`${prefix}root-form-builder`);
         }
     );
 
@@ -82,11 +84,13 @@ describe("Elasticsearch index", () => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index: noLocaleIndex } = configurations.es({
                 tenant,
                 locale
             });
-            expect(noLocaleIndex).toEqual(`root-${locale}-form-builder`.toLowerCase());
+            expect(noLocaleIndex).toEqual(`${prefix}root-${locale}-form-builder`.toLowerCase());
         }
     );
 });

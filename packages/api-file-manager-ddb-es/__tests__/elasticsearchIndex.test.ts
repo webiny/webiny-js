@@ -69,11 +69,13 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index: noLocaleIndex } = configurations.es({
                 tenant,
                 locale
             });
-            expect(noLocaleIndex).toEqual("root-file-manager");
+            expect(noLocaleIndex).toEqual(`${prefix}root-file-manager`);
         }
     );
 
@@ -83,11 +85,13 @@ describe("Elasticsearch index", () => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index: noLocaleIndex } = configurations.es({
                 tenant,
                 locale
             });
-            expect(noLocaleIndex).toEqual(`root-${locale}-file-manager`.toLowerCase());
+            expect(noLocaleIndex).toEqual(`${prefix}root-${locale}-file-manager`.toLowerCase());
         }
     );
 });
