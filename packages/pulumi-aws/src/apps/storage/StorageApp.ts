@@ -8,7 +8,7 @@ import {
 
 import { StorageCognito } from "./StorageCognito";
 import { StorageDynamo } from "./StorageDynamo";
-import { createEventBus } from "./StorageEventBus";
+import { StorageEventBus } from "./StorageEventBus";
 import { StorageFileManger } from "./StorageFileManager";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
@@ -36,7 +36,7 @@ export const StorageApp = defineApp({
         });
 
         // Setup event bus
-        const eventBus = createEventBus(app);
+        const eventBus = app.addModule(StorageEventBus);
 
         // Setup file storage bucket
         const fileManagerBucket = app.addModule(StorageFileManger, { protect });
