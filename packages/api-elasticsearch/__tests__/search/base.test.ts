@@ -67,30 +67,40 @@ describe("Elasticsearch Base Search", () => {
     const fetchAllData = async () => {
         return client.search({
             index: indexTestName,
-            body: {}
+            body: {
+                sort: {
+                    id: {
+                        order: "asc"
+                    }
+                }
+            }
         });
     };
 
     beforeEach(async () => {
-        await deleteIndexes({
-            client,
-            prefix
-        });
-        await deleteTemplates({
-            client,
-            prefix
-        });
+        try {
+            await deleteIndexes({
+                client,
+                prefix
+            });
+            await deleteTemplates({
+                client,
+                prefix
+            });
+        } catch (ex) {}
     });
 
     afterEach(async () => {
-        await deleteIndexes({
-            client,
-            prefix
-        });
-        await deleteTemplates({
-            client,
-            prefix
-        });
+        try {
+            await deleteIndexes({
+                client,
+                prefix
+            });
+            await deleteTemplates({
+                client,
+                prefix
+            });
+        } catch (ex) {}
     });
 
     it("should prepare entries - pre-created indexes", async () => {

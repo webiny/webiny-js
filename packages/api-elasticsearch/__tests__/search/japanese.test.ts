@@ -57,7 +57,7 @@ describe("Japanese search", () => {
     };
 
     const refreshIndex = async () => {
-        await client.indices.refresh({
+        const result = await client.indices.refresh({
             index: indexName
         });
         await new Promise(resolve => {
@@ -65,6 +65,7 @@ describe("Japanese search", () => {
                 resolve(0);
             }, 1500);
         });
+        return result;
     };
     const fetchAllData = async () => {
         return client.search({
