@@ -25,21 +25,20 @@ export interface I18NLocaleData extends I18NLocale {
 }
 
 export interface I18NContextObject {
-    __i18n: {
-        acceptLanguage: string | null;
-        defaultLocale: I18NLocale | null;
-        locale: Record<string, I18NLocale | null>;
-        locales: I18NLocale[];
-    };
     defaultLocale?: string | null;
     acceptLanguage?: string | null;
-    getCurrentLocale: (localeContext: LocaleKeys) => I18NLocale | null;
+    getContentLocale(): I18NLocale | undefined;
+    getCurrentLocale: (localeContext: LocaleKeys) => I18NLocale | undefined;
+    setCurrentLocale: (localeContext: LocaleKeys, locale: I18NLocale) => void;
     getCurrentLocales: () => { context: string; locale: string | null }[];
-    getDefaultLocale: () => I18NLocale | null;
+    getDefaultLocale: () => I18NLocale | undefined;
+    setContentLocale: (locale: I18NLocale) => void;
     getLocales: () => I18NLocale[];
-    getLocale: (code: string) => I18NLocale | null;
+    getLocale: (code: string) => I18NLocale | undefined;
     locales: LocalesCRUD;
     system: SystemCRUD;
+    hasI18NContentPermission: () => Promise<boolean>;
+    checkI18NContentPermission: () => Promise<void>;
 }
 
 export interface SystemInstallParams {

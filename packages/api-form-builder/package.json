@@ -21,7 +21,6 @@
     "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api-file-manager": "^5.25.0",
     "@webiny/api-i18n": "^5.25.0",
-    "@webiny/api-i18n-content": "^5.25.0",
     "@webiny/api-i18n-ddb": "^5.25.0",
     "@webiny/api-security": "^5.25.0",
     "@webiny/api-tenancy": "^5.25.0",

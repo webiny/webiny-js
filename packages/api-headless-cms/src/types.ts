@@ -7,7 +7,6 @@ import {
     GraphQLSchemaDefinition,
     Resolvers
 } from "@webiny/handler-graphql/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -62,7 +61,6 @@ export interface CmsContext
         HttpContext,
         I18NContext,
         FileManagerContext,
-        I18NContentContext,
         TenancyContext {
     cms: HeadlessCms;
 }
