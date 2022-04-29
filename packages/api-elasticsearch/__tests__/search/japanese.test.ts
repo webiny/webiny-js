@@ -122,10 +122,14 @@ describe("Japanese search", () => {
             await refreshIndex();
             await fetchAllData();
         } catch (ex) {
-            console.log("Prepare with index.");
-            console.log(`japanese: ${indexName}`);
-            console.log(ex.message);
-            console.log(ex.data);
+            console.log(
+                JSON.stringify({
+                    name: "Prepare with index.",
+                    prefix,
+                    japanese: indexName,
+                    error: ex
+                })
+            );
             throw ex;
         }
     };
@@ -137,11 +141,15 @@ describe("Japanese search", () => {
             await refreshIndex();
             await fetchAllData();
         } catch (ex) {
-            console.log("Prepare with index template.");
-            console.log(`base: ${baseIndexTemplateName}`);
-            console.log(`japanese: ${japaneseIndexTemplateName}`);
-            console.log(ex.message);
-            console.log(ex.data);
+            console.log(
+                JSON.stringify({
+                    name: "Prepare with template.",
+                    prefix,
+                    base: baseIndexTemplateName,
+                    japanese: japaneseIndexTemplateName,
+                    error: ex
+                })
+            );
             throw ex;
         }
     };
