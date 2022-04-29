@@ -114,17 +114,34 @@ describe("Japanese search", () => {
     };
 
     const prepareWithIndex = async (items: string[]) => {
-        await createIndex();
-        await insertAllData(items);
-        await refreshIndex();
-        await fetchAllData();
+        try {
+            await createIndex();
+            await insertAllData(items);
+            await refreshIndex();
+            await fetchAllData();
+        } catch (ex) {
+            console.log("Prepare with index.");
+            console.log(`japanese: ${indexName}`);
+            console.log(ex.message);
+            console.log(ex.data);
+            throw ex;
+        }
     };
 
     const prepareWithTemplate = async (items: string[]) => {
-        await createIndexTemplate();
-        await insertAllData(items);
-        await refreshIndex();
-        await fetchAllData();
+        try {
+            await createIndexTemplate();
+            await insertAllData(items);
+            await refreshIndex();
+            await fetchAllData();
+        } catch (ex) {
+            console.log("Prepare with index template.");
+            console.log(`base: ${baseIndexTemplateName}`);
+            console.log(`japanese: ${japaneseIndexTemplateName}`);
+            console.log(ex.message);
+            console.log(ex.data);
+            throw ex;
+        }
     };
 
     beforeEach(async () => {
