@@ -1,4 +1,4 @@
-import { createElasticsearchClient, createPrefixId } from "../helpers";
+import { createElasticsearchClient } from "../helpers";
 import { base as baseIndexConfiguration } from "~/indexConfiguration/base";
 import { japanese as japaneseIndexConfiguration } from "~/indexConfiguration/japanese";
 import { ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin } from "~/plugins/operator/japanese/contains";
@@ -13,15 +13,11 @@ import { entries, searchTargets } from "./japanese.entries";
 describe("Japanese search", () => {
     const client = createElasticsearchClient();
 
-    let prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-    if (!prefix) {
-        prefix = createPrefixId(10);
-        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
-    }
+    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-    const baseIndexTemplateName = `${prefix}base-index-template`;
-    const japaneseIndexTemplateName = `${prefix}japanese-index-template`;
-    const indexName = `${prefix}japanese-index-test`;
+    const baseIndexTemplateName = `${prefix}api-elasticsearch-base-index-template`;
+    const japaneseIndexTemplateName = `${prefix}api-elasticsearch-japanese-index-template`;
+    const indexName = `${prefix}api-elasticsearch-japanese-index-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin();
 
@@ -61,8 +57,13 @@ describe("Japanese search", () => {
     };
 
     const refreshIndex = async () => {
-        return client.indices.refresh({
+        await client.indices.refresh({
             index: indexName
+        });
+        await new Promise(resolve => {
+            setTimeout(() => {
+                resolve(0);
+            }, 1500);
         });
     };
     const fetchAllData = async () => {

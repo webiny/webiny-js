@@ -40,7 +40,7 @@ describe("ElasticsearchContext", () => {
                 "0": {
                     epoch: expect.any(String),
                     cluster: expect.any(String),
-                    status: "green"
+                    status: expect.stringMatching(/green|yellow/)
                 }
             },
             statusCode: 200

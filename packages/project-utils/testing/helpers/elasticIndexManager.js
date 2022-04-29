@@ -1,20 +1,4 @@
-const characters = "abcdefghijklmnopqrstuvwxyz";
-
-const createPrefixId = (length = 10) => {
-    const output = [];
-    const total = characters.length;
-    for (let i = 0; i < length; i++) {
-        output.push(characters.charAt(Math.floor(Math.random() * total)));
-    }
-    output.push("-");
-    return output.join("");
-};
 let prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-if (!prefix) {
-    const id = createPrefixId(10);
-    process.env.ELASTIC_SEARCH_INDEX_PREFIX = id;
-    prefix = id;
-}
 
 module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, template }) => {
     /**

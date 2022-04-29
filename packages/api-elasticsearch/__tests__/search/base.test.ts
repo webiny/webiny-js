@@ -5,16 +5,11 @@ import { people } from "./base.entries";
 import { base } from "~/indexConfiguration/base";
 import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains";
-import { createPrefixId } from "../helpers";
 
 describe("Elasticsearch Base Search", () => {
     const client = createElasticsearchClient();
 
-    let prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-    if (!prefix) {
-        prefix = createPrefixId(10);
-        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
-    }
+    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
     const indexTestName = `${prefix}base-index-test`;
     const indexTemplateTestName = `${prefix}base-index-template-test`;

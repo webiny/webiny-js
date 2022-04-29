@@ -1,7 +1,7 @@
 import { base } from "~/indexConfiguration/base";
 import { japanese } from "~/indexConfiguration/japanese";
 import { ElasticsearchIndexRequestBody } from "~/types";
-import { createElasticsearchClient, createPrefixId } from "./helpers";
+import { createElasticsearchClient } from "./helpers";
 
 import {
     deleteTemplates,
@@ -27,11 +27,7 @@ const createIndexPattern = (name: string): string => {
 describe("Elasticsearch Templates", () => {
     const client = createElasticsearchClient();
 
-    let prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-    if (!prefix) {
-        prefix = createPrefixId(10);
-        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
-    }
+    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
     beforeEach(async () => {
         await deleteIndexes({ client, prefix });

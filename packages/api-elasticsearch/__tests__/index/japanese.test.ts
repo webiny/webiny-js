@@ -1,5 +1,5 @@
 import { japanese } from "~/indexConfiguration/japanese";
-import { createElasticsearchClient, createPrefixId } from "../helpers";
+import { createElasticsearchClient } from "../helpers";
 import { deleteTemplates } from "@webiny/project-utils/testing/elasticsearch/templates";
 import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
@@ -8,14 +8,10 @@ const order = 73;
 describe("Elasticsearch Japanese", () => {
     const client = createElasticsearchClient();
 
-    let prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-    if (!prefix) {
-        prefix = createPrefixId(10);
-        process.env.ELASTIC_SEARCH_INDEX_PREFIX = prefix;
-    }
+    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-    const indexTestName = `${prefix}japanese-index-test`;
-    const indexTemplateTestName = `${prefix}japanese-index-template-test`;
+    const indexTestName = `${prefix}api-elasticsearch-japanese-index-test`;
+    const indexTemplateTestName = `${prefix}api-elasticsearch-japanese-index-template-test`;
 
     beforeEach(async () => {
         await deleteIndexes({
