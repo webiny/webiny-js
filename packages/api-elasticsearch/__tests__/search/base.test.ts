@@ -11,8 +11,8 @@ describe("Elasticsearch Base Search", () => {
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-    const indexTestName = `${prefix}base-index-test`;
-    const indexTemplateTestName = `${prefix}base-index-template-test`;
+    const indexTestName = `${prefix}api-elasticsearch-search-base-index-test`;
+    const indexTemplateTestName = `${prefix}api-elasticsearch-search-base-index-template-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderOperatorContainsPlugin();
 
@@ -60,21 +60,35 @@ describe("Elasticsearch Base Search", () => {
     };
 
     const refreshIndex = async () => {
-        return client.indices.refresh({
-            index: indexTestName
-        });
+        try {
+            return await client.indices.refresh({
+                index: indexTestName
+            });
+        } catch (ex) {
+            console.log("Refresh index.");
+            console.log(ex.message);
+            console.log(JSON.stringify(ex));
+            throw ex;
+        }
     };
     const fetchAllData = async () => {
-        return client.search({
-            index: indexTestName,
-            body: {
-                sort: {
-                    id: {
-                        order: "asc"
+        try {
+            return await client.search({
+                index: indexTestName,
+                body: {
+                    sort: {
+                        id: {
+                            order: "asc"
+                        }
                     }
                 }
-            }
-        });
+            });
+        } catch (ex) {
+            console.log("Fetch all data.");
+            console.log(ex.message);
+            console.log(JSON.stringify(ex));
+            throw ex;
+        }
     };
 
     beforeEach(async () => {
