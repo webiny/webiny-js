@@ -15,10 +15,10 @@ export default (params: CreateFormBuilderCrudParams) => {
 
     return new ContextPlugin<FormBuilderContext>(async context => {
         const getLocale = () => {
-            const locale = context.i18nContent.getCurrentLocale();
+            const locale = context.i18n.getContentLocale();
             if (!locale) {
                 throw new WebinyError(
-                    "Missing locale on context.i18nContent locale in API Form Builder.",
+                    "Missing locale on context.i18n locale in API Form Builder.",
                     "LOCALE_ERROR"
                 );
             }

@@ -16,7 +16,6 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 
 /**
@@ -135,7 +134,6 @@ export default (params?: UseGqlHandlerParams) => {
         graphqlHandlerPlugins(),
         i18nContext(),
         i18nDynamoDbStorageOperations(),
-        i18nContentPlugins(),
         mockLocalesPlugins(),
         elasticsearchClientContext,
         richTextFieldPlugin(),

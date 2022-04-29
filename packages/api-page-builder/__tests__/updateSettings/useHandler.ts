@@ -20,11 +20,12 @@ export default (params: Params = {}) => {
         graphqlHandler(),
         ...createTenancyAndSecurity(),
         new ContextPlugin<PbContext>(async context => {
-            if (context.i18nContent) {
+            if (context.i18n) {
                 return;
             }
-            context.i18nContent = {
-                ...(context.i18nContent || ({} as any)),
+            context.i18n = {
+                // @ts-ignore
+                ...(context.i18n || {}),
                 getLocale: () => {
                     return {
                         code: "en-US"

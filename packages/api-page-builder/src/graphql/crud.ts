@@ -54,9 +54,9 @@ const setup = (params: CreateCrudParams) => {
         };
 
         const getLocaleCode = (): string => {
-            const locale = context.i18nContent.getCurrentLocale();
+            const locale = context.i18n.getContentLocale();
             if (!locale) {
-                throw new WebinyError("Missing context.i18nContent locale in API Page Builder.");
+                throw new WebinyError("Missing content locale in API Page Builder.");
             }
             return locale.code;
         };

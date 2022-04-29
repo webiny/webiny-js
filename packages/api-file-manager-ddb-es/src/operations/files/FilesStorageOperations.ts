@@ -419,9 +419,12 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private getElasticsearchIndex(): string {
-        const locale = this.context.i18nContent.getCurrentLocale();
+        const locale = this.context.i18n.getContentLocale();
         if (!locale) {
-            throw new WebinyError("Missing locale in FilesStorageOperations.", "LOCALE_ERROR");
+            throw new WebinyError(
+                "Missing content locale in FilesStorageOperations.",
+                "LOCALE_ERROR"
+            );
         }
         const { index } = configurations.es({
             tenant: this.context.tenancy.getCurrentTenant().id,

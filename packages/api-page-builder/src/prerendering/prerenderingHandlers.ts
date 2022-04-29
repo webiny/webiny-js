@@ -22,10 +22,10 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
                 return;
             }
 
-            const locale = context.i18nContent.getCurrentLocale();
+            const locale = context.i18n.getContentLocale();
 
             if (!locale || !locale.code) {
-                console.log("Missing current locale on context.i18nContent.getCurrentLocale().");
+                console.log("Missing content locale on context.i18n.");
                 return;
             }
 

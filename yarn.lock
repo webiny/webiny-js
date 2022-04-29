@@ -10035,7 +10035,6 @@ __metadata:
     "@webiny/api-headless-cms": ^5.25.0
     "@webiny/api-headless-cms-ddb": ^5.25.0
     "@webiny/api-i18n": ^5.25.0
-    "@webiny/api-i18n-content": ^5.25.0
     "@webiny/api-i18n-ddb": ^5.25.0
     "@webiny/api-page-builder": ^5.25.0
     "@webiny/api-page-builder-so-ddb": ^5.25.0
@@ -10300,7 +10299,6 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@commodo/fields": 1.1.2-beta.20
     "@webiny/api-i18n": ^5.25.0
-    "@webiny/api-i18n-content": ^5.25.0
     "@webiny/api-i18n-ddb": ^5.25.0
     "@webiny/api-security": ^5.25.0
     "@webiny/api-tenancy": ^5.25.0
@@ -10340,9 +10338,6 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": ^5.25.0
     "@webiny/api-elasticsearch": ^5.25.0
     "@webiny/api-form-builder": ^5.25.0
-    "@webiny/api-i18n": ^5.25.0
-    "@webiny/api-tenancy": ^5.25.0
-    "@webiny/api-upgrade": ^5.25.0
     "@webiny/cli": ^5.25.0
     "@webiny/db-dynamodb": ^5.25.0
     "@webiny/error": ^5.25.0
@@ -10411,7 +10406,6 @@ __metadata:
     "@webiny/api-file-manager": ^5.25.0
     "@webiny/api-file-manager-ddb": ^5.25.0
     "@webiny/api-i18n": ^5.25.0
-    "@webiny/api-i18n-content": ^5.25.0
     "@webiny/api-i18n-ddb": ^5.25.0
     "@webiny/api-security": ^5.25.0
     "@webiny/api-security-so-ddb": ^5.25.0
@@ -10553,7 +10547,6 @@ __metadata:
     "@graphql-tools/schema": ^7.1.2
     "@webiny/api-file-manager": ^5.25.0
     "@webiny/api-i18n": ^5.25.0
-    "@webiny/api-i18n-content": ^5.25.0
     "@webiny/api-i18n-ddb": ^5.25.0
     "@webiny/api-security": ^5.25.0
     "@webiny/api-security-so-ddb": ^5.25.0
@@ -10607,10 +10600,8 @@ __metadata:
     "@webiny/api-security": ^5.25.0
     "@webiny/cli": ^5.25.0
     "@webiny/handler": ^5.25.0
-    "@webiny/handler-graphql": ^5.25.0
     "@webiny/project-utils": ^5.25.0
     graphql: ^15.7.2
-    lodash.get: ^4.4.2
     rimraf: ^3.0.2
     typescript: 4.5.5
   languageName: unknown
@@ -10858,7 +10849,6 @@ __metadata:
     "@webiny/api-file-manager": ^5.25.0
     "@webiny/api-file-manager-ddb": ^5.25.0
     "@webiny/api-i18n": ^5.25.0
-    "@webiny/api-i18n-content": ^5.25.0
     "@webiny/api-i18n-ddb": ^5.25.0
     "@webiny/api-prerendering-service": ^5.25.0
     "@webiny/api-security": ^5.25.0

@@ -5,7 +5,7 @@ export default async (
     context: FileManagerContext,
     check: { rwd?: string } = {}
 ): Promise<FilePermission> => {
-    await context.i18nContent.checkI18NContentPermission();
+    await context.i18n.checkI18NContentPermission();
     const filePermission = await context.security.getPermission<FilePermission>("fm.file");
     if (!filePermission) {
         throw new NotAuthorizedError();
