@@ -10,8 +10,8 @@ describe("Elasticsearch Japanese", () => {
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-    const indexTestName = `${prefix}api-elasticsearch-japanese-index-test`;
-    const indexTemplateTestName = `${prefix}api-elasticsearch-japanese-index-template-test`;
+    const indexTestName = `${prefix}api-elasticsearch-index-japanese-index-test`;
+    const indexTemplateTestName = `${prefix}api-elasticsearch-index-japanese-index-template-test`;
 
     beforeEach(async () => {
         await deleteIndexes({
