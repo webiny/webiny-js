@@ -42,6 +42,8 @@ import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/defi
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
+import { configurations } from "~/configurations";
+import { base as baseIndexConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/base";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -59,6 +61,11 @@ interface InvokeParams {
     headers?: Record<string, string>;
 }
 
+interface ElasticsearchIndiceParams {
+    tenant: string;
+    locale: string;
+}
+
 export default (params?: UseGqlHandlerParams) => {
     const { permissions, identity } = params || {};
 
@@ -72,45 +79,31 @@ export default (params?: UseGqlHandlerParams) => {
         secretAccessKey: "test"
     });
     const elasticsearchClientContext = elasticsearchClientContextPlugin(elasticsearchClient);
-    const clearElasticsearch = async () => {
-        return elasticsearchClient.indices.delete({
-            index: "_all"
-        });
+
+    const getIndexName = (params: ElasticsearchIndiceParams): string => {
+        const cfg = configurations.es(params);
+
+        return cfg.index;
     };
 
-    const createElasticsearchIndice = async () => {
+    const clearElasticsearch = async (params: ElasticsearchIndiceParams) => {
+        const index = getIndexName(params);
+        try {
+            return await elasticsearchClient.indices.delete({
+                index
+            });
+        } catch (ex) {
+            console.log(`Could not delete elasticsearch index: ${index}`);
+            console.log(ex.message);
+        }
+        return null;
+    };
+
+    const createElasticsearchIndice = async (params: ElasticsearchIndiceParams) => {
         return elasticsearchClient.indices.create({
-            index: "root-file-manager",
+            index: getIndexName(params),
             body: {
-                settings: {
-                    analysis: {
-                        analyzer: {
-                            lowercase_analyzer: {
-                                type: "custom",
-                                filter: ["lowercase", "trim"],
-                                tokenizer: "keyword"
-                            }
-                        }
-                    }
-                },
-                mappings: {
-                    properties: {
-                        property: {
-                            type: "text",
-                            fields: {
-                                keyword: {
-                                    type: "keyword",
-                                    ignore_above: 256
-                                }
-                            },
-                            analyzer: "lowercase_analyzer"
-                        },
-                        rawValues: {
-                            type: "object",
-                            enabled: false
-                        }
-                    }
-                }
+                ...baseIndexConfiguration
             }
         });
     };
@@ -168,6 +161,7 @@ export default (params?: UseGqlHandlerParams) => {
         invoke,
         clearElasticsearch,
         createElasticsearchIndice,
+        getIndexName,
         // Files
         async createFile(variables: Variables, fields: string[] = []) {
             return invoke({ body: { query: CREATE_FILE(fields), variables } });
