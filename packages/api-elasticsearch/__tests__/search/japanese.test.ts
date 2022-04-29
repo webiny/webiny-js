@@ -68,7 +68,13 @@ describe("Japanese search", () => {
     const fetchAllData = async () => {
         return client.search({
             index: indexName,
-            body: {}
+            body: {
+                sort: {
+                    id: {
+                        order: "asc"
+                    }
+                }
+            }
         });
     };
 
