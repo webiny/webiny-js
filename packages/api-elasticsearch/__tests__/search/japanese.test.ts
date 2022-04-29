@@ -9,6 +9,7 @@ import {
 } from "@webiny/project-utils/testing/elasticsearch/templates";
 import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 import { entries, searchTargets } from "./japanese.entries";
+import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
 
 describe("Japanese search", () => {
     const client = createElasticsearchClient();
@@ -68,7 +69,7 @@ describe("Japanese search", () => {
         return result;
     };
     const fetchAllData = async () => {
-        return client.search({
+        return await clientSearch({
             index: indexName,
             body: {
                 sort: {
@@ -141,6 +142,16 @@ describe("Japanese search", () => {
             console.log(`japanese: ${japaneseIndexTemplateName}`);
             console.log(ex.message);
             console.log(ex.data);
+            throw ex;
+        }
+    };
+
+    const clientSearch = async (request: RequestParams.Search) => {
+        try {
+            return await client.search(request);
+        } catch (ex) {
+            console.log("Searching...");
+            console.log(JSON.stringify(ex));
             throw ex;
         }
     };
@@ -263,7 +274,7 @@ describe("Japanese search", () => {
                 keyword: true
             });
 
-            const response = await client.search({
+            const response = await clientSearch({
                 index: indexName,
                 body: {
                     query: {
@@ -331,7 +342,7 @@ describe("Japanese search", () => {
                 keyword: false
             });
 
-            const response = await client.search({
+            const response = await clientSearch({
                 index: indexName,
                 body: {
                     query: {
