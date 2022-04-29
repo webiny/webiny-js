@@ -122,11 +122,19 @@ describe("Japanese search", () => {
             await refreshIndex();
             await fetchAllData();
         } catch (ex) {
+            const response = await client.cat.indices({
+                format: "json"
+            });
+            let availableIndexes: string[] = [];
+            if (response.body) {
+                availableIndexes = Object.values(response.body).map(item => item.index);
+            }
             console.log(
                 JSON.stringify({
                     name: "Prepare with index.",
                     prefix,
                     japanese: indexName,
+                    availableIndexes,
                     error: ex
                 })
             );
@@ -141,12 +149,20 @@ describe("Japanese search", () => {
             await refreshIndex();
             await fetchAllData();
         } catch (ex) {
+            const response = await client.cat.indices({
+                format: "json"
+            });
+            let availableIndexes: string[] = [];
+            if (response.body) {
+                availableIndexes = Object.values(response.body).map(item => item.index);
+            }
             console.log(
                 JSON.stringify({
                     name: "Prepare with template.",
                     prefix,
                     base: baseIndexTemplateName,
                     japanese: japaneseIndexTemplateName,
+                    availableIndexes,
                     error: ex
                 })
             );
