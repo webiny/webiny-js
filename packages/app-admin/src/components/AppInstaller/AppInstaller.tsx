@@ -48,17 +48,6 @@ export const AppInstaller: React.FC = ({ children }) => {
         skippingVersions
     } = useInstaller({ isInstalled: isInstallerCompleted() });
 
-    const openWelcomeScreen = () => {
-        if (!isRootTenant) {
-            return;
-        }
-        if (!isFirstInstall) {
-            window.location.href = `https://site.webiny.com/thank-you/upgrade?version=${wbyVersion}&returnUrl=${window.location.href}`;
-            return;
-        }
-        window.location.href = `https://site.webiny.com/thank-you/installation?returnUrl=${window.location.href}`;
-    };
-
     useEffect(() => {
         if (identity) {
             onUser();
@@ -171,12 +160,20 @@ export const AppInstaller: React.FC = ({ children }) => {
             <Elevation z={1}>
                 <SuccessDialog>
                     <p>You have successfully installed all new applications!</p>
+                    {isRootTenant && isFirstInstall ? (
+                        <iframe
+                            height="0"
+                            width="0"
+                            frameBorder="0"
+                            style={{ opacity: "0" }}
+                            src="https://www.webiny.com/thank-you/new-install"
+                        ></iframe>
+                    ) : null}
                     <ButtonPrimary
                         data-testid={"open-webiny-cms-admin-button"}
                         onClick={() => {
                             markInstallerAsCompleted();
                             setFinished(true);
-                            openWelcomeScreen();
                         }}
                     >
                         {isFirstInstall ? "Finish install" : "Finish upgrade"}
