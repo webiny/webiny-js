@@ -18,7 +18,7 @@ const defaultTemplateOrder = 350;
 const testPageBuilderIndexName = `${prefix}test-page-builder`;
 
 const noPropertyIndex = new PageElasticsearchIndexTemplatePlugin({
-    name: "no-property-pages-index",
+    name: `${prefix}no-property-pages-index`,
     order: 351,
     body: {
         index_patterns: ["*test-page-builder"],

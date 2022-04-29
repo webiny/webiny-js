@@ -93,9 +93,9 @@ export abstract class ElasticsearchIndexTemplatePlugin extends Plugin {
          * Name cannot contain anything other than a-z, 0-9 and -.
          */
         const name = this.template.name;
-        if (name.match(/^([a-z0-9\-]+)$/) === null) {
+        if (name.match(/^([a-z0-9\-_]+)$/) === null) {
             throw new WebinyError(
-                `Index template name not supported.`,
+                `Index template name not supported (${name}).`,
                 "INVALID_ES_TEMPLATE_DEFINITION",
                 {
                     config: this.template

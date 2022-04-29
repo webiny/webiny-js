@@ -19,7 +19,9 @@ if (!!esEndpoint) {
     defaultOptions.auth = undefined;
 }
 
-export const createElasticsearchClient = (options: Partial<ElasticsearchClientOptions>): Client => {
+export const createElasticsearchClient = (
+    options: Partial<ElasticsearchClientOptions> = {}
+): Client => {
     return createClient({
         ...defaultOptions,
         ...options
