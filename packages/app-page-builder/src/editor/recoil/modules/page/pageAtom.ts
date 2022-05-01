@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { PbEditorElement } from "~/types";
 
 interface PageCategoryType {
     slug: string;
@@ -6,8 +7,12 @@ interface PageCategoryType {
     url: string;
 }
 
+export interface PageWithContent extends PageAtomType {
+    content: PbEditorElement;
+}
+
 export interface PageAtomType {
-    id?: string;
+    id: string;
     title?: string;
     pid?: string;
     path?: string;
@@ -32,6 +37,7 @@ export interface PageAtomType {
 export const pageAtom = atom<PageAtomType>({
     key: "pageAtom",
     default: {
+        id: "",
         locked: false,
         version: 1,
         published: false,
