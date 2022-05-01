@@ -1,10 +1,9 @@
 import React from "react";
 import { makeComposable } from "@webiny/app-admin";
-import { PageAtomType, RevisionsAtomType } from "~/editor/recoil/modules";
-import { PbEditorElement } from "~/types";
+import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
 
 export type EditorProps = {
-    page: PageAtomType & PbEditorElement;
+    page: PageWithContent;
     revisions: RevisionsAtomType;
 };
 
