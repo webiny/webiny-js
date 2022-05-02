@@ -1,5 +1,4 @@
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
-import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 import { people } from "./base.entries";
 import { base } from "~/indexConfiguration/base";
 import { ElasticsearchBoolQueryConfig } from "~/types";
@@ -79,17 +78,11 @@ describe("Elasticsearch Base Search", () => {
     };
 
     beforeEach(async () => {
-        await deleteIndexes({
-            client,
-            prefix
-        });
+        return client.indices.deleteAll();
     });
 
     afterEach(async () => {
-        await deleteIndexes({
-            client,
-            prefix
-        });
+        return client.indices.deleteAll();
     });
 
     it("should prepare entries - pre-created indexes", async () => {

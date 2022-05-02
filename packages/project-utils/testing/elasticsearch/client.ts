@@ -34,14 +34,16 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
     // @ts-ignore
     client.indices.create = async (
         params: RequestParams.IndicesCreate<any>,
-        options?: TransportRequestOptions
+        options: TransportRequestOptions = {}
     ) => {
         if (createdIndexes.has(params.index) === true) {
-            throw new Error(`Index "${params.index}" already exists.`);
+            throw new Error(
+                `Index "${params.index}" already exists. It should be deleted after each of the tests.`
+            );
         }
         createdIndexes.add(params.index);
         // @ts-ignore
-        return originalCreate(params, options);
+        return originalCreate.apply(client.indices, [params, options]);
     };
 
     (client as ElasticsearchClient).indices.deleteAll = async () => {
@@ -60,6 +62,7 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
                 deletedIndexes.push(index);
             } catch (ex) {
                 console.log(`Could not delete index "${index}".`);
+                console.log(JSON.stringify(ex));
             }
         }
         console.log(`Deleted indexes: ${deletedIndexes}`);
