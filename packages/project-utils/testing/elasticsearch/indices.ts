@@ -21,26 +21,27 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
         return;
     }
     const re = new RegExp(`^${prefix}`);
-    const items: string[] = Object.values(response.body)
+    const indexes: string[] = Object.values(response.body)
         .map(item => {
             return item.index;
         })
         .filter(index => {
             return index.match(re) !== null;
         });
-    if (items.length === 0) {
+    if (indexes.length === 0) {
         return;
     }
 
-    try {
-        console.log(`Deleting indexes @${new Date().getTime()}`);
-        await client.indices.delete({
-            index: items
-        });
-        console.log(`Deleted indexes: ${items.join(", ")}`);
-    } catch (ex) {
-        console.log(`Error while deleting indexes ${items.join(", ")}`);
-        console.log(JSON.stringify(ex));
-        // throw ex;
+    for (const index of indexes) {
+        try {
+            console.log(`Deleting index "${index}" ...`);
+            await client.indices.delete({
+                index
+            });
+            console.log("... success");
+        } catch (ex) {
+            console.log("... error");
+            console.log(JSON.stringify(ex));
+        }
     }
 };
