@@ -28,6 +28,7 @@ describe("Japanese search", () => {
             });
             if (!response.body) {
                 console.log("No created index.");
+                console.log(JSON.stringify(response));
                 throw new WebinyError({
                     message: `Index ${indexName} was not created - checked.`,
                     data: response
