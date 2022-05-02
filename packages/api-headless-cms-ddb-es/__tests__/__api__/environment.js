@@ -28,7 +28,7 @@ if (typeof createStorageOperations !== "function") {
 }
 
 const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-`;
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-env-`;
 
 class CmsTestEnvironment extends NodeEnvironment {
     async setup() {

@@ -32,7 +32,7 @@ if (typeof createFormBuilderStorageOperations !== "function") {
 }
 
 const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-form-builder-`;
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-form-builder-env-`;
 
 class FormBuilderTestEnvironment extends NodeEnvironment {
     async setup() {

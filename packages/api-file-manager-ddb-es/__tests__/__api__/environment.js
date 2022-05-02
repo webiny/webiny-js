@@ -27,7 +27,7 @@ if (typeof plugins !== "function") {
 }
 
 const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-file-manager-`;
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-file-manager-env-`;
 
 class FileManagerTestEnvironment extends NodeEnvironment {
     async setup() {

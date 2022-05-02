@@ -27,7 +27,7 @@ if (typeof createStorageOperations !== "function") {
 }
 
 const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-page-builder-`;
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-page-builder-env-`;
 
 class PageBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
