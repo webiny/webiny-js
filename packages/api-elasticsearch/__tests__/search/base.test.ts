@@ -97,20 +97,12 @@ describe("Elasticsearch Base Search", () => {
                 client,
                 prefix
             });
-            await deleteTemplates({
-                client,
-                prefix
-            });
         } catch (ex) {}
     });
 
     afterEach(async () => {
         try {
             await deleteIndexes({
-                client,
-                prefix
-            });
-            await deleteTemplates({
                 client,
                 prefix
             });

@@ -7,6 +7,13 @@ interface DeleteIndexesParams {
 export const deleteIndexes = async (params: DeleteIndexesParams) => {
     const { client, prefix } = params;
 
+    /**
+     * Prefix MUST exist. we cannot allow going further without the prefix.
+     */
+    if (!prefix) {
+        throw new Error("process.env.ELASTIC_SEARCH_INDEX_PREFIX is not set!");
+    }
+
     const response = await client.cat.indices({
         format: "json"
     });
