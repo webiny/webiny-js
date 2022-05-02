@@ -127,12 +127,12 @@ describe("Japanese search", () => {
         }
     };
 
-    beforeEach(async () => {
-        await deleteIndexes({
-            client,
-            prefix
-        });
-    });
+    // beforeEach(async () => {
+    //     await deleteIndexes({
+    //         client,
+    //         prefix
+    //     });
+    // });
 
     afterEach(async () => {
         await deleteIndexes({
