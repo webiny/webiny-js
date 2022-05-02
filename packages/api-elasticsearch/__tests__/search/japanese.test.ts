@@ -5,6 +5,7 @@ import { ElasticsearchBoolQueryConfig } from "~/types";
 import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 import { entries, searchTargets } from "./japanese.entries";
 import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
+import WebinyError from "@webiny/error";
 
 describe("Japanese search", () => {
     const client = createElasticsearchClient();
@@ -17,7 +18,7 @@ describe("Japanese search", () => {
 
     const createIndex = async () => {
         try {
-            console.log(`Creating index @${new Date().getTime()}: ${indexName}`);
+            console.log(`Creating index "${indexName}" @${new Date().getTime()}: ${indexName}`);
             const result = await client.indices.create({
                 index: indexName,
                 body: japaneseIndexConfiguration
@@ -26,7 +27,8 @@ describe("Japanese search", () => {
                 index: indexName
             });
             if (!response.body) {
-                throw new Error("Index was not created - checked.");
+                console.log("No created index.");
+                throw new WebinyError(`Index ${indexName} was not created - checked.`);
             }
             return result;
         } catch (ex) {
@@ -59,7 +61,7 @@ describe("Japanese search", () => {
     };
 
     const refreshIndex = async () => {
-        console.log(`Refreshing @${new Date().getTime()}`);
+        console.log(`Refreshing index ${indexName} @${new Date().getTime()}`);
         const result = await client.indices.refresh({
             index: indexName
         });
@@ -71,7 +73,7 @@ describe("Japanese search", () => {
         return result;
     };
     const fetchAllData = async () => {
-        console.log(`Fetching all data @${new Date().getTime()}`);
+        console.log(`Fetching all data from index ${indexName} @${new Date().getTime()}`);
         return await clientSearch({
             index: indexName,
             body: {
@@ -112,10 +114,11 @@ describe("Japanese search", () => {
     };
 
     const clientSearch = async (request: RequestParams.Search) => {
-        console.log(`Searching @${new Date().getTime()}`);
+        console.log(`Searching index "${indexName}" @${new Date().getTime()}`);
         try {
             return await client.search(request);
         } catch (ex) {
+            console.log("Searching error....");
             console.log(JSON.stringify(ex));
             throw ex;
         }
