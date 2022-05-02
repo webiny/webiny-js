@@ -3,6 +3,8 @@ import {
     createElasticsearchClient as createClient,
     ElasticsearchClientOptions
 } from "../../../api-elasticsearch/src/client";
+import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
+import { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
 
@@ -19,11 +21,61 @@ if (!!esEndpoint) {
     defaultOptions.auth = undefined;
 }
 
+interface ElasticsearchClient extends Client {
+    indices: Client["indices"] & {
+        deleteAll: () => Promise<any>;
+    };
+}
+
+const attachCustomEvents = (client: Client): ElasticsearchClient => {
+    const createdIndexes = new Set<string>();
+    const originalCreate = client.indices.create;
+
+    // @ts-ignore
+    client.indices.create = async (
+        params: RequestParams.IndicesCreate<any>,
+        options?: TransportRequestOptions
+    ) => {
+        if (createdIndexes.has(params.index) === true) {
+            throw new Error(`Index "${params.index}" already exists.`);
+        }
+        createdIndexes.add(params.index);
+        // @ts-ignore
+        return originalCreate(params, options);
+    };
+
+    (client as ElasticsearchClient).indices.deleteAll = async () => {
+        const indexes = Array.from(createdIndexes.values());
+        if (indexes.length === 0) {
+            console.log("No indexes to delete.");
+            return;
+        }
+        const deletedIndexes: string[] = [];
+        for (const index of indexes) {
+            try {
+                await client.indices.delete({
+                    index
+                });
+                createdIndexes.delete(index);
+                deletedIndexes.push(index);
+            } catch (ex) {
+                console.log(`Could not delete index "${index}".`);
+            }
+        }
+        console.log(`Deleted indexes: ${deletedIndexes}`);
+        console.log(deletedIndexes.join(", "));
+    };
+
+    return client as ElasticsearchClient;
+};
+
 export const createElasticsearchClient = (
     options: Partial<ElasticsearchClientOptions> = {}
-): Client => {
-    return createClient({
+): ElasticsearchClient => {
+    const client = createClient({
         ...defaultOptions,
         ...options
     });
+
+    return attachCustomEvents(client);
 };

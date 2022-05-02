@@ -2,7 +2,6 @@ import { createElasticsearchClient } from "../helpers";
 import { japanese as japaneseIndexConfiguration } from "~/indexConfiguration/japanese";
 import { ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin } from "~/plugins/operator/japanese/contains";
 import { ElasticsearchBoolQueryConfig } from "~/types";
-import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 import { entries, searchTargets } from "./japanese.entries";
 import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
 import WebinyError from "@webiny/error";
@@ -132,17 +131,11 @@ describe("Japanese search", () => {
     };
 
     beforeEach(async () => {
-        await deleteIndexes({
-            client,
-            prefix
-        });
+        return client.indices.deleteAll();
     });
 
     afterEach(async () => {
-        await deleteIndexes({
-            client,
-            prefix
-        });
+        return client.indices.deleteAll();
     });
 
     it("should verify that all data is prepared", async () => {
