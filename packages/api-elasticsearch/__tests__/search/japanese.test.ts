@@ -17,7 +17,7 @@ describe("Japanese search", () => {
 
     const createIndex = async () => {
         try {
-            console.log(`Creating index: ${indexName}`);
+            console.log(`Creating index @${new Date().getTime()}: ${indexName}`);
             return await client.indices.create({
                 index: indexName,
                 body: japaneseIndexConfiguration
@@ -104,6 +104,7 @@ describe("Japanese search", () => {
 
     const clientSearch = async (request: RequestParams.Search) => {
         try {
+            console.log(`Searching @${new Date().getTime()}`);
             return await client.search(request);
         } catch (ex) {
             console.log("Searching...");

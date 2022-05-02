@@ -33,6 +33,7 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
     }
 
     try {
+        console.log(`Deleting indexes @${new Date().getTime()}`);
         await client.indices.delete({
             index: items
         });
