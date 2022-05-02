@@ -18,10 +18,17 @@ describe("Japanese search", () => {
     const createIndex = async () => {
         try {
             console.log(`Creating index @${new Date().getTime()}: ${indexName}`);
-            return await client.indices.create({
+            const result = await client.indices.create({
                 index: indexName,
                 body: japaneseIndexConfiguration
             });
+            const response = await client.indices.exists({
+                index: indexName
+            });
+            if (!response.body) {
+                throw new Error("Index was not created - checked.");
+            }
+            return result;
         } catch (ex) {
             console.log(JSON.stringify(ex));
             throw ex;
@@ -52,6 +59,7 @@ describe("Japanese search", () => {
     };
 
     const refreshIndex = async () => {
+        console.log(`Refreshing @${new Date().getTime()}`);
         const result = await client.indices.refresh({
             index: indexName
         });
@@ -63,6 +71,7 @@ describe("Japanese search", () => {
         return result;
     };
     const fetchAllData = async () => {
+        console.log(`Fetching all data @${new Date().getTime()}`);
         return await clientSearch({
             index: indexName,
             body: {
@@ -103,11 +112,10 @@ describe("Japanese search", () => {
     };
 
     const clientSearch = async (request: RequestParams.Search) => {
+        console.log(`Searching @${new Date().getTime()}`);
         try {
-            console.log(`Searching @${new Date().getTime()}`);
             return await client.search(request);
         } catch (ex) {
-            console.log("Searching...");
             console.log(JSON.stringify(ex));
             throw ex;
         }
