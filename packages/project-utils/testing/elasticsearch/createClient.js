@@ -15,11 +15,54 @@ if (!!esEndpoint) {
     defaultOptions.auth = undefined;
 }
 
+const attachCustomEvents = client => {
+    const createdIndexes = new Set();
+    const originalCreate = client.indices.create;
+
+    // @ts-ignore
+    client.indices.create = async (params, options = {}) => {
+        if (createdIndexes.has(params.index) === true) {
+            throw new Error(
+                `Index "${params.index}" already exists. It should be deleted after each of the tests.`
+            );
+        }
+        createdIndexes.add(params.index);
+        // @ts-ignore
+        return originalCreate.apply(client.indices, [params, options]);
+    };
+
+    client.indices.deleteAll = async () => {
+        const indexes = Array.from(createdIndexes.values());
+        if (indexes.length === 0) {
+            console.log("No indexes to delete.");
+            return;
+        }
+        const deletedIndexes = [];
+        for (const index of indexes) {
+            try {
+                await client.indices.delete({
+                    index
+                });
+                createdIndexes.delete(index);
+                deletedIndexes.push(index);
+            } catch (ex) {
+                console.log(`Could not delete index "${index}".`);
+                console.log(JSON.stringify(ex));
+            }
+        }
+        console.log(`Deleted indexes: ${deletedIndexes}`);
+        console.log(deletedIndexes.join(", "));
+    };
+
+    return client;
+};
+
 module.exports = {
     createElasticsearchClient: (options = {}) => {
-        return createElasticsearchClient({
+        const client = createElasticsearchClient({
             ...defaultOptions,
             ...options
         });
+        return attachCustomEvents(client);
     }
 };

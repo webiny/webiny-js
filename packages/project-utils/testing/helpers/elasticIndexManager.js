@@ -11,33 +11,40 @@ module.exports.elasticIndexManager = ({ global, client }) => {
      *
      * The regex to match all the indexes used by this tests.
      */
-    const re = new RegExp(`^${prefix}`);
+    //const re = new RegExp(`^${prefix}`);
     const clearEsIndices = async () => {
-        const response = await client.cat.indices({
-            format: "json"
-        });
-        if (!response.body) {
-            return;
-        }
-        const items = Object.values(response.body)
-            .map(item => {
-                return item.index;
-            })
-            .filter(index => {
-                return index.match(re) !== null;
-            });
-        if (items.length === 0) {
-            return;
-        }
-
         try {
-            await client.indices.delete({
-                index: items
-            });
+            await client.indices.deleteAll();
         } catch (ex) {
-            console.log(ex.message);
-            //throw ex;
+            console.log("Could not delete all indexes.");
+            console.log(JSON.stringify(ex));
+            throw ex;
         }
+        //const response = await client.cat.indices({
+        //    format: "json"
+        //});
+        //if (!response.body) {
+        //    return;
+        //}
+        //const items = Object.values(response.body)
+        //    .map(item => {
+        //        return item.index;
+        //    })
+        //    .filter(index => {
+        //        return index.match(re) !== null;
+        //    });
+        //if (items.length === 0) {
+        //    return;
+        //}
+        //
+        //try {
+        //    await client.indices.delete({
+        //        index: items
+        //    });
+        //} catch (ex) {
+        //    console.log(ex.message);
+        //    //throw ex;
+        //}
     };
 
     global.__beforeEach = async () => {
