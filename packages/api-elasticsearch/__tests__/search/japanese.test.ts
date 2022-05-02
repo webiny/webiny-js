@@ -18,6 +18,14 @@ describe("Japanese search", () => {
 
     const createIndex = async () => {
         try {
+            const responseExists1 = await client.indices.exists({
+                index: indexName
+            });
+            if (responseExists1.body) {
+                await client.indices.delete({
+                    index: indexName
+                });
+            }
             console.log(`Creating index "${indexName}" @${new Date().getTime()}: ${indexName}`);
             const result = await client.indices.create({
                 index: indexName,
@@ -28,6 +36,7 @@ describe("Japanese search", () => {
             });
             if (!response.body) {
                 console.log("No created index.");
+                console.log(JSON.stringify(result));
                 console.log(JSON.stringify(response));
                 throw new WebinyError({
                     message: `Index ${indexName} was not created - checked.`,
