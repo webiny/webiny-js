@@ -20,6 +20,12 @@ context("File Manager View - CRUD", () => {
                     cy.findByTestId("fm-file-wrapper-file-info-icon").click({ force: true });
                 });
         });
+
+        // Assert the aside file details is displayed.
+        cy.findByTestId("fm.file-details.drawer").should('be.visible');
+        cy.findByTestId("fm.file-details.drawer").find('img').should('be.visible');
+        cy.get('span').contains('File details').should('be.visible');
+
         // Edit file
         cy.findByTestId("fm-edit-image-button").click();
         cy.findByTestId("fm-image-editor-dialog")
