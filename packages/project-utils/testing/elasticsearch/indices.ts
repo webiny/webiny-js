@@ -39,6 +39,7 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
         await client.indices.delete({
             index: items
         });
+        console.log(`Deleted indexes: ${items.join(", ")}`);
     } catch (ex) {
         console.log(ex.message);
         // throw ex;
