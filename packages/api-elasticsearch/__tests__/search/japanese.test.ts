@@ -28,7 +28,10 @@ describe("Japanese search", () => {
             });
             if (!response.body) {
                 console.log("No created index.");
-                throw new WebinyError(`Index ${indexName} was not created - checked.`);
+                throw new WebinyError({
+                    message: `Index ${indexName} was not created - checked.`,
+                    data: response
+                });
             }
             return result;
         } catch (ex) {

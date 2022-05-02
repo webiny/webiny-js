@@ -39,7 +39,8 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
         });
         console.log(`Deleted indexes: ${items.join(", ")}`);
     } catch (ex) {
-        console.log(ex.message);
+        console.log(`Error while deleting indexes ${items.join(", ")}`);
+        console.log(JSON.stringify(ex));
         // throw ex;
     }
 };
