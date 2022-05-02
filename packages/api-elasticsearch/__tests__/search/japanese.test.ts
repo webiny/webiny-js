@@ -17,6 +17,7 @@ describe("Japanese search", () => {
 
     const createIndex = async () => {
         try {
+            console.log(`Creating index: ${indexName}`);
             return await client.indices.create({
                 index: indexName,
                 body: japaneseIndexConfiguration
