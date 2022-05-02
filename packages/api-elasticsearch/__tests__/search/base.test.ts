@@ -10,7 +10,7 @@ describe("Elasticsearch Base Search", () => {
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-    const indexTestName = `${prefix}api-elasticsearch-search-base-index-test`;
+    const indexTestName = `${prefix}search-base-index-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderOperatorContainsPlugin();
 

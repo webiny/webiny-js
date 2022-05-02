@@ -17,7 +17,7 @@ describe("Elasticsearch Index Mapping And Settings", () => {
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-    const testIndexName = `${prefix}api-elasticsearch-dummy-index-test`;
+    const testIndexName = `${prefix}dummy-index-test`;
 
     beforeEach(async () => {
         await deleteIndexes({

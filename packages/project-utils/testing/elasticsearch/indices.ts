@@ -26,9 +26,6 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
             return item.index;
         })
         .filter(index => {
-            if (!prefix) {
-                return true;
-            }
             return index.match(re) !== null;
         });
     if (items.length === 0) {

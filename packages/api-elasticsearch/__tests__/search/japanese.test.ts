@@ -11,7 +11,7 @@ describe("Japanese search", () => {
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-    const indexName = `${prefix}api-elasticsearch-search-japanese-index-test`;
+    const indexName = `${prefix}search-japanese-index-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin();
 
