@@ -2,6 +2,8 @@ import { createPersonEntries, createPersonModel, PersonEntriesResult } from "./h
 import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 import { CmsModel, HeadlessCmsStorageOperations } from "~/types";
 
+jest.setTimeout(60000);
+
 interface WaitPersonRecordsParams {
     records: PersonEntriesResult;
     storageOperations: HeadlessCmsStorageOperations;
@@ -15,7 +17,9 @@ const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void>
         () => {
             return storageOperations.entries.list(model, {
                 where: {
-                    latest: true
+                    latest: true,
+                    tenant: model.tenant,
+                    locale: model.locale
                 },
                 sort: ["version_ASC"],
                 limit: 10000

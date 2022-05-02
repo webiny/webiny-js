@@ -80,7 +80,8 @@ export const createModelsStorageOperations = (
          */
         try {
             await elasticsearch.indices.delete({
-                index
+                index,
+                ignore_unavailable: true
             });
         } catch (ex) {
             throw new WebinyError(
@@ -135,25 +136,6 @@ export const createModelsStorageOperations = (
                     error: ex,
                     model,
                     keys
-                }
-            );
-        }
-        const { index } = configurations.es({
-            model
-        });
-        /**
-         * In case of DynamoDB error we need to remove the index we created.
-         */
-        try {
-            await elasticsearch.indices.delete({
-                index
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                `Could not delete elasticsearch index "${index}" after model record was deleted.`,
-                "DELETE_MODEL_INDICE_ERROR",
-                {
-                    error: ex
                 }
             );
         }

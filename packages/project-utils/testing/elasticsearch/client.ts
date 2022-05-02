@@ -49,14 +49,15 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
     (client as ElasticsearchClient).indices.deleteAll = async () => {
         const indexes = Array.from(createdIndexes.values());
         if (indexes.length === 0) {
-            console.log("No indexes to delete.");
+            // console.log("No indexes to delete.");
             return;
         }
         const deletedIndexes: string[] = [];
         for (const index of indexes) {
             try {
                 await client.indices.delete({
-                    index
+                    index,
+                    ignore_unavailable: true
                 });
                 createdIndexes.delete(index);
                 deletedIndexes.push(index);
@@ -65,8 +66,8 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
                 console.log(JSON.stringify(ex));
             }
         }
-        console.log(`Deleted indexes: ${deletedIndexes}`);
-        console.log(deletedIndexes.join(", "));
+        // console.log(`Deleted indexes: ${deletedIndexes}`);
+        // console.log(deletedIndexes.join(", "));
     };
 
     return client as ElasticsearchClient;

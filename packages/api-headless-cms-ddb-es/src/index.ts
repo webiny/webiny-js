@@ -20,6 +20,7 @@ import { createGroupsStorageOperations } from "~/operations/group";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
+import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -136,6 +137,12 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                     elasticsearch,
                     model,
                     plugins
+                });
+            });
+            context.cms.onAfterModelDelete.subscribe(async ({ model }) => {
+                await deleteElasticsearchIndex({
+                    elasticsearch,
+                    model
                 });
             });
         },
