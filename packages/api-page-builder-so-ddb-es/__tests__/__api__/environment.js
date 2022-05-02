@@ -19,6 +19,8 @@ const {
  * For this to work it must load plugins that have already been built
  */
 const { createStorageOperations } = require("../../dist/index");
+const { configurations } = require("../../dist/configurations");
+const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -83,7 +85,19 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
 
         elasticIndexManager({
             global: this.global,
-            client: elasticsearchClient
+            client: elasticsearchClient,
+            onBeforeEach: async () => {
+                const { index } = configurations.es({
+                    locale: "en-US",
+                    tenant: "root"
+                });
+                await elasticsearchClient.indices.create({
+                    index,
+                    body: {
+                        ...baseConfigurationPlugin.body
+                    }
+                });
+            }
         });
     }
 }

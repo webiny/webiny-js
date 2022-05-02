@@ -18,6 +18,9 @@ const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operato
  * For this to work it must load plugins that have already been built
  */
 const { createFormBuilderStorageOperations } = require("../../dist/index");
+const { configurations } = require("../../dist/configurations");
+const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
+
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
@@ -95,7 +98,19 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         // Each test should work with its own ES index, and only those indexes have to be deleted.
         elasticIndexManager({
             global: this.global,
-            client: elasticsearchClient
+            client: elasticsearchClient,
+            onBeforeEach: async () => {
+                const { index } = configurations.es({
+                    locale: "en-US",
+                    tenant: "root"
+                });
+                await elasticsearchClient.indices.create({
+                    index,
+                    body: {
+                        ...baseConfigurationPlugin.body
+                    }
+                });
+            }
         });
     }
 }

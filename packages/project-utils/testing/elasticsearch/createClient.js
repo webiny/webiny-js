@@ -34,7 +34,6 @@ const attachCustomEvents = client => {
     client.indices.deleteAll = async () => {
         const indexes = Array.from(createdIndexes.values());
         if (indexes.length === 0) {
-            console.log("No indexes to delete.");
             return;
         }
         const deletedIndexes = [];
@@ -50,8 +49,8 @@ const attachCustomEvents = client => {
                 console.log(JSON.stringify(ex));
             }
         }
-        console.log(`Deleted indexes: ${deletedIndexes}`);
-        console.log(deletedIndexes.join(", "));
+        //console.log(`Deleted indexes: ${deletedIndexes}`);
+        //console.log(deletedIndexes.join(", "));
     };
 
     return client;

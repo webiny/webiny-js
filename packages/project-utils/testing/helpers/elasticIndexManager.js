@@ -1,6 +1,6 @@
 let prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
 
-module.exports.elasticIndexManager = ({ global, client }) => {
+module.exports.elasticIndexManager = ({ global, client, onBeforeEach }) => {
     /**
      * Prefix MUST exist. we cannot allow going further without the prefix.
      */
@@ -13,6 +13,7 @@ module.exports.elasticIndexManager = ({ global, client }) => {
      */
     //const re = new RegExp(`^${prefix}`);
     const clearEsIndices = async () => {
+        //console.log("Started with clearing Elasticsearch indices.");
         try {
             await client.indices.deleteAll();
         } catch (ex) {
@@ -20,35 +21,13 @@ module.exports.elasticIndexManager = ({ global, client }) => {
             console.log(JSON.stringify(ex));
             throw ex;
         }
-        //const response = await client.cat.indices({
-        //    format: "json"
-        //});
-        //if (!response.body) {
-        //    return;
-        //}
-        //const items = Object.values(response.body)
-        //    .map(item => {
-        //        return item.index;
-        //    })
-        //    .filter(index => {
-        //        return index.match(re) !== null;
-        //    });
-        //if (items.length === 0) {
-        //    return;
-        //}
-        //
-        //try {
-        //    await client.indices.delete({
-        //        index: items
-        //    });
-        //} catch (ex) {
-        //    console.log(ex.message);
-        //    //throw ex;
-        //}
     };
 
     global.__beforeEach = async () => {
         await clearEsIndices();
+        if (typeof onBeforeEach === "function") {
+            await onBeforeEach();
+        }
     };
 
     global.__afterEach = async () => {
