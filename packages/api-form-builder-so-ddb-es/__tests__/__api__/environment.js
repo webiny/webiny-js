@@ -28,6 +28,9 @@ if (typeof createFormBuilderStorageOperations !== "function") {
     );
 }
 
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}_api-form-builder-`;
+
 class FormBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();

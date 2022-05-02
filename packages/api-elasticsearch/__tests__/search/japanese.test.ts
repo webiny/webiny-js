@@ -65,15 +65,9 @@ describe("Japanese search", () => {
 
     const refreshIndex = async () => {
         console.log(`Refreshing index ${indexName} @${new Date().getTime()}`);
-        const result = await client.indices.refresh({
+        return await client.indices.refresh({
             index: indexName
         });
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve(0);
-            }, 1500);
-        });
-        return result;
     };
     const fetchAllData = async () => {
         console.log(`Fetching all data from index ${indexName} @${new Date().getTime()}`);
@@ -127,12 +121,12 @@ describe("Japanese search", () => {
         }
     };
 
-    // beforeEach(async () => {
-    //     await deleteIndexes({
-    //         client,
-    //         prefix
-    //     });
-    // });
+    beforeEach(async () => {
+        await deleteIndexes({
+            client,
+            prefix
+        });
+    });
 
     afterEach(async () => {
         await deleteIndexes({
