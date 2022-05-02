@@ -36,7 +36,7 @@ module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, tem
             });
         } catch (ex) {
             console.log(ex.message);
-            throw ex;
+            //throw ex;
         }
     };
 

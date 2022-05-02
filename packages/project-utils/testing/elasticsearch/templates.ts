@@ -82,7 +82,7 @@ export const deleteTemplates = async (params: DeleteTemplatesParams) => {
             });
         } catch (ex) {
             console.log(ex.message);
-            throw ex;
+            // throw ex;
         }
     }
 };
