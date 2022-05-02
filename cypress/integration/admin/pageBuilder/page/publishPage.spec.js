@@ -83,7 +83,7 @@ context(
             return cy.pbListPages({ limit: 1, search: { query: pageTitle2 } }).then(([page]) => {
                 const { id } = page;
                 // Delete page by deleting first revision
-                cy.pbDeletePage({ id: `${id.substr(0, id.length - 1)}1` });
+                cy.pbDeletePage({ id: `${id.slice(0, -1)}1` });
             });
         });
     }

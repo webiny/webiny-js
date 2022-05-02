@@ -10,7 +10,6 @@
   "author": "Webiny Ltd",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@pulumi/pulumi": "< 3.18.0",
     "@webiny/cli": "^5.25.0",
     "@webiny/pulumi-sdk": "^5.25.0",
     "ansi-to-html": "0.6.15",

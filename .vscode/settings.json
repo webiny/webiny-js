@@ -1,3 +1,14 @@
 {
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "files.exclude": {
+    "**/.git": true,
+    ".webiny": true
+  },
+  "search.exclude": {
+    "**/dist": true,
+    "**/node_modules": true,
+    "yarn.lock": true,
+    ".pulumi": true
+  },
+  "files.eol": "\n"
 }
