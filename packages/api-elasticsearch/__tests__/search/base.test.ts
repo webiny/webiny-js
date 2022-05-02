@@ -1,6 +1,5 @@
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
-import { deleteTemplates } from "@webiny/project-utils/testing/elasticsearch/templates";
 import { people } from "./base.entries";
 import { base } from "~/indexConfiguration/base";
 import { ElasticsearchBoolQueryConfig } from "~/types";
@@ -12,7 +11,6 @@ describe("Elasticsearch Base Search", () => {
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
     const indexTestName = `${prefix}api-elasticsearch-search-base-index-test`;
-    const indexTemplateTestName = `${prefix}api-elasticsearch-search-base-index-template-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderOperatorContainsPlugin();
 
@@ -43,17 +41,6 @@ describe("Elasticsearch Base Search", () => {
         return client.indices.create({
             index: indexTestName,
             body: {
-                ...base
-            }
-        });
-    };
-
-    const insertTemplate = async () => {
-        return client.indices.putTemplate({
-            name: indexTemplateTestName,
-            body: {
-                index_patterns: ["*index-test"],
-                order: 50,
                 ...base
             }
         });
@@ -92,21 +79,17 @@ describe("Elasticsearch Base Search", () => {
     };
 
     beforeEach(async () => {
-        try {
-            await deleteIndexes({
-                client,
-                prefix
-            });
-        } catch (ex) {}
+        await deleteIndexes({
+            client,
+            prefix
+        });
     });
 
     afterEach(async () => {
-        try {
-            await deleteIndexes({
-                client,
-                prefix
-            });
-        } catch (ex) {}
+        await deleteIndexes({
+            client,
+            prefix
+        });
     });
 
     it("should prepare entries - pre-created indexes", async () => {
@@ -116,71 +99,6 @@ describe("Elasticsearch Base Search", () => {
             body: {
                 acknowledged: true,
                 index: indexTestName
-            },
-            statusCode: 200
-        });
-
-        const insertResponse = await insertAllData();
-        expect(insertResponse).toMatchObject({
-            body: {
-                errors: false,
-                items: people.map((_, index) => {
-                    const id = Number(index) + 1;
-                    return {
-                        index: {
-                            _id: `person${id}`
-                        }
-                    };
-                })
-            },
-            statusCode: 200
-        });
-
-        const refreshResponse = await refreshIndex();
-        expect(refreshResponse).toMatchObject({
-            body: {
-                _shards: {
-                    total: expect.any(Number),
-                    successful: expect.any(Number),
-                    failed: 0
-                }
-            },
-            statusCode: 200
-        });
-
-        const fetchResponse = await fetchAllData();
-
-        expect(fetchResponse).toMatchObject({
-            body: {
-                hits: {
-                    total: {
-                        value: people.length,
-                        relation: "eq"
-                    },
-                    hits: people.map((person, index) => {
-                        const id = Number(index) + 1;
-
-                        return {
-                            _index: indexTestName,
-                            _type: "_doc",
-                            _id: `person${id}`,
-                            _source: {
-                                ...person
-                            }
-                        };
-                    })
-                }
-            },
-            statusCode: 200
-        });
-    });
-
-    it("should prepare entries - index via template", async () => {
-        const createResponse = await insertTemplate();
-
-        expect(createResponse).toMatchObject({
-            body: {
-                acknowledged: true
             },
             statusCode: 200
         });

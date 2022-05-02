@@ -1,5 +1,8 @@
-import { FormBuilderStorageOperationsFactory, ENTITIES } from "~/types";
+import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
+import formElasticsearchFields from "./operations/form/elasticsearchFields";
+import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
 import WebinyError from "@webiny/error";
+import { FormBuilderStorageOperationsFactory, ENTITIES } from "~/types";
 import { createTable } from "~/definitions/table";
 import { createFormEntity } from "~/definitions/form";
 import { createSubmissionEntity } from "~/definitions/submission";
@@ -9,15 +12,12 @@ import { createSystemStorageOperations } from "~/operations/system";
 import { createSubmissionStorageOperations } from "~/operations/submission";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createFormStorageOperations } from "~/operations/form";
-import { createElasticsearchIndexTemplate } from "~/operations/system/createElasticsearchIndexTemplate";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { createElasticsearchEntity } from "~/definitions/elasticsearch";
-import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
-import formElasticsearchFields from "./operations/form/elasticsearchFields";
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
-import { elasticsearchIndexTemplates } from "~/elasticsearch/templates";
+import { elasticsearchIndexPlugins } from "~/elasticsearch/indices";
+import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -68,9 +68,9 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
          */
         getElasticsearchOperators(),
         /**
-         * Built-in Elasticsearch index templates
+         * Built-in Elasticsearch index plugins
          */
-        elasticsearchIndexTemplates()
+        elasticsearchIndexPlugins()
     ]);
 
     const table = createTable({
@@ -124,10 +124,11 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
 
     return {
         init: async context => {
-            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale }) => {
-                await createElasticsearchIndexTemplate({
+            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale, tenant }) => {
+                await createElasticsearchIndex({
                     elasticsearch,
                     plugins,
+                    tenant,
                     locale: locale.code
                 });
             });

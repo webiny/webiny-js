@@ -1,6 +1,5 @@
 import { japanese } from "~/indexConfiguration/japanese";
 import { createElasticsearchClient } from "../helpers";
-import { deleteTemplates } from "@webiny/project-utils/testing/elasticsearch/templates";
 import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
 const order = 73;
@@ -18,18 +17,10 @@ describe("Elasticsearch Japanese", () => {
             client,
             prefix
         });
-        await deleteTemplates({
-            client,
-            prefix
-        });
     });
 
     afterEach(async () => {
         await deleteIndexes({
-            client,
-            prefix
-        });
-        await deleteTemplates({
             client,
             prefix
         });

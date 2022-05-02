@@ -19,7 +19,6 @@ const {
  * For this to work it must load plugins that have already been built
  */
 const plugins = require("../../dist/index").default;
-const { base: baseElasticsearchIndexTemplate } = require("../../dist/elasticsearch/templates/base");
 
 if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -72,8 +71,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
 
         elasticIndexManager({
             global: this.global,
-            client: elasticsearchClient,
-            template: baseElasticsearchIndexTemplate.template
+            client: elasticsearchClient
         });
     }
 }

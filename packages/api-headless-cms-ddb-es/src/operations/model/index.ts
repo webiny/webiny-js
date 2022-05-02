@@ -61,26 +61,6 @@ export const createModelsStorageOperations = (
         const { index } = configurations.es({
             model
         });
-        try {
-            const { body: exists } = await elasticsearch.indices.exists({
-                index
-            });
-            if (!exists) {
-                await elasticsearch.indices.create({
-                    index
-                });
-            }
-        } catch (ex) {
-            throw new WebinyError(
-                "Could not create Elasticsearch indice.",
-                "ELASTICSEARCH_INDICE_CREATE_ERROR",
-                {
-                    error: ex,
-                    index,
-                    model
-                }
-            );
-        }
 
         const keys = createKeys(model);
 

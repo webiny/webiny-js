@@ -41,6 +41,6 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
         });
     } catch (ex) {
         console.log(ex.message);
-        throw ex;
+        // throw ex;
     }
 };

@@ -112,11 +112,17 @@ describe("Japanese search", () => {
     };
 
     beforeEach(async () => {
-        await deleteIndexes({ client, prefix });
+        await deleteIndexes({
+            client,
+            prefix
+        });
     });
 
     afterEach(async () => {
-        await deleteIndexes({ client, prefix });
+        await deleteIndexes({
+            client,
+            prefix
+        });
     });
 
     it("should verify that all data is prepared", async () => {
