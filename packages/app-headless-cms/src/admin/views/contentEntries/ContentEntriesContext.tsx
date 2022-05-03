@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Dispatch, SetStateAction } from "react";
+import React, { useState, useMemo, Dispatch, SetStateAction, useCallback } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorContentModel, CmsSecurityPermission } from "~/types";
@@ -59,6 +59,13 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
     const { identity, getPermission } = useSecurity();
     const viewConfig = useContentEntriesViewConfig();
 
+    const appliesToContentModel = useCallback(
+        ({ modelIds }: ContentEntriesViewConfigSorter) => {
+            return modelIds.length === 0 || modelIds.includes(contentModel.modelId);
+        },
+        [contentModel]
+    );
+
     const canCreate = useMemo((): boolean => {
         const permission = getPermission<CmsSecurityPermission>("cms.contentEntry");
         if (!permission) {
@@ -79,11 +86,11 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
 
         const titleFieldLabel = titleField ? titleField.label : null;
         if (!titleFieldLabel) {
-            return toEntriesSorters(viewConfig.sorters);
+            return toEntriesSorters(viewConfig.sorters.filter(appliesToContentModel));
         }
 
         return [
-            ...toEntriesSorters(viewConfig.sorters),
+            ...toEntriesSorters(viewConfig.sorters.filter(appliesToContentModel)),
             {
                 label: t`{titleFieldLabel} A-Z`({ titleFieldLabel }),
                 value: `${contentModel.titleFieldId}_ASC`
