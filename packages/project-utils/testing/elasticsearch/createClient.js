@@ -28,7 +28,13 @@ const attachCustomEvents = client => {
         }
         createdIndexes.add(params.index);
         // @ts-ignore
-        return originalCreate.apply(client.indices, [params, options]);
+        const response = await originalCreate.apply(client.indices, [params, options]);
+
+        await client.indices.refresh({
+            index: params.index
+        });
+
+        return response;
     };
 
     client.indices.deleteAll = async () => {
