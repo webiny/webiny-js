@@ -430,7 +430,7 @@ describe("Republish entries", () => {
                     return false;
                 }
 
-                const targets = [galaRecord.id, goldenRecord.id];
+                const targets: string[] = [galaRecord.id, goldenRecord.id];
 
                 return items.every(item => {
                     return targets.includes(item.id);
@@ -478,14 +478,15 @@ describe("Republish entries", () => {
                     sort: ["createdOn_ASC"]
                 }),
             ([response]: any) => {
-                const items = response.data.listProducts.data;
+                const items: any[] = response.data.listProducts.data;
                 if (items.length !== 2) {
                     return false;
                 }
-                const [gala, golden] = items;
-                const ids = gala.id === galaRecord.id && golden.id === goldenRecord.id;
-                const times = gala.savedOn === galaSavedOn && golden.savedOn === goldenSavedOn;
-                return ids && times;
+                const requiredIdList: string[] = [galaRecord.id, goldenRecord.id];
+                const requiredTimes: string[] = [galaSavedOn, goldenSavedOn];
+                return items.every(item => {
+                    return requiredIdList.includes(item.id) && requiredTimes.includes(item.savedOn);
+                });
             },
             {
                 name: "after re-publishing product"

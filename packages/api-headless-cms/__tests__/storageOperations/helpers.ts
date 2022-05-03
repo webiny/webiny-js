@@ -76,7 +76,7 @@ export const createPersonModel = (): CmsModel => {
             id: baseGroup.contentModelGroup.id,
             name: baseGroup.contentModelGroup.name
         },
-        modelId: "personModel",
+        modelId: "personEntriesModel",
         locale: "en-US",
         tenant: "root",
         titleFieldId: personModelFields.name.id,
