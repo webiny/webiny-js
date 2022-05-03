@@ -62,7 +62,7 @@ describe("listing latest pages", () => {
         // List should show all pages - all updated.
         await until(
             () => listPages({ sort: ["createdOn_ASC"] }),
-            ([res]) => {
+            ([res]: any) => {
                 const data = res.data.pageBuilder.listPages.data;
                 return (
                     data.length === pages.length &&
@@ -91,7 +91,7 @@ describe("listing latest pages", () => {
                 listPages({
                     sort: "createdOn_ASC"
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data[4].title === "page-c",
+            ([res]: any) => res.data.pageBuilder.listPages.data[4].title === "page-c",
             {
                 name: "list pages createdOn ASC"
             }
@@ -172,7 +172,7 @@ describe("listing latest pages", () => {
         // List should show all five pages.
         const [listTitleAscResponse] = await until(
             () => listPages({ sort: ["title_ASC", "createdOn_ASC"] }),
-            ([res]) => {
+            ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPages;
                 return data[0].title === "page-a" && data[9].title === "page-Z";
             },
@@ -245,7 +245,7 @@ describe("listing latest pages", () => {
                 listPages({
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => {
+            ([res]: any) => {
                 return res.data.pageBuilder.listPages.data.length === 10;
             },
             {
@@ -276,7 +276,7 @@ describe("listing latest pages", () => {
         // 1. Check if `category: custom` were returned and sorted `createdOn: desc`.
         const [listPagesWhereCustomCategory] = await until(
             () => listPages({ where: { category: "custom" }, sort: ["createdOn_ASC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 5
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 5
         );
 
         expect(listPagesWhereCustomCategory).toMatchObject({
@@ -298,7 +298,7 @@ describe("listing latest pages", () => {
         // 2. Check if `category: custom` were returned and sorted `title: desc`.
         const [listPagesWhereCustomCategoryTitleDescResponse] = await until(
             () => listPages({ where: { category: "custom" }, sort: ["title_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 5
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 5
         );
         expect(listPagesWhereCustomCategoryTitleDescResponse).toMatchObject({
             data: {
@@ -354,7 +354,7 @@ describe("listing latest pages", () => {
         // 1. Check if all were returned and sorted `createdOn: desc`.
         const [listPagesCreatedOnDesc] = await until(
             () => listPages({ sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length,
             {
                 name: "list pages createdOn desc"
             }
@@ -378,7 +378,7 @@ describe("listing latest pages", () => {
         // 2. We should only get two results here because we published two pages.
         const [listPagesPublishedCreatedOnDesc] = await until(
             () => listPages({ where: { status: "published" }, sort: ["createdOn_DESC"] }),
-            ([res]) => {
+            ([res]: any) => {
                 return res.data.pageBuilder.listPages.data.length === 2;
             },
             {
@@ -402,7 +402,7 @@ describe("listing latest pages", () => {
                     sort: ["title_ASC"],
                     where: { status: "published" }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data[0].title === "page-a",
+            ([res]: any) => res.data.pageBuilder.listPages.data[0].title === "page-a",
             {
                 name: "list published pages title asc"
             }
@@ -427,7 +427,7 @@ describe("listing latest pages", () => {
                     sort: ["title_ASC"],
                     where: { status: "published" }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 0
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 0
         );
         expect(listPagesPublishedTitleAscAfterUnpublish).toMatchObject({
             data: {
@@ -449,7 +449,7 @@ describe("listing latest pages", () => {
                     where: { status: "reviewRequested" },
                     sort: ["createdOn_DESC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 2,
             {
                 name: "list pages review requested createdOn desc"
             }
@@ -479,7 +479,7 @@ describe("listing latest pages", () => {
                 listPages({
                     where: { status: "reviewRequested" }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 0,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 0,
             {
                 name: "list pages review requested after request changes"
             }
@@ -491,7 +491,7 @@ describe("listing latest pages", () => {
                     where: { status: "changesRequested" },
                     sort: ["createdOn_DESC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 2,
             {
                 name: "list pages changes requested createdOn desc"
             }
@@ -515,7 +515,7 @@ describe("listing latest pages", () => {
         await createInitialData();
         await until(
             () => listPages({ sort: ["createdOn_DESC"] }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 5
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 5
         );
 
         /**
@@ -752,7 +752,7 @@ describe("listing latest pages", () => {
                 listPages({
                     sort: ["createdOn_DESC"]
                 }),
-            ([res]) => {
+            ([res]: any) => {
                 return res.data.pageBuilder.listPages.data.length === initialData.pages.length;
             },
             {
@@ -790,7 +790,7 @@ describe("listing latest pages", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 4,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 4,
             {
                 name: "list pages where tag is new"
             }
@@ -822,7 +822,7 @@ describe("listing latest pages", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 2,
             {
                 name: "list tags world, news"
             }
@@ -843,7 +843,7 @@ describe("listing latest pages", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 2,
             {
                 name: "list tags local, news"
             }
@@ -912,7 +912,7 @@ describe("listing latest pages", () => {
                         query: "title for seo"
                     }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data[0].title === TITLE_SEO,
+            ([res]: any) => res.data.pageBuilder.listPages.data[0].title === TITLE_SEO,
             {
                 name: "list pages title for seo search"
             }
@@ -925,7 +925,7 @@ describe("listing latest pages", () => {
                         query: "healthy recipes"
                     }
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data[0].title === TITLE_HEALTHY_RECIPES,
+            ([res]: any) => res.data.pageBuilder.listPages.data[0].title === TITLE_HEALTHY_RECIPES,
             {
                 name: "list pages title healthy recipes"
             }
@@ -939,7 +939,7 @@ describe("listing latest pages", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 3,
             {
                 name: "list pages why go serverless"
             }
@@ -959,7 +959,7 @@ describe("listing latest pages", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 3,
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 3,
             {
                 name: "list pages serverless worth it"
             }
@@ -983,7 +983,7 @@ describe("listing latest pages", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }),
-            ([res]) => res.data.pageBuilder.listPages.data.length === 2
+            ([res]: any) => res.data.pageBuilder.listPages.data.length === 2
         );
 
         expect(

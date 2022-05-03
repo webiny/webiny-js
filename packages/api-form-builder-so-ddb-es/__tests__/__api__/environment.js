@@ -18,7 +18,9 @@ const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operato
  * For this to work it must load plugins that have already been built
  */
 const { createFormBuilderStorageOperations } = require("../../dist/index");
-const { base: baseElasticsearchIndexTemplate } = require("../../dist/elasticsearch/templates/base");
+const { configurations } = require("../../dist/configurations");
+const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
+
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
@@ -28,6 +30,9 @@ if (typeof createFormBuilderStorageOperations !== "function") {
         `Loaded "createFormBuilderStorageOperations" must be a function that will return the storage operations.`
     );
 }
+
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-form-builder-env-`;
 
 class FormBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
@@ -94,7 +99,18 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         elasticIndexManager({
             global: this.global,
             client: elasticsearchClient,
-            template: baseElasticsearchIndexTemplate.template
+            onBeforeEach: async () => {
+                const { index } = configurations.es({
+                    locale: "en-US",
+                    tenant: "root"
+                });
+                await elasticsearchClient.indices.create({
+                    index,
+                    body: {
+                        ...baseConfigurationPlugin.body
+                    }
+                });
+            }
         });
     }
 }

@@ -12,7 +12,7 @@ import { createPageEntity } from "~/definitions/pageEntity";
 import { createPageElasticsearchEntity } from "~/definitions/pageElasticsearchEntity";
 import { PluginsContainer } from "@webiny/plugins";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
-import { createElasticsearchIndexTemplates } from "~/elasticsearch/createElasticsearchIndexTemplates";
+import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createCategoryDynamoDbFields } from "~/operations/category/fields";
 import { createCategoryStorageOperations } from "~/operations/category";
@@ -25,7 +25,7 @@ import {
     createPagesDynamoDbFields
 } from "~/operations/pages/fields";
 import { createPageStorageOperations } from "~/operations/pages";
-import { elasticsearchIndexTemplates } from "~/elasticsearch/templates";
+import { elasticsearchIndexPlugins } from "~/elasticsearch/indices";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -82,7 +82,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Built-in Elasticsearch index templates
          */
-        elasticsearchIndexTemplates()
+        elasticsearchIndexPlugins()
     ]);
 
     const entities = {
@@ -125,11 +125,12 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     return {
         init: async context => {
-            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale }) => {
-                await createElasticsearchIndexTemplates({
+            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale, tenant }) => {
+                await createElasticsearchIndex({
                     elasticsearch,
                     plugins,
-                    locale: locale.code
+                    locale: locale.code,
+                    tenant
                 });
             });
         },

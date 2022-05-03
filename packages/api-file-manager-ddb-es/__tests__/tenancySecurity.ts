@@ -68,6 +68,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
                 return permissions || [{ name: "*" }];
             });
         }),
+        // @ts-ignore
         new BeforeHandlerPlugin<SecurityContext>(context => {
             return context.security.authenticate("");
         })

@@ -7,6 +7,13 @@ interface DeleteIndexesParams {
 export const deleteIndexes = async (params: DeleteIndexesParams) => {
     const { client, prefix } = params;
 
+    /**
+     * Prefix MUST exist. we cannot allow going further without the prefix.
+     */
+    if (!prefix) {
+        throw new Error("process.env.ELASTIC_SEARCH_INDEX_PREFIX is not set!");
+    }
+
     const response = await client.cat.indices({
         format: "json"
     });
@@ -14,26 +21,27 @@ export const deleteIndexes = async (params: DeleteIndexesParams) => {
         return;
     }
     const re = new RegExp(`^${prefix}`);
-    const items: string[] = Object.values(response.body)
+    const indexes: string[] = Object.values(response.body)
         .map(item => {
             return item.index;
         })
         .filter(index => {
-            if (!prefix) {
-                return true;
-            }
             return index.match(re) !== null;
         });
-    if (items.length === 0) {
+    if (indexes.length === 0) {
         return;
     }
 
-    try {
-        await client.indices.delete({
-            index: items
-        });
-    } catch (ex) {
-        console.log(ex.message);
-        // throw ex;
+    for (const index of indexes) {
+        try {
+            console.log(`Deleting index "${index}" ...`);
+            await client.indices.delete({
+                index
+            });
+            console.log("... success");
+        } catch (ex) {
+            console.log("... error");
+            console.log(JSON.stringify(ex));
+        }
     }
 };

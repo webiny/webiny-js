@@ -19,11 +19,15 @@ const {
  * For this to work it must load plugins that have already been built
  */
 const plugins = require("../../dist/index").default;
-const { base: baseElasticsearchIndexTemplate } = require("../../dist/elasticsearch/templates/base");
+const { configurations } = require("../../dist/configurations");
+const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 
 if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
+
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-file-manager-env-`;
 
 class FileManagerTestEnvironment extends NodeEnvironment {
     async setup() {
@@ -73,7 +77,18 @@ class FileManagerTestEnvironment extends NodeEnvironment {
         elasticIndexManager({
             global: this.global,
             client: elasticsearchClient,
-            template: baseElasticsearchIndexTemplate.template
+            onBeforeEach: async () => {
+                const { index } = configurations.es({
+                    locale: "en-US",
+                    tenant: "root"
+                });
+                await elasticsearchClient.indices.create({
+                    index,
+                    body: {
+                        ...baseConfigurationPlugin.body
+                    }
+                });
+            }
         });
     }
 }

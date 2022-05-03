@@ -10426,7 +10426,6 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": ^5.25.0
     "@webiny/api-elasticsearch": ^5.25.0
     "@webiny/api-headless-cms": ^5.25.0
-    "@webiny/api-upgrade": ^5.25.0
     "@webiny/cli": ^5.25.0
     "@webiny/db-dynamodb": ^5.25.0
     "@webiny/error": ^5.25.0

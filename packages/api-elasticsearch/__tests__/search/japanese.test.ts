@@ -1,33 +1,48 @@
 import { createElasticsearchClient } from "../helpers";
-import { base as baseIndexConfiguration } from "~/indexConfiguration/base";
 import { japanese as japaneseIndexConfiguration } from "~/indexConfiguration/japanese";
 import { ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin } from "~/plugins/operator/japanese/contains";
 import { ElasticsearchBoolQueryConfig } from "~/types";
-import {
-    deleteTemplates,
-    putTemplate
-} from "@webiny/project-utils/testing/elasticsearch/templates";
-import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 import { entries, searchTargets } from "./japanese.entries";
 import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
+import WebinyError from "@webiny/error";
 
 describe("Japanese search", () => {
     const client = createElasticsearchClient();
 
     const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
 
-    const baseIndexTemplateName = `${prefix}api-elasticsearch-search-base-index-template`;
-    const japaneseIndexTemplateName = `${prefix}api-elasticsearch-search-japanese-index-template`;
-    const indexName = `${prefix}api-elasticsearch-search-japanese-index-test`;
+    const indexName = `${prefix}search-japanese-index-test`;
 
     const searchPlugin = new ElasticsearchQueryBuilderJapaneseOperatorContainsPlugin();
 
     const createIndex = async () => {
         try {
-            return await client.indices.create({
+            const responseExists1 = await client.indices.exists({
+                index: indexName
+            });
+            if (responseExists1.body) {
+                await client.indices.delete({
+                    index: indexName
+                });
+            }
+            console.log(`Creating index "${indexName}" @${new Date().getTime()}: ${indexName}`);
+            const result = await client.indices.create({
                 index: indexName,
                 body: japaneseIndexConfiguration
             });
+            const response = await client.indices.exists({
+                index: indexName
+            });
+            if (!response.body) {
+                console.log("No created index.");
+                console.log(JSON.stringify(result));
+                console.log(JSON.stringify(response));
+                throw new WebinyError({
+                    message: `Index ${indexName} was not created - checked.`,
+                    data: response
+                });
+            }
+            return result;
         } catch (ex) {
             console.log(JSON.stringify(ex));
             throw ex;
@@ -58,17 +73,13 @@ describe("Japanese search", () => {
     };
 
     const refreshIndex = async () => {
-        const result = await client.indices.refresh({
+        console.log(`Refreshing index ${indexName} @${new Date().getTime()}`);
+        return await client.indices.refresh({
             index: indexName
         });
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve(0);
-            }, 1500);
-        });
-        return result;
     };
     const fetchAllData = async () => {
+        console.log(`Fetching all data from index ${indexName} @${new Date().getTime()}`);
         return await clientSearch({
             index: indexName,
             body: {
@@ -79,40 +90,6 @@ describe("Japanese search", () => {
                 }
             }
         });
-    };
-
-    const createIndexTemplate = async () => {
-        try {
-            await putTemplate({
-                client,
-                prefix,
-                template: {
-                    name: baseIndexTemplateName,
-                    order: 50,
-                    body: {
-                        index_patterns: ["*-index-*"],
-                        aliases: {},
-                        ...baseIndexConfiguration
-                    }
-                }
-            });
-            await putTemplate({
-                client,
-                prefix,
-                template: {
-                    name: japaneseIndexTemplateName,
-                    order: 51,
-                    body: {
-                        index_patterns: ["*japanese-index-*"],
-                        aliases: {},
-                        ...japaneseIndexConfiguration
-                    }
-                }
-            });
-        } catch (ex) {
-            console.log(JSON.stringify(ex));
-            throw ex;
-        }
     };
 
     const prepareWithIndex = async (items: string[]) => {
@@ -142,58 +119,23 @@ describe("Japanese search", () => {
         }
     };
 
-    const prepareWithTemplate = async (items: string[]) => {
-        try {
-            await createIndexTemplate();
-            await insertAllData(items);
-            await refreshIndex();
-            await fetchAllData();
-        } catch (ex) {
-            const response = await client.cat.indices({
-                format: "json"
-            });
-            let availableIndexes: string[] = [];
-            if (response.body) {
-                availableIndexes = Object.values(response.body).map(item => item.index);
-            }
-            console.log(
-                JSON.stringify({
-                    name: "Prepare with template.",
-                    prefix,
-                    base: baseIndexTemplateName,
-                    japanese: japaneseIndexTemplateName,
-                    availableIndexes,
-                    error: ex
-                })
-            );
-            throw ex;
-        }
-    };
-
     const clientSearch = async (request: RequestParams.Search) => {
+        console.log(`Searching index "${indexName}" @${new Date().getTime()}`);
         try {
             return await client.search(request);
         } catch (ex) {
-            console.log("Searching...");
+            console.log("Searching error....");
             console.log(JSON.stringify(ex));
             throw ex;
         }
     };
 
     beforeEach(async () => {
-        await deleteIndexes({ client, prefix });
-        await deleteTemplates({
-            client,
-            prefix
-        });
+        return client.indices.deleteAll();
     });
 
     afterEach(async () => {
-        await deleteIndexes({ client, prefix });
-        await deleteTemplates({
-            client,
-            prefix
-        });
+        return client.indices.deleteAll();
     });
 
     it("should verify that all data is prepared", async () => {
@@ -280,7 +222,7 @@ describe("Japanese search", () => {
     });
 
     it.each(searchTargets)(
-        "pre-created index - should get proper search results for - %s",
+        "should get proper search results for - %s",
         async (search, positions) => {
             await prepareWithIndex(entries);
 
@@ -296,74 +238,6 @@ describe("Japanese search", () => {
                 path: "title",
                 value: search,
                 keyword: true
-            });
-
-            const response = await clientSearch({
-                index: indexName,
-                body: {
-                    query: {
-                        bool: {
-                            ...query
-                        }
-                    },
-                    sort: [
-                        {
-                            id: {
-                                order: "asc"
-                            }
-                        }
-                    ],
-                    size: 100,
-                    search_after: undefined,
-                    track_total_hits: true
-                }
-            });
-
-            expect(response).toMatchObject({
-                body: {
-                    hits: {
-                        hits: positions.map(index => {
-                            const title = entries[index];
-                            const id = Number(index) + 1;
-                            return {
-                                _id: `itemId${index}`,
-                                _index: indexName,
-                                _source: {
-                                    id,
-                                    title
-                                },
-                                _score: null,
-                                _type: "_doc",
-                                sort: [id]
-                            };
-                        }),
-                        total: {
-                            relation: "eq",
-                            value: positions.length
-                        }
-                    }
-                },
-                statusCode: 200
-            });
-        }
-    );
-    it.each(searchTargets)(
-        "template index - should get proper search results for - %s",
-        async (search, positions) => {
-            await prepareWithTemplate(entries);
-
-            const query: ElasticsearchBoolQueryConfig = {
-                must: [],
-                should: [],
-                filter: [],
-                must_not: []
-            };
-
-            searchPlugin.apply(query, {
-                basePath: "title",
-                path: "title",
-                value: search,
-                keyword: false
             });
 
             const response = await clientSearch({

@@ -19,11 +19,15 @@ const {
  * For this to work it must load plugins that have already been built
  */
 const { createStorageOperations } = require("../../dist/index");
-const { base: baseElasticsearchIndexTemplate } = require("../../dist/elasticsearch/templates/base");
+const { configurations } = require("../../dist/configurations");
+const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
+
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-page-builder-env-`;
 
 class PageBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
@@ -82,7 +86,18 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
         elasticIndexManager({
             global: this.global,
             client: elasticsearchClient,
-            template: baseElasticsearchIndexTemplate.template
+            onBeforeEach: async () => {
+                const { index } = configurations.es({
+                    locale: "en-US",
+                    tenant: "root"
+                });
+                await elasticsearchClient.indices.create({
+                    index,
+                    body: {
+                        ...baseConfigurationPlugin.body
+                    }
+                });
+            }
         });
     }
 }
