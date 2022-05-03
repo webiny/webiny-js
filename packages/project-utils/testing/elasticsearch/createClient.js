@@ -25,7 +25,7 @@ const createDeleteIndexCallable = client => {
             try {
                 const { body: exists } = await client.indices.exists({
                     index,
-                    ignore_unavailable: true
+                    ignore_unavailable: false
                 });
                 if (!exists) {
                     return;
