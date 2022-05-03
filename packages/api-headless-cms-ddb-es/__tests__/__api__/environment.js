@@ -23,6 +23,7 @@ const modelFieldToGraphQLPlugins =
  */
 const { createStorageOperations } = require("../../dist/index");
 const { configurations } = require("../../dist/configurations");
+const { base: baseIndexConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -68,21 +69,56 @@ class CmsTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        const onBeforeEntryList = new ContextPlugin(async context => {
-            //if (!context.cms) {
-            //    return;
-            //}
-            //context.cms.onBeforeEntryList.subscribe(async ({ model }) => {
-            //    console.log("Refreshing index on before listing...");
-            //    const { index } = configurations.es({
-            //        model
-            //    });
-            //    await elasticsearchClient.indices.refresh({
-            //        index,
-            //        ignore_unavailable: true,
-            //        expand_wildcards: "all"
-            //    });
-            //});
+        //const onBeforeEntryList = new ContextPlugin(async context => {
+        //if (!context.cms) {
+        //    return;
+        //}
+        //context.cms.onBeforeEntryList.subscribe(async ({ model }) => {
+        //    console.log("Refreshing index on before listing...");
+        //    const { index } = configurations.es({
+        //        model
+        //    });
+        //    await elasticsearchClient.indices.refresh({
+        //        index,
+        //        ignore_unavailable: true,
+        //        expand_wildcards: "all"
+        //    });
+        //});
+        //});
+        /**
+         * We need to create model index before entry create because of the direct storage operations tests.
+         * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
+         */
+        const onBeforeEntryCreate = new ContextPlugin(async context => {
+            if (!context.cms) {
+                return;
+            }
+            context.cms.onBeforeEntryCreate.subscribe(async ({ model }) => {
+                const { index } = configurations.es({
+                    model
+                });
+                const response = await elasticsearchClient.indices.exists({
+                    index,
+                    ignore_unavailable: true
+                });
+                if (response.body) {
+                    return;
+                }
+                try {
+                    await elasticsearchClient.indices.create({
+                        index,
+                        body: {
+                            ...baseIndexConfigurationPlugin.body
+                        }
+                    });
+                    await elasticsearchClient.indices.refresh({
+                        index
+                    });
+                } catch (ex) {
+                    console.log("Could not create index on before entry create...");
+                    console.log(JSON.stringify(ex));
+                }
+            });
         });
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
@@ -99,7 +135,8 @@ class CmsTestEnvironment extends NodeEnvironment {
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
                         plugins: testPlugins.concat([
                             elasticsearchDataGzipCompression(),
-                            onBeforeEntryList
+                            //onBeforeEntryList,
+                            onBeforeEntryCreate
                         ])
                     });
                 },

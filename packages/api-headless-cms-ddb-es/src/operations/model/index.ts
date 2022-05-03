@@ -86,7 +86,7 @@ export const createModelsStorageOperations = (
         } catch (ex) {
             throw new WebinyError(
                 `Could not delete elasticsearch index "${index}" after model record failed to be created.`,
-                "DELETE_MODEL_INDICE_ERROR",
+                "DELETE_MODEL_INDEX_ERROR",
                 {
                     dynamodbError: error,
                     elasticsearchError: ex
@@ -126,6 +126,10 @@ export const createModelsStorageOperations = (
         const { model } = params;
         const keys = createKeys(model);
 
+        const { index } = configurations.es({
+            model
+        });
+
         try {
             await entity.delete(keys);
         } catch (ex) {
@@ -139,6 +143,26 @@ export const createModelsStorageOperations = (
                 }
             );
         }
+        /**
+         * Always delete the model index after deleting the model.
+         */
+        try {
+            await elasticsearch.indices.delete({
+                index,
+                ignore_unavailable: true
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                `Could not delete elasticsearch index "${index}" after model record delete.`,
+                "DELETE_MODEL_INDEX_ERROR",
+                {
+                    error: ex,
+                    index,
+                    model
+                }
+            );
+        }
+
         return model;
     };
 

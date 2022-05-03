@@ -216,3 +216,19 @@ export const createPersonEntries = async (
     }
     return result;
 };
+
+interface DeletePersonModelParams {
+    storageOperations: HeadlessCmsStorageOperations;
+}
+export const deletePersonModel = async (params: DeletePersonModelParams) => {
+    const { storageOperations } = params;
+    try {
+        await storageOperations.models.delete({
+            model: createPersonModel()
+        });
+    } catch (ex) {
+        console.log("Trying to delete person model... failed...");
+        console.log(ex.message);
+        console.log(JSON.stringify(ex));
+    }
+};
