@@ -2,6 +2,10 @@ import React, { useState, useMemo, Dispatch, SetStateAction } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorContentModel, CmsSecurityPermission } from "~/types";
+import {
+    useContentEntriesViewConfig,
+    ContentEntriesViewConfigSorter
+} from "./experiment/ContentEntriesViewConfig";
 
 const t = i18n.ns("app-headless-cms/admin/contents/entries");
 
@@ -9,16 +13,6 @@ export interface CmsEntriesSorter {
     label: string;
     value: string;
 }
-const SORTERS: CmsEntriesSorter[] = [
-    {
-        label: t`Newest to oldest`,
-        value: "savedOn_DESC"
-    },
-    {
-        label: t`Oldest to newest`,
-        value: "savedOn_ASC"
-    }
-];
 
 export interface ListQueryVariables {
     sort?: string[];
@@ -30,18 +24,18 @@ export interface ListQueryVariables {
 
 export interface ContentEntriesContext {
     contentModel: CmsEditorContentModel;
-    sorters: CmsEntriesSorter[];
     canCreate: boolean;
     listQueryVariables: ListQueryVariables;
+    sorters: CmsEntriesSorter[];
     setListQueryVariables: Dispatch<SetStateAction<ListQueryVariables>>;
     insideDialog?: boolean;
 }
 
 export const Context = React.createContext<ContentEntriesContext>({
     contentModel: null as unknown as CmsEditorContentModel,
-    sorters: [],
     canCreate: false,
     listQueryVariables: {},
+    sorters: [],
     setListQueryVariables: () => {
         return void 0;
     }
@@ -53,16 +47,17 @@ export interface ContentEntriesContextProviderProps {
     insideDialog?: boolean;
 }
 
+function toEntriesSorters(sorters: ContentEntriesViewConfigSorter[]) {
+    return sorters.map(s => ({ label: s.label, value: s.name }));
+}
+
 export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
     contentModel,
     children,
     insideDialog
 }) => {
     const { identity, getPermission } = useSecurity();
-
-    const [listQueryVariables, setListQueryVariables] = useState<ListQueryVariables>({
-        sort: [SORTERS[0].value]
-    });
+    const viewConfig = useContentEntriesViewConfig();
 
     const canCreate = useMemo((): boolean => {
         const permission = getPermission<CmsSecurityPermission>("cms.contentEntry");
@@ -81,13 +76,14 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
         const titleField = contentModel.fields.find(
             field => field.fieldId === contentModel.titleFieldId
         );
+
         const titleFieldLabel = titleField ? titleField.label : null;
         if (!titleFieldLabel) {
-            return SORTERS;
+            return toEntriesSorters(viewConfig.sorters);
         }
 
         return [
-            ...SORTERS,
+            ...toEntriesSorters(viewConfig.sorters),
             {
                 label: t`{titleFieldLabel} A-Z`({ titleFieldLabel }),
                 value: `${contentModel.titleFieldId}_ASC`
@@ -97,7 +93,12 @@ export const Provider: React.FC<ContentEntriesContextProviderProps> = ({
                 value: `${contentModel.titleFieldId}_DESC`
             }
         ];
-    }, [contentModel.modelId]);
+    }, [viewConfig.sorters, contentModel.modelId]);
+
+    const [listQueryVariables, setListQueryVariables] = useState<ListQueryVariables>({
+        sort: [sorters[0].value],
+        where: {}
+    });
 
     const value = {
         insideDialog,
