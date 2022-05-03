@@ -420,12 +420,16 @@ describe("Republish entries", () => {
                     sort: ["createdOn_ASC"]
                 }),
             ([response]: any) => {
-                const items = response.data.listProducts.data;
+                const items = response.data.listProducts.data as any[];
                 if (items.length !== 2) {
                     return false;
                 }
-                const [gala, golden] = items;
-                return gala.id === galaRecord.id && golden.id === goldenRecord.id;
+
+                const targets = [galaRecord.id, goldenRecord.id];
+
+                return items.every(item => {
+                    return targets.includes(item.id);
+                });
             },
             {
                 name: "after publishing product"
@@ -479,7 +483,7 @@ describe("Republish entries", () => {
                 return ids && times;
             },
             {
-                name: "after publishing product"
+                name: "after re-publishing product"
             }
         );
         /**
@@ -488,7 +492,9 @@ describe("Republish entries", () => {
          */
         const latestProducts = await storageOperations.entries.list(productModel, {
             where: {
-                latest: true
+                latest: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             },
             sort: ["createdOn_ASC"]
         });
@@ -521,7 +527,9 @@ describe("Republish entries", () => {
         const latestGalaRecord = await storageOperations.entries.get(productModel, {
             where: {
                 id: galaRecord.id,
-                latest: true
+                latest: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             }
         });
 
@@ -539,7 +547,9 @@ describe("Republish entries", () => {
         const latestGoldenRecord = await storageOperations.entries.get(productModel, {
             where: {
                 id: goldenRecord.id,
-                latest: true
+                latest: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             }
         });
 
@@ -556,7 +566,9 @@ describe("Republish entries", () => {
 
         const publishedProducts = await storageOperations.entries.list(productModel, {
             where: {
-                published: true
+                published: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             },
             sort: ["createdOn_ASC"]
         });
@@ -589,7 +601,9 @@ describe("Republish entries", () => {
         const publishedGalaRecord = await storageOperations.entries.get(productModel, {
             where: {
                 id: galaRecord.id,
-                published: true
+                published: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             }
         });
 
@@ -607,7 +621,9 @@ describe("Republish entries", () => {
         const publishedGoldenRecord = await storageOperations.entries.get(productModel, {
             where: {
                 id: goldenRecord.id,
-                published: true
+                published: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             }
         });
 
