@@ -184,6 +184,11 @@ describe("Republish entries", () => {
             () => listCategories(),
             ([response]: any) => {
                 return response.data.listCategories.data.length === 3;
+                // if (!result) {
+                //     console.log("after publishing categories not passing");
+                //     console.log(JSON.stringify(response.data));
+                // }
+                // return result;
             },
             {
                 name: "after publishing categories"
