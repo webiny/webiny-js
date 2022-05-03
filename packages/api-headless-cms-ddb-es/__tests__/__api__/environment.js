@@ -69,20 +69,20 @@ class CmsTestEnvironment extends NodeEnvironment {
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
         const onBeforeEntryList = new ContextPlugin(async context => {
-            if (!context.cms) {
-                return;
-            }
-            context.cms.onBeforeEntryList.subscribe(async ({ model }) => {
-                console.log("Refreshing index on before listing...");
-                const { index } = configurations.es({
-                    model
-                });
-                await elasticsearchClient.indices.refresh({
-                    index,
-                    ignore_unavailable: true,
-                    expand_wildcards: "all"
-                });
-            });
+            //if (!context.cms) {
+            //    return;
+            //}
+            //context.cms.onBeforeEntryList.subscribe(async ({ model }) => {
+            //    console.log("Refreshing index on before listing...");
+            //    const { index } = configurations.es({
+            //        model
+            //    });
+            //    await elasticsearchClient.indices.refresh({
+            //        index,
+            //        ignore_unavailable: true,
+            //        expand_wildcards: "all"
+            //    });
+            //});
         });
         /**
          * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.

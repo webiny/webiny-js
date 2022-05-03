@@ -15,20 +15,63 @@ if (!!esEndpoint) {
     defaultOptions.auth = undefined;
 }
 
+const createDeleteIndexCallable = client => {
+    const max = 10;
+    return async index => {
+        for (let counter = 0; counter <= max; counter++) {
+            /**
+             * First we try to determine if the index actually exists.
+             */
+            try {
+                const { body: exists } = await client.indices.exists({
+                    index,
+                    ignore_unavailable: true
+                });
+                if (!exists) {
+                    return;
+                }
+            } catch (ex) {
+                console.log(`Could not determine that index exists: ${index}`);
+                console.log(ex.message);
+                return;
+            }
+            /**
+             * Then we delete it.
+             */
+            try {
+                await client.indices.delete({
+                    index,
+                    ignore_unavailable: true
+                });
+            } catch (ex) {
+                console.log(`Could not delete index: ${index}`);
+                console.log(JSON.stringify(ex));
+                return;
+            }
+            counter++;
+        }
+    };
+};
+
 const attachCustomEvents = client => {
     const createdIndexes = new Set();
     const originalCreate = client.indices.create;
 
+    const deleteIndexCallable = createDeleteIndexCallable(client);
+
     // @ts-ignore
     client.indices.create = async (params, options = {}) => {
-        if (createdIndexes.has(params.index) === true) {
-            throw new Error(
-                `Index "${params.index}" already exists. It should be deleted after each of the tests.`
-            );
-        }
-        createdIndexes.add(params.index);
+        /**
+         * First we always delete existing index, if any.
+         */
+        await deleteIndexCallable(params.index);
+
         // @ts-ignore
         const response = await originalCreate.apply(client.indices, [params, options]);
+
+        if (createdIndexes.has(params.index) === false) {
+            createdIndexes.add(params.index);
+        }
 
         await client.indices.refresh({
             index: params.index
@@ -46,10 +89,7 @@ const attachCustomEvents = client => {
         const deletedIndexes = [];
         for (const index of indexes) {
             try {
-                await client.indices.delete({
-                    index,
-                    ignore_unavailable: true
-                });
+                await deleteIndexCallable(index);
                 createdIndexes.delete(index);
                 deletedIndexes.push(index);
             } catch (ex) {
