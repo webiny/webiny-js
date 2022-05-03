@@ -24,7 +24,10 @@ import { useCallback } from "react";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/useContentEntriesList";
 import { positionValues as PositionValues } from "react-custom-scrollbars";
 import { CmsEditorContentEntry } from "~/types";
-import { useContentEntriesViewConfig } from "./experiment/ContentEntriesViewConfig";
+import {
+    useContentEntriesViewConfig,
+    ContentEntriesViewConfigFilter
+} from "./experiment/ContentEntriesViewConfig";
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
 
@@ -87,6 +90,13 @@ const ContentEntriesList: React.FC = () => {
         sort: listQueryVariables.sort ? listQueryVariables.sort[0] : ""
     };
 
+    const appliesToContentModel = useCallback(
+        ({ modelIds }: ContentEntriesViewConfigFilter) => {
+            return modelIds.length === 0 || modelIds.includes(contentModel.modelId);
+        },
+        [contentModel]
+    );
+
     const entriesDataListModalOverlay = useMemo(
         () => (
             <UIList.DataListModalOverlay>
@@ -117,7 +127,7 @@ const ContentEntriesList: React.FC = () => {
                                     </Select>
                                 </Bind>
                             </Cell>
-                            {viewConfig.filters.map(filter => (
+                            {viewConfig.filters.filter(appliesToContentModel).map(filter => (
                                 <Cell span={12} key={filter.name}>
                                     {filter.element}
                                 </Cell>

@@ -34,14 +34,21 @@ export const ContentEntriesViewConfig: ContentEntriesViewConfig = ({ children })
 export interface ContentEntriesViewConfigFilterProps {
     name: string;
     element?: React.ReactElement<unknown>;
+    modelIds?: string[];
     remove?: boolean;
 }
 
-const Filter: React.FC<ContentEntriesViewConfigFilterProps> = ({ name, element, remove }) => {
+const Filter: React.FC<ContentEntriesViewConfigFilterProps> = ({
+    name,
+    element,
+    modelIds = [],
+    remove = false
+}) => {
     return (
         <Property id={name} name={"filter"} merge={true} remove={remove}>
-            <Property id="name" name={"name"} value={name} />
-            {element ? <Property id="element" name={"element"} value={element} /> : null}
+            <Property id={"name"} name={"name"} value={name} />
+            <Property id={"modelIds"} name={"modelIds"} value={modelIds} />
+            {element ? <Property id={"element"} name={"element"} value={element} /> : null}
         </Property>
     );
 };
@@ -49,13 +56,21 @@ const Filter: React.FC<ContentEntriesViewConfigFilterProps> = ({ name, element, 
 export interface ContentEntriesViewConfigSorterProps {
     name: string;
     label: string;
+    modelIds?: string[];
+    remove?: boolean;
 }
 
-const Sorter: React.FC<ContentEntriesViewConfigSorterProps> = ({ name, label }) => {
+const Sorter: React.FC<ContentEntriesViewConfigSorterProps> = ({
+    name,
+    label,
+    modelIds = [],
+    remove = false
+}) => {
     return (
-        <Property id={name} name={"sorter"} merge={true}>
-            <Property name={"name"} value={name} />
-            <Property name={"label"} value={label} />
+        <Property id={name} name={"sorter"} merge={true} remove={remove}>
+            <Property id={"name"} name={"name"} value={name} />
+            <Property id={"label"} name={"label"} value={label} />
+            <Property id={"modelIds"} name={"modelIds"} value={modelIds} />
         </Property>
     );
 };
@@ -98,11 +113,13 @@ function byName(name: string) {
 export interface ContentEntriesViewConfigFilter {
     name: string;
     element: React.ReactElement;
+    modelIds: string[];
 }
 
 export interface ContentEntriesViewConfigSorter {
     name: string;
     label: string;
+    modelIds: string[];
 }
 
 export function useContentEntriesViewConfig(): {
@@ -118,6 +135,7 @@ export function useContentEntriesViewConfig(): {
     const sorters = properties
         .filter(byName("sorter"))
         .map(f => toObject<ContentEntriesViewConfigSorter>(f));
+
     return {
         filters,
         sorters
