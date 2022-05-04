@@ -26,4 +26,20 @@ context("Account Module", () => {
             cy.should("exist");
         });
     });
+
+    it("should be able to change avatar", () => {
+        cy.visit("/account");
+        cy.get('div[data-role="select-image"]').click();
+
+        cy.findByTestId("fm-list-wrapper").dropFile("sample.jpeg", "image/jpeg");
+        cy.findByText("File upload complete.").should("exist");
+        cy.get('div[data-testid="fm-list-wrapper-file"]:first-child').click();
+
+        cy.get('div.mdc-layout-grid div > img').should('exist');
+       
+        cy.get('span').contains('Update account').click();
+        cy.contains('Account saved successfully').should('be.visible');
+        cy.reload();
+        cy.get('div.mdc-layout-grid div > img').should('exist');
+    });
 });
