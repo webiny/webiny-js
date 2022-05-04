@@ -95,13 +95,13 @@ export interface ElasticsearchSearchResponse<T = any> {
     };
 }
 
-interface ElasticsearchIndexRequestBodyMappingsDynamicTemplate {
+export interface ElasticsearchIndexRequestBodyMappingsDynamicTemplate {
     [key: string]: {
         match_mapping_type?: string;
         match?: string;
         unmatch?: string;
         mapping?: {
-            type?: string;
+            type?: "text" | "date" | "binary" | "boolean" | "object" | "ip" | "geo" | string;
             search_analyzer?: string;
             analyzer?: string;
             fields?: {

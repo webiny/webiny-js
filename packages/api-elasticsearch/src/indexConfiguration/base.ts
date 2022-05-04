@@ -1,8 +1,9 @@
 import { ElasticsearchIndexRequestBody } from "~/types";
+import { common } from "./common";
 
 export const base: ElasticsearchIndexRequestBody = {
     mappings: {
-        dynamic_templates: [
+        dynamic_templates: common.concat([
             {
                 strings: {
                     match_mapping_type: "string",
@@ -17,7 +18,7 @@ export const base: ElasticsearchIndexRequestBody = {
                     }
                 }
             }
-        ],
+        ]),
         properties: {
             rawValues: {
                 type: "object",

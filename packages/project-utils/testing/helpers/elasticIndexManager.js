@@ -1,17 +1,4 @@
-let prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
-
 module.exports.elasticIndexManager = ({ global, client, onBeforeEach }) => {
-    /**
-     * Prefix MUST exist. we cannot allow going further without the prefix.
-     */
-    if (!prefix) {
-        throw new Error("process.env.ELASTIC_SEARCH_INDEX_PREFIX is not set!");
-    }
-    /**
-     *
-     * The regex to match all the indexes used by this tests.
-     */
-    //const re = new RegExp(`^${prefix}`);
     const clearEsIndices = async () => {
         //console.log("Started with clearing Elasticsearch indices.");
         try {

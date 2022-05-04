@@ -1,4 +1,5 @@
 import { ElasticsearchIndexRequestBody } from "~/types";
+import { common } from "./common";
 
 export const japanese: ElasticsearchIndexRequestBody = {
     settings: {
@@ -91,7 +92,7 @@ export const japanese: ElasticsearchIndexRequestBody = {
         }
     },
     mappings: {
-        dynamic_templates: [
+        dynamic_templates: common.concat([
             {
                 strings: {
                     match_mapping_type: "string",
@@ -113,7 +114,7 @@ export const japanese: ElasticsearchIndexRequestBody = {
                     }
                 }
             }
-        ],
+        ]),
         properties: {
             rawValues: {
                 type: "object",
