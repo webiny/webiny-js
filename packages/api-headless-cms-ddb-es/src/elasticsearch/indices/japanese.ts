@@ -1,7 +1,9 @@
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/CmsEntryElasticsearchIndexPlugin";
-import { japanese as baseJapanese } from "@webiny/api-elasticsearch/indexConfiguration/japanese";
+import { japanese as japaneseConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/japanese";
 
 export const japanese = new CmsEntryElasticsearchIndexPlugin({
-    body: baseJapanese,
+    body: {
+        ...japaneseConfiguration
+    },
     locales: ["ja", "ja-jp"]
 });

@@ -508,6 +508,8 @@ describe("Republish entries", () => {
         expect(latestProducts).toMatchObject({
             items: [
                 {
+                    entryId: galaRecord.entryId,
+                    createdOn: galaRecord.createdOn,
                     values: {
                         category: {
                             id: applePublished.id,
@@ -517,6 +519,8 @@ describe("Republish entries", () => {
                     }
                 },
                 {
+                    entryId: goldenRecord.entryId,
+                    createdOn: goldenRecord.createdOn,
                     values: {
                         category: {
                             id: bananaPublished.id,

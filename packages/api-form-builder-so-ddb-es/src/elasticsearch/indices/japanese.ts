@@ -1,7 +1,9 @@
-import { japanese as baseJapanese } from "@webiny/api-elasticsearch/indexConfiguration/japanese";
+import { japanese as japaneseConfiguration } from "@webiny/api-elasticsearch/indexConfiguration/japanese";
 import { FormElasticsearchIndexPlugin } from "~/plugins/FormElasticsearchIndexPlugin";
 
 export const japanese = new FormElasticsearchIndexPlugin({
-    body: baseJapanese,
+    body: {
+        ...japaneseConfiguration
+    },
     locales: ["ja", "ja-jp"]
 });
