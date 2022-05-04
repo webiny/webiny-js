@@ -39,7 +39,15 @@ context("Account Module", () => {
        
         cy.get('span').contains('Update account').click();
         cy.contains('Account saved successfully').should('be.visible');
+
+        // Refresh page to assert the avatar persists.
         cy.reload();
         cy.get('div.mdc-layout-grid div > img').should('exist');
+
+        // Delete the newly avatar image.
+        cy.get('[data-testid="remove-image"]').click({force: true})
+        cy.get('div.mdc-layout-grid div > img').should('not.exist');
+        cy.findByText("Update account").click();
+        cy.findByText("Account saved successfully!");
     });
 });
