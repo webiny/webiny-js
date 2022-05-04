@@ -19,24 +19,28 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index } = configurations.es({
                 tenant,
                 locale
             });
 
-            expect(index).toEqual(`${tenant}-${locale}-file-manager`.toLowerCase());
+            expect(index).toEqual(`${prefix}${tenant}-${locale}-file-manager`.toLowerCase());
         }
     );
 
     it.each(withLocaleItems)(
         "should create index without locale code as part of the name",
         async (tenant, locale) => {
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index } = configurations.es({
                 tenant,
                 locale
             });
 
-            expect(index).toEqual(`${tenant}-file-manager`.toLowerCase());
+            expect(index).toEqual(`${prefix}${tenant}-file-manager`.toLowerCase());
         }
     );
 
@@ -69,11 +73,13 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index: noLocaleIndex } = configurations.es({
                 tenant,
                 locale
             });
-            expect(noLocaleIndex).toEqual("root-file-manager");
+            expect(noLocaleIndex).toEqual(`${prefix}root-file-manager`);
         }
     );
 
@@ -83,11 +89,13 @@ describe("Elasticsearch index", () => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index: noLocaleIndex } = configurations.es({
                 tenant,
                 locale
             });
-            expect(noLocaleIndex).toEqual(`root-${locale}-file-manager`.toLowerCase());
+            expect(noLocaleIndex).toEqual(`${prefix}root-${locale}-file-manager`.toLowerCase());
         }
     );
 });

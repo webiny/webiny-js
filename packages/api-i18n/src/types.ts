@@ -108,28 +108,34 @@ export interface LocalesCRUDListParams {
 export interface OnBeforeCreateLocaleTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnAfterCreateLocaleTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnBeforeUpdateLocaleTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnAfterUpdateLocaleTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnBeforeDeleteLocaleTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnAfterDeleteLocaleTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
+    tenant: string;
 }
 /**
  * Definition for the locales part crud of the i18n.

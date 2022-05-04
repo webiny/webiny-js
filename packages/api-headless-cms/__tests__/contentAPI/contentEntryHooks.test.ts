@@ -557,7 +557,12 @@ describe("contentEntryHooks", () => {
         await until(
             () => listCategories(),
             ([response]: any) => {
-                return response.data.listCategories.data.length > 0;
+                if (response.data.listCategories.data.length === 0) {
+                    return false;
+                }
+                return response.data.listCategories.data.some((category: any) => {
+                    return category.id === id;
+                });
             },
             {
                 name: "list categories after create"

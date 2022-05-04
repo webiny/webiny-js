@@ -4,8 +4,7 @@ import { PluginsContainer } from "@webiny/plugins";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchContext } from "~/types";
-
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 
 /**
  * If adding new default operators, they must be added here as well.
@@ -29,13 +28,31 @@ const operators = [
 ];
 
 describe("ElasticsearchContext", () => {
+    it("should connect to the elasticsearch", async () => {
+        const client = createElasticsearchClient();
+
+        const response = await client.cat.health({
+            format: "json"
+        });
+
+        expect(response).toMatchObject({
+            body: {
+                "0": {
+                    epoch: expect.any(String),
+                    cluster: expect.any(String),
+                    status: expect.stringMatching(/green|yellow/)
+                }
+            },
+            statusCode: 200
+        });
+    });
+
     it("should initialize the Elasticsearch context plugin", async () => {
         const context: any = {
             plugins: new PluginsContainer()
         };
-        const plugin = elasticsearchContext({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-        });
+        const client = createElasticsearchClient();
+        const plugin = elasticsearchContext(client);
         /**
          * A context plugin must be created.
          */
@@ -54,9 +71,9 @@ describe("ElasticsearchContext", () => {
         const context = {
             plugins: new PluginsContainer()
         } as unknown as ElasticsearchContext;
-        const plugin = elasticsearchContext({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-        });
+        const client = createElasticsearchClient();
+        const plugin = elasticsearchContext(client);
+
         expect(plugin).toBeInstanceOf(ContextPlugin);
         await plugin.apply(context);
         /**

@@ -14,12 +14,13 @@ import { createEntryEntity } from "~/definitions/entry";
 import { createEntryElasticsearchEntity } from "~/definitions/entryElasticsearch";
 import { createSystemEntity } from "~/definitions/system";
 import { createSettingsEntity } from "~/definitions/settings";
-import { createElasticsearchIndexTemplate } from "~/elasticsearch/createElasticsearchIndexTemplate";
+import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
-import { elasticsearchIndexTemplates } from "~/elasticsearch/templates";
+import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
+import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -106,7 +107,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Built-in Elasticsearch index templates.
          */
-        elasticsearchIndexTemplates()
+        elasticsearchIndexPlugins()
     ]);
 
     return {
@@ -120,11 +121,28 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             ]);
         },
         init: async context => {
-            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale }) => {
-                await createElasticsearchIndexTemplate({
+            /**
+             * We need to create indexes on before model create and on clone (create from).
+             * Other apps create indexes on locale creation.
+             */
+            context.cms.onBeforeModelCreate.subscribe(async ({ model }) => {
+                await createElasticsearchIndex({
                     elasticsearch,
-                    plugins,
-                    locale: locale.code
+                    model,
+                    plugins
+                });
+            });
+            context.cms.onBeforeModelCreateFrom.subscribe(async ({ model }) => {
+                await createElasticsearchIndex({
+                    elasticsearch,
+                    model,
+                    plugins
+                });
+            });
+            context.cms.onAfterModelDelete.subscribe(async ({ model }) => {
+                await deleteElasticsearchIndex({
+                    elasticsearch,
+                    model
                 });
             });
         },

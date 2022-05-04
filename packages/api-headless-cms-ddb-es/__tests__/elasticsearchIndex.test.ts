@@ -19,6 +19,8 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index } = configurations.es({
                 model: {
                     tenant,
@@ -27,7 +29,9 @@ describe("Elasticsearch index", () => {
                 } as CmsModel
             });
 
-            expect(index).toEqual(`${tenant}-headless-cms-${locale}-testModel`.toLowerCase());
+            expect(index).toEqual(
+                `${prefix}${tenant}-headless-cms-${locale}-testModel`.toLowerCase()
+            );
         }
     );
 
@@ -64,6 +68,8 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
 
+            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
             const { index: noLocaleIndex } = configurations.es({
                 model: {
                     tenant,
@@ -71,7 +77,9 @@ describe("Elasticsearch index", () => {
                     modelId: "testModel"
                 } as CmsModel
             });
-            expect(noLocaleIndex).toEqual(`root-headless-cms-${locale}-testModel`.toLowerCase());
+            expect(noLocaleIndex).toEqual(
+                `${prefix}root-headless-cms-${locale}-testModel`.toLowerCase()
+            );
         }
     );
 });

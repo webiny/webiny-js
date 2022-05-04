@@ -42,7 +42,6 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
-    "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.25.0",
     "@webiny/cli": "^5.25.0",
     "@webiny/handler-db": "^5.25.0",

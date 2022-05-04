@@ -10,13 +10,17 @@ const elasticsearchDataGzipCompression =
     require("@webiny/api-elasticsearch/plugins/GzipCompression").default;
 const { ContextPlugin } = require("@webiny/handler");
 const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
-const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
+const {
+    createElasticsearchClient
+} = require("@webiny/project-utils/testing/elasticsearch/createClient");
 const { getElasticsearchOperators } = require("@webiny/api-elasticsearch/operators");
 /**
  * For this to work it must load plugins that have already been built
  */
 const { createFormBuilderStorageOperations } = require("../../dist/index");
-const { base: baseElasticsearchIndexTemplate } = require("../../dist/elasticsearch/templates/base");
+const { configurations } = require("../../dist/configurations");
+const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
+
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
@@ -27,16 +31,14 @@ if (typeof createFormBuilderStorageOperations !== "function") {
     );
 }
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-form-builder-env-`;
 
 class FormBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClient = createElasticsearchClient();
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
@@ -97,7 +99,18 @@ class FormBuilderTestEnvironment extends NodeEnvironment {
         elasticIndexManager({
             global: this.global,
             client: elasticsearchClient,
-            template: baseElasticsearchIndexTemplate.template
+            onBeforeEach: async () => {
+                const { index } = configurations.es({
+                    locale: "en-US",
+                    tenant: "root"
+                });
+                await elasticsearchClient.indices.create({
+                    index,
+                    body: {
+                        ...baseConfigurationPlugin.body
+                    }
+                });
+            }
         });
     }
 }

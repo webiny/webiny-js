@@ -2,11 +2,7 @@ import { base } from "~/indexConfiguration/base";
 import { japanese } from "~/indexConfiguration/japanese";
 import { ElasticsearchIndexRequestBody } from "~/types";
 import { createElasticsearchClient } from "./helpers";
-import { deleteIndexes } from "@webiny/project-utils/testing/elasticsearch/indices";
 
-const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
-
-const testIndexName = `${prefix}dummy-index-test`;
 /**
  * Add configurations when added to the code.
  */
@@ -18,24 +14,21 @@ const settings: [string, ElasticsearchIndexRequestBody][] = [
 describe("Elasticsearch Index Mapping And Settings", () => {
     const client = createElasticsearchClient();
 
+    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
+    const testIndexName = `${prefix}dummy-index-test`;
+
     beforeEach(async () => {
-        await deleteIndexes({
-            client,
-            indices: [testIndexName]
-        });
+        return client.indices.deleteAll();
     });
 
     afterEach(async () => {
-        await deleteIndexes({
-            client,
-            indices: [testIndexName]
-        });
+        return client.indices.deleteAll();
     });
 
     it.each(settings)(
         "should create index with correct settings - %s",
-        // @ts-ignore
-        async (name: string, setting: ElasticsearchIndexRequestBody) => {
+        async (_: string, setting: ElasticsearchIndexRequestBody) => {
             const createResponse = await client.indices.create({
                 index: testIndexName,
                 body: {
@@ -72,7 +65,7 @@ describe("Elasticsearch Index Mapping And Settings", () => {
                     settings: {
                         ...setting.settings,
                         index: {
-                            ...setting.settings.index,
+                            ...(setting.settings?.index || {}),
                             creation_date: expect.stringMatching(/^([0-9]+)$/),
                             number_of_replicas: expect.stringMatching(/^([0-9]+)$/),
                             number_of_shards: expect.stringMatching(/^([0-9]+)$/),

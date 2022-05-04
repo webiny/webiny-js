@@ -1,61 +1,31 @@
-module.exports.elasticIndexManager = ({ global, client: elasticsearchClient, template }) => {
+module.exports.elasticIndexManager = ({ global, client, onBeforeEach }) => {
     const clearEsIndices = async () => {
-        await elasticsearchClient.indices.delete({
-            index: "_all"
-        });
-    };
-
-    const clearEsIndexTemplates = async () => {
-        const templates = [];
+        //console.log("Started with clearing Elasticsearch indices.");
         try {
-            const response = await elasticsearchClient.indices.getTemplate();
-            if (!response || !response.body) {
-                return;
-            }
-            templates.push(...Object.keys(response.body));
+            await client.indices.deleteAll();
         } catch (ex) {
-            console.log(ex);
-            console.log(ex.meta.body.error);
-        }
-        if (templates.length === 0) {
-            return;
-        }
-        for (const name of templates) {
-            try {
-                await elasticsearchClient.indices.deleteTemplate({
-                    name
-                });
-            } catch (ex) {
-                console.log(`Could not delete Elasticsearch index template "${name}".`);
-            }
+            console.log("Could not delete all indexes.");
+            console.log(JSON.stringify(ex));
+            throw ex;
         }
     };
 
     global.__beforeEach = async () => {
         await clearEsIndices();
-        if (!template) {
-            throw new Error("Missing Elasticsearch Index template.");
-        }
-        try {
-            await elasticsearchClient.indices.putTemplate(template);
-        } catch (ex) {
-            console.log(ex);
-            throw ex;
+        if (typeof onBeforeEach === "function") {
+            await onBeforeEach();
         }
     };
 
     global.__afterEach = async () => {
         await clearEsIndices();
-        await clearEsIndexTemplates();
     };
 
     global.__beforeAll = async () => {
         await clearEsIndices();
-        await clearEsIndexTemplates();
     };
 
     global.__afterAll = async () => {
         await clearEsIndices();
-        await clearEsIndexTemplates();
     };
 };
