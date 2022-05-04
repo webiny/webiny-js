@@ -25,21 +25,20 @@ export interface I18NLocaleData extends I18NLocale {
 }
 
 export interface I18NContextObject {
-    __i18n: {
-        acceptLanguage: string | null;
-        defaultLocale: I18NLocale | null;
-        locale: Record<string, I18NLocale | null>;
-        locales: I18NLocale[];
-    };
     defaultLocale?: string | null;
     acceptLanguage?: string | null;
-    getCurrentLocale: (localeContext: LocaleKeys) => I18NLocale | null;
+    getContentLocale(): I18NLocale | undefined;
+    getCurrentLocale: (localeContext: LocaleKeys) => I18NLocale | undefined;
+    setCurrentLocale: (localeContext: LocaleKeys, locale: I18NLocale) => void;
     getCurrentLocales: () => { context: string; locale: string | null }[];
-    getDefaultLocale: () => I18NLocale | null;
+    getDefaultLocale: () => I18NLocale | undefined;
+    setContentLocale: (locale: I18NLocale) => void;
     getLocales: () => I18NLocale[];
-    getLocale: (code: string) => I18NLocale | null;
+    getLocale: (code: string) => I18NLocale | undefined;
     locales: LocalesCRUD;
     system: SystemCRUD;
+    hasI18NContentPermission: () => Promise<boolean>;
+    checkI18NContentPermission: () => Promise<void>;
 }
 
 export interface SystemInstallParams {
@@ -108,28 +107,34 @@ export interface LocalesCRUDListParams {
 export interface OnBeforeCreateLocaleTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnAfterCreateLocaleTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnBeforeUpdateLocaleTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnAfterUpdateLocaleTopicParams {
     context: I18NContext;
     original: I18NLocaleData;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnBeforeDeleteLocaleTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
+    tenant: string;
 }
 export interface OnAfterDeleteLocaleTopicParams {
     context: I18NContext;
     locale: I18NLocaleData;
+    tenant: string;
 }
 /**
  * Definition for the locales part crud of the i18n.

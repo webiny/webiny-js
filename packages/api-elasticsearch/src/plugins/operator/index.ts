@@ -13,3 +13,4 @@ export * from "./notContains";
 export * from "./notIn";
 export * from "./startsWith";
 export * from "./notStartsWith";
+export * from "./japanese/contains";

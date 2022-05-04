@@ -20,17 +20,14 @@ describe("timeSearch", () => {
         ["13:45:55", 49555],
         ["23:59:59", 86399]
     ];
-    test.each(correctValues)(
-        "should transform value correctly",
-        (value: string, expected: number) => {
-            const result = plugin.transform({
-                field: timeField as any,
-                value
-            });
+    test.each(correctValues)("should transform value correctly", (value, expected) => {
+        const result = plugin.transform({
+            field: timeField as any,
+            value
+        });
 
-            expect(result).toEqual(expected);
-        }
-    );
+        expect(result).toEqual(expected);
+    });
 
     it("should return passed value as it is not time field", () => {
         const result = plugin.transform({

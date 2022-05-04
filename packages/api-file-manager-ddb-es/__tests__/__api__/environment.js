@@ -12,27 +12,28 @@ const { ContextPlugin } = require("@webiny/handler");
 const {
     elasticIndexManager
 } = require("@webiny/project-utils/testing/helpers/elasticIndexManager");
-const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
+const {
+    createElasticsearchClient
+} = require("@webiny/project-utils/testing/elasticsearch/createClient");
 /**
  * For this to work it must load plugins that have already been built
  */
 const plugins = require("../../dist/index").default;
-const { base: baseElasticsearchIndexTemplate } = require("../../dist/elasticsearch/templates/base");
+const { configurations } = require("../../dist/configurations");
+const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 
 if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-file-manager-env-`;
 
 class FileManagerTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClient = createElasticsearchClient();
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
@@ -76,7 +77,18 @@ class FileManagerTestEnvironment extends NodeEnvironment {
         elasticIndexManager({
             global: this.global,
             client: elasticsearchClient,
-            template: baseElasticsearchIndexTemplate.template
+            onBeforeEach: async () => {
+                const { index } = configurations.es({
+                    locale: "en-US",
+                    tenant: "root"
+                });
+                await elasticsearchClient.indices.create({
+                    index,
+                    body: {
+                        ...baseConfigurationPlugin.body
+                    }
+                });
+            }
         });
     }
 }

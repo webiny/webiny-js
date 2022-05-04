@@ -1,4 +1,4 @@
-import { Plugin } from "@webiny/plugins/types";
+import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import {
     CmsEntry,
     CmsModel,
@@ -168,7 +168,7 @@ export interface StorageOperationsFactoryParams {
     esTable?: TableModifier;
     modelFieldToGraphQLPlugins: CmsModelFieldToGraphQLPlugin[];
     attributes?: Record<ENTITIES, Attributes>;
-    plugins?: Plugin[] | Plugin[][];
+    plugins?: PluginCollection;
 }
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {

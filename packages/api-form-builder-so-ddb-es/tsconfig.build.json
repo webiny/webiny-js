@@ -4,9 +4,6 @@
   "references": [
     { "path": "../api-elasticsearch/tsconfig.build.json" },
     { "path": "../api-form-builder/tsconfig.build.json" },
-    { "path": "../api-i18n/tsconfig.build.json" },
-    { "path": "../api-tenancy/tsconfig.build.json" },
-    { "path": "../api-upgrade/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },

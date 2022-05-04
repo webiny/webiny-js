@@ -1,5 +1,4 @@
 import { DefaultSettingsCrudOptions, PbContext } from "~/graphql/types";
-import { Plugin } from "@webiny/plugins/types";
 import { UpgradePlugin } from "@webiny/api-upgrade";
 
 export * from "./graphql/types";
@@ -699,7 +698,6 @@ export interface PageStorageOperations {
      * Deletes ALL of the certain page versions.
      */
     deleteAll: (params: PageStorageOperationsDeleteAllParams) => Promise<[Page]>;
-
     publish: (params: PageStorageOperationsPublishParams) => Promise<Page>;
     unpublish: (params: PageStorageOperationsUnpublishParams) => Promise<Page>;
     requestReview: (params: PageStorageOperationsRequestReviewParams) => Promise<Page>;
@@ -714,11 +712,8 @@ export interface PageBuilderStorageOperations {
     pageElements: PageElementStorageOperations;
     pages: PageStorageOperations;
 
+    beforeInit?: (context: PbContext) => Promise<void>;
     init?: (context: PbContext) => Promise<void>;
-    /**
-     * Plugins to be attached to the main context.
-     */
-    plugins?: Plugin[] | Plugin[][];
     /**
      * An upgrade to run if necessary.
      */

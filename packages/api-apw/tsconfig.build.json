@@ -12,9 +12,6 @@
       "path": "../api-i18n/tsconfig.build.json"
     },
     {
-      "path": "../api-i18n-content/tsconfig.build.json"
-    },
-    {
       "path": "../api-i18n-ddb/tsconfig.build.json"
     },
     {

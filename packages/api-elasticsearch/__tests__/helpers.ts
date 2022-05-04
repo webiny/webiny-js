@@ -1,4 +1,5 @@
-import { ElasticsearchBoolQueryConfig } from "~/types";
+import { ElasticsearchBoolQueryConfig } from "../src/types";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/client";
 
 export const createBlankQuery = (): ElasticsearchBoolQueryConfig => ({
     must_not: [],
@@ -6,3 +7,5 @@ export const createBlankQuery = (): ElasticsearchBoolQueryConfig => ({
     filter: [],
     should: []
 });
+
+export { createElasticsearchClient };

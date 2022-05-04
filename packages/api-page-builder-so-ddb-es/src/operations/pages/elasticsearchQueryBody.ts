@@ -6,13 +6,13 @@ import { PageStorageOperationsListWhere } from "@webiny/api-page-builder/types";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { PageElasticsearchFieldPlugin } from "~/plugins/definitions/PageElasticsearchFieldPlugin";
 import { PageElasticsearchSortModifierPlugin } from "~/plugins/definitions/PageElasticsearchSortModifierPlugin";
 import { PageElasticsearchQueryModifierPlugin } from "~/plugins/definitions/PageElasticsearchQueryModifierPlugin";
 import { PageElasticsearchBodyModifierPlugin } from "~/plugins/definitions/PageElasticsearchBodyModifierPlugin";
 import { applyWhere } from "@webiny/api-elasticsearch/where";
 import { PluginsContainer } from "@webiny/plugins";
+import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
 
 interface CreateElasticsearchQueryArgs {
     where: PageStorageOperationsListWhere;
@@ -95,14 +95,7 @@ const createElasticsearchQuery = (
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins = plugins
-        .byType<ElasticsearchQueryBuilderOperatorPlugin>(
-            ElasticsearchQueryBuilderOperatorPlugin.type
-        )
-        .reduce((acc, plugin) => {
-            acc[plugin.getOperator()] = plugin;
-            return acc;
-        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
+    const operatorPlugins = getElasticsearchOperatorPluginsByLocale(plugins, initialWhere.locale);
 
     const where: Partial<PageStorageOperationsListWhere> = {
         ...initialWhere

@@ -6,6 +6,7 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
+import { ContentEntriesView } from "../views/contentEntries/experiment/ContentEntriesViewConfig";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
@@ -18,7 +19,6 @@ const Loader: React.FC = ({ children, ...props }) => (
 const ContentModelEditor = lazy(() => import("../views/contentModels/ContentModelEditor"));
 const ContentModelsView = lazy(() => import("../views/contentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/contentModelGroups/ContentModelGroups"));
-const ContentEntiesView = lazy(() => import("../views/contentEntries/ContentEntries"));
 
 const plugins: RoutePlugin[] = [
     {
@@ -56,9 +56,7 @@ const plugins: RoutePlugin[] = [
                             <Helmet>
                                 <title>{t`Content`}</title>
                             </Helmet>
-                            <Loader>
-                                <ContentEntiesView />
-                            </Loader>
+                            <ContentEntriesView />
                         </AdminLayout>
                     </SecureRoute>
                 )}
