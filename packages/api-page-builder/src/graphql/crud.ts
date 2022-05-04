@@ -61,6 +61,20 @@ const setup = (params: CreateCrudParams) => {
             return locale.code;
         };
 
+        if (storageOperations.beforeInit) {
+            try {
+                await storageOperations.beforeInit(context);
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not run before init in Page Builder storage operations.",
+                    ex.code || "STORAGE_OPERATIONS_BEFORE_INIT_ERROR",
+                    {
+                        ...ex
+                    }
+                );
+            }
+        }
+
         const system = await createSystemCrud({
             context,
             storageOperations,
@@ -111,6 +125,21 @@ const setup = (params: CreateCrudParams) => {
             ...pageElements,
             ...categories
         };
+
+        if (!storageOperations.init) {
+            return;
+        }
+        try {
+            await storageOperations.init(context);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not run init in Page Builder storage operations.",
+                ex.code || "STORAGE_OPERATIONS_INIT_ERROR",
+                {
+                    ...ex
+                }
+            );
+        }
     });
 };
 

@@ -1,3 +1,4 @@
+import WebinyError from "@webiny/error";
 import {
     I18NContext,
     I18NLocaleData,
@@ -10,7 +11,6 @@ import {
     OnBeforeDeleteLocaleTopicParams,
     OnBeforeUpdateLocaleTopicParams
 } from "~/types";
-import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
@@ -112,6 +112,8 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
 
             const defaultLocale = await storageOperations.getDefault();
 
+            const tenant = tenancy.getCurrentTenant().id;
+
             const locale: I18NLocaleData = {
                 ...input,
                 default: input.default === true,
@@ -121,14 +123,15 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                tenant: tenancy.getCurrentTenant().id,
+                tenant,
                 webinyVersion: context.WEBINY_VERSION
             };
 
             try {
                 await onBeforeCreate.publish({
                     context,
-                    locale
+                    locale,
+                    tenant
                 });
                 const result = await storageOperations.create({
                     locale
@@ -141,7 +144,8 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 }
                 await onAfterCreate.publish({
                     context,
-                    locale: result
+                    locale: result,
+                    tenant
                 });
                 return locale;
             } catch (ex) {
@@ -157,7 +161,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             }
         },
         async updateLocale(this: LocalesCRUD, code, input) {
-            const { security } = context;
+            const { security, tenancy } = context;
 
             const permission = await security.getPermission("i18n.locale");
 
@@ -185,6 +189,8 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 throw new NotFoundError(`Missing default locale.`);
             }
 
+            const tenant = tenancy.getCurrentTenant().id;
+
             const locale: I18NLocaleData = {
                 ...original,
                 ...input,
@@ -196,6 +202,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 await onBeforeUpdate.publish({
                     context,
                     locale,
+                    tenant,
                     original
                 });
                 const result = await storageOperations.update({
@@ -211,6 +218,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 await onAfterUpdate.publish({
                     context,
                     locale: result,
+                    tenant,
                     original
                 });
                 return locale;
@@ -226,7 +234,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             }
         },
         async deleteLocale(this: LocalesCRUD, code) {
-            const { security } = context;
+            const { security, tenancy } = context;
 
             const permission = await security.getPermission("i18n.locale");
 
@@ -247,17 +255,22 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
             if (allLocales.length === 1) {
                 throw new WebinyError("Cannot delete the last locale.");
             }
+
+            const tenant = tenancy.getCurrentTenant().id;
+
             try {
                 await onBeforeDelete.publish({
                     context,
-                    locale
+                    locale,
+                    tenant
                 });
                 await storageOperations.delete({
                     locale
                 });
                 await onAfterDelete.publish({
                     context,
-                    locale
+                    locale,
+                    tenant
                 });
                 return locale;
             } catch (ex) {

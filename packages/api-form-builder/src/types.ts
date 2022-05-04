@@ -193,10 +193,12 @@ export interface SubmissionsCRUD {
 
 export interface BeforeInstallTopic {
     tenant: string;
+    locale: string;
 }
 
 export interface AfterInstallTopic {
     tenant: string;
+    locale: string;
 }
 
 export interface SystemCRUD {
@@ -657,11 +659,8 @@ export interface FormBuilderStorageOperations
         FormBuilderSettingsStorageOperations,
         FormBuilderFormStorageOperations,
         FormBuilderSubmissionStorageOperations {
-    /**
-     * We can initialize what ever we require in this method.
-     * Initially it was intended to attach events like afterInstall, beforeInstall, etc...
-     */
-    init?: (formBuilder: FormBuilder) => Promise<void>;
+    beforeInit?: (context: FormBuilderContext) => Promise<void>;
+    init?: (context: FormBuilderContext) => Promise<void>;
     /**
      * An upgrade to run if necessary.
      */

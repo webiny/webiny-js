@@ -13,7 +13,7 @@ import {
     EntityCompositeAttributes
 } from "dynamodb-toolbox/dist/classes/Entity";
 import { Client } from "@elastic/elasticsearch";
-import { Plugin } from "@webiny/plugins";
+import { PluginCollection } from "@webiny/plugins/types";
 
 export type AttributeDefinition = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
 
@@ -34,7 +34,7 @@ export interface FormBuilderStorageOperationsFactoryParams {
     table?: string;
     esTable?: string;
     attributes?: Record<ENTITIES, Attributes>;
-    plugins?: Plugin[];
+    plugins?: PluginCollection;
 }
 
 export interface FormBuilderSystemCreateKeysParams {

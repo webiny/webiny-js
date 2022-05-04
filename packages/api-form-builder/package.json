@@ -47,8 +47,6 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
-    "@elastic/elasticsearch": "7.12.0",
-    "@shelf/jest-elasticsearch": "^1.0.0",
     "@types/got": "^9.6.12",
     "@types/json2csv": "^4.5.1",
     "@types/node-fetch": "^2.6.1",

@@ -1,8 +1,8 @@
 import { Plugin } from "@webiny/plugins";
 import { FileManagerContext, FileManagerFilesStorageOperations } from "~/types";
 
-export interface FilesStorageOperationsProviderPluginParams {
-    context: FileManagerContext;
+export interface FilesStorageOperationsProviderPluginParams<T = FileManagerContext> {
+    context: T;
 }
 
 export abstract class FilesStorageOperationsProviderPlugin extends Plugin {

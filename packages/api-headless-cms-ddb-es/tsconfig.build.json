@@ -3,7 +3,6 @@
   "include": ["src"],
   "references": [
     { "path": "../api-headless-cms/tsconfig.build.json" },
-    { "path": "../api-upgrade/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },

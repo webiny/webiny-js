@@ -1,6 +1,6 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
+import { FileManagerContext } from "~/types";
 
 export interface FileElasticsearchEntityParams {
     context: FileManagerContext;

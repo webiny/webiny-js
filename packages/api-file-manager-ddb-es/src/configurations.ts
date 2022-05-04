@@ -34,7 +34,7 @@ export const configurations = {
             .join("-")
             .toLowerCase();
 
-        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
+        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
         if (!prefix) {
             return {
                 index

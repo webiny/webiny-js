@@ -42,8 +42,8 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
             return context.tenancy.getCurrentTenant();
         };
 
-        if (storageOperations.plugins && storageOperations.plugins.length > 0) {
-            context.plugins.register(storageOperations.plugins);
+        if (storageOperations.beforeInit) {
+            await storageOperations.beforeInit(context);
         }
 
         context.cms = {
@@ -52,6 +52,7 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
             ...createSystemCrud({
                 context,
                 getTenant,
+                getLocale,
                 getIdentity,
                 storageOperations
             }),
@@ -85,6 +86,6 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
         if (!storageOperations.init) {
             return;
         }
-        await storageOperations.init(context.cms);
+        await storageOperations.init(context);
     });
 };

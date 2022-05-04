@@ -7,6 +7,14 @@ import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } fro
 export abstract class ElasticsearchQueryBuilderOperatorPlugin extends Plugin {
     public static override readonly type: string = "elasticsearch.queryBuilder.operator";
 
+    /**
+     * Check if current locale is supported by this plugin.
+     */
+    // eslint-disable-next-line
+    public isLocaleSupported(_: string): boolean {
+        return true;
+    }
+
     public abstract getOperator(): string;
 
     public abstract apply(
