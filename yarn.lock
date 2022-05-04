@@ -6037,6 +6037,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/dom@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@material/dom@npm:5.1.0"
+  dependencies:
+    tslib: ^1.9.3
+  checksum: 298a53bf47a9236402a94beb483c652ffb0345bd2c192420a52f2549882144e9ba5cbb2fb48cfb5c5ff64078cc73b6c5e82b7b0d74e58c89d0b70878c91742f4
+  languageName: node
+  linkType: hard
+
 "@material/drawer@npm:^3.1.1, @material/drawer@npm:^3.2.0":
   version: 3.2.0
   resolution: "@material/drawer@npm:3.2.0"
@@ -7237,11 +7246,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/base@link:./packages/ui/rmwc/base::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@rmwc/base@link:./packages/ui/rmwc/base::locator=root-workspace-0b6124%40workspace%3A."
+"@rmwc/base@npm:^5.7.2":
+  version: 5.7.2
+  resolution: "@rmwc/base@npm:5.7.2"
+  dependencies:
+    "@rmwc/types": ^5.6.0
+    classnames: ^2.2.6
+    focus-trap: ^5.0.0
+    hyperform: ^0.9.9
+    mutation-observer: ^1.0.3
+  peerDependencies:
+    react: ^16.3.x
+    react-dom: ^16.3.x
+  checksum: 0e6ab4a2124494138011e579437bd1df2ed8ab77af2b6757ca588a2494e2feced2b65b3f445aef72dccefc818eee9a2db364e2b2f488a6ea6d47f94972e4d05a
   languageName: node
-  linkType: soft
+  linkType: hard
+
+"@rmwc/base@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "@rmwc/base@npm:7.0.3"
+  dependencies:
+    "@material/dom": ^5.1.0
+    "@rmwc/types": ^7.0.3
+    "@types/classnames": ^2.3.1
+    classnames: ^2.3.1
+    hyperform: ^0.11.0
+    mutation-observer: ^1.0.3
+    tslib: ^2.3.0
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 9d1f67c22d1ffec75a70bf89aad5576eaeeb3f99f3c4ae8c24ff219537c7efc946efcfa304629c12c9b977497a605f6053566f4d5f6245763385e9db473c2f72
+  languageName: node
+  linkType: hard
 
 "@rmwc/button@npm:^5.6.0, @rmwc/button@npm:^5.7.2":
   version: 5.7.2
@@ -7661,6 +7698,13 @@ __metadata:
   version: 5.6.0
   resolution: "@rmwc/types@npm:5.6.0"
   checksum: 3d3920cf9559a17948f0e609c917bf8c57f354d064f8f8e8c387b9ae861aab90bc41d537be1629de739f7f3aeb1f96102abcba0eac7ca8c2fedb8f0dc12847fc
+  languageName: node
+  linkType: hard
+
+"@rmwc/types@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "@rmwc/types@npm:7.0.3"
+  checksum: c8ebf7d80d0f6f360a4f6eecfe1e30bb0a3b94d2305045b88832c2c03b0dc475b3394d65ddcd4b1018a3ecb82dad2db166bed845450bd65bf1a03d1a837d3fcf
   languageName: node
   linkType: hard
 
@@ -8760,6 +8804,15 @@ __metadata:
   dependencies:
     classnames: "*"
   checksum: e1bd6de60fc5e4ead601838078b10f378d6a66ad21112922856de59a1f450b1361f597aa3ca34f2cc33bc030f950112872fddfde43c5189bec89737a8b237f24
+  languageName: node
+  linkType: hard
+
+"@types/classnames@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@types/classnames@npm:2.3.1"
+  dependencies:
+    classnames: "*"
+  checksum: 09a17ea08fcb83380921efdfdac94cfa162f87025cae0bf6f4ba508c2fa5f436459ce7612905a3f968fdddb68c03b8e6ff08e762ed2d0c110c5c4fceb244dc55
   languageName: node
   linkType: hard
 
@@ -13625,7 +13678,7 @@ __metadata:
     "@emotion/styled": ^10.0.17
     "@material/base": ^3.1.0
     "@material/textfield": ^3.2.0
-    "@rmwc/base": "file:./rmwc/base"
+    "@rmwc/base": ^7.0.3
     "@rmwc/button": ^5.6.0
     "@rmwc/checkbox": ^5.6.0
     "@rmwc/chip": ^5.6.0
@@ -24963,6 +25016,13 @@ __metadata:
     husky-run: bin/run.js
     husky-upgrade: lib/upgrader/bin.js
   checksum: ac5e6c72053b2a25532f4137f4b036c9057a4b31980f41c7c2efe05e094d2e06b5c8adc0aafba5c6b70e204ab05d4a916233aec9dffc7a0ccfdd14d4b01c719b
+  languageName: node
+  linkType: hard
+
+"hyperform@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "hyperform@npm:0.11.0"
+  checksum: dc35af1ad23be39967c47016fb7e9caa6605f4cc3ff5f2dd4fcfff723a2417c4d6a240b6a40d7ee71228fb77160c3300d0a40b7157e7c97df7bf13e13c562e35
   languageName: node
   linkType: hard
 
@@ -39070,7 +39130,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
+"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
   version: 2.4.0
   resolution: "tslib@npm:2.4.0"
   checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113

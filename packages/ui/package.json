@@ -20,7 +20,7 @@
     "@emotion/styled": "^10.0.17",
     "@material/base": "^3.1.0",
     "@material/textfield": "^3.2.0",
-    "@rmwc/base": "file:./rmwc/base",
+    "@rmwc/base": "^7.0.3",
     "@rmwc/button": "^5.6.0",
     "@rmwc/checkbox": "^5.6.0",
     "@rmwc/chip": "^5.6.0",
@@ -137,8 +137,7 @@
       "dependencies": [
         "@svgr/webpack",
         "material-components-web",
-        "@emotion/core",
-        "@rmwc/base"
+        "@emotion/core"
       ]
     }
   },

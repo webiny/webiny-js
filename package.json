@@ -213,7 +213,6 @@
   },
   "resolutions": {
     "@rmwc/textfield": "link:./packages/ui/rmwc/textfield",
-    "@rmwc/base": "link:./packages/ui/rmwc/base",
     "@types/react": "16.14.2",
     "@types/jsdom": "link:./typings/void",
     "@typescript/lib-dom": "npm:@types/web@*",
