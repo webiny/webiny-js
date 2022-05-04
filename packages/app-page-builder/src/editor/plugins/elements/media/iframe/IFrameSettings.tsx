@@ -24,10 +24,6 @@ const classes = {
         justifySelf: "end"
     })
 };
-
-const urlRegex =
-    /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
-
 interface LinkSettingsFormData {
     url?: string;
 }
@@ -57,7 +53,7 @@ const LinkSettingsComponent: React.FC<
             return;
         }
 
-        const isValidUrl = data.url && urlRegex.test(data.url);
+        const isValidUrl = data.url && validation.validateSync(data.url, "url:allowHref");
 
         if (!isValidUrl) {
             return;
