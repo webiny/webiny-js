@@ -5758,6 +5758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "@material/drawer@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/drawer@npm:5.1.0"
@@ -5773,6 +5774,32 @@ __metadata:
     "@material/shape": ^5.1.0
     "@material/theme": ^5.1.0
     "@material/typography": ^5.1.0
+=======
+"@material/dom@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@material/dom@npm:5.1.0"
+  dependencies:
+    tslib: ^1.9.3
+  checksum: 298a53bf47a9236402a94beb483c652ffb0345bd2c192420a52f2549882144e9ba5cbb2fb48cfb5c5ff64078cc73b6c5e82b7b0d74e58c89d0b70878c91742f4
+  languageName: node
+  linkType: hard
+
+"@material/drawer@npm:^3.1.1, @material/drawer@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@material/drawer@npm:3.2.0"
+  dependencies:
+    "@material/animation": ^3.1.0
+    "@material/base": ^3.1.0
+    "@material/elevation": ^3.1.0
+    "@material/feature-targeting": ^3.1.0
+    "@material/list": ^3.2.0
+    "@material/ripple": ^3.2.0
+    "@material/rtl": ^3.2.0
+    "@material/shape": ^3.1.0
+    "@material/theme": ^3.1.0
+    "@material/typography": ^3.1.0
+    focus-trap: ^5.0.0
+>>>>>>> ca05ff632b (feat(ui): upgrade rmwc/base, use npm package)
     tslib: ^1.9.3
   checksum: 0cafacdbd8178361fe968f6d0e110e917d9fe0d50518fd05ddb1b256e858cf3086c7a903d056a08527702df4db1aea1d64a0534fdf6a171db596956cdab4900e
   languageName: node
@@ -6981,6 +7008,7 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "@rmwc/base@npm:7.0.3, @rmwc/base@npm:^7.0.3":
   version: 7.0.3
   resolution: "@rmwc/base@npm:7.0.3"
@@ -6998,6 +7026,41 @@ __metadata:
   checksum: 9d1f67c22d1ffec75a70bf89aad5576eaeeb3f99f3c4ae8c24ff219537c7efc946efcfa304629c12c9b977497a605f6053566f4d5f6245763385e9db473c2f72
   languageName: node
   linkType: hard
+=======
+"@rmwc/base@npm:^5.7.2":
+  version: 5.7.2
+  resolution: "@rmwc/base@npm:5.7.2"
+  dependencies:
+    "@rmwc/types": ^5.6.0
+    classnames: ^2.2.6
+    focus-trap: ^5.0.0
+    hyperform: ^0.9.9
+    mutation-observer: ^1.0.3
+  peerDependencies:
+    react: ^16.3.x
+    react-dom: ^16.3.x
+  checksum: 0e6ab4a2124494138011e579437bd1df2ed8ab77af2b6757ca588a2494e2feced2b65b3f445aef72dccefc818eee9a2db364e2b2f488a6ea6d47f94972e4d05a
+  languageName: node
+  linkType: hard
+
+"@rmwc/base@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "@rmwc/base@npm:7.0.3"
+  dependencies:
+    "@material/dom": ^5.1.0
+    "@rmwc/types": ^7.0.3
+    "@types/classnames": ^2.3.1
+    classnames: ^2.3.1
+    hyperform: ^0.11.0
+    mutation-observer: ^1.0.3
+    tslib: ^2.3.0
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 9d1f67c22d1ffec75a70bf89aad5576eaeeb3f99f3c4ae8c24ff219537c7efc946efcfa304629c12c9b977497a605f6053566f4d5f6245763385e9db473c2f72
+  languageName: node
+  linkType: hard
+>>>>>>> ca05ff632b (feat(ui): upgrade rmwc/base, use npm package)
 
 "@rmwc/button@npm:7.0.3, @rmwc/button@npm:^7.0.3":
   version: 7.0.3
@@ -7433,9 +7496,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "@rmwc/typography@npm:7.0.3":
   version: 7.0.3
   resolution: "@rmwc/typography@npm:7.0.3"
+=======
+"@rmwc/types@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "@rmwc/types@npm:7.0.3"
+  checksum: c8ebf7d80d0f6f360a4f6eecfe1e30bb0a3b94d2305045b88832c2c03b0dc475b3394d65ddcd4b1018a3ecb82dad2db166bed845450bd65bf1a03d1a837d3fcf
+  languageName: node
+  linkType: hard
+
+"@rmwc/typography@npm:^5.6.0":
+  version: 5.7.2
+  resolution: "@rmwc/typography@npm:5.7.2"
+>>>>>>> ca05ff632b (feat(ui): upgrade rmwc/base, use npm package)
   dependencies:
     "@material/typography": ^5.1.0
     "@rmwc/base": ^7.0.3
@@ -13409,6 +13485,7 @@ __metadata:
     "@editorjs/editorjs": ^2.24.3
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
+<<<<<<< HEAD
     "@rmwc/button": 7.0.3
     "@rmwc/checkbox": 7.0.3
     "@rmwc/chip": 7.0.3
@@ -13430,6 +13507,37 @@ __metadata:
     "@rmwc/textfield": 7.0.3
     "@rmwc/top-app-bar": 7.0.3
     "@rmwc/typography": 7.0.3
+=======
+    "@material/base": ^3.1.0
+    "@material/textfield": ^3.2.0
+    "@rmwc/base": ^7.0.3
+    "@rmwc/button": ^5.6.0
+    "@rmwc/checkbox": ^5.6.0
+    "@rmwc/chip": ^5.6.0
+    "@rmwc/dialog": ^5.6.0
+    "@rmwc/drawer": ^5.6.0
+    "@rmwc/elevation": ^5.6.0
+    "@rmwc/fab": ^5.6.0
+    "@rmwc/floating-label": ^5.6.0
+    "@rmwc/grid": ^5.6.0
+    "@rmwc/icon": ^5.6.0
+    "@rmwc/icon-button": ^5.6.0
+    "@rmwc/line-ripple": ^5.6.0
+    "@rmwc/list": ^5.6.0
+    "@rmwc/menu": ^5.6.0
+    "@rmwc/notched-outline": ^5.6.0
+    "@rmwc/radio": ^5.6.0
+    "@rmwc/ripple": ^5.6.0
+    "@rmwc/select": ^5.6.0
+    "@rmwc/slider": ^5.6.0
+    "@rmwc/snackbar": ^5.6.0
+    "@rmwc/switch": ^5.6.0
+    "@rmwc/tabs": ^5.6.0
+    "@rmwc/textfield": "file:./rmwc/textfield"
+    "@rmwc/top-app-bar": ^5.6.0
+    "@rmwc/types": ^5.6.0
+    "@rmwc/typography": ^5.6.0
+>>>>>>> ca05ff632b (feat(ui): upgrade rmwc/base, use npm package)
     "@storybook/addon-info": ^5.2.8
     "@storybook/addon-knobs": ^5.0.5
     "@storybook/addon-links": ^5.0.5
@@ -24718,6 +24826,16 @@ __metadata:
   version: 0.11.0
   resolution: "hyperform@npm:0.11.0"
   checksum: dc35af1ad23be39967c47016fb7e9caa6605f4cc3ff5f2dd4fcfff723a2417c4d6a240b6a40d7ee71228fb77160c3300d0a40b7157e7c97df7bf13e13c562e35
+<<<<<<< HEAD
+=======
+  languageName: node
+  linkType: hard
+
+"hyperform@npm:^0.9.9":
+  version: 0.9.23
+  resolution: "hyperform@npm:0.9.23"
+  checksum: 8130a84a4e8fa8b86433a44e5c2cfbdddbdef8c315619b5b4a7f0798332a3523f0bc5a5f1f65cc3351f16ff1140b076d98553d7431919d25d0b6a00b5d7d5fcb
+>>>>>>> ca05ff632b (feat(ui): upgrade rmwc/base, use npm package)
   languageName: node
   linkType: hard
 
