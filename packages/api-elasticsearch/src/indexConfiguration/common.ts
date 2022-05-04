@@ -1,9 +1,6 @@
 import { ElasticsearchIndexRequestBodyMappingsDynamicTemplate } from "~/types";
 
-/**
- * @internal
- */
-export const common: ElasticsearchIndexRequestBodyMappingsDynamicTemplate[] = [
+export const dynamicTemplateDates: ElasticsearchIndexRequestBodyMappingsDynamicTemplate[] = [
     {
         dates: {
             match: "^createdOn|savedOn|publishedOn$",

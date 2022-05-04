@@ -1,9 +1,9 @@
 import { ElasticsearchIndexRequestBody } from "~/types";
-import { common } from "./common";
+import { dynamicTemplateDates } from "./common";
 
 export const base: ElasticsearchIndexRequestBody = {
     mappings: {
-        dynamic_templates: common.concat([
+        dynamic_templates: dynamicTemplateDates.concat([
             {
                 strings: {
                     match_mapping_type: "string",

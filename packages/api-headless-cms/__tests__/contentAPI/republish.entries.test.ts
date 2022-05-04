@@ -129,8 +129,14 @@ describe("Republish entries", () => {
         };
     };
 
-    const createEntry = (model: CmsModel, input: Record<string, any>): CreateEntryResult => {
+    const createEntry = (
+        model: CmsModel,
+        input: Record<string, any>,
+        add = 0
+    ): CreateEntryResult => {
         const id = mdbid();
+        const date = new Date();
+        date.setTime(date.getTime() + add);
         return {
             entry: {
                 id: `${id}#0001`,
@@ -140,8 +146,8 @@ describe("Republish entries", () => {
                 webinyVersion,
                 locked: false,
                 values: input,
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
+                createdOn: date.toISOString(),
+                savedOn: date.toISOString(),
                 modelId: model.modelId,
                 status: "draft",
                 version: 1,
@@ -362,13 +368,17 @@ describe("Republish entries", () => {
                 modelId: categoryModel.modelId
             }
         });
-        const { entry: goldenEntry, input: goldenInput } = createEntry(productModel, {
-            title: "Golden",
-            category: {
-                entryId: bananaPublished.id,
-                modelId: categoryModel.modelId
-            }
-        });
+        const { entry: goldenEntry, input: goldenInput } = createEntry(
+            productModel,
+            {
+                title: "Golden",
+                category: {
+                    entryId: bananaPublished.id,
+                    modelId: categoryModel.modelId
+                }
+            },
+            5
+        );
 
         const galaRecord = await storageOperations.entries.create(productModel, {
             entry: galaEntry,
