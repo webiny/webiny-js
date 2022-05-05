@@ -321,7 +321,7 @@ describe("multiple values in field", () => {
                         code: "ENTRY_FIELD_USED",
                         data: null,
                         message: expect.stringMatching(
-                            `Cannot remove the field "availableSizes@text@([a-zA-Z0-9_-]+)" because it's already in use in created content.`
+                            `Cannot remove the field "availableSizes@text@([a-zA-Z0-9\-\_]+)" because it's already in use in created content.`
                         )
                     }
                 }
