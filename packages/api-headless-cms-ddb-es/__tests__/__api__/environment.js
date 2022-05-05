@@ -69,22 +69,6 @@ class CmsTestEnvironment extends NodeEnvironment {
         });
         simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
 
-        //const onBeforeEntryList = new ContextPlugin(async context => {
-        //if (!context.cms) {
-        //    return;
-        //}
-        //context.cms.onBeforeEntryList.subscribe(async ({ model }) => {
-        //    console.log("Refreshing index on before listing...");
-        //    const { index } = configurations.es({
-        //        model
-        //    });
-        //    await elasticsearchClient.indices.refresh({
-        //        index,
-        //        ignore_unavailable: true,
-        //        expand_wildcards: "all"
-        //    });
-        //});
-        //});
         /**
          * We need to create model index before entry create because of the direct storage operations tests.
          * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.

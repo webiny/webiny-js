@@ -478,11 +478,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
 
-            await onBeforeEntryList.publish({
-                where,
-                model
-            });
-
             const fields = getSearchableFields({
                 model,
                 plugins: context.plugins,
