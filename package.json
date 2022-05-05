@@ -212,7 +212,6 @@
     }
   },
   "resolutions": {
-    "@rmwc/textfield": "link:./packages/ui/rmwc/textfield",
     "@types/react": "16.14.2",
     "@types/jsdom": "link:./typings/void",
     "@typescript/lib-dom": "npm:@types/web@*",
