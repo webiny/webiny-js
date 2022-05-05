@@ -32,12 +32,12 @@ story.add(
 
                             <Chips>
                                 <Chip>
-                                    <ChipIcon leading icon={<BaselineEmailIcon />} />
+                                    <ChipIcon icon={<BaselineEmailIcon />} />
                                     Cookies
                                 </Chip>
                                 <Chip>
                                     Cookies
-                                    <ChipIcon trailing icon={<BaselineDoneIcon />} />
+                                    <ChipIcon trailingIcon icon={<BaselineDoneIcon />} />
                                 </Chip>
                             </Chips>
                         </div>

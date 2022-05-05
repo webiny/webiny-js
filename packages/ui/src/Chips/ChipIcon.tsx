@@ -1,5 +1,5 @@
 import React from "react";
-import { ChipIcon as RmwcChipIcon, ChipIconProps as RmwcChipIconProps } from "@rmwc/chip";
+import { Chip as RmwcChipIcon, ChipProps as RmwcChipIconProps } from "@rmwc/chip";
 import { chipIconWrapper } from "./styles";
 
 export type ChipIconProps = RmwcChipIconProps;
