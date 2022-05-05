@@ -564,6 +564,15 @@ export const createEntriesStorageOperations = (
         });
 
         const totalCount = filteredItems.length;
+
+        const aliasToIdMap: Record<string, string> = {};
+        for (const key in modelFields) {
+            const field = modelFields[key];
+            if (!field.def.alias) {
+                continue;
+            }
+            aliasToIdMap[field.def.alias] = field.def.fieldId;
+        }
         /**
          * Sorting is also done via the code.
          * It takes the sort input and sorts by it via the lodash sortBy method.

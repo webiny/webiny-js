@@ -8,27 +8,32 @@ export const systemFields: Record<string, CmsModelField> = {
     id: createSystemField({
         id: "id",
         type: "text",
-        fieldId: "id"
+        fieldId: "id",
+        alias: "id"
     }),
     entryId: createSystemField({
         id: "entryId",
         type: "text",
-        fieldId: "entryId"
+        fieldId: "entryId",
+        alias: "entryId"
     }),
     createdOn: createSystemField({
         id: "createdOn",
         type: "datetime",
-        fieldId: "createdOn"
+        fieldId: "createdOn",
+        alias: "createdOn"
     }),
     savedOn: createSystemField({
         id: "savedOn",
         type: "datetime",
-        fieldId: "savedOn"
+        fieldId: "savedOn",
+        alias: "savedOn"
     }),
     createdBy: createSystemField({
         id: "createdBy",
         type: "plainObject",
         fieldId: "createdBy",
+        alias: "createdBy",
         settings: {
             path: "createdBy.id"
         }
@@ -37,6 +42,7 @@ export const systemFields: Record<string, CmsModelField> = {
         id: "ownedBy",
         type: "plainObject",
         fieldId: "ownedBy",
+        alias: "ownedBy",
         settings: {
             path: "ownedBy.id"
         }
@@ -44,6 +50,7 @@ export const systemFields: Record<string, CmsModelField> = {
     version: createSystemField({
         id: "version",
         type: "number",
-        fieldId: "version"
+        fieldId: "version",
+        alias: "version"
     })
 };

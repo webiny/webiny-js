@@ -326,7 +326,19 @@ const createFullTextSearch = ({
     }
     return async ({ item, fromStorage, fields }: FullTextSearchParams) => {
         for (const targetField of targetFields) {
-            const value = await fromStorage(fields[targetField].def, item.values[targetField]);
+            const field = Object.values(fields).find(field => {
+                return field.def.fieldId === targetField || field.def.alias === targetField;
+            });
+            if (!field) {
+                throw new WebinyError(
+                    `Unknown field "${targetField}" in the model.`,
+                    "UNKNOWN_FIELD",
+                    {
+                        target: targetField
+                    }
+                );
+            }
+            const value = await fromStorage(field.def, item.values[targetField]);
             if (!value) {
                 continue;
             }
@@ -458,15 +470,19 @@ export const filterItems = async (params: FilterItemsParams): Promise<CmsEntry[]
     return results.filter(Boolean) as CmsEntry[];
 };
 
-const extractSort = (
-    sortBy: string,
-    fields: ModelFieldRecords
-): { valuePath: string; reverse: boolean; fieldId: string } => {
+interface ExtractSortResult {
+    valuePath: string;
+    reverse: boolean;
+    fieldId: string;
+    field: ModelField;
+}
+
+const extractSort = (sortBy: string, fields: ModelFieldRecords): ExtractSortResult => {
     const result = sortBy.split("_");
     if (result.length !== 2) {
         throw new WebinyError(
             "Problem in determining the sorting for the entry items.",
-            "SORT_ERROR",
+            "SORT_EXTRACT_ERROR",
             {
                 sortBy
             }
@@ -474,7 +490,9 @@ const extractSort = (
     }
     const [fieldId, order] = result;
 
-    const modelField = fields[fieldId];
+    const modelField = Object.values(fields).find(field => {
+        return field.def.fieldId === fieldId || field.def.alias === fieldId;
+    });
 
     if (!modelField) {
         throw new WebinyError(
@@ -490,6 +508,7 @@ const extractSort = (
         field: modelField.def
     });
     return {
+        field: modelField,
         fieldId,
         valuePath,
         reverse: order === "DESC"
@@ -509,19 +528,22 @@ export const sortEntryItems = (params: SortEntryItemsArgs): CmsEntry[] => {
     } else if (sort.length === 0) {
         sort.push("savedOn_DESC");
     } else if (sort.length > 1) {
-        throw new WebinyError("Sorting is limited to a single field.", "SORT_ERROR", {
-            sort: sort
-        });
+        throw new WebinyError(
+            "Sorting is limited to a single field.",
+            "SORT_MULTIPLE_FIELDS_ERROR",
+            {
+                sort: sort
+            }
+        );
     }
     const [firstSort] = sort;
     if (!firstSort) {
-        throw new WebinyError("Empty sort array item.", "SORT_ERROR", {
+        throw new WebinyError("Empty sort array item.", "SORT_EMPTY_ERROR", {
             sort
         });
     }
 
-    const { fieldId, valuePath, reverse } = extractSort(firstSort, fields);
-    const field = fields[fieldId];
+    const { fieldId, field, valuePath, reverse } = extractSort(firstSort, fields);
 
     const itemsToSort = items.map(item => {
         return {
@@ -598,6 +620,14 @@ export const buildModelFields = ({
         property: "fieldType"
     });
     const fields: ModelFieldRecords = Object.values(systemFields).reduce((collection, field) => {
+        /**
+         * This should be caught on the tests runs and never actually happen on live system.
+         */
+        if (!field.alias) {
+            throw new WebinyError("Missing system field alias.", "ALIAS_ERROR", {
+                field
+            });
+        }
         const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
 
@@ -609,7 +639,7 @@ export const buildModelFields = ({
                 return valuePathPlugin.createPath(params);
             };
         }
-        collection[field.fieldId] = {
+        collection[field.alias] = {
             def: field,
             valueTransformer: (value: any) => {
                 if (!transformValuePlugin) {
@@ -625,6 +655,10 @@ export const buildModelFields = ({
     }, {} as ModelFieldRecords);
 
     return model.fields.reduce((collection, field) => {
+        if (!field.alias) {
+            console.log(`Field "${field.fieldId}" in model "${model.modelId}" is missing alias.`);
+            return collection;
+        }
         const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
 
@@ -637,7 +671,7 @@ export const buildModelFields = ({
             };
         }
 
-        collection[field.fieldId] = {
+        collection[field.alias] = {
             def: field,
             valueTransformer: (value: any) => {
                 if (!transformValuePlugin) {
