@@ -166,7 +166,8 @@ const stepStatusField = (): CmsModelField => ({
             message: "Value is required."
         }
     ],
-    fieldId: "status"
+    fieldId: "status",
+    alias: "status"
 });
 
 const stepPendingChangeRequests = () =>
@@ -242,6 +243,7 @@ const stepsField = (fields: CmsModelField[]): CmsModelField => ({
     },
     listValidation: [],
     validation: [],
+    alias: "steps",
     fieldId: "steps",
     multipleValues: true,
     predefinedValues: {

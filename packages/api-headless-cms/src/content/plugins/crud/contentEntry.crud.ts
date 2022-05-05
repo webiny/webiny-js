@@ -499,7 +499,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     await storageOperations.entries.list(model, {
                         ...params,
                         where,
-                        fields,
+                        fields
                     });
 
                 const meta = {
