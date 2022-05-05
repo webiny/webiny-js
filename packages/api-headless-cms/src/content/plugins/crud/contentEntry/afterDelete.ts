@@ -16,7 +16,8 @@ export const assignAfterEntryDelete = (params: AssignAfterEntryDeleteParams) => 
             where: {
                 entryId_not: entry.entryId,
                 latest: true,
-                tenant: model.tenant
+                tenant: model.tenant,
+                locale: model.locale
             },
             limit: 1
         });

@@ -39,7 +39,8 @@ export const createChangeRequestStorageOperations = ({
                 ...params,
                 where: {
                     ...params.where,
-                    tenant: model.tenant
+                    tenant: model.tenant,
+                    locale: model.locale
                 }
             });
             const all = await Promise.all(

@@ -38,7 +38,7 @@ enum SETTINGS_TYPE {
 }
 
 const checkBasePermissions = async (context: PbContext) => {
-    await context.i18nContent.checkI18NContentPermission();
+    await context.i18n.checkI18NContentPermission();
     const pbPagePermission = await context.security.getPermission("pb.settings");
     if (!pbPagePermission) {
         throw new NotAuthorizedError();

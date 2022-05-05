@@ -5,11 +5,10 @@
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { paginateBatch } from "../utils";
 import { configurations } from "~/configurations";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { DbContext } from "@webiny/handler-db/types";
+import { FileManagerContext } from "~/types";
 
-const plugin: UpgradePlugin<FileManagerContext & ElasticsearchContext & DbContext> = {
+const plugin: UpgradePlugin<FileManagerContext & DbContext> = {
     name: "api-upgrade-file-manager",
     type: "api-upgrade",
     app: "file-manager",

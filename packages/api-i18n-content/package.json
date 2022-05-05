@@ -14,9 +14,7 @@
     "@webiny/api-i18n": "^5.25.0",
     "@webiny/api-security": "^5.25.0",
     "@webiny/handler": "^5.25.0",
-    "@webiny/handler-graphql": "^5.25.0",
-    "graphql": "^15.7.2",
-    "lodash.get": "^4.4.2"
+    "graphql": "^15.7.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

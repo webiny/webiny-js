@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { FileManagerContext } from "~/types";
 
 export const getDocumentClient = (context: FileManagerContext): DocumentClient => {
     const driver = context.db.driver as any;

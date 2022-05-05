@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { Table } from "dynamodb-toolbox";
-import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { FileManagerContext } from "~/types";
 import { getDocumentClient } from "~/operations/utils";
 
 export interface TableElasticsearchParams {

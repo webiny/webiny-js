@@ -89,7 +89,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
                 return await storageOperations.categories.get(params);
             }
 
-            await context.i18nContent.checkI18NContentPermission();
+            await context.i18n.checkI18NContentPermission();
 
             let permission;
             const categoryPermission = await getPermission("pb.category");
@@ -133,7 +133,7 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
         },
 
         async listCategories() {
-            await context.i18nContent.checkI18NContentPermission();
+            await context.i18n.checkI18NContentPermission();
 
             let permission: PbSecurityPermission | null = null;
             const categoryPermission = await getPermission("pb.category");

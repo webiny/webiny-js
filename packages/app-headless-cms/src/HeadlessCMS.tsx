@@ -5,6 +5,7 @@ import { ApolloClient } from "apollo-client";
 import { CmsProvider } from "./admin/contexts/Cms";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader";
 import apiInformation from "./admin/plugins/apiInformation";
+import { ContentEntriesModule } from "./admin/views/contentEntries/experiment/ContentEntriesModule";
 
 const createHeadlessCMSProvider =
     (createApolloClient: CreateApolloClient) =>
@@ -34,6 +35,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
 
     return (
         <Fragment>
+            <ContentEntriesModule />
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <Plugins>
                 <CmsMenuLoader />

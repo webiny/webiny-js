@@ -38,6 +38,7 @@ const setupContentModel = async (manager: any, contentModelGroup: CmsGroup, name
         process.exit(1);
     } else if (createResponse.data.createContentModel.error) {
         console.log(`[setupContentModel] ${createResponse.data.createContentModel.error.message}`);
+        console.log(createResponse.data.createContentModel.error.message);
         process.exit(1);
     }
 

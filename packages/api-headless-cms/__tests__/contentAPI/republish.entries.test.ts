@@ -129,8 +129,14 @@ describe("Republish entries", () => {
         };
     };
 
-    const createEntry = (model: CmsModel, input: Record<string, any>): CreateEntryResult => {
+    const createEntry = (
+        model: CmsModel,
+        input: Record<string, any>,
+        add = 0
+    ): CreateEntryResult => {
         const id = mdbid();
+        const date = new Date();
+        date.setTime(date.getTime() + add);
         return {
             entry: {
                 id: `${id}#0001`,
@@ -149,8 +155,8 @@ describe("Republish entries", () => {
                     collection[field.fieldId] = input[key];
                     return collection;
                 }, {} as Record<string, any>),
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
+                createdOn: date.toISOString(),
+                savedOn: date.toISOString(),
                 modelId: model.modelId,
                 status: "draft",
                 version: 1,
@@ -193,6 +199,11 @@ describe("Republish entries", () => {
             () => listCategories(),
             ([response]: any) => {
                 return response.data.listCategories.data.length === 3;
+                // if (!result) {
+                //     console.log("after publishing categories not passing");
+                //     console.log(JSON.stringify(response.data));
+                // }
+                // return result;
             },
             {
                 name: "after publishing categories"
@@ -366,13 +377,17 @@ describe("Republish entries", () => {
                 modelId: categoryModel.modelId
             }
         });
-        const { entry: goldenEntry, input: goldenInput } = createEntry(productModel, {
-            title: "Golden",
-            category: {
-                entryId: bananaPublished.id,
-                modelId: categoryModel.modelId
-            }
-        });
+        const { entry: goldenEntry, input: goldenInput } = createEntry(
+            productModel,
+            {
+                title: "Golden",
+                category: {
+                    entryId: bananaPublished.id,
+                    modelId: categoryModel.modelId
+                }
+            },
+            5
+        );
 
         const galaRecord = await storageOperations.entries.create(productModel, {
             entry: galaEntry,
@@ -429,12 +444,16 @@ describe("Republish entries", () => {
                     sort: ["createdOn_ASC"]
                 }),
             ([response]: any) => {
-                const items = response.data.listProducts.data;
+                const items = response.data.listProducts.data as any[];
                 if (items.length !== 2) {
                     return false;
                 }
-                const [gala, golden] = items;
-                return gala.id === galaRecord.id && golden.id === goldenRecord.id;
+
+                const targets: string[] = [galaRecord.id, goldenRecord.id];
+
+                return items.every(item => {
+                    return targets.includes(item.id);
+                });
             },
             {
                 name: "after publishing product"
@@ -478,17 +497,18 @@ describe("Republish entries", () => {
                     sort: ["createdOn_ASC"]
                 }),
             ([response]: any) => {
-                const items = response.data.listProducts.data;
+                const items: any[] = response.data.listProducts.data;
                 if (items.length !== 2) {
                     return false;
                 }
-                const [gala, golden] = items;
-                const ids = gala.id === galaRecord.id && golden.id === goldenRecord.id;
-                const times = gala.savedOn === galaSavedOn && golden.savedOn === goldenSavedOn;
-                return ids && times;
+                const requiredIdList: string[] = [galaRecord.id, goldenRecord.id];
+                const requiredTimes: string[] = [galaSavedOn, goldenSavedOn];
+                return items.every(item => {
+                    return requiredIdList.includes(item.id) && requiredTimes.includes(item.savedOn);
+                });
             },
             {
-                name: "after publishing product"
+                name: "after re-publishing product"
             }
         );
         /**
@@ -497,8 +517,9 @@ describe("Republish entries", () => {
          */
         const latestProducts = await storageOperations.entries.list(productModel, {
             where: {
+                latest: true,
                 tenant: productModel.tenant,
-                latest: true
+                locale: productModel.locale
             },
             sort: ["createdOn_ASC"]
         });
@@ -510,6 +531,8 @@ describe("Republish entries", () => {
         expect(latestProducts).toMatchObject({
             items: [
                 {
+                    entryId: galaRecord.entryId,
+                    createdOn: galaRecord.createdOn,
                     values: {
                         [categoryField.fieldId]: {
                             id: applePublished.id,
@@ -519,6 +542,8 @@ describe("Republish entries", () => {
                     }
                 },
                 {
+                    entryId: goldenRecord.entryId,
+                    createdOn: goldenRecord.createdOn,
                     values: {
                         [categoryField.fieldId]: {
                             id: bananaPublished.id,
@@ -534,9 +559,10 @@ describe("Republish entries", () => {
 
         const latestGalaRecord = await storageOperations.entries.get(productModel, {
             where: {
-                tenant: productModel.tenant,
                 id: galaRecord.id,
-                latest: true
+                latest: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             }
         });
 
@@ -553,9 +579,10 @@ describe("Republish entries", () => {
 
         const latestGoldenRecord = await storageOperations.entries.get(productModel, {
             where: {
-                tenant: productModel.tenant,
                 id: goldenRecord.id,
-                latest: true
+                latest: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             }
         });
 
@@ -572,8 +599,9 @@ describe("Republish entries", () => {
 
         const publishedProducts = await storageOperations.entries.list(productModel, {
             where: {
+                published: true,
                 tenant: productModel.tenant,
-                published: true
+                locale: productModel.locale
             },
             sort: ["createdOn_ASC"]
         });
@@ -581,6 +609,8 @@ describe("Republish entries", () => {
         expect(publishedProducts).toMatchObject({
             items: [
                 {
+                    entryId: galaRecord.entryId,
+                    createdOn: galaRecord.createdOn,
                     values: {
                         [categoryField.fieldId]: {
                             id: applePublished.id,
@@ -590,6 +620,8 @@ describe("Republish entries", () => {
                     }
                 },
                 {
+                    entryId: goldenRecord.entryId,
+                    createdOn: goldenRecord.createdOn,
                     values: {
                         [categoryField.fieldId]: {
                             id: bananaPublished.id,
@@ -605,9 +637,10 @@ describe("Republish entries", () => {
 
         const publishedGalaRecord = await storageOperations.entries.get(productModel, {
             where: {
-                tenant: productModel.tenant,
                 id: galaRecord.id,
-                published: true
+                published: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             }
         });
 
@@ -624,9 +657,10 @@ describe("Republish entries", () => {
 
         const publishedGoldenRecord = await storageOperations.entries.get(productModel, {
             where: {
-                tenant: productModel.tenant,
                 id: goldenRecord.id,
-                published: true
+                published: true,
+                tenant: productModel.tenant,
+                locale: productModel.locale
             }
         });
 

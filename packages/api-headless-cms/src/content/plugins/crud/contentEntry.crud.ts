@@ -260,6 +260,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onAfterEntryDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>();
     const onBeforeEntryGet = createTopic<BeforeEntryGetTopicParams>();
     const onBeforeEntryList = createTopic<BeforeEntryListTopicParams>();
+
     /**
      * We need to assign some default behaviors.
      */
@@ -358,6 +359,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         getEntryById: async (model, id) => {
             const where: CmsEntryListWhere = {
                 id,
+                locale: model.locale,
                 tenant: model.tenant
             };
             await onBeforeEntryGet.publish({
@@ -437,7 +439,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
-            const { where } = params;
+            const { where: initialWhere } = params;
+            /**
+             * We always assign tenant and locale because we do not allow one model to have content through multiple tenants.
+             */
+            const where: CmsEntryListWhere = {
+                ...initialWhere,
+                locale: model.locale,
+                tenant: model.tenant
+            };
+            /**
+             * Possibly only get records which are owned by current user.
+             * Or if searching for the owner set that value - in the case that user can see other entries than their own.
+             */
+            const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
+            if (ownedBy !== undefined) {
+                where.ownedBy = ownedBy;
+            }
             /**
              * Where must contain either latest or published keys.
              * We cannot list entries without one of those
@@ -459,21 +477,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     }
                 );
             }
-            /**
-             * Possibly only get records which are owned by current user.
-             * Or if searching for the owner set that value - in the case that user can see other entries than their own.
-             */
-            const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
-            const listWhere: CmsEntryListWhere = {
-                ...where,
-                tenant: model.tenant,
-                locale: model.locale
-            };
-            if (ownedBy !== undefined) {
-                listWhere.ownedBy = ownedBy;
-            }
 
-            const searchableFields = getSearchableFields({
+            await onBeforeEntryList.publish({
+                where,
+                model
+            });
+
+            const fields = getSearchableFields({
                 model,
                 plugins: context.plugins,
                 fields: params.fields || []
@@ -481,15 +491,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             try {
                 await onBeforeEntryList.publish({
-                    where: listWhere,
+                    where,
                     model
                 });
 
                 const { hasMoreItems, totalCount, cursor, items } =
                     await storageOperations.entries.list(model, {
                         ...params,
-                        where: listWhere,
-                        fields: searchableFields
+                        where,
+                        fields,
                     });
 
                 const meta = {
@@ -511,16 +521,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                         params,
                         error: ex,
                         model,
-                        searchableFields
+                        fields
                     }
                 );
             }
         },
         listLatestEntries: async function (model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
-            if (!where.tenant) {
-                where.tenant = model.tenant;
-            }
 
             return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],
@@ -533,9 +540,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         },
         listPublishedEntries: async function (model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
-            if (!where.tenant) {
-                where.tenant = model.tenant;
-            }
 
             return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],

@@ -1,6 +1,5 @@
 import {
     File,
-    FileManagerContext,
     FileManagerFilesStorageOperations,
     FileManagerFilesStorageOperationsCreateBatchParams,
     FileManagerFilesStorageOperationsCreateParams,
@@ -31,9 +30,9 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import {
     ElasticsearchSearchResponse,
-    ElasticsearchContext,
     SearchBody as ElasticsearchSearchBody
 } from "@webiny/api-elasticsearch/types";
+import { FileManagerContext } from "~/types";
 
 interface FileItem extends File {
     PK: string;
@@ -59,7 +58,7 @@ interface CreatePartitionKeyParams {
 }
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly context: FileManagerContext & Partial<ElasticsearchContext>;
+    private readonly context: FileManagerContext;
     private readonly table: Table;
     private readonly esTable: Table;
     private readonly entity: Entity<any>;
@@ -419,9 +418,12 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private getElasticsearchIndex(): string {
-        const locale = this.context.i18nContent.getCurrentLocale();
+        const locale = this.context.i18n.getContentLocale();
         if (!locale) {
-            throw new WebinyError("Missing locale in FilesStorageOperations.", "LOCALE_ERROR");
+            throw new WebinyError(
+                "Missing content locale in FilesStorageOperations.",
+                "LOCALE_ERROR"
+            );
         }
         const { index } = configurations.es({
             tenant: this.context.tenancy.getCurrentTenant().id,
