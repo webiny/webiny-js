@@ -40,6 +40,7 @@ export interface DragSource extends DragObjectWithType {
 interface GetFieldParams {
     id?: string;
     fieldId?: string;
+    alias?: string;
 }
 interface InsertFieldParams {
     field: CmsEditorField;

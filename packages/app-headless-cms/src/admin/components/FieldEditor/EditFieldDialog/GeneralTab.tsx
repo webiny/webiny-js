@@ -50,7 +50,24 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
         []
     );
 
+    const beforeChangeAlias = useCallback(
+        (value: string, baseOnChange: (value: string) => void) => {
+            const newValue = value.trim();
+
+            baseOnChange(newValue);
+        },
+        []
+    );
+
     const fieldIdValidator = useCallback(fieldId => {
+        if (fieldId.trim().toLowerCase() !== "id") {
+            return true;
+        }
+
+        throw new Error(`Cannot use "id" as Field ID.`);
+    }, []);
+
+    const aliasValidator = useCallback(fieldId => {
         if (fieldId.trim().toLowerCase() !== "id") {
             return true;
         }
@@ -65,6 +82,17 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
         }
 
         if (existingField.id === field.id) {
+            return true;
+        }
+        throw new Error("Please enter a unique Field ID.");
+    }, []);
+
+    const uniqueFieldAliasValidator = useCallback((alias: string) => {
+        if (!alias) {
+            return true;
+        }
+        const existingField = getField({ alias });
+        if (!existingField || existingField.id === field.id) {
             return true;
         }
         throw new Error("Please enter a unique Field ID.");
@@ -90,7 +118,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
     return (
         <>
             <Grid>
-                <Cell span={6}>
+                <Cell span={4}>
                     <Bind
                         name={"label"}
                         validators={validation.create("required")}
@@ -104,7 +132,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                         <Input label={"Label"} inputRef={inputRef} />
                     </Bind>
                 </Cell>
-                <Cell span={6}>
+                <Cell span={4}>
                     <Bind
                         name={"fieldId"}
                         validators={[
@@ -115,6 +143,19 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                         beforeChange={beforeChangeFieldId}
                     >
                         <Input label={"Field ID"} disabled={!!field.id} />
+                    </Bind>
+                </Cell>
+                <Cell span={4}>
+                    <Bind
+                        name={"alias"}
+                        validators={[
+                            validation.create("maxLength:255"),
+                            uniqueFieldAliasValidator,
+                            aliasValidator
+                        ]}
+                        beforeChange={beforeChangeAlias}
+                    >
+                        <Input label={"Alias"} />
                     </Bind>
                 </Cell>
 
