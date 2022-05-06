@@ -137,8 +137,8 @@ function paginateMultipleSelection(
 ) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
-        // @ts-ignore TODO: Will fix this in the following PR.
-        ? multipleSelection.map((item, index) => ({ ...item, index }))
+        ? // @ts-ignore TODO: Will fix this in the following PR.
+          multipleSelection.map((item, index) => ({ ...item, index }))
         : [];
 
     if (typeof search === "string" && search) {
