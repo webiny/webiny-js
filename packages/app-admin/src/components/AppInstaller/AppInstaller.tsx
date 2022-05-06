@@ -10,6 +10,13 @@ import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
+
+declare global {
+    interface Window {
+        Cypress: any;
+    }
+}
+
 import {
     Wrapper,
     alertClass,
@@ -30,7 +37,7 @@ export const AppInstaller: React.FC = ({ children }) => {
     * (Cypress doesn't work with cross domains because of security-related implications).
     * @see https://docs.cypress.io/guides/guides/web-security#Insecure-Content 
     */
-    const isCypressTest = window && window.Cypress
+    const isCypressTest = window && window.Cypress;
 
     const markInstallerAsCompleted = () => {
         localStorage.set(lsKey, wbyVersion);
