@@ -7,7 +7,8 @@ import {
     CmsEditorFieldId,
     CmsEditorFieldsLayout,
     CmsEditorFieldTypePlugin,
-    FieldLayoutPosition
+    FieldLayoutPosition,
+    TemporaryCmsEditorField
 } from "~/types";
 import { plugins } from "@webiny/plugins";
 import * as utils from "./utils";
@@ -43,7 +44,7 @@ interface GetFieldParams {
     alias?: string;
 }
 interface InsertFieldParams {
-    field: CmsEditorField;
+    field: CmsEditorField<TemporaryCmsEditorField>;
     position: FieldLayoutPosition;
 }
 interface MoveFieldParams {
@@ -268,6 +269,10 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
      * Checks if field of given type already exists in the list of fields.
      */
     const getField: GetFieldCallable = query => {
+        if (Object.keys(query).length === 0) {
+            console.log("No key was sent into getField() method.");
+            return undefined;
+        }
         return state.fields.find(field => {
             for (const key in query) {
                 if (!(key in field)) {
@@ -289,7 +294,10 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
      */
     const insertField: InsertFieldCallable = ({ field, position }) => {
         if (!field.id) {
-            field.id = shortid.generate();
+            if (!field._temporaryId) {
+                field._temporaryId = shortid.generate();
+            }
+            field.id = field._temporaryId;
         }
 
         if (!field.type) {

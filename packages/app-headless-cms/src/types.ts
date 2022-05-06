@@ -254,6 +254,9 @@ export interface CmsEditorFieldPredefinedValues {
     values: CmsEditorFieldPredefinedValuesEntry[];
 }
 
+export interface TemporaryCmsEditorField {
+    _temporaryId?: string;
+}
 export type CmsEditorField<T = unknown> = T & {
     id: string;
     type: string;
