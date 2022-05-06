@@ -326,7 +326,7 @@ jobs:
       # Generates a new cypress.json config.
       - name: Create Cypress config
         working-directory: v5
-        run: yarn setup-cypress
+        run: yarn setup-cypress --projectFolder ../xyz/test-project
 
       # We also want to store the generated Cypress config as a job output.
       # This way we don't have to generate it again (which may take ~30s).
@@ -568,7 +568,7 @@ jobs:
       # Generates a new cypress.json config.
       - name: Create Cypress config
         working-directory: v5
-        run: yarn setup-cypress
+        run: yarn setup-cypress --projectFolder ../xyz/test-project
 
       # We also want to store the generated Cypress config as a job output.
       # This way we don't have to generate it again (which may take ~30s).
