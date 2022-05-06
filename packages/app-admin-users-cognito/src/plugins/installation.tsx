@@ -149,8 +149,8 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                             <Cell span={4}>
                                 <ButtonPrimary
                                     data-testid="install-security-button"
-                                    onClick={ev => {
-                                        submit(ev);
+                                    onClick={() => {
+                                        submit();
                                     }}
                                 >
                                     Create Admin User
