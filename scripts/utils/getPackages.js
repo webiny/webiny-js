@@ -14,7 +14,7 @@ module.exports.rootPackageJson = rootPackageJson;
 let packagesCache;
 
 const isFolder = p => fs.statSync(p).isDirectory();
-const hasPackageJson = p => fs.existsSync(p + "/package.json")
+const hasPackageJson = p => fs.existsSync(p + "/package.json");
 
 module.exports.getPackages = (args = {}) => {
     if (packagesCache) {
