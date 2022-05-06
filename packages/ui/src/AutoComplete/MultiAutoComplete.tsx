@@ -12,7 +12,6 @@ import { Typography } from "~/Typography";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
 import { FormElementMessage } from "~/FormElementMessage";
-
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as PrevIcon } from "./icons/navigate_before-24px.svg";
 import { ReactComponent as NextIcon } from "./icons/navigate_next-24px.svg";
@@ -20,17 +19,18 @@ import { ReactComponent as PrevAllIcon } from "./icons/skip_previous-24px.svg";
 import { ReactComponent as NextAllIcon } from "./icons/skip_next-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
-
 import { css } from "emotion";
+import { ListItemGraphic } from "~/List";
+import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
 
 const listItemMetaClassName = css({
     display: "table"
 });
+
 const iconButtonClassName = css({
     display: "table-cell !important"
 });
-import { ListItemGraphic } from "~/List";
-import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
+
 const style = {
     pagination: {
         bar: css({
@@ -59,6 +59,7 @@ const style = {
         })
     }
 };
+
 const listStyles = css({
     "&.multi-autocomplete__options-list": {
         listStyle: "none",
