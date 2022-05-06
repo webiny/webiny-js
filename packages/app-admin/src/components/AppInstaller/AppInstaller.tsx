@@ -22,10 +22,10 @@ import { config as appConfig } from "@webiny/app/config";
 
 export const AppInstaller: React.FC = ({ children }) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
-
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
     const isRootTenant = tenantId === "root";
+    const isCypressTest = window && window.Cypress
 
     const markInstallerAsCompleted = () => {
         localStorage.set(lsKey, wbyVersion);
@@ -160,7 +160,7 @@ export const AppInstaller: React.FC = ({ children }) => {
             <Elevation z={1}>
                 <SuccessDialog>
                     <p>You have successfully installed all new applications!</p>
-                    {isRootTenant && isFirstInstall ? (
+                    {!isCypressTest && isRootTenant && isFirstInstall ? (
                         <iframe
                             height="0"
                             width="0"
