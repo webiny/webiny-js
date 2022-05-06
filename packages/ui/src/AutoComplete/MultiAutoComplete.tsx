@@ -72,7 +72,8 @@ const listStyles = css({
 interface SelectionItem {
     name: string;
 }
-type MultiAutoCompletePropsValue = SelectionItem[];
+
+type MultiAutoCompletePropsValue = SelectionItem[] | string[];
 
 export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "value"> {
     /**
@@ -261,11 +262,11 @@ export class MultiAutoComplete extends React.Component<
     getOptions() {
         const { unique, value, allowFreeInput, useSimpleValues, options } = this.props;
 
+        const values = Array.isArray(value) ? [...value] : [];
         const filtered = options.filter(item => {
             // We need to filter received options.
             // 1) If "unique" prop was passed, we don't want to show already picked options again.
             if (unique) {
-                const values = value;
                 if (Array.isArray(values)) {
                     if (
                         values.find(
