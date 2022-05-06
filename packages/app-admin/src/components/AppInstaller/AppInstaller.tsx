@@ -32,11 +32,11 @@ export const AppInstaller: React.FC = ({ children }) => {
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
     const isRootTenant = tenantId === "root";
-    /* 
-    * This flag allows us to avoid rendering the <iframe> when the app is tested with Cypress
-    * (Cypress doesn't work with cross domains because of security-related implications).
-    * @see https://docs.cypress.io/guides/guides/web-security#Insecure-Content 
-    */
+    /*
+     * This flag allows us to avoid rendering the <iframe> when the app is tested with Cypress
+     * (Cypress doesn't work with cross domains because of security-related implications).
+     * @see https://docs.cypress.io/guides/guides/web-security#Insecure-Content
+     */
     const isCypressTest = window && window.Cypress;
 
     const markInstallerAsCompleted = () => {

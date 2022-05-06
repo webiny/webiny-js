@@ -126,7 +126,7 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                             <View name={"adminUsers.installation.fields"} props={{ Bind, data }} />
                         </Grid>
 
-                        <Grid style={{ paddingTop: '0px' }}>
+                        <Grid style={{ paddingTop: "0px" }}>
                             <Cell span={12}>
                                 <Bind name="subscribed">
                                     <Checkbox
@@ -144,7 +144,10 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                     <SimpleFormFooter>
                         <Grid>
                             <Cell span={8}>
-                                <p style={{ textAlign: "left" }}>By submitting the form, you agree to our Terms of Service and acknowledge our {privacyPolicyLink}.</p>
+                                <p style={{ textAlign: "left" }}>
+                                    By submitting the form, you agree to our Terms of Service and
+                                    acknowledge our {privacyPolicyLink}.
+                                </p>
                             </Cell>
                             <Cell span={4}>
                                 <ButtonPrimary
@@ -157,7 +160,6 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                                 </ButtonPrimary>
                             </Cell>
                         </Grid>
-
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
