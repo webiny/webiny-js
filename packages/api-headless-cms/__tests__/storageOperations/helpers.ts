@@ -150,8 +150,7 @@ export const createPersonEntries = async (
 
         const entryResult = await storageOperations.entries.create(personModel, {
             entry,
-            storageEntry: entry,
-            input: {} as any
+            storageEntry: entry
         });
 
         entries.push(entryResult);
@@ -185,8 +184,7 @@ export const createPersonEntries = async (
 
             const entryRevisionResult = await storageOperations.entries.create(personModel, {
                 entry: revision,
-                storageEntry: revision,
-                input: {} as any
+                storageEntry: revision
             });
             entries.push(entryRevisionResult);
             /**

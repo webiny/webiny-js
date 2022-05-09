@@ -369,7 +369,7 @@ export interface CmsModel {
     /**
      * Description for the content model.
      */
-    description?: string | null;
+    description?: string;
     /**
      * Date created
      */
@@ -836,7 +836,7 @@ export interface CmsGroup {
     /**
      * Icon for the group. In a form of "ico/ico".
      */
-    icon?: string;
+    icon: string;
     /**
      * CreatedBy reference object.
      */

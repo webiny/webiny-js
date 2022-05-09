@@ -290,10 +290,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         .filter(model => modelIds.includes(model.modelId))
                         .map(async model => {
                             const modelManager = await context.cms.getModelManager(model.modelId);
-                            const where: CmsEntryListWhere = {
-                                tenant: model.tenant,
-                                locale: model.locale
-                            };
+                            const where: CmsEntryListWhere = {};
 
                             const [items] = await modelManager.listLatest({
                                 limit,

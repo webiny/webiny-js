@@ -506,9 +506,7 @@ describe("Republish entries", () => {
          */
         const latestProducts = await storageOperations.entries.list(productModel, {
             where: {
-                latest: true,
-                tenant: productModel.tenant,
-                locale: productModel.locale
+                latest: true
             },
             sort: ["createdOn_ASC"]
         });
@@ -545,9 +543,7 @@ describe("Republish entries", () => {
         const latestGalaRecord = await storageOperations.entries.get(productModel, {
             where: {
                 id: galaRecord.id,
-                latest: true,
-                tenant: productModel.tenant,
-                locale: productModel.locale
+                latest: true
             }
         });
 
@@ -565,9 +561,7 @@ describe("Republish entries", () => {
         const latestGoldenRecord = await storageOperations.entries.get(productModel, {
             where: {
                 id: goldenRecord.id,
-                latest: true,
-                tenant: productModel.tenant,
-                locale: productModel.locale
+                latest: true
             }
         });
 
@@ -584,9 +578,7 @@ describe("Republish entries", () => {
 
         const publishedProducts = await storageOperations.entries.list(productModel, {
             where: {
-                published: true,
-                tenant: productModel.tenant,
-                locale: productModel.locale
+                published: true
             },
             sort: ["createdOn_ASC"]
         });
@@ -623,9 +615,7 @@ describe("Republish entries", () => {
         const publishedGalaRecord = await storageOperations.entries.get(productModel, {
             where: {
                 id: galaRecord.id,
-                published: true,
-                tenant: productModel.tenant,
-                locale: productModel.locale
+                published: true
             }
         });
 
@@ -643,9 +633,7 @@ describe("Republish entries", () => {
         const publishedGoldenRecord = await storageOperations.entries.get(productModel, {
             where: {
                 id: goldenRecord.id,
-                published: true,
-                tenant: productModel.tenant,
-                locale: productModel.locale
+                published: true
             }
         });
 
