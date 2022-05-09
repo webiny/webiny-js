@@ -2073,17 +2073,11 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
     latestStorageEntry: T | null;
 }
 
-export interface CmsEntryStorageOperationsDeleteParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
+export interface CmsEntryStorageOperationsDeleteParams {
     /**
      * Entry that is going to be deleted.
      */
     entry: CmsEntry;
-    /**
-     * Entry that is going to be deleted, directly from storage.
-     */
-    storageEntry: T;
 }
 
 export interface CmsEntryStorageOperationsPublishParams<
@@ -2298,7 +2292,7 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Delete the entry.
      */
-    delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams<T>) => Promise<void>;
+    delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
     /**
      * Publish the entry.
      */
