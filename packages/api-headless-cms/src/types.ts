@@ -832,7 +832,7 @@ export interface CmsGroup {
     /**
      * Description for the group.
      */
-    description?: string;
+    description: string;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
