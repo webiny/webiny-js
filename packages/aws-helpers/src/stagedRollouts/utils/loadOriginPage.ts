@@ -1,4 +1,4 @@
-import { CloudFrontResponse } from "aws-lambda";
+import { CloudFrontResponse } from "~/lambdaEdge";
 import { get } from "https";
 import { load, Element } from "cheerio";
 import { parseSrcset, stringifySrcset, SrcSetDefinition } from "srcset";
@@ -26,7 +26,7 @@ export function loadOriginPage(domain: string, path: string) {
                 res.on("end", () => {
                     logDebug(`Parsing page`);
                     const html = parseHtml(responseBody, domain);
-                    const response: CloudFrontResponse & { body: string } = {
+                    const response: CloudFrontResponse = {
                         body: html,
                         status: "200",
                         statusDescription: "ok",

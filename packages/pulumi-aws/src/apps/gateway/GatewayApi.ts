@@ -15,6 +15,7 @@ export interface GatewayApiParams {
     viewerRequest: pulumi.Output<aws.cloudfront.Function>;
     viewerResponse: pulumi.Output<aws.cloudfront.Function>;
     originRequest: pulumi.Output<aws.lambda.Function>;
+    configOriginRequest: pulumi.Output<aws.lambda.Function>;
 }
 
 export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
@@ -107,6 +108,49 @@ export function createApiAppGateway(app: PulumiApp, params: GatewayApiParams) {
                 ]
             },
             orderedCacheBehaviors: [
+                {
+                    // This is a special behavior just to expose traffic splitting config file from S3 bucket.
+                    // This is just for the sake of POC.
+                    // TODO remove that behavior after implementing loading config from WCP
+                    pathPattern: "/_config.json",
+                    targetOriginId: bucket.output.arn,
+                    viewerProtocolPolicy: "redirect-to-https",
+                    allowedMethods: ["GET", "HEAD", "OPTIONS"],
+                    cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                    minTtl: 0,
+                    defaultTtl: 600,
+                    maxTtl: 600,
+                    forwardedValues: {
+                        cookies: {
+                            forward: "none"
+                        },
+                        queryString: false
+                    }
+                },
+                {
+                    // This behavior is responsible for loading traffic splitting config from WCP
+                    // and caching it approprietely within CloudFront.
+                    pathPattern: "/_config",
+                    targetOriginId: bucket.output.arn,
+                    viewerProtocolPolicy: "redirect-to-https",
+                    allowedMethods: ["GET", "HEAD", "OPTIONS"],
+                    cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                    minTtl: 0,
+                    defaultTtl: 600,
+                    maxTtl: 600,
+                    forwardedValues: {
+                        cookies: {
+                            forward: "none"
+                        },
+                        queryString: false
+                    },
+                    lambdaFunctionAssociations: [
+                        {
+                            eventType: "origin-request",
+                            lambdaArn: params.configOriginRequest.qualifiedArn
+                        }
+                    ]
+                },
                 {
                     pathPattern: "/files/*",
                     targetOriginId: bucket.output.arn,

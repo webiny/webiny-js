@@ -1,15 +1,9 @@
 import { defineCloudfrontFunctionRequestHandler } from "~/cloudfrontFunctions";
 
 import { variantFixedKey, variantRandomKey } from "../utils/common";
-import { configPath } from "../utils/common";
 
 defineCloudfrontFunctionRequestHandler(event => {
     const request = event.request;
-
-    if (request.uri === configPath) {
-        // requesting the config file, pass it through
-        return request;
-    }
 
     // Try to get stage name from cookie or header.
     const variantFixed =

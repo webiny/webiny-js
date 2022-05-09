@@ -1,17 +1,12 @@
 import { CloudFrontRequestEvent, getHeader, notFoundResponse } from "~/lambdaEdge";
 
-import { variantFixedKey, variantRandomKey, configPath } from "../utils/common";
+import { variantFixedKey, variantRandomKey } from "../utils/common";
 import { GatewayConfig, loadTrafficSplittingConfig } from "../utils/loadTrafficSplittingConfig";
 import { logDebug } from "./log";
 
 export async function loadVariantOrigin(event: CloudFrontRequestEvent) {
     const cf = event.Records[0].cf;
     const request = cf.request;
-
-    if (request.uri === configPath) {
-        // requesting the config file, pass it through
-        return request;
-    }
 
     const config = await loadTrafficSplittingConfig(event);
 

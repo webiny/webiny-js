@@ -1,10 +1,10 @@
 {
-  "1": {
-    "domain": "d132nt1tqm8mmn.cloudfront.net",
-    "weight": 50
-  },
-  "2": {
-    "domain": "d1pir5q98ri1y2.cloudfront.net",
-    "weight": 50
-  }
+    "1": {
+        "domain": "d1aewdl7mwz1p6.cloudfront.net",
+        "weight": 50
+    },
+    "2": {
+        "domain": "d1pir5q98ri1y2.cloudfront.net",
+        "weight": 50
+    }
 }
