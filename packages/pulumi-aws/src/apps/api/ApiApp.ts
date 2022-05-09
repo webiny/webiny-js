@@ -6,17 +6,17 @@ import {
     ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
-import { createGraphql } from "./ApiGraphql";
+import { ApiGraphql } from "./ApiGraphql";
 import { createVpc, Vpc } from "./ApiVpc";
 import { createPrerenderingService } from "./ApiPrerendering";
-import { createFileManager } from "./ApiFileManager";
-import { createPageBuilder } from "./ApiPageBuilder";
-import { createHeadlessCms } from "./ApiHeadlessCMS";
-import { createApiGateway } from "./ApiGateway";
-import { createCloudfront } from "./ApiCloudfront";
+import { ApiFileManager } from "./ApiFileManager";
+import { ApiPageBuilder } from "./ApiPageBuilder";
+import { ApiHeadlessCMS } from "./ApiHeadlessCMS";
+import { ApiGateway } from "./ApiGateway";
+import { ApiCloudfront } from "./ApiCloudfront";
 import { getStorageOutput } from "../getStorageOutput";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
-import { createApwScheduler } from "./ApiApwScheduler";
+import { ApiApwScheduler } from "./ApiApwScheduler";
 
 export interface ApiAppConfig {
     vpc?(app: PulumiApp, ctx: ApplicationContext): boolean | Vpc;
@@ -41,7 +41,7 @@ export const ApiApp = defineApp({
         const awsAccountId = getAwsAccountId(app);
         const awsRegion = getAwsRegion(app);
 
-        const pageBuilder = createPageBuilder(app, {
+        const pageBuilder = app.addModule(ApiPageBuilder, {
             env: {
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
@@ -67,7 +67,7 @@ export const ApiApp = defineApp({
             vpc
         });
 
-        const fileManager = createFileManager(app, {
+        const fileManager = app.addModule(ApiFileManager, {
             fileManagerBucketId: storage.fileManagerBucketId,
             vpc
         });
@@ -87,7 +87,7 @@ export const ApiApp = defineApp({
             vpc
         });
 
-        const apwScheduler = createApwScheduler(app, {
+        const apwScheduler = app.addModule(ApiApwScheduler, {
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
             env: {
                 COGNITO_REGION: String(process.env.AWS_REGION),
@@ -99,7 +99,7 @@ export const ApiApp = defineApp({
             }
         });
 
-        const graphql = createGraphql(app, {
+        const graphql = app.addModule(ApiGraphql, {
             env: {
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
@@ -140,7 +140,7 @@ export const ApiApp = defineApp({
             vpc
         });
 
-        const headlessCms = createHeadlessCms(app, {
+        const headlessCms = app.addModule(ApiHeadlessCMS, {
             env: {
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
@@ -164,7 +164,7 @@ export const ApiApp = defineApp({
             vpc
         });
 
-        const apiGateway = createApiGateway(app, {
+        const apiGateway = app.addModule(ApiGateway, {
             "graphql-post": {
                 path: "/graphql",
                 method: "POST",
@@ -192,9 +192,7 @@ export const ApiApp = defineApp({
             }
         });
 
-        const cloudfront = createCloudfront(app, {
-            apiGateway
-        });
+        const cloudfront = app.addModule(ApiCloudfront);
 
         app.addOutputs({
             region: process.env.AWS_REGION,
@@ -227,7 +225,7 @@ export const ApiApp = defineApp({
 
 export type ApiApp = InstanceType<typeof ApiApp>;
 
-export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
+export function createApiApp(config?: ApiAppConfig & ApplicationConfig<ApiApp>) {
     return createGenericApplication({
         id: "api",
         name: "api",
@@ -241,14 +239,17 @@ export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
             }
         },
         async app(ctx) {
+            // Create the app instance.
             const app = new ApiApp(ctx);
-            await app.setup(config);
-            await config.config?.(app, ctx);
+            // Run the default application setup.
+            await app.setup(config || {});
+            // Run the custom user config.
+            await config?.config?.(app, ctx);
             return app;
         },
-        onBeforeBuild: config.onBeforeBuild,
-        onAfterBuild: config.onAfterBuild,
-        onBeforeDeploy: config.onBeforeDeploy,
-        onAfterDeploy: config.onAfterDeploy
+        onBeforeBuild: config?.onBeforeBuild,
+        onAfterBuild: config?.onAfterBuild,
+        onBeforeDeploy: config?.onBeforeDeploy,
+        onAfterDeploy: config?.onAfterDeploy
     });
 }

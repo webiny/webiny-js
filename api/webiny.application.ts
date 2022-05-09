@@ -5,4 +5,4 @@
 
 import { createApiApp } from "@webiny/pulumi-aws";
 
-export default createApiApp({});
+export default createApiApp();

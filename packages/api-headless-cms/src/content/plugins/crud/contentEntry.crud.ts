@@ -36,7 +36,8 @@ import {
     UpdateCmsEntryInput,
     CreateCmsEntryInput,
     CmsModelField,
-    CreatedBy
+    CreatedBy,
+    CmsModelFieldToGraphQLPlugin
 } from "~/types";
 import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -52,6 +53,7 @@ import {
 } from "~/content/plugins/utils/entryStorage";
 import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afterDelete";
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
+import { PluginsContainer } from "@webiny/plugins";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -186,6 +188,36 @@ const increaseEntryIdVersion = (id: string): EntryIdResult => {
     };
 };
 
+interface GetSearchableFieldsParams {
+    plugins: PluginsContainer;
+    model: CmsModel;
+    fields?: string[];
+}
+const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
+    const { plugins, model, fields } = params;
+
+    const fieldPluginMap = plugins
+        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
+        .reduce((collection, field) => {
+            collection[field.fieldType] = field;
+            return collection;
+        }, {} as Record<string, CmsModelFieldToGraphQLPlugin>);
+
+    return model.fields
+        .filter(field => {
+            const plugin = fieldPluginMap[field.type];
+            if (!plugin) {
+                return false;
+            } else if (!plugin.fullTextSearch) {
+                return false;
+            } else if (!fields || fields.length === 0) {
+                return true;
+            }
+            return fields.includes(field.fieldId);
+        })
+        .map(field => field.fieldId);
+};
+
 export interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
@@ -215,6 +247,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onAfterEntryDeleteRevision = createTopic<AfterEntryDeleteRevisionTopicParams>();
     const onBeforeEntryGet = createTopic<BeforeEntryGetTopicParams>();
     const onBeforeEntryList = createTopic<BeforeEntryListTopicParams>();
+
     /**
      * We need to assign some default behaviors.
      */
@@ -313,6 +346,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         getEntryById: async (model, id) => {
             const where: CmsEntryListWhere = {
                 id,
+                locale: model.locale,
                 tenant: model.tenant
             };
             await onBeforeEntryGet.publish({
@@ -392,7 +426,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             const permission = await checkEntryPermissions({ rwd: "r" });
             await utils.checkModelAccess(context, model);
 
-            const { where } = params;
+            const { where: initialWhere } = params;
+            /**
+             * We always assign tenant and locale because we do not allow one model to have content through multiple tenants.
+             */
+            const where: CmsEntryListWhere = {
+                ...initialWhere,
+                locale: model.locale,
+                tenant: model.tenant
+            };
+            /**
+             * Possibly only get records which are owned by current user.
+             * Or if searching for the owner set that value - in the case that user can see other entries than their own.
+             */
+            const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
+            if (ownedBy !== undefined) {
+                where.ownedBy = ownedBy;
+            }
             /**
              * Where must contain either latest or published keys.
              * We cannot list entries without one of those
@@ -414,29 +464,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     }
                 );
             }
-            /**
-             * Possibly only get records which are owned by current user.
-             * Or if searching for the owner set that value - in the case that user can see other entries than their own.
-             */
-            const ownedBy = permission.own ? getIdentity().id : where.ownedBy;
-            const listWhere: CmsEntryListWhere = {
-                ...where,
-                tenant: model.tenant,
-                locale: model.locale
-            };
-            if (ownedBy !== undefined) {
-                listWhere.ownedBy = ownedBy;
-            }
 
             await onBeforeEntryList.publish({
-                where: listWhere,
+                where,
                 model
+            });
+
+            const fields = getSearchableFields({
+                model,
+                plugins: context.plugins,
+                fields: params.fields || []
             });
 
             const { hasMoreItems, totalCount, cursor, items } =
                 await storageOperations.entries.list(model, {
                     ...params,
-                    where: listWhere
+                    where,
+                    fields
                 });
 
             const meta = {
@@ -453,9 +497,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         },
         listLatestEntries: async function (model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
-            if (!where.tenant) {
-                where.tenant = model.tenant;
-            }
 
             return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],
@@ -468,9 +509,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         },
         listPublishedEntries: async function (model, params) {
             const where = params?.where || ({} as CmsEntryListWhere);
-            if (!where.tenant) {
-                where.tenant = model.tenant;
-            }
 
             return context.cms.listEntries(model, {
                 sort: ["createdOn_DESC"],

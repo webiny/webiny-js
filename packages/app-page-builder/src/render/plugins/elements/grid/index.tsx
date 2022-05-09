@@ -1,6 +1,6 @@
 import React from "react";
 import Grid from "./Grid";
-import { PbRenderElementPlugin } from "../../../../types";
+import { PbRenderElementPlugin } from "~/types";
 
 export default (): PbRenderElementPlugin => {
     return {

@@ -85,8 +85,8 @@ const ids = {
 const models: CmsModel[] = [
     // category
     {
-        createdOn: new Date(),
-        savedOn: new Date(),
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
         locale: "en-US",
         titleFieldId: "title",
         lockedFields: [],
@@ -158,8 +158,8 @@ const models: CmsModel[] = [
     },
     // product
     {
-        createdOn: new Date(),
-        savedOn: new Date(),
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
         locale: "en-US",
         titleFieldId: "title",
         lockedFields: [],
@@ -701,8 +701,8 @@ const models: CmsModel[] = [
     },
     // product review
     {
-        createdOn: new Date(),
-        savedOn: new Date(),
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
         locale: "en-US",
         titleFieldId: "text",
         lockedFields: [],
@@ -804,8 +804,8 @@ const models: CmsModel[] = [
     },
     // author
     {
-        createdOn: new Date(),
-        savedOn: new Date(),
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
         locale: "en-US",
         titleFieldId: "fullName",
         lockedFields: [],
@@ -847,8 +847,8 @@ const models: CmsModel[] = [
     },
     // fruit
     {
-        createdOn: new Date(),
-        savedOn: new Date(),
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
         locale: "en-US",
         titleFieldId: "name",
         lockedFields: [],
@@ -1339,8 +1339,8 @@ const models: CmsModel[] = [
     },
     // bug
     {
-        createdOn: new Date(),
-        savedOn: new Date(),
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
         locale: "en-US",
         titleFieldId: "name",
         lockedFields: [],
@@ -1472,8 +1472,8 @@ const models: CmsModel[] = [
         webinyVersion
     },
     {
-        createdOn: new Date(),
-        savedOn: new Date(),
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
         locale: "en-US",
         titleFieldId: "title",
         lockedFields: [],

@@ -1,3 +1,4 @@
+import { PreviewResult, RefreshResult, UpResult } from "@pulumi/pulumi/automation";
 import { ApplicationHooks } from "./ApplicationConfig";
 import { ApplicationHook } from "./ApplicationHook";
 import { Pulumi } from "./Pulumi";
@@ -22,9 +23,9 @@ export interface ApplicationBuilderConfig extends Partial<ApplicationHooks> {
 
 export interface ApplicationStack {
     app?: PulumiApp;
-    refresh(): Promise<any>;
-    preview(): Promise<any>;
-    up(): Promise<any>;
+    refresh(): Promise<RefreshResult | undefined>;
+    preview(): Promise<PreviewResult | undefined>;
+    up(): Promise<UpResult | undefined>;
 }
 
 export abstract class ApplicationBuilder<

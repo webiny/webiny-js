@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { CmsContext, CmsContextValue } from "../contexts/Cms";
+import { CmsContext } from "../contexts/Cms";
 
 function useCms() {
-    const context = useContext<CmsContextValue>(CmsContext);
+    const context = useContext(CmsContext);
     if (!context) {
         throw new Error("useCms must be used within a CmsProvider");
     }

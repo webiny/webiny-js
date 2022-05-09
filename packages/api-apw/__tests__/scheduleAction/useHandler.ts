@@ -21,20 +21,21 @@ export default (params: Params = {}) => {
         {
             type: "context",
             apply: (context: any) => {
-                if (context.i18nContent) {
+                if (context.i18n) {
                     return;
                 }
-                context.i18nContent = {
-                    locale: {
-                        code: "en-US"
-                    },
-                    getCurrentLocale: () => {
+
+                context.i18n = {
+                    getContentLocale: () => {
                         return {
                             code: "en-US"
                         };
                     },
-                    checkI18NContentPermission: () => {
+                    hasI18NContentPermission: () => {
                         return true;
+                    },
+                    checkI18NContentPermission: () => {
+                        return;
                     }
                 };
             }

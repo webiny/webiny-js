@@ -1,4 +1,3 @@
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
@@ -521,8 +520,7 @@ export interface PageBuilderContextObject
 }
 
 export interface PbContext
-    extends I18NContentContext,
-        I18NContext,
+    extends I18NContext,
         ClientContext,
         DbContext,
         SecurityContext,

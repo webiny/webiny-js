@@ -1,6 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import { PulumiApp } from "@webiny/pulumi-sdk";
+import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
 export interface ApiRouteParams {
     path: pulumi.Input<string>;
@@ -8,43 +8,46 @@ export interface ApiRouteParams {
     function: pulumi.Input<string>;
 }
 
-export type ApiGateway = ReturnType<typeof createApiGateway>;
+export type ApiGateway = PulumiAppModule<typeof ApiGateway>;
 
-export function createApiGateway(app: PulumiApp, routes: Record<string, ApiRouteParams>) {
-    const api = app.addResource(aws.apigatewayv2.Api, {
-        name: "api-gateway",
-        config: {
-            protocolType: "HTTP",
-            description: "Main API gateway"
+export const ApiGateway = defineAppModule({
+    name: "ApiGateway",
+    config(app: PulumiApp, routesConfig: Record<string, ApiRouteParams>) {
+        const api = app.addResource(aws.apigatewayv2.Api, {
+            name: "api-gateway",
+            config: {
+                protocolType: "HTTP",
+                description: "Main API gateway"
+            }
+        });
+
+        const stage = app.addResource(aws.apigatewayv2.Stage, {
+            name: "default",
+            config: {
+                apiId: api.output.id,
+                autoDeploy: true
+            }
+        });
+
+        const routes: Record<string, ReturnType<typeof createRoute>> = {};
+
+        for (const name of Object.keys(routesConfig)) {
+            addRoute(name, routesConfig[name]);
         }
-    });
 
-    const defaultStage = app.addResource(aws.apigatewayv2.Stage, {
-        name: "default",
-        config: {
-            apiId: api.output.id,
-            autoDeploy: true
+        return {
+            api,
+            stage,
+            routes,
+            addRoute
+        };
+
+        function addRoute(name: string, params: ApiRouteParams) {
+            const route = createRoute(app, api.output, name, params);
+            routes[name] = route;
         }
-    });
-
-    const routesResult: Record<string, ReturnType<typeof createRoute>> = {};
-
-    for (const name of Object.keys(routes)) {
-        addRoute(name, routes[name]);
     }
-
-    return {
-        api,
-        defaultStage,
-        routes: routesResult,
-        addRoute
-    };
-
-    function addRoute(name: string, params: ApiRouteParams) {
-        const route = createRoute(app, api.output, name, params);
-        routesResult[name] = route;
-    }
-}
+});
 
 function createRoute(
     app: PulumiApp,

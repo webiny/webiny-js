@@ -4,11 +4,11 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { ReactRouterOnLinkPlugin } from "~/types";
 import ApolloClient from "apollo-client";
 
-export type ReactRouterContextValue = {
+export interface ReactRouterContext {
     onLink(link: string): void;
-};
+}
 
-export const RouterContext = React.createContext<ReactRouterContextValue>({
+export const RouterContext = React.createContext<ReactRouterContext>({
     onLink: () => {
         return void 0;
     }

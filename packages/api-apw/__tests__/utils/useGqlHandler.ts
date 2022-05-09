@@ -1,7 +1,6 @@
 import { getIntrospectionQuery } from "graphql";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createHandler } from "@webiny/handler-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
@@ -165,7 +164,6 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
-            i18nContentPlugins(),
             mockLocalesPlugins(),
             createPageBuilderGraphQL(),
             /**

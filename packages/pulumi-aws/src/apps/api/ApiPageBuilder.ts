@@ -4,7 +4,7 @@ import * as aws from "@pulumi/aws";
 
 //@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
-import { PulumiApp } from "@webiny/pulumi-sdk";
+import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 import { Vpc } from "./ApiVpc";
 import { createLambdaRole } from "./ApiLambdaUtils";
 
@@ -20,31 +20,36 @@ interface PageBuilderParams {
     vpc: Vpc | undefined;
 }
 
-export function createPageBuilder(app: PulumiApp, params: PageBuilderParams) {
-    app.addHandler(() => {
-        const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
-        // Will create "pbInstallation.zip" and save it in the `pbInstallationZipPath` path.
-        createInstallationZip(pbInstallationZipPath);
+export type ApiPageBuilder = PulumiAppModule<typeof ApiPageBuilder>;
 
-        new aws.s3.BucketObject("./pbInstallation.zip", {
-            key: "pbInstallation.zip",
-            acl: "public-read",
-            bucket: params.fileManagerBucketId,
-            contentType: "application/octet-stream",
-            source: new pulumi.asset.FileAsset(pbInstallationZipPath)
+export const ApiPageBuilder = defineAppModule({
+    name: "ApiPageBuilder",
+    config(app: PulumiApp, params: PageBuilderParams) {
+        app.addHandler(() => {
+            const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
+            // Will create "pbInstallation.zip" and save it in the `pbInstallationZipPath` path.
+            createInstallationZip(pbInstallationZipPath);
+
+            new aws.s3.BucketObject("./pbInstallation.zip", {
+                key: "pbInstallation.zip",
+                acl: "public-read",
+                bucket: params.fileManagerBucketId,
+                contentType: "application/octet-stream",
+                source: new pulumi.asset.FileAsset(pbInstallationZipPath)
+            });
         });
-    });
 
-    const updateSettings = createUpdateSettingsResources(app, params);
-    const exportPages = createExportPagesResources(app, params);
-    const importPages = createImportPagesResources(app, params);
+        const updateSettings = createUpdateSettingsResources(app, params);
+        const exportPages = createExportPagesResources(app, params);
+        const importPages = createImportPagesResources(app, params);
 
-    return {
-        updateSettings,
-        exportPages,
-        importPages
-    };
-}
+        return {
+            updateSettings,
+            exportPages,
+            importPages
+        };
+    }
+});
 
 function createUpdateSettingsResources(app: PulumiApp, params: PageBuilderParams) {
     const policy = createUpdateSettingsLambdaPolicy(app, params);

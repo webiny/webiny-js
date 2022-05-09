@@ -6,10 +6,10 @@ import {
 } from "@webiny/pulumi-sdk";
 import { AppInput, getAppInput } from "../utils";
 
-import { createCognitoResources } from "./StorageCognito";
-import { createDynamoTable } from "./StorageDynamo";
+import { StorageCognito } from "./StorageCognito";
+import { StorageDynamo } from "./StorageDynamo";
 import { ElasticSearch } from "./StorageElasticSearch";
-import { createFileManagerBucket } from "./StorageFileManager";
+import { StorageFileManger } from "./StorageFileManager";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
     protect?: AppInput<boolean>;
@@ -28,16 +28,16 @@ export const StorageApp = defineApp({
         const legacyConfig = getAppInput(app, config.legacy) ?? {};
 
         // Setup DynamoDB table
-        const dynamoDbTable = createDynamoTable(app, { protect });
+        const dynamoDbTable = app.addModule(StorageDynamo, { protect });
 
         // Setup Cognito
-        const cognito = createCognitoResources(app, {
+        const cognito = app.addModule(StorageCognito, {
             protect,
             useEmailAsUsername: legacyConfig.useEmailAsUsername ?? false
         });
 
         // Setup file storage bucket
-        const fileManagerBucket = createFileManagerBucket(app, { protect });
+        const fileManagerBucket = app.addModule(StorageFileManger, { protect });
 
         const elasticSearch = getAppInput(app, config.elasticSearch)
             ? app.addModule(ElasticSearch, { protect: protect })
@@ -66,21 +66,23 @@ export const StorageApp = defineApp({
 
 export type StorageApp = InstanceType<typeof StorageApp>;
 
-export function createStorageApp(config: StorageAppConfig & ApplicationConfig<StorageApp>) {
+export function createStorageApp(config?: StorageAppConfig & ApplicationConfig<StorageApp>) {
     return createGenericApplication({
         id: "storage",
         name: "storage",
         description: "Your project's persistent storages.",
         async app(ctx) {
+            // Create the app instance.
             const app = new StorageApp(ctx);
-            await app.setup(config);
-            await config.config?.(app, ctx);
-            config.config?.(app, ctx);
+            // Run the default application setup.
+            await app.setup(config || {});
+            // Run the custom user config.
+            await config?.config?.(app, ctx);
             return app;
         },
-        onBeforeBuild: config.onBeforeBuild,
-        onAfterBuild: config.onAfterBuild,
-        onBeforeDeploy: config.onBeforeDeploy,
-        onAfterDeploy: config.onAfterDeploy
+        onBeforeBuild: config?.onBeforeBuild,
+        onAfterBuild: config?.onAfterBuild,
+        onBeforeDeploy: config?.onBeforeDeploy,
+        onAfterDeploy: config?.onAfterDeploy
     });
 }

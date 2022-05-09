@@ -15,7 +15,7 @@ export default class TargetDataModelsResolver {
         // If our GraphQL API uses the Webiny I18N application, we can use
         // the current locale code as the prefix for our primary keys (PKs).
         // https://github.com/webiny/webiny-js/tree/v5.12.0/packages/api-i18n
-        const locale = this.context.i18nContent.getCurrentLocale().code;
+        const locale = this.context.i18n.getContentLocale().code;
         base = `L#${locale}#${base}`;
 
         // In integration test environments, we use the `process.env.TEST_RUN_ID` as a suffix.

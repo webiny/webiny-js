@@ -7,6 +7,7 @@
     { "path": "../api-upgrade/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },

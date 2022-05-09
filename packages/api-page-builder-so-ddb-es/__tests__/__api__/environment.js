@@ -4,7 +4,9 @@ const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
 const { createHandler } = require("@webiny/handler-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
-const { createElasticsearchClient } = require("@webiny/api-elasticsearch/client");
+const {
+    createElasticsearchClient
+} = require("@webiny/project-utils/testing/elasticsearch/createClient");
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 const elasticsearchDataGzipCompression =
@@ -17,22 +19,21 @@ const {
  * For this to work it must load plugins that have already been built
  */
 const { createStorageOperations } = require("../../dist/index");
-const { base: baseElasticsearchIndexTemplate } = require("../../dist/elasticsearch/templates/base");
+const { configurations } = require("../../dist/configurations");
+const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-page-builder-env-`;
 
 class PageBuilderTestEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        const elasticsearchClient = createElasticsearchClient({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`,
-            auth: {}
-        });
+        const elasticsearchClient = createElasticsearchClient();
         const documentClient = new DocumentClient({
             convertEmptyValues: true,
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
@@ -85,7 +86,18 @@ class PageBuilderTestEnvironment extends NodeEnvironment {
         elasticIndexManager({
             global: this.global,
             client: elasticsearchClient,
-            template: baseElasticsearchIndexTemplate.template
+            onBeforeEach: async () => {
+                const { index } = configurations.es({
+                    locale: "en-US",
+                    tenant: "root"
+                });
+                await elasticsearchClient.indices.create({
+                    index,
+                    body: {
+                        ...baseConfigurationPlugin.body
+                    }
+                });
+            }
         });
     }
 }

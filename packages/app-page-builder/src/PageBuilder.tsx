@@ -15,6 +15,9 @@ import { DefaultOnPagePublish } from "~/admin/plugins/pageDetails/pageRevisions/
 import { DefaultOnPageDelete } from "~/admin/plugins/pageDetails/pageRevisions/DefaultOnPageDelete";
 import { EditorProps, EditorRenderer } from "./admin/components/Editor";
 
+export type { EditorProps };
+export { EditorRenderer };
+
 const PageBuilderProviderHOC = (Component: React.FC): React.FC => {
     return function PageBuilderProvider({ children }) {
         return (
@@ -86,15 +89,12 @@ const EditorRendererHOC: HigherOrderComponent<EditorProps> = () => {
         return <EditorLoader {...props} />;
     };
 };
-/**
- * TODO @ts-refactor @pavel
- * as any in hoc and provider
- */
+
 export const PageBuilder: React.FC = () => {
     return (
         <Fragment>
             <Provider hoc={PageBuilderProviderHOC} />
-            <Compose component={EditorRenderer as any} with={EditorRendererHOC as any} />
+            <Compose component={EditorRenderer} with={EditorRendererHOC} />
             <Plugins>
                 <PageBuilderMenu />
                 <WebsiteSettings />

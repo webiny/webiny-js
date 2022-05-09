@@ -236,6 +236,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 searchContentEntries(
                     modelIds: [ID!]!
                     query: String
+                    fields: [String!]
                     limit: Int
                 ): CmsContentEntriesResponse
 
@@ -282,7 +283,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             },
             Query: {
                 async searchContentEntries(_, args: any, context) {
-                    const { modelIds, query, limit = 10 } = args;
+                    const { modelIds, fields, query, limit = 10 } = args;
                     const models = await context.cms.listModels();
 
                     const getters = models
@@ -290,14 +291,15 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         .map(async model => {
                             const modelManager = await context.cms.getModelManager(model.modelId);
                             const where: CmsEntryListWhere = {
-                                tenant: model.tenant
+                                tenant: model.tenant,
+                                locale: model.locale
                             };
-                            if (!!query) {
-                                where[`${model.titleFieldId}_contains`] = query;
-                            }
+
                             const [items] = await modelManager.listLatest({
                                 limit,
-                                where
+                                where,
+                                search: !!query ? query : undefined,
+                                fields: fields || []
                             });
 
                             return items.map((entry: CmsEntry) => {

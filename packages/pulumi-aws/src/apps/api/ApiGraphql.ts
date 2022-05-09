@@ -2,7 +2,7 @@ import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
-import { PulumiApp } from "@webiny/pulumi-sdk";
+import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 import { Vpc } from "./ApiVpc";
 import { createLambdaRole } from "./ApiLambdaUtils";
 
@@ -23,71 +23,80 @@ interface GraphqlParams {
     vpc: Vpc | undefined;
 }
 
-export function createGraphql(app: PulumiApp, params: GraphqlParams) {
-    const policy = createGraphqlLambdaPolicy(app, params);
-    const role = createLambdaRole(app, {
-        name: "api-lambda-role",
-        policy: policy.output,
-        vpc: params.vpc
-    });
+export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
 
-    const graphql = app.addResource(aws.lambda.Function, {
-        name: "graphql",
-        config: {
-            runtime: "nodejs14.x",
-            handler: "handler.handler",
-            role: role.output.arn,
-            timeout: 30,
-            memorySize: 512,
-            code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive(path.join(app.ctx.appDir, "code/graphql/build"))
-            }),
-            environment: {
-                variables: {
-                    ...params.env,
-                    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
-                    WCP_ENVIRONMENT_API_KEY: String(process.env["WCP_ENVIRONMENT_API_KEY"])
-                }
-            },
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
-        }
-    });
+export const ApiGraphql = defineAppModule({
+    name: "ApiGraphql",
+    config(app: PulumiApp, params: GraphqlParams) {
+        const policy = createGraphqlLambdaPolicy(app, params);
+        const role = createLambdaRole(app, {
+            name: "api-lambda-role",
+            policy: policy.output,
+            vpc: params.vpc
+        });
 
-    /**
-     * Store meta information like "mainGraphqlFunctionArn" in APW settings at deploy time.
-     *
-     * Note: We can't pass "mainGraphqlFunctionArn" as env variable due to circular dependency between
-     * "graphql" lambda and "api-apw-scheduler-execute-action" lambda.
-     */
-    app.addResource(aws.dynamodb.TableItem, {
-        name: "apwSettings",
-        config: {
-            tableName: params.primaryDynamodbTableName,
-            hashKey: params.primaryDynamodbTableHashKey,
-            rangeKey: pulumi.output(params.primaryDynamodbTableRangeKey).apply(key => key || "SK"),
-            item: pulumi.interpolate`{
+        const graphql = app.addResource(aws.lambda.Function, {
+            name: "graphql",
+            config: {
+                runtime: "nodejs14.x",
+                handler: "handler.handler",
+                role: role.output.arn,
+                timeout: 30,
+                memorySize: 512,
+                code: new pulumi.asset.AssetArchive({
+                    ".": new pulumi.asset.FileArchive(
+                        path.join(app.ctx.appDir, "code/graphql/build")
+                    )
+                }),
+                environment: {
+                    variables: {
+                        ...params.env,
+                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+                        WCP_ENVIRONMENT_API_KEY: String(process.env["WCP_ENVIRONMENT_API_KEY"])
+                    }
+                },
+                vpcConfig: params.vpc
+                    ? {
+                          subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
+                          securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
+                      }
+                    : undefined
+            }
+        });
+
+        /**
+         * Store meta information like "mainGraphqlFunctionArn" in APW settings at deploy time.
+         *
+         * Note: We can't pass "mainGraphqlFunctionArn" as env variable due to circular dependency between
+         * "graphql" lambda and "api-apw-scheduler-execute-action" lambda.
+         */
+        app.addResource(aws.dynamodb.TableItem, {
+            name: "apwSettings",
+            config: {
+                tableName: params.primaryDynamodbTableName,
+                hashKey: params.primaryDynamodbTableHashKey,
+                rangeKey: pulumi
+                    .output(params.primaryDynamodbTableRangeKey)
+                    .apply(key => key || "SK"),
+                item: pulumi.interpolate`{
               "PK": {"S": "APW#SETTINGS"},
               "SK": {"S": "A"},
               "mainGraphqlFunctionArn": {"S": "${graphql.output.arn}"},
               "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
               "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}
             }`
-        }
-    });
+            }
+        });
 
-    return {
-        role,
-        policy,
-        functions: {
-            graphql
-        }
-    };
-}
+        return {
+            role,
+            policy,
+            functions: {
+                graphql
+            }
+        };
+    }
+});
 
 function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
     return app.addResource(aws.iam.Policy, {
