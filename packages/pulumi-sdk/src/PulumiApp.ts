@@ -111,6 +111,12 @@ export abstract class PulumiApp<TConfig = unknown> {
         def: PulumiAppModuleDefinition<TModule, TConfig>,
         config?: TConfig
     ) {
+        if (this.modules.has(def.symbol)) {
+            throw new Error(
+                `Module "${def.name}" is already present in the "${this.name}" application.`
+            );
+        }
+
         const module = def.run(this, config as TConfig);
         this.modules.set(def.symbol, module);
 
