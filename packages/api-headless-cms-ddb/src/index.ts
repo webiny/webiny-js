@@ -19,7 +19,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         attributes,
         table,
         documentClient,
-        plugins: customPlugins,
+        plugins: userPlugins,
         modelFieldToGraphQLPlugins
     } = params;
 
@@ -60,7 +60,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * User defined custom plugins.
          */
-        ...(customPlugins || []),
+        ...(userPlugins || []),
         /**
          * Plugins of type CmsModelFieldToGraphQLPlugin.
          */
@@ -76,13 +76,15 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     ]);
 
     return {
-        plugins: [
-            /**
-             * Field plugins for DynamoDB.
-             * We must pass them to the base application.
-             */
-            dynamoDbPlugins()
-        ],
+        beforeInit: async context => {
+            context.plugins.register([
+                /**
+                 * Field plugins for DynamoDB.
+                 * We must pass them to the base application.
+                 */
+                dynamoDbPlugins()
+            ]);
+        },
         getEntities: () => entities,
         getTable: () => tableInstance,
         system: createSystemStorageOperations({

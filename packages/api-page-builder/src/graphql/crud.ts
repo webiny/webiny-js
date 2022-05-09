@@ -54,12 +54,26 @@ const setup = (params: CreateCrudParams) => {
         };
 
         const getLocaleCode = (): string => {
-            const locale = context.i18nContent.getCurrentLocale();
+            const locale = context.i18n.getContentLocale();
             if (!locale) {
-                throw new WebinyError("Missing context.i18nContent locale in API Page Builder.");
+                throw new WebinyError("Missing content locale in API Page Builder.");
             }
             return locale.code;
         };
+
+        if (storageOperations.beforeInit) {
+            try {
+                await storageOperations.beforeInit(context);
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not run before init in Page Builder storage operations.",
+                    ex.code || "STORAGE_OPERATIONS_BEFORE_INIT_ERROR",
+                    {
+                        ...ex
+                    }
+                );
+            }
+        }
 
         const system = await createSystemCrud({
             context,
@@ -111,6 +125,21 @@ const setup = (params: CreateCrudParams) => {
             ...pageElements,
             ...categories
         };
+
+        if (!storageOperations.init) {
+            return;
+        }
+        try {
+            await storageOperations.init(context);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not run init in Page Builder storage operations.",
+                ex.code || "STORAGE_OPERATIONS_INIT_ERROR",
+                {
+                    ...ex
+                }
+            );
+        }
     });
 };
 

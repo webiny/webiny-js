@@ -10,6 +10,13 @@ import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
+
+declare global {
+    interface Window {
+        Cypress: any;
+    }
+}
+
 import {
     Wrapper,
     alertClass,
@@ -22,10 +29,15 @@ import { config as appConfig } from "@webiny/app/config";
 
 export const AppInstaller: React.FC = ({ children }) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
-
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
     const isRootTenant = tenantId === "root";
+    /*
+     * This flag allows us to avoid rendering the <iframe> when the app is tested with Cypress
+     * (Cypress doesn't work with cross domains because of security-related implications).
+     * @see https://docs.cypress.io/guides/guides/web-security#Insecure-Content
+     */
+    const isCypressTest = window && window.Cypress;
 
     const markInstallerAsCompleted = () => {
         localStorage.set(lsKey, wbyVersion);
@@ -47,17 +59,6 @@ export const AppInstaller: React.FC = ({ children }) => {
         onUser,
         skippingVersions
     } = useInstaller({ isInstalled: isInstallerCompleted() });
-
-    const openWelcomeScreen = () => {
-        if (!isRootTenant) {
-            return;
-        }
-        if (!isFirstInstall) {
-            window.location.href = `https://site.webiny.com/thank-you/upgrade?version=${wbyVersion}&returnUrl=${window.location.href}`;
-            return;
-        }
-        window.location.href = `https://site.webiny.com/thank-you/installation?returnUrl=${window.location.href}`;
-    };
 
     useEffect(() => {
         if (identity) {
@@ -171,12 +172,20 @@ export const AppInstaller: React.FC = ({ children }) => {
             <Elevation z={1}>
                 <SuccessDialog>
                     <p>You have successfully installed all new applications!</p>
+                    {!isCypressTest && isRootTenant && isFirstInstall ? (
+                        <iframe
+                            height="0"
+                            width="0"
+                            frameBorder="0"
+                            style={{ opacity: "0" }}
+                            src="https://www.webiny.com/thank-you/new-install"
+                        ></iframe>
+                    ) : null}
                     <ButtonPrimary
                         data-testid={"open-webiny-cms-admin-button"}
                         onClick={() => {
                             markInstallerAsCompleted();
                             setFinished(true);
-                            openWelcomeScreen();
                         }}
                     >
                         {isFirstInstall ? "Finish install" : "Finish upgrade"}

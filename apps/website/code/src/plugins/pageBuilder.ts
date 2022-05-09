@@ -28,6 +28,7 @@ import youtube from "@webiny/app-page-builder/render/plugins/elements/embeds/you
 import vimeo from "@webiny/app-page-builder/render/plugins/elements/embeds/vimeo";
 import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twitter";
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
+import iframe from "@webiny/app-page-builder/render/plugins/elements/iframe";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
 
@@ -78,6 +79,7 @@ export default [
     vimeo(),
     twitter(),
     pinterest(),
+    iframe(),
     pagesList(),
     imagesList(),
 

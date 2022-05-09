@@ -3,7 +3,6 @@ import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { FormElasticsearchFieldPlugin } from "~/plugins/FormElasticsearchFieldPlugin";
 import { FormElasticsearchSortModifierPlugin } from "~/plugins/FormElasticsearchSortModifierPlugin";
 import { FormElasticsearchBodyModifierPlugin } from "~/plugins/FormElasticsearchBodyModifierPlugin";
@@ -11,6 +10,7 @@ import { FormBuilderStorageOperationsListFormsParams } from "@webiny/api-form-bu
 import { FormElasticsearchQueryModifierPlugin } from "~/plugins/FormElasticsearchQueryModifierPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { applyWhere } from "@webiny/api-elasticsearch/where";
+import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
 
 export const createFormElasticType = (): string => {
     return "fb.form";
@@ -44,14 +44,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
     /**
      * Be aware that, if having more registered operator plugins of same type, the last one will be used.
      */
-    const operatorPlugins = plugins
-        .byType<ElasticsearchQueryBuilderOperatorPlugin>(
-            ElasticsearchQueryBuilderOperatorPlugin.type
-        )
-        .reduce((acc, plugin) => {
-            acc[plugin.getOperator()] = plugin;
-            return acc;
-        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
+    const operatorPlugins = getElasticsearchOperatorPluginsByLocale(plugins, initialWhere.locale);
 
     const where: Partial<FormBuilderStorageOperationsListFormsParams["where"]> = {
         ...initialWhere

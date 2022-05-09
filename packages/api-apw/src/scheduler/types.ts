@@ -1,8 +1,7 @@
 import { Context } from "@webiny/handler/types";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import { I18NLocale } from "@webiny/api-i18n/types";
+import { I18NLocale, I18NContext } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
 export interface ListWhere {
@@ -124,7 +123,7 @@ export interface ApwScheduleActionCrud
     deleteCurrentTask(): Promise<Boolean>;
 }
 
-export interface ScheduleActionContext extends Context, I18NContentContext, TenancyContext {
+export interface ScheduleActionContext extends Context, I18NContext, TenancyContext {
     scheduleAction: ApwScheduleActionCrud;
 }
 

@@ -7,13 +7,14 @@ import {
     RevisionsAtomType,
     pageAtom,
     elementsAtom,
-    PageAtomType
+    PageAtomType,
+    PageWithContent
 } from "./recoil/modules";
 import { flattenElements } from "./helpers";
-import { PbEditorElement } from "~/types";
+import omit from "lodash/omit";
 
 interface EditorPropsType {
-    page: PageAtomType & PbEditorElement;
+    page: PageWithContent;
     revisions: RevisionsAtomType;
 }
 
@@ -31,8 +32,8 @@ export const Editor: React.FC<EditorPropsType> = ({ page, revisions }) => {
                 /**
                  * We always unset the content because we are not using it via the page atom.
                  */
-                const pageData = { ...page };
-                delete pageData.content;
+                const pageData: PageAtomType = omit(page, ["content"]);
+
                 set(pageAtom, pageData);
             }}
         >

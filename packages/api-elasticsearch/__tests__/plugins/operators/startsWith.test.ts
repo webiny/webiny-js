@@ -4,7 +4,6 @@ import { ElasticsearchQueryBuilderOperatorStartsWithPlugin } from "~/plugins/ope
 
 describe("ElasticsearchQueryBuilderOperatorStartsWithPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorStartsWithPlugin();
-    const context: any = {};
 
     it("should apply startsWith correctly", () => {
         const query = createBlankQuery();
@@ -13,7 +12,6 @@ describe("ElasticsearchQueryBuilderOperatorStartsWithPlugin", () => {
             path: "name.keyword",
             basePath: "name",
             value: "John",
-            context,
             keyword: true
         });
 
@@ -21,7 +19,6 @@ describe("ElasticsearchQueryBuilderOperatorStartsWithPlugin", () => {
             path: "name.keyword",
             basePath: "name",
             value: "Doe",
-            context,
             keyword: true
         });
 

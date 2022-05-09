@@ -85,6 +85,9 @@
     "webpack-manifest-plugin": "4.0.2",
     "webpackbar": "5.0.2"
   },
+  "devDependencies": {
+    "@elastic/elasticsearch": "7.12.0"
+  },
   "license": "MIT",
   "adio": {
     "ignore": {

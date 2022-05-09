@@ -22,11 +22,11 @@ import {
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import dotProp from "dot-prop-immutable";
-import { PbEditorElement, PbErrorResponse } from "~/types";
-import { PageAtomType, RevisionsAtomType } from "~/editor/recoil/modules";
+import { PbErrorResponse } from "~/types";
+import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
 
 interface PageDataAndRevisionsState {
-    page: (PageAtomType & PbEditorElement) | null;
+    page: PageWithContent | null;
     revisions: RevisionsAtomType;
 }
 
@@ -98,7 +98,7 @@ const Editor: React.FC = () => {
                 }
 
                 const { revisions = [], content, ...restOfPageData } = extractPageData(data);
-                const page: PageAtomType & PbEditorElement = {
+                const page: PageWithContent = {
                     ...restOfPageData,
                     content: content || createElement("document")
                 };
@@ -142,7 +142,7 @@ const Editor: React.FC = () => {
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
             <LoadData>
-                <PbEditor page={page as PageAtomType & PbEditorElement} revisions={revisions} />
+                <PbEditor page={page as PageWithContent} revisions={revisions} />
             </LoadData>
         </React.Suspense>
     );

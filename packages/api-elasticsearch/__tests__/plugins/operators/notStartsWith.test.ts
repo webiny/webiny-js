@@ -4,7 +4,6 @@ import { ElasticsearchQueryBuilderOperatorNotStartsWithPlugin } from "~/plugins/
 
 describe("ElasticsearchQueryBuilderOperatorNotStartsWithPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorNotStartsWithPlugin();
-    const context: any = {};
 
     it("should apply startsWith correctly", () => {
         const query = createBlankQuery();
@@ -13,7 +12,6 @@ describe("ElasticsearchQueryBuilderOperatorNotStartsWithPlugin", () => {
             path: "name.keyword",
             basePath: "name",
             value: "John",
-            context,
             keyword: true
         });
 
@@ -21,7 +19,6 @@ describe("ElasticsearchQueryBuilderOperatorNotStartsWithPlugin", () => {
             path: "name.keyword",
             basePath: "name",
             value: "Doe",
-            context,
             keyword: true
         });
 

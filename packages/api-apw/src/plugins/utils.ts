@@ -159,12 +159,9 @@ export const updateContentReviewStep = (
     });
 };
 
-type CheckInstallationParams = Pick<ApwContext, "tenancy" | "i18nContent">;
+type CheckInstallationParams = Pick<ApwContext, "tenancy" | "i18n">;
 
-export const isInstallationPending = ({
-    tenancy,
-    i18nContent
-}: CheckInstallationParams): boolean => {
+export const isInstallationPending = ({ tenancy, i18n }: CheckInstallationParams): boolean => {
     /**
      * In case of a fresh webiny project "tenant" and "locale" won't be there until
      * installation is completed. So, we need to skip "APW" creation till then.
@@ -173,6 +170,6 @@ export const isInstallationPending = ({
     if (!tenant) {
         return true;
     }
-    const locale = i18nContent.locale;
-    return !locale;
+
+    return !i18n.getContentLocale();
 };

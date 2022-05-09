@@ -22,7 +22,7 @@ const sortEntries = (
     if (!sort) {
         return list;
     } else if (Array.isArray(sort) === false) {
-        console.log("Sort is not an Array of string.");
+        console.log("Sort is not an Array of strings.");
         return list;
     } else if (sort.length === 0) {
         return list;

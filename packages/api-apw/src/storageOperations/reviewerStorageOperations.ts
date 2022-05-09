@@ -33,7 +33,8 @@ export const createReviewerStorageOperations = ({
                 ...params,
                 where: {
                     ...params.where,
-                    tenant: model.tenant
+                    tenant: model.tenant,
+                    locale: model.locale
                 }
             });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];

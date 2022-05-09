@@ -76,7 +76,7 @@ export const createPersonModel = (): CmsModel => {
             id: baseGroup.contentModelGroup.id,
             name: baseGroup.contentModelGroup.name
         },
-        modelId: "personModel",
+        modelId: "personEntriesModel",
         locale: "en-US",
         tenant: "root",
         titleFieldId: personModelFields.name.id,
@@ -215,4 +215,20 @@ export const createPersonEntries = async (
         result[entry.entryId].revisions.push(entry);
     }
     return result;
+};
+
+interface DeletePersonModelParams {
+    storageOperations: HeadlessCmsStorageOperations;
+}
+export const deletePersonModel = async (params: DeletePersonModelParams) => {
+    const { storageOperations } = params;
+    try {
+        await storageOperations.models.delete({
+            model: createPersonModel()
+        });
+    } catch (ex) {
+        console.log("Trying to delete person model... failed...");
+        console.log(ex.message);
+        console.log(JSON.stringify(ex));
+    }
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
 import Heading from "./Heading";
-import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../types";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
     const elementType = args.elementType || "heading";

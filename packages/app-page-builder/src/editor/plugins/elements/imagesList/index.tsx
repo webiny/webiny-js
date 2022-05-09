@@ -5,7 +5,8 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin,
     DisplayMode,
-    PbEditorElementPluginArgs
+    PbEditorElementPluginArgs,
+    OnCreateActions
 } from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ImagesList from "./ImagesList";
@@ -52,7 +53,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
                     ? args.settings(defaultSettings)
                     : defaultSettings,
             target: ["cell", "block"],
-            onCreate: "open-settings",
+            onCreate: OnCreateActions.OPEN_SETTINGS,
             create(options = {}) {
                 const defaultValue = {
                     type: this.elementType,

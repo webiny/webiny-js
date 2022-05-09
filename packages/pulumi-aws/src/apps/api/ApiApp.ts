@@ -191,7 +191,7 @@ export const ApiApp = defineApp({
 
 export type ApiApp = InstanceType<typeof ApiApp>;
 
-export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
+export function createApiApp(config?: ApiAppConfig & ApplicationConfig<ApiApp>) {
     return createGenericApplication({
         id: "api",
         name: "api",
@@ -208,14 +208,14 @@ export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
             // Create the app instance.
             const app = new ApiApp(ctx);
             // Run the default application setup.
-            await app.setup(config);
+            await app.setup(config || {});
             // Run the custom user config.
-            await config.config?.(app, ctx);
+            await config?.config?.(app, ctx);
             return app;
         },
-        onBeforeBuild: config.onBeforeBuild,
-        onAfterBuild: config.onAfterBuild,
-        onBeforeDeploy: config.onBeforeDeploy,
-        onAfterDeploy: config.onAfterDeploy
+        onBeforeBuild: config?.onBeforeBuild,
+        onAfterBuild: config?.onAfterBuild,
+        onBeforeDeploy: config?.onBeforeDeploy,
+        onAfterDeploy: config?.onAfterDeploy
     });
 }

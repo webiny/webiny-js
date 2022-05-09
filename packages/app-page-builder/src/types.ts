@@ -127,7 +127,9 @@ export interface PbElementDataSettingsType {
     margin?: PbElementDataSettingsMarginType;
     padding?: PbElementDataSettingsPaddingType;
     height?: {
-        value?: number;
+        [key in DisplayMode]?: {
+            value: number;
+        };
     };
     background?: PbElementDataSettingsBackgroundType;
     border?: PbElementDataSettingsBorderType;
@@ -167,6 +169,9 @@ export type PbElementDataType = {
     link?: {
         href?: string;
         newTab?: boolean;
+    };
+    iframe?: {
+        url?: string;
     };
     type?: string;
     icon?: PbElementDataIconType;
@@ -468,7 +473,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         child: PbEditorElement;
     }) => PbEditorElement | undefined;
     // Executed after element was created
-    onCreate?: string;
+    onCreate?: OnCreateActions;
     // Render element preview (used when creating element screenshots; not all elements have a simple DOM representation
     // so this callback is used to customize the look of the element in a PNG image)
     renderElementPreview?: (params: {
@@ -477,6 +482,12 @@ export type PbEditorPageElementPlugin = Plugin & {
         height: number;
     }) => ReactElement;
 };
+
+export enum OnCreateActions {
+    OPEN_SETTINGS = "open-settings",
+    SKIP = "skip",
+    SKIP_ELEMENT_HEIGHT = "skipElementHighlight"
+}
 
 export type PbEditorPageElementActionPlugin = Plugin & {
     type: "pb-editor-page-element-action";
