@@ -54,6 +54,7 @@ import {
 import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afterDelete";
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
 import { PluginsContainer } from "@webiny/plugins";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -222,10 +223,11 @@ export interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
+    getTenant: () => Tenant;
 }
 
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
-    const { storageOperations, context, getIdentity } = params;
+    const { storageOperations, context, getIdentity, getTenant } = params;
 
     const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();
     const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>();
@@ -345,15 +347,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         getEntryById: async (model, id) => {
             const where: CmsEntryListWhere = {
-                id,
-                locale: model.locale,
-                tenant: model.tenant
+                id
             };
             await onBeforeEntryGet.publish({
                 where,
                 model
             });
-            const [entry] = await getEntriesByIds(model, [where.id as string]);
+            const [entry] = await getEntriesByIds(model, [id]);
             if (!entry) {
                 throw new NotFoundError(`Entry by ID "${id}" not found.`);
             }
@@ -431,9 +431,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              * We always assign tenant and locale because we do not allow one model to have content through multiple tenants.
              */
             const where: CmsEntryListWhere = {
-                ...initialWhere,
-                locale: model.locale,
-                tenant: model.tenant
+                ...initialWhere
             };
             /**
              * Possibly only get records which are owned by current user.
@@ -554,7 +552,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             const entry: CmsEntry = {
                 webinyVersion: context.WEBINY_VERSION,
-                tenant: context.tenancy.getCurrentTenant().id,
+                tenant: getTenant().id,
                 entryId,
                 id,
                 modelId: model.modelId,

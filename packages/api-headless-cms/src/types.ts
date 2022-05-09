@@ -346,6 +346,10 @@ export interface CmsModel {
      */
     modelId: string;
     /**
+     * Model tenant.
+     */
+    tenant: string;
+    /**
      * Locale this model belongs to.
      */
     locale: string;
@@ -406,10 +410,6 @@ export interface CmsModel {
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
-    /**
-     * Model tenant.
-     */
-    tenant: string;
 }
 
 /**
@@ -822,6 +822,10 @@ export interface CmsGroup {
      */
     slug: string;
     /**
+     * Group tenant.
+     */
+    tenant: string;
+    /**
      * Locale this group belongs to.
      */
     locale: string;
@@ -849,10 +853,6 @@ export interface CmsGroup {
      * Which Webiny version was this record stored with.
      */
     webinyVersion: string;
-    /**
-     * Group tenant.
-     */
-    tenant: string;
 }
 
 /**
@@ -1386,7 +1386,7 @@ export interface CmsModelContext {
  *
  * @category CmsEntry
  */
-type CmsEntryStatus =
+export type CmsEntryStatus =
     | "published"
     | "unpublished"
     | "reviewRequested"
@@ -1465,15 +1465,6 @@ export interface CmsEntryListWhere {
      * @internal
      */
     latest?: boolean;
-    /**
-     * Search for exact locale.
-     * This will most likely be populated, but leave it as optional.
-     */
-    locale: string;
-    /**
-     * Exact tenant. No multi-tenancy search.
-     */
-    tenant: string;
     /**
      * Can be reference field or, actually, anything else.
      */

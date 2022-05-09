@@ -535,8 +535,6 @@ export const createEntriesStorageOperations = (
         };
         delete where["published"];
         delete where["latest"];
-        delete where["locale"];
-        delete where["tenant"];
         /**
          * We need a object containing field, transformers and paths.
          * Just build it here and pass on into other methods that require it to avoid mapping multiple times.
