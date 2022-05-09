@@ -836,7 +836,7 @@ export interface CmsGroup {
     /**
      * Icon for the group. In a form of "ico/ico".
      */
-    icon?: string;
+    icon: string;
     /**
      * CreatedBy reference object.
      */
@@ -1468,7 +1468,7 @@ export interface CmsEntryListWhere {
     /**
      * Can be reference field or, actually, anything else.
      */
-    [key: string]: any | CmsEntryListWhereRef;
+    // [key: string]: any | CmsEntryListWhereRef;
 }
 
 /**
