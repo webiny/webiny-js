@@ -218,10 +218,12 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
             const createdData = new CreateContentModelGroupModel().populate({
                 ...inputData,
-                slug: inputData.slug ? utils.toSlug(inputData.slug) : ""
+                slug: inputData.slug ? utils.toSlug(inputData.slug) : "",
+                description: inputData.description || ""
             });
             await createdData.validate();
-            const input: CmsGroupCreateInput & { slug: string } = await createdData.toJSON();
+            const input: CmsGroupCreateInput & { slug: string; description: string } =
+                await createdData.toJSON();
 
             const identity = getIdentity();
 
