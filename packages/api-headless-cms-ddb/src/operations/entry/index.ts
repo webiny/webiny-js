@@ -88,7 +88,7 @@ export const createEntriesStorageOperations = (
                 model,
                 field,
                 value,
-                getStoragePlugin(fieldType: string): StorageTransformPlugin<any> {
+                getStoragePlugin(fieldType: string): StorageTransformPlugin {
                     return storageTransformPlugins[fieldType] || storageTransformPlugins["*"];
                 },
                 plugins

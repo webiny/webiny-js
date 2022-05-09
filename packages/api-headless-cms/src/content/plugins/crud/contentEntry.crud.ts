@@ -138,7 +138,6 @@ const cleanUpdatedInputData = (
 interface DeleteEntryParams {
     model: CmsModel;
     entry: CmsEntry;
-    storageEntry: CmsStorageEntry;
 }
 
 interface EntryIdResult {
@@ -277,7 +276,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * A helper to delete the entire entry.
      */
     const deleteEntry = async (params: DeleteEntryParams): Promise<void> => {
-        const { model, entry, storageEntry } = params;
+        const { model, entry } = params;
         try {
             await onBeforeEntryDelete.publish({
                 entry,
@@ -285,8 +284,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             await storageOperations.entries.delete(model, {
-                entry,
-                storageEntry
+                entry
             });
 
             await onAfterEntryDelete.publish({
@@ -962,8 +960,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             if (entryToDelete.id === latestEntryRevisionId && !previousStorageEntry) {
                 return await deleteEntry({
                     model,
-                    entry: entryToDelete,
-                    storageEntry: storageEntryToDelete
+                    entry: entryToDelete
                 });
             }
             /**
@@ -1025,8 +1022,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             return await deleteEntry({
                 model,
-                entry,
-                storageEntry
+                entry
             });
         },
         publishEntry: async (model, id) => {
