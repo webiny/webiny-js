@@ -26,6 +26,7 @@ export default (): CmsModelFieldValidatorPlugin => {
                         where: {
                             entryId_not: entry ? entry.entryId : undefined,
                             tenant: model.tenant,
+                            locale: model.locale,
                             [field.fieldId]: value
                         },
                         limit: 1

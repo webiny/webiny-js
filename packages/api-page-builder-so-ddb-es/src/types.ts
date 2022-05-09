@@ -2,7 +2,7 @@ import { PageBuilderStorageOperations as BasePageBuilderStorageOperations } from
 import { Entity, Table } from "dynamodb-toolbox";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Client } from "@elastic/elasticsearch";
-import { Plugin } from "@webiny/plugins/types";
+import { PluginCollection } from "@webiny/plugins/types";
 import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
 import {
     EntityAttributeConfig,
@@ -42,7 +42,7 @@ export interface StorageOperationsFactoryParams {
     table?: TableModifier;
     esTable?: TableModifier;
     attributes?: Record<ENTITIES, Attributes>;
-    plugins?: Plugin[] | Plugin[][];
+    plugins?: PluginCollection;
 }
 
 export interface StorageOperationsFactory {

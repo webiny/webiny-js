@@ -5,7 +5,7 @@ export const checkBaseFormPermissions = async (
     context: FormBuilderContext,
     check: { rwd?: string; pw?: string } = {}
 ): Promise<FbFormPermission> => {
-    await context.i18nContent.checkI18NContentPermission();
+    await context.i18n.checkI18NContentPermission();
     const permission = await context.security.getPermission<FbFormPermission>("fb.form");
     if (!permission) {
         throw new NotAuthorizedError();

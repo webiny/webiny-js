@@ -1,6 +1,10 @@
 import dateStoragePlugin from "~/dynamoDb/storage/date";
 
-const createDefaultArgs = ({ fieldId = "fieldId", type }) => {
+interface CreateDefaultArgsParams {
+    fieldId?: string;
+    type: string;
+}
+const createDefaultArgs = ({ fieldId = "fieldId", type }: CreateDefaultArgsParams) => {
     return {
         field: {
             fieldId,
@@ -29,7 +33,7 @@ describe("dateStoragePlugin", () => {
     ];
     test.each(correctToStorageDateValues)(
         "toStorage should transform value for storage",
-        async (value: string | Date, expected: string) => {
+        async (value: string | Date, expected) => {
             const plugin = dateStoragePlugin();
 
             const result = await plugin.toStorage({
@@ -49,7 +53,7 @@ describe("dateStoragePlugin", () => {
 
     test.each(correctFromStorageDateValues)(
         "fromStorage should transform value for output",
-        async (value: string | Date, expected: string) => {
+        async (value: string | Date, expected) => {
             const plugin = dateStoragePlugin();
 
             const result = await plugin.fromStorage({

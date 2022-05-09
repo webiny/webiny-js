@@ -26,7 +26,7 @@ const isReserved = (name: string): void => {
 };
 
 export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFactory = params => {
-    const { attributes, table: tableName, documentClient, plugins: pluginsInput } = params;
+    const { attributes, table: tableName, documentClient, plugins: userPlugins } = params;
 
     if (attributes) {
         Object.values(attributes).forEach(attrs => {
@@ -38,7 +38,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         /**
          * User defined plugins.
          */
-        pluginsInput || [],
+        userPlugins || [],
         /**
          * Form submission DynamoDB fields.
          */

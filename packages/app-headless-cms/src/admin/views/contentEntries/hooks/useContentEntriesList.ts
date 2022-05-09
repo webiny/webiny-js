@@ -79,7 +79,7 @@ export function useContentEntriesList() {
     const { data, loading, fetchMore } = useQuery<
         CmsEntriesListQueryResponse,
         CmsEntriesListQueryVariables
-    >(LIST_QUERY, { variables: listQueryVariables });
+    >(LIST_QUERY, { variables: listQueryVariables, fetchPolicy: "network-only" });
 
     const onCreate = useCallback(() => {
         history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);

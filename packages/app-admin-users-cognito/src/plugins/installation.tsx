@@ -126,15 +126,14 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                             <View name={"adminUsers.installation.fields"} props={{ Bind, data }} />
                         </Grid>
 
-                        <Grid>
+                        <Grid style={{ paddingTop: "0px" }}>
                             <Cell span={12}>
                                 <Bind name="subscribed">
                                     <Checkbox
                                         label={
                                             <span>
                                                 I want to receive updates on product improvements
-                                                and new features. Doing so I accept Webiny&apos;s{" "}
-                                                {privacyPolicyLink}.
+                                                and new features.
                                             </span>
                                         }
                                     />
@@ -143,14 +142,24 @@ const Install: React.FC<InstallProps> = ({ onInstalled }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary
-                            data-testid="install-security-button"
-                            onClick={ev => {
-                                submit(ev);
-                            }}
-                        >
-                            Create Admin User
-                        </ButtonPrimary>
+                        <Grid>
+                            <Cell span={8}>
+                                <p style={{ textAlign: "left" }}>
+                                    By submitting the form, you agree to our Terms of Service and
+                                    acknowledge our {privacyPolicyLink}.
+                                </p>
+                            </Cell>
+                            <Cell span={4}>
+                                <ButtonPrimary
+                                    data-testid="install-security-button"
+                                    onClick={() => {
+                                        submit();
+                                    }}
+                                >
+                                    Create Admin User
+                                </ButtonPrimary>
+                            </Cell>
+                        </Grid>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

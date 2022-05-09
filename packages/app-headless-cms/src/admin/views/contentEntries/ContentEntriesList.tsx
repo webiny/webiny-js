@@ -14,8 +14,8 @@ import { Typography } from "@webiny/ui/Typography";
 import * as UIList from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
+import { Select } from "@webiny/ui/Select";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
@@ -24,6 +24,10 @@ import { useCallback } from "react";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/useContentEntriesList";
 import { positionValues as PositionValues } from "react-custom-scrollbars";
 import { CmsEditorContentEntry } from "~/types";
+import {
+    useContentEntriesViewConfig,
+    ContentEntriesViewConfigFilter
+} from "./experiment/ContentEntriesViewConfig";
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
 
@@ -70,6 +74,8 @@ const ContentEntriesList: React.FC = () => {
         setFilter
     } = useContentEntriesList();
 
+    const viewConfig = useContentEntriesViewConfig();
+
     const loadMoreOnScroll = useCallback(
         debounce((scrollFrame: PositionValues) => {
             if (scrollFrame.top > 0.9) {
@@ -84,13 +90,26 @@ const ContentEntriesList: React.FC = () => {
         sort: listQueryVariables.sort ? listQueryVariables.sort[0] : ""
     };
 
+    const appliesToContentModel = useCallback(
+        ({ modelIds }: ContentEntriesViewConfigFilter) => {
+            return modelIds.length === 0 || modelIds.includes(contentModel.modelId);
+        },
+        [contentModel]
+    );
+
     const entriesDataListModalOverlay = useMemo(
         () => (
             <UIList.DataListModalOverlay>
                 <Form
                     data={formInitialData}
-                    onChange={({ status, sort }) => {
-                        setListQueryVariables(prevState => ({ ...prevState, sort, status }));
+                    onChange={({ sort, status, ...data }) => {
+                        setListQueryVariables(() => ({
+                            status,
+                            // GraphQL Schema requires "sort" to be an array.
+                            sort: [sort],
+                            // Spread the rest of form data
+                            ...data
+                        }));
                     }}
                 >
                     {({ Bind }) => (
@@ -98,9 +117,9 @@ const ContentEntriesList: React.FC = () => {
                             <Cell span={12}>
                                 <Bind name={"sort"}>
                                     <Select label={t`Sort by`}>
-                                        {sorters.map(({ label, value }) => {
+                                        {sorters.map(({ value, label }) => {
                                             return (
-                                                <option key={label} value={value}>
+                                                <option key={value} value={value}>
                                                     {label}
                                                 </option>
                                             );
@@ -108,31 +127,17 @@ const ContentEntriesList: React.FC = () => {
                                     </Select>
                                 </Bind>
                             </Cell>
-                            <Cell span={12}>
-                                <Bind name={"status"}>
-                                    <Select
-                                        label={t`Filter by status`}
-                                        description={"Filter by a specific page status."}
-                                    >
-                                        <option value={"all"}>{t`All`}</option>
-                                        <option value={"draft"}>{t`Draft`}</option>
-                                        <option value={"published"}>{t`Published`}</option>
-                                        <option value={"unpublished"}>{t`Unpublished`}</option>
-                                        <option
-                                            value={"reviewRequested"}
-                                        >{t`Review requested`}</option>
-                                        <option
-                                            value={"changesRequested"}
-                                        >{t`Changes requested`}</option>
-                                    </Select>
-                                </Bind>
-                            </Cell>
+                            {viewConfig.filters.filter(appliesToContentModel).map(filter => (
+                                <Cell span={12} key={filter.name}>
+                                    {filter.element}
+                                </Cell>
+                            ))}
                         </Grid>
                     )}
                 </Form>
             </UIList.DataListModalOverlay>
         ),
-        [listQueryVariables]
+        [listQueryVariables, viewConfig.filters]
     );
 
     return (

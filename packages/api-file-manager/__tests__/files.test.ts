@@ -263,7 +263,10 @@ describe("Files CRUD test", () => {
             ({ data }: any) => {
                 return data.fileManager.listFiles.data.length === 4;
             },
-            { name: "bulk list files", tries: 10 }
+            {
+                name: "bulk list files",
+                tries: 10
+            }
         );
 
         const [response] = await listFiles({

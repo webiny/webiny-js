@@ -20,7 +20,6 @@
     "@commodo/fields": "beta",
     "@webiny/api-headless-cms": "^5.25.0",
     "@webiny/api-i18n": "^5.25.0",
-    "@webiny/api-i18n-content": "^5.25.0",
     "@webiny/api-i18n-ddb": "^5.25.0",
     "@webiny/api-page-builder": "^5.25.0",
     "@webiny/api-security": "^5.25.0",

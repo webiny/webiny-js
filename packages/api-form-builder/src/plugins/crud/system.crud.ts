@@ -14,15 +14,17 @@ import {
 import { Tenant } from "@webiny/api-tenancy/types";
 import { createTopic } from "@webiny/pubsub";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { I18NLocale } from "@webiny/api-i18n/types";
 
 interface CreateSystemCrudParams {
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
+    getLocale: () => I18NLocale;
     context: FormBuilderContext;
 }
 
 export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => {
-    const { getTenant, getIdentity, context } = params;
+    const { getTenant, getLocale, getIdentity, context } = params;
 
     const onBeforeInstall = createTopic<BeforeInstallTopic>();
     const onAfterInstall = createTopic<AfterInstallTopic>();
@@ -109,13 +111,15 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
 
             try {
                 await onBeforeInstall.publish({
-                    tenant: getTenant().id
+                    tenant: getTenant().id,
+                    locale: getLocale().code
                 });
 
                 await this.createSettings(data);
 
                 await onAfterInstall.publish({
-                    tenant: getTenant().id
+                    tenant: getTenant().id,
+                    locale: getLocale().code
                 });
                 await this.setSystemVersion(context.WEBINY_VERSION);
             } catch (err) {

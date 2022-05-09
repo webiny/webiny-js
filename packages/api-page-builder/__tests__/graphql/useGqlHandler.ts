@@ -3,7 +3,6 @@ import graphqlHandler from "@webiny/handler-graphql";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "~/graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbPlugins from "@webiny/api-file-manager-ddb";
@@ -79,7 +78,6 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         ...createTenancyAndSecurity({ permissions, identity }),
         i18nContext(),
         i18nDynamoDbStorageOperations(),
-        i18nContentPlugins(),
         fileManagerPlugins(),
         mockLocalesPlugins(),
         createPageBuilderGraphQL(),

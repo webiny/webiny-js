@@ -63,10 +63,10 @@ export default ({ storageOperations }: PageImportExportPluginsParams) =>
         }
 
         const getLocale = () => {
-            const locale = context.i18nContent.getCurrentLocale();
+            const locale = context.i18n.getContentLocale();
             if (!locale) {
                 throw new WebinyError(
-                    "Missing locale on context.i18nContent.getCurrentLocale() in pageImportExportTasks.crud.ts",
+                    "Missing content locale in pageImportExportTasks.crud.ts",
                     "LOCALE_ERROR"
                 );
             }

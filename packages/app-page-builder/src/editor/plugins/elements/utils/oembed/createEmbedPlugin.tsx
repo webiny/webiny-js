@@ -4,7 +4,8 @@ import {
     PbEditorElement,
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin,
-    DisplayMode
+    DisplayMode,
+    OnCreateActions
 } from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../../elementSettings/elementSettingsUtils";
 
@@ -41,7 +42,7 @@ interface EmbedPluginConfig {
     settings?: Array<string | Array<string | any>> | Function;
     create?: Function;
     target?: Array<string>;
-    onCreate?: string;
+    onCreate?: OnCreateActions;
     renderElementPreview?: EmbedPluginConfigRenderElementPreviewCallable;
 }
 
@@ -87,7 +88,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
 
             return <OEmbed element={props.element} {...(config.oembed || {})} />;
         },
-        onCreate: config.onCreate || "open-settings",
+        onCreate: config.onCreate || OnCreateActions.OPEN_SETTINGS,
         renderElementPreview: config.renderElementPreview
     };
 };

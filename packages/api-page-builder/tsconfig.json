@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api-file-manager" },
     { "path": "../api-i18n" },
-    { "path": "../api-i18n-content" },
     { "path": "../api-prerendering-service" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
@@ -35,8 +34,6 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
-      "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
-      "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
       "@webiny/api-prerendering-service": ["../api-prerendering-service/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
