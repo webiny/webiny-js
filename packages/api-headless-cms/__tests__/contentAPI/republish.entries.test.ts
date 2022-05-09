@@ -361,14 +361,14 @@ describe("Republish entries", () => {
 
         const { storageOperations } = useCategoryManageHandler(manageOpts);
 
-        const { entry: galaEntry, input: galaInput } = createEntry(productModel, {
+        const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",
             category: {
                 entryId: applePublished.id,
                 modelId: categoryModel.modelId
             }
         });
-        const { entry: goldenEntry, input: goldenInput } = createEntry(
+        const { entry: goldenEntry } = createEntry(
             productModel,
             {
                 title: "Golden",
@@ -382,13 +382,11 @@ describe("Republish entries", () => {
 
         const galaRecord = await storageOperations.entries.create(productModel, {
             entry: galaEntry,
-            input: galaInput,
             storageEntry: galaEntry
         });
 
         const goldenRecord = await storageOperations.entries.create(productModel, {
             entry: goldenEntry,
-            input: goldenInput,
             storageEntry: goldenEntry
         });
 

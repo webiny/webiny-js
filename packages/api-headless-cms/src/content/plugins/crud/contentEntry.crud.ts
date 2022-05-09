@@ -579,7 +579,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
                 storageEntry = await entryToStorageTransform(context, model, entry);
                 const result = await storageOperations.entries.create(model, {
-                    input,
                     entry,
                     storageEntry
                 });
@@ -706,8 +705,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 const result = await storageOperations.entries.createRevisionFrom(model, {
                     entry,
                     storageEntry,
-                    originalEntry,
-                    originalStorageEntry,
                     latestEntry,
                     latestStorageEntry
                 });
@@ -816,11 +813,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 storageEntry = await entryToStorageTransform(context, model, entry);
 
                 const result = await storageOperations.entries.update(model, {
-                    originalEntry,
-                    originalStorageEntry,
                     entry,
-                    storageEntry,
-                    input
+                    storageEntry
                 });
 
                 await onAfterEntryUpdate.publish({
@@ -897,11 +891,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              */
             try {
                 await storageOperations.entries.update(model, {
-                    originalEntry,
-                    originalStorageEntry,
                     entry,
-                    storageEntry,
-                    input: {}
+                    storageEntry
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -917,8 +908,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
              */
             try {
                 return await storageOperations.entries.publish(model, {
-                    originalEntry,
-                    originalStorageEntry,
                     entry,
                     storageEntry
                 });
@@ -1000,10 +989,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 });
 
                 await storageOperations.entries.deleteRevision(model, {
-                    entryToDelete,
-                    storageEntryToDelete,
-                    entryToSetAsLatest,
-                    storageEntryToSetAsLatest
+                    entry: entryToDelete,
+                    storageEntry: storageEntryToDelete,
+                    latestEntry: entryToSetAsLatest,
+                    latestStorageEntry: storageEntryToSetAsLatest
                 });
 
                 await onAfterEntryDeleteRevision.publish({
@@ -1013,10 +1002,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             } catch (ex) {
                 throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
                     error: ex,
-                    entryToDelete,
-                    storageEntryToDelete,
-                    entryToSetAsLatest,
-                    storageEntryToSetAsLatest
+                    entry: entryToDelete,
+                    storageEntry: storageEntryToDelete,
+                    latestEntry: entryToSetAsLatest,
+                    latestStorageEntry: storageEntryToSetAsLatest
                 });
             }
         },
@@ -1084,9 +1073,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 storageEntry = await entryToStorageTransform(context, model, entry);
                 const result = await storageOperations.entries.publish(model, {
                     entry,
-                    storageEntry,
-                    originalEntry,
-                    originalStorageEntry
+                    storageEntry
                 });
 
                 await onAfterEntryPublish.publish({
@@ -1159,8 +1146,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 storageEntry = await entryToStorageTransform(context, model, entry);
 
                 const result = await storageOperations.entries.requestChanges(model, {
-                    originalEntry,
-                    originalStorageEntry,
                     entry,
                     storageEntry
                 });
@@ -1238,8 +1223,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 storageEntry = await entryToStorageTransform(context, model, entry);
 
                 const result = await storageOperations.entries.requestReview(model, {
-                    originalEntry,
-                    originalStorageEntry,
                     entry,
                     storageEntry
                 });
@@ -1306,8 +1289,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 storageEntry = await entryToStorageTransform(context, model, entry);
 
                 const result = await storageOperations.entries.unpublish(model, {
-                    originalEntry,
-                    originalStorageEntry,
                     entry,
                     storageEntry
                 });

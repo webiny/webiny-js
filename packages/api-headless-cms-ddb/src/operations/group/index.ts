@@ -89,7 +89,7 @@ export const createGroupsStorageOperations = (
         }
     };
     const update = async (params: CmsGroupStorageOperationsUpdateParams) => {
-        const { group, original } = params;
+        const { group } = params;
         const keys = createKeys(group);
         try {
             await entity.put({
@@ -105,7 +105,6 @@ export const createGroupsStorageOperations = (
                 {
                     error: ex,
                     group,
-                    original,
                     keys
                 }
             );
