@@ -34,9 +34,7 @@ export const createContentReviewStorageOperations = ({
             const [entries, meta] = await cms.listLatestEntries(model, {
                 ...params,
                 where: {
-                    ...params.where,
-                    tenant: model.tenant,
-                    locale: model.locale
+                    ...params.where
                 }
             });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
