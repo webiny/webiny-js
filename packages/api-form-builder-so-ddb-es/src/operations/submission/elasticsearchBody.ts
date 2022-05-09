@@ -49,6 +49,9 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
             ElasticsearchQueryBuilderOperatorPlugin.type
         )
         .reduce((acc, plugin) => {
+            if (plugin.isLocaleSupported(initialWhere.locale) === false) {
+                return acc;
+            }
             acc[plugin.getOperator()] = plugin;
             return acc;
         }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);

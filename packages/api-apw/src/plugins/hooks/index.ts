@@ -16,9 +16,9 @@ export default () => [
      * Hook into CMS events and execute business logic.
      */
     new ContextPlugin<ApwContext>(async context => {
-        const { security, apw, tenancy, i18nContent } = context;
+        const { security, apw, tenancy, i18n } = context;
 
-        if (isInstallationPending({ tenancy, i18nContent })) {
+        if (isInstallationPending({ tenancy, i18n })) {
             return;
         }
 

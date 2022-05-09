@@ -85,7 +85,7 @@ export const AdminApp = defineApp({
 
 export type AdminApp = InstanceType<typeof AdminApp>;
 
-export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminApp>) {
+export function createAdminApp(config?: AdminAppConfig & ApplicationConfig<AdminApp>) {
     return createGenericApplication({
         id: "admin",
         name: "admin",
@@ -100,14 +100,14 @@ export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminA
             // Create the app instance.
             const app = new AdminApp(ctx);
             // Run the default application setup.
-            await app.setup(config);
+            await app.setup(config || {});
             // Run the custom user config.
-            await config.config?.(app, ctx);
+            await config?.config?.(app, ctx);
             return app;
         },
-        onBeforeBuild: config.onBeforeBuild,
-        onAfterBuild: config.onAfterBuild,
-        onBeforeDeploy: config.onBeforeDeploy,
-        onAfterDeploy: config.onAfterDeploy
+        onBeforeBuild: config?.onBeforeBuild,
+        onAfterBuild: config?.onAfterBuild,
+        onBeforeDeploy: config?.onBeforeDeploy,
+        onAfterDeploy: config?.onAfterDeploy
     });
 }

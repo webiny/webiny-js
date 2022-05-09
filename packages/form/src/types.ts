@@ -31,7 +31,8 @@ export interface BindComponentRenderProp<T = any, F = Record<string, any>> {
 
 export interface BindComponentProps {
     name: string;
-    beforeChange?: (value: any, cb: (value: string | string[]) => void) => void;
+    // Form field value can be anything, so we just let it be `any`.
+    beforeChange?: (value: any, cb: (value: any) => void) => void;
     afterChange?: (value: any, form: FormAPI) => void;
     defaultValue?: any;
     validators?: Validator | Validator[];

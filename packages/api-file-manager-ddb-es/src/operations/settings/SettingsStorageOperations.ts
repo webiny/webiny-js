@@ -1,5 +1,4 @@
 import {
-    FileManagerContext,
     FileManagerSettings,
     FileManagerSettingsStorageOperations,
     FileManagerSettingsStorageOperationsCreateParams,
@@ -9,6 +8,7 @@ import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
 import defineSettingsEntity from "~/definitions/settingsEntity";
+import { FileManagerContext } from "~/types";
 
 interface SettingsStorageOperationsConstructorParams {
     context: FileManagerContext;

@@ -146,7 +146,7 @@ describe("Content entries", () => {
             data: {
                 createFruitFrom: {
                     data: {
-                        id: (banana.id || "").replace("0001", "0002"),
+                        id: `${banana.entryId}#0002`,
                         entryId: banana.entryId,
                         meta: {
                             version: 2,
@@ -480,7 +480,7 @@ describe("Content entries", () => {
             data: {
                 createFruitFrom: {
                     data: {
-                        id: (banana.id || "").replace("0001", "0002"),
+                        id: `${banana.entryId}#0002`,
                         entryId: banana.entryId,
                         meta: {
                             version: 2,

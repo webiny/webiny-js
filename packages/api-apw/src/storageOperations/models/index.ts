@@ -19,16 +19,16 @@ export const createApwModels = (context: CmsContext) => {
         return;
     }
 
-    if (isInstallationPending({ tenancy: context.tenancy, i18nContent: context.i18nContent })) {
+    if (isInstallationPending({ tenancy: context.tenancy, i18n: context.i18n })) {
         return;
     }
 
     context.security.disableAuthorization();
 
-    const locale = context.i18nContent.locale;
+    const locale = context.i18n.getContentLocale();
     if (!locale) {
         throw new WebinyError(
-            "Missing context.i18nContent.locale in api-apw/storageOperations/index.ts",
+            "Missing content locale in api-apw/storageOperations/index.ts",
             "LOCALE_ERROR"
         );
     }

@@ -1,17 +1,23 @@
 import { ContextPlugin } from "@webiny/handler";
 import { CmsContext } from "~/types";
 
+const DEFAULT_LOCALE_CODE = "en-US";
+
 export default () => {
     return new ContextPlugin<CmsContext>(context => {
-        const locale = context.i18nContent.getCurrentLocale();
-
         context.cms = {
             ...(context.cms || ({} as any)),
-            locale: locale ? locale.code : "en-US",
+            get locale() {
+                const locale = context.i18n.getContentLocale();
+
+                return locale ? locale.code : DEFAULT_LOCALE_CODE;
+            },
             getLocale() {
+                const locale = context.i18n.getContentLocale();
+
                 if (!locale) {
                     return {
-                        code: "en-US",
+                        code: DEFAULT_LOCALE_CODE,
                         default: true
                     };
                 }
