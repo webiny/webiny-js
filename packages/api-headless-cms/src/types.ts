@@ -369,7 +369,7 @@ export interface CmsModel {
     /**
      * Description for the content model.
      */
-    description?: string;
+    description: string;
     /**
      * Date created
      */

@@ -265,7 +265,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const identity = getIdentity();
             const model: CmsModel = {
                 name: input.name,
-                description: input.description,
+                description: input.description || "",
                 modelId: input.modelId || "",
                 titleFieldId: "id",
                 locale: getLocale().code,
@@ -387,7 +387,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 },
                 name: input.name,
                 modelId: input.modelId || "",
-                description: input.description,
+                description: input.description || "",
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
