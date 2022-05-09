@@ -23,7 +23,9 @@ const baseGroup = new CmsGroupPlugin({
     tenant: "root",
     locale: "en-US",
     id: "group",
-    slug: "group"
+    slug: "group",
+    description: "",
+    icon: ""
 });
 
 const biography = crypto.randomBytes(65536).toString("hex");
@@ -84,6 +86,7 @@ export const createPersonModel = (): CmsModel => {
         layout: Object.values(personModelFields).map(field => {
             return [field.id];
         }),
+        description: "",
         webinyVersion
     };
 };
