@@ -7,7 +7,8 @@ import render from "./../render";
 import { validation } from "@webiny/validation";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementAdvancedSettingsPlugin
+    PbEditorPageElementAdvancedSettingsPlugin,
+    OnCreateActions
 } from "@webiny/app-page-builder/types";
 import Accordion from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Accordion";
 import InputField from "@webiny/app-page-builder/editor/plugins/elementSettings/components/InputField";
@@ -49,7 +50,7 @@ export default () => [
             "pb-editor-page-element-settings-height"
         ],
         target: ["column", "row", "list-item"],
-        onCreate: "open-settings",
+        onCreate: OnCreateActions.OPEN_SETTINGS,
         render({ element }) {
             return (
                 <ElementRoot element={element} className={"webiny-pb-page-element-typeform"}>

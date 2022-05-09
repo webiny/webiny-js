@@ -3,7 +3,6 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-headless-cms" },
-    { "path": "../api-upgrade" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../handler" },
@@ -22,8 +21,6 @@
       "~/*": ["./src/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
-      "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],

@@ -17,6 +17,7 @@ import youtube from "@webiny/app-page-builder/editor/plugins/elements/media/yout
 import pinterest from "@webiny/app-page-builder/editor/plugins/elements/social/pinterest";
 import twitter from "@webiny/app-page-builder/editor/plugins/elements/social/twitter";
 import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/codesandbox";
+import iframe from "@webiny/app-page-builder/editor/plugins/elements/media/iframe";
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
@@ -95,6 +96,7 @@ export default [
     youtube(),
     pinterest(),
     twitter(),
+    iframe(),
     codesandbox(),
     pagesList(),
     // grid presets

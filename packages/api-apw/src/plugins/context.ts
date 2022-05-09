@@ -18,9 +18,9 @@ import { apwContentPagePlugins } from "~/plugins/pageBuilder/apwContentPagePlugi
 
 const setupApwContext = (params: CreateApwContextParams) =>
     new ContextPlugin<ApwContext>(async context => {
-        const { tenancy, security, i18nContent, handlerClient } = context;
+        const { tenancy, security, i18n, handlerClient } = context;
 
-        if (isInstallationPending({ tenancy, i18nContent })) {
+        if (isInstallationPending({ tenancy, i18n })) {
             return;
         }
 
@@ -33,14 +33,15 @@ const setupApwContext = (params: CreateApwContextParams) =>
         context.plugins.register([createManageCMSPlugin(), ...contentHeadlessCmsContextPlugins]);
 
         const getLocale = () => {
-            if (!i18nContent.locale) {
+            const locale = i18n.getContentLocale();
+            if (!locale) {
                 throw new WebinyError(
-                    "Missing context.i18nContent.locale in api-apw/plugins/context.ts",
+                    "Missing content locale in api-apw/plugins/context.ts",
                     "LOCALE_ERROR"
                 );
             }
 
-            return i18nContent.locale;
+            return locale;
         };
 
         const getTenant = (): Tenant => {

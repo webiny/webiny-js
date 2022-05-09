@@ -1,5 +1,8 @@
-import { FormBuilderStorageOperationsFactory, ENTITIES } from "~/types";
+import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
+import formElasticsearchFields from "./operations/form/elasticsearchFields";
+import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
 import WebinyError from "@webiny/error";
+import { FormBuilderStorageOperationsFactory, ENTITIES } from "~/types";
 import { createTable } from "~/definitions/table";
 import { createFormEntity } from "~/definitions/form";
 import { createSubmissionEntity } from "~/definitions/submission";
@@ -9,15 +12,12 @@ import { createSystemStorageOperations } from "~/operations/system";
 import { createSubmissionStorageOperations } from "~/operations/submission";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createFormStorageOperations } from "~/operations/form";
-import { createElasticsearchIndexTemplate } from "~/operations/system/createElasticsearchIndexTemplate";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
 import { PluginsContainer } from "@webiny/plugins";
 import { createElasticsearchEntity } from "~/definitions/elasticsearch";
-import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
-import formElasticsearchFields from "./operations/form/elasticsearchFields";
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
-import { base as baseElasticsearchIndexTemplate } from "~/elasticsearch/templates/base";
+import { elasticsearchIndexPlugins } from "~/elasticsearch/indices";
+import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -37,7 +37,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         esTable: esTableName,
         documentClient,
         elasticsearch,
-        plugins: pluginsInput
+        plugins: userPlugins
     } = params;
 
     if (attributes) {
@@ -50,7 +50,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
         /**
          * User defined plugins.
          */
-        pluginsInput || [],
+        userPlugins || [],
         /**
          * Elasticsearch field definitions for the submission record.
          */
@@ -68,9 +68,9 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
          */
         getElasticsearchOperators(),
         /**
-         * Base Elasticsearch index template.
+         * Built-in Elasticsearch index plugins
          */
-        baseElasticsearchIndexTemplate
+        elasticsearchIndexPlugins()
     ]);
 
     const table = createTable({
@@ -123,11 +123,13 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
     };
 
     return {
-        init: async formBuilder => {
-            formBuilder.onAfterInstall.subscribe(async () => {
-                await createElasticsearchIndexTemplate({
+        init: async context => {
+            context.i18n.locales.onBeforeCreate.subscribe(async ({ locale, tenant }) => {
+                await createElasticsearchIndex({
                     elasticsearch,
-                    plugins
+                    plugins,
+                    tenant,
+                    locale: locale.code
                 });
             });
         },

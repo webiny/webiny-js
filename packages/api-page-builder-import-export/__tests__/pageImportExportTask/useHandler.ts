@@ -21,11 +21,16 @@ export default (params: Params = {}) => {
         {
             type: "context",
             apply: (context: PbContext) => {
-                if (context.i18nContent) {
+                if (context.i18n) {
                     return;
                 }
-                context.i18nContent = {
-                    ...(context.i18nContent || ({} as any)),
+
+                context.i18n = {
+                    // @ts-ignore
+                    ...(context.i18n || ({} as any)),
+                    getContentLocale() {
+                        return { code: "en-US", default: true };
+                    },
                     getCurrentLocale: () => {
                         return {
                             code: "en-US",

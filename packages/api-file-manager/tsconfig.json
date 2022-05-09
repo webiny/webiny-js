@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-i18n-content" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../api-upgrade" },
@@ -22,8 +21,6 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
-      "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],

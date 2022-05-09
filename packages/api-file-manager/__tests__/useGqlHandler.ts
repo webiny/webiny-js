@@ -3,7 +3,6 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 import filesPlugins from "~/plugins";
@@ -63,7 +62,6 @@ export default (params: UseGqlHandlerParams = {}) => {
         graphqlHandlerPlugins(),
         ...createTenancyAndSecurity({ permissions, identity }),
         i18nContext(),
-        i18nContentPlugins(),
         mockLocalesPlugins(),
         filesPlugins(),
         /**
