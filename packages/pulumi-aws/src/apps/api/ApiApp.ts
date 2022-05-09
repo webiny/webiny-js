@@ -197,7 +197,7 @@ export const ApiApp = defineApp({
 
 export type ApiApp = InstanceType<typeof ApiApp>;
 
-export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
+export function createApiApp(config?: ApiAppConfig & ApplicationConfig<ApiApp>) {
     return createGenericApplication({
         id: "api",
         name: "api",
@@ -212,13 +212,13 @@ export function createApiApp(config: ApiAppConfig & ApplicationConfig<ApiApp>) {
         },
         async app(ctx) {
             const app = new ApiApp(ctx);
-            await app.setup(config);
-            await config.config?.(app, ctx);
+            await app.setup(config || {});
+            await config?.config?.(app, ctx);
             return app;
         },
-        onBeforeBuild: config.onBeforeBuild,
-        onAfterBuild: config.onAfterBuild,
-        onBeforeDeploy: config.onBeforeDeploy,
-        onAfterDeploy: config.onAfterDeploy
+        onBeforeBuild: config?.onBeforeBuild,
+        onAfterBuild: config?.onAfterBuild,
+        onBeforeDeploy: config?.onBeforeDeploy,
+        onAfterDeploy: config?.onAfterDeploy
     });
 }

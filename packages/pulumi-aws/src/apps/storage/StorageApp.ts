@@ -59,21 +59,21 @@ export const StorageApp = defineApp({
 
 export type StorageApp = InstanceType<typeof StorageApp>;
 
-export function createStorageApp(config: StorageAppConfig & ApplicationConfig<StorageApp>) {
+export function createStorageApp(config?: StorageAppConfig & ApplicationConfig<StorageApp>) {
     return createGenericApplication({
         id: "storage",
         name: "storage",
         description: "Your project's persistent storages.",
         async app(ctx) {
             const app = new StorageApp(ctx);
-            await app.setup(config);
-            await config.config?.(app, ctx);
-            config.config?.(app, ctx);
+            await app.setup(config || {});
+            await config?.config?.(app, ctx);
+            config?.config?.(app, ctx);
             return app;
         },
-        onBeforeBuild: config.onBeforeBuild,
-        onAfterBuild: config.onAfterBuild,
-        onBeforeDeploy: config.onBeforeDeploy,
-        onAfterDeploy: config.onAfterDeploy
+        onBeforeBuild: config?.onBeforeBuild,
+        onAfterBuild: config?.onAfterBuild,
+        onBeforeDeploy: config?.onBeforeDeploy,
+        onAfterDeploy: config?.onAfterDeploy
     });
 }
