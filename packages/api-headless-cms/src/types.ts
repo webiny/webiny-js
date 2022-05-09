@@ -1497,7 +1497,7 @@ export interface CmsEntryGetParams {
  * @category GraphQL params
  */
 export interface CmsEntryListParams {
-    where: CmsEntryListWhere;
+    where?: CmsEntryListWhere;
     sort?: CmsEntryListSort;
     search?: string;
     fields?: string[];

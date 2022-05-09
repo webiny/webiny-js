@@ -485,7 +485,7 @@ const execElasticsearchBuildQueryPlugins = (
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
     const { plugins, model, args, parentPath = null } = params;
-    const { where, after, limit, sort: initialSort, search, fields } = args;
+    const { where = {}, after, limit, sort: initialSort, search, fields } = args;
 
     const modelFields = createModelFields(plugins, model);
     const searchPlugins = searchPluginsList(plugins);
