@@ -39,10 +39,19 @@ export interface ResourceConfigModifier<T> {
     (value: pulumi.Unwrap<T>): T | void;
 }
 
-export class PulumiApp {
+interface DeployEventParams {
+    outputs: Record<string, any>;
+}
+
+interface DeployEventHandler {
+    (params: DeployEventParams): Promise<void> | void;
+}
+
+export abstract class PulumiApp<TConfig = unknown> {
     public readonly name: string;
     public readonly ctx: ApplicationContext;
     private readonly resourceHandlers: ResourceHandler[] = [];
+    private readonly afterDeployHandlers: DeployEventHandler[] = [];
     private readonly handlers: (() => void | Promise<void>)[] = [];
     private readonly outputs: Record<string, any> = {};
     private readonly modules = new Map<symbol, unknown>();
@@ -52,8 +61,14 @@ export class PulumiApp {
         this.ctx = params.ctx;
     }
 
+    public abstract setup(config: TConfig): Promise<void> | void;
+
     public onResource(handler: ResourceHandler): void {
         this.resourceHandlers.push(handler);
+    }
+
+    public onAfterDeploy(handler: DeployEventHandler) {
+        this.afterDeployHandlers.push(handler);
     }
 
     public addResource<T extends ResourceConstructor>(ctor: T, params: CreateResourceParams<T>) {
@@ -101,8 +116,14 @@ export class PulumiApp {
         return module;
     }
 
-    public addHandler(handler: () => Promise<void> | void) {
-        this.handlers.push(handler);
+    public addHandler<T>(handler: () => Promise<T> | T) {
+        const promise = new Promise<T>(resolve => {
+            this.handlers.push(async () => {
+                resolve(await handler());
+            });
+        });
+
+        return pulumi.output(promise);
     }
 
     public getModule<TConfig, TModule>(def: PulumiAppModuleDefinition<TModule, TConfig>): TModule;
@@ -131,18 +152,30 @@ export class PulumiApp {
         return module;
     }
 
-    public async run() {
+    public createController() {
+        return {
+            run: this.runProgram.bind(this),
+            deployFinished: this.deployFinished.bind(this)
+        };
+    }
+
+    private async runProgram() {
         tagResources({
             WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
             WbyEnvironment: String(process.env["WEBINY_ENV"])
         });
 
-        // TODO: run concurrently?
         for (const handler of this.handlers) {
             await handler();
         }
 
         return this.outputs;
+    }
+
+    private async deployFinished(params: DeployEventParams) {
+        for (const handler of this.afterDeployHandlers) {
+            await handler(params);
+        }
     }
 }
 
@@ -173,21 +206,24 @@ export function defineAppModule<TModule, TConfig = void>(
 
 export interface CreateAppParams<TOutput extends Record<string, unknown>, TConfig = void> {
     name: string;
-    config(app: PulumiApp, config: TConfig): TOutput;
+    config(app: PulumiApp, config: TConfig): TOutput | Promise<TOutput>;
 }
 
 export function defineApp<TOutput extends Record<string, unknown>, TConfig = void>(
     params: CreateAppParams<TOutput, TConfig>
 ) {
-    const appDef = class App extends PulumiApp {
-        constructor(ctx: ApplicationContext, config: TConfig) {
+    const appDef = class App extends PulumiApp<TConfig> {
+        constructor(ctx: ApplicationContext) {
             super({ name: params.name, ctx: ctx });
-            const output = params.config(this, config);
+        }
+
+        public async setup(config: TConfig) {
+            const output = await params.config(this, config);
             Object.assign(this, output);
         }
     };
 
-    return appDef as new (ctx: ApplicationContext, config: TConfig) => PulumiApp & TOutput;
+    return appDef as new (ctx: ApplicationContext) => PulumiApp<TConfig> & TOutput;
 }
 
 function createConfigProxy<T extends object>(obj: T) {

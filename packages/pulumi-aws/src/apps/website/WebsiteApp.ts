@@ -161,7 +161,7 @@ export const WebsiteApp = defineApp({
 
 export type WebsiteApp = InstanceType<typeof WebsiteApp>;
 
-export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<WebsiteApp>) {
+export function createWebsiteApp(config?: WebsiteAppConfig & ApplicationConfig<WebsiteApp>) {
     return createGenericApplication({
         id: "website",
         name: "website",
@@ -172,19 +172,20 @@ export function createWebsiteApp(config: WebsiteAppConfig & ApplicationConfig<We
                 deploy: false
             }
         },
-        app(ctx) {
-            const app = new WebsiteApp(ctx, config);
-            config.config?.(app, ctx);
+        async app(ctx) {
+            const app = new WebsiteApp(ctx);
+            await app.setup(config || {});
+            await config?.config?.(app, ctx);
             return app;
         },
-        onBeforeBuild: config.onBeforeBuild,
-        onAfterBuild: config.onAfterBuild,
-        onBeforeDeploy: config.onBeforeDeploy,
+        onBeforeBuild: config?.onBeforeBuild,
+        onAfterBuild: config?.onAfterBuild,
+        onBeforeDeploy: config?.onBeforeDeploy,
         onAfterDeploy: mergeAppHooks(
             websiteUpload,
             websiteRender,
             websiteUpdatePbSettings,
-            config.onAfterDeploy
+            config?.onAfterDeploy
         )
     });
 }

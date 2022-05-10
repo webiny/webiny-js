@@ -1,11 +1,16 @@
 import * as aws from "@pulumi/aws";
-import ApiGateway from "./apiGateway";
-import { parse } from "url";
+import { PulumiApp } from "@webiny/pulumi-sdk";
 
-class Cloudfront {
-    cloudfront: aws.cloudfront.Distribution;
-    constructor({ apiGateway }: { apiGateway: ApiGateway }) {
-        this.cloudfront = new aws.cloudfront.Distribution("api-cloudfront", {
+import { ApiGateway } from "./ApiGateway";
+
+export interface ApiCloudfrontParams {
+    apiGateway: ApiGateway;
+}
+
+export function createCloudfront(app: PulumiApp, params: ApiCloudfrontParams) {
+    return app.addResource(aws.cloudfront.Distribution, {
+        name: "api-cloudfront",
+        config: {
             waitForDeployment: false,
             defaultCacheBehavior: {
                 compress: true,
@@ -22,7 +27,7 @@ class Cloudfront {
                 minTtl: 0,
                 defaultTtl: 0,
                 maxTtl: 86400,
-                targetOriginId: apiGateway.api.name,
+                targetOriginId: params.apiGateway.api.output.name,
                 viewerProtocolPolicy: "allow-all"
             },
             isIpv6Enabled: true,
@@ -41,7 +46,7 @@ class Cloudfront {
                     },
                     pathPattern: "/cms*",
                     viewerProtocolPolicy: "allow-all",
-                    targetOriginId: apiGateway.api.name
+                    targetOriginId: params.apiGateway.api.output.name
                 },
                 {
                     allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
@@ -59,18 +64,18 @@ class Cloudfront {
                     maxTtl: 2592000,
                     pathPattern: "/files/*",
                     viewerProtocolPolicy: "allow-all",
-                    targetOriginId: apiGateway.api.name
+                    targetOriginId: params.apiGateway.api.output.name
                 }
             ],
             origins: [
                 {
-                    domainName: apiGateway.defaultStage.invokeUrl.apply((url: string) =>
-                        String(parse(url).hostname)
+                    domainName: params.apiGateway.defaultStage.output.invokeUrl.apply(
+                        (url: string) => new URL(url).hostname
                     ),
-                    originPath: apiGateway.defaultStage.invokeUrl.apply((url: string) =>
-                        String(parse(url).pathname)
+                    originPath: params.apiGateway.defaultStage.output.invokeUrl.apply(
+                        (url: string) => new URL(url).pathname
                     ),
-                    originId: apiGateway.api.name,
+                    originId: params.apiGateway.api.output.name,
                     customOriginConfig: {
                         httpPort: 80,
                         httpsPort: 443,
@@ -87,8 +92,6 @@ class Cloudfront {
             viewerCertificate: {
                 cloudfrontDefaultCertificate: true
             }
-        });
-    }
+        }
+    });
 }
-
-export default Cloudfront;

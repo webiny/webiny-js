@@ -1,10 +1,15 @@
 import * as aws from "@pulumi/aws";
+import { PulumiApp } from "@webiny/pulumi-sdk";
 
-class Cognito {
-    userPoolClient: aws.cognito.UserPoolClient;
-    userPool: aws.cognito.UserPool;
-    constructor() {
-        this.userPool = new aws.cognito.UserPool("api-user-pool", {
+interface CognitoParams {
+    protect: boolean;
+    useEmailAsUsername: boolean;
+}
+
+export function createCognitoResources(app: PulumiApp, params: CognitoParams) {
+    const userPool = app.addResource(aws.cognito.UserPool, {
+        name: "user-pool",
+        config: {
             passwordPolicy: {
                 minimumLength: 8,
                 requireLowercase: false,
@@ -20,12 +25,16 @@ class Cognito {
             emailConfiguration: {
                 emailSendingAccount: "COGNITO_DEFAULT"
             },
+            // In a legacy setup we use email as username.
+            // We need to provide a way for users to have this setup,
+            // because changing it would require whole cognito pool to be recreated.
+            usernameAttributes: params.useEmailAsUsername ? ["email"] : undefined,
+            aliasAttributes: params.useEmailAsUsername ? undefined : ["preferred_username"],
             lambdaConfig: {},
             mfaConfiguration: "OFF",
             userPoolAddOns: {
                 advancedSecurityMode: "OFF" /* required */
             },
-            aliasAttributes: ["preferred_username"],
             verificationMessageTemplate: {
                 defaultEmailOption: "CONFIRM_WITH_CODE"
             },
@@ -64,12 +73,21 @@ class Cognito {
                     }
                 }
             ]
-        });
+        },
+        opts: {
+            protect: params.protect
+        }
+    });
 
-        this.userPoolClient = new aws.cognito.UserPoolClient("api-user-pool-client", {
-            userPoolId: this.userPool.id
-        });
-    }
+    const userPoolClient = app.addResource(aws.cognito.UserPoolClient, {
+        name: "user-pool-client",
+        config: {
+            userPoolId: userPool.output.id
+        }
+    });
+
+    return {
+        userPool,
+        userPoolClient
+    };
 }
-
-export default Cognito;

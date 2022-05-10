@@ -5,4 +5,4 @@
 
 import { createWebsiteApp } from "@webiny/pulumi-aws";
 
-export default createWebsiteApp({});
+export default createWebsiteApp();

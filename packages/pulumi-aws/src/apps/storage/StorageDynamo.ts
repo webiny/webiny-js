@@ -1,9 +1,10 @@
 import * as aws from "@pulumi/aws";
+import { PulumiApp } from "@webiny/pulumi-sdk";
 
-class DynamoDB {
-    table: aws.dynamodb.Table;
-    constructor() {
-        this.table = new aws.dynamodb.Table("webiny", {
+export function createDynamoTable(app: PulumiApp, params: { protect: boolean }) {
+    return app.addResource(aws.dynamodb.Table, {
+        name: "webiny",
+        config: {
             attributes: [
                 { name: "PK", type: "S" },
                 { name: "SK", type: "S" },
@@ -21,8 +22,9 @@ class DynamoDB {
                     projectionType: "ALL"
                 }
             ]
-        });
-    }
+        },
+        opts: {
+            protect: params.protect
+        }
+    });
 }
-
-export default DynamoDB;
