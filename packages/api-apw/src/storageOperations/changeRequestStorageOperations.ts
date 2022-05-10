@@ -38,9 +38,7 @@ export const createChangeRequestStorageOperations = ({
             const [entries, meta] = await cms.listLatestEntries(model, {
                 ...params,
                 where: {
-                    ...params.where,
-                    tenant: model.tenant,
-                    locale: model.locale
+                    ...params.where
                 }
             });
             const all = await Promise.all(
