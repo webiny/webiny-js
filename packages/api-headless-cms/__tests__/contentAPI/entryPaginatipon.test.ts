@@ -75,7 +75,6 @@ describe("entry pagination", () => {
             const fruit = createFruitData(i);
             await storageOperations.entries.create(fruitContentModel, {
                 storageEntry: fruit,
-                input: fruit,
                 entry: fruit
             });
         }

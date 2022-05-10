@@ -35,6 +35,7 @@ import { createTopic } from "@webiny/pubsub";
 import { assignBeforeGroupUpdate } from "~/content/plugins/crud/contentModelGroup/beforeUpdate";
 import { assignBeforeGroupCreate } from "~/content/plugins/crud/contentModelGroup/beforeCreate";
 import { assignBeforeGroupDelete } from "~/content/plugins/crud/contentModelGroup/beforeDelete";
+import DataLoader from "dataloader";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -58,6 +59,36 @@ export interface CreateModelGroupsCrudParams {
 }
 export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
+
+    const dataLoaders = {
+        listGroups: new DataLoader(async () => {
+            const tenant = getTenant().id;
+            const locale = getLocale().code;
+
+            const pluginsGroups = getGroupsAsPlugins().map(group => {
+                return {
+                    ...group,
+                    tenant: group.tenant || tenant,
+                    locale: group.locale || locale
+                };
+            });
+
+            const groups = await storageOperations.groups.list({
+                where: {
+                    tenant: getTenant().id,
+                    locale: getLocale().code
+                }
+            });
+
+            return [groups.concat(pluginsGroups)];
+        })
+    };
+
+    const clearGroupsCache = (): void => {
+        for (const loader of Object.values(dataLoaders)) {
+            loader.clearAll();
+        }
+    };
 
     const getGroupsAsPlugins = (): CmsGroup[] => {
         const tenant = getTenant().id;
@@ -95,62 +126,21 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     };
 
     const groupsGet = async (id: string) => {
-        const groupPlugin = getGroupsAsPlugins().find(group => group.id === id);
+        const groups = await dataLoaders.listGroups.load("listGroups");
 
-        if (groupPlugin) {
-            return groupPlugin;
-        }
-        const tenant = getTenant().id;
-        const locale = getLocale().code;
+        const group = groups.find(g => g.id === id);
 
-        let group: CmsGroup | null = null;
-        try {
-            group = await storageOperations.groups.get({
-                tenant,
-                locale,
-                id
-            });
-        } catch (ex) {
-            throw new WebinyError(ex.message, ex.code || "GET_ERROR", {
-                ...(ex.data || {}),
-                id
-            });
-        }
         if (!group) {
             throw new NotFoundError(`Cms Group "${id}" was not found!`);
         }
-
-        return {
-            ...group,
-            tenant: group.tenant || tenant,
-            locale: group.locale || locale
-        };
+        return group;
     };
 
     const groupsList = async (params: CmsGroupListParams) => {
         const { where } = params || {};
-        const tenant = getTenant().id;
-        const locale = getLocale().code;
+
         try {
-            const pluginsGroups = getGroupsAsPlugins();
-
-            const databaseGroups = await storageOperations.groups.list({
-                where: {
-                    ...(where || {}),
-                    tenant: where ? where.tenant : tenant,
-                    locale: where ? where.locale : locale
-                }
-            });
-
-            return pluginsGroups.concat(
-                databaseGroups.map(group => {
-                    return {
-                        ...group,
-                        tenant: group.tenant || tenant,
-                        locale: group.locale || locale
-                    };
-                })
-            );
+            return await dataLoaders.listGroups.load("listGroups");
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code || "LIST_ERROR", {
                 ...(ex.data || {}),
@@ -191,6 +181,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         onAfterGroupUpdate: onAfterUpdate,
         onBeforeGroupDelete: onBeforeDelete,
         onAfterGroupDelete: onAfterDelete,
+        clearGroupsCache,
         getGroup: async id => {
             const permission = await checkPermissions("r");
 
@@ -227,10 +218,12 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
 
             const createdData = new CreateContentModelGroupModel().populate({
                 ...inputData,
-                slug: inputData.slug ? utils.toSlug(inputData.slug) : ""
+                slug: inputData.slug ? utils.toSlug(inputData.slug) : "",
+                description: inputData.description || ""
             });
             await createdData.validate();
-            const input: CmsGroupCreateInput & { slug: string } = await createdData.toJSON();
+            const input: CmsGroupCreateInput & { slug: string; description: string } =
+                await createdData.toJSON();
 
             const identity = getIdentity();
 
@@ -255,9 +248,10 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 });
 
                 const result = await storageOperations.groups.create({
-                    input,
                     group
                 });
+
+                clearGroupsCache();
 
                 await onAfterCreate.publish({
                     group: result
@@ -312,10 +306,9 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 });
 
                 const updatedGroup = await storageOperations.groups.update({
-                    original,
-                    group,
-                    input
+                    group
                 });
+                clearGroupsCache();
 
                 await onAfterUpdate.publish({
                     original,
@@ -345,6 +338,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                 });
 
                 await storageOperations.groups.delete({ group });
+                clearGroupsCache();
 
                 await onAfterDelete.publish({
                     group
