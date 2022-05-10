@@ -18,7 +18,8 @@ export enum ENTITIES {
     CATEGORIES = "PbCategories",
     MENUS = "PbMenus",
     PAGE_ELEMENTS = "PbPageElements",
-    PAGES = "PbPages"
+    PAGES = "PbPages",
+    BLOCK_CATEGORIES = "PbBlockCategories"
 }
 
 export interface TableModifier {
@@ -28,7 +29,13 @@ export interface TableModifier {
 export interface PageBuilderStorageOperations extends BasePageBuilderStorageOperations {
     getTable: () => Table;
     getEntities: () => Record<
-        "system" | "settings" | "categories" | "menus" | "pageElements" | "pages",
+        | "system"
+        | "settings"
+        | "categories"
+        | "menus"
+        | "pageElements"
+        | "pages"
+        | "blockCategories",
         Entity<any>
     >;
 }
