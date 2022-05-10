@@ -126,58 +126,6 @@ const Spinner: React.FC = () => {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 };
 
-const DEFAULT_PER_PAGE = 10;
-
-function paginateMultipleSelection(
-    multipleSelection: MultiAutoCompletePropsValue,
-    limit: number,
-    page: number,
-    search: string,
-    textProp: keyof SelectionItem
-) {
-    // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
-    let data = Array.isArray(multipleSelection)
-        ? // @ts-ignore TODO: Will fix this in the following PR.
-          multipleSelection.map((item, index) => ({ ...item, index }))
-        : [];
-
-    if (typeof search === "string" && search) {
-        data = data.filter(item => {
-            return (
-                typeof item[textProp] === "string" &&
-                item[textProp].toLowerCase().includes(search.toLowerCase())
-            );
-        });
-    }
-
-    const lastPage = Math.ceil(data.length / limit);
-    const totalCount = data.length;
-
-    page = page || lastPage;
-    data = data.slice((page - 1) * limit, page * limit);
-
-    let from = 0;
-    let to = 0;
-    if (data.length) {
-        from = (page - 1) * limit + 1;
-        to = from + (data.length - 1);
-    }
-
-    const meta = {
-        hasData: data.length > 0,
-        totalCount,
-        from,
-        to,
-        page: page,
-        lastPage,
-        limit,
-        hasPrevious: page > 1,
-        hasNext: page < lastPage
-    };
-
-    return { data, meta };
-}
-
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
     options: AutoCompleteProps["options"];
@@ -391,6 +339,55 @@ export class MultiAutoComplete extends React.Component<
         );
     }
 
+    paginateMultipleSelection() {
+        const { value } = this.props;
+        const limit = 10;
+        let page = this.state.multipleSelectionPage;
+        const search = this.state.multipleSelectionSearch;
+
+        // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
+        let data = Array.isArray(value)
+            ? value.map((option, index) => {
+                  return { option, index };
+              })
+            : [];
+
+        if (search) {
+            data = data.filter(item => {
+                return getOptionText(item.option, this.props)
+                    .toLowerCase()
+                    .includes(search.toLowerCase());
+            });
+        }
+
+        const lastPage = Math.ceil(data.length / limit);
+        const totalCount = data.length;
+
+        page = page || lastPage;
+        data = data.slice((page - 1) * limit, page * limit);
+
+        let from = 0;
+        let to = 0;
+        if (data.length) {
+            from = (page - 1) * limit + 1;
+            to = from + (data.length - 1);
+        }
+
+        const meta = {
+            hasData: data.length > 0,
+            totalCount,
+            from,
+            to,
+            page: page,
+            lastPage,
+            limit,
+            hasPrevious: page > 1,
+            hasNext: page < lastPage
+        };
+
+        return { data, meta };
+    }
+
     /**
      * Once added, items can also be removed by clicking on the ✕ icon. This is the method that is responsible for
      * rendering selected items (we are using already existing "Chips" component).
@@ -403,18 +400,11 @@ export class MultiAutoComplete extends React.Component<
             useMultipleSelectionList,
             description,
             renderListItemLabel,
-            renderListItemOptions,
-            textProp
+            renderListItemOptions
         } = this.props;
 
         if (useMultipleSelectionList) {
-            const { data, meta } = paginateMultipleSelection(
-                value as SelectionItem[],
-                DEFAULT_PER_PAGE,
-                this.state.multipleSelectionPage,
-                this.state.multipleSelectionSearch,
-                textProp as keyof SelectionItem
-            );
+            const { data, meta } = this.paginateMultipleSelection();
 
             return (
                 <>
@@ -463,7 +453,7 @@ export class MultiAutoComplete extends React.Component<
                     <List className={style.pagination.list}>
                         {meta.hasData ? (
                             data.map((item, index) => {
-                                const key = `${getOptionValue(item, this.props)}-${index}`;
+                                const key = `${getOptionValue(item.option, this.props)}-${index}`;
                                 if (this.state.reorderFormVisible === key) {
                                     return (
                                         <ListItem key={key}>
@@ -536,10 +526,10 @@ export class MultiAutoComplete extends React.Component<
                                             {item.index + 1}.
                                         </div>{" "}
                                         {renderListItemLabel &&
-                                            renderListItemLabel.call(this, item)}
+                                            renderListItemLabel.call(this, item.option)}
                                         <ListItemMeta className={listItemMetaClassName}>
                                             {renderListItemOptions &&
-                                                renderListItemOptions.call(this, item)}
+                                                renderListItemOptions.call(this, item.option)}
                                             <IconButton
                                                 icon={<DeleteIcon />}
                                                 className={iconButtonClassName}
