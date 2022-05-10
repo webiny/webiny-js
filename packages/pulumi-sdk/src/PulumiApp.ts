@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 
 import { ApplicationContext } from "./ApplicationConfig";
+import { PulumiAppModuleDefinition } from "./PulumiAppModule";
 import { ResourceArgs, ResourceConstructor, ResourceType } from "./PulumiResource";
 import { tagResources } from "./utils/tagResources";
 
@@ -110,6 +111,12 @@ export abstract class PulumiApp<TConfig = unknown> {
         def: PulumiAppModuleDefinition<TModule, TConfig>,
         config?: TConfig
     ) {
+        if (this.modules.has(def.symbol)) {
+            throw new Error(
+                `Module "${def.name}" is already present in the "${this.name}" application.`
+            );
+        }
+
         const module = def.run(this, config as TConfig);
         this.modules.set(def.symbol, module);
 
@@ -177,31 +184,6 @@ export abstract class PulumiApp<TConfig = unknown> {
             await handler(params);
         }
     }
-}
-
-export interface PulumiAppModuleCallback<TModule, TConfig> {
-    (this: void, app: PulumiApp, config: TConfig): TModule;
-}
-
-export interface PulumiAppModuleParams<TModule, TConfig> {
-    name: string;
-    config: PulumiAppModuleCallback<TModule, TConfig>;
-}
-
-export class PulumiAppModuleDefinition<TModule, TConfig> {
-    public readonly symbol = Symbol();
-    public readonly name: string;
-    public readonly run: PulumiAppModuleCallback<TModule, TConfig>;
-    constructor(params: PulumiAppModuleParams<TModule, TConfig>) {
-        this.name = params.name;
-        this.run = params.config;
-    }
-}
-
-export function defineAppModule<TModule, TConfig = void>(
-    params: PulumiAppModuleParams<TModule, TConfig>
-) {
-    return new PulumiAppModuleDefinition(params);
 }
 
 export interface CreateAppParams<TOutput extends Record<string, unknown>, TConfig = void> {
