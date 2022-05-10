@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Features
+
+* new pulumi architectrure ([#2205](https://github.com/webiny/webiny-js/issues/2205)) ([ea2ea7f](https://github.com/webiny/webiny-js/commit/ea2ea7f956c9f847e0e5e9c48d6b439100991b24))
+
+
+
+
+
 # [5.24.0](https://github.com/webiny/webiny-js/compare/v5.24.0-beta.0...v5.24.0) (2022-03-03)
 
 **Note:** Version bump only for package @webiny/pulumi-sdk
