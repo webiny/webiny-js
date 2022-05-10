@@ -36,7 +36,8 @@ const contentModelPlugin = new CmsModelPlugin({
         }
     ],
     layout: [["name"], ["sku", "price"]],
-    titleFieldId: "name"
+    titleFieldId: "name",
+    description: ""
 });
 
 const FIELDS_FRAGMENT = /* GraphQL */ `
@@ -256,7 +257,7 @@ describe("content model plugins", () => {
                         data: {
                             createdBy: null,
                             createdOn: null,
-                            description: null,
+                            description: "",
                             fields: [
                                 {
                                     fieldId: "name@text@name",
@@ -329,7 +330,7 @@ describe("content model plugins", () => {
                             {
                                 createdBy: null,
                                 createdOn: null,
-                                description: null,
+                                description: "",
                                 fields: [
                                     {
                                         fieldId: "name@text@name",

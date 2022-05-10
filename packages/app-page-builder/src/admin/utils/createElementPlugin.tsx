@@ -1,7 +1,7 @@
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { plugins } from "@webiny/plugins";
-import { PbEditorElement, PbEditorPageElementPlugin } from "~/types";
+import { OnCreateActions, PbEditorElement, PbEditorPageElementPlugin } from "~/types";
 import Title from "./components/Title";
 
 /**
@@ -45,7 +45,8 @@ export default (el: PbEditorElement): void => {
                 );
             }
         },
-        onCreate: "skip",
+
+        onCreate: OnCreateActions.SKIP,
         settings: rootPlugin ? rootPlugin.settings : [],
         // @ts-ignore
         create() {

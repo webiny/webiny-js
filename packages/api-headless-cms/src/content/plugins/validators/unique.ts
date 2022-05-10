@@ -25,8 +25,6 @@ export default (): CmsModelFieldValidatorPlugin => {
                     const [items] = await manager.listLatest({
                         where: {
                             entryId_not: entry ? entry.entryId : undefined,
-                            tenant: model.tenant,
-                            locale: model.locale,
                             [field.alias || field.fieldId]: value
                         },
                         limit: 1

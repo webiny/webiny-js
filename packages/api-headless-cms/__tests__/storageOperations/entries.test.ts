@@ -22,9 +22,7 @@ const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void>
         () => {
             return storageOperations.entries.list(model, {
                 where: {
-                    latest: true,
-                    tenant: model.tenant,
-                    locale: model.locale
+                    latest: true
                 },
                 sort: ["version_ASC"],
                 limit: 10000

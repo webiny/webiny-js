@@ -131,7 +131,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: {
                         name: "Test Content model",
-                        description: null,
+                        description: "",
                         titleFieldId: "id",
                         modelId: "testContentModel",
                         createdBy: helpers.identity,
@@ -158,7 +158,10 @@ describe("content model test", () => {
         expect(getResponse).toEqual({
             data: {
                 getContentModel: {
-                    data: createResponse.data.createContentModel.data,
+                    data: {
+                        ...createResponse.data.createContentModel.data,
+                        description: null
+                    },
                     error: null
                 }
             }
@@ -178,6 +181,7 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: {
                         ...createResponse.data.createContentModel.data,
+                        description: null,
                         savedOn: expect.stringMatching(/^20/)
                     },
                     error: null
@@ -351,7 +355,8 @@ describe("content model test", () => {
             data: {
                 getContentModel: {
                     data: {
-                        ...contentModel
+                        ...contentModel,
+                        description: null
                     },
                     error: null
                 }
@@ -948,7 +953,10 @@ describe("content model test", () => {
             modelId: createdContentModels[0].modelId
         });
 
-        expect(response.data.getContentModel.data).toEqual(createdContentModels[0]);
+        expect(response.data.getContentModel.data).toEqual({
+            ...createdContentModels[0],
+            description: null
+        });
         expect(response.data.getContentModel.error).toEqual(null);
     });
 });
