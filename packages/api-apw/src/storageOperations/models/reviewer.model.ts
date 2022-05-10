@@ -31,6 +31,7 @@ export const createReviewerModelDefinition = (): WorkflowModelDefinition => {
         modelId: "apwReviewerModelDefinition",
         titleFieldId: "displayName",
         layout: [["reviewer_id"], ["reviewer_displayName"]],
-        fields: [idField(), displayNameField(), typeField()]
+        fields: [idField(), displayNameField(), typeField()],
+        description: ""
     };
 };
