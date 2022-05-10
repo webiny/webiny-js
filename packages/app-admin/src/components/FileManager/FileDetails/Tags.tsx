@@ -255,11 +255,7 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                                 {({ value, ...bindProps }) => (
                                     <MultiAutoComplete
                                         {...bindProps}
-                                        value={tagWithoutScopePrefix(value, queryParams.scope).map(
-                                            value => ({
-                                                name: value
-                                            })
-                                        )}
+                                        value={tagWithoutScopePrefix(value, queryParams.scope)}
                                         options={allTags}
                                         placeholder={"homepage asset"}
                                         description={"Type in a new tag or select an existing one."}

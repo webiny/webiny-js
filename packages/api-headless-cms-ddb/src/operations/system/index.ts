@@ -62,7 +62,7 @@ export const createSystemStorageOperations = (
     };
 
     const update = async (params: CmsSystemStorageOperationsUpdateParams) => {
-        const { system, original } = params;
+        const { system } = params;
 
         const keys = createKeys(system);
 
@@ -79,7 +79,6 @@ export const createSystemStorageOperations = (
                 {
                     error: ex,
                     system,
-                    original,
                     keys
                 }
             );

@@ -11,8 +11,8 @@ const ids = {
 
 const models: CmsModel[] = [
     {
-        createdOn: new Date(),
-        savedOn: new Date(),
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
         titleFieldId: "title",
         lockedFields: [],
         name: "Category",
