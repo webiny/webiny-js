@@ -97,8 +97,11 @@ export function createAdminApp(config?: AdminAppConfig & ApplicationConfig<Admin
             }
         },
         async app(ctx) {
+            // Create the app instance.
             const app = new AdminApp(ctx);
+            // Run the default application setup.
             await app.setup(config || {});
+            // Run the custom user config.
             await config?.config?.(app, ctx);
             return app;
         },

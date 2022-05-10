@@ -2,7 +2,7 @@ import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
-import { PulumiApp } from "@webiny/pulumi-sdk";
+import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
 import { Vpc } from "./ApiVpc";
 import { createLambdaRole } from "./ApiLambdaUtils";
@@ -13,50 +13,55 @@ interface HeadlessCMSParams {
     vpc: Vpc | undefined;
 }
 
-export function createHeadlessCms(app: PulumiApp, params: HeadlessCMSParams) {
-    const policy = createHeadlessCmsLambdaPolicy(app, params);
-    const role = createLambdaRole(app, {
-        name: "headless-cms-lambda-role",
-        policy: policy.output,
-        vpc: params.vpc
-    });
+export type ApiHeadlessCMS = PulumiAppModule<typeof ApiHeadlessCMS>;
 
-    const graphql = app.addResource(aws.lambda.Function, {
-        name: "headless-cms",
-        config: {
-            runtime: "nodejs14.x",
-            handler: "handler.handler",
-            role: role.output.arn,
-            timeout: 30,
-            memorySize: 512,
-            code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive(
-                    path.join(app.ctx.appDir, "code/headlessCMS/build")
-                )
-            }),
-            environment: {
-                variables: {
-                    ...params.env,
-                    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
-                }
-            },
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
-        }
-    });
+export const ApiHeadlessCMS = defineAppModule({
+    name: "ApiHeadlessCMS",
+    config(app: PulumiApp, params: HeadlessCMSParams) {
+        const policy = createHeadlessCmsLambdaPolicy(app, params);
+        const role = createLambdaRole(app, {
+            name: "headless-cms-lambda-role",
+            policy: policy.output,
+            vpc: params.vpc
+        });
 
-    return {
-        role,
-        policy,
-        functions: {
-            graphql
-        }
-    };
-}
+        const graphql = app.addResource(aws.lambda.Function, {
+            name: "headless-cms",
+            config: {
+                runtime: "nodejs14.x",
+                handler: "handler.handler",
+                role: role.output.arn,
+                timeout: 30,
+                memorySize: 512,
+                code: new pulumi.asset.AssetArchive({
+                    ".": new pulumi.asset.FileArchive(
+                        path.join(app.ctx.appDir, "code/headlessCMS/build")
+                    )
+                }),
+                environment: {
+                    variables: {
+                        ...params.env,
+                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+                    }
+                },
+                vpcConfig: params.vpc
+                    ? {
+                          subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
+                          securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
+                      }
+                    : undefined
+            }
+        });
+
+        return {
+            role,
+            policy,
+            functions: {
+                graphql
+            }
+        };
+    }
+});
 
 function createHeadlessCmsLambdaPolicy(app: PulumiApp, params: HeadlessCMSParams) {
     return app.addResource(aws.iam.Policy, {
