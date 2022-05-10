@@ -49,7 +49,6 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): CmsSetting
             }
 
             await storageOperations.settings.update({
-                original,
                 settings
             });
         },

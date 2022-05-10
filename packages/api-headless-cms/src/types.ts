@@ -346,6 +346,10 @@ export interface CmsModel {
      */
     modelId: string;
     /**
+     * Model tenant.
+     */
+    tenant: string;
+    /**
      * Locale this model belongs to.
      */
     locale: string;
@@ -365,7 +369,7 @@ export interface CmsModel {
     /**
      * Description for the content model.
      */
-    description?: string | null;
+    description: string;
     /**
      * Date created
      */
@@ -406,10 +410,6 @@ export interface CmsModel {
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
-    /**
-     * Model tenant.
-     */
-    tenant: string;
 }
 
 /**
@@ -822,17 +822,21 @@ export interface CmsGroup {
      */
     slug: string;
     /**
+     * Group tenant.
+     */
+    tenant: string;
+    /**
      * Locale this group belongs to.
      */
     locale: string;
     /**
      * Description for the group.
      */
-    description?: string;
+    description: string;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
-    icon?: string;
+    icon: string;
     /**
      * CreatedBy reference object.
      */
@@ -849,10 +853,6 @@ export interface CmsGroup {
      * Which Webiny version was this record stored with.
      */
     webinyVersion: string;
-    /**
-     * Group tenant.
-     */
-    tenant: string;
 }
 
 /**
@@ -946,6 +946,10 @@ export interface CmsGroupContext {
      * Delete content model group by given id.
      */
     deleteGroup: (id: string) => Promise<boolean>;
+    /**
+     * Clear the cached groups.
+     */
+    clearGroupsCache: () => void;
     /**
      * Events.
      */
@@ -1348,13 +1352,22 @@ export interface CmsModelContext {
      * Get a instance of CmsModelManager for given content modelId.
      *
      * @see CmsModelManager
+     *
+     * @deprecated use the getEntryManager() method instead
      */
     getModelManager: (model: CmsModel | string) => Promise<CmsModelManager>;
+    getEntryManager: (model: CmsModel | string) => Promise<CmsModelManager>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
+     * @deprecated use getEntryManagers instead
      */
     getManagers: () => Map<string, CmsModelManager>;
+    getEntryManagers: () => Map<string, CmsModelManager>;
+    /**
+     * Clear all the model caches.
+     */
+    clearModelsCache: () => void;
     /**
      * Events.
      */
@@ -1373,7 +1386,7 @@ export interface CmsModelContext {
  *
  * @category CmsEntry
  */
-type CmsEntryStatus =
+export type CmsEntryStatus =
     | "published"
     | "unpublished"
     | "reviewRequested"
@@ -1453,18 +1466,9 @@ export interface CmsEntryListWhere {
      */
     latest?: boolean;
     /**
-     * Search for exact locale.
-     * This will most likely be populated, but leave it as optional.
-     */
-    locale: string;
-    /**
-     * Exact tenant. No multi-tenancy search.
-     */
-    tenant: string;
-    /**
      * Can be reference field or, actually, anything else.
      */
-    [key: string]: any | CmsEntryListWhereRef;
+    // [key: string]: any | CmsEntryListWhereRef;
 }
 
 /**
@@ -1493,7 +1497,7 @@ export interface CmsEntryGetParams {
  * @category GraphQL params
  */
 export interface CmsEntryListParams {
-    where: CmsEntryListWhere;
+    where?: CmsEntryListWhere;
     sort?: CmsEntryListSort;
     search?: string;
     fields?: string[];
@@ -1891,14 +1895,11 @@ export interface CmsGroupStorageOperationsListParams {
 }
 
 export interface CmsGroupStorageOperationsCreateParams {
-    input: CmsGroupCreateInput;
     group: CmsGroup;
 }
 
 export interface CmsGroupStorageOperationsUpdateParams {
-    original: CmsGroup;
     group: CmsGroup;
-    input: CmsGroupUpdateInput;
 }
 
 export interface CmsGroupStorageOperationsDeleteParams {
@@ -1950,14 +1951,11 @@ export interface CmsModelStorageOperationsListParams {
 }
 
 export interface CmsModelStorageOperationsCreateParams {
-    input: CmsModelCreateInput;
     model: CmsModel;
 }
 
 export interface CmsModelStorageOperationsUpdateParams {
-    original: CmsModel;
     model: CmsModel;
-    input: CmsModelUpdateInput;
 }
 
 export interface CmsModelStorageOperationsDeleteParams {
@@ -2011,10 +2009,6 @@ export interface CmsEntryStorageOperationsCreateParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
     /**
-     * Input received from the user.
-     */
-    input: Record<string, any>;
-    /**
      * Real entry, with no transformations on it.
      */
     entry: CmsEntry;
@@ -2027,14 +2021,6 @@ export interface CmsEntryStorageOperationsCreateParams<
 export interface CmsEntryStorageOperationsCreateRevisionFromParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
-    /**
-     * The entry we are creating new one from.
-     */
-    originalEntry: CmsEntry;
-    /**
-     * The entry we are creating new one from, directly from storage, with transformations on it.
-     */
-    originalStorageEntry: T;
     /**
      * Latest entry, used to calculate the new version.
      */
@@ -2057,18 +2043,6 @@ export interface CmsEntryStorageOperationsUpdateParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
     /**
-     * Input received from the user.
-     */
-    input: Record<string, any>;
-    /**
-     * Used to compare IDs, versions and passed into storage operations to be used if required.
-     */
-    originalEntry: CmsEntry;
-    /**
-     * Directly from storage, with transformations on it.
-     */
-    originalStorageEntry: T;
-    /**
      * Real entry, with no transformations on it.
      */
     entry: CmsEntry;
@@ -2084,45 +2058,31 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
     /**
      * Entry that was deleted.
      */
-    entryToDelete: CmsEntry;
+    entry: CmsEntry;
     /**
      * Entry that was deleted, directly from storage, with transformations.
      */
-    storageEntryToDelete: T;
+    storageEntry: T;
     /**
      * Entry that was set as latest.
      */
-    entryToSetAsLatest: CmsEntry | null;
+    latestEntry: CmsEntry | null;
     /**
      * Entry that was set as latest, directly from storage, with transformations.
      */
-    storageEntryToSetAsLatest: T | null;
+    latestStorageEntry: T | null;
 }
 
-export interface CmsEntryStorageOperationsDeleteParams<
-    T extends CmsStorageEntry = CmsStorageEntry
-> {
+export interface CmsEntryStorageOperationsDeleteParams {
     /**
      * Entry that is going to be deleted.
      */
     entry: CmsEntry;
-    /**
-     * Entry that is going to be deleted, directly from storage.
-     */
-    storageEntry: T;
 }
 
 export interface CmsEntryStorageOperationsPublishParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
-    /**
-     * The entry record before it was published.
-     */
-    originalEntry: CmsEntry;
-    /**
-     * Directly from storage, with transformations on it.
-     */
-    originalStorageEntry: T;
     /**
      * The modified entry that is going to be saved as published.
      * Entry is in its original form.
@@ -2137,14 +2097,6 @@ export interface CmsEntryStorageOperationsPublishParams<
 export interface CmsEntryStorageOperationsUnpublishParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
-    /**
-     * The entry record before it was unpublished.
-     */
-    originalEntry: CmsEntry;
-    /**
-     * The entry record before it was unpublished, with transformations on it.
-     */
-    originalStorageEntry: T;
     /**
      * The modified entry that is going to be saved as unpublished.
      */
@@ -2166,14 +2118,6 @@ export interface CmsEntryStorageOperationsRequestChangesParams<
      * Entry that is prepared for the storageOperations, with the transformations.
      */
     storageEntry: T;
-    /**
-     * Original entry from the storage.
-     */
-    originalEntry: CmsEntry;
-    /**
-     * Original entry to be updated, directly from storage, with the transformations.
-     */
-    originalStorageEntry: T;
 }
 
 export interface CmsEntryStorageOperationsRequestReviewParams<
@@ -2187,14 +2131,6 @@ export interface CmsEntryStorageOperationsRequestReviewParams<
      * Entry that is prepared for the storageOperations, with the transformations.
      */
     storageEntry: T;
-    /**
-     * Original entry from the storage.
-     */
-    originalEntry: CmsEntry;
-    /**
-     * Original entry to be updated, directly from storage, with the transformations.
-     */
-    originalStorageEntry: T;
 }
 
 export interface CmsEntryStorageOperationsGetByIdsParams {
@@ -2356,7 +2292,7 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Delete the entry.
      */
-    delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams<T>) => Promise<void>;
+    delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
     /**
      * Publish the entry.
      */
@@ -2399,7 +2335,6 @@ export interface CmsSettingsStorageOperationsCreateParams {
 }
 
 export interface CmsSettingsStorageOperationsUpdateParams {
-    original: CmsSettings;
     settings: CmsSettings;
 }
 
@@ -2437,7 +2372,6 @@ export interface CmsSystemStorageOperationsCreateParams {
 
 export interface CmsSystemStorageOperationsUpdateParams {
     system: CmsSystem;
-    original: CmsSystem;
 }
 
 export interface CmsSystemStorageOperations {

@@ -23,7 +23,9 @@ const baseGroup = new CmsGroupPlugin({
     tenant: "root",
     locale: "en-US",
     id: "group",
-    slug: "group"
+    slug: "group",
+    description: "",
+    icon: ""
 });
 
 const biography = crypto.randomBytes(65536).toString("hex");
@@ -84,6 +86,7 @@ export const createPersonModel = (): CmsModel => {
         layout: Object.values(personModelFields).map(field => {
             return [field.id];
         }),
+        description: "",
         webinyVersion
     };
 };
@@ -150,8 +153,7 @@ export const createPersonEntries = async (
 
         const entryResult = await storageOperations.entries.create(personModel, {
             entry,
-            storageEntry: entry,
-            input: {} as any
+            storageEntry: entry
         });
 
         entries.push(entryResult);
@@ -185,8 +187,7 @@ export const createPersonEntries = async (
 
             const entryRevisionResult = await storageOperations.entries.create(personModel, {
                 entry: revision,
-                storageEntry: revision,
-                input: {} as any
+                storageEntry: revision
             });
             entries.push(entryRevisionResult);
             /**

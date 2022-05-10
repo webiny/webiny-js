@@ -191,7 +191,7 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams
     ) => {
-        const { originalEntry, entry, storageEntry } = params;
+        const { entry, storageEntry } = params;
         const revisionKeys = {
             PK: createPartitionKey(entry),
             SK: createRevisionSortKey(entry)
@@ -240,7 +240,6 @@ export const createEntriesStorageOperations = (
                 ex.code || "CREATE_REVISION_ERROR",
                 {
                     error: ex,
-                    originalEntry,
                     entry,
                     storageEntry
                 }
@@ -261,7 +260,6 @@ export const createEntriesStorageOperations = (
                 ex.code || "CREATE_REVISION_ERROR",
                 {
                     error: ex,
-                    originalEntry,
                     entry
                 }
             );
@@ -273,7 +271,7 @@ export const createEntriesStorageOperations = (
     };
 
     const update = async (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams) => {
-        const { originalEntry, entry, storageEntry } = params;
+        const { entry, storageEntry } = params;
         const revisionKeys = {
             PK: createPartitionKey(entry),
             SK: createRevisionSortKey(entry)
@@ -288,7 +286,7 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: [originalEntry.id]
+            ids: [entry.id]
         });
 
         const items = [
@@ -302,7 +300,7 @@ export const createEntriesStorageOperations = (
          * If the latest entry is the one being updated, we need to create a new latest entry records.
          */
         let elasticsearchLatestData = null;
-        if (latestStorageEntry.id === originalEntry.id) {
+        if (latestStorageEntry.id === entry.id) {
             /**
              * First we update the regular DynamoDB table
              */
@@ -339,7 +337,6 @@ export const createEntriesStorageOperations = (
                 ex.code || "UPDATE_ENTRY_ERROR",
                 {
                     error: ex,
-                    originalEntry,
                     entry,
                     storageEntry
                 }
@@ -363,7 +360,6 @@ export const createEntriesStorageOperations = (
                 ex.code || "UPDATE_ES_ENTRY_ERROR",
                 {
                     error: ex,
-                    originalEntry,
                     entry
                 }
             );
@@ -446,9 +442,9 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsDeleteRevisionParams
     ) => {
-        const { entryToDelete, entryToSetAsLatest, storageEntryToSetAsLatest } = params;
+        const { entry, latestEntry, latestStorageEntry } = params;
 
-        const partitionKey = createPartitionKey(entryToDelete);
+        const partitionKey = createPartitionKey(entry);
 
         const { index } = configurations.es({
             model
@@ -458,7 +454,7 @@ export const createEntriesStorageOperations = (
          */
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: [entryToDelete.id]
+            ids: [entry.id]
         });
         /**
          * We need to delete all existing records of the given entry revision.
@@ -469,7 +465,7 @@ export const createEntriesStorageOperations = (
              */
             entity.deleteBatch({
                 PK: partitionKey,
-                SK: createRevisionSortKey(entryToDelete)
+                SK: createRevisionSortKey(entry)
             })
         ];
 
@@ -478,7 +474,7 @@ export const createEntriesStorageOperations = (
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
          */
-        if (publishedStorageEntry && entryToDelete.id === publishedStorageEntry.id) {
+        if (publishedStorageEntry && entry.id === publishedStorageEntry.id) {
             items.push(
                 entity.deleteBatch({
                     PK: partitionKey,
@@ -492,12 +488,12 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
-        if (entryToSetAsLatest && storageEntryToSetAsLatest) {
+        if (latestEntry && latestStorageEntry) {
             const esEntry = prepareEntryToIndex({
                 plugins,
                 model,
-                entry: lodashCloneDeep(entryToSetAsLatest),
-                storageEntry: lodashCloneDeep(storageEntryToSetAsLatest)
+                entry: lodashCloneDeep(latestEntry),
+                storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
             const esLatestData = await getESLatestEntryData(plugins, esEntry);
@@ -506,7 +502,7 @@ export const createEntriesStorageOperations = (
              */
             items.push(
                 entity.putBatch({
-                    ...storageEntryToSetAsLatest,
+                    ...latestStorageEntry,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
                     TYPE: createLatestType()
@@ -537,9 +533,9 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_REVISION_ERROR",
                 {
                     error: ex,
-                    entryToDelete,
-                    entryToSetAsLatest,
-                    storageEntryToSetAsLatest
+                    entry,
+                    latestEntry,
+                    latestStorageEntry
                 }
             );
         }
@@ -560,9 +556,9 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_REVISION_ERROR",
                 {
                     error: ex,
-                    entryToDelete,
-                    entryToSetAsLatest,
-                    storageEntryToSetAsLatest
+                    entry,
+                    latestEntry,
+                    latestStorageEntry
                 }
             );
         }
@@ -964,7 +960,7 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsRequestReviewParams
     ) => {
-        const { entry, storageEntry, originalEntry } = params;
+        const { entry, storageEntry } = params;
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -1010,8 +1006,8 @@ export const createEntriesStorageOperations = (
                 ex.code || "REQUEST_REVIEW_ERROR",
                 {
                     entry,
-                    latestStorageEntry,
-                    originalEntry
+                    storageEntry,
+                    latestStorageEntry
                 }
             );
         }
@@ -1036,8 +1032,8 @@ export const createEntriesStorageOperations = (
                 ex.code || "REQUEST_REVIEW_ERROR",
                 {
                     entry,
-                    latestStorageEntry,
-                    originalEntry
+                    storageEntry,
+                    latestStorageEntry
                 }
             );
         }
@@ -1048,7 +1044,7 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsRequestChangesParams
     ) => {
-        const { entry, storageEntry, originalEntry } = params;
+        const { entry, storageEntry } = params;
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -1109,8 +1105,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "REQUEST_CHANGES_ERROR",
                 {
                     entry,
-                    latestStorageEntry,
-                    originalEntry
+                    latestStorageEntry
                 }
             );
         }
@@ -1135,8 +1130,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "REQUEST_CHANGES_ERROR",
                 {
                     entry,
-                    latestStorageEntry,
-                    originalEntry
+                    latestStorageEntry
                 }
             );
         }

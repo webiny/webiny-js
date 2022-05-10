@@ -69,7 +69,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
             return;
         }
         await storageOperations.system.update({
-            original,
             system
         });
     };
@@ -95,7 +94,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
                     readAPIKey
                 };
                 await storageOperations.system.update({
-                    original,
                     system
                 });
                 return readAPIKey;

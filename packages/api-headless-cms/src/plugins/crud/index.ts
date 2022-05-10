@@ -81,6 +81,7 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
             ...createContentEntryCrud({
                 context,
                 getIdentity,
+                getTenant,
                 storageOperations
             })
         };

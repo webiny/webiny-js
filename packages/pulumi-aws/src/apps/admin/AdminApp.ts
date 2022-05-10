@@ -3,14 +3,13 @@ import * as aws from "@pulumi/aws";
 import {
     defineApp,
     createGenericApplication,
-    mergeAppHooks,
     ApplicationContext,
     ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { adminUpload } from "./AdminHookUpload";
+import { adminUpload } from "./AdminUpload";
 
 export interface AdminAppConfig {
     /** Custom domain configuration */
@@ -66,7 +65,15 @@ export const AdminApp = defineApp({
 
         app.addOutputs({
             appStorage: bucket.bucket.output.id,
+            appDomain: cloudfront.output.domainName,
             appUrl: cloudfront.output.domainName.apply(value => `https://${value}`)
+        });
+
+        app.onAfterDeploy(async ({ outputs }) => {
+            await adminUpload({
+                appDir: app.ctx.appDir,
+                bucket: outputs["appStorage"]
+            });
         });
 
         return {
@@ -78,7 +85,7 @@ export const AdminApp = defineApp({
 
 export type AdminApp = InstanceType<typeof AdminApp>;
 
-export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminApp>) {
+export function createAdminApp(config?: AdminAppConfig & ApplicationConfig<AdminApp>) {
     return createGenericApplication({
         id: "admin",
         name: "admin",
@@ -89,14 +96,18 @@ export function createAdminApp(config: AdminAppConfig & ApplicationConfig<AdminA
                 deploy: false
             }
         },
-        app(ctx) {
-            const app = new AdminApp(ctx, config);
-            config.config?.(app, ctx);
+        async app(ctx) {
+            // Create the app instance.
+            const app = new AdminApp(ctx);
+            // Run the default application setup.
+            await app.setup(config || {});
+            // Run the custom user config.
+            await config?.config?.(app, ctx);
             return app;
         },
-        onBeforeBuild: config.onBeforeBuild,
-        onAfterBuild: config.onAfterBuild,
-        onBeforeDeploy: config.onBeforeDeploy,
-        onAfterDeploy: mergeAppHooks(adminUpload, config.onAfterDeploy)
+        onBeforeBuild: config?.onBeforeBuild,
+        onAfterBuild: config?.onAfterBuild,
+        onBeforeDeploy: config?.onBeforeDeploy,
+        onAfterDeploy: config?.onAfterDeploy
     });
 }
