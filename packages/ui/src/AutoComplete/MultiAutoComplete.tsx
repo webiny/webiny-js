@@ -12,7 +12,6 @@ import { Typography } from "~/Typography";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
 import { FormElementMessage } from "~/FormElementMessage";
-
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as PrevIcon } from "./icons/navigate_before-24px.svg";
 import { ReactComponent as NextIcon } from "./icons/navigate_next-24px.svg";
@@ -20,17 +19,18 @@ import { ReactComponent as PrevAllIcon } from "./icons/skip_previous-24px.svg";
 import { ReactComponent as NextAllIcon } from "./icons/skip_next-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
-
 import { css } from "emotion";
+import { ListItemGraphic } from "~/List";
+import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
 
 const listItemMetaClassName = css({
     display: "table"
 });
+
 const iconButtonClassName = css({
     display: "table-cell !important"
 });
-import { ListItemGraphic } from "~/List";
-import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
+
 const style = {
     pagination: {
         bar: css({
@@ -59,6 +59,7 @@ const style = {
         })
     }
 };
+
 const listStyles = css({
     "&.multi-autocomplete__options-list": {
         listStyle: "none",
@@ -72,7 +73,8 @@ const listStyles = css({
 interface SelectionItem {
     name: string;
 }
-type MultiAutoCompletePropsValue = SelectionItem[];
+
+type MultiAutoCompletePropsValue = SelectionItem[] | string[];
 
 export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "value"> {
     /**
@@ -135,7 +137,8 @@ function paginateMultipleSelection(
 ) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
     let data = Array.isArray(multipleSelection)
-        ? multipleSelection.map((item, index) => ({ ...item, index }))
+        ? // @ts-ignore TODO: Will fix this in the following PR.
+          multipleSelection.map((item, index) => ({ ...item, index }))
         : [];
 
     if (typeof search === "string" && search) {
@@ -261,11 +264,11 @@ export class MultiAutoComplete extends React.Component<
     getOptions() {
         const { unique, value, allowFreeInput, useSimpleValues, options } = this.props;
 
+        const values = Array.isArray(value) ? [...value] : [];
         const filtered = options.filter(item => {
             // We need to filter received options.
             // 1) If "unique" prop was passed, we don't want to show already picked options again.
             if (unique) {
-                const values = value;
                 if (Array.isArray(values)) {
                     if (
                         values.find(
