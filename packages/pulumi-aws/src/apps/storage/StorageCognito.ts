@@ -1,12 +1,19 @@
 import * as aws from "@pulumi/aws";
+import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-class Cognito {
-    userPoolClient: aws.cognito.UserPoolClient;
-    userPool: aws.cognito.UserPool;
-    constructor({ protectedEnvironment }: { protectedEnvironment: boolean }) {
-        this.userPool = new aws.cognito.UserPool(
-            "api-user-pool",
-            {
+export interface StorageCognitoParams {
+    protect: boolean;
+    useEmailAsUsername: boolean;
+}
+
+export type StorageCognito = PulumiAppModule<typeof StorageCognito>;
+
+export const StorageCognito = defineAppModule({
+    name: "Cognito",
+    config(app: PulumiApp, params: StorageCognitoParams) {
+        const userPool = app.addResource(aws.cognito.UserPool, {
+            name: "user-pool",
+            config: {
                 passwordPolicy: {
                     minimumLength: 8,
                     requireLowercase: false,
@@ -22,12 +29,16 @@ class Cognito {
                 emailConfiguration: {
                     emailSendingAccount: "COGNITO_DEFAULT"
                 },
+                // In a legacy setup we use email as username.
+                // We need to provide a way for users to have this setup,
+                // because changing it would require whole cognito pool to be recreated.
+                usernameAttributes: params.useEmailAsUsername ? ["email"] : undefined,
+                aliasAttributes: params.useEmailAsUsername ? undefined : ["preferred_username"],
                 lambdaConfig: {},
                 mfaConfiguration: "OFF",
                 userPoolAddOns: {
                     advancedSecurityMode: "OFF" /* required */
                 },
-                usernameAttributes: ["email"],
                 verificationMessageTemplate: {
                     defaultEmailOption: "CONFIRM_WITH_CODE"
                 },
@@ -67,13 +78,21 @@ class Cognito {
                     }
                 ]
             },
-            { protect: protectedEnvironment }
-        );
-
-        this.userPoolClient = new aws.cognito.UserPoolClient("api-user-pool-client", {
-            userPoolId: this.userPool.id
+            opts: {
+                protect: params.protect
+            }
         });
-    }
-}
 
-export default Cognito;
+        const userPoolClient = app.addResource(aws.cognito.UserPoolClient, {
+            name: "user-pool-client",
+            config: {
+                userPoolId: userPool.output.id
+            }
+        });
+
+        return {
+            userPool,
+            userPoolClient
+        };
+    }
+});

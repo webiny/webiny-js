@@ -17,7 +17,8 @@
     "@pulumi/aws": "^4.10.0",
     "@pulumi/pulumi": "^3.25.0",
     "@webiny/cli-plugin-deploy-pulumi": "^5.25.0",
-    "@webiny/pulumi-sdk": "^5.25.0"
+    "@webiny/pulumi-sdk": "^5.25.0",
+    "chalk": "^4.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -25,6 +26,8 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@babel/runtime": "^7.16.3",
+    "@webiny/api-page-builder": "^5.25.0",
+    "@webiny/aws-layers": "^5.25.0",
     "@webiny/cli": "^5.25.0",
     "@webiny/project-utils": "^5.25.0",
     "rimraf": "^3.0.2",
