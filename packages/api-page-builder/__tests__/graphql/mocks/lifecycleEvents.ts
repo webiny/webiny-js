@@ -160,3 +160,28 @@ export const assignPageElementLifecycleEvents = () => {
         });
     });
 };
+
+export const assignBlockCategoryLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforeBlockCategoryCreate.subscribe(async params => {
+            tracker.track("block-category:beforeCreate", params);
+        });
+        context.pageBuilder.onAfterBlockCategoryCreate.subscribe(async params => {
+            tracker.track("block-category:afterCreate", params);
+        });
+
+        context.pageBuilder.onBeforeBlockCategoryUpdate.subscribe(async params => {
+            tracker.track("block-category:beforeUpdate", params);
+        });
+        context.pageBuilder.onAfterBlockCategoryUpdate.subscribe(async params => {
+            tracker.track("block-category:afterUpdate", params);
+        });
+
+        context.pageBuilder.onBeforeBlockCategoryDelete.subscribe(async params => {
+            tracker.track("block-category:beforeDelete", params);
+        });
+        context.pageBuilder.onAfterBlockCategoryDelete.subscribe(async params => {
+            tracker.track("block-category:afterDelete", params);
+        });
+    });
+};
