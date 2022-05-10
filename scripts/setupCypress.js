@@ -78,6 +78,7 @@ const args = {
             env: args.env,
             cwd: args.projectFolder
         });
+
         cypressConfig.baseUrl = adminOutput.appUrl;
         cypressConfig.env.ADMIN_URL = adminOutput.appUrl;
         cypressConfig.env.WEBSITE_URL = websiteOutput.deliveryUrl;

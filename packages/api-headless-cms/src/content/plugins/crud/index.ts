@@ -80,6 +80,7 @@ export const createContentCruds = (params: CreateContentCrudsParams) => {
             ...createContentEntryCrud({
                 context,
                 getIdentity,
+                getTenant,
                 storageOperations
             })
         };

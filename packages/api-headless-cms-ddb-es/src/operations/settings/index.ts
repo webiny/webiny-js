@@ -97,7 +97,7 @@ export const createSettingsStorageOperations = (
     };
 
     const update = async (params: CmsSettingsStorageOperationsUpdateParams) => {
-        const { settings, original } = params;
+        const { settings } = params;
 
         const keys = createKeys(settings);
 
@@ -117,7 +117,6 @@ export const createSettingsStorageOperations = (
                     error: ex,
                     settings,
                     dbSettings,
-                    original,
                     keys
                 }
             );

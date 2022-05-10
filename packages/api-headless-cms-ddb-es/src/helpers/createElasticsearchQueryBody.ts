@@ -60,7 +60,7 @@ interface CreateElasticsearchQueryArgs {
     };
 }
 
-const specialFields = ["published", "latest", "locale", "tenant"];
+const specialFields: (keyof Partial<CmsEntryListWhere>)[] = ["published", "latest"];
 const noKeywordFields = ["date", "number", "boolean"];
 
 const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esSort => {
@@ -126,12 +126,15 @@ const findFieldByAliasOrFieldId = (model: CmsModel, id: string): CmsModelField |
  * Latest is used in the manage API and published in the read API.
  */
 const createInitialQueryValue = (
-    args: CreateElasticsearchQueryArgs
+    params: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
+    const { model, where: initialWhere } = params;
     /**
      * Cast as partial so we can remove unnecessary keys.
      */
-    const where = args.where as Partial<CmsEntryListWhere>;
+    const where: CmsEntryListWhere = {
+        ...initialWhere
+    };
 
     const query: ElasticsearchBoolQueryConfig = {
         must: [],
@@ -142,19 +145,16 @@ const createInitialQueryValue = (
 
     // When ES index is shared between tenants, we need to filter records by tenant ID
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-    if (sharedIndex && where.tenant) {
-        query.must.push({ term: { "tenant.keyword": where.tenant } });
+    if (sharedIndex) {
+        query.must.push({ term: { "tenant.keyword": model.tenant } });
     }
-    delete where["tenant"];
 
-    if (where.locale) {
-        query.must.push({
-            term: {
-                "locale.keyword": where.locale
-            }
-        });
-    }
-    delete where["locale"];
+    query.must.push({
+        term: {
+            "locale.keyword": model.locale
+        }
+    });
+
     /**
      * We must transform published and latest where args into something that is understandable by our Elasticsearch
      */
@@ -412,16 +412,16 @@ const execElasticsearchBuildQueryPlugins = (
     params: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
     const {
+        model,
         where: initialWhere,
         modelFields,
         parentPath,
         plugins,
         searchPlugins,
-        fullTextSearch,
-        model
+        fullTextSearch
     } = params;
 
-    const where: CmsEntryListWhere = {
+    const where: Partial<CmsEntryListWhere> = {
         ...initialWhere
     };
     const query = createInitialQueryValue({
@@ -450,7 +450,7 @@ const execElasticsearchBuildQueryPlugins = (
         return query;
     }
 
-    const operatorPlugins = getElasticsearchOperatorPluginsByLocale(plugins, initialWhere.locale);
+    const operatorPlugins = getElasticsearchOperatorPluginsByLocale(plugins, model.locale);
 
     for (const key in where) {
         if (where.hasOwnProperty(key) === false) {
@@ -460,7 +460,9 @@ const execElasticsearchBuildQueryPlugins = (
          * We do not need to go further if value is undefined.
          * There are few hardcoded possibilities when value is undefined, for example, ownedBy.
          */
-        if (where[key] === undefined) {
+        // TODO figure out how to have type.
+        const value = (where as any)[key];
+        if (value === undefined) {
             continue;
         }
         const { field, operator } = parseWhereKey(key);
@@ -492,18 +494,18 @@ const execElasticsearchBuildQueryPlugins = (
          * There is a possibility that value is an object.
          * In that case, check if field is ref field and continue a bit differently.
          */
-        if (isRefFieldFiltering({ key, value: where[key], field: cmsField })) {
+        if (isRefFieldFiltering({ key, value, field: cmsField })) {
             /**
              * We we need to go through each key in where[key] to determine the filters.
              */
-            for (const whereKey in where[key]) {
+            for (const whereKey in value) {
                 const { operator } = parseWhereKey(whereKey);
                 applyFiltering({
                     query,
                     modelField,
                     operator,
                     key: whereKey,
-                    value: where[key][whereKey],
+                    value: value[whereKey],
                     searchPlugins,
                     operatorPlugins,
                     parentPath
@@ -516,7 +518,7 @@ const execElasticsearchBuildQueryPlugins = (
             modelField,
             operator,
             key,
-            value: where[key],
+            value,
             searchPlugins,
             operatorPlugins,
             parentPath
@@ -528,7 +530,7 @@ const execElasticsearchBuildQueryPlugins = (
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
     const { plugins, model, args, parentPath = null } = params;
-    const { where, after, limit, sort: initialSort, search, fields } = args;
+    const { where = {}, after, limit, sort: initialSort, search, fields } = args;
 
     const modelFields = createModelFields(plugins, model);
     const searchPlugins = searchPluginsList(plugins);

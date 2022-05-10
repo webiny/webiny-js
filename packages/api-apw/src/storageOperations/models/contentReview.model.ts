@@ -293,5 +293,6 @@ export const createContentReviewModelDefinition = ({
             stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])
         ]),
         latestCommentId()
-    ]
+    ],
+    description: ""
 });

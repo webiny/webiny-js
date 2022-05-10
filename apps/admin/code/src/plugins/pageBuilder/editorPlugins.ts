@@ -14,6 +14,7 @@ import button from "@webiny/app-page-builder/editor/plugins/elements/button";
 import soundcloud from "@webiny/app-page-builder/editor/plugins/elements/media/soundcloud";
 import vimeo from "@webiny/app-page-builder/editor/plugins/elements/media/vimeo";
 import youtube from "@webiny/app-page-builder/editor/plugins/elements/media/youtube";
+import iframe from "@webiny/app-page-builder/editor/plugins/elements/media/iframe";
 import pinterest from "@webiny/app-page-builder/editor/plugins/elements/social/pinterest";
 import twitter from "@webiny/app-page-builder/editor/plugins/elements/social/twitter";
 import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/codesandbox";
@@ -93,6 +94,7 @@ export default [
     soundcloud(),
     vimeo(),
     youtube(),
+    iframe(),
     pinterest(),
     twitter(),
     codesandbox(),

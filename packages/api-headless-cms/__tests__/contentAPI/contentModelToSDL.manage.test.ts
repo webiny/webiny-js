@@ -5,15 +5,18 @@ import { createManageSDL } from "~/content/plugins/schema/createManageSDL";
 import categoryManage from "./snapshots/category.manage";
 import productManage from "./snapshots/product.manage";
 import reviewManage from "./snapshots/review.manage";
+import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
 
 describe("MANAGE - ContentModel to SDL", () => {
-    const fieldTypePlugins = graphQLFieldPlugins().reduce((acc, pl) => {
+    const fieldTypePlugins = graphQLFieldPlugins().reduce<
+        Record<string, CmsModelFieldToGraphQLPlugin>
+    >((acc, pl) => {
         acc[pl.fieldType] = pl;
         return acc;
     }, {});
 
     test("Category SDL", async () => {
-        const model = contentModels.find(c => c.modelId === "category");
+        const model = contentModels.find(c => c.modelId === "category") as CmsModel;
         const sdl = createManageSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(categoryManage.trim(), { parser: "graphql" });
@@ -21,7 +24,7 @@ describe("MANAGE - ContentModel to SDL", () => {
     });
 
     test("Product SDL", async () => {
-        const model = contentModels.find(c => c.modelId === "product");
+        const model = contentModels.find(c => c.modelId === "product") as CmsModel;
         const sdl = createManageSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(productManage.trim(), { parser: "graphql" });
@@ -29,7 +32,7 @@ describe("MANAGE - ContentModel to SDL", () => {
     });
 
     test("Review SDL", async () => {
-        const model = contentModels.find(c => c.modelId === "review");
+        const model = contentModels.find(c => c.modelId === "review") as CmsModel;
         const sdl = createManageSDL({ model, fieldTypePlugins });
         const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = prettier.format(reviewManage.trim(), { parser: "graphql" });

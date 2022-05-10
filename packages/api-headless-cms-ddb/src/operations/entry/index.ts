@@ -88,7 +88,7 @@ export const createEntriesStorageOperations = (
                 model,
                 field,
                 value,
-                getStoragePlugin(fieldType: string): StorageTransformPlugin<any> {
+                getStoragePlugin(fieldType: string): StorageTransformPlugin {
                     return storageTransformPlugins[fieldType] || storageTransformPlugins["*"];
                 },
                 plugins
@@ -150,9 +150,9 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams
     ) => {
-        const { originalEntry, entry, storageEntry, latestEntry } = params;
+        const { entry, storageEntry, latestEntry } = params;
 
-        const partitionKey = createPartitionKey(storageEntry);
+        const partitionKey = createPartitionKey(entry);
         /**
          * We need to:
          *  - create the main entry item
@@ -190,7 +190,6 @@ export const createEntriesStorageOperations = (
                 ex.code || "CREATE_REVISION_ERROR",
                 {
                     error: ex,
-                    originalEntry,
                     latestEntry,
                     entry,
                     storageEntry
@@ -204,8 +203,8 @@ export const createEntriesStorageOperations = (
     };
 
     const update = async (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams) => {
-        const { originalEntry, entry, storageEntry } = params;
-        const partitionKey = createPartitionKey(originalEntry);
+        const { entry, storageEntry } = params;
+        const partitionKey = createPartitionKey(entry);
 
         const items = [];
         /**
@@ -257,7 +256,6 @@ export const createEntriesStorageOperations = (
                 ex.code || "UPDATE_ERROR",
                 {
                     error: ex,
-                    originalEntry,
                     entry,
                     latestStorageEntry
                 }
@@ -321,22 +319,22 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsDeleteRevisionParams
     ) => {
-        const { entryToDelete, entryToSetAsLatest, storageEntryToSetAsLatest } = params;
-        const partitionKey = createPartitionKey(entryToDelete);
+        const { entry, latestEntry, latestStorageEntry } = params;
+        const partitionKey = createPartitionKey(entry);
 
         const items = [
             entity.deleteBatch({
                 PK: partitionKey,
-                SK: createRevisionSortKey(entryToDelete)
+                SK: createRevisionSortKey(entry)
             })
         ];
 
-        const publishedStorageEntry = await getPublishedRevisionByEntryId(model, entryToDelete);
+        const publishedStorageEntry = await getPublishedRevisionByEntryId(model, entry);
 
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
          */
-        if (publishedStorageEntry && entryToDelete.id === publishedStorageEntry.id) {
+        if (publishedStorageEntry && entry.id === publishedStorageEntry.id) {
             items.push(
                 entity.deleteBatch({
                     PK: partitionKey,
@@ -344,15 +342,15 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
-        if (storageEntryToSetAsLatest) {
+        if (latestStorageEntry) {
             items.push(
                 entity.putBatch({
-                    ...storageEntryToSetAsLatest,
+                    ...latestStorageEntry,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
                     TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(storageEntryToSetAsLatest)
+                    GSI1_SK: createGSISortKey(latestStorageEntry)
                 })
             );
         }
@@ -367,8 +365,8 @@ export const createEntriesStorageOperations = (
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code, {
                 error: ex,
-                entryToDelete,
-                entryToSetAsLatest
+                entry,
+                latestEntry
             });
         }
     };
@@ -496,7 +494,7 @@ export const createEntriesStorageOperations = (
     const list = async (model: CmsModel, params: CmsEntryStorageOperationsListParams) => {
         const {
             limit: initialLimit = 10,
-            where: originalWhere,
+            where: initialWhere,
             after,
             sort,
             fields,
@@ -504,7 +502,7 @@ export const createEntriesStorageOperations = (
         } = params;
         const limit = initialLimit <= 0 || initialLimit >= 10000 ? 10000 : initialLimit;
 
-        const type = originalWhere.published ? "P" : "L";
+        const type = initialWhere.published ? "P" : "L";
 
         const queryAllParams: QueryAllParams = {
             entity,
@@ -533,12 +531,10 @@ export const createEntriesStorageOperations = (
             };
         }
         const where: Partial<CmsEntryListWhere> = {
-            ...originalWhere
+            ...initialWhere
         };
         delete where["published"];
         delete where["latest"];
-        delete where["locale"];
-        delete where["tenant"];
         /**
          * We need a object containing field, transformers and paths.
          * Just build it here and pass on into other methods that require it to avoid mapping multiple times.
@@ -612,7 +608,7 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsRequestChangesParams
     ) => {
-        const { entry, storageEntry, originalEntry } = params;
+        const { entry, storageEntry } = params;
 
         const partitionKey = createPartitionKey(entry);
 
@@ -663,8 +659,7 @@ export const createEntriesStorageOperations = (
                 ex.message || "Could not execute the request changes batch.",
                 ex.code || "REQUEST_CHANGES_ERROR",
                 {
-                    entry,
-                    originalEntry
+                    entry
                 }
             );
         }
@@ -675,7 +670,7 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsRequestReviewParams
     ) => {
-        const { entry, storageEntry, originalEntry } = params;
+        const { entry, storageEntry } = params;
 
         const partitionKey = createPartitionKey(entry);
         /**
@@ -727,8 +722,7 @@ export const createEntriesStorageOperations = (
                 ex.code || "REQUEST_REVIEW_ERROR",
                 {
                     entry,
-                    storageEntry,
-                    originalEntry
+                    storageEntry
                 }
             );
         }
