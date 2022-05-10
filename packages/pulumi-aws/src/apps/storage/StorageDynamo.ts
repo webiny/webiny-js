@@ -1,11 +1,14 @@
 import * as aws from "@pulumi/aws";
+import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-class DynamoDB {
-    table: aws.dynamodb.Table;
-    constructor({ protectedEnvironment }: { protectedEnvironment: boolean }) {
-        this.table = new aws.dynamodb.Table(
-            "webiny",
-            {
+export type StorageDynamo = PulumiAppModule<typeof StorageDynamo>;
+
+export const StorageDynamo = defineAppModule({
+    name: "DynamoDb",
+    config(app: PulumiApp, params: { protect: boolean }) {
+        return app.addResource(aws.dynamodb.Table, {
+            name: "webiny",
+            config: {
                 attributes: [
                     { name: "PK", type: "S" },
                     { name: "SK", type: "S" },
@@ -24,9 +27,9 @@ class DynamoDB {
                     }
                 ]
             },
-            { protect: protectedEnvironment }
-        );
+            opts: {
+                protect: params.protect
+            }
+        });
     }
-}
-
-export default DynamoDB;
+});

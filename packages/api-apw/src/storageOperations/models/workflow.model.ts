@@ -219,7 +219,7 @@ export const createWorkflowModelDefinition = ({
     modelId: "apwWorkflowModelDefinition",
     layout: [["workflow_title"], ["workflow_steps"], ["workflow_scope"], ["workflow_app"]],
     titleFieldId: "title",
-    description: null,
+    description: "",
     fields: [
         titleField(),
         stepsField([

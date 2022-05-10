@@ -54,6 +54,7 @@ export const createCommentModelDefinition = ({
         modelId: "apwCommentModelDefinition",
         titleFieldId: "displayName",
         layout: [["comment_body"], ["comment_displayName"]],
-        fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()]
+        fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()],
+        description: ""
     };
 };

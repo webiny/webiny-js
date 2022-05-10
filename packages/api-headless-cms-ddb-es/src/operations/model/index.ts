@@ -97,7 +97,7 @@ export const createModelsStorageOperations = (
     };
 
     const update = async (params: CmsModelStorageOperationsUpdateParams) => {
-        const { original, model } = params;
+        const { model } = params;
 
         const keys = createKeys(model);
 
@@ -115,7 +115,6 @@ export const createModelsStorageOperations = (
                 {
                     error: ex,
                     model,
-                    original,
                     keys
                 }
             );

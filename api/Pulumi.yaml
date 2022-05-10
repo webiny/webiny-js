@@ -1,4 +1,0 @@
-name: api
-runtime: nodejs
-description: Represents cloud infrastructure needed for supporting your project's (GraphQL) API.
-main: pulumi/

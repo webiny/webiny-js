@@ -35,6 +35,8 @@ export class ApplicationBuilderLegacy extends ApplicationBuilder {
                         }
                     }
                 });
+
+                return undefined;
             },
             preview: async () => {
                 await args.pulumi.run({
@@ -53,6 +55,8 @@ export class ApplicationBuilderLegacy extends ApplicationBuilder {
                         }
                     }
                 });
+
+                return undefined;
             },
             up: async () => {
                 await args.pulumi.run({
@@ -74,6 +78,8 @@ export class ApplicationBuilderLegacy extends ApplicationBuilder {
                         }
                     }
                 });
+
+                return undefined;
             }
         };
     }
