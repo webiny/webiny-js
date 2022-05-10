@@ -1,6 +1,8 @@
-import { Pulumi } from "./Pulumi";
+import { PreviewResult, RefreshResult, UpResult } from "@pulumi/pulumi/automation";
 import { ApplicationHooks } from "./ApplicationConfig";
 import { ApplicationHook } from "./ApplicationHook";
+import { Pulumi } from "./Pulumi";
+import { PulumiApp } from "./PulumiApp";
 
 export interface ApplicationStackArgs {
     /** Root path of the application */
@@ -20,9 +22,10 @@ export interface ApplicationBuilderConfig extends Partial<ApplicationHooks> {
 }
 
 export interface ApplicationStack {
-    refresh(): Promise<void>;
-    preview(): Promise<void>;
-    up(): Promise<void>;
+    app?: PulumiApp;
+    refresh(): Promise<RefreshResult | undefined>;
+    preview(): Promise<PreviewResult | undefined>;
+    up(): Promise<UpResult | undefined>;
 }
 
 export abstract class ApplicationBuilder<
