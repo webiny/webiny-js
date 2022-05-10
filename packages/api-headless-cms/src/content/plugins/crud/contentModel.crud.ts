@@ -72,6 +72,12 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         })
     };
 
+    const clearModelsCache = (): void => {
+        for (const loader of Object.values(loaders)) {
+            loader.clearAll();
+        }
+    };
+
     const managers = new Map<string, CmsModelManager>();
     const updateManager = async (
         context: CmsContext,
@@ -239,6 +245,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         onAfterModelUpdate,
         onBeforeModelDelete,
         onAfterModelDelete,
+        clearModelsCache,
         getModel,
         listModels,
         async createModel(inputData) {
@@ -258,7 +265,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const identity = getIdentity();
             const model: CmsModel = {
                 name: input.name,
-                description: input.description,
+                description: input.description || "",
                 modelId: input.modelId || "",
                 titleFieldId: "id",
                 locale: getLocale().code,
@@ -272,8 +279,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                createdOn: new Date().toISOString() as any,
-                savedOn: new Date().toISOString() as any,
+                createdOn: new Date().toISOString(),
+                savedOn: new Date().toISOString(),
                 fields: [],
                 lockedFields: [],
                 layout: [],
@@ -286,7 +293,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             });
 
             const createdModel = await storageOperations.models.create({
-                input,
                 model
             });
 
@@ -316,15 +322,13 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             };
 
             await onBeforeModelUpdate.publish({
-                input: {} as any,
+                input: {} as CmsModelUpdateInput,
                 original,
                 model
             });
 
             const resultModel = await storageOperations.models.update({
-                original,
-                model,
-                input: {} as any
+                model
             });
 
             await updateManager(context, resultModel);
@@ -332,7 +336,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             loaders.listModels.clearAll();
 
             await onAfterModelUpdate.publish({
-                input: {} as any,
+                input: {} as CmsModelUpdateInput,
                 original,
                 model: resultModel
             });
@@ -383,7 +387,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 },
                 name: input.name,
                 modelId: input.modelId || "",
-                description: input.description,
+                description: input.description || "",
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
@@ -402,7 +406,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             });
 
             const createdModel = await storageOperations.models.create({
-                input,
                 model
             });
 
@@ -429,7 +432,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             const input: CmsModelUpdateInput = await updatedData.toJSON({ onlyDirty: true });
             if (Object.keys(input).length === 0) {
-                return {} as any;
+                /**
+                 * We need to return the original if nothing is to be updated.
+                 */
+                return original;
             }
             let group: CmsModel["group"] = {
                 id: original.group.id,
@@ -467,9 +473,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             });
 
             const resultModel = await storageOperations.models.update({
-                original,
-                model,
-                input
+                model
             });
 
             await updateManager(context, resultModel);
@@ -513,6 +517,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             managers.delete(model.modelId);
         },
         getModelManager,
-        getManagers: () => managers
+        getEntryManager: async model => {
+            return getModelManager(model);
+        },
+        getManagers: () => managers,
+        getEntryManagers: () => managers
     };
 };

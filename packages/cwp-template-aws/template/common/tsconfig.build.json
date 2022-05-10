@@ -6,7 +6,7 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "module": "esnext",
-    "lib": ["dom", "dom.iterable"],
+    "lib": ["esnext"],
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,

@@ -12,6 +12,5 @@
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
-  },
-  "include": ["./pulumi/**/*.ts"]
+  }
 }

@@ -173,6 +173,12 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
         if (where.hasOwnProperty(key) === false) {
             continue;
         }
+
+        const value = (where as any)[key];
+        if (value === undefined) {
+            continue;
+        }
+
         const { fieldId, operation, negate } = extractWhereParams(key);
 
         const field: ModelField = fields[fieldId];
@@ -201,11 +207,11 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
 
         const objectFilteringParams = {
             key,
-            value: where[key],
+            value,
             field: field.def
         };
         if (isObjectFiltering(objectFilteringParams)) {
-            const propertyFilters = Object.keys(where[key]);
+            const propertyFilters = Object.keys(value);
             if (propertyFilters.length === 0) {
                 continue;
             }
@@ -233,10 +239,7 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
                     path: `${basePath}.${multiValuesPath}${propertyId}`,
                     filterPlugin,
                     negate: propertyNegate,
-                    compareValue: transformValue(
-                        where[key][propertyFilter],
-                        transformValueCallable
-                    ),
+                    compareValue: transformValue(value[propertyFilter], transformValueCallable),
                     transformValue: transformValueCallable
                 });
             }
@@ -257,7 +260,7 @@ const createFilters = (params: CreateFiltersParams): ItemFilter[] => {
             }),
             filterPlugin,
             negate,
-            compareValue: transformValue(where[key], transformValueCallable),
+            compareValue: transformValue(value, transformValueCallable),
             transformValue: transformValueCallable
         });
     }

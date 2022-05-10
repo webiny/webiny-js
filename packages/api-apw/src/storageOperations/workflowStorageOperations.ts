@@ -49,12 +49,7 @@ export const createWorkflowStorageOperations = ({
         async listWorkflows(params) {
             const model = await getWorkflowModel();
             const [entries, meta] = await cms.listLatestEntries(model, {
-                ...params,
-                where: {
-                    ...params.where,
-                    tenant: model.tenant,
-                    locale: model.locale
-                }
+                ...params
             });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
         },
