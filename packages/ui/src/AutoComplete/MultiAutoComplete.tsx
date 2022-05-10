@@ -265,7 +265,27 @@ export class MultiAutoComplete extends React.Component<
         const { unique, value, allowFreeInput, useSimpleValues, options } = this.props;
 
         const values = Array.isArray(value) ? [...value] : [];
-        const filtered = options.filter(item => {
+
+        const filtered = [...options];
+
+        // If free input is allowed, prepend typed value to the list.
+        if (allowFreeInput && this.state.inputValue) {
+            if (useSimpleValues) {
+                const existingValue = filtered.includes(this.state.inputValue);
+                if (!existingValue) {
+                    filtered.unshift(this.state.inputValue);
+                }
+            } else {
+                const existingValue = filtered.find(
+                    item => this.state.inputValue === getOptionText(item, this.props)
+                );
+                if (!existingValue) {
+                    filtered.unshift({ [this.props.textProp]: this.state.inputValue });
+                }
+            }
+        }
+
+        return filtered.filter(item => {
             // We need to filter received options.
             // 1) If "unique" prop was passed, we don't want to show already picked options again.
             if (unique) {
@@ -295,25 +315,6 @@ export class MultiAutoComplete extends React.Component<
                 .toLowerCase()
                 .includes(this.state.inputValue.toLowerCase());
         });
-
-        // If free input is allowed, prepend typed value to the list.
-        if (allowFreeInput && this.state.inputValue) {
-            if (useSimpleValues) {
-                const existingValue = filtered.includes(this.state.inputValue);
-                if (!existingValue) {
-                    filtered.unshift(this.state.inputValue);
-                }
-            } else {
-                const existingValue = filtered.find(
-                    item => this.state.inputValue === getOptionText(item, this.props)
-                );
-                if (!existingValue) {
-                    filtered.unshift({ [this.props.textProp]: this.state.inputValue });
-                }
-            }
-        }
-
-        return filtered;
     }
 
     /**
