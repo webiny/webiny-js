@@ -22,7 +22,7 @@ interface UnionField {
 }
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
-    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.alias as string)}`;
+    return `${createReadTypeName(model.modelId)}${createReadTypeName(field.alias)}`;
 };
 
 interface CreateListFilterParams {

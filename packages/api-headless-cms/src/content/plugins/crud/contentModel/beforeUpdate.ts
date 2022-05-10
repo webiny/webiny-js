@@ -194,9 +194,7 @@ export const assignBeforeModelUpdate = (params: AssignBeforeModelUpdateParams) =
             /**
              * Check the field alias against existing ones.
              */
-            if (!field.alias) {
-                continue;
-            } else if (aliases.includes(field.alias)) {
+            if (aliases.includes(field.alias)) {
                 throw new WebinyError(
                     `Cannot update content model because field "${field.fieldId}" has alias "${field.alias}", which is already used.`
                 );

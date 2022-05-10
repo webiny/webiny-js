@@ -43,9 +43,7 @@ export class CmsModelPlugin extends Plugin {
             }
 
             fieldIdList.push(field.fieldId);
-            if (!field.alias) {
-                continue;
-            } else if (aliases.includes(field.alias) === true) {
+            if (aliases.includes(field.alias) === true) {
                 throw new WebinyError(
                     `Fields "alias" is not unique in the content model "${this.contentModel.modelId}".`,
                     "ALIAS_ERROR",

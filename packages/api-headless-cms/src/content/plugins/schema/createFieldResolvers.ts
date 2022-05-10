@@ -5,11 +5,12 @@ import {
     CmsModelFieldToGraphQLCreateResolver,
     ApiEndpoint,
     CmsModel,
-    CmsFieldTypePlugins
+    CmsFieldTypePlugins,
+    CmsEntry
 } from "~/types";
 import { entryFieldFromStorageTransform } from "~/content/plugins/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
-import WebinyError from "@webiny/error";
+import { GraphQLResolveInfo } from "graphql";
 
 interface CreateFieldResolvers {
     graphQLType: string;
@@ -53,18 +54,6 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             if (!fieldTypePlugins[field.type]) {
                 continue;
             }
-            /**
-             * Field that is passed into this factory MUST have alias, so filter it before the method call.
-             */
-            if (!field.alias) {
-                throw new WebinyError(
-                    "Field is missing an alias. Cannot process field without the alias in the resolvers.",
-                    "FIELD_ALIAS_ERROR",
-                    {
-                        field
-                    }
-                );
-            }
 
             const createResolver = getCreateResolver(fieldTypePlugins, field, endpointType);
 
@@ -89,7 +78,12 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             const { alias, fieldId } = field;
             // TODO @ts-refactor figure out types for parameters
             // @ts-ignore
-            fieldResolvers[alias] = async (parent, args, context: CmsContext, info) => {
+            fieldResolvers[alias] = async (
+                parent: CmsEntry["values"],
+                args: any,
+                context: CmsContext,
+                info: GraphQLResolveInfo
+            ) => {
                 // Get transformed value (eg. data decompression)
                 const transformedValue = await entryFieldFromStorageTransform({
                     context,

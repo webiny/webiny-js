@@ -99,7 +99,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 helpText: String
                 placeholderText: String
                 fieldId: String!
-                alias: String
+                alias: String!
                 type: String!
                 multipleValues: Boolean
                 predefinedValues: CmsPredefinedValuesInput
@@ -177,7 +177,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             type CmsContentModelField {
                 id: ID!
                 fieldId: String!
-                alias: String
+                alias: String!
                 label: String!
                 helpText: String
                 placeholderText: String

@@ -12,7 +12,6 @@ import injectRenderTs from "./injectRenderTs";
 import injectTenantLocale from "./injectTenantLocale";
 import injectNotFoundPageFlag from "./injectNotFoundPageFlag";
 import getPsTags from "./getPsTags";
-import shortid from "shortid";
 import {
     RenderResult,
     RenderUrlCallableParams,
@@ -21,6 +20,7 @@ import {
 } from "./types";
 import { Browser, Page } from "puppeteer";
 import { TagUrlLink } from "~/types";
+import { generateId } from "@webiny/utils";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {
     page.evaluateOnNewDocument(`
@@ -50,7 +50,7 @@ export interface File {
 }
 
 export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta]> => {
-    const id = shortid.generate();
+    const id = generateId(21);
     const ts = new Date().getTime();
 
     console.log(`Rendering "${url}" (render ID: ${id})...`);

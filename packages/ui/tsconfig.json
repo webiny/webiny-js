@@ -3,6 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../form" },
+    { "path": "../utils" },
     { "path": "../storybook-utils" },
     { "path": "../validation" }
   ],
@@ -14,6 +15,8 @@
       "~/*": ["./src/*"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/storybook-utils/*": ["../storybook-utils/src/*"],
       "@webiny/storybook-utils": ["../storybook-utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],

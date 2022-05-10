@@ -261,6 +261,7 @@ export type CmsEditorField<T = unknown> = T & {
     id: string;
     type: string;
     fieldId: CmsEditorFieldId;
+    alias: string | null;
     label?: string;
     helpText?: string;
     placeholderText?: string;

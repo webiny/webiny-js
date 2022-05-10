@@ -9,6 +9,7 @@ const ERROR_FIELDS = `
 export const FIELDS_FIELDS = `
     id
     fieldId
+    alias
     type
     label
     placeholderText

@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
-import dot from "dot-prop-immutable";
-import shortid from "shortid";
+import dotProp from "dot-prop-immutable";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import {
     CmsEditorField,
@@ -15,6 +14,7 @@ import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";
 import { DragObjectWithType, DragSourceMonitor } from "react-dnd";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 interface DropTarget {
     row: number;
@@ -38,11 +38,7 @@ export interface DragSource extends DragObjectWithType {
 /**
  * Property in GetFieldParams can be any key from CmsEditorField, but TS does not allow union types
  */
-interface GetFieldParams {
-    id?: string;
-    fieldId?: string;
-    alias?: string;
-}
+type GetFieldParams = { id: string } | { fieldId: string } | { alias: string };
 interface InsertFieldParams {
     field: CmsEditorField<TemporaryCmsEditorField>;
     position: FieldLayoutPosition;
@@ -269,10 +265,6 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
      * Checks if field of given type already exists in the list of fields.
      */
     const getField: GetFieldCallable = query => {
-        if (Object.keys(query).length === 0) {
-            console.log("No key was sent into getField() method.");
-            return undefined;
-        }
         return state.fields.find(field => {
             for (const key in query) {
                 if (!(key in field)) {
@@ -294,10 +286,8 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
      */
     const insertField: InsertFieldCallable = ({ field, position }) => {
         if (!field.id) {
-            if (!field._temporaryId) {
-                field._temporaryId = shortid.generate();
-            }
-            field.id = field._temporaryId;
+            field.id = field._temporaryId || generateAlphaNumericId(8);
+            delete field["_temporaryId"];
         }
 
         if (!field.type) {
@@ -345,7 +335,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
         setState(data => {
             for (let i = 0; i < data.fields.length; i++) {
                 if (data.fields[i].id === field.id) {
-                    return dot.set(data, `fields.${i}`, field);
+                    return dotProp.set(data, `fields.${i}`, field);
                 }
             }
             return data;

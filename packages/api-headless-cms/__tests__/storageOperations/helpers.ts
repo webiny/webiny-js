@@ -1,4 +1,3 @@
-import shortId from "shortid";
 /**
  * Package mdbid does not have types.
  */
@@ -12,7 +11,7 @@ import {
     HeadlessCmsStorageOperations
 } from "~/types";
 import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
-import { createIdentifier } from "@webiny/utils";
+import { createIdentifier, generateAlphaNumericId } from "@webiny/utils";
 import crypto from "crypto";
 
 const cliPackageJson = require("@webiny/cli/package.json");
@@ -30,11 +29,11 @@ const baseGroup = new CmsGroupPlugin({
 
 const biography = crypto.randomBytes(65536).toString("hex");
 
-const nameId = shortId.generate();
-const dateOfBirthId = shortId.generate();
-const childrenId = shortId.generate();
-const marriedId = shortId.generate();
-const biographyId = shortId.generate();
+const nameId = generateAlphaNumericId();
+const dateOfBirthId = generateAlphaNumericId();
+const childrenId = generateAlphaNumericId();
+const marriedId = generateAlphaNumericId();
+const biographyId = generateAlphaNumericId();
 const personModelFields: Record<string, CmsModelField> = {
     name: {
         id: nameId,

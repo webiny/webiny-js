@@ -112,6 +112,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: expect.stringMatching("name@text@"),
+                                alias: "name",
                                 error: "Min length is 2."
                             }
                         ]
@@ -137,6 +138,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: expect.stringMatching("name@text@"),
+                                alias: "name",
                                 error: "Max length is 15."
                             }
                         ]
@@ -198,6 +200,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: expect.stringMatching("numbers@number@"),
+                                alias: "numbers",
                                 error: "Numbers must contain at least 2 items."
                             }
                         ]
@@ -223,6 +226,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: expect.stringMatching("numbers@number"),
+                                alias: "numbers",
                                 error: "Numbers can contain at most 7 items."
                             }
                         ]
@@ -248,6 +252,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: expect.stringMatching("numbers@number"),
+                                alias: "numbers",
                                 error: "Number must be greater or equal 5."
                             }
                         ]
@@ -273,6 +278,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: expect.stringMatching("numbers@number"),
+                                alias: "numbers",
                                 error: "Number be less or equal 15."
                             }
                         ]
@@ -280,35 +286,6 @@ describe("fieldValidations", () => {
                 }
             }
         });
-        /**
-         * This test is not eligible anymore because you cannot send null / undefined into the array.
-         */
-        /*
-        const [requiredResponse] = await createFruit({
-            data: {
-                ...defaultFruitData,
-                numbers: [5, 6, 15]
-            }
-        });
-
-        expect(requiredResponse).toEqual({
-            data: {
-                createFruit: {
-                    data: null,
-                    error: {
-                        message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
-                        data: [
-                            {
-                                fieldId: expect.stringMatching("numbers@number",
-                                error: "Number is required."
-                            }
-                        ]
-                    }
-                }
-            }
-        });
-        */
     });
 
     const emailPatternTestValues = [
@@ -354,6 +331,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: expect.stringMatching("email@text@"),
+                                    alias: "email",
                                     error: "Must be in a form of an email."
                                 }
                             ]
@@ -407,6 +385,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: expect.stringMatching("url@text@"),
+                                    alias: "url",
                                     error: "Must be in a form of a url."
                                 }
                             ]
@@ -454,6 +433,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: expect.stringMatching("lowerCase@text@"),
+                                    alias: "lowerCase",
                                     error: "Everything must be lowercase."
                                 }
                             ]
@@ -500,6 +480,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: expect.stringMatching("upperCase@text@"),
+                                    alias: "upperCase",
                                     error: "Everything must be uppercase."
                                 }
                             ]
@@ -542,6 +523,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: expect.stringMatching("date@datetime@"),
+                                    alias: "date",
                                     error: message
                                 }
                             ]
@@ -584,6 +566,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: expect.stringMatching("dateTime@datetime@"),
+                                    alias: "dateTime",
                                     error: message
                                 }
                             ]
@@ -629,6 +612,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: expect.stringMatching("dateTimeZ@datetime@"),
+                                    alias: "dateTimeZ",
                                     error: message
                                 }
                             ]
@@ -671,6 +655,7 @@ describe("fieldValidations", () => {
                             data: [
                                 {
                                     fieldId: expect.stringMatching("time@datetime@"),
+                                    alias: "time",
                                     error: message
                                 }
                             ]
@@ -732,7 +717,8 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 error: "Field value must be unique.",
-                                fieldId: expect.stringMatching("slug@text@")
+                                fieldId: expect.stringMatching("slug@text@"),
+                                alias: "slug"
                             }
                         ]
                     }

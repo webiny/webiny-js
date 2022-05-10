@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useRef, useMemo } from "react";
-import { camelCase } from "lodash";
+import camelCase from "lodash/camelCase";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -9,7 +9,7 @@ import { FormRenderPropParams } from "@webiny/form/types";
 
 import { useFieldEditor } from "~/admin/components/FieldEditor";
 import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
-import shortid from "shortid";
+import { generateAlphaNumericId } from "@webiny/utils";
 
 interface GeneralTabProps {
     field: CmsEditorField<TemporaryCmsEditorField>;
@@ -40,12 +40,12 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
 
     const afterChangeLabel = useCallback(
         (value: string) => {
-            value = camelCase(value);
+            value = camelCase(value || "");
             if (field.id) {
                 return;
             }
             if (!field._temporaryId) {
-                field._temporaryId = shortid.generate();
+                field._temporaryId = generateAlphaNumericId(8);
             }
             setValue("fieldId", `${value}@${field.type}@${field._temporaryId}`);
             setValue("alias", value);
@@ -55,7 +55,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
 
     const beforeChangeAlias = useCallback(
         (value: string, baseOnChange: (value: string) => void) => {
-            value = camelCase(value);
+            value = camelCase(value || "");
 
             baseOnChange(value);
         },
@@ -63,7 +63,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
     );
 
     const aliasValidator = useCallback((alias: string) => {
-        if (alias.trim().toLowerCase() !== "id") {
+        if ((alias || "").trim().toLowerCase() !== "id") {
             return true;
         }
 
@@ -79,7 +79,9 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
         if (existingField.id === field.id) {
             return true;
         }
-        throw new Error("Please enter a unique Field ID.");
+        throw new Error(
+            "Field ID is not unique for some reason. As it is automatically generated, something must be wrong with the generator."
+        );
     }, []);
 
     const uniqueFieldAliasValidator = useCallback(

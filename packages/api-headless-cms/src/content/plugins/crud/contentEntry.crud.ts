@@ -111,14 +111,11 @@ const mapAndCleanCreateInputData = (
     input: CreateCmsEntryInput
 ): CreateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
-        if (!field.alias) {
-            return acc;
-        }
         const value = input[field.alias];
         /**
          * We set the default value on create input if value is not defined.
          */
-        acc[field.fieldId] = value === undefined ? getDefaultValue(field) : value;
+        acc[field.alias] = value === undefined ? getDefaultValue(field) : value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };
@@ -130,9 +127,6 @@ const mapAndCleanUpdatedInputData = (
     input: UpdateCmsEntryInput
 ): UpdateCmsEntryInput => {
     return model.fields.reduce((acc, field) => {
-        if (!field.alias) {
-            return acc;
-        }
         /**
          * We cannot set default value here because user might want to updated only certain field values.
          */
@@ -140,7 +134,7 @@ const mapAndCleanUpdatedInputData = (
         if (value === undefined) {
             return acc;
         }
-        acc[field.fieldId] = value;
+        acc[field.alias] = value;
         return acc;
     }, {} as CreateCmsEntryInput);
 };
@@ -215,9 +209,6 @@ const getSearchableFields = (params: GetSearchableFieldsParams): string[] => {
 
     return model.fields
         .filter(field => {
-            if (!field.alias) {
-                return false;
-            }
             const plugin = fieldPluginMap[field.type];
             if (!plugin) {
                 return false;

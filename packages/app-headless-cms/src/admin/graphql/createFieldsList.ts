@@ -7,6 +7,9 @@ export function createFieldsList(fields: CmsEditorField[]): string {
         .reduce((acc, item) => ({ ...acc, [item.field.type]: item.field }), {});
 
     return fields
+        .filter(field => {
+            return !!field.alias;
+        })
         .map(field => {
             const { graphql } = fieldPlugins[field.type];
 
@@ -15,10 +18,10 @@ export function createFieldsList(fields: CmsEditorField[]): string {
                 const selection =
                     typeof queryField === "string" ? queryField : queryField({ field });
 
-                return `${field.fieldId} ${selection}`;
+                return `${field.alias} ${selection}`;
             }
 
-            return field.fieldId;
+            return field.alias;
         })
         .join("\n");
 }

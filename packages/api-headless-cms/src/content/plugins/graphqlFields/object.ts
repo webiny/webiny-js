@@ -29,11 +29,9 @@ const typeFromField = (params: TypeFromFieldParams): TypeFromFieldResponse | nul
     const mTypeName = createManageTypeName(typeName);
 
     // `field` is an "object" field
-    const fields: CmsModelField[] = (field.settings?.fields || []).filter(f => {
-        return !!f.alias;
-    });
+    const fields: CmsModelField[] = field.settings?.fields || [];
 
-    const fieldTypeName = `${mTypeName}_${upperFirst(field.alias as string)}`;
+    const fieldTypeName = `${mTypeName}_${upperFirst(field.alias)}`;
 
     const typeFields = [];
     const nestedTypes = [];
@@ -102,14 +100,12 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createResolver({ field, createFieldResolvers, graphQLType }) {
-            const fields = (field.settings?.fields || []).filter(f => {
-                return !!f.alias;
-            });
+            const fields = field.settings?.fields || [];
             if (fields.length === 0) {
                 return false;
             }
 
-            const fieldType = `${graphQLType}_${upperFirst(field.alias as string)}`;
+            const fieldType = `${graphQLType}_${upperFirst(field.alias)}`;
 
             const typeResolvers = createFieldResolvers({
                 graphQLType: fieldType,
@@ -163,13 +159,11 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createResolver({ graphQLType, field, createFieldResolvers }) {
-            const fields = (field.settings?.fields || []).filter(f => {
-                return !!f.alias;
-            });
+            const fields = field.settings?.fields || [];
             if (fields.length === 0) {
                 return false;
             }
-            const fieldType = `${graphQLType}_${upperFirst(field.alias as string)}`;
+            const fieldType = `${graphQLType}_${upperFirst(field.alias)}`;
             const typeResolvers = createFieldResolvers({
                 graphQLType: fieldType,
                 fields

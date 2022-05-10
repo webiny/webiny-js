@@ -1,10 +1,25 @@
-import { BeforeGroupCreateTopicParams, HeadlessCmsStorageOperations } from "~/types";
+import WebinyError from "@webiny/error";
+import { BeforeGroupCreateTopicParams, CmsGroup, HeadlessCmsStorageOperations } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { toSlug } from "~/utils";
-import WebinyError from "@webiny/error";
-import shortid from "shortid";
+import { generateAlphaNumericId } from "@webiny/utils";
+
+const createGroupSlug = (groups: CmsGroup[], initialSlug: string): string => {
+    let slug = initialSlug;
+    for (let current = 0; current < 10; current++) {
+        if (groups.some(g => g.slug === slug)) {
+            slug = `${initialSlug}-${generateAlphaNumericId(8)}`;
+            continue;
+        }
+        return slug;
+    }
+    throw new WebinyError("Could not determine group slug after 10 tries", "GROUP_SLUG_ERROR", {
+        initialSlug,
+        slug
+    });
+};
 
 interface AssignBeforeGroupCreateParams {
     onBeforeCreate: Topic<BeforeGroupCreateTopicParams>;
@@ -36,16 +51,11 @@ export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) =
             const groups = await storageOperations.groups.list({
                 where: {
                     tenant: group.tenant,
-                    locale: group.locale,
-                    slug
+                    locale: group.locale
                 }
             });
 
-            if (groups.length === 0) {
-                group.slug = slug;
-            } else {
-                group.slug = `${slug}-${shortid.generate()}`;
-            }
+            group.slug = createGroupSlug(groups, slug);
         }
 
         const groupPlugin = plugins

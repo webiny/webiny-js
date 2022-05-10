@@ -141,7 +141,19 @@ export interface CmsModelField {
      *
      * This value MUST be unique in the CmsModel.
      */
-    alias: string | null;
+    alias: string;
+    /**
+     * Is the field visible in the GraphQL schema?
+     *
+     * Default is true.
+     */
+    displayInSchema?: boolean;
+    /**
+     * Is the field visible in the UI?
+     *
+     * Default is true.
+     */
+    displayInUi?: boolean;
     /**
      * A label for the field
      */
@@ -1056,7 +1068,7 @@ export interface CmsModelFieldInput {
     /**
      * Alias for the field. Must be unique in the model.
      */
-    alias: string | null;
+    alias: string;
     /**
      * Label for the field.
      */

@@ -10,9 +10,6 @@ export const cleanupModelFields = (model: CmsModel): CmsModel => {
     return {
         ...model,
         fields: model.fields.filter(field => {
-            if (!field.alias) {
-                return false;
-            }
             fieldIdList.push(field.id);
             return true;
         }),

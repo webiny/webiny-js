@@ -9183,13 +9183,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/shortid@npm:^0.0.29":
-  version: 0.0.29
-  resolution: "@types/shortid@npm:0.0.29"
-  checksum: 06d940fabc5774ff2221da6ba3496cef97ae7c2f7f0fee4740144a68cf2b630b109db2f934133096daa58045e4e7aaffba687934166bb0b2b0d5c52679b10d08
-  languageName: node
-  linkType: hard
-
 "@types/sinonjs__fake-timers@npm:^6.0.1":
   version: 6.0.4
   resolution: "@types/sinonjs__fake-timers@npm:6.0.4"
@@ -10547,7 +10540,6 @@ __metadata:
     pluralize: ^8.0.0
     prettier: ^2.3.2
     rimraf: ^3.0.2
-    shortid: ^2.2.15
     sinon: ^9.0.2
     slugify: ^1.4.0
     ttypescript: ^1.5.12
@@ -10930,7 +10922,6 @@ __metadata:
     prettier: ^2.3.2
     puppeteer: ^5.5.0
     rimraf: ^3.0.2
-    shortid: ^2.2.16
     ttypescript: ^1.5.12
     typescript: 4.5.5
   languageName: unknown
@@ -11583,7 +11574,6 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-sortable-hoc: ^1.9.1
     rimraf: ^3.0.2
-    shortid: ^2.2.14
     timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.5.5
@@ -11693,7 +11683,6 @@ __metadata:
     react-hotkeyz: ^1.0.4
     react-virtualized: ^9.21.2
     rimraf: ^3.0.2
-    shortid: ^2.2.14
     timeago-react: ^2.0.0
     ttypescript: ^1.5.12
     typescript: 4.5.5
@@ -13363,11 +13352,11 @@ __metadata:
     "@types/rc-tooltip": ^3.7.2
     "@types/react-custom-scrollbars": ^4.0.10
     "@types/react-transition-group": ^4.4.4
-    "@types/shortid": ^0.0.29
     "@webiny/cli": ^5.25.0
     "@webiny/form": ^5.25.0
     "@webiny/project-utils": ^5.25.0
     "@webiny/storybook-utils": ^5.25.0
+    "@webiny/utils": ^5.25.0
     "@webiny/validation": ^5.25.0
     babel-loader: ^8.0.0-beta.6
     babel-plugin-emotion: ^9.2.8
@@ -13405,7 +13394,6 @@ __metadata:
     rimraf: ^3.0.2
     sass: ^1.38.0
     sass-loader: ^12.1.0
-    shortid: ^2.2.16
     ttypescript: ^1.5.13
     typescript: 4.5.5
     webpack: ^4.46.0
@@ -29296,13 +29284,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^2.1.0":
-  version: 2.1.11
-  resolution: "nanoid@npm:2.1.11"
-  checksum: 18cd14386816873849787eb4e65667021bfdeb019a8f14c74287c23594c67b7c0e8f42c7d69f6aedf05cd3d100f1ddc41184f9f9b6b17fbaea1c3ee3f0704eec
-  languageName: node
-  linkType: hard
-
 "nanoid@npm:^3.1.20, nanoid@npm:^3.1.22, nanoid@npm:^3.1.23, nanoid@npm:^3.1.30, nanoid@npm:^3.2.0":
   version: 3.3.1
   resolution: "nanoid@npm:3.3.1"
@@ -35809,15 +35790,6 @@ __metadata:
   dependencies:
     hash-string: ^1.0.0
   checksum: 383b9eaa3102262b34b9eff7cf1d0851d79da053930b6bf56843d5c49043a2c26248efa6ae42b83e4de14929d39b595e9091bab43845188fde5139ccdd4f65ca
-  languageName: node
-  linkType: hard
-
-"shortid@npm:^2.2.14, shortid@npm:^2.2.15, shortid@npm:^2.2.16":
-  version: 2.2.16
-  resolution: "shortid@npm:2.2.16"
-  dependencies:
-    nanoid: ^2.1.0
-  checksum: 0790ce22fe20aacc226915160da178b5a6af7814d1796404684f6699b60f77e291d39ad3b6b2b4c6efcf5553e1deeee7e29a48b8f46955de1425e67ab934e309
   languageName: node
   linkType: hard
 

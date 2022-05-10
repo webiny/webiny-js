@@ -48,7 +48,6 @@
     "react-google-recaptcha": "^1.1.0",
     "react-hotkeyz": "^1.0.4",
     "react-sortable-hoc": "^1.9.1",
-    "shortid": "^2.2.14",
     "timeago-react": "^2.0.0"
   },
   "devDependencies": {

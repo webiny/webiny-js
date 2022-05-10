@@ -1,5 +1,4 @@
 import React from "react";
-import shortid from "shortid";
 import { cloneDeep, pick } from "lodash";
 import {
     GET_FORM,
@@ -29,6 +28,7 @@ import {
 } from "~/admin/components/FormEditor/Context/index";
 import dotProp from "dot-prop-immutable";
 import { useSnackbar } from "@webiny/app-admin";
+import { generateId } from "@webiny/utils";
 
 interface SetDataCallable {
     (value: FbFormModel): FbFormModel;
@@ -299,7 +299,7 @@ export const useFormEditorFactory = (
             insertField: (data, position) => {
                 const field = cloneDeep(data);
                 if (!field._id) {
-                    field._id = shortid.generate();
+                    field._id = generateId(12);
                 }
 
                 if (!data.name) {
