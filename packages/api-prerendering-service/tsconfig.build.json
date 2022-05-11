@@ -7,7 +7,8 @@
     { "path": "../handler-args/tsconfig.build.json" },
     { "path": "../handler-client/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" }
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

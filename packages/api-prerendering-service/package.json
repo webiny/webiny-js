@@ -21,6 +21,7 @@
     "@webiny/handler-args": "^5.25.0",
     "@webiny/handler-client": "^5.25.0",
     "@webiny/plugins": "^5.25.0",
+    "@webiny/utils": "^5.25.0",
     "chrome-aws-lambda": "^5.5.0",
     "dot-prop": "^6.0.1",
     "lodash": "^4.17.20",
