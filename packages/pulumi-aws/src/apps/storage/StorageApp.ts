@@ -44,7 +44,8 @@ export const StorageApp = defineApp({
         const dynamoDbTable = app.addModule(StorageDynamo, { protect });
 
         // Setup VPC
-        const vpc = config?.vpc?.(app.ctx) ? app.addModule(StorageVpc) : null;
+        const vpcEnabled = config?.vpc?.(app.ctx) ?? app.ctx.env === "prod";
+        const vpc = vpcEnabled ? app.addModule(StorageVpc) : null;
 
         // Setup Cognito
         const cognito = app.addModule(StorageCognito, {
