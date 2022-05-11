@@ -1,5 +1,11 @@
-import { defineApp, createGenericApplication, ApplicationConfig } from "@webiny/pulumi-sdk";
+import {
+    defineApp,
+    createGenericApplication,
+    ApplicationConfig,
+    ApplicationContext
+} from "@webiny/pulumi-sdk";
 
+import { StorageOutput, VpcConfig } from "../common";
 import { ApiGraphql } from "./ApiGraphql";
 import { createPrerenderingService } from "./ApiPrerendering";
 import { ApiFileManager } from "./ApiFileManager";
@@ -7,13 +13,20 @@ import { ApiPageBuilder } from "./ApiPageBuilder";
 import { ApiHeadlessCMS } from "./ApiHeadlessCMS";
 import { ApiGateway } from "./ApiGateway";
 import { ApiCloudfront } from "./ApiCloudfront";
-import { getStorageOutput } from "../getStorageOutput";
-import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 import { ApiApwScheduler } from "./ApiApwScheduler";
+
+export interface ApiAppConfig {
+    /**
+     * Enables or disables VPC for the API.
+     * For VPC to work you also have to enable it in the `storage` application.
+     * @param ctx Application context
+     */
+    vpc?(ctx: ApplicationContext): boolean | undefined;
+}
 
 export const ApiApp = defineApp({
     name: "Api",
-    async config(app) {
+    async config(app, config: ApiAppConfig) {
         // Among other things, this determines the amount of information we reveal on runtime errors.
         // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
         const DEBUG = String(process.env.DEBUG);
@@ -22,9 +35,13 @@ export const ApiApp = defineApp({
         // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
         const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
 
-        const storage = getStorageOutput(app);
-        const awsAccountId = getAwsAccountId(app);
-        const awsRegion = getAwsRegion(app);
+        // Register storage output as a module available for all other modules
+        const storage = app.addModule(StorageOutput);
+
+        // Register VPC config module to be available to other modules
+        app.addModule(VpcConfig, {
+            enabled: config?.vpc?.(app.ctx)
+        });
 
         const pageBuilder = app.addModule(ApiPageBuilder, {
             env: {
@@ -34,24 +51,16 @@ export const ApiApp = defineApp({
                 S3_BUCKET: storage.fileManagerBucketId,
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
-            },
-            awsRegion,
-            awsAccountId,
-            storage
+            }
         });
 
-        const fileManager = app.addModule(ApiFileManager, {
-            storage
-        });
+        const fileManager = app.addModule(ApiFileManager);
 
         const prerenderingService = createPrerenderingService(app, {
             env: {
                 DB_TABLE: storage.primaryDynamodbTableName,
                 DEBUG
-            },
-            awsRegion,
-            awsAccountId,
-            storage
+            }
         });
 
         const apwScheduler = app.addModule(ApiApwScheduler, {
@@ -85,9 +94,6 @@ export const ApiApp = defineApp({
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             },
-            awsRegion,
-            awsAccountId,
-            storage,
             apwSchedulerEventRule: apwScheduler.eventRule.output,
             apwSchedulerEventTarget: apwScheduler.eventTarget.output
         });
@@ -102,8 +108,7 @@ export const ApiApp = defineApp({
                 OKTA_ISSUER: process.env["OKTA_ISSUER"],
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
-            },
-            storage
+            }
         });
 
         const apiGateway = app.addModule(ApiGateway, {
@@ -166,7 +171,7 @@ export const ApiApp = defineApp({
 
 export type ApiApp = InstanceType<typeof ApiApp>;
 
-export function createApiApp(config?: ApplicationConfig<ApiApp>) {
+export function createApiApp(config?: ApiAppConfig & ApplicationConfig<ApiApp>) {
     return createGenericApplication({
         id: "api",
         name: "api",
@@ -183,7 +188,7 @@ export function createApiApp(config?: ApplicationConfig<ApiApp>) {
             // Create the app instance.
             const app = new ApiApp(ctx);
             // Run the default application setup.
-            await app.setup();
+            await app.setup(config || {});
             // Run the custom user config.
             await config?.config?.(app, ctx);
             return app;

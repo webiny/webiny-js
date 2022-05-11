@@ -1,9 +1,8 @@
 import {
     defineApp,
     createGenericApplication,
-    ApplicationContext,
-    ApplicationHooks,
-    ApplicationConfig
+    ApplicationConfig,
+    ApplicationContext
 } from "@webiny/pulumi-sdk";
 
 import { StorageCognito } from "./StorageCognito";
@@ -11,9 +10,23 @@ import { StorageDynamo } from "./StorageDynamo";
 import { StorageFileManger } from "./StorageFileManager";
 import { StorageVpc } from "./StorageVpc";
 
-export interface StorageAppConfig extends Partial<ApplicationHooks> {
+export interface StorageAppConfig {
+    /**
+     * Secures against deleting database by accident.
+     * By default enabled in production environments.
+     * @param ctx Application context
+     */
     protect?(ctx: ApplicationContext): boolean;
+    /**
+     * Enables VPC for the application.
+     * By default enabled in production environments.
+     * @param ctx Application context
+     */
     vpc?(ctx: ApplicationContext): boolean;
+    /**
+     * Additional settings for backwards compatibility.
+     * @param ctx Application context
+     */
     legacy?(ctx: ApplicationContext): StorageAppLegacyConfig;
 }
 

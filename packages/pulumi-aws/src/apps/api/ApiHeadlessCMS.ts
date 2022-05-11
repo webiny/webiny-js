@@ -5,12 +5,10 @@ import * as aws from "@pulumi/aws";
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
 import { createLambdaRole } from "./ApiLambdaUtils";
-import { StorageOutput } from "../getStorageOutput";
-import { getFunctionVpcConfig } from "../vpcUtils";
+import { StorageOutput, VpcConfig } from "../common";
 
 interface HeadlessCMSParams {
     env: Record<string, any>;
-    storage: StorageOutput;
 }
 
 export type ApiHeadlessCMS = PulumiAppModule<typeof ApiHeadlessCMS>;
@@ -18,11 +16,10 @@ export type ApiHeadlessCMS = PulumiAppModule<typeof ApiHeadlessCMS>;
 export const ApiHeadlessCMS = defineAppModule({
     name: "ApiHeadlessCMS",
     config(app: PulumiApp, params: HeadlessCMSParams) {
-        const policy = createHeadlessCmsLambdaPolicy(app, params);
+        const policy = createHeadlessCmsLambdaPolicy(app);
         const role = createLambdaRole(app, {
             name: "headless-cms-lambda-role",
-            policy: policy.output,
-            storage: params.storage
+            policy: policy.output
         });
 
         const graphql = app.addResource(aws.lambda.Function, {
@@ -44,7 +41,7 @@ export const ApiHeadlessCMS = defineAppModule({
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },
-                vpcConfig: getFunctionVpcConfig(params.storage)
+                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
         });
 
@@ -58,7 +55,9 @@ export const ApiHeadlessCMS = defineAppModule({
     }
 });
 
-function createHeadlessCmsLambdaPolicy(app: PulumiApp, params: HeadlessCMSParams) {
+function createHeadlessCmsLambdaPolicy(app: PulumiApp) {
+    const storage = app.getModule(StorageOutput);
+
     return app.addResource(aws.iam.Policy, {
         name: "HeadlessCmsLambdaPolicy",
         config: {
@@ -122,8 +121,8 @@ function createHeadlessCmsLambdaPolicy(app: PulumiApp, params: HeadlessCMSParams
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]
