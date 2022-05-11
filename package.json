@@ -30,6 +30,7 @@
     "@babel/core": "^7.16.0",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
+    "@deploysentinel/cypress-debugger": "^0.2.5",
     "@testing-library/cypress": "^7.0.2",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.24",
