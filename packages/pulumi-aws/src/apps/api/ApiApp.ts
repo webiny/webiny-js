@@ -8,7 +8,6 @@ import {
 
 import { ApiGraphql } from "./ApiGraphql";
 import { createVpc, Vpc } from "./ApiVpc";
-import { createPrerenderingService } from "./ApiPrerendering";
 import { ApiFileManager } from "./ApiFileManager";
 import { ApiPageBuilder } from "./ApiPageBuilder";
 import { ApiHeadlessCMS } from "./ApiHeadlessCMS";
@@ -63,19 +62,6 @@ export const ApiApp = defineApp({
             vpc
         });
 
-        const prerenderingService = createPrerenderingService(app, {
-            env: {
-                DB_TABLE: storage.primaryDynamodbTableName,
-                DEBUG
-            },
-            awsRegion,
-            awsAccountId,
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            fileManagerBucketId: storage.fileManagerBucketId,
-            cognitoUserPoolArn: storage.cognitoUserPoolArn,
-            vpc
-        });
-
         const apwScheduler = app.addModule(ApiApwScheduler, {
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
             env: {
@@ -94,12 +80,7 @@ export const ApiApp = defineApp({
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
                 DB_TABLE: storage.primaryDynamodbTableName,
                 S3_BUCKET: storage.fileManagerBucketId,
-
-                PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.output.arn,
-                PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.output.arn,
-                PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.output.arn,
-                PRERENDERING_QUEUE_PROCESS_HANDLER:
-                    prerenderingService.functions.queue.process.output.arn,
+                EVENT_BUS: storage.eventBusArn,
                 IMPORT_PAGES_CREATE_HANDLER: pageBuilder.importPages.functions.create.output.arn,
                 EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.exportPages.functions.process.output.arn,
                 // TODO: move to okta plugin
@@ -115,6 +96,7 @@ export const ApiApp = defineApp({
             primaryDynamodbTableRangeKey: storage.primaryDynamodbTableRangeKey,
             fileManagerBucketId: storage.fileManagerBucketId,
             cognitoUserPoolArn: storage.cognitoUserPoolArn,
+            eventBusArn: storage.eventBusArn,
             apwSchedulerEventRule: apwScheduler.eventRule.output,
             apwSchedulerEventTarget: apwScheduler.eventTarget.output,
             vpc
@@ -171,9 +153,6 @@ export const ApiApp = defineApp({
             cognitoUserPoolId: storage.cognitoUserPoolId,
             cognitoAppClientId: storage.cognitoAppClientId,
             cognitoUserPoolPasswordPolicy: storage.cognitoUserPoolPasswordPolicy,
-            updatePbSettingsFunction: pageBuilder.updateSettings.functions.update.output.arn,
-            psQueueAdd: prerenderingService.functions.queue.add.output.arn,
-            psQueueProcess: prerenderingService.functions.queue.process.output.arn,
             apwSchedulerScheduleAction: apwScheduler.scheduleAction.lambda.output.arn,
             apwSchedulerExecuteAction: apwScheduler.executeAction.lambda.output.arn,
             apwSchedulerEventRule: apwScheduler.eventRule.output.name,
@@ -183,7 +162,6 @@ export const ApiApp = defineApp({
 
         return {
             fileManager,
-            prerenderingService,
             graphql,
             headlessCms,
             apiGateway,

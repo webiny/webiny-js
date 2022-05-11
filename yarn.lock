@@ -8340,6 +8340,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/aws-lambda@npm:^8.10.93":
+  version: 8.10.93
+  resolution: "@types/aws-lambda@npm:8.10.93"
+  checksum: 82eac08a9e1c77724708192ff5c487ffbef572d4dd3851908c56c8bd7f174dd3fa558090ff5c499e04c3e7afa0dc885fb8cf12cd1b1044542b55b17c61846d14
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.7":
   version: 7.1.18
   resolution: "@types/babel__core@npm:7.1.18"
@@ -10903,18 +10910,22 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@types/aws-lambda": ^8.10.93
     "@webiny/api-prerendering-service": ^5.25.0
     "@webiny/cli": ^5.25.0
+    "@webiny/error": ^5.25.0
     "@webiny/handler": ^5.25.0
     "@webiny/handler-args": ^5.25.0
+    "@webiny/handler-client": ^5.25.0
     "@webiny/plugins": ^5.25.0
     "@webiny/project-utils": ^5.25.0
+    lodash: ^4.17.21
     rimraf: ^3.0.2
     typescript: 4.5.5
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-so-ddb@^5.25.0, @webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
+"@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb"
   dependencies:
@@ -14351,6 +14362,7 @@ __metadata:
     "@webiny/api-page-builder-import-export-so-ddb": ^5.25.0
     "@webiny/api-page-builder-so-ddb": ^5.25.0
     "@webiny/api-prerendering-service": ^5.25.0
+    "@webiny/api-prerendering-service-aws": ^5.25.0
     "@webiny/api-security": ^5.25.0
     "@webiny/api-security-cognito": ^5.25.0
     "@webiny/api-security-okta": ^5.25.0
@@ -14501,56 +14513,6 @@ __metadata:
   dependencies:
     "@webiny/api-page-builder": ^5.25.0
     "@webiny/api-page-builder-so-ddb": ^5.25.0
-    "@webiny/cli": ^5.25.0
-    "@webiny/handler-aws": ^5.25.0
-    "@webiny/project-utils": ^5.25.0
-  languageName: unknown
-  linkType: soft
-
-"api-prerendering-service-flush@workspace:api/code/prerenderingService/flush":
-  version: 0.0.0-use.local
-  resolution: "api-prerendering-service-flush@workspace:api/code/prerenderingService/flush"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.25.0
-    "@webiny/api-prerendering-service-aws": ^5.25.0
-    "@webiny/api-prerendering-service-so-ddb": ^5.25.0
-    "@webiny/cli": ^5.25.0
-    "@webiny/handler-aws": ^5.25.0
-    "@webiny/project-utils": ^5.25.0
-  languageName: unknown
-  linkType: soft
-
-"api-prerendering-service-queue-add@workspace:api/code/prerenderingService/queue/add":
-  version: 0.0.0-use.local
-  resolution: "api-prerendering-service-queue-add@workspace:api/code/prerenderingService/queue/add"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.25.0
-    "@webiny/api-prerendering-service-so-ddb": ^5.25.0
-    "@webiny/cli": ^5.25.0
-    "@webiny/handler-aws": ^5.25.0
-    "@webiny/project-utils": ^5.25.0
-  languageName: unknown
-  linkType: soft
-
-"api-prerendering-service-queue-process@workspace:api/code/prerenderingService/queue/process":
-  version: 0.0.0-use.local
-  resolution: "api-prerendering-service-queue-process@workspace:api/code/prerenderingService/queue/process"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.25.0
-    "@webiny/api-prerendering-service-so-ddb": ^5.25.0
-    "@webiny/cli": ^5.25.0
-    "@webiny/handler-aws": ^5.25.0
-    "@webiny/project-utils": ^5.25.0
-  languageName: unknown
-  linkType: soft
-
-"api-prerendering-service-render@workspace:api/code/prerenderingService/render":
-  version: 0.0.0-use.local
-  resolution: "api-prerendering-service-render@workspace:api/code/prerenderingService/render"
-  dependencies:
-    "@webiny/api-prerendering-service": ^5.25.0
-    "@webiny/api-prerendering-service-aws": ^5.25.0
-    "@webiny/api-prerendering-service-so-ddb": ^5.25.0
     "@webiny/cli": ^5.25.0
     "@webiny/handler-aws": ^5.25.0
     "@webiny/project-utils": ^5.25.0

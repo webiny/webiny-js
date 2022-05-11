@@ -1,6 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
-import queueProcessPlugins from "@webiny/api-prerendering-service/queue/process";
+import subscribePlugins from "@webiny/api-prerendering-service-aws/render/subscriber";
 import { createPrerenderingServiceStorageOperations } from "@webiny/api-prerendering-service-so-ddb";
 
 const documentClient = new DocumentClient({
@@ -9,11 +9,8 @@ const documentClient = new DocumentClient({
 });
 
 export const handler = createHandler(
-    queueProcessPlugins({
-        handlers: {
-            render: String(process.env.PRERENDERING_RENDER_HANDLER),
-            flush: String(process.env.PRERENDERING_FLUSH_HANDLER)
-        },
+    subscribePlugins({
+        sqsQueueUrl: String(process.env.SQS_QUEUE),
         storageOperations: createPrerenderingServiceStorageOperations({
             table(table) {
                 return {
