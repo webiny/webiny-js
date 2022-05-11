@@ -40,8 +40,8 @@
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
-        "@webiny/utils/*": ["../utils/src/*"],
-        "@webiny/utils": ["../utils/src"]
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

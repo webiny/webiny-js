@@ -28,8 +28,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-        "@webiny/utils/*": ["../utils/src/*"],
-        "@webiny/utils": ["../utils/src"]
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }
