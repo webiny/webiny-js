@@ -3,7 +3,13 @@ import { zeroPad } from "~/zeroPad";
 import { createIdentifier } from "~/createIdentifier";
 import { decodeCursor, encodeCursor } from "~/cursor";
 import { getWebinyVersionHeaders } from "~/headers";
-import { generateAlphaNumericId, generateId } from "~/generateId";
+import {
+    generateAlphaNumericId,
+    generateId,
+    generateAlphaId,
+    generateAlphaLowerCaseId,
+    generateAlphaUpperCaseId
+} from "~/generateId";
 
 export {
     parseIdentifier,
@@ -13,5 +19,8 @@ export {
     decodeCursor,
     getWebinyVersionHeaders,
     generateAlphaNumericId,
-    generateId
+    generateId,
+    generateAlphaLowerCaseId,
+    generateAlphaUpperCaseId,
+    generateAlphaId
 };
