@@ -14,7 +14,7 @@ import * as utils from "./utils";
 import { FieldEditorProps } from "./FieldEditor";
 import { DragObjectWithType, DragSourceMonitor } from "react-dnd";
 import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
-import { generateAlphaNumericId } from "@webiny/utils";
+import { generateAlphaLowerCaseId } from "@webiny/utils";
 
 interface DropTarget {
     row: number;
@@ -286,7 +286,7 @@ export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
      */
     const insertField: InsertFieldCallable = ({ field, position }) => {
         if (!field.id) {
-            field.id = field._temporaryId || generateAlphaNumericId(8);
+            field.id = field._temporaryId || generateAlphaLowerCaseId(8);
             delete field["_temporaryId"];
         }
 

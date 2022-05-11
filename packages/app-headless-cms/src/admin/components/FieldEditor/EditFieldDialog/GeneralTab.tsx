@@ -9,7 +9,7 @@ import { FormRenderPropParams } from "@webiny/form/types";
 
 import { useFieldEditor } from "~/admin/components/FieldEditor";
 import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
-import { generateAlphaNumericId } from "@webiny/utils";
+import { generateAlphaLowerCaseId } from "@webiny/utils";
 
 interface GeneralTabProps {
     field: CmsEditorField<TemporaryCmsEditorField>;
@@ -45,9 +45,9 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                 return;
             }
             if (!field._temporaryId) {
-                field._temporaryId = generateAlphaNumericId(8);
+                field._temporaryId = generateAlphaLowerCaseId(8);
             }
-            setValue("fieldId", `${value}@${field.type}@${field._temporaryId}`);
+            setValue("fieldId", value ? `${value}@${field.type}@${field._temporaryId}` : "");
             setValue("alias", value);
         },
         [field]
@@ -86,9 +86,6 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
 
     const uniqueFieldAliasValidator = useCallback(
         (alias: string) => {
-            if (!alias) {
-                return true;
-            }
             const existingField = getField({ alias });
             if (!existingField || existingField.id === field.id) {
                 return true;
@@ -142,7 +139,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ field, form, fieldPlugin }) => 
                     <Bind
                         name={"alias"}
                         validators={[
-                            validation.create("maxLength:255"),
+                            validation.create("required,maxLength:255"),
                             uniqueFieldAliasValidator,
                             aliasValidator
                         ]}
