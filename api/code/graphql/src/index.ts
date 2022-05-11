@@ -12,7 +12,7 @@ import { createStorageOperations as createPageBuilderStorageOperations } from "@
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
-import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
+import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
@@ -61,14 +61,7 @@ export const handler = createHandler({
         fileManagerDynamoDbStorageOperation(),
         fileManagerS3(),
         prerenderingServicePlugins({
-            handlers: {
-                render: String(process.env.PRERENDERING_RENDER_HANDLER),
-                flush: String(process.env.PRERENDERING_FLUSH_HANDLER),
-                queue: {
-                    add: String(process.env.PRERENDERING_QUEUE_ADD_HANDLER),
-                    process: String(process.env.PRERENDERING_QUEUE_PROCESS_HANDLER)
-                }
-            }
+            eventBus: String(process.env.EVENT_BUS)
         }),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({

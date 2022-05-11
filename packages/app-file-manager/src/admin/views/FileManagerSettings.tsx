@@ -46,6 +46,21 @@ const FileManagerSettings: React.FC = () => {
                                         uploadMaxFileSize: parseFloat(data.uploadMaxFileSize),
                                         srcPrefix: data.srcPrefix
                                     }
+                                },
+                                update: (cache, result) => {
+                                    const data = structuredClone(
+                                        cache.readQuery({ query: graphql.GET_SETTINGS })
+                                    );
+
+                                    data.fileManager.getSettings.data = {
+                                        ...data.fileManager.getSettings.data,
+                                        ...result.data.fileManager.updateSettings.data
+                                    };
+
+                                    cache.writeQuery({
+                                        query: graphql.GET_SETTINGS,
+                                        data
+                                    });
                                 }
                             });
                             showSnackbar("Settings updated successfully.");

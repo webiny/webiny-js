@@ -9,6 +9,7 @@ import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 interface GraphqlParams {
     env: Record<string, any>;
+    eventBusArn: pulumi.Input<string>;
     apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
     apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
 }
@@ -179,6 +180,12 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                         Effect: "Allow",
                         Action: "cognito-idp:*",
                         Resource: pulumi.interpolate`${storage.cognitoUserPoolArn}`
+                    },
+                    {
+                        Sid: "PermissionForEventBus",
+                        Effect: "Allow",
+                        Action: "events:PutEvents",
+                        Resource: params.eventBusArn
                     }
                 ]
             }

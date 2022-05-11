@@ -1,18 +1,21 @@
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import {
     defineApp,
     ApplicationContext,
     createGenericApplication,
-    mergeAppHooks
+    mergeAppHooks,
+    ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
 import { websiteUpload } from "./WebsiteHookUpload";
 import { websiteRender } from "./WebsiteHookRender";
-import { websiteUpdatePbSettings } from "./WebsiteHookUpdatePbSettings";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { ApplicationConfig } from "@webiny/pulumi-sdk";
+import { createPrerenderingService } from "./WebsitePrerendering";
+import { getStorageOutput } from "../getStorageOutput";
+import { getAwsAccountId } from "../awsUtils";
 
 export interface WebsiteAppConfig {
     /** Custom domain configuration */
@@ -22,6 +25,9 @@ export interface WebsiteAppConfig {
 export const WebsiteApp = defineApp({
     name: "Website",
     config(app, config: WebsiteAppConfig) {
+        const storage = getStorageOutput(app);
+        const awsAccountId = getAwsAccountId(app);
+
         const appBucket = createPublicAppBucket(app, "app");
 
         const appCloudfront = app.addResource(aws.cloudfront.Distribution, {
@@ -126,6 +132,25 @@ export const WebsiteApp = defineApp({
             }
         });
 
+        const envVariables = {
+            // Among other things, this determines the amount of information we reveal on runtime errors.
+            // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
+            DEBUG: String(process.env.DEBUG),
+            DB_TABLE: storage.primaryDynamodbTableName,
+            APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
+            DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
+            DELIVERY_CLOUDFRONT: deliveryCloudfront.output.id,
+            DELIVERY_URL: pulumi.interpolate`https://${deliveryCloudfront.output.domainName}`
+        };
+
+        const prerendering = createPrerenderingService(app, {
+            awsAccountId,
+            envVariables,
+            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+            fileManagerBucketId: storage.fileManagerBucketId,
+            eventBusArn: storage.eventBusArn
+        });
+
         const domain = config.domain?.(app.ctx);
         if (domain) {
             applyCustomDomain(deliveryCloudfront, domain);
@@ -147,6 +172,7 @@ export const WebsiteApp = defineApp({
         });
 
         return {
+            prerendering,
             app: {
                 ...appBucket,
                 cloudfront: appCloudfront
@@ -184,11 +210,6 @@ export function createWebsiteApp(config?: WebsiteAppConfig & ApplicationConfig<W
         onBeforeBuild: config?.onBeforeBuild,
         onAfterBuild: config?.onAfterBuild,
         onBeforeDeploy: config?.onBeforeDeploy,
-        onAfterDeploy: mergeAppHooks(
-            websiteUpload,
-            websiteRender,
-            websiteUpdatePbSettings,
-            config?.onAfterDeploy
-        )
+        onAfterDeploy: mergeAppHooks(websiteUpload, websiteRender, config?.onAfterDeploy)
     });
 }
