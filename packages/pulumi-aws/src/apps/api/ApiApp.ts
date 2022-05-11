@@ -1,13 +1,6 @@
-import {
-    defineApp,
-    createGenericApplication,
-    ApplicationContext,
-    PulumiApp,
-    ApplicationConfig
-} from "@webiny/pulumi-sdk";
+import { defineApp, createGenericApplication, ApplicationConfig } from "@webiny/pulumi-sdk";
 
 import { ApiGraphql } from "./ApiGraphql";
-import { createVpc, Vpc } from "./ApiVpc";
 import { createPrerenderingService } from "./ApiPrerendering";
 import { ApiFileManager } from "./ApiFileManager";
 import { ApiPageBuilder } from "./ApiPageBuilder";
@@ -18,13 +11,9 @@ import { getStorageOutput } from "../getStorageOutput";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 import { ApiApwScheduler } from "./ApiApwScheduler";
 
-export interface ApiAppConfig {
-    vpc?(app: PulumiApp, ctx: ApplicationContext): boolean | Vpc;
-}
-
 export const ApiApp = defineApp({
     name: "Api",
-    async config(app, config: ApiAppConfig) {
+    async config(app) {
         // Among other things, this determines the amount of information we reveal on runtime errors.
         // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
         const DEBUG = String(process.env.DEBUG);
@@ -32,10 +21,6 @@ export const ApiApp = defineApp({
         // Enables logs forwarding.
         // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
         const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
-
-        const vpcConfig = config.vpc?.(app, app.ctx) ?? app.ctx.env !== "dev";
-        const vpc =
-            vpcConfig === true ? createVpc(app) : vpcConfig === false ? undefined : vpcConfig;
 
         const storage = getStorageOutput(app);
         const awsAccountId = getAwsAccountId(app);
@@ -52,15 +37,11 @@ export const ApiApp = defineApp({
             },
             awsRegion,
             awsAccountId,
-            fileManagerBucketId: storage.fileManagerBucketId,
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            cognitoUserPoolArn: storage.cognitoUserPoolArn,
-            vpc
+            storage
         });
 
         const fileManager = app.addModule(ApiFileManager, {
-            fileManagerBucketId: storage.fileManagerBucketId,
-            vpc
+            storage
         });
 
         const prerenderingService = createPrerenderingService(app, {
@@ -70,10 +51,7 @@ export const ApiApp = defineApp({
             },
             awsRegion,
             awsAccountId,
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            fileManagerBucketId: storage.fileManagerBucketId,
-            cognitoUserPoolArn: storage.cognitoUserPoolArn,
-            vpc
+            storage
         });
 
         const apwScheduler = app.addModule(ApiApwScheduler, {
@@ -109,15 +87,9 @@ export const ApiApp = defineApp({
             },
             awsRegion,
             awsAccountId,
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            primaryDynamodbTableName: storage.primaryDynamodbTableName,
-            primaryDynamodbTableHashKey: storage.primaryDynamodbTableHashKey,
-            primaryDynamodbTableRangeKey: storage.primaryDynamodbTableRangeKey,
-            fileManagerBucketId: storage.fileManagerBucketId,
-            cognitoUserPoolArn: storage.cognitoUserPoolArn,
+            storage,
             apwSchedulerEventRule: apwScheduler.eventRule.output,
-            apwSchedulerEventTarget: apwScheduler.eventTarget.output,
-            vpc
+            apwSchedulerEventTarget: apwScheduler.eventTarget.output
         });
 
         const headlessCms = app.addModule(ApiHeadlessCMS, {
@@ -131,8 +103,7 @@ export const ApiApp = defineApp({
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             },
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            vpc
+            storage
         });
 
         const apiGateway = app.addModule(ApiGateway, {
@@ -195,7 +166,7 @@ export const ApiApp = defineApp({
 
 export type ApiApp = InstanceType<typeof ApiApp>;
 
-export function createApiApp(config?: ApiAppConfig & ApplicationConfig<ApiApp>) {
+export function createApiApp(config?: ApplicationConfig<ApiApp>) {
     return createGenericApplication({
         id: "api",
         name: "api",
@@ -212,7 +183,7 @@ export function createApiApp(config?: ApiAppConfig & ApplicationConfig<ApiApp>) 
             // Create the app instance.
             const app = new ApiApp(ctx);
             // Run the default application setup.
-            await app.setup(config || {});
+            await app.setup();
             // Run the custom user config.
             await config?.config?.(app, ctx);
             return app;

@@ -6,17 +6,15 @@ import { PulumiApp } from "@webiny/pulumi-sdk";
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
 
-import { Vpc } from "./ApiVpc";
 import { createLambdaRole } from "./ApiLambdaUtils";
+import { StorageOutput } from "../getStorageOutput";
+import { getFunctionVpcConfig } from "../vpcUtils";
 
 interface PreRenderingServiceParams {
     env: Record<string, any>;
-    primaryDynamodbTableArn: pulumi.Input<string>;
-    fileManagerBucketId: pulumi.Input<string>;
-    cognitoUserPoolArn: pulumi.Input<string>;
     awsAccountId: pulumi.Input<string>;
     awsRegion: pulumi.Input<string>;
-    vpc: Vpc | undefined;
+    storage: StorageOutput;
 }
 
 export function createPrerenderingService(app: PulumiApp, params: PreRenderingServiceParams) {
@@ -24,7 +22,7 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
     const role = createLambdaRole(app, {
         name: "pre-rendering-service-lambda-role",
         policy: policy.output,
-        vpc: params.vpc
+        storage: params.storage
     });
 
     const render = app.addResource(aws.lambda.Function, {
@@ -47,12 +45,7 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
                     path.join(app.ctx.appDir, "code/prerenderingService/render/build")
                 )
             }),
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
+            vpcConfig: getFunctionVpcConfig(params.storage)
         }
     });
 
@@ -75,12 +68,7 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
                     path.join(app.ctx.appDir, "code/prerenderingService/flush/build")
                 )
             }),
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
+            vpcConfig: getFunctionVpcConfig(params.storage)
         }
     });
 
@@ -103,12 +91,7 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
                     path.join(app.ctx.appDir, "code/prerenderingService/queue/add/build")
                 )
             }),
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
+            vpcConfig: getFunctionVpcConfig(params.storage)
         }
     });
 
@@ -133,12 +116,7 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
                     path.join(app.ctx.appDir, "code/prerenderingService/queue/process/build")
                 )
             }),
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
+            vpcConfig: getFunctionVpcConfig(params.storage)
         }
     });
 
@@ -205,8 +183,8 @@ function createRenderingServiceLambdaPolicy(app: PulumiApp, params: PreRendering
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -226,7 +204,7 @@ function createRenderingServiceLambdaPolicy(app: PulumiApp, params: PreRendering
                             "s3:PutObjectAcl"
                         ],
                         Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${params.fileManagerBucketId}/*`,
+                            pulumi.interpolate`arn:aws:s3:::${params.storage.fileManagerBucketId}/*`,
                             /**
                              * We're using the hard-coded value for "delivery" S3 bucket because;
                              * It is created during deployment of the `apps/website` stack which is after the api stack,

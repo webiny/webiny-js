@@ -2,12 +2,12 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { PulumiApp } from "@webiny/pulumi-sdk";
 
-import { Vpc } from "./ApiVpc";
+import { StorageOutput } from "../getStorageOutput";
 
 interface LambdaRoleParams {
     name: string;
     policy: pulumi.Output<aws.iam.Policy>;
-    vpc: Vpc | undefined;
+    storage: StorageOutput;
 }
 
 export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
@@ -41,9 +41,12 @@ export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
         name: `${params.name}-execution-role`,
         config: {
             role: role.output,
-            policyArn: params.vpc
-                ? aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
-                : aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+            policyArn: params.storage.apply(storage => {
+                if (storage.vpcSecurityGroupIds?.length) {
+                    return aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole;
+                }
+                return aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole;
+            })
         }
     });
 

@@ -5,17 +5,15 @@ import * as aws from "@pulumi/aws";
 //@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
-import { Vpc } from "./ApiVpc";
 import { createLambdaRole } from "./ApiLambdaUtils";
+import { StorageOutput } from "../getStorageOutput";
+import { getFunctionVpcConfig } from "../vpcUtils";
 
 interface PageBuilderParams {
     env: Record<string, any>;
-    primaryDynamodbTableArn: pulumi.Input<string>;
-    fileManagerBucketId: pulumi.Input<string>;
-    cognitoUserPoolArn: pulumi.Input<string>;
     awsAccountId: pulumi.Input<string>;
     awsRegion: pulumi.Input<string>;
-    vpc: Vpc | undefined;
+    storage: StorageOutput;
 }
 
 export type ApiPageBuilder = PulumiAppModule<typeof ApiPageBuilder>;
@@ -31,7 +29,7 @@ export const ApiPageBuilder = defineAppModule({
             new aws.s3.BucketObject("./pbInstallation.zip", {
                 key: "pbInstallation.zip",
                 acl: "public-read",
-                bucket: params.fileManagerBucketId,
+                bucket: params.storage.fileManagerBucketId,
                 contentType: "application/octet-stream",
                 source: new pulumi.asset.FileAsset(pbInstallationZipPath)
             });
@@ -54,7 +52,7 @@ function createUpdateSettingsResources(app: PulumiApp, params: PageBuilderParams
     const role = createLambdaRole(app, {
         name: "pb-update-settings-lambda-role",
         policy: policy.output,
-        vpc: params.vpc
+        storage: params.storage
     });
 
     const update = app.addResource(aws.lambda.Function, {
@@ -77,12 +75,7 @@ function createUpdateSettingsResources(app: PulumiApp, params: PageBuilderParams
                     ...params.env
                 }
             },
-            vpcConfig: params.vpc
-                ? {
-                      subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                      securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                  }
-                : undefined
+            vpcConfig: getFunctionVpcConfig(params.storage)
         }
     });
 
@@ -116,8 +109,8 @@ function createUpdateSettingsLambdaPolicy(app: PulumiApp, params: PageBuilderPar
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]
@@ -131,7 +124,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
     const role = createLambdaRole(app, {
         name: "pb-export-pages-lambda-role",
         policy: policy.output,
-        vpc: params.vpc
+        storage: params.storage
     });
 
     const combine = app.addResource(aws.lambda.Function, {
@@ -151,7 +144,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             environment: {
                 variables: {
                     ...params.env,
-                    S3_BUCKET: params.fileManagerBucketId
+                    S3_BUCKET: params.storage.fileManagerBucketId
                 }
             }
         }
@@ -174,7 +167,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             environment: {
                 variables: {
                     ...params.env,
-                    S3_BUCKET: params.fileManagerBucketId,
+                    S3_BUCKET: params.storage.fileManagerBucketId,
                     EXPORT_PAGE_COMBINE_HANDLER: combine.output.arn
                 }
             }
@@ -212,8 +205,8 @@ function createExportPagesLambdaPolicy(app: PulumiApp, params: PageBuilderParams
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -228,9 +221,9 @@ function createExportPagesLambdaPolicy(app: PulumiApp, params: PageBuilderParams
                             "s3:ListBucket"
                         ],
                         Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${params.fileManagerBucketId}/*`,
+                            pulumi.interpolate`arn:aws:s3:::${params.storage.fileManagerBucketId}/*`,
                             // We need to explicitly add bucket ARN to "Resource" list for "s3:ListBucket" action.
-                            pulumi.interpolate`arn:aws:s3:::${params.fileManagerBucketId}`
+                            pulumi.interpolate`arn:aws:s3:::${params.storage.fileManagerBucketId}`
                         ]
                     },
                     {
@@ -250,7 +243,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
     const role = createLambdaRole(app, {
         name: "pb-import-page-lambda-role",
         policy: policy.output,
-        vpc: params.vpc
+        storage: params.storage
     });
 
     const process = app.addResource(aws.lambda.Function, {
@@ -270,7 +263,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             environment: {
                 variables: {
                     ...params.env,
-                    S3_BUCKET: params.fileManagerBucketId
+                    S3_BUCKET: params.storage.fileManagerBucketId
                 }
             }
         }
@@ -293,7 +286,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             environment: {
                 variables: {
                     ...params.env,
-                    S3_BUCKET: params.fileManagerBucketId,
+                    S3_BUCKET: params.storage.fileManagerBucketId,
                     IMPORT_PAGE_QUEUE_PROCESS_HANDLER: process.output.arn
                 }
             }
@@ -331,8 +324,8 @@ function createImportPagesLambdaPolicy(app: PulumiApp, params: PageBuilderParams
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -347,9 +340,9 @@ function createImportPagesLambdaPolicy(app: PulumiApp, params: PageBuilderParams
                             "s3:ListBucket"
                         ],
                         Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${params.fileManagerBucketId}/*`,
+                            pulumi.interpolate`arn:aws:s3:::${params.storage.fileManagerBucketId}/*`,
                             // We need to explicitly add bucket ARN to "Resource" list for "s3:ListBucket" action.
-                            pulumi.interpolate`arn:aws:s3:::${params.fileManagerBucketId}`
+                            pulumi.interpolate`arn:aws:s3:::${params.storage.fileManagerBucketId}`
                         ]
                     },
                     {
@@ -362,7 +355,7 @@ function createImportPagesLambdaPolicy(app: PulumiApp, params: PageBuilderParams
                         Sid: "PermissionForCognitoIdp",
                         Effect: "Allow",
                         Action: "cognito-idp:*",
-                        Resource: pulumi.interpolate`${params.cognitoUserPoolArn}`
+                        Resource: pulumi.interpolate`${params.storage.cognitoUserPoolArn}`
                     }
                 ]
             }

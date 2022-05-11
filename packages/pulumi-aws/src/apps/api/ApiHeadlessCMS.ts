@@ -4,13 +4,13 @@ import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-import { Vpc } from "./ApiVpc";
 import { createLambdaRole } from "./ApiLambdaUtils";
+import { StorageOutput } from "../getStorageOutput";
+import { getFunctionVpcConfig } from "../vpcUtils";
 
 interface HeadlessCMSParams {
     env: Record<string, any>;
-    primaryDynamodbTableArn: pulumi.Input<string>;
-    vpc: Vpc | undefined;
+    storage: StorageOutput;
 }
 
 export type ApiHeadlessCMS = PulumiAppModule<typeof ApiHeadlessCMS>;
@@ -22,7 +22,7 @@ export const ApiHeadlessCMS = defineAppModule({
         const role = createLambdaRole(app, {
             name: "headless-cms-lambda-role",
             policy: policy.output,
-            vpc: params.vpc
+            storage: params.storage
         });
 
         const graphql = app.addResource(aws.lambda.Function, {
@@ -44,12 +44,7 @@ export const ApiHeadlessCMS = defineAppModule({
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },
-                vpcConfig: params.vpc
-                    ? {
-                          subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                          securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                      }
-                    : undefined
+                vpcConfig: getFunctionVpcConfig(params.storage)
             }
         });
 
@@ -127,8 +122,8 @@ function createHeadlessCmsLambdaPolicy(app: PulumiApp, params: HeadlessCMSParams
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]

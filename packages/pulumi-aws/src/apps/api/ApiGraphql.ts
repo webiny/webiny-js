@@ -3,22 +3,17 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
-import { Vpc } from "./ApiVpc";
 import { createLambdaRole } from "./ApiLambdaUtils";
+import { StorageOutput } from "../getStorageOutput";
+import { getFunctionVpcConfig } from "../vpcUtils";
 
 interface GraphqlParams {
     env: Record<string, any>;
-    primaryDynamodbTableArn: pulumi.Input<string>;
-    primaryDynamodbTableName: pulumi.Input<string>;
-    primaryDynamodbTableHashKey: pulumi.Input<string>;
-    primaryDynamodbTableRangeKey: pulumi.Input<string>;
-    fileManagerBucketId: pulumi.Input<string>;
-    cognitoUserPoolArn: pulumi.Input<string>;
-    apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
-    apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
     awsAccountId: pulumi.Input<string>;
     awsRegion: pulumi.Input<string>;
-    vpc: Vpc | undefined;
+    apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
+    apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
+    storage: StorageOutput;
 }
 
 export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
@@ -30,7 +25,7 @@ export const ApiGraphql = defineAppModule({
         const role = createLambdaRole(app, {
             name: "api-lambda-role",
             policy: policy.output,
-            vpc: params.vpc
+            storage: params.storage
         });
 
         const graphql = app.addResource(aws.lambda.Function, {
@@ -53,12 +48,7 @@ export const ApiGraphql = defineAppModule({
                         WCP_ENVIRONMENT_API_KEY: String(process.env["WCP_ENVIRONMENT_API_KEY"])
                     }
                 },
-                vpcConfig: params.vpc
-                    ? {
-                          subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                          securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                      }
-                    : undefined
+                vpcConfig: getFunctionVpcConfig(params.storage)
             }
         });
 
@@ -71,10 +61,10 @@ export const ApiGraphql = defineAppModule({
         app.addResource(aws.dynamodb.TableItem, {
             name: "apwSettings",
             config: {
-                tableName: params.primaryDynamodbTableName,
-                hashKey: params.primaryDynamodbTableHashKey,
+                tableName: params.storage.primaryDynamodbTableName,
+                hashKey: params.storage.primaryDynamodbTableHashKey,
                 rangeKey: pulumi
-                    .output(params.primaryDynamodbTableRangeKey)
+                    .output(params.storage.primaryDynamodbTableRangeKey)
                     .apply(key => key || "SK"),
                 item: pulumi.interpolate`{
               "PK": {"S": "APW#SETTINGS"},
@@ -160,8 +150,8 @@ function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${params.storage.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -174,7 +164,7 @@ function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
                             "s3:PutObject",
                             "s3:GetObject"
                         ],
-                        Resource: pulumi.interpolate`arn:aws:s3:::${params.fileManagerBucketId}/*`
+                        Resource: pulumi.interpolate`arn:aws:s3:::${params.storage.fileManagerBucketId}/*`
                     },
                     {
                         Sid: "PermissionForLambda",
@@ -186,7 +176,7 @@ function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
                         Sid: "PermissionForCognitoIdp",
                         Effect: "Allow",
                         Action: "cognito-idp:*",
-                        Resource: pulumi.interpolate`${params.cognitoUserPoolArn}`
+                        Resource: pulumi.interpolate`${params.storage.cognitoUserPoolArn}`
                     }
                 ]
             }

@@ -9,9 +9,11 @@ import {
 import { StorageCognito } from "./StorageCognito";
 import { StorageDynamo } from "./StorageDynamo";
 import { StorageFileManger } from "./StorageFileManager";
+import { StorageVpc } from "./StorageVpc";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
     protect?(ctx: ApplicationContext): boolean;
+    vpc?(ctx: ApplicationContext): boolean;
     legacy?(ctx: ApplicationContext): StorageAppLegacyConfig;
 }
 
@@ -27,6 +29,9 @@ export const StorageApp = defineApp({
 
         // Setup DynamoDB table
         const dynamoDbTable = app.addModule(StorageDynamo, { protect });
+
+        // Setup VPC
+        const vpc = config?.vpc?.(app.ctx) ? app.addModule(StorageVpc) : null;
 
         // Setup Cognito
         const cognito = app.addModule(StorageCognito, {
@@ -51,6 +56,7 @@ export const StorageApp = defineApp({
 
         return {
             dynamoDbTable,
+            vpc,
             ...cognito,
             fileManagerBucket
         };
