@@ -6,10 +6,10 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/api-prerendering-service": "^5.25.0",
-    "@webiny/api-prerendering-service-so-ddb": "^5.25.0",
-    "@webiny/cli": "^5.25.0",
-    "@webiny/handler-aws": "^5.25.0",
-    "@webiny/project-utils": "^5.25.0"
+    "@webiny/api-prerendering-service": "^5.25.1-beta.1",
+    "@webiny/api-prerendering-service-so-ddb": "^5.25.1-beta.1",
+    "@webiny/cli": "^5.25.1-beta.1",
+    "@webiny/handler-aws": "^5.25.1-beta.1",
+    "@webiny/project-utils": "^5.25.1-beta.1"
   }
 }
