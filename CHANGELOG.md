@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** update CmsEntryListWhere interface and comments ([bf4b2cd](https://github.com/webiny/webiny-js/commit/bf4b2cdd1d16a089f6cd976e1d4ddeed56b3bff6))
+
+
+
+
+
 ## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
 
 
