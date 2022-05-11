@@ -1,5 +1,5 @@
 export const CONTENT_MODEL_DATA = {
-    layout: [["KIpyfhIzb"], ["y6Pe59AYa"]],
+    layout: [["kipyfhizb"], ["ygpespaya"]],
     fields: [
         {
             type: "text",
@@ -13,14 +13,15 @@ export const CONTENT_MODEL_DATA = {
                 name: "text-input"
             },
             label: "Title",
-            fieldId: "title",
+            alias: "title",
+            fieldId: "title@text@kipyfhizb",
             helpText: "What should we call it?",
             placeholderText: "Think and Grow Rich",
             predefinedValues: {
                 enabled: false,
                 values: []
             },
-            id: "KIpyfhIzb"
+            id: "kipyfhizb"
         },
         {
             type: "number",
@@ -34,8 +35,9 @@ export const CONTENT_MODEL_DATA = {
                 name: "number-input"
             },
             label: "Edition",
-            fieldId: "edition",
-            id: "y6Pe59AYa",
+            alias: "edition",
+            fieldId: "edition@number@ygpespaya",
+            id: "ygpespaya",
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -45,13 +47,14 @@ export const CONTENT_MODEL_DATA = {
 };
 
 export const getAuthorContentModelData = modelId => ({
-    layout: [["jxoS0C7r6"], ["Q3E6CJkaQ"]],
+    layout: [["jxosoctrg"], ["qeegcjkaq"]],
     fields: [
         {
             type: "text",
             label: "Name",
-            id: "jxoS0C7r6",
-            fieldId: "name",
+            id: "jxosoctrg",
+            alias: "name",
+            fieldId: "name@text@jxosoctrg",
             validation: [],
             multipleValues: false,
             renderer: {
@@ -61,8 +64,9 @@ export const getAuthorContentModelData = modelId => ({
         {
             type: "ref",
             label: "Books",
-            id: "Q3E6CJkaQ",
-            fieldId: "books",
+            id: "qeegcjkaq",
+            alias: "books",
+            fieldId: "books@ref@qeegcjkaq",
             validation: [],
             multipleValues: true,
             renderer: {
@@ -80,13 +84,14 @@ export const getAuthorContentModelData = modelId => ({
 });
 
 export const BOOK_CONTENT_MODEL_DATA = {
-    layout: [["PUp1vtslZ"]],
+    layout: [["pupivtslz"]],
     fields: [
         {
             type: "text",
             label: "Title",
-            id: "PUp1vtslZ",
-            fieldId: "title",
+            id: "pupivtslz",
+            alias: "title",
+            fieldId: "title@text@pupivtslz",
             validation: [],
             multipleValues: false,
             renderer: {
@@ -97,13 +102,14 @@ export const BOOK_CONTENT_MODEL_DATA = {
 };
 
 export const getBookContentModelData = modelId => ({
-    layout: [["PUp1vtslZ"], ["YDWl_3GPC"]],
+    layout: [["pupivtslz"], ["ydwluegpc"]],
     fields: [
         {
             type: "text",
             label: "Title",
-            id: "PUp1vtslZ",
-            fieldId: "title",
+            id: "pupivtslz",
+            alias: "title",
+            fieldId: "title@text@pupivtslz",
             validation: [],
             multipleValues: false,
             renderer: {
@@ -113,8 +119,9 @@ export const getBookContentModelData = modelId => ({
         {
             type: "ref",
             label: "Author",
-            id: "YDWl_3GPC",
-            fieldId: "author",
+            id: "ydwluegpc",
+            alias: "author",
+            fieldId: "author@ref@ydwluegpc",
             validation: [],
             multipleValues: false,
             renderer: {
