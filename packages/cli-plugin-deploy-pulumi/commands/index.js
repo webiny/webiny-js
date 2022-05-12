@@ -205,6 +205,10 @@ module.exports = [
                         describe: `Environment`,
                         type: "string"
                     });
+                    yargs.option("variant", {
+                        describe: `Variant (only for staged rollouts)`,
+                        type: "string"
+                    });
                     yargs.option("debug", {
                         default: false,
                         describe: `Turn on debug logs`,
