@@ -3,7 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 import { ApplicationContext } from "./ApplicationConfig";
 import { PulumiAppModuleDefinition } from "./PulumiAppModule";
 import { ResourceArgs, ResourceConstructor, ResourceType } from "./PulumiResource";
-import { tagResources } from "./utils/tagResources";
+import { tagResources } from "./utils";
 
 export interface CreateResourceParams<TCtor extends ResourceConstructor> {
     name: string;

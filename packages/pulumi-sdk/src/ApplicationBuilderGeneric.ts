@@ -5,7 +5,7 @@ import trimNewlines from "trim-newlines";
 import { LocalWorkspace, Stack, UpOptions } from "@pulumi/pulumi/automation";
 
 import { PulumiApp } from "./PulumiApp";
-import { getPulumiWorkDir } from "./utils/getPulumiWorkDir";
+import { getPulumiWorkDir, getStackName } from "./utils";
 import {
     ApplicationBuilder,
     ApplicationBuilderConfig,
@@ -59,7 +59,10 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
             }
         });
 
-        const stackName = args.variant ? `${args.env}.${args.variant}` : args.env;
+        const stackName = getStackName({
+            env: args.env,
+            variant: args.variant
+        });
 
         const stack = await Stack.createOrSelect(stackName, workspace);
 
