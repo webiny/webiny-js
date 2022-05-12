@@ -6,7 +6,6 @@ import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
 import { getSchemaFromFieldPlugins } from "~/content/plugins/utils/getSchemaFromFieldPlugins";
-import { cleanupModelFields } from "~/content/plugins/schema/cleanupModelFields";
 
 export const generateSchemaPlugins = async (
     context: CmsContext
@@ -41,9 +40,6 @@ export const generateSchemaPlugins = async (
         /**
          * First we need to filter out all the fields which do not have an alias defined.
          */
-        .map(model => {
-            return cleanupModelFields(model);
-        })
         .filter(model => model.fields.length > 0)
         .forEach(model => {
             switch (cms.type) {

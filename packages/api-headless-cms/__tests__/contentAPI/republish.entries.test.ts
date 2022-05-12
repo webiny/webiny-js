@@ -152,7 +152,7 @@ describe("Republish entries", () => {
                     if (!field) {
                         return collection;
                     }
-                    collection[field.fieldId] = input[key];
+                    collection[field.alias] = input[key];
                     return collection;
                 }, {} as Record<string, any>),
                 createdOn: date.toISOString(),
@@ -530,7 +530,7 @@ describe("Republish entries", () => {
                     entryId: galaRecord.entryId,
                     createdOn: galaRecord.createdOn,
                     values: {
-                        [categoryField.fieldId]: {
+                        [categoryField.alias]: {
                             id: applePublished.id,
                             entryId: applePublished.entryId,
                             modelId: categoryModel.modelId
@@ -541,7 +541,7 @@ describe("Republish entries", () => {
                     entryId: goldenRecord.entryId,
                     createdOn: goldenRecord.createdOn,
                     values: {
-                        [categoryField.fieldId]: {
+                        [categoryField.alias]: {
                             id: bananaPublished.id,
                             entryId: bananaPublished.entryId,
                             modelId: categoryModel.modelId
@@ -563,7 +563,7 @@ describe("Republish entries", () => {
         expect(latestGalaRecord).toMatchObject({
             id: galaRecord.id,
             values: {
-                [categoryField.fieldId]: {
+                [categoryField.alias]: {
                     id: applePublished.id,
                     entryId: applePublished.entryId,
                     modelId: categoryModel.modelId
@@ -581,7 +581,7 @@ describe("Republish entries", () => {
         expect(latestGoldenRecord).toMatchObject({
             id: goldenRecord.id,
             values: {
-                [categoryField.fieldId]: {
+                [categoryField.alias]: {
                     id: bananaPublished.id,
                     entryId: bananaPublished.entryId,
                     modelId: categoryModel.modelId
@@ -602,7 +602,7 @@ describe("Republish entries", () => {
                     entryId: galaRecord.entryId,
                     createdOn: galaRecord.createdOn,
                     values: {
-                        [categoryField.fieldId]: {
+                        [categoryField.alias]: {
                             id: applePublished.id,
                             entryId: applePublished.entryId,
                             modelId: categoryModel.modelId
@@ -613,7 +613,7 @@ describe("Republish entries", () => {
                     entryId: goldenRecord.entryId,
                     createdOn: goldenRecord.createdOn,
                     values: {
-                        [categoryField.fieldId]: {
+                        [categoryField.alias]: {
                             id: bananaPublished.id,
                             entryId: bananaPublished.entryId,
                             modelId: categoryModel.modelId
@@ -635,7 +635,7 @@ describe("Republish entries", () => {
         expect(publishedGalaRecord).toMatchObject({
             id: galaRecord.id,
             values: {
-                [categoryField.fieldId]: {
+                [categoryField.alias]: {
                     id: applePublished.id,
                     entryId: applePublished.entryId,
                     modelId: categoryModel.modelId
@@ -653,7 +653,7 @@ describe("Republish entries", () => {
         expect(publishedGoldenRecord).toMatchObject({
             id: goldenRecord.id,
             values: {
-                [categoryField.fieldId]: {
+                [categoryField.alias]: {
                     id: bananaPublished.id,
                     entryId: bananaPublished.entryId,
                     modelId: categoryModel.modelId

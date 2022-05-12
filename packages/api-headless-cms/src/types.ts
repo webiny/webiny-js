@@ -1175,6 +1175,14 @@ export interface ModelManagerPlugin extends Plugin {
 }
 
 /**
+ * A content entry values definition for and from the database.
+ *
+ * @category CmsEntry
+ */
+export interface CmsEntryValues {
+    [key: string]: any;
+}
+/**
  * A content entry definition for and from the database.
  *
  * @category Database model
@@ -1249,7 +1257,7 @@ export interface CmsEntry {
      *
      * @see CmsModelField
      */
-    values: Record<string, any>;
+    values: CmsEntryValues;
 }
 
 export interface CmsStorageEntry extends CmsEntry {

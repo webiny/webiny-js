@@ -225,7 +225,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
-                                fieldId: expect.stringMatching("numbers@number"),
+                                fieldId: expect.stringMatching("numbers@number@"),
                                 alias: "numbers",
                                 error: "Numbers can contain at most 7 items."
                             }
@@ -251,7 +251,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
-                                fieldId: expect.stringMatching("numbers@number"),
+                                fieldId: expect.stringMatching("numbers@number@"),
                                 alias: "numbers",
                                 error: "Number must be greater or equal 5."
                             }
@@ -277,7 +277,7 @@ describe("fieldValidations", () => {
                         code: "VALIDATION_FAILED",
                         data: [
                             {
-                                fieldId: expect.stringMatching("numbers@number"),
+                                fieldId: expect.stringMatching("numbers@number@"),
                                 alias: "numbers",
                                 error: "Number be less or equal 15."
                             }

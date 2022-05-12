@@ -24,9 +24,9 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
     // or if initial titleFieldId is the default one also try to find first available text field
     if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
         const titleField = fields.find(field => {
-            return field.type === "text" && !field.multipleValues && field.alias;
+            return field.type === "text" && !field.multipleValues;
         });
-        return titleField ? (titleField.alias as string) : defaultTitleFieldId;
+        return titleField ? titleField.fieldId : defaultTitleFieldId;
     }
     /**
      * check existing titleFieldId for existence in the model
@@ -35,14 +35,10 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
      *
      * We check the alias along side the titleFieldId because of the old systems.
      */
-    const target = fields.find(f => f.fieldId === titleFieldId || f.alias === titleFieldId);
+    const target = fields.find(f => f.fieldId === titleFieldId);
     if (!target) {
         throw new WebinyError(`Field does not exist in the model.`, "VALIDATION_ERROR", {
             fieldId: titleFieldId
-        });
-    } else if (!target.alias) {
-        throw new WebinyError(`Field does not have an alias.`, "VALIDATION_ERROR", {
-            field: target
         });
     }
 
@@ -72,7 +68,7 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
         );
     }
 
-    return target.alias as string;
+    return target.fieldId;
 };
 
 interface AssignBeforeModelUpdateParams {

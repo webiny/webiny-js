@@ -55,6 +55,7 @@ import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afte
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
 import { PluginsContainer } from "@webiny/plugins";
 import { Tenant } from "@webiny/api-tenancy/types";
+// import { CmsEntryProxy } from "~/content/plugins/CmsEntryProxy";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -231,7 +232,9 @@ export interface CreateContentEntryCrudParams {
 
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const { storageOperations, context, getIdentity, getTenant } = params;
-
+    /**
+     * Lifecycle event definitions
+     */
     const onBeforeEntryCreate = createTopic<BeforeEntryCreateTopicParams>();
     const onAfterEntryCreate = createTopic<AfterEntryCreateTopicParams>();
     const onBeforeEntryCreateRevision = createTopic<BeforeEntryCreateRevisionTopicParams>();
@@ -268,6 +271,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         context,
         onAfterEntryDelete
     });
+
+    // const createCmsEntryProxy = (model: CmsModel, entry: CmsEntry): CmsEntryProxy => {
+    //     return new CmsEntryProxy({
+    //         entry,
+    //         fromStorage: target => {
+    //             return entryFromStorageTransform(context, model, target);
+    //         },
+    //         toStorage: target => {
+    //             return entryToStorageTransform(context, model, target);
+    //         }
+    //     });
+    // };
 
     const checkEntryPermissions = (check: {
         rwd?: string;

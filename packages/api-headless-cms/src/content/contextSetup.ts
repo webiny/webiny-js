@@ -42,6 +42,6 @@ export default () => {
             READ: type === "read",
             PREVIEW: type === "preview",
             MANAGE: type === "manage"
-        } as any;
+        };
     });
 };

@@ -12,6 +12,10 @@ const createBasePartitionKey = (params: BasePartitionKeyParams): string => {
     } else if (!locale) {
         throw new WebinyError(`Missing tenant variable when creating entry basePartitionKey`);
     }
+    /**
+     * TODO remove the CME from this string.
+     * This will require an upgrade to the DynamoDB only deployments.
+     */
     return `T#${tenant}#L#${locale}#CMS#CME`;
 };
 

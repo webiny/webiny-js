@@ -105,7 +105,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 type: "text",
-                fieldId: "title",
+                fieldId: `title@text@${ids.field11}`,
                 alias: "title",
                 validation: [
                     {
@@ -136,7 +136,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Slug",
                 type: "text",
-                fieldId: "slug",
+                fieldId: `slug@text@${ids.field12}`,
                 alias: "slug",
                 validation: [
                     {
@@ -192,7 +192,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Title",
-                fieldId: "title",
+                fieldId: `title@text@${ids.field201}`,
                 alias: "title",
                 type: "text",
                 validation: [
@@ -216,7 +216,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Category",
-                fieldId: "category",
+                fieldId: `category@ref@${ids.field202}`,
                 alias: "category",
                 type: "ref",
                 validation: [
@@ -244,7 +244,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
-                fieldId: "price",
+                fieldId: `price@number@${ids.field203}`,
                 alias: "price",
                 type: "number",
                 validation: [
@@ -267,8 +267,8 @@ const models: CmsModel[] = [
                 id: ids.field204,
                 multipleValues: false,
                 helpText: "",
-                label: "Price",
-                fieldId: "inStock",
+                label: "In Stock",
+                fieldId: `inStock@boolean@${ids.field204}`,
                 alias: "inStock",
                 type: "boolean",
                 validation: [],
@@ -286,8 +286,8 @@ const models: CmsModel[] = [
                 id: ids.field205,
                 multipleValues: false,
                 helpText: "",
-                label: "Price",
-                fieldId: "itemsInStock",
+                label: "Items In Stock",
+                fieldId: `itemsInStock@number@${ids.field205}`,
                 alias: "itemsInStock",
                 type: "number",
                 validation: [],
@@ -306,7 +306,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Available on",
-                fieldId: "availableOn",
+                fieldId: `availableOn@datetime@${ids.field206}`,
                 alias: "availableOn",
                 type: "datetime",
                 settings: {
@@ -328,7 +328,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Color",
-                fieldId: "color",
+                fieldId: `color@text@${ids.field207}`,
                 alias: "color",
                 type: "text",
                 settings: {
@@ -372,7 +372,7 @@ const models: CmsModel[] = [
                 multipleValues: true,
                 helpText: "",
                 label: "Available sizes",
-                fieldId: "availableSizes",
+                fieldId: `availableSizes@text@${ids.field208}`,
                 alias: "availableSizes",
                 type: "text",
                 settings: {
@@ -416,7 +416,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "Upload an image of the product",
                 label: "Image",
-                fieldId: "image",
+                fieldId: `image@file@${ids.field209}`,
                 alias: "image",
                 type: "file",
                 settings: {
@@ -443,7 +443,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "Rich text",
                 label: "Rich text",
-                fieldId: "richText",
+                fieldId: `richText@rich-text@${ids.field210}`,
                 alias: "richText",
                 type: "rich-text",
                 settings: {
@@ -465,7 +465,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "Variant",
-                fieldId: "variant",
+                fieldId: `variant@object@${ids.field211}`,
                 alias: "variant",
                 type: "object",
                 settings: {
@@ -475,7 +475,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Name",
-                            fieldId: "name",
+                            fieldId: `name@text@${ids.field212}`,
                             alias: "name",
                             type: "text",
                             settings: {
@@ -497,7 +497,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Price",
-                            fieldId: "price",
+                            fieldId: `price@number@${ids.field213}`,
                             alias: "price",
                             type: "number",
                             settings: {
@@ -519,7 +519,7 @@ const models: CmsModel[] = [
                             multipleValues: false,
                             helpText: "",
                             label: "Category",
-                            fieldId: "category",
+                            fieldId: `category@ref@${ids.field217}`,
                             alias: "category",
                             type: "ref",
                             validation: [
@@ -546,7 +546,7 @@ const models: CmsModel[] = [
                             multipleValues: true,
                             helpText: "",
                             label: "Options",
-                            fieldId: "options",
+                            fieldId: `options@object@${ids.field214}`,
                             alias: "options",
                             type: "object",
                             settings: {
@@ -556,7 +556,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Name",
-                                        fieldId: "name",
+                                        fieldId: `name@text@${ids.field215}`,
                                         alias: "name",
                                         type: "text",
                                         settings: {
@@ -578,7 +578,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Price",
-                                        fieldId: "price",
+                                        fieldId: `price@number@${ids.field216}`,
                                         alias: "price",
                                         type: "number",
                                         settings: {
@@ -600,7 +600,7 @@ const models: CmsModel[] = [
                                         multipleValues: false,
                                         helpText: "",
                                         label: "Category",
-                                        fieldId: "category",
+                                        fieldId: `category@ref@${ids.field218}`,
                                         alias: "category",
                                         type: "ref",
                                         validation: [
@@ -627,7 +627,7 @@ const models: CmsModel[] = [
                                         multipleValues: true,
                                         helpText: "",
                                         label: "Categories",
-                                        fieldId: "categories",
+                                        fieldId: `categories@ref@${ids.field219}`,
                                         alias: "categories",
                                         type: "ref",
                                         validation: [],
@@ -675,7 +675,7 @@ const models: CmsModel[] = [
                 multipleValues: false,
                 helpText: "",
                 label: "No fields object",
-                fieldId: "fieldsObject",
+                fieldId: `fieldsObject@object@${ids.field220}`,
                 alias: "fieldsObject",
                 type: "object",
                 settings: {
@@ -687,7 +687,7 @@ const models: CmsModel[] = [
                             helpText: "",
                             label: "Text",
                             type: "text",
-                            fieldId: "text",
+                            fieldId: `text@text@${ids.field31}`,
                             alias: "text",
                             validation: [
                                 {
@@ -744,7 +744,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Text",
                 type: "text",
-                fieldId: "text",
+                fieldId: `text@text@${ids.field31}`,
                 alias: "text",
                 validation: [
                     {
@@ -768,7 +768,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Product",
                 type: "ref",
-                fieldId: "product",
+                fieldId: `product@ref@${ids.field32}`,
                 alias: "product",
                 validation: [],
                 listValidation: [],
@@ -790,7 +790,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Rating",
                 type: "number",
-                fieldId: "rating",
+                fieldId: `rating@number@${ids.field33}`,
                 alias: "rating",
                 validation: [],
                 listValidation: [],
@@ -809,7 +809,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Author",
                 type: "ref",
-                fieldId: "author",
+                fieldId: `author@ref@${ids.field34}`,
                 alias: "author",
                 validation: [],
                 listValidation: [],
@@ -851,7 +851,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Full name",
                 type: "text",
-                fieldId: "fullName",
+                fieldId: `fullName@text@${ids.field40}`,
                 alias: "fullName",
                 validation: [
                     {
@@ -911,7 +911,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Name",
                 type: "text",
-                fieldId: "name",
+                fieldId: `name@text@${ids.field501}`,
                 alias: "name",
                 validation: [
                     {
@@ -950,7 +950,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Numbers",
                 type: "number",
-                fieldId: "numbers",
+                fieldId: `numbers@number@${ids.field502}`,
                 alias: "numbers",
                 validation: [
                     {
@@ -1004,7 +1004,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "E-mail",
                 type: "text",
-                fieldId: "email",
+                fieldId: `email@text@${ids.field503}`,
                 alias: "email",
                 validation: [
                     {
@@ -1032,7 +1032,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Url",
                 type: "text",
-                fieldId: "url",
+                fieldId: `url@text@${ids.field504}`,
                 alias: "url",
                 validation: [
                     {
@@ -1059,7 +1059,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "LowerCase",
                 type: "text",
-                fieldId: "lowerCase",
+                fieldId: `lowerCase@text@${ids.field505}`,
                 alias: "lowerCase",
                 validation: [
                     {
@@ -1087,7 +1087,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "UpperCase",
                 type: "text",
-                fieldId: "upperCase",
+                fieldId: `upperCase@text@${ids.field506}`,
                 alias: "upperCase",
                 validation: [
                     {
@@ -1115,7 +1115,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Date",
                 type: "datetime",
-                fieldId: "date",
+                fieldId: `date@datetime@${ids.field507}`,
                 alias: "date",
                 validation: [
                     {
@@ -1159,7 +1159,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "DateTime",
                 type: "datetime",
-                fieldId: "dateTime",
+                fieldId: `dateTime@datetime@${ids.field508}`,
                 alias: "dateTime",
                 validation: [
                     {
@@ -1203,7 +1203,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "DateTime",
                 type: "datetime",
-                fieldId: "dateTimeZ",
+                fieldId: `dateTimeZ@datetime@${ids.field509}`,
                 alias: "dateTimeZ",
                 validation: [
                     {
@@ -1247,7 +1247,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Time",
                 type: "datetime",
-                fieldId: "time",
+                fieldId: `time@datetime@${ids.field510}`,
                 alias: "time",
                 validation: [
                     {
@@ -1291,7 +1291,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Is Something",
                 type: "boolean",
-                fieldId: "isSomething",
+                fieldId: `isSomething@boolean@${ids.field511}`,
                 alias: "isSomething",
                 validation: [],
                 settings: {
@@ -1314,7 +1314,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Rating",
                 type: "number",
-                fieldId: "rating",
+                fieldId: `rating@number@${ids.field512}`,
                 alias: "rating",
                 validation: [],
                 settings: {
@@ -1336,7 +1336,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Description",
                 type: "long-text",
-                fieldId: "description",
+                fieldId: `description@long-text@${ids.field513}`,
                 alias: "description",
                 validation: [],
                 settings: {},
@@ -1356,7 +1356,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Slug",
                 type: "text",
-                fieldId: "slug",
+                fieldId: `slug@text@${ids.field514}`,
                 alias: "slug",
                 validation: [
                     {
@@ -1401,7 +1401,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Name",
                 type: "text",
-                fieldId: "name",
+                fieldId: `name@text@${ids.field601}`,
                 alias: "name",
                 validation: [],
                 listValidation: [],
@@ -1420,7 +1420,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug type",
                 type: "text",
-                fieldId: "bugType",
+                fieldId: `bugType@text@${ids.field602}`,
                 alias: "bugType",
                 validation: [],
                 listValidation: [],
@@ -1455,7 +1455,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug developer value",
                 type: "number",
-                fieldId: "bugValue",
+                fieldId: `bugValue@number@${ids.field603}`,
                 alias: "bugValue",
                 validation: [],
                 listValidation: [],
@@ -1487,7 +1487,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Bug fixed?",
                 type: "number",
-                fieldId: "bugFixed",
+                fieldId: `bugFixed@number@${ids.field604}`,
                 alias: "bugFixed",
                 validation: [],
                 listValidation: [],
@@ -1538,7 +1538,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Title",
                 type: "text",
-                fieldId: "title",
+                fieldId: `title@text@${ids.field701}`,
                 alias: "title",
                 validation: [],
                 listValidation: [],
@@ -1557,7 +1557,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Body",
                 type: "rich-text",
-                fieldId: "body",
+                fieldId: `body@rich-text@${ids.field702}`,
                 alias: "body",
                 validation: [],
                 listValidation: [],
@@ -1576,7 +1576,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Categories",
                 type: "ref",
-                fieldId: "categories",
+                fieldId: `categories@ref@${ids.field703}`,
                 alias: "categories",
                 validation: [],
                 listValidation: [],
@@ -1598,7 +1598,7 @@ const models: CmsModel[] = [
                 helpText: "",
                 label: "Category",
                 type: "ref",
-                fieldId: "category",
+                fieldId: `category@ref@${ids.field704}`,
                 alias: "category",
                 validation: [],
                 listValidation: [],

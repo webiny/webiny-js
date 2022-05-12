@@ -64,16 +64,16 @@ const personModelFields: Record<string, CmsModelField> = {
     },
     married: {
         id: marriedId,
-        fieldId: "married",
-        alias: `married@boolean@${marriedId}`,
+        fieldId: `married@boolean@${marriedId}`,
+        alias: `married`,
         label: "Married",
         multipleValues: false,
         type: "boolean"
     },
     biography: {
         id: biographyId,
-        fieldId: "biography",
-        alias: `biography@text@${biographyId}`,
+        fieldId: `biography@text@${biographyId}`,
+        alias: `biography`,
         label: "Biography",
         multipleValues: false,
         type: "text"

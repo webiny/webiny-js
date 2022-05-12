@@ -115,7 +115,7 @@ describe("Content model locked fields", () => {
         });
 
         // when removing field one by one error must be thrown that given field cannot be removed
-        const fieldsToRemove = productModel.fields.filter(field => field.fieldId !== "title");
+        const fieldsToRemove = productModel.fields.filter(field => field.alias !== "title");
         for (const field of fieldsToRemove) {
             const targetFields = productModel.fields.filter(f => f.id !== field.id);
             const [removedFieldResponse] = await updateContentModelMutation({
