@@ -4,7 +4,7 @@ import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-import { createLambdaRole } from "./ApiLambdaUtils";
+import { createLambdaRole } from "../lambdaUtils";
 import { StorageOutput, VpcConfig } from "../common";
 
 interface HeadlessCMSParams {

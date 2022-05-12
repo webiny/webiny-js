@@ -6,7 +6,7 @@ import * as aws from "@pulumi/aws";
 import { getLayerArn } from "@webiny/aws-layers";
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-import { createLambdaRole } from "./ApiLambdaUtils";
+import { createLambdaRole } from "../lambdaUtils";
 import { StorageOutput, VpcConfig } from "../common";
 
 export type ApiFileManager = PulumiAppModule<typeof ApiFileManager>;

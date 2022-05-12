@@ -3,7 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
-import { createLambdaRole } from "./ApiLambdaUtils";
+import { createLambdaRole } from "../lambdaUtils";
 import { StorageOutput, VpcConfig } from "../common";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
@@ -185,7 +185,7 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                         Sid: "PermissionForEventBus",
                         Effect: "Allow",
                         Action: "events:PutEvents",
-                        Resource: params.eventBusArn
+                        Resource: storage.eventBusArn
                     }
                 ]
             }

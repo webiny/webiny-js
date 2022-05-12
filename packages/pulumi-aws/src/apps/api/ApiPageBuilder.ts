@@ -6,7 +6,7 @@ import * as aws from "@pulumi/aws";
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 import { StorageOutput, VpcConfig } from "../common";
-import { createLambdaRole } from "./ApiLambdaUtils";
+import { createLambdaRole } from "../lambdaUtils";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 interface PageBuilderParams {
