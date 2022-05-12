@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** set field as title ([#2399](https://github.com/webiny/webiny-js/issues/2399)) ([ce3ae84](https://github.com/webiny/webiny-js/commit/ce3ae8470241bc61782c256f7676012bdfad2d9b))
+
+
+
+
+
 # [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
 
 **Note:** Version bump only for package webiny-js
