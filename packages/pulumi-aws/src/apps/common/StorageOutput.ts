@@ -30,7 +30,18 @@ export const StorageOutput = defineAppModule({
                 // These outputs are optional, since VPC is not always enabled.
                 vpcPublicSubnetIds: output["vpcPublicSubnetIds"] as string[] | undefined,
                 vpcPrivateSubnetIds: output["vpcPrivateSubnetIds"] as string[] | undefined,
-                vpcSecurityGroupIds: output["vpcSecurityGroupIds"] as string[] | undefined
+                vpcSecurityGroupIds: output["vpcSecurityGroupIds"] as string[] | undefined,
+
+                elasticsearchDomainArn: output["elasticsearchDomainArn"] as string | undefined,
+                elasticsearchDomainEndpoint: output["elasticsearchDomainEndpoint"] as
+                    | string
+                    | undefined,
+                elasticsearchDynamodbTableArn: output["elasticsearchDynamodbTableArn"] as
+                    | string
+                    | undefined,
+                elasticsearchDynamodbTableName: output["elasticsearchDynamodbTableName"] as
+                    | string
+                    | undefined
             };
         });
     }

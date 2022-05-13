@@ -314,7 +314,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
 }
 
 function createImportPagesLambdaPolicy(app: PulumiApp) {
-    const storage = app.getModule(StorageOutput);
+    const storageOutput = app.getModule(StorageOutput);
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
@@ -322,57 +322,83 @@ function createImportPagesLambdaPolicy(app: PulumiApp) {
         name: "ImportPageLambdaPolicy",
         config: {
             description: "This policy enables access Dynamodb, S3, Lambda and Cognito IDP",
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "PermissionForDynamodb",
-                        Effect: "Allow",
-                        Action: [
-                            "dynamodb:BatchGetItem",
-                            "dynamodb:BatchWriteItem",
-                            "dynamodb:PutItem",
-                            "dynamodb:DeleteItem",
-                            "dynamodb:GetItem",
-                            "dynamodb:Query",
-                            "dynamodb:UpdateItem"
-                        ],
-                        Resource: [
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
-                        ]
-                    },
-                    {
-                        Sid: "PermissionForS3",
-                        Effect: "Allow",
-                        Action: [
-                            "s3:GetObjectAcl",
-                            "s3:DeleteObject",
-                            "s3:PutObjectAcl",
-                            "s3:PutObject",
-                            "s3:GetObject",
-                            "s3:ListBucket"
-                        ],
-                        Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${storage.fileManagerBucketId}/*`,
-                            // We need to explicitly add bucket ARN to "Resource" list for "s3:ListBucket" action.
-                            pulumi.interpolate`arn:aws:s3:::${storage.fileManagerBucketId}`
-                        ]
-                    },
-                    {
-                        Sid: "PermissionForLambda",
-                        Effect: "Allow",
-                        Action: ["lambda:InvokeFunction"],
-                        Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
-                    },
-                    {
-                        Sid: "PermissionForCognitoIdp",
-                        Effect: "Allow",
-                        Action: "cognito-idp:*",
-                        Resource: pulumi.interpolate`${storage.cognitoUserPoolArn}`
-                    }
-                ]
-            }
+            // Storage is pulumi.Output, so we need to run apply() to resolve policy based on it
+            policy: storageOutput.apply(storage => {
+                const policy: aws.iam.PolicyDocument = {
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Sid: "PermissionForDynamodb",
+                            Effect: "Allow",
+                            Action: [
+                                "dynamodb:BatchGetItem",
+                                "dynamodb:BatchWriteItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:GetItem",
+                                "dynamodb:Query",
+                                "dynamodb:UpdateItem"
+                            ],
+                            Resource: [
+                                `${storage.primaryDynamodbTableArn}`,
+                                `${storage.primaryDynamodbTableArn}/*`,
+                                // Attach permissions for elastic search dynamo as well (if ES is enabled).
+                                ...(storage.elasticsearchDynamodbTableArn
+                                    ? [
+                                          `${storage.elasticsearchDynamodbTableArn}`,
+                                          `${storage.elasticsearchDynamodbTableArn}/*`
+                                      ]
+                                    : [])
+                            ]
+                        },
+                        {
+                            Sid: "PermissionForS3",
+                            Effect: "Allow",
+                            Action: [
+                                "s3:GetObjectAcl",
+                                "s3:DeleteObject",
+                                "s3:PutObjectAcl",
+                                "s3:PutObject",
+                                "s3:GetObject",
+                                "s3:ListBucket"
+                            ],
+                            Resource: [
+                                `arn:aws:s3:::${storage.fileManagerBucketId}/*`,
+                                // We need to explicitly add bucket ARN to "Resource" list for "s3:ListBucket" action.
+                                `arn:aws:s3:::${storage.fileManagerBucketId}`
+                            ]
+                        },
+                        {
+                            Sid: "PermissionForLambda",
+                            Effect: "Allow",
+                            Action: ["lambda:InvokeFunction"],
+                            Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
+                        },
+                        {
+                            Sid: "PermissionForCognitoIdp",
+                            Effect: "Allow",
+                            Action: "cognito-idp:*",
+                            Resource: `${storage.cognitoUserPoolArn}`
+                        },
+                        // Attach permissions for elastic search domain as well (if ES is enabled).
+                        ...(storage.elasticsearchDomainArn
+                            ? [
+                                  {
+                                      Sid: "PermissionForES",
+                                      Effect: "Allow" as const,
+                                      Action: "es:*",
+                                      Resource: [
+                                          `${storage.elasticsearchDomainArn}`,
+                                          `${storage.elasticsearchDomainArn}/*`
+                                      ]
+                                  }
+                              ]
+                            : [])
+                    ]
+                };
+
+                return policy;
+            })
         }
     });
 }

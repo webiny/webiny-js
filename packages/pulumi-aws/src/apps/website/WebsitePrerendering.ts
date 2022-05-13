@@ -267,10 +267,23 @@ function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>)
                             "dynamodb:Scan",
                             "dynamodb:UpdateItem"
                         ],
-                        Resource: [
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
-                        ]
+                        Resource: storage.apply(s => {
+                            // Add permissions to DynamoDB table
+                            const resources = [
+                                `${s.primaryDynamodbTableArn}`,
+                                `${s.primaryDynamodbTableArn}/*`
+                            ];
+
+                            // Attach permissions for elastic search dynamo as well (if ES is enabled).
+                            if (s.elasticsearchDynamodbTableArn) {
+                                resources.push(
+                                    `${s.elasticsearchDynamodbTableArn}`,
+                                    `${s.elasticsearchDynamodbTableArn}/*`
+                                );
+                            }
+
+                            return resources;
+                        })
                     },
                     {
                         Sid: "PermissionForS3",

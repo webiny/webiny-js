@@ -2,9 +2,9 @@ import {
     defineApp,
     createGenericApplication,
     ApplicationConfig,
-    ApplicationContext,
-    updateGatewayConfig
+    ApplicationContext
 } from "@webiny/pulumi-sdk";
+import { updateGatewayConfig } from "@webiny/pulumi-sdk";
 
 import { StorageOutput, VpcConfig } from "../common";
 import { ApiGraphql } from "./ApiGraphql";
@@ -15,14 +15,14 @@ import { ApiGateway } from "./ApiGateway";
 import { ApiCloudfront } from "./ApiCloudfront";
 import { ApiApwScheduler } from "./ApiApwScheduler";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
+import { AppInput, getAppInput } from "../utils";
 
 export interface ApiAppConfig {
     /**
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the `storage` application.
-     * @param ctx Application context
      */
-    vpc?(ctx: ApplicationContext): boolean | undefined;
+    vpc?: AppInput<boolean | undefined>;
     /** Custom domain configuration */
     domain?(ctx: ApplicationContext): CustomDomainParams | undefined | void;
 }
@@ -39,7 +39,7 @@ export const ApiApp = defineApp({
 
         // Register VPC config module to be available to other modules
         app.addModule(VpcConfig, {
-            enabled: config?.vpc?.(app.ctx)
+            enabled: getAppInput(app, config.vpc)
         });
 
         const pageBuilder = app.addModule(ApiPageBuilder, {
@@ -47,6 +47,13 @@ export const ApiApp = defineApp({
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
                 DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: storage.elasticsearchDynamodbTableName,
+                ELASTIC_SEARCH_ENDPOINT: storage.elasticsearchDomainEndpoint,
+
+                // Not required. Useful for testing purposes / ephemeral environments.
+                // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+                ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+
                 S3_BUCKET: storage.fileManagerBucketId,
                 WEBINY_LOGS_FORWARD_URL
             }
@@ -56,6 +63,7 @@ export const ApiApp = defineApp({
 
         const apwScheduler = app.addModule(ApiApwScheduler, {
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
+
             env: {
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
@@ -70,6 +78,13 @@ export const ApiApp = defineApp({
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
                 DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: storage.elasticsearchDynamodbTableName,
+                ELASTIC_SEARCH_ENDPOINT: storage.elasticsearchDomainEndpoint,
+
+                // Not required. Useful for testing purposes / ephemeral environments.
+                // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+                ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+
                 S3_BUCKET: storage.fileManagerBucketId,
                 EVENT_BUS: storage.eventBusArn,
                 IMPORT_PAGES_CREATE_HANDLER: pageBuilder.importPages.functions.create.output.arn,
@@ -78,7 +93,6 @@ export const ApiApp = defineApp({
                 OKTA_ISSUER: process.env["OKTA_ISSUER"],
                 WEBINY_LOGS_FORWARD_URL
             },
-            eventBusArn: storage.eventBusArn,
             apwSchedulerEventRule: apwScheduler.eventRule.output,
             apwSchedulerEventTarget: apwScheduler.eventTarget.output
         });
@@ -88,6 +102,13 @@ export const ApiApp = defineApp({
                 COGNITO_REGION: String(process.env.AWS_REGION),
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
                 DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: storage.elasticsearchDynamodbTableName,
+                ELASTIC_SEARCH_ENDPOINT: storage.elasticsearchDomainEndpoint,
+
+                // Not required. Useful for testing purposes / ephemeral environments.
+                // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+                ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+
                 S3_BUCKET: storage.fileManagerBucketId,
                 // TODO: move to okta plugin
                 OKTA_ISSUER: process.env["OKTA_ISSUER"],
@@ -141,7 +162,8 @@ export const ApiApp = defineApp({
             apwSchedulerExecuteAction: apwScheduler.executeAction.lambda.output.arn,
             apwSchedulerEventRule: apwScheduler.eventRule.output.name,
             apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
-            dynamoDbTable: storage.primaryDynamodbTableName
+            dynamoDbTable: storage.primaryDynamodbTableName,
+            dynamoDbElasticsearchTable: storage.elasticsearchDynamodbTableName
         });
 
         // Update variant gateway configuration.

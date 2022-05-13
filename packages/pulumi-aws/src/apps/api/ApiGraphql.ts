@@ -9,7 +9,6 @@ import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 interface GraphqlParams {
     env: Record<string, any>;
-    eventBusArn: pulumi.Input<string>;
     apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
     apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
 }
@@ -87,7 +86,7 @@ export const ApiGraphql = defineAppModule({
 });
 
 function createGraphqlLambdaPolicy(app: PulumiApp) {
-    const storage = app.getModule(StorageOutput);
+    const storageOutput = app.getModule(StorageOutput);
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
@@ -95,101 +94,127 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
         name: "ApiGraphqlLambdaPolicy",
         config: {
             description: "This policy enables access to Dynamodb, S3, Lambda and Cognito IDP",
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "PermissionForDynamodb",
-                        Effect: "Allow",
-                        Action: [
-                            "dynamodb:BatchGetItem",
-                            "dynamodb:BatchWriteItem",
-                            "dynamodb:ConditionCheckItem",
-                            "dynamodb:CreateBackup",
-                            "dynamodb:CreateTable",
-                            "dynamodb:CreateTableReplica",
-                            "dynamodb:DeleteBackup",
-                            "dynamodb:DeleteItem",
-                            "dynamodb:DeleteTable",
-                            "dynamodb:DeleteTableReplica",
-                            "dynamodb:DescribeBackup",
-                            "dynamodb:DescribeContinuousBackups",
-                            "dynamodb:DescribeContributorInsights",
-                            "dynamodb:DescribeExport",
-                            "dynamodb:DescribeKinesisStreamingDestination",
-                            "dynamodb:DescribeLimits",
-                            "dynamodb:DescribeReservedCapacity",
-                            "dynamodb:DescribeReservedCapacityOfferings",
-                            "dynamodb:DescribeStream",
-                            "dynamodb:DescribeTable",
-                            "dynamodb:DescribeTableReplicaAutoScaling",
-                            "dynamodb:DescribeTimeToLive",
-                            "dynamodb:DisableKinesisStreamingDestination",
-                            "dynamodb:EnableKinesisStreamingDestination",
-                            "dynamodb:ExportTableToPointInTime",
-                            "dynamodb:GetItem",
-                            "dynamodb:GetRecords",
-                            "dynamodb:GetShardIterator",
-                            "dynamodb:ListBackups",
-                            "dynamodb:ListContributorInsights",
-                            "dynamodb:ListExports",
-                            "dynamodb:ListStreams",
-                            "dynamodb:ListTables",
-                            "dynamodb:ListTagsOfResource",
-                            "dynamodb:PartiQLDelete",
-                            "dynamodb:PartiQLInsert",
-                            "dynamodb:PartiQLSelect",
-                            "dynamodb:PartiQLUpdate",
-                            "dynamodb:PurchaseReservedCapacityOfferings",
-                            "dynamodb:PutItem",
-                            "dynamodb:Query",
-                            "dynamodb:RestoreTableFromBackup",
-                            "dynamodb:RestoreTableToPointInTime",
-                            "dynamodb:Scan",
-                            "dynamodb:UpdateContinuousBackups",
-                            "dynamodb:UpdateContributorInsights",
-                            "dynamodb:UpdateItem",
-                            "dynamodb:UpdateTable",
-                            "dynamodb:UpdateTableReplicaAutoScaling",
-                            "dynamodb:UpdateTimeToLive"
-                        ],
-                        Resource: [
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
-                        ]
-                    },
-                    {
-                        Sid: "PermissionForS3",
-                        Effect: "Allow",
-                        Action: [
-                            "s3:GetObjectAcl",
-                            "s3:DeleteObject",
-                            "s3:PutObjectAcl",
-                            "s3:PutObject",
-                            "s3:GetObject"
-                        ],
-                        Resource: pulumi.interpolate`arn:aws:s3:::${storage.fileManagerBucketId}/*`
-                    },
-                    {
-                        Sid: "PermissionForLambda",
-                        Effect: "Allow",
-                        Action: ["lambda:InvokeFunction"],
-                        Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
-                    },
-                    {
-                        Sid: "PermissionForCognitoIdp",
-                        Effect: "Allow",
-                        Action: "cognito-idp:*",
-                        Resource: pulumi.interpolate`${storage.cognitoUserPoolArn}`
-                    },
-                    {
-                        Sid: "PermissionForEventBus",
-                        Effect: "Allow",
-                        Action: "events:PutEvents",
-                        Resource: storage.eventBusArn
-                    }
-                ]
-            }
+            // Storage is pulumi.Output, so we need to run apply() to resolve policy based on it
+            policy: storageOutput.apply(storage => {
+                const policy: aws.iam.PolicyDocument = {
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Sid: "PermissionForDynamodb",
+                            Effect: "Allow",
+                            Action: [
+                                "dynamodb:BatchGetItem",
+                                "dynamodb:BatchWriteItem",
+                                "dynamodb:ConditionCheckItem",
+                                "dynamodb:CreateBackup",
+                                "dynamodb:CreateTable",
+                                "dynamodb:CreateTableReplica",
+                                "dynamodb:DeleteBackup",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:DeleteTable",
+                                "dynamodb:DeleteTableReplica",
+                                "dynamodb:DescribeBackup",
+                                "dynamodb:DescribeContinuousBackups",
+                                "dynamodb:DescribeContributorInsights",
+                                "dynamodb:DescribeExport",
+                                "dynamodb:DescribeKinesisStreamingDestination",
+                                "dynamodb:DescribeLimits",
+                                "dynamodb:DescribeReservedCapacity",
+                                "dynamodb:DescribeReservedCapacityOfferings",
+                                "dynamodb:DescribeStream",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:DescribeTableReplicaAutoScaling",
+                                "dynamodb:DescribeTimeToLive",
+                                "dynamodb:DisableKinesisStreamingDestination",
+                                "dynamodb:EnableKinesisStreamingDestination",
+                                "dynamodb:ExportTableToPointInTime",
+                                "dynamodb:GetItem",
+                                "dynamodb:GetRecords",
+                                "dynamodb:GetShardIterator",
+                                "dynamodb:ListBackups",
+                                "dynamodb:ListContributorInsights",
+                                "dynamodb:ListExports",
+                                "dynamodb:ListStreams",
+                                "dynamodb:ListTables",
+                                "dynamodb:ListTagsOfResource",
+                                "dynamodb:PartiQLDelete",
+                                "dynamodb:PartiQLInsert",
+                                "dynamodb:PartiQLSelect",
+                                "dynamodb:PartiQLUpdate",
+                                "dynamodb:PurchaseReservedCapacityOfferings",
+                                "dynamodb:PutItem",
+                                "dynamodb:Query",
+                                "dynamodb:RestoreTableFromBackup",
+                                "dynamodb:RestoreTableToPointInTime",
+                                "dynamodb:Scan",
+                                "dynamodb:UpdateContinuousBackups",
+                                "dynamodb:UpdateContributorInsights",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:UpdateTable",
+                                "dynamodb:UpdateTableReplicaAutoScaling",
+                                "dynamodb:UpdateTimeToLive"
+                            ],
+                            Resource: [
+                                `${storage.primaryDynamodbTableArn}`,
+                                `${storage.primaryDynamodbTableArn}/*`,
+                                // Attach permissions for elastic search dynamo as well (if ES is enabled).
+                                ...(storage.elasticsearchDynamodbTableArn
+                                    ? [
+                                          `${storage.elasticsearchDynamodbTableArn}`,
+                                          `${storage.elasticsearchDynamodbTableArn}/*`
+                                      ]
+                                    : [])
+                            ]
+                        },
+                        {
+                            Sid: "PermissionForS3",
+                            Effect: "Allow",
+                            Action: [
+                                "s3:GetObjectAcl",
+                                "s3:DeleteObject",
+                                "s3:PutObjectAcl",
+                                "s3:PutObject",
+                                "s3:GetObject"
+                            ],
+                            Resource: `arn:aws:s3:::${storage.fileManagerBucketId}/*`
+                        },
+                        {
+                            Sid: "PermissionForLambda",
+                            Effect: "Allow",
+                            Action: ["lambda:InvokeFunction"],
+                            Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
+                        },
+                        {
+                            Sid: "PermissionForCognitoIdp",
+                            Effect: "Allow",
+                            Action: "cognito-idp:*",
+                            Resource: `${storage.cognitoUserPoolArn}`
+                        },
+                        {
+                            Sid: "PermissionForEventBus",
+                            Effect: "Allow",
+                            Action: "events:PutEvents",
+                            Resource: storage.eventBusArn
+                        },
+                        // Attach permissions for elastic search domain as well (if ES is enabled).
+                        ...(storage.elasticsearchDomainArn
+                            ? [
+                                  {
+                                      Sid: "PermissionForES",
+                                      Effect: "Allow" as const,
+                                      Action: "es:*",
+                                      Resource: [
+                                          `${storage.elasticsearchDomainArn}`,
+                                          `${storage.elasticsearchDomainArn}/*`
+                                      ]
+                                  }
+                              ]
+                            : [])
+                    ]
+                };
+
+                return policy;
+            })
         }
     });
 }

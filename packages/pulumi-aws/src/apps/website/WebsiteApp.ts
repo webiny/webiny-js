@@ -15,6 +15,7 @@ import { websiteUpload } from "./WebsiteUpload";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { StorageOutput, VpcConfig } from "../common";
+import { AppInput, getAppInput } from "../utils";
 import { websiteRender } from "./WebsiteHookRender";
 
 export interface WebsiteAppConfig {
@@ -24,9 +25,8 @@ export interface WebsiteAppConfig {
     /**
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the `storage` application.
-     * @param ctx Application context
      */
-    vpc?(ctx: ApplicationContext): boolean | undefined;
+    vpc?: AppInput<boolean | undefined>;
 }
 
 export const WebsiteApp = defineApp({
@@ -37,7 +37,7 @@ export const WebsiteApp = defineApp({
 
         // Register VPC config module to be available to other modules
         app.addModule(VpcConfig, {
-            enabled: config?.vpc?.(app.ctx)
+            enabled: getAppInput(app, config.vpc)
         });
 
         const appBucket = createPublicAppBucket(app, "app");
@@ -147,6 +147,7 @@ export const WebsiteApp = defineApp({
         const prerendering = createPrerenderingService(app, {
             env: {
                 DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: pulumi.interpolate`${storage.elasticsearchDynamodbTableName}`,
                 APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
                 DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
                 DELIVERY_CLOUDFRONT: deliveryCloudfront.output.id,
