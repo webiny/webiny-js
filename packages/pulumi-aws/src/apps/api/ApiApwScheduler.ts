@@ -2,10 +2,10 @@ import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
+import { StorageOutput } from "../common";
 
 interface ScheduleActionParams {
     env: Record<string, any>;
-    primaryDynamodbTableArn: pulumi.Input<string>;
 }
 
 const LAMBDA_NAME_PREFIX = "apw-scheduler";
@@ -80,7 +80,7 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
         }
     });
 
-    const policy = createExecuteActionLambdaPolicy(app, params);
+    const policy = createExecuteActionLambdaPolicy(app);
 
     app.addResource(aws.iam.RolePolicyAttachment, {
         name: `${EXECUTE_ACTION_LAMBDA}-role-policy-attachment`,
@@ -127,7 +127,9 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
     };
 }
 
-function createExecuteActionLambdaPolicy(app: PulumiApp, params: ScheduleActionParams) {
+function createExecuteActionLambdaPolicy(app: PulumiApp) {
+    const storage = app.getModule(StorageOutput);
+
     return app.addResource(aws.iam.Policy, {
         name: "ApwSchedulerExecuteActionLambdaPolicy",
         config: {
@@ -146,8 +148,8 @@ function createExecuteActionLambdaPolicy(app: PulumiApp, params: ScheduleActionP
                         Effect: "Allow",
                         Action: ["dynamodb:Query", "dynamodb:GetItem", "dynamodb:DeleteItem"],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]
@@ -179,7 +181,7 @@ function createScheduleActionLambda(
         }
     });
 
-    const policy = createScheduleActionLambdaPolicy(app, params);
+    const policy = createScheduleActionLambdaPolicy(app);
 
     app.addResource(aws.iam.RolePolicyAttachment, {
         name: `${CREATE_RULE_LAMBDA}-role-policy-attachment`,
@@ -229,7 +231,9 @@ function createScheduleActionLambda(
     };
 }
 
-function createScheduleActionLambdaPolicy(app: PulumiApp, params: ScheduleActionParams) {
+function createScheduleActionLambdaPolicy(app: PulumiApp) {
+    const storage = app.getModule(StorageOutput);
+
     return app.addResource(aws.iam.Policy, {
         name: "ApwSchedulerScheduleActionLambdaPolicy",
         config: {
@@ -254,8 +258,8 @@ function createScheduleActionLambdaPolicy(app: PulumiApp, params: ScheduleAction
                             "dynamodb:DeleteItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {

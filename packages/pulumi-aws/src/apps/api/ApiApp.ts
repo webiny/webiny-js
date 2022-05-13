@@ -1,24 +1,26 @@
 import {
     defineApp,
     createGenericApplication,
-    ApplicationContext,
-    PulumiApp,
-    ApplicationConfig
+    ApplicationConfig,
+    ApplicationContext
 } from "@webiny/pulumi-sdk";
 
+import { StorageOutput, VpcConfig } from "../common";
 import { ApiGraphql } from "./ApiGraphql";
-import { createVpc, Vpc } from "./ApiVpc";
 import { ApiFileManager } from "./ApiFileManager";
 import { ApiPageBuilder } from "./ApiPageBuilder";
 import { ApiHeadlessCMS } from "./ApiHeadlessCMS";
 import { ApiGateway } from "./ApiGateway";
 import { ApiCloudfront } from "./ApiCloudfront";
-import { getStorageOutput } from "../getStorageOutput";
-import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 import { ApiApwScheduler } from "./ApiApwScheduler";
 
 export interface ApiAppConfig {
-    vpc?(app: PulumiApp, ctx: ApplicationContext): boolean | Vpc;
+    /**
+     * Enables or disables VPC for the API.
+     * For VPC to work you also have to enable it in the `storage` application.
+     * @param ctx Application context
+     */
+    vpc?(ctx: ApplicationContext): boolean | undefined;
 }
 
 export const ApiApp = defineApp({
@@ -32,13 +34,13 @@ export const ApiApp = defineApp({
         // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
         const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
 
-        const vpcConfig = config.vpc?.(app, app.ctx) ?? app.ctx.env !== "dev";
-        const vpc =
-            vpcConfig === true ? createVpc(app) : vpcConfig === false ? undefined : vpcConfig;
+        // Register storage output as a module available for all other modules
+        const storage = app.addModule(StorageOutput);
 
-        const storage = getStorageOutput(app);
-        const awsAccountId = getAwsAccountId(app);
-        const awsRegion = getAwsRegion(app);
+        // Register VPC config module to be available to other modules
+        app.addModule(VpcConfig, {
+            enabled: config?.vpc?.(app.ctx)
+        });
 
         const pageBuilder = app.addModule(ApiPageBuilder, {
             env: {
@@ -48,19 +50,10 @@ export const ApiApp = defineApp({
                 S3_BUCKET: storage.fileManagerBucketId,
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
-            },
-            awsRegion,
-            awsAccountId,
-            fileManagerBucketId: storage.fileManagerBucketId,
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            cognitoUserPoolArn: storage.cognitoUserPoolArn,
-            vpc
+            }
         });
 
-        const fileManager = app.addModule(ApiFileManager, {
-            fileManagerBucketId: storage.fileManagerBucketId,
-            vpc
-        });
+        const fileManager = app.addModule(ApiFileManager);
 
         const apwScheduler = app.addModule(ApiApwScheduler, {
             primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
@@ -88,18 +81,9 @@ export const ApiApp = defineApp({
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             },
-            awsRegion,
-            awsAccountId,
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            primaryDynamodbTableName: storage.primaryDynamodbTableName,
-            primaryDynamodbTableHashKey: storage.primaryDynamodbTableHashKey,
-            primaryDynamodbTableRangeKey: storage.primaryDynamodbTableRangeKey,
-            fileManagerBucketId: storage.fileManagerBucketId,
-            cognitoUserPoolArn: storage.cognitoUserPoolArn,
             eventBusArn: storage.eventBusArn,
             apwSchedulerEventRule: apwScheduler.eventRule.output,
-            apwSchedulerEventTarget: apwScheduler.eventTarget.output,
-            vpc
+            apwSchedulerEventTarget: apwScheduler.eventTarget.output
         });
 
         const headlessCms = app.addModule(ApiHeadlessCMS, {
@@ -112,9 +96,7 @@ export const ApiApp = defineApp({
                 OKTA_ISSUER: process.env["OKTA_ISSUER"],
                 DEBUG,
                 WEBINY_LOGS_FORWARD_URL
-            },
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            vpc
+            }
         });
 
         const apiGateway = app.addModule(ApiGateway, {

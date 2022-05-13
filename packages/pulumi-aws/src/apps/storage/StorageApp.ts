@@ -1,18 +1,33 @@
 import {
     defineApp,
     createGenericApplication,
-    ApplicationContext,
-    ApplicationHooks,
-    ApplicationConfig
+    ApplicationConfig,
+    ApplicationContext
 } from "@webiny/pulumi-sdk";
 
 import { StorageCognito } from "./StorageCognito";
 import { StorageDynamo } from "./StorageDynamo";
 import { StorageEventBus } from "./StorageEventBus";
 import { StorageFileManger } from "./StorageFileManager";
+import { StorageVpc } from "./StorageVpc";
 
-export interface StorageAppConfig extends Partial<ApplicationHooks> {
+export interface StorageAppConfig {
+    /**
+     * Secures against deleting database by accident.
+     * By default enabled in production environments.
+     * @param ctx Application context
+     */
     protect?(ctx: ApplicationContext): boolean;
+    /**
+     * Enables VPC for the application.
+     * By default enabled in production environments.
+     * @param ctx Application context
+     */
+    vpc?(ctx: ApplicationContext): boolean;
+    /**
+     * Additional settings for backwards compatibility.
+     * @param ctx Application context
+     */
     legacy?(ctx: ApplicationContext): StorageAppLegacyConfig;
 }
 
@@ -28,6 +43,10 @@ export const StorageApp = defineApp({
 
         // Setup DynamoDB table
         const dynamoDbTable = app.addModule(StorageDynamo, { protect });
+
+        // Setup VPC
+        const vpcEnabled = config?.vpc?.(app.ctx) ?? app.ctx.env === "prod";
+        const vpc = vpcEnabled ? app.addModule(StorageVpc) : null;
 
         // Setup Cognito
         const cognito = app.addModule(StorageCognito, {
@@ -56,6 +75,7 @@ export const StorageApp = defineApp({
 
         return {
             dynamoDbTable,
+            vpc,
             ...cognito,
             eventBus,
             fileManagerBucket
