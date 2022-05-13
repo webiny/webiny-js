@@ -4,7 +4,7 @@ import {
     TopAppBarActionItemProps as RmwcTopAppBarActionItemProps
 } from "@rmwc/top-app-bar";
 
-export type TopAppBarActionItemProps = Omit<RmwcTopAppBarActionItemProps, 'onChange'>;
+export type TopAppBarActionItemProps = Omit<RmwcTopAppBarActionItemProps, "onChange">;
 
 const TopAppBarActionItem = (props: TopAppBarActionItemProps) => {
     return <RmwcTopAppBarActionItem {...props} />;
