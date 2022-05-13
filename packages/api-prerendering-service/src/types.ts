@@ -169,6 +169,8 @@ export interface Args {
 }
 
 export interface RenderPagesEvent extends Args {
+    /** Render pages only in a specific variant. */
+    variant?: string;
     tag?: {
         key: string;
         value?: string;

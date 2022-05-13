@@ -40,3 +40,6 @@ schema.graphql
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# TODO remove after moving traffic splitting config to WPC
+gateway.*.json

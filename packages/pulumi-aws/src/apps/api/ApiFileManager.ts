@@ -6,7 +6,7 @@ import * as aws from "@pulumi/aws";
 import { getLayerArn } from "@webiny/aws-layers";
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-import { createLambdaRole } from "../lambdaUtils";
+import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { StorageOutput, VpcConfig } from "../common";
 
 export type ApiFileManager = PulumiAppModule<typeof ApiFileManager>;
@@ -38,7 +38,10 @@ export const ApiFileManager = defineAppModule({
                 }),
                 layers: [getLayerArn("sharp")],
                 environment: {
-                    variables: { S3_BUCKET: storage.fileManagerBucketId }
+                    variables: {
+                        ...getCommonLambdaEnvVariables(app),
+                        S3_BUCKET: storage.fileManagerBucketId
+                    }
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
@@ -59,7 +62,10 @@ export const ApiFileManager = defineAppModule({
                     )
                 }),
                 environment: {
-                    variables: { S3_BUCKET: storage.fileManagerBucketId }
+                    variables: {
+                        ...getCommonLambdaEnvVariables(app),
+                        S3_BUCKET: storage.fileManagerBucketId
+                    }
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
@@ -81,6 +87,7 @@ export const ApiFileManager = defineAppModule({
                 }),
                 environment: {
                     variables: {
+                        ...getCommonLambdaEnvVariables(app),
                         S3_BUCKET: storage.fileManagerBucketId,
                         IMAGE_TRANSFORMER_FUNCTION: transform.output.arn
                     }

@@ -16,7 +16,7 @@ const parseMessage = message => {
 module.exports = async ({ projectApplication, inputs, context }) => {
     const start = new Date();
 
-    const { env, debug } = inputs;
+    const { env, variant, debug } = inputs;
     let multipleBuilds = false;
     switch (projectApplication.packages.length) {
         case 0:
@@ -157,7 +157,12 @@ module.exports = async ({ projectApplication, inputs, context }) => {
 
                 worker.postMessage(
                     JSON.stringify({
-                        options: { env, debug, logs: enableLogs },
+                        options: {
+                            env,
+                            variant,
+                            debug,
+                            logs: enableLogs
+                        },
                         package: current
                     })
                 );

@@ -14,6 +14,8 @@ export const ApiCloudfront = defineAppModule({
             name: "api-cloudfront",
             config: {
                 waitForDeployment: false,
+                isIpv6Enabled: true,
+                enabled: true,
                 defaultCacheBehavior: {
                     compress: true,
                     allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
@@ -32,8 +34,6 @@ export const ApiCloudfront = defineAppModule({
                     targetOriginId: gateway.api.output.name,
                     viewerProtocolPolicy: "allow-all"
                 },
-                isIpv6Enabled: true,
-                enabled: true,
                 orderedCacheBehaviors: [
                     {
                         compress: true,

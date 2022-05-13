@@ -1,4 +1,10 @@
-import { defineApp, createGenericApplication, ApplicationConfig } from "@webiny/pulumi-sdk";
+import {
+    defineApp,
+    createGenericApplication,
+    ApplicationConfig,
+    ApplicationContext
+} from "@webiny/pulumi-sdk";
+import { updateGatewayConfig } from "@webiny/pulumi-sdk";
 
 import { StorageOutput, VpcConfig } from "../common";
 import { ApiGraphql } from "./ApiGraphql";
@@ -8,6 +14,7 @@ import { ApiHeadlessCMS } from "./ApiHeadlessCMS";
 import { ApiGateway } from "./ApiGateway";
 import { ApiCloudfront } from "./ApiCloudfront";
 import { ApiApwScheduler } from "./ApiApwScheduler";
+import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { AppInput, getAppInput } from "../utils";
 
 export interface ApiAppConfig {
@@ -16,15 +23,13 @@ export interface ApiAppConfig {
      * For VPC to work you also have to enable it in the `storage` application.
      */
     vpc?: AppInput<boolean | undefined>;
+    /** Custom domain configuration */
+    domain?(ctx: ApplicationContext): CustomDomainParams | undefined | void;
 }
 
 export const ApiApp = defineApp({
     name: "Api",
     async config(app, config: ApiAppConfig) {
-        // Among other things, this determines the amount of information we reveal on runtime errors.
-        // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-        const DEBUG = String(process.env.DEBUG);
-
         // Enables logs forwarding.
         // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
         const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
@@ -50,7 +55,6 @@ export const ApiApp = defineApp({
                 ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
 
                 S3_BUCKET: storage.fileManagerBucketId,
-                DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             }
         });
@@ -65,7 +69,6 @@ export const ApiApp = defineApp({
                 COGNITO_USER_POOL_ID: storage.cognitoUserPoolId,
                 DB_TABLE: storage.primaryDynamodbTableName,
                 S3_BUCKET: storage.fileManagerBucketId,
-                DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             }
         });
@@ -88,7 +91,6 @@ export const ApiApp = defineApp({
                 EXPORT_PAGES_PROCESS_HANDLER: pageBuilder.exportPages.functions.process.output.arn,
                 // TODO: move to okta plugin
                 OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             },
             apwSchedulerEventRule: apwScheduler.eventRule.output,
@@ -110,7 +112,6 @@ export const ApiApp = defineApp({
                 S3_BUCKET: storage.fileManagerBucketId,
                 // TODO: move to okta plugin
                 OKTA_ISSUER: process.env["OKTA_ISSUER"],
-                DEBUG,
                 WEBINY_LOGS_FORWARD_URL
             }
         });
@@ -145,9 +146,15 @@ export const ApiApp = defineApp({
 
         const cloudfront = app.addModule(ApiCloudfront);
 
+        const domain = config.domain?.(app.ctx);
+        if (domain) {
+            applyCustomDomain(cloudfront, domain);
+        }
+
         app.addOutputs({
             region: process.env.AWS_REGION,
             apiUrl: cloudfront.output.domainName.apply(value => `https://${value}`),
+            apiDomain: cloudfront.output.domainName,
             cognitoUserPoolId: storage.cognitoUserPoolId,
             cognitoAppClientId: storage.cognitoAppClientId,
             cognitoUserPoolPasswordPolicy: storage.cognitoUserPoolPasswordPolicy,
@@ -158,6 +165,22 @@ export const ApiApp = defineApp({
             dynamoDbTable: storage.primaryDynamodbTableName,
             dynamoDbElasticsearchTable: storage.elasticsearchDynamodbTableName
         });
+
+        // Update variant gateway configuration.
+        const variant = app.ctx.variant;
+        if (variant) {
+            app.onAfterDeploy(async ({ outputs }) => {
+                // After deployment is made we update a static JSON file with a variant configuration.
+                // TODO: We should update WCP config instead of a static file here
+                await updateGatewayConfig({
+                    app: "api",
+                    cwd: app.ctx.projectDir,
+                    env: app.ctx.env,
+                    variant: variant,
+                    domain: outputs["apiDomain"]
+                });
+            });
+        }
 
         return {
             fileManager,

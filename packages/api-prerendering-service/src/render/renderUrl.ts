@@ -6,6 +6,7 @@ import { noopener } from "posthtml-noopener";
  */
 // @ts-ignore
 import posthtmlPluginLinkPreload from "posthtml-plugin-link-preload";
+import absoluteAssetUrls from "./absoluteAssetUrls";
 import injectApolloState from "./injectApolloState";
 import injectRenderId from "./injectRenderId";
 import injectRenderTs from "./injectRenderTs";
@@ -82,6 +83,7 @@ export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta
     const allArgs: RenderUrlPostHtmlParams = { render, args, url, id, ts };
     const { html } = await posthtml([
         noopener(),
+        absoluteAssetUrls(),
         posthtmlPluginLinkPreload(),
         injectRenderId(allArgs),
         injectRenderTs(allArgs),
