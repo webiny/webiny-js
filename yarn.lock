@@ -12412,7 +12412,7 @@ __metadata:
   resolution: "@webiny/aws-helpers@workspace:packages/aws-helpers"
   dependencies:
     "@types/aws-lambda": ^8.10.93
-    "@webiny/project-utils": ^5.24.0
+    "@webiny/project-utils": ^5.25.0
     cheerio: ^1.0.0-rc.10
     srcset: ^4.0.0
   languageName: unknown
