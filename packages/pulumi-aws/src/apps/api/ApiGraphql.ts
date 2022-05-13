@@ -3,7 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
-import { createLambdaRole } from "../lambdaUtils";
+import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { StorageOutput, VpcConfig } from "../common";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
@@ -42,6 +42,7 @@ export const ApiGraphql = defineAppModule({
                 }),
                 environment: {
                     variables: {
+                        ...getCommonLambdaEnvVariables(app),
                         ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
                         WCP_ENVIRONMENT_API_KEY: String(process.env["WCP_ENVIRONMENT_API_KEY"])

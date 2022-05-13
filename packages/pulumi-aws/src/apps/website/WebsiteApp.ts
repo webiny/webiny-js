@@ -146,10 +146,6 @@ export const WebsiteApp = defineApp({
 
         const prerendering = createPrerenderingService(app, {
             env: {
-                // Among other things, this determines the amount of information we reveal on runtime errors.
-                // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-                DEBUG: String(process.env.DEBUG),
-            STAGED_ROLLOUTS_VARIANT: app.ctx.variant || "",
                 DB_TABLE: storage.primaryDynamodbTableName,
                 APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
                 DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
