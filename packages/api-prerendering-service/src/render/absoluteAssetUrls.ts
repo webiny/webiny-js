@@ -1,5 +1,5 @@
 import { NodeAPI, Node } from "posthtml";
-import { parseSrcset, stringifySrcset, SrcSetDefinition } from "srcset";
+import { parse as parseSrcset, stringify as stringifySrcset, SrcSetDefinition } from "srcset";
 
 export default () => async (tree: NodeAPI) => {
     // We are rewriting asset URLs from relative to absolute.
