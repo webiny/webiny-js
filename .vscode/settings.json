@@ -10,6 +10,5 @@
     "yarn.lock": true,
     ".pulumi": true
   },
-  "files.eol": "\n",
-  "cSpell.words": ["Rmwc"]
+  "files.eol": "\n"
 }
