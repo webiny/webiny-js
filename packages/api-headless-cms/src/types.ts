@@ -1425,7 +1425,9 @@ export interface CmsEntryListWhere {
     entryId_in?: string[];
     entryId_not_in?: string[];
     /**
-     * Entry is owned by whom?
+     * Contains the owner of the entry. An "owner" is the identity who originally created the entry.
+     * Subsequent revisions can be created by other identities, and those will be stored in `createdBy`,
+     * but the `owner` is always the original author of the entry.
      *
      * Can be sent via the API or set internal if user can see only their own entries.
      */
@@ -1450,25 +1452,25 @@ export interface CmsEntryListWhere {
     version_lt?: number;
     version_gt?: number;
     /**
-     * Each operations implementation MUST determine how to use this field.
-     * In SQL it can be published field and in DynamoDB can be a secondary key.
+     * Each storage operations implementation MUST determine how to use this field.
+     * In SQL, it can be a `published` field, and in DynamoDB it can be an SK.
      *
      * It is not meant to be used via the API.
      * @internal
      */
     published?: boolean;
     /**
-     * Each operations implementation MUST determine how to use this field.
-     * In SQL it can be published field and in DynamoDB can be a secondary key.
+     * Each storage operations implementation MUST determine how to use this field.
+     * In SQL, it can be a `latest` field, and in DynamoDB it can be an SK.
      *
      * It is not meant to be used via the API.
      * @internal
      */
     latest?: boolean;
     /**
-     * Can be reference field or, actually, anything else.
+     * This is to allow querying by any content model field defined by the user.
      */
-    // [key: string]: any | CmsEntryListWhereRef;
+    [key: string]: any | CmsEntryListWhereRef;
 }
 
 /**

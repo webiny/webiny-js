@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** update CmsEntryListWhere interface and comments ([bf4b2cd](https://github.com/webiny/webiny-js/commit/bf4b2cdd1d16a089f6cd976e1d4ddeed56b3bff6))
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** add missing property to test files ([41a38eb](https://github.com/webiny/webiny-js/commit/41a38ebee832dad2e27db5984250c0d81c79015c))
+* **api-headless-cms:** make description a required field ([0c0e299](https://github.com/webiny/webiny-js/commit/0c0e299e872259c26c311648a9cf225bd9be9ad0))
+* **api-headless-cms:** remove unused storageEntry parameter ([2bb322a](https://github.com/webiny/webiny-js/commit/2bb322a7c11b69f326d7af1008b0955894d3b0a7))
+* **api-i18n:** move api-i18n-content methods to api-i18n ([5a6c335](https://github.com/webiny/webiny-js/commit/5a6c33512f31979d94f78246ff4a8a18173b7f96))
+* improve telemetry client ([a036766](https://github.com/webiny/webiny-js/commit/a036766272a71b5fc9d355ce2ec1607d2e670020))
+
+
+### Features
+
+* **api-headless-cms:** remove unnecessary types ([#2388](https://github.com/webiny/webiny-js/issues/2388)) ([919c445](https://github.com/webiny/webiny-js/commit/919c445a405a26fcda8f39636d145cea6c6cf88f))
+* elasticsearch japanese index configuration ([#2326](https://github.com/webiny/webiny-js/issues/2326)) ([83fe117](https://github.com/webiny/webiny-js/commit/83fe117e7a7ec9f2d916850cf9fc5148a866442a))
+* **api-headless-cms:** full text search on all or selected fields ([#2347](https://github.com/webiny/webiny-js/issues/2347)) ([ed3f313](https://github.com/webiny/webiny-js/commit/ed3f3137cfc87dbfd23ae62900760f7866304b83))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/api-headless-cms
