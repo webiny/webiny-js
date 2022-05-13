@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-plugin-admin-welcome-screen",
-  "version": "5.25.0",
+  "version": "5.26.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/plugins": "^5.25.0",
+    "@webiny/plugins": "^5.26.0",
     "react": "16.14.0",
     "react-dom": "16.14.0"
   },
@@ -23,8 +23,8 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
-    "@webiny/cli": "^5.25.0",
-    "@webiny/project-utils": "^5.25.0",
+    "@webiny/cli": "^5.26.0",
+    "@webiny/project-utils": "^5.26.0",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
   },

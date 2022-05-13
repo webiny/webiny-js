@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* **pulumi-aws:** add descriptive comments ([1144488](https://github.com/webiny/webiny-js/commit/114448804b6d89c73926a30871b5e8b1293324b0))
+* **pulumi-aws:** improve request.uri handling ([ef627e6](https://github.com/webiny/webiny-js/commit/ef627e60ce773bf54971803bc048ffa39d910161))
+
+
+### Features
+
+* decomposed storage and API apps into modules [#2360](https://github.com/webiny/webiny-js/issues/2360) ([3e968a6](https://github.com/webiny/webiny-js/commit/3e968a64c9889ca4d8c97fbac1ce552cc7c26418))
+* extracting storage app from API ([#2327](https://github.com/webiny/webiny-js/issues/2327)) ([9b6904f](https://github.com/webiny/webiny-js/commit/9b6904f2389d4a0765a0913e0f25258ec660beaf))
+* new pulumi architectrure ([#2205](https://github.com/webiny/webiny-js/issues/2205)) ([ea2ea7f](https://github.com/webiny/webiny-js/commit/ea2ea7f956c9f847e0e5e9c48d6b439100991b24))
+* update webiny packages deps ([#2348](https://github.com/webiny/webiny-js/issues/2348)) ([7b92825](https://github.com/webiny/webiny-js/commit/7b9282592d8da1eff155dc0c7071e6153ce36c7c))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/pulumi-aws
