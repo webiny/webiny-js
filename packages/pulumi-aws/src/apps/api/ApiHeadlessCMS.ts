@@ -4,13 +4,11 @@ import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-import { Vpc } from "./ApiVpc";
-import { createLambdaRole } from "./ApiLambdaUtils";
+import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
+import { StorageOutput, VpcConfig } from "../common";
 
 interface HeadlessCMSParams {
     env: Record<string, any>;
-    primaryDynamodbTableArn: pulumi.Input<string>;
-    vpc: Vpc | undefined;
 }
 
 export type ApiHeadlessCMS = PulumiAppModule<typeof ApiHeadlessCMS>;
@@ -18,11 +16,10 @@ export type ApiHeadlessCMS = PulumiAppModule<typeof ApiHeadlessCMS>;
 export const ApiHeadlessCMS = defineAppModule({
     name: "ApiHeadlessCMS",
     config(app: PulumiApp, params: HeadlessCMSParams) {
-        const policy = createHeadlessCmsLambdaPolicy(app, params);
+        const policy = createHeadlessCmsLambdaPolicy(app);
         const role = createLambdaRole(app, {
             name: "headless-cms-lambda-role",
-            policy: policy.output,
-            vpc: params.vpc
+            policy: policy.output
         });
 
         const graphql = app.addResource(aws.lambda.Function, {
@@ -40,16 +37,12 @@ export const ApiHeadlessCMS = defineAppModule({
                 }),
                 environment: {
                     variables: {
+                        ...getCommonLambdaEnvVariables(app),
                         ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },
-                vpcConfig: params.vpc
-                    ? {
-                          subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                          securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                      }
-                    : undefined
+                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
         });
 
@@ -63,7 +56,9 @@ export const ApiHeadlessCMS = defineAppModule({
     }
 });
 
-function createHeadlessCmsLambdaPolicy(app: PulumiApp, params: HeadlessCMSParams) {
+function createHeadlessCmsLambdaPolicy(app: PulumiApp) {
+    const storage = app.getModule(StorageOutput);
+
     return app.addResource(aws.iam.Policy, {
         name: "HeadlessCmsLambdaPolicy",
         config: {
@@ -127,8 +122,8 @@ function createHeadlessCmsLambdaPolicy(app: PulumiApp, params: HeadlessCMSParams
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]

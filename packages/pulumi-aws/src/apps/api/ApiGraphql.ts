@@ -3,23 +3,15 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
-import { Vpc } from "./ApiVpc";
-import { createLambdaRole } from "./ApiLambdaUtils";
+import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
+import { StorageOutput, VpcConfig } from "../common";
+import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 interface GraphqlParams {
     env: Record<string, any>;
-    primaryDynamodbTableArn: pulumi.Input<string>;
-    primaryDynamodbTableName: pulumi.Input<string>;
-    primaryDynamodbTableHashKey: pulumi.Input<string>;
-    primaryDynamodbTableRangeKey: pulumi.Input<string>;
-    fileManagerBucketId: pulumi.Input<string>;
-    cognitoUserPoolArn: pulumi.Input<string>;
     eventBusArn: pulumi.Input<string>;
     apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
     apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
-    awsAccountId: pulumi.Input<string>;
-    awsRegion: pulumi.Input<string>;
-    vpc: Vpc | undefined;
 }
 
 export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
@@ -27,11 +19,12 @@ export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
 export const ApiGraphql = defineAppModule({
     name: "ApiGraphql",
     config(app: PulumiApp, params: GraphqlParams) {
-        const policy = createGraphqlLambdaPolicy(app, params);
+        const storage = app.getModule(StorageOutput);
+
+        const policy = createGraphqlLambdaPolicy(app);
         const role = createLambdaRole(app, {
             name: "api-lambda-role",
-            policy: policy.output,
-            vpc: params.vpc
+            policy: policy.output
         });
 
         const graphql = app.addResource(aws.lambda.Function, {
@@ -49,17 +42,13 @@ export const ApiGraphql = defineAppModule({
                 }),
                 environment: {
                     variables: {
+                        ...getCommonLambdaEnvVariables(app),
                         ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
                         WCP_ENVIRONMENT_API_KEY: String(process.env["WCP_ENVIRONMENT_API_KEY"])
                     }
                 },
-                vpcConfig: params.vpc
-                    ? {
-                          subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                          securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                      }
-                    : undefined
+                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
         });
 
@@ -72,14 +61,14 @@ export const ApiGraphql = defineAppModule({
         app.addResource(aws.dynamodb.TableItem, {
             name: "apwSettings",
             config: {
-                tableName: params.primaryDynamodbTableName,
-                hashKey: params.primaryDynamodbTableHashKey,
+                tableName: storage.primaryDynamodbTableName,
+                hashKey: storage.primaryDynamodbTableHashKey,
                 rangeKey: pulumi
-                    .output(params.primaryDynamodbTableRangeKey)
+                    .output(storage.primaryDynamodbTableRangeKey)
                     .apply(key => key || "SK"),
                 item: pulumi.interpolate`{
               "PK": {"S": "APW#SETTINGS"},
-              "SK": {"S": "A"},
+              "SK": {"S": "${app.ctx.variant || "A"}"},
               "mainGraphqlFunctionArn": {"S": "${graphql.output.arn}"},
               "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
               "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}
@@ -97,7 +86,11 @@ export const ApiGraphql = defineAppModule({
     }
 });
 
-function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
+function createGraphqlLambdaPolicy(app: PulumiApp) {
+    const storage = app.getModule(StorageOutput);
+    const awsAccountId = getAwsAccountId(app);
+    const awsRegion = getAwsRegion(app);
+
     return app.addResource(aws.iam.Policy, {
         name: "ApiGraphqlLambdaPolicy",
         config: {
@@ -161,8 +154,8 @@ function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
@@ -175,25 +168,25 @@ function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
                             "s3:PutObject",
                             "s3:GetObject"
                         ],
-                        Resource: pulumi.interpolate`arn:aws:s3:::${params.fileManagerBucketId}/*`
+                        Resource: pulumi.interpolate`arn:aws:s3:::${storage.fileManagerBucketId}/*`
                     },
                     {
                         Sid: "PermissionForLambda",
                         Effect: "Allow",
                         Action: ["lambda:InvokeFunction"],
-                        Resource: pulumi.interpolate`arn:aws:lambda:${params.awsRegion}:${params.awsAccountId}:function:*`
+                        Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
                     },
                     {
                         Sid: "PermissionForCognitoIdp",
                         Effect: "Allow",
                         Action: "cognito-idp:*",
-                        Resource: params.cognitoUserPoolArn
+                        Resource: pulumi.interpolate`${storage.cognitoUserPoolArn}`
                     },
                     {
                         Sid: "PermissionForEventBus",
                         Effect: "Allow",
                         Action: "events:PutEvents",
-                        Resource: params.eventBusArn
+                        Resource: storage.eventBusArn
                     }
                 ]
             }
