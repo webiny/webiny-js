@@ -64,7 +64,7 @@ const CircularProgress: React.FC<CircularProgressProps> = props => {
 
 CircularProgress.defaultProps = {
     size: 45,
-    spinnerColor: "#fa5723",
+    spinnerColor: "var(--mdc-theme-primary)",
     spinnerWidth: 4,
     visible: true
 };

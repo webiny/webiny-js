@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+
+### Bug Fixes
+
+* **ui:** use a CSS variable instead of a hardcoded hex value ([fa52f89](https://github.com/webiny/webiny-js/commit/fa52f897aa0fda6a8c132e2406b35035bc186ce9))
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* correct filtering of options ([8d33947](https://github.com/webiny/webiny-js/commit/8d339475da475c44ac54ba23eae48d666c356896))
+* correct`MultiAutoCompletePropsValue` type ([a776f1e](https://github.com/webiny/webiny-js/commit/a776f1e00fc18203fc2df3028cc4663842500e34))
+* ensure `paginateMultipleSelection` supports all types of values ([9d4db26](https://github.com/webiny/webiny-js/commit/9d4db26203625ff1429b525a56b6ce2bb6c620cd))
+* format with prettier ([9efe240](https://github.com/webiny/webiny-js/commit/9efe240bb1c1b7f3dd66c9c27182ef7c4b0ac116))
+* **ui:** add check for optional validation prop in RichTextEditor ([c6faf93](https://github.com/webiny/webiny-js/commit/c6faf9330f46acfcf186147806747170efa9e147))
+* **ui:** add className prop in RichTextEditor ui component ([ea8904c](https://github.com/webiny/webiny-js/commit/ea8904ca085a099cc6d2e230a6f5b994bbfa9ac3))
+* **ui:** add iconClassName prop in AccordionItem ([5c86904](https://github.com/webiny/webiny-js/commit/5c86904085aa5d289d80400684948f18daf20b43))
+* **ui:** add validation prop in RichTextEditor component ([72babb0](https://github.com/webiny/webiny-js/commit/72babb0c9c19c1d3d06a8310ebc129141c5fbbf5))
+* **ui:** create new array in CheckboxGroup onChange method instead of mutation ([84dd3f2](https://github.com/webiny/webiny-js/commit/84dd3f215c25a46d7e4a0881c302701606a09a91))
+* **ui:** export ChildrenRenderProp interface ([e4e1e89](https://github.com/webiny/webiny-js/commit/e4e1e89d261272da85eeedc4362608255888940a))
+* **ui:** update data list header ([d5744a8](https://github.com/webiny/webiny-js/commit/d5744a8e0febe2814a67e14241ee61619e30a604))
+* **ui:** use textProp in search inside paginateMultipleSelection ([76946e5](https://github.com/webiny/webiny-js/commit/76946e543bbe6cf8aeeee574684dd8c97960cfab))
+
+
+### Features
+
+* **ui:** add subHeader prop to DataList component ([9d9ff3e](https://github.com/webiny/webiny-js/commit/9d9ff3eb7ac417e2961f1d5ccb79899695d130d5))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/ui

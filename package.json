@@ -147,7 +147,7 @@
     "test:integration": "cross-env TEST_TYPE=integration yarn test",
     "test:e2e": "cross-env TEST_TYPE=e2e yarn test",
     "validate-packages": "node scripts/validatePackages.js",
-    "lerna:version:latest": "yarn lerna version --force-publish --conventional-graduate --yes",
+    "lerna:version:latest": "yarn lerna version minor --force-publish --conventional-graduate --yes",
     "lerna:publish:latest": "yarn lerna publish from-package --yes",
     "lerna:version:beta": "yarn lerna version prerelease --conventional-prerelease --force-publish --preid beta --yes",
     "lerna:publish:beta": "yarn lerna publish from-package --dist-tag beta --yes",
