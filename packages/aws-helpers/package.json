@@ -25,7 +25,7 @@
   "dependencies": {
     "@types/aws-lambda": "^8.10.93",
     "cheerio": "^1.0.0-rc.10",
-    "srcset": "^5.0.0"
+    "srcset": "^4.0.0"
   },
   "devDependencies": {
     "@webiny/project-utils": "^5.24.0"

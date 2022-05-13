@@ -32,7 +32,7 @@
     "posthtml-plugin-link-preload": "^1.0.0",
     "puppeteer": "^5.5.0",
     "shortid": "^2.2.16",
-    "srcset": "^5.0.0"
+    "srcset": "^4.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
