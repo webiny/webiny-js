@@ -14,6 +14,7 @@ import { ApiHeadlessCMS } from "./ApiHeadlessCMS";
 import { ApiGateway } from "./ApiGateway";
 import { ApiCloudfront } from "./ApiCloudfront";
 import { ApiApwScheduler } from "./ApiApwScheduler";
+import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
 export interface ApiAppConfig {
     /**
@@ -22,6 +23,8 @@ export interface ApiAppConfig {
      * @param ctx Application context
      */
     vpc?(ctx: ApplicationContext): boolean | undefined;
+    /** Custom domain configuration */
+    domain?(ctx: ApplicationContext): CustomDomainParams | undefined | void;
 }
 
 export const ApiApp = defineApp({
@@ -121,6 +124,11 @@ export const ApiApp = defineApp({
         });
 
         const cloudfront = app.addModule(ApiCloudfront);
+
+        const domain = config.domain?.(app.ctx);
+        if (domain) {
+            applyCustomDomain(cloudfront, domain);
+        }
 
         app.addOutputs({
             region: process.env.AWS_REGION,

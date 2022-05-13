@@ -14,7 +14,7 @@ import { adminUpload } from "./AdminUpload";
 
 export interface AdminAppConfig {
     /** Custom domain configuration */
-    domain?(ctx: ApplicationContext): CustomDomainParams;
+    domain?(ctx: ApplicationContext): CustomDomainParams | undefined | void;
 }
 
 export const AdminApp = defineApp({
