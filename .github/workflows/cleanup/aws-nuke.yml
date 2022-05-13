@@ -25,6 +25,8 @@ resource-types:
     - LambdaFunction
     - CloudFrontDistribution
     - CloudFrontDistributionDeployment
+    - CognitoUserPool
+    - CognitoUserPoolClient
     - IAMPolicy
     - IAMRole
     - IAMRolePolicy

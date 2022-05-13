@@ -1,6 +1,6 @@
 {
   "name": "@webiny/where-parser",
-  "version": "5.25.0",
+  "version": "5.26.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,15 +16,15 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/error": "^5.25.0"
+    "@webiny/error": "^5.26.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-flow": "^7.16.0",
-    "@webiny/cli": "^5.25.0",
-    "@webiny/project-utils": "^5.25.0",
+    "@webiny/cli": "^5.26.0",
+    "@webiny/project-utils": "^5.26.0",
     "jest": "^26.6.3",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",

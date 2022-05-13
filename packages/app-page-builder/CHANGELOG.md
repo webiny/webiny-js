@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* **app-page-builder:** add AdminPageBuilderContextProvider in PageBuilderProviderHOC ([994b91a](https://github.com/webiny/webiny-js/commit/994b91af51f0f3c897cc1de2ba1d4208d05dfeb0))
+* **app-page-builder:** add mutationOptions to PublishPageOptions ([5b6b30d](https://github.com/webiny/webiny-js/commit/5b6b30d34d1501022aa982e364a4f4371c18ae48))
+* **app-page-builder:** add PageRevisionListItemGraphic as composable component ([397a95d](https://github.com/webiny/webiny-js/commit/397a95d1a181ec91dcc72c78b94707f7aaef8a6a))
+* **app-page-builder:** add update cache logic in DefaultOnPagePublish plugin ([e943d63](https://github.com/webiny/webiny-js/commit/e943d6324749a8217e0f561d0af6c6040593b3b3))
+* **app-page-builder:** improve TS types ([81c8281](https://github.com/webiny/webiny-js/commit/81c8281aa46f38ec0b209200445d72e7e5472eb1))
+* **app-page-builder:** make page action buttons composable ([d8aac1a](https://github.com/webiny/webiny-js/commit/d8aac1a4b96cdf6da09bd961938c19ad7077ce0c))
+
+
+### Features
+
+* **api-apw:** add composeAsync utility ([4a7fe57](https://github.com/webiny/webiny-js/commit/4a7fe57353502526b3660659b9d7ef35f91f8303))
+* **app-page-builder:** add AdminPageBuilder context ([4f90af8](https://github.com/webiny/webiny-js/commit/4f90af84d06d4116da0a67c7e32b3c6088602c12))
+* **app-page-builder:** add DefaultOnPagePublish plugin ([2cec1b4](https://github.com/webiny/webiny-js/commit/2cec1b44e437fefe00a2ea7dcea1d1bc12da58b8))
+* **app-page-builder:** add onPageDelete hook in AdminPageBuilder context ([1a020b6](https://github.com/webiny/webiny-js/commit/1a020b6c103171dbc534a7f6fe8c4fd52960e926))
+* **page-builder:** iframe element ([#2319](https://github.com/webiny/webiny-js/issues/2319)) ([fa4c571](https://github.com/webiny/webiny-js/commit/fa4c57139ff2bcd41b669a0be5127f5f0d80de14))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/app-page-builder

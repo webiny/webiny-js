@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Features
+
+* **api-headless-cms:** remove unnecessary types ([#2388](https://github.com/webiny/webiny-js/issues/2388)) ([919c445](https://github.com/webiny/webiny-js/commit/919c445a405a26fcda8f39636d145cea6c6cf88f))
+* elasticsearch japanese index configuration ([#2326](https://github.com/webiny/webiny-js/issues/2326)) ([83fe117](https://github.com/webiny/webiny-js/commit/83fe117e7a7ec9f2d916850cf9fc5148a866442a))
+* **api-elasticsearch:** add locale to index names ([#2323](https://github.com/webiny/webiny-js/issues/2323)) ([1b480ea](https://github.com/webiny/webiny-js/commit/1b480eac378ecb2e4add04cda60761ce1060322d))
+* **api-elasticsearch:** plugin to customize index template ([#2316](https://github.com/webiny/webiny-js/issues/2316)) ([2f55b1d](https://github.com/webiny/webiny-js/commit/2f55b1d6aea2085f8c46fc73c48157a49cd46ae0))
+* **api-headless-cms:** full text search on all or selected fields ([#2347](https://github.com/webiny/webiny-js/issues/2347)) ([ed3f313](https://github.com/webiny/webiny-js/commit/ed3f3137cfc87dbfd23ae62900760f7866304b83))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/api-headless-cms-ddb-es
