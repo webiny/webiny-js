@@ -6,15 +6,16 @@ import {
     ApplicationContext,
     createGenericApplication,
     mergeAppHooks,
+    updateGatewayConfig,
     ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
-import { websiteUpload } from "./WebsiteHookUpload";
-import { websiteRender } from "./WebsiteHookRender";
+import { websiteUpload } from "./WebsiteUpload";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { StorageOutput, VpcConfig } from "../common";
+import { websiteRender } from "./WebsiteHookRender";
 
 export interface WebsiteAppConfig {
     /** Custom domain configuration */
@@ -145,9 +146,6 @@ export const WebsiteApp = defineApp({
 
         const prerendering = createPrerenderingService(app, {
             env: {
-                // Among other things, this determines the amount of information we reveal on runtime errors.
-                // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-                DEBUG: String(process.env.DEBUG),
                 DB_TABLE: storage.primaryDynamodbTableName,
                 APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
                 DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
@@ -168,13 +166,38 @@ export const WebsiteApp = defineApp({
             appId: appCloudfront.output.id,
             appStorage: appBucket.bucket.output.id,
             appUrl: appCloudfront.output.domainName.apply(value => `https://${value}`),
+            appDomain: appCloudfront.output.domainName,
             // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
             // The static HTML snapshots delivered from them still rely on the app's S3 bucket
             // defined above, for serving static assets (JS, CSS, images).
             deliveryId: deliveryCloudfront.output.id,
             deliveryStorage: deliveryBucket.bucket.output.id,
+            deliveryDomain: deliveryCloudfront.output.domainName,
             deliveryUrl: deliveryCloudfront.output.domainName.apply(value => `https://${value}`)
         });
+
+        app.onAfterDeploy(async ({ outputs }) => {
+            await websiteUpload({
+                appDir: app.ctx.appDir,
+                bucket: outputs["appStorage"]
+            });
+        });
+
+        // Update variant gateway configuration.
+        const variant = app.ctx.variant;
+        if (variant) {
+            app.onAfterDeploy(async ({ outputs }) => {
+                // After deployment is made we update a static JSON file with a variant configuration.
+                // TODO: We should update WCP config instead of a static file here
+                await updateGatewayConfig({
+                    app: "website",
+                    cwd: app.ctx.projectDir,
+                    env: app.ctx.env,
+                    variant: variant,
+                    domain: outputs["deliveryDomain"]
+                });
+            });
+        }
 
         return {
             prerendering,
@@ -215,6 +238,6 @@ export function createWebsiteApp(config?: WebsiteAppConfig & ApplicationConfig<W
         onBeforeBuild: config?.onBeforeBuild,
         onAfterBuild: config?.onAfterBuild,
         onBeforeDeploy: config?.onBeforeDeploy,
-        onAfterDeploy: mergeAppHooks(websiteUpload, websiteRender, config?.onAfterDeploy)
+        onAfterDeploy: mergeAppHooks(websiteRender, config?.onAfterDeploy)
     });
 }

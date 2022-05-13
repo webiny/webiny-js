@@ -4,7 +4,7 @@ import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-import { createLambdaRole } from "../lambdaUtils";
+import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { StorageOutput, VpcConfig } from "../common";
 
 interface HeadlessCMSParams {
@@ -37,6 +37,7 @@ export const ApiHeadlessCMS = defineAppModule({
                 }),
                 environment: {
                     variables: {
+                        ...getCommonLambdaEnvVariables(app),
                         ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }

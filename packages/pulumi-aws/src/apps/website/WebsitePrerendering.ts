@@ -6,7 +6,7 @@ import { PulumiApp } from "@webiny/pulumi-sdk";
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
 
-import { createLambdaRole } from "../lambdaUtils";
+import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { StorageOutput, VpcConfig } from "../common";
 import { getAwsAccountId } from "../awsUtils";
 
@@ -59,6 +59,7 @@ function createRenderSubscriber(
             memorySize: 512,
             environment: {
                 variables: {
+                    ...getCommonLambdaEnvVariables(app),
                     ...params.env,
                     SQS_QUEUE: queue.url
                 }
@@ -135,6 +136,7 @@ function createRenderer(
             layers: [getLayerArn("shelf-io-chrome-aws-lambda-layer")],
             environment: {
                 variables: {
+                    ...getCommonLambdaEnvVariables(app),
                     ...params.env
                 }
             },
@@ -188,6 +190,7 @@ function createFlushService(
             memorySize: 512,
             environment: {
                 variables: {
+                    ...getCommonLambdaEnvVariables(app),
                     ...params.env
                 }
             },
