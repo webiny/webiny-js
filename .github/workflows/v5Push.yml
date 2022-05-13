@@ -338,7 +338,7 @@ jobs:
 
       - name: Cypress - run installation wizard test
         working-directory: v5
-        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
@@ -396,7 +396,7 @@ jobs:
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: v5
-        run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
+        run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
@@ -580,7 +580,7 @@ jobs:
 
       - name: Cypress - run installation wizard test
         working-directory: v5
-        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
+        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
@@ -640,7 +640,7 @@ jobs:
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: v5
-        run: yarn cypress run --spec "${{ matrix.cypress-folder }}"
+        run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
