@@ -19,7 +19,7 @@ import { websiteRender } from "./WebsiteHookRender";
 
 export interface WebsiteAppConfig {
     /** Custom domain configuration */
-    domain?(ctx: ApplicationContext): CustomDomainParams;
+    domain?(ctx: ApplicationContext): CustomDomainParams | undefined | void;
 
     /**
      * Enables or disables VPC for the API.
