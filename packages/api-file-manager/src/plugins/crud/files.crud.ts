@@ -36,23 +36,25 @@ const checkOwnership = (file: File, permission: FilePermission, context: FileMan
 };
 
 const getLocaleCode = (context: FileManagerContext): string => {
-    if (!context.i18nContent) {
+    if (!context.i18n) {
+        throw new WebinyError("Missing i18n on the FileManagerContext.", "MISSING_I18N");
+    }
+
+    const locale = context.i18n.getContentLocale();
+    if (!locale) {
         throw new WebinyError(
-            "Missing i18nContent on the FileManagerContext.",
-            "MISSING_I18N_CONTENT"
-        );
-    } else if (!context.i18nContent.locale) {
-        throw new WebinyError(
-            "Missing i18nContent.locale on the FileManagerContext.",
+            "Missing content locale on the FileManagerContext.",
             "MISSING_I18N_CONTENT_LOCALE"
         );
-    } else if (!context.i18nContent.locale.code) {
+    }
+
+    if (!locale.code) {
         throw new WebinyError(
-            "Missing i18nContent.locale.code on the FileManagerContext.",
+            "Missing content locale code on the FileManagerContext.",
             "MISSING_I18N_CONTENT_LOCALE_CODE"
         );
     }
-    return context.i18nContent.locale.code;
+    return locale.code;
 };
 
 const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async context => {
@@ -408,10 +410,11 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 );
             }
         },
-        async listTags({ after, limit }) {
+        async listTags({ where: initialWhere, after, limit }) {
             await checkBasePermissions(context);
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
+                ...initialWhere,
                 tenant: context.tenancy.getCurrentTenant().id,
                 locale: getLocaleCode(context)
             };

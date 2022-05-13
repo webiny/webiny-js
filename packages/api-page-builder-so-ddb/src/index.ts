@@ -20,7 +20,7 @@ import { createPageFields } from "~/operations/pages/fields";
 import { createPageStorageOperations } from "~/operations/pages";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
-    const { documentClient, table, attributes, plugins: customPlugins } = params;
+    const { documentClient, table, attributes, plugins: userPlugins } = params;
 
     const tableInstance = createTable({
         table,
@@ -31,7 +31,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * User defined custom plugins.
          */
-        ...(customPlugins || []),
+        ...(userPlugins || []),
         /**
          * DynamoDB filter plugins for the where conditions.
          */
@@ -88,7 +88,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     };
 
     return {
-        plugins: [],
         getEntities: () => entities,
         getTable: () => tableInstance,
         system: createSystemStorageOperations({

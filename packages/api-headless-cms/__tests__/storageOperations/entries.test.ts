@@ -1,6 +1,13 @@
-import { createPersonEntries, createPersonModel, PersonEntriesResult } from "./helpers";
+import {
+    createPersonEntries,
+    createPersonModel,
+    deletePersonModel,
+    PersonEntriesResult
+} from "./helpers";
 import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 import { CmsModel, HeadlessCmsStorageOperations } from "~/types";
+
+jest.setTimeout(60000);
 
 interface WaitPersonRecordsParams {
     records: PersonEntriesResult;
@@ -38,6 +45,18 @@ const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void>
 describe("Entries storage operations", () => {
     const { storageOperations, until } = useAdminGqlHandler({
         path: "manage/en-US"
+    });
+
+    beforeEach(async () => {
+        await deletePersonModel({
+            storageOperations
+        });
+    });
+
+    afterEach(async () => {
+        await deletePersonModel({
+            storageOperations
+        });
     });
 
     it("getRevisions - should get revisions of all the entries", async () => {

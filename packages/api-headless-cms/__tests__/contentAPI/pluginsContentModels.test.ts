@@ -1,12 +1,13 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { until } from "./../utils/helpers";
-import { CmsGroup } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
 
 const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
     modelId: "product",
     locale: "en-US",
+    tenant: "root",
     group: {
         id: "ecommerce",
         name: "E-Commerce"
@@ -32,7 +33,8 @@ const contentModelPlugin = new CmsModelPlugin({
         }
     ],
     layout: [["name"], ["sku", "price"]],
-    titleFieldId: "name"
+    titleFieldId: "name",
+    description: ""
 });
 
 const FIELDS_FRAGMENT = /* GraphQL */ `
@@ -116,6 +118,27 @@ const GET_PRODUCT = /* GraphQL */ `
 `;
 
 describe("content model plugins", () => {
+    const { storageOperations } = useContentGqlHandler({
+        path: "manage/en-US"
+    });
+
+    beforeEach(async () => {
+        await storageOperations.models.delete({
+            model: {
+                ...(contentModelPlugin.contentModel as CmsModel),
+                webinyVersion: "x.x.x"
+            }
+        });
+    });
+    afterEach(async () => {
+        await storageOperations.models.delete({
+            model: {
+                ...(contentModelPlugin.contentModel as CmsModel),
+                webinyVersion: "x.x.x"
+            }
+        });
+    });
+
     test("must not be able to create, update, or delete a content model that was registered via plugins", async () => {
         const {
             createContentModelMutation,
@@ -231,7 +254,7 @@ describe("content model plugins", () => {
                         data: {
                             createdBy: null,
                             createdOn: null,
-                            description: null,
+                            description: "",
                             fields: [
                                 {
                                     fieldId: "name",
@@ -301,7 +324,7 @@ describe("content model plugins", () => {
                             {
                                 createdBy: null,
                                 createdOn: null,
-                                description: null,
+                                description: "",
                                 fields: [
                                     {
                                         fieldId: "name",

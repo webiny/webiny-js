@@ -5,6 +5,7 @@ import { ContextPlugin } from "@webiny/handler";
 import { createModelGroupsCrud } from "~/content/plugins/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/content/plugins/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/content/plugins/crud/contentEntry.crud";
+import { I18NLocale } from "@webiny/api-i18n/types";
 
 const debug = process.env.DEBUG === "true";
 
@@ -31,7 +32,8 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
             return;
         }
         const getLocale = () => {
-            return context.cms.getLocale();
+            // Casting into I18NLocale because we're sure that, at this point, we will have a locale.
+            return context.i18n.getContentLocale() as I18NLocale;
         };
 
         const getIdentity = () => {
@@ -42,8 +44,8 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
             return context.tenancy.getCurrentTenant();
         };
 
-        if (storageOperations.plugins && storageOperations.plugins.length > 0) {
-            context.plugins.register(storageOperations.plugins);
+        if (storageOperations.beforeInit) {
+            await storageOperations.beforeInit(context);
         }
 
         context.cms = {
@@ -52,6 +54,7 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
             ...createSystemCrud({
                 context,
                 getTenant,
+                getLocale,
                 getIdentity,
                 storageOperations
             }),
@@ -78,6 +81,7 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
             ...createContentEntryCrud({
                 context,
                 getIdentity,
+                getTenant,
                 storageOperations
             })
         };
@@ -85,6 +89,6 @@ export const createAdminCruds = (params: CreateAdminCrudsParams) => {
         if (!storageOperations.init) {
             return;
         }
-        await storageOperations.init(context.cms);
+        await storageOperations.init(context);
     });
 };

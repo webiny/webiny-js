@@ -22,9 +22,30 @@ const changeRequestRef = (modelId: string) =>
         }
     });
 
+const stepField = () =>
+    createModelField({
+        label: "Step",
+        type: "text",
+        parent: "comment",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required"
+            }
+        ]
+    });
+
+const mediaField = () =>
+    createModelField({
+        label: "Media",
+        type: "file",
+        parent: "comment"
+    });
+
 interface CreateCommentModelDefinitionParams {
     modelId: string;
 }
+
 export const createCommentModelDefinition = ({
     modelId
 }: CreateCommentModelDefinitionParams): WorkflowModelDefinition => {
@@ -33,6 +54,7 @@ export const createCommentModelDefinition = ({
         modelId: "apwCommentModelDefinition",
         titleFieldId: "displayName",
         layout: [["comment_body"], ["comment_displayName"]],
-        fields: [commentBody(), changeRequestRef(modelId)]
+        fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()],
+        description: ""
     };
 };

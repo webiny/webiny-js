@@ -7,6 +7,8 @@ import styled from "@emotion/styled";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as TagIcon } from "./icons/round-label-24px.svg";
 import { LIST_TAGS } from "./graphql";
+import { getWhere } from "./FileManagerContext";
+import { formatTagAsLabel } from "./FileDetails/Tags";
 
 const style = {
     leftDrawer: css({
@@ -55,18 +57,19 @@ interface LeftSidebarProps {
     toggleTag: (item: string) => void;
     queryParams: {
         tags: string[];
+        scope: string;
     };
 }
 const LeftSidebar: React.FC<LeftSidebarProps> = props => {
     const {
         toggleTag,
-        queryParams: { tags }
+        queryParams: { tags, scope }
     } = props;
     const activeTags = Array.isArray(tags) ? tags : [];
 
-    const { data } = useQuery(LIST_TAGS);
+    const { data } = useQuery(LIST_TAGS, { variables: { where: getWhere(scope) } });
 
-    const list = get(data, "fileManager.listTags") || [];
+    const list = get(data, "fileManager.listTags", []);
 
     if (list.length === 0) {
         return (
@@ -83,18 +86,20 @@ const LeftSidebar: React.FC<LeftSidebarProps> = props => {
     return (
         <div className={style.leftDrawer}>
             <TagList data-testid={"fm.left-drawer.tag-list"}>
-                {tagList.map((item, index) => {
-                    const className = activeTags.includes(item) ? "active" : "";
-                    return (
-                        <Tag
-                            className={className}
-                            key={item + index}
-                            onClick={() => toggleTag(item)}
-                        >
-                            <Icon icon={<TagIcon />} /> {item}
-                        </Tag>
-                    );
-                })}
+                {tagList
+                    .filter(tag => tag !== scope)
+                    .map((item, index) => {
+                        const className = activeTags.includes(item) ? "active" : "";
+                        return (
+                            <Tag
+                                className={className}
+                                key={item + index}
+                                onClick={() => toggleTag(item)}
+                            >
+                                <Icon icon={<TagIcon />} /> {formatTagAsLabel(item, scope)}
+                            </Tag>
+                        );
+                    })}
             </TagList>
         </div>
     );

@@ -1,6 +1,5 @@
 import {
     File,
-    FileManagerContext,
     FileManagerFilesStorageOperations,
     FileManagerFilesStorageOperationsCreateBatchParams,
     FileManagerFilesStorageOperationsCreateParams,
@@ -21,16 +20,19 @@ import defineEsTable from "~/definitions/tableElasticsearch";
 import defineFilesEntity from "~/definitions/filesEntity";
 import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
 import { configurations } from "~/configurations";
-import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
-import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { compress } from "@webiny/api-elasticsearch/compression";
 import { get as getEntityItem } from "@webiny/db-dynamodb/utils/get";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { ElasticsearchSearchResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import {
+    ElasticsearchSearchResponse,
+    SearchBody as ElasticsearchSearchBody
+} from "@webiny/api-elasticsearch/types";
+import { FileManagerContext } from "~/types";
 
 interface FileItem extends File {
     PK: string;
@@ -56,7 +58,7 @@ interface CreatePartitionKeyParams {
 }
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly context: FileManagerContext & Partial<ElasticsearchContext>;
+    private readonly context: FileManagerContext;
     private readonly table: Table;
     private readonly esTable: Table;
     private readonly entity: Entity<any>;
@@ -344,35 +346,25 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
-        const { where, limit: initialLimit } = params;
+        const { where, limit } = params;
 
-        const must: any[] = [];
-        if (where.locale) {
-            must.push({ term: { "locale.keyword": where.locale } });
-        }
+        const initialBody = createElasticsearchBody({
+            context: this.context,
+            where,
+            limit,
+            sort: [],
+            after: undefined
+        });
 
-        // When ES index is shared between tenants, we need to filter records by tenant ID
-        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-        if (sharedIndex) {
-            const tenant = this.context.tenancy.getCurrentTenant();
-            must.push({ term: { "tenant.keyword": tenant.id } });
-        }
-
-        const limit = createLimit(initialLimit);
-
-        const body = {
-            query: {
-                bool: {
-                    must
-                }
-            },
-            size: limit + 1,
+        const body: ElasticsearchSearchBody = {
+            ...initialBody,
             aggs: {
                 listTags: {
-                    terms: { field: "tags.keyword" }
+                    terms: {
+                        field: "tags.keyword"
+                    }
                 }
-            },
-            search_after: decodeCursor(null)
+            }
         };
 
         let response: ElasticsearchSearchResponse<string> | undefined = undefined;
@@ -406,7 +398,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const meta: FileManagerFilesStorageOperationsListResponseMeta = {
             hasMoreItems,
             totalCount,
-            cursor: null //tags.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null
+            cursor: null
         };
 
         return [tags, meta];
@@ -426,9 +418,12 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     }
 
     private getElasticsearchIndex(): string {
-        const locale = this.context.i18nContent.getCurrentLocale();
+        const locale = this.context.i18n.getContentLocale();
         if (!locale) {
-            throw new WebinyError("Missing locale in FilesStorageOperations.", "LOCALE_ERROR");
+            throw new WebinyError(
+                "Missing content locale in FilesStorageOperations.",
+                "LOCALE_ERROR"
+            );
         }
         const { index } = configurations.es({
             tenant: this.context.tenancy.getCurrentTenant().id,

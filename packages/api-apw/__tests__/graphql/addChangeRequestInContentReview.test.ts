@@ -58,6 +58,17 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         return createContentReviewResponse.data.apw.createContentReview.data;
     };
 
+    const expectedContent = {
+        id: expect.any(String),
+        type: expect.any(String),
+        version: expect.any(Number),
+        settings: null,
+        publishedBy: null,
+        publishedOn: null,
+        scheduledBy: null,
+        scheduledOn: null
+    };
+
     test("should able to add change request in a content review", async () => {
         const { page } = await createSetupForContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
@@ -78,7 +89,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
             data: changeRequestMock.createChangeRequestInput({
-                step: `${contentReview.id}#${step1.slug}`
+                step: `${contentReview.id}#${step1.id}`
             })
         });
         const changeRequested = createChangeRequestResponse.data.apw.createChangeRequest.data;
@@ -100,7 +111,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                 const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
                 return (
                     entry &&
-                    entry.steps.find(step => step.slug === step1.slug)?.pendingChangeRequests === 1
+                    entry.steps.find(step => step.id === step1.id)?.pendingChangeRequests === 1
                 );
             },
             {
@@ -113,7 +124,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const [listChangeRequestsResponse] = await listChangeRequestsQuery({
             where: {
-                step: `${contentReview.id}#${step1.slug}`
+                step: `${contentReview.id}#${step1.id}`
             }
         });
         expect(listChangeRequestsResponse).toEqual({
@@ -151,7 +162,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
         for (let i = 0; i < 2; i++) {
             const [createChangeRequestResponse] = await createChangeRequestMutation({
                 data: changeRequestMock.createChangeRequestInput({
-                    step: `${contentReview.id}#${step2.slug}`,
+                    step: `${contentReview.id}#${step2.id}`,
                     title: "Please make change in heading-" + i
                 })
             });
@@ -164,8 +175,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                     const [entry] = response.data.apw.listContentReviews.data as ApwContentReview[];
                     return (
                         entry &&
-                        entry.steps.find(step => step.slug === step2.slug)
-                            ?.pendingChangeRequests ===
+                        entry.steps.find(step => step.id === step2.id)?.pendingChangeRequests ===
                             i + 1
                     );
                 },
@@ -181,7 +191,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             () =>
                 listChangeRequestsQuery({
                     where: {
-                        step: `${contentReview.id}#${step2.slug}`
+                        step: `${contentReview.id}#${step2.id}`
                     }
                 }).then(([data]) => data),
             (response: any) => {
@@ -198,7 +208,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         const [listChangeRequestsResponse2] = await listChangeRequestsQuery({
             where: {
-                step: `${contentReview.id}#${step2.slug}`
+                step: `${contentReview.id}#${step2.id}`
             }
         });
         expect(listChangeRequestsResponse2).toEqual({
@@ -312,28 +322,25 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
                                 type: "admin"
                             },
                             status: "underReview",
-                            content: {
-                                id: expect.any(String),
-                                type: "page",
-                                settings: null
-                            },
+                            title: expect.any(String),
+                            content: expect.objectContaining(expectedContent),
                             steps: [
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 1,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 2,
                                     signOffProvidedOn: null,
                                     signOffProvidedBy: null
                                 },
                                 {
-                                    slug: expect.any(String),
+                                    id: expect.any(String),
                                     status: expect.any(String),
                                     pendingChangeRequests: 0,
                                     signOffProvidedOn: null,
@@ -349,13 +356,15 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
     });
 
     test(`should delete all "change requests" when a "content review" gets deleted`, async () => {
-        const { page } = await createSetupForContentReview(gqlHandler);
+        const { page, createPage } = await createSetupForContentReview(gqlHandler);
+        const page2 = await createPage(gqlHandler);
+        const pages = [page, page2];
         /*
          * Create two new content review entries.
          */
         const contentReviews = [];
         for (let i = 0; i < 2; i++) {
-            const contentReview = await createContentReview(page);
+            const contentReview = await createContentReview(pages[i]);
             contentReviews.push(contentReview);
         }
 
@@ -368,7 +377,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
             for (let j = 0; j < 2; j++) {
                 const [createCommentResponse] = await createChangeRequestMutation({
                     data: changeRequestMock.createChangeRequestInput({
-                        step: `${contentReview.id}#${contentReview.steps[0].slug}`,
+                        step: `${contentReview.id}#${contentReview.steps[0].id}`,
                         title: `Please change heading-${i}-${j}`
                     })
                 });
@@ -485,7 +494,7 @@ describe(`Add change requests on a step in a "Content Review"`, () => {
          */
         [listChangeRequestsResponse] = await listChangeRequestsQuery({
             where: {
-                step: `${contentReviews[0].id}#${contentReviews[0].steps[0].slug}`
+                step: `${contentReviews[0].id}#${contentReviews[0].steps[0].id}`
             }
         });
         expect(listChangeRequestsResponse).toEqual({

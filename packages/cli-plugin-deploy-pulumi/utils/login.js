@@ -21,11 +21,7 @@ module.exports = async projectApplication => {
     await copyStateFilesToProjectRoot(projectApplication);
 
     // Do the login with Pulumi CLI.
-    const pulumi = await getPulumi({
-        execa: {
-            cwd: projectApplication.root
-        }
-    });
+    const pulumi = await getPulumi();
 
     const relativeProjectApplicationPath = relative(
         projectApplication.project.root,

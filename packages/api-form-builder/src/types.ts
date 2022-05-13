@@ -1,6 +1,5 @@
 import { Plugin } from "@webiny/plugins/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { I18NContext } from "@webiny/api-i18n/types";
@@ -193,10 +192,12 @@ export interface SubmissionsCRUD {
 
 export interface BeforeInstallTopic {
     tenant: string;
+    locale: string;
 }
 
 export interface AfterInstallTopic {
     tenant: string;
+    locale: string;
 }
 
 export interface SystemCRUD {
@@ -292,11 +293,7 @@ export interface FormBuilder extends SystemCRUD, SettingsCRUD, FormsCRUD, Submis
     storageOperations: FormBuilderStorageOperations;
 }
 
-export interface FormBuilderContext
-    extends TenancyContext,
-        I18NContext,
-        I18NContentContext,
-        FileManagerContext {
+export interface FormBuilderContext extends TenancyContext, I18NContext, FileManagerContext {
     /**
      *
      */
@@ -657,11 +654,8 @@ export interface FormBuilderStorageOperations
         FormBuilderSettingsStorageOperations,
         FormBuilderFormStorageOperations,
         FormBuilderSubmissionStorageOperations {
-    /**
-     * We can initialize what ever we require in this method.
-     * Initially it was intended to attach events like afterInstall, beforeInstall, etc...
-     */
-    init?: (formBuilder: FormBuilder) => Promise<void>;
+    beforeInit?: (context: FormBuilderContext) => Promise<void>;
+    init?: (context: FormBuilderContext) => Promise<void>;
     /**
      * An upgrade to run if necessary.
      */

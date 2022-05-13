@@ -14,6 +14,7 @@ module.exports.rootPackageJson = rootPackageJson;
 let packagesCache;
 
 const isFolder = p => fs.statSync(p).isDirectory();
+const hasPackageJson = p => fs.existsSync(p + "/package.json");
 
 module.exports.getPackages = (args = {}) => {
     if (packagesCache) {
@@ -22,6 +23,7 @@ module.exports.getPackages = (args = {}) => {
 
     packagesCache = getPackages()
         .filter(isFolder)
+        .filter(hasPackageJson)
         .map(path => {
             if (args.includes) {
                 if (!args.includes.some(p => path.includes(p))) {

@@ -1,29 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-
-const richTextMock = [
-    {
-        tag: "h1",
-        content: "Testing H1 tags"
-    },
-    {
-        tag: "p",
-        content: "Some small piece of text to test P tags"
-    },
-    {
-        tag: "div",
-        content: [
-            {
-                tag: "p",
-                text: "Text inside the div > p"
-            },
-            {
-                tag: "a",
-                href: "https://www.webiny.com",
-                text: "Webiny"
-            }
-        ]
-    }
-];
+import { createContentReviewSetup } from "../utils/helpers";
+import { mocks as changeRequestMock } from "./mocks/changeRequest";
 
 const updatedRichText = [
     {
@@ -50,19 +27,14 @@ const updatedRichText = [
     }
 ];
 
-const changeRequested = {
-    step: "61af1a60f04e49226e6cc17e#design_review",
-    title: "Please replace this heading",
-    body: richTextMock,
-    media: {
-        src: "cloudfront.net/my-file"
-    }
-};
-
 describe("ChangeRequest crud test", () => {
     const options = {
         path: "manage/en-US"
     };
+
+    const gqlHandler = useContentGqlHandler({
+        ...options
+    });
 
     const {
         getChangeRequestQuery,
@@ -71,15 +43,16 @@ describe("ChangeRequest crud test", () => {
         updateChangeRequestMutation,
         deleteChangeRequestMutation,
         until
-    } = useContentGqlHandler({
-        ...options
-    });
+    } = gqlHandler;
+
     test(`should able to create, update, get, list and delete a "change request"`, async () => {
+        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new entry.
          */
         const [createChangeRequestResponse] = await createChangeRequestMutation({
-            data: changeRequested
+            data: changeRequestMock.createChangeRequestInput({ step: changeRequestStep })
         });
         const createdChangeRequest = createChangeRequestResponse.data.apw.createChangeRequest.data;
 
@@ -96,8 +69,11 @@ describe("ChangeRequest crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            resolved: null,
-                            ...changeRequested
+                            title: expect.any(String),
+                            body: expect.any(Object),
+                            media: expect.any(Object),
+                            step: expect.any(String),
+                            resolved: null
                         },
                         error: null
                     }
@@ -132,8 +108,11 @@ describe("ChangeRequest crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            resolved: null,
-                            ...changeRequested
+                            title: expect.any(String),
+                            body: expect.any(Object),
+                            media: expect.any(Object),
+                            step: expect.any(String),
+                            resolved: null
                         },
                         error: null
                     }
@@ -164,9 +143,11 @@ describe("ChangeRequest crud test", () => {
                                 displayName: "John Doe",
                                 type: "admin"
                             },
-                            ...changeRequested,
-                            resolved: true,
-                            body: updatedRichText
+                            title: expect.any(String),
+                            body: updatedRichText,
+                            media: expect.any(Object),
+                            step: expect.any(String),
+                            resolved: true
                         },
                         error: null
                     }
@@ -203,7 +184,9 @@ describe("ChangeRequest crud test", () => {
                                     displayName: "John Doe",
                                     type: "admin"
                                 },
-                                ...changeRequested,
+                                title: expect.any(String),
+                                media: expect.any(Object),
+                                step: expect.any(String),
                                 resolved: true,
                                 body: updatedRichText
                             }
@@ -261,6 +244,54 @@ describe("ChangeRequest crud test", () => {
                             hasMoreItems: false,
                             totalCount: 0,
                             cursor: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should not able to create "change request" with wrong step`, async () => {
+        /*
+         * Create a new entry.
+         */
+        let [createChangeRequestResponse] = await createChangeRequestMutation({
+            data: changeRequestMock.createChangeRequestInput({
+                step: "61af1a60f04e49226e6cc17e#design_review"
+            })
+        });
+
+        expect(createChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    createChangeRequest: {
+                        data: null,
+                        error: {
+                            message: expect.any(String),
+                            code: "MALFORMED_CHANGE_REQUEST_STEP",
+                            data: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+        const nonExistingContentReview = "61af1a60f04e49226e6cc17e#0001#design_review";
+
+        [createChangeRequestResponse] = await createChangeRequestMutation({
+            data: changeRequestMock.createChangeRequestInput({
+                step: nonExistingContentReview
+            })
+        });
+
+        expect(createChangeRequestResponse).toEqual({
+            data: {
+                apw: {
+                    createChangeRequest: {
+                        data: null,
+                        error: {
+                            message: expect.any(String),
+                            code: "NOT_FOUND",
+                            data: expect.any(Object)
                         }
                     }
                 }

@@ -86,7 +86,7 @@ const Field: React.FC<FieldProps> = props => {
             return { ...data, titleFieldId: field.fieldId };
         });
 
-        if (response.error) {
+        if (response && response.error) {
             return showSnackbar(response.error.message);
         }
 

@@ -59,14 +59,26 @@ describe("Files CRUD ddb/es", () => {
         clearElasticsearch,
         until,
         createElasticsearchIndice
-    } = useGqlHandler() as any;
+    } = useGqlHandler();
+
+    const locale = "en-US";
+    const tenant = "root";
 
     beforeEach(async () => {
-        await clearElasticsearch();
-        await createElasticsearchIndice();
+        await clearElasticsearch({
+            locale,
+            tenant
+        });
+        await createElasticsearchIndice({
+            locale,
+            tenant
+        });
     });
     afterEach(async () => {
-        await clearElasticsearch();
+        await clearElasticsearch({
+            locale,
+            tenant
+        });
     });
 
     test("it should create a new file with custom richText field and then update it", async () => {
@@ -115,7 +127,7 @@ describe("Files CRUD ddb/es", () => {
             {
                 id
             },
-            ["id", extraFields]
+            ["id"].concat(extraFields)
         );
 
         expect(getResponse).toEqual({
@@ -143,7 +155,7 @@ describe("Files CRUD ddb/es", () => {
                     richText: simpleRichTextData
                 }
             },
-            ["id", extraFields]
+            ["id"].concat(extraFields)
         );
         expect(updateResponse).toEqual({
             data: {
@@ -167,7 +179,7 @@ describe("Files CRUD ddb/es", () => {
             {
                 id
             },
-            ["id", extraFields]
+            ["id"].concat(extraFields)
         );
 
         expect(getUpdatedResponse).toEqual({

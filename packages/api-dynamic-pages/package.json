@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/api-dynamic-pages",
-  "version": "5.25.0",
+  "version": "5.26.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,11 +17,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/api-page-builder": "^5.25.0",
-    "@webiny/api-page-builder-so-ddb-es": "^5.25.0",
-    "@webiny/handler-graphql": "^5.25.0",
-    "@webiny/plugins": "^5.25.0",
-    "@webiny/project-utils": "^5.25.0",
+    "@webiny/api-page-builder": "^5.26.0",
+    "@webiny/api-page-builder-so-ddb-es": "^5.26.0",
+    "@webiny/handler-graphql": "^5.26.0",
+    "@webiny/plugins": "^5.26.0",
+    "@webiny/project-utils": "^5.26.0",
     "dot-prop-immutable": "^2.1.0"
   },
   "devDependencies": {
@@ -33,8 +33,7 @@
     "@babel/preset-typescript": "^7.16.0",
     "@elastic/elasticsearch": "7.12.0",
     "@elastic/elasticsearch-mock": "0.3.0",
-    "@shelf/jest-elasticsearch": "^1.0.0",
-    "@webiny/cli": "^5.25.0",
+    "@webiny/cli": "^5.26.0",
     "execa": "^5.0.0",
     "jest": "^26.6.3",
     "jest-dynalite": "^3.2.0",

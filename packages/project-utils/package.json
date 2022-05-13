@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "5.25.0",
+  "version": "5.26.0",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
@@ -23,9 +23,9 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "6.1.1",
     "@types/webpack-env": "1.16.3",
-    "@webiny/cli": "^5.25.0",
-    "@webiny/global-config": "^5.25.0",
-    "@webiny/telemetry": "^5.25.0",
+    "@webiny/cli": "^5.26.0",
+    "@webiny/global-config": "^5.26.0",
+    "@webiny/telemetry": "^5.26.0",
     "babel-loader": "8.2.3",
     "babel-plugin-lodash": "3.3.4",
     "buffer": "^6.0.3",
@@ -76,6 +76,9 @@
     "webpack-dev-server": "4.6.0",
     "webpack-manifest-plugin": "4.0.2",
     "webpackbar": "5.0.2"
+  },
+  "devDependencies": {
+    "@elastic/elasticsearch": "7.12.0"
   },
   "license": "MIT",
   "adio": {

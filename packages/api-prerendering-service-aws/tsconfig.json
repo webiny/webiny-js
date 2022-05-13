@@ -3,8 +3,10 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../api-prerendering-service" },
+    { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-args" },
+    { "path": "../handler-client" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -15,10 +17,14 @@
       "~/*": ["./src/*"],
       "@webiny/api-prerendering-service/*": ["../api-prerendering-service/src/*"],
       "@webiny/api-prerendering-service": ["../api-prerendering-service/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-args/*": ["../handler-args/src/*"],
       "@webiny/handler-args": ["../handler-args/src"],
+      "@webiny/handler-client/*": ["../handler-client/src/*"],
+      "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

@@ -129,8 +129,14 @@ describe("Republish entries", () => {
         };
     };
 
-    const createEntry = (model: CmsModel, input: Record<string, any>): CreateEntryResult => {
+    const createEntry = (
+        model: CmsModel,
+        input: Record<string, any>,
+        add = 0
+    ): CreateEntryResult => {
         const id = mdbid();
+        const date = new Date();
+        date.setTime(date.getTime() + add);
         return {
             entry: {
                 id: `${id}#0001`,
@@ -140,8 +146,8 @@ describe("Republish entries", () => {
                 webinyVersion,
                 locked: false,
                 values: input,
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
+                createdOn: date.toISOString(),
+                savedOn: date.toISOString(),
                 modelId: model.modelId,
                 status: "draft",
                 version: 1,
@@ -184,6 +190,11 @@ describe("Republish entries", () => {
             () => listCategories(),
             ([response]: any) => {
                 return response.data.listCategories.data.length === 3;
+                // if (!result) {
+                //     console.log("after publishing categories not passing");
+                //     console.log(JSON.stringify(response.data));
+                // }
+                // return result;
             },
             {
                 name: "after publishing categories"
@@ -350,30 +361,32 @@ describe("Republish entries", () => {
 
         const { storageOperations } = useCategoryManageHandler(manageOpts);
 
-        const { entry: galaEntry, input: galaInput } = createEntry(productModel, {
+        const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",
             category: {
                 entryId: applePublished.id,
                 modelId: categoryModel.modelId
             }
         });
-        const { entry: goldenEntry, input: goldenInput } = createEntry(productModel, {
-            title: "Golden",
-            category: {
-                entryId: bananaPublished.id,
-                modelId: categoryModel.modelId
-            }
-        });
+        const { entry: goldenEntry } = createEntry(
+            productModel,
+            {
+                title: "Golden",
+                category: {
+                    entryId: bananaPublished.id,
+                    modelId: categoryModel.modelId
+                }
+            },
+            5
+        );
 
         const galaRecord = await storageOperations.entries.create(productModel, {
             entry: galaEntry,
-            input: galaInput,
             storageEntry: galaEntry
         });
 
         const goldenRecord = await storageOperations.entries.create(productModel, {
             entry: goldenEntry,
-            input: goldenInput,
             storageEntry: goldenEntry
         });
 
@@ -420,12 +433,16 @@ describe("Republish entries", () => {
                     sort: ["createdOn_ASC"]
                 }),
             ([response]: any) => {
-                const items = response.data.listProducts.data;
+                const items = response.data.listProducts.data as any[];
                 if (items.length !== 2) {
                     return false;
                 }
-                const [gala, golden] = items;
-                return gala.id === galaRecord.id && golden.id === goldenRecord.id;
+
+                const targets: string[] = [galaRecord.id, goldenRecord.id];
+
+                return items.every(item => {
+                    return targets.includes(item.id);
+                });
             },
             {
                 name: "after publishing product"
@@ -469,17 +486,18 @@ describe("Republish entries", () => {
                     sort: ["createdOn_ASC"]
                 }),
             ([response]: any) => {
-                const items = response.data.listProducts.data;
+                const items: any[] = response.data.listProducts.data;
                 if (items.length !== 2) {
                     return false;
                 }
-                const [gala, golden] = items;
-                const ids = gala.id === galaRecord.id && golden.id === goldenRecord.id;
-                const times = gala.savedOn === galaSavedOn && golden.savedOn === goldenSavedOn;
-                return ids && times;
+                const requiredIdList: string[] = [galaRecord.id, goldenRecord.id];
+                const requiredTimes: string[] = [galaSavedOn, goldenSavedOn];
+                return items.every(item => {
+                    return requiredIdList.includes(item.id) && requiredTimes.includes(item.savedOn);
+                });
             },
             {
-                name: "after publishing product"
+                name: "after re-publishing product"
             }
         );
         /**
@@ -496,6 +514,8 @@ describe("Republish entries", () => {
         expect(latestProducts).toMatchObject({
             items: [
                 {
+                    entryId: galaRecord.entryId,
+                    createdOn: galaRecord.createdOn,
                     values: {
                         category: {
                             id: applePublished.id,
@@ -505,6 +525,8 @@ describe("Republish entries", () => {
                     }
                 },
                 {
+                    entryId: goldenRecord.entryId,
+                    createdOn: goldenRecord.createdOn,
                     values: {
                         category: {
                             id: bananaPublished.id,
@@ -564,6 +586,8 @@ describe("Republish entries", () => {
         expect(publishedProducts).toMatchObject({
             items: [
                 {
+                    entryId: galaRecord.entryId,
+                    createdOn: galaRecord.createdOn,
                     values: {
                         category: {
                             id: applePublished.id,
@@ -573,6 +597,8 @@ describe("Republish entries", () => {
                     }
                 },
                 {
+                    entryId: goldenRecord.entryId,
+                    createdOn: goldenRecord.createdOn,
                     values: {
                         category: {
                             id: bananaPublished.id,

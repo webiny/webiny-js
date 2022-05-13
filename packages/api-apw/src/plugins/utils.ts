@@ -1,13 +1,21 @@
-import { CmsModelField } from "@webiny/api-headless-cms/types";
 import get from "lodash/get";
+import { customAlphabet } from "nanoid";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import {
+    ApwChangeRequest,
+    ApwContentReview,
+    ApwContentReviewCrud,
     ApwContentReviewStep,
     ApwContentReviewStepStatus,
+    ApwContext,
     ApwReviewerCrud,
     ApwWorkflowStep,
     ApwWorkflowStepTypes
 } from "~/types";
-import { SecurityIdentity } from "@webiny/api-security/types";
+
+const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 
 export interface CreateModelFieldParams extends Omit<CmsModelField, "id" | "fieldId"> {
     parent: string;
@@ -75,4 +83,93 @@ export const getNextStepStatus = (
     }
 
     return ApwContentReviewStepStatus.INACTIVE;
+};
+
+export interface ExtractContentReviewIdAndStepResult {
+    id: string;
+    stepId: string;
+}
+
+export const extractContentReviewIdAndStep = (
+    step: ApwChangeRequest["step"]
+): ExtractContentReviewIdAndStepResult => {
+    /*
+     * Get associated content review entry.
+     */
+    const [entryId, version, stepId] = step.split("#");
+    const revisionId = `${entryId}#${version}`;
+
+    return {
+        id: revisionId,
+        stepId
+    };
+};
+
+type SafelyGetContentReviewParams = Pick<UpdateContentReviewParams, "id" | "contentReviewMethods">;
+
+export const safelyGetContentReview = async ({
+    id,
+    contentReviewMethods
+}: SafelyGetContentReviewParams): Promise<ApwContentReview | null> => {
+    let contentReviewEntry = null;
+    try {
+        contentReviewEntry = await contentReviewMethods.get(id);
+    } catch (e) {
+        if (e.message !== "index_not_found_exception" && e.code !== "NOT_FOUND") {
+            throw e;
+        }
+    }
+
+    return contentReviewEntry;
+};
+
+export interface UpdateContentReviewParams {
+    id: string;
+    contentReviewMethods: ApwContentReviewCrud;
+    getNewContentReviewData: (entry: ApwContentReview) => ApwContentReview;
+}
+
+export const updateContentReview = async ({
+    contentReviewMethods,
+    id,
+    getNewContentReviewData
+}: UpdateContentReviewParams): Promise<void> => {
+    const contentReviewEntry = await safelyGetContentReview({ id, contentReviewMethods });
+    if (contentReviewEntry) {
+        const newContentReviewData = getNewContentReviewData(contentReviewEntry);
+        /**
+         * Update content review entry.
+         */
+        await contentReviewMethods.update(contentReviewEntry.id, newContentReviewData);
+    }
+};
+
+export const updateContentReviewStep = (
+    steps: ApwContentReviewStep[],
+    stepId: string,
+    updater: (step: ApwContentReviewStep) => ApwContentReviewStep
+): ApwContentReviewStep[] => {
+    return steps.map(step => {
+        if (step.id === stepId) {
+            return {
+                ...updater(step)
+            };
+        }
+        return step;
+    });
+};
+
+type CheckInstallationParams = Pick<ApwContext, "tenancy" | "i18n">;
+
+export const isInstallationPending = ({ tenancy, i18n }: CheckInstallationParams): boolean => {
+    /**
+     * In case of a fresh webiny project "tenant" and "locale" won't be there until
+     * installation is completed. So, we need to skip "APW" creation till then.
+     */
+    const tenant = tenancy.getCurrentTenant();
+    if (!tenant) {
+        return true;
+    }
+
+    return !i18n.getContentLocale();
 };

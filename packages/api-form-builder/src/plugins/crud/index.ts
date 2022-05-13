@@ -15,10 +15,10 @@ export default (params: CreateFormBuilderCrudParams) => {
 
     return new ContextPlugin<FormBuilderContext>(async context => {
         const getLocale = () => {
-            const locale = context.i18nContent.getCurrentLocale();
+            const locale = context.i18n.getContentLocale();
             if (!locale) {
                 throw new WebinyError(
-                    "Missing locale on context.i18nContent locale in API Form Builder.",
+                    "Missing locale on context.i18n locale in API Form Builder.",
                     "LOCALE_ERROR"
                 );
             }
@@ -33,11 +33,26 @@ export default (params: CreateFormBuilderCrudParams) => {
             return context.tenancy.getCurrentTenant();
         };
 
+        if (storageOperations.beforeInit) {
+            try {
+                await storageOperations.beforeInit(context);
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not run before init in Form Builder storage operations.",
+                    ex.code || "STORAGE_OPERATIONS_BEFORE_INIT_ERROR",
+                    {
+                        ...ex
+                    }
+                );
+            }
+        }
+
         context.formBuilder = {
             storageOperations,
             ...createSystemCrud({
                 getIdentity,
                 getTenant,
+                getLocale,
                 context
             }),
             ...createSettingsCrud({
@@ -54,18 +69,15 @@ export default (params: CreateFormBuilderCrudParams) => {
                 context
             })
         };
-        /**
-         * Initialization of the storage operations.
-         * Used to attach subscription to form builder topics.
-         */
-        if (!context.formBuilder.storageOperations.init) {
+
+        if (!storageOperations.init) {
             return;
         }
         try {
-            await context.formBuilder.storageOperations.init(context.formBuilder);
+            await storageOperations.init(context);
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not initialize Form Builder storage operations.",
+                ex.message || "Could not run init in Form Builder storage operations.",
                 ex.code || "STORAGE_OPERATIONS_INIT_ERROR",
                 {
                     ...ex

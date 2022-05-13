@@ -1,7 +1,6 @@
 import { getIntrospectionQuery } from "graphql";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { createHandler } from "@webiny/handler-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
@@ -17,6 +16,8 @@ import {
 } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwContext, createApwGraphQL } from "~/index";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
+import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -30,14 +31,18 @@ import {
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
 import { CREATE_CATEGORY, GET_CATEGORY } from "./graphql/categories";
-import { CREATE_PAGE, GET_PAGE } from "./graphql/pages";
+import { CREATE_PAGE, GET_PAGE, PUBLISH_PAGE, DELETE_PAGE, UPDATE_PAGE } from "./graphql/pages";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
     DELETE_CONTENT_REVIEW_MUTATION,
     GET_CONTENT_REVIEW_QUERY,
     LIST_CONTENT_REVIEWS_QUERY,
     PROVIDE_SIGN_OFF_MUTATION,
-    RETRACT_SIGN_OFF_MUTATION
+    RETRACT_SIGN_OFF_MUTATION,
+    IS_REVIEW_REQUIRED_QUERY,
+    PUBLISH_CONTENT_MUTATION,
+    UNPUBLISH_CONTENT_MUTATION,
+    DELETE_SCHEDULED_ACTION_MUTATION
 } from "./graphql/contentReview";
 import { LOGIN } from "./graphql/login";
 import { GET_REVIEWER_QUERY, LIST_REVIEWERS_QUERY } from "./graphql/reviewer";
@@ -91,7 +96,8 @@ const documentClient = new DocumentClient({
 
 export const useGqlHandler = (params: GQLHandlerCallableParams) => {
     const ops = getStorageOperations({
-        plugins: params.storageOperationPlugins || []
+        plugins: params.storageOperationPlugins || [],
+        documentClient
     });
 
     const tenant = {
@@ -106,9 +112,15 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         setupTenancyAndSecurityGraphQL,
         createHeadlessCmsApp
     } = params;
-
+    /**
+     * We're using ddb-only storageOperations here because current jest setup doesn't allow
+     * usage of more than one storageOperations at a time with the help of --keyword flag.
+     */
     const headlessCmsApp = createHeadlessCmsApp({
-        storageOperations: ops.storageOperations
+        storageOperations: createHeadlessCmsStorageOperations({
+            documentClient,
+            modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+        })
     });
 
     const handler = createHandler({
@@ -134,7 +146,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
                             id: apiKey,
                             name: apiKey,
                             tenant: tenant.id,
-                            permissions: identity?.permissions || [],
+                            permissions: identity?.["permissions"] || [],
                             token,
                             createdBy: {
                                 id: "test",
@@ -152,14 +164,19 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
             i18nDynamoDbStorageOperations(),
-            i18nContentPlugins(),
             mockLocalesPlugins(),
             createPageBuilderGraphQL(),
+            /**
+             * We're using ddb-only storageOperations here because current jest setup doesn't allow
+             * usage of more than one storageOperations at a time with the help of --keyword flag.
+             */
             createPageBuilderContext({
                 storageOperations: createPageBuilderStorageOperations({ documentClient })
             }),
             ...headlessCmsApp,
-            createApwContext(),
+            createApwContext({
+                storageOperations: ops.storageOperations
+            }),
             createApwGraphQL(),
             plugins
         ],
@@ -264,10 +281,22 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         async createPage(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
         },
+        async updatePage(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_PAGE, variables } });
+        },
+        async publishPage(variables: Record<string, any>) {
+            return invoke({ body: { query: PUBLISH_PAGE, variables } });
+        },
         async getPageQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_PAGE, variables } });
         },
+        async deletePageMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_PAGE, variables } });
+        },
         // Content Review
+        async isReviewRequiredQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: IS_REVIEW_REQUIRED_QUERY, variables } });
+        },
         async getContentReviewQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_CONTENT_REVIEW_QUERY, variables } });
         },
@@ -285,6 +314,15 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async retractSignOffMutation(variables: Record<string, any>) {
             return invoke({ body: { query: RETRACT_SIGN_OFF_MUTATION, variables } });
+        },
+        async publishContentMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: PUBLISH_CONTENT_MUTATION, variables } });
+        },
+        async unpublishContentMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: UNPUBLISH_CONTENT_MUTATION, variables } });
+        },
+        async deleteScheduledActionMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_SCHEDULED_ACTION_MUTATION, variables } });
         }
     };
 };

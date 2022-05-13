@@ -1,14 +1,10 @@
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import { FileStorage } from "./plugins/storage/FileStorage";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { Context } from "@webiny/handler/types";
 
-export interface FileManagerContext
-    extends Context,
-        SecurityContext,
-        TenancyContext,
-        I18NContentContext {
+export interface FileManagerContext extends Context, SecurityContext, TenancyContext, I18NContext {
     fileManager: {
         files: FilesCRUD;
         settings: SettingsCRUD;
@@ -91,6 +87,8 @@ interface FilesCrudListTagsWhere {
     tag?: string;
     tag_contains?: string;
     tag_in?: string[];
+    tag_not_startsWith?: string;
+    tag_startsWith?: string;
 }
 interface FilesCrudListTagsParams {
     where?: FilesCrudListTagsWhere;

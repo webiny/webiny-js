@@ -11,7 +11,7 @@ export default async <TPermission extends PbSecurityPermission = PbSecurityPermi
     name: string,
     check: Check
 ): Promise<TPermission> => {
-    await context.i18nContent.checkI18NContentPermission();
+    await context.i18n.checkI18NContentPermission();
     const pbPagePermission = await context.security.getPermission<TPermission>(name);
     if (!pbPagePermission) {
         throw new NotAuthorizedError();

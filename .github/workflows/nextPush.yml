@@ -138,6 +138,12 @@ jobs:
         node: [14]
         package: ${{ fromJson(needs.init.outputs.jest-packages) }}
     runs-on: ${{ matrix.os }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -330,7 +336,7 @@ jobs:
       # Generates a new cypress.json config.
       - name: Create Cypress config
         working-directory: next
-        run: yarn setup-cypress
+        run: yarn setup-cypress --projectFolder ../xyz/test-project
 
       # We also want to store the generated Cypress config as a job output.
       # This way we don't have to generate it again (which may take ~30s).
@@ -448,6 +454,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es
@@ -578,7 +585,7 @@ jobs:
       # Generates a new cypress.json config.
       - name: Create Cypress config
         working-directory: next
-        run: yarn setup-cypress
+        run: yarn setup-cypress --projectFolder ../xyz/test-project
 
       # We also want to store the generated Cypress config as a job output.
       # This way we don't have to generate it again (which may take ~30s).
@@ -616,6 +623,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_ddb-es

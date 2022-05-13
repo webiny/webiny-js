@@ -1,0 +1,4 @@
+{
+  "name": "API APW Schedule Action DynamoDB",
+  "entryPoints": ["types.ts"]
+}

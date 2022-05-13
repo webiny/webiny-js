@@ -15,8 +15,7 @@ export const assignAfterEntryDelete = (params: AssignAfterEntryDeleteParams) => 
         const { items } = await context.cms.storageOperations.entries.list(model, {
             where: {
                 entryId_not: entry.entryId,
-                latest: true,
-                tenant: model.tenant
+                latest: true
             },
             limit: 1
         });

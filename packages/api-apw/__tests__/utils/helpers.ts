@@ -90,62 +90,80 @@ export const setupCategory = async ({ getCategory, createCategory }: SetupCatego
     return createCategoryResponse.data.pageBuilder.createCategory.data;
 };
 
+const setupReviewer = async (gqlHandler: any) => {
+    await gqlHandler.securityIdentity.login();
+
+    await gqlHandler.until(
+        () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]: any[]) => data),
+        (response: any) => {
+            return response.data.apw.listReviewers.data.length === 1;
+        },
+        {
+            name: "Wait for listReviewer query"
+        }
+    );
+
+    const [listReviewersResponse] = await gqlHandler.reviewer.listReviewersQuery({});
+    const [reviewer] = listReviewersResponse.data.apw.listReviewers.data;
+    return reviewer;
+};
+
+const setupPage = async (gqlHandler: any) => {
+    const category = await setupCategory({
+        getCategory: gqlHandler.getCategory,
+        createCategory: gqlHandler.createCategory
+    });
+
+    const [createPageResponse] = await gqlHandler.createPage({ category: category.slug });
+    return createPageResponse.data.pageBuilder.createPage.data;
+};
+
+const setupWorkflow = async (gqlHandler: any): Promise<ApwWorkflow> => {
+    const reviewer = await setupReviewer(gqlHandler);
+    const [createWorkflowResponse] = await gqlHandler.createWorkflowMutation({
+        data: workflowMocks.createWorkflowWithThreeSteps({}, [reviewer])
+    });
+    return createWorkflowResponse.data.apw.createWorkflow.data;
+};
+
 export const createSetupForContentReview = async (gqlHandler: any) => {
-    const setupReviewer = async () => {
-        await gqlHandler.securityIdentity.login();
+    const workflow = await setupWorkflow(gqlHandler);
 
-        await gqlHandler.until(
-            () => gqlHandler.reviewer.listReviewersQuery({}).then(([data]: any) => data),
-            (response: any) => response.data.apw.listReviewers.data.length === 1,
-            {
-                name: "Wait for listReviewer query"
+    await gqlHandler.until(
+        () => gqlHandler.listWorkflowsQuery({}).then(([data]: any) => data),
+        (response: any) => {
+            const list = response.data.apw.listWorkflows.data;
+            return list.length === 1;
+        },
+        {
+            name: "Wait for workflow entry to be available in list query before creating page."
+        }
+    );
+
+    const page = await setupPage(gqlHandler);
+
+    return {
+        page,
+        workflow,
+        createPage: setupPage
+    };
+};
+
+export const createContentReviewSetup = async (gqlHandler: any) => {
+    const { page } = await createSetupForContentReview(gqlHandler);
+    /*
+     Create a content review entry.
+    */
+    const [createContentReviewResponse] = await gqlHandler.createContentReviewMutation({
+        data: {
+            content: {
+                id: page.id,
+                type: "page"
             }
-        );
-
-        const [listReviewersResponse] = await gqlHandler.reviewer.listReviewersQuery({});
-        const [reviewer] = listReviewersResponse.data.apw.listReviewers.data;
-        return reviewer;
+        }
+    });
+    const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
+    return {
+        contentReview
     };
-
-    const setupPage = async () => {
-        const category = await setupCategory({
-            getCategory: gqlHandler.getCategory,
-            createCategory: gqlHandler.createCategory
-        });
-
-        const [createPageResponse] = await gqlHandler.createPage({ category: category.slug });
-        return createPageResponse.data.pageBuilder.createPage.data;
-    };
-
-    const setupWorkflow = async (): Promise<ApwWorkflow> => {
-        const reviewer = await setupReviewer();
-        const [createWorkflowResponse] = await gqlHandler.createWorkflowMutation({
-            data: workflowMocks.createWorkflowWithThreeSteps({}, [reviewer])
-        });
-        return createWorkflowResponse.data.apw.createWorkflow.data;
-    };
-
-    const setup = async () => {
-        const workflow = await setupWorkflow();
-
-        await gqlHandler.until(
-            () => gqlHandler.listWorkflowsQuery({}).then(([data]: any) => data),
-            (response: any) => {
-                const list = response.data.apw.listWorkflows.data;
-                return list.length === 1;
-            },
-            {
-                name: "Wait for workflow entry to be available in list query before creating page."
-            }
-        );
-
-        const page = await setupPage();
-
-        return {
-            page,
-            workflow
-        };
-    };
-
-    return setup();
 };

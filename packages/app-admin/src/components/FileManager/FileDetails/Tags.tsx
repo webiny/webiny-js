@@ -11,7 +11,7 @@ import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Icon } from "@webiny/ui/Icon";
 import { Form } from "@webiny/form";
 import { useSnackbar } from "~/hooks/useSnackbar";
-import { useFileManager } from "./../FileManagerContext";
+import { getWhere, useFileManager } from "./../FileManagerContext";
 import {
     UPDATE_FILE,
     LIST_FILES,
@@ -22,6 +22,19 @@ import {
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { ReactComponent as LabelIcon } from "./../icons/round-label-24px.svg";
 import { FileItem } from "../types";
+
+const SCOPE_SEPARATOR = ":";
+
+export const formatTagAsLabel = (tag: string, scope: string | undefined) => {
+    if (!scope) {
+        return tag;
+    }
+    return tag.replace(`${scope}${SCOPE_SEPARATOR}`, "");
+};
+
+export const tagWithoutScopePrefix = (tags: string[], scope: string) => {
+    return tags.filter(tag => tag !== scope).map(tag => formatTagAsLabel(tag, scope));
+};
 
 const chipsStyle = css({
     "&.mdc-chip-set": {
@@ -57,6 +70,7 @@ interface TagsProps {
     file: FileItem;
     canEdit: (file: FileItem) => boolean;
 }
+
 const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
     const client = useApolloClient();
 
@@ -66,8 +80,11 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
     const { showSnackbar } = useSnackbar();
     const { queryParams } = useFileManager();
     const handleEdit = useCallback(() => setEdit(true), []);
-    const listTagsQuery = useQuery(LIST_TAGS);
-    const allTags = get(listTagsQuery, "data.fileManager.listTags") || [];
+    const listTagsQuery = useQuery(LIST_TAGS, {
+        variables: { where: getWhere(queryParams.scope) }
+    });
+    const listTags = get(listTagsQuery, "data.fileManager.listTags", []);
+    const allTags = tagWithoutScopePrefix(listTags, queryParams.scope);
 
     const isEditingAllowed = canEdit(file);
 
@@ -83,10 +100,17 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                 return (
                     <>
                         <Chips className={classNames("list-item__content", chipsStyle)}>
-                            {data.tags.map((tag, index) => {
-                                const label = typeof tag === "string" ? tag : tag.name;
-                                return <Chip key={label + index} label={label} />;
-                            })}
+                            {data.tags
+                                .filter(tag => tag !== queryParams.scope)
+                                .map((tag, index) => {
+                                    const label = typeof tag === "string" ? tag : tag.name;
+                                    return (
+                                        <Chip
+                                            key={label + index}
+                                            label={formatTagAsLabel(label, queryParams.scope)}
+                                        />
+                                    );
+                                })}
                         </Chips>
                         {isEditingAllowed && (
                             <IconButton
@@ -158,7 +182,8 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                                 // Get list tags data
                                 const listTagsData = cloneDeep(
                                     cache.readQuery<ListFileTagsQueryResponse>({
-                                        query: LIST_TAGS
+                                        query: LIST_TAGS,
+                                        variables: { where: getWhere(queryParams.scope) }
                                     })
                                 );
                                 if (!listTagsData) {
@@ -179,6 +204,7 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                                 // Write it to cache
                                 cache.writeQuery({
                                     query: LIST_TAGS,
+                                    variables: { where: getWhere(queryParams.scope) },
                                     data: listTagsData
                                 });
                             }
@@ -210,19 +236,35 @@ const Tags: React.FC<TagsProps> = ({ file, canEdit }) => {
                                     tags: string[],
                                     baseOnChange: (tags: string[]) => void
                                 ) => {
-                                    const formattedTags = tags.map(tag => tag.toLowerCase());
+                                    const formattedTags = tags.map(tag => {
+                                        const tagInLowerCase = tag.toLowerCase();
+                                        /**
+                                         * If "scope" exists, prefix tag with "scope" if not already.
+                                         */
+                                        if (
+                                            queryParams.scope &&
+                                            !tagInLowerCase.startsWith(queryParams.scope)
+                                        ) {
+                                            return `${queryParams.scope}${SCOPE_SEPARATOR}${tagInLowerCase}`;
+                                        }
+                                        return tagInLowerCase;
+                                    });
                                     baseOnChange(formattedTags);
                                 }}
                             >
-                                <MultiAutoComplete
-                                    options={allTags}
-                                    placeholder={"homepage asset"}
-                                    description={"Type in a new tag or select an existing one."}
-                                    unique={true}
-                                    allowFreeInput={true}
-                                    useSimpleValues={true}
-                                    disabled={saving}
-                                />
+                                {({ value, ...bindProps }) => (
+                                    <MultiAutoComplete
+                                        {...bindProps}
+                                        value={tagWithoutScopePrefix(value, queryParams.scope)}
+                                        options={allTags}
+                                        placeholder={"homepage asset"}
+                                        description={"Type in a new tag or select an existing one."}
+                                        unique={true}
+                                        allowFreeInput={true}
+                                        useSimpleValues={true}
+                                        disabled={saving}
+                                    />
+                                )}
                             </Bind>
                             <div className={actionWrapperStyle}>
                                 <ButtonPrimary

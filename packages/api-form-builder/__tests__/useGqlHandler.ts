@@ -6,7 +6,6 @@ import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbPlugins from "@webiny/api-file-manager-ddb";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createFormBuilder } from "~/index";
@@ -86,7 +85,6 @@ export default (params: UseGqlHandlerParams = {}) => {
         ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
         i18nContext(),
         i18nDynamoDbStorageOperations(),
-        i18nContentPlugins(),
         mockLocalesPlugins(),
         fileManagerPlugins(),
         fileManagerDynamoDbPlugins(),

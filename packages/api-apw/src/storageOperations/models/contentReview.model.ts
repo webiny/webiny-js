@@ -1,5 +1,5 @@
 import { createModelField } from "./utils";
-import { stepTitleField, stepTypeField, stepSlugField, stepReviewersField } from "./workflow.model";
+import { stepTitleField, stepTypeField, stepIdField, stepReviewersField } from "./workflow.model";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { WorkflowModelDefinition } from "~/types";
 
@@ -48,9 +48,25 @@ const contentStatus = () =>
         ]
     });
 
+const titleField = () =>
+    createModelField({
+        label: "Title",
+        type: "text",
+        parent: "contentReview",
+        validation: [{ name: "required", message: "Value is required." }]
+    });
+
 const contentIdField = () =>
     createModelField({
         label: "Id",
+        type: "text",
+        parent: "contentReview Content",
+        validation: [{ name: "required", message: "Value is required." }]
+    });
+
+const contentWorkflowIdField = () =>
+    createModelField({
+        label: "Workflow Id",
         type: "text",
         parent: "contentReview Content",
         validation: [{ name: "required", message: "Value is required." }]
@@ -73,12 +89,49 @@ const contentTypeField = () =>
         },
         validation: [{ name: "required", message: "Value is required." }]
     });
-// TODO: Find a way to store JSON value without "object" field.
-const contentSettingsField = () =>
+
+const contentSettingsField = (fields: CmsModelField[]) =>
     createModelField({
         label: "Settings",
+        parent: "contentReview Content",
+        type: "object",
+        multipleValues: false,
+        settings: { fields }
+    });
+
+const contentSettingsModelIdField = () =>
+    createModelField({
+        label: "Model Id",
+        parent: "contentReview Settings",
+        type: "text"
+    });
+
+const scheduledActionIdField = () =>
+    createModelField({
+        label: "Scheduled action Id",
         type: "text",
-        parent: "contentReview Settings"
+        parent: "contentReview Content"
+    });
+
+const contentScheduledOnField = () =>
+    createModelField({
+        label: "Scheduled on",
+        type: "datetime",
+        parent: "contentReview Content"
+    });
+
+const contentScheduledByField = () =>
+    createModelField({
+        label: "Scheduled by",
+        type: "text",
+        parent: "contentReview Content"
+    });
+
+const contentPublishedByField = () =>
+    createModelField({
+        label: "Published by",
+        type: "text",
+        parent: "contentReview Content"
     });
 
 const stepStatusField = (): CmsModelField => ({
@@ -127,6 +180,26 @@ const stepPendingChangeRequests = () =>
                 message: "Value is required."
             }
         ]
+    });
+
+const stepTotalComments = () =>
+    createModelField({
+        label: "Total comments",
+        type: "number",
+        parent: "contentReview Step",
+        validation: [
+            {
+                name: "required",
+                message: "Value is required."
+            }
+        ]
+    });
+
+const latestCommentId = () =>
+    createModelField({
+        label: "Latest comment Id",
+        type: "text",
+        parent: "contentReview"
     });
 
 const stepSignOffProvidedOn = () =>
@@ -180,35 +253,44 @@ const stepsField = (fields: CmsModelField[]): CmsModelField => ({
 interface CreateContentReviewModelDefinitionParams {
     reviewerModelId: string;
 }
+
 export const createContentReviewModelDefinition = ({
     reviewerModelId
-}: CreateContentReviewModelDefinitionParams): WorkflowModelDefinition => {
-    return {
-        name: "APW - Content Review",
-        modelId: "apwContentReviewModelDefinition",
-        titleFieldId: "content",
-        layout: [
-            ["contentReview_content"],
-            ["contentReview_reviewRequestedBy"],
-            ["contentReview_steps"],
-            ["contentReview_changeRequested"]
-        ],
-        fields: [
-            contentField([contentIdField(), contentTypeField(), contentSettingsField()]),
-            contentStatus(),
-            stepsField([
-                stepTitleField(),
-                stepTypeField(),
-                stepSlugField(),
-                stepReviewersField(reviewerModelId),
-                stepStatusField(),
-                stepPendingChangeRequests(),
-                stepSignOffProvidedOn(),
-                stepSignOffProvidedBy([
-                    stepSignOffProvidedById(),
-                    stepSignOffProvidedByDisplayName()
-                ])
-            ])
-        ]
-    };
-};
+}: CreateContentReviewModelDefinitionParams): WorkflowModelDefinition => ({
+    name: "APW - Content Review",
+    modelId: "apwContentReviewModelDefinition",
+    titleFieldId: "content",
+    layout: [
+        ["contentReview_content"],
+        ["contentReview_reviewRequestedBy"],
+        ["contentReview_steps"],
+        ["contentReview_changeRequested"]
+    ],
+    fields: [
+        titleField(),
+        contentField([
+            contentIdField(),
+            contentTypeField(),
+            contentWorkflowIdField(),
+            contentSettingsField([contentSettingsModelIdField()]),
+            contentScheduledOnField(),
+            contentScheduledByField(),
+            scheduledActionIdField(),
+            contentPublishedByField()
+        ]),
+        contentStatus(),
+        stepsField([
+            stepTitleField(),
+            stepTypeField(),
+            stepIdField(),
+            stepReviewersField(reviewerModelId),
+            stepStatusField(),
+            stepPendingChangeRequests(),
+            stepTotalComments(),
+            stepSignOffProvidedOn(),
+            stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])
+        ]),
+        latestCommentId()
+    ],
+    description: ""
+});

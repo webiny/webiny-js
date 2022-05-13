@@ -4,13 +4,13 @@ import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
 
-export interface CmsContextValue {
+export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
 }
 
-export const CmsContext = React.createContext<CmsContextValue>({
+export const CmsContext = React.createContext<CmsContext>({
     getApolloClient: () => {
         return null;
     },
@@ -21,7 +21,7 @@ export const CmsContext = React.createContext<CmsContextValue>({
     /**
      * Safe to cast.
      */
-} as unknown as CmsContextValue);
+} as unknown as CmsContext);
 
 interface ApolloClientsCache {
     [locale: string]: ApolloClient<any>;
@@ -39,14 +39,6 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
     const { getCurrentLocale } = useI18N();
 
     const currentLocale = getCurrentLocale("content");
-    /**
-     * TODO @ts-refactor @pavel did you think about this?
-     */
-    // TODO: not sure why this was necessary :thinking:
-    // const hasPermission = identity.getPermission("cms.endpoint.manage");
-    // if (!hasPermission) {
-    //     return <CmsContext.Provider value={{}} {...props} />;
-    // }
 
     if (currentLocale && !apolloClientsCache[currentLocale]) {
         apolloClientsCache[currentLocale] = props.createApolloClient({

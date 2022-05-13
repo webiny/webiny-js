@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import { OperatorPlugins, operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
 import {
@@ -28,6 +27,9 @@ import {
     CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
     CreatePathCallableParams
 } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin";
+import { getElasticsearchOperatorPluginsByLocale } from "@webiny/api-elasticsearch/operators";
+import { normalizeValue } from "@webiny/api-elasticsearch/normalize";
+import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 
 interface CreateElasticsearchParams {
     plugins: PluginsContainer;
@@ -52,9 +54,13 @@ interface CreateElasticsearchQueryArgs {
     modelFields: ModelFields;
     parentPath?: string | null;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
+    fullTextSearch: {
+        term?: string;
+        fields: string[];
+    };
 }
 
-const specialFields = ["published", "latest", "locale", "tenant"];
+const specialFields: (keyof Partial<CmsEntryListWhere>)[] = ["published", "latest"];
 const noKeywordFields = ["date", "number", "boolean"];
 
 const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esSort => {
@@ -94,12 +100,15 @@ const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esS
  * Latest is used in the manage API and published in the read API.
  */
 const createInitialQueryValue = (
-    args: CreateElasticsearchQueryArgs
+    params: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
+    const { model, where: initialWhere } = params;
     /**
      * Cast as partial so we can remove unnecessary keys.
      */
-    const where = args.where as Partial<CmsEntryListWhere>;
+    const where: CmsEntryListWhere = {
+        ...initialWhere
+    };
 
     const query: ElasticsearchBoolQueryConfig = {
         must: [],
@@ -110,19 +119,16 @@ const createInitialQueryValue = (
 
     // When ES index is shared between tenants, we need to filter records by tenant ID
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-    if (sharedIndex && where.tenant) {
-        query.must.push({ term: { "tenant.keyword": where.tenant } });
+    if (sharedIndex) {
+        query.must.push({ term: { "tenant.keyword": model.tenant } });
     }
-    delete where["tenant"];
 
-    if (where.locale) {
-        query.must.push({
-            term: {
-                "locale.keyword": where.locale
-            }
-        });
-    }
-    delete where["locale"];
+    query.must.push({
+        term: {
+            "locale.keyword": model.locale
+        }
+    });
+
     /**
      * We must transform published and latest where args into something that is understandable by our Elasticsearch
      */
@@ -290,7 +296,7 @@ interface ApplyFilteringParams {
     operator: string;
     key: string;
     value: any;
-    operatorPlugins: OperatorPlugins;
+    operatorPlugins: Record<string, ElasticsearchQueryBuilderOperatorPlugin>;
     searchPlugins: Record<string, CmsEntryElasticsearchQueryBuilderValueSearchPlugin>;
     parentPath?: string | null;
 }
@@ -339,20 +345,71 @@ const applyFiltering = (params: ApplyFilteringParams) => {
         keyword
     });
 };
+
+interface ApplyFullTextSearchParams {
+    query: ElasticsearchBoolQueryConfig;
+    modelFields: ModelFields;
+    term?: string;
+    fields: string[];
+}
+const applyFullTextSearch = (params: ApplyFullTextSearchParams): void => {
+    const { query, modelFields, term, fields } = params;
+    if (!term || term.length === 0 || fields.length === 0) {
+        return;
+    }
+
+    const fieldPaths = fields.reduce((collection, field) => {
+        const modelField = modelFields[field];
+        if (!modelField) {
+            return collection;
+        }
+
+        collection.push(`values.${field}`);
+
+        return collection;
+    }, [] as string[]);
+
+    query.must.push({
+        query_string: {
+            allow_leading_wildcard: true,
+            fields: fieldPaths,
+            query: normalizeValue(term),
+            default_operator: "or"
+        }
+    });
+};
 /*
  * Iterate through where keys and apply plugins where necessary
  */
 const execElasticsearchBuildQueryPlugins = (
     params: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where: initialWhere, modelFields, parentPath, plugins, searchPlugins } = params;
+    const {
+        model,
+        where: initialWhere,
+        modelFields,
+        parentPath,
+        plugins,
+        searchPlugins,
+        fullTextSearch
+    } = params;
 
-    const where: CmsEntryListWhere = {
+    const where: Partial<CmsEntryListWhere> = {
         ...initialWhere
     };
     const query = createInitialQueryValue({
         ...params,
         where
+    });
+
+    /**
+     * Add full text search for requested fields.
+     */
+    applyFullTextSearch({
+        query,
+        modelFields,
+        term: fullTextSearch.term,
+        fields: fullTextSearch.fields
     });
 
     /**
@@ -366,7 +423,7 @@ const execElasticsearchBuildQueryPlugins = (
         return query;
     }
 
-    const operatorPlugins = operatorPluginsList(plugins);
+    const operatorPlugins = getElasticsearchOperatorPluginsByLocale(plugins, model.locale);
 
     for (const key in where) {
         if (where.hasOwnProperty(key) === false) {
@@ -376,7 +433,9 @@ const execElasticsearchBuildQueryPlugins = (
          * We do not need to go further if value is undefined.
          * There are few hardcoded possibilities when value is undefined, for example, ownedBy.
          */
-        if (where[key] === undefined) {
+        // TODO figure out how to have type.
+        const value = (where as any)[key];
+        if (value === undefined) {
             continue;
         }
         const { field, operator } = parseWhereKey(key);
@@ -393,18 +452,18 @@ const execElasticsearchBuildQueryPlugins = (
          * There is a possibility that value is an object.
          * In that case, check if field is ref field and continue a bit differently.
          */
-        if (isRefFieldFiltering({ key, value: where[key], field: cmsField })) {
+        if (isRefFieldFiltering({ key, value, field: cmsField })) {
             /**
              * We we need to go through each key in where[key] to determine the filters.
              */
-            for (const whereKey in where[key]) {
+            for (const whereKey in value) {
                 const { operator } = parseWhereKey(whereKey);
                 applyFiltering({
                     query,
                     modelField,
                     operator,
                     key: whereKey,
-                    value: where[key][whereKey],
+                    value: value[whereKey],
                     searchPlugins,
                     operatorPlugins,
                     parentPath
@@ -417,7 +476,7 @@ const execElasticsearchBuildQueryPlugins = (
             modelField,
             operator,
             key,
-            value: where[key],
+            value,
             searchPlugins,
             operatorPlugins,
             parentPath
@@ -429,7 +488,7 @@ const execElasticsearchBuildQueryPlugins = (
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
     const { plugins, model, args, parentPath = null } = params;
-    const { where, after, limit, sort: initialSort } = args;
+    const { where = {}, after, limit, sort: initialSort, search, fields } = args;
 
     const modelFields = createModelFields(plugins, model);
     const searchPlugins = searchPluginsList(plugins);
@@ -440,7 +499,11 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
         where,
         modelFields,
         parentPath,
-        searchPlugins
+        searchPlugins,
+        fullTextSearch: {
+            term: search,
+            fields: fields || []
+        }
     });
 
     const queryPlugins = plugins

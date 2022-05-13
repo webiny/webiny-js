@@ -7,6 +7,7 @@ import { createReviewerModelDefinition } from "./reviewer.model";
 import { createCommentModelDefinition } from "./comment.model";
 import { createChangeRequestModelDefinition } from "./changeRequest.model";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import { isInstallationPending } from "~/plugins/utils";
 
 export const createApwModels = (context: CmsContext) => {
     /**
@@ -17,12 +18,17 @@ export const createApwModels = (context: CmsContext) => {
         console.warn("Creating model before cms init.");
         return;
     }
+
+    if (isInstallationPending({ tenancy: context.tenancy, i18n: context.i18n })) {
+        return;
+    }
+
     context.security.disableAuthorization();
 
-    const locale = context.i18nContent.locale;
+    const locale = context.i18n.getContentLocale();
     if (!locale) {
         throw new WebinyError(
-            "Missing context.i18nContent.locale in api-apw/storageOperations/index.ts",
+            "Missing content locale in api-apw/storageOperations/index.ts",
             "LOCALE_ERROR"
         );
     }
@@ -38,7 +44,8 @@ export const createApwModels = (context: CmsContext) => {
         id: groupId,
         slug: "apw",
         name: "APW",
-        description: "Group for Advanced Publishing Workflow"
+        description: "Group for Advanced Publishing Workflow",
+        icon: "fas/star"
     });
 
     /**
@@ -72,6 +79,13 @@ export const createApwModels = (context: CmsContext) => {
             locale: locale.code,
             modelDefinition
         });
+        /**
+         * We want "title" field as the "titleField" for "ContentReview" model.
+         * so that we can later search entries by title.
+         */
+        if (cmsModelPlugin.contentModel.modelId === "apwContentReviewModelDefinition") {
+            cmsModelPlugin.contentModel.titleFieldId = "title";
+        }
         cmsModelPlugins.push(cmsModelPlugin);
     }
 

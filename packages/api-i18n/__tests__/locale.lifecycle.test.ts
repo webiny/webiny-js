@@ -70,21 +70,23 @@ describe("Locale lifecycle events", () => {
         /**
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
-        const beforeCreate = lifecycleTracker.getLast(LocaleLifecycle.BEFORE_CREATE);
+        const beforeCreate: any = lifecycleTracker.getLast(LocaleLifecycle.BEFORE_CREATE);
         expect(beforeCreate.params[0]).toEqual({
             context: expect.any(Object),
             locale: {
                 ...localeData,
                 ...hookParamsExpected
-            }
+            },
+            tenant: "root"
         });
-        const afterCreate = lifecycleTracker.getLast(LocaleLifecycle.AFTER_CREATE);
+        const afterCreate: any = lifecycleTracker.getLast(LocaleLifecycle.AFTER_CREATE);
         expect(afterCreate.params[0]).toEqual({
             context: expect.any(Object),
             locale: {
                 ...localeData,
                 ...hookParamsExpected
-            }
+            },
+            tenant: "root"
         });
     });
 
@@ -164,7 +166,7 @@ describe("Locale lifecycle events", () => {
         /**
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
-        const beforeUpdate = lifecycleTracker.getLast(LocaleLifecycle.BEFORE_UPDATE);
+        const beforeUpdate: any = lifecycleTracker.getLast(LocaleLifecycle.BEFORE_UPDATE);
         expect(beforeUpdate.params[0]).toEqual({
             context: expect.any(Object),
             original: {
@@ -177,9 +179,10 @@ describe("Locale lifecycle events", () => {
                 ...localeData,
                 ...hookParamsExpected,
                 code: "en-US"
-            }
+            },
+            tenant: "root"
         });
-        const afterUpdate = lifecycleTracker.getLast(LocaleLifecycle.AFTER_UPDATE);
+        const afterUpdate: any = lifecycleTracker.getLast(LocaleLifecycle.AFTER_UPDATE);
         expect(afterUpdate.params[0]).toEqual({
             context: expect.any(Object),
             original: {
@@ -192,7 +195,8 @@ describe("Locale lifecycle events", () => {
                 ...localeData,
                 ...hookParamsExpected,
                 code: "en-US"
-            }
+            },
+            tenant: "root"
         });
     });
 
@@ -235,7 +239,7 @@ describe("Locale lifecycle events", () => {
         /**
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
-        const beforeDelete = lifecycleTracker.getLast(LocaleLifecycle.BEFORE_DELETE);
+        const beforeDelete: any = lifecycleTracker.getLast(LocaleLifecycle.BEFORE_DELETE);
         expect(beforeDelete.params[0]).toEqual({
             context: expect.any(Object),
             locale: {
@@ -243,9 +247,10 @@ describe("Locale lifecycle events", () => {
                 ...hookParamsExpected,
                 default: false,
                 code: "en-US"
-            }
+            },
+            tenant: "root"
         });
-        const afterDelete = lifecycleTracker.getLast(LocaleLifecycle.AFTER_DELETE);
+        const afterDelete: any = lifecycleTracker.getLast(LocaleLifecycle.AFTER_DELETE);
         expect(afterDelete.params[0]).toEqual({
             context: expect.any(Object),
             locale: {
@@ -253,7 +258,8 @@ describe("Locale lifecycle events", () => {
                 ...hookParamsExpected,
                 default: false,
                 code: "en-US"
-            }
+            },
+            tenant: "root"
         });
     });
 });

@@ -1,6 +1,6 @@
 import React from "react";
 import kebabCase from "lodash/kebabCase";
-import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../types";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
 import Quote from "./Quote";
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {

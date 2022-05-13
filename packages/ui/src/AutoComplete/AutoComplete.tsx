@@ -51,7 +51,14 @@ interface State {
 }
 
 const Spinner: React.FC = () => {
-    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
+    return (
+        <MaterialSpinner
+            size={24}
+            spinnerColor={"var(--mdc-theme-primary)"}
+            spinnerWidth={2}
+            visible
+        />
+    );
 };
 
 interface RenderOptionsParams

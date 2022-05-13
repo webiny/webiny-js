@@ -1,3 +1,11 @@
 const base = require("../../jest.config.base");
 
-module.exports = base({ path: __dirname });
+const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-elasticsearch-`;
+
+module.exports = base(
+    {
+        path: __dirname
+    },
+    []
+);

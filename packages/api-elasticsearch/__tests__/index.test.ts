@@ -1,78 +1,83 @@
-import elasticsearchContext from "~/index";
-import { ContextPlugin } from "@webiny/handler";
-import { PluginsContainer } from "@webiny/plugins";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
-import { Client } from "@elastic/elasticsearch";
-import { ElasticsearchContext } from "~/types";
-
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
+import { base } from "~/indexConfiguration/base";
+import { japanese } from "~/indexConfiguration/japanese";
+import { ElasticsearchIndexRequestBody } from "~/types";
+import { createElasticsearchClient } from "./helpers";
 
 /**
- * If adding new default operators, they must be added here as well.
+ * Add configurations when added to the code.
  */
-const operators = [
-    "between",
-    "contains",
-    "eq",
-    "gt",
-    "gte",
-    "in",
-    "and_in",
-    "lt",
-    "lte",
-    "not",
-    "not_between",
-    "not_contains",
-    "not_in"
+const settings: [string, ElasticsearchIndexRequestBody][] = [
+    ["base", base],
+    ["japanese", japanese]
 ];
 
-describe("ElasticsearchContext", () => {
-    it("should initialize the Elasticsearch context plugin", async () => {
-        const context: any = {
-            plugins: new PluginsContainer()
-        };
-        const plugin = elasticsearchContext({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-        });
-        /**
-         * A context plugin must be created.
-         */
-        expect(plugin).toBeInstanceOf(ContextPlugin);
-        /**
-         * Must apply what is required on the context.
-         */
-        await plugin.apply(context);
-        /**
-         * A elasticsearch property must be initialized.
-         */
-        expect(context.elasticsearch).toBeInstanceOf(Client);
+describe("Elasticsearch Index Mapping And Settings", () => {
+    const client = createElasticsearchClient();
+
+    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+
+    const testIndexName = `${prefix}dummy-index-test`;
+
+    beforeEach(async () => {
+        return client.indices.deleteAll();
     });
 
-    test.each(operators)(`should initialize the plugin "%s"`, async (operator: string) => {
-        const context = {
-            plugins: new PluginsContainer()
-        } as unknown as ElasticsearchContext;
-        const plugin = elasticsearchContext({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-        });
-        expect(plugin).toBeInstanceOf(ContextPlugin);
-        await plugin.apply(context);
-        /**
-         * Operators should be registered.
-         */
-        const registeredOperatorPlugins =
-            context.plugins.byType<ElasticsearchQueryBuilderOperatorPlugin>(
-                ElasticsearchQueryBuilderOperatorPlugin.type
-            );
-
-        expect(registeredOperatorPlugins).toHaveLength(operators.length);
-        const operatorPlugins = registeredOperatorPlugins.filter(pl => {
-            return pl.getOperator() === operator;
-        });
-        expect(operatorPlugins).toHaveLength(1);
-        /**
-         * The operator plugin name must end with the .default so it can be overridden later.
-         */
-        expect(operatorPlugins[0].name).toMatch(/\.default$/);
+    afterEach(async () => {
+        return client.indices.deleteAll();
     });
+
+    it.each(settings)(
+        "should create index with correct settings - %s",
+        async (_: string, setting: ElasticsearchIndexRequestBody) => {
+            const createResponse = await client.indices.create({
+                index: testIndexName,
+                body: {
+                    ...setting
+                }
+            });
+
+            expect(createResponse).toMatchObject({
+                body: {
+                    acknowledged: true,
+                    index: testIndexName
+                },
+                statusCode: 200
+            });
+
+            const mappingResponse = await client.indices.getMapping({
+                index: testIndexName
+            });
+
+            expect(mappingResponse.body).toEqual({
+                [testIndexName]: {
+                    mappings: {
+                        ...setting.mappings
+                    }
+                }
+            });
+
+            const settingsResponse = await client.indices.getSettings({
+                index: testIndexName
+            });
+
+            expect(settingsResponse.body).toEqual({
+                [testIndexName]: {
+                    settings: {
+                        ...setting.settings,
+                        index: {
+                            ...(setting.settings?.index || {}),
+                            creation_date: expect.stringMatching(/^([0-9]+)$/),
+                            number_of_replicas: expect.stringMatching(/^([0-9]+)$/),
+                            number_of_shards: expect.stringMatching(/^([0-9]+)$/),
+                            provided_name: testIndexName,
+                            uuid: expect.stringMatching(/^([a-zA-Z0-9_-]+)$/),
+                            version: {
+                                created: expect.stringMatching(/^([0-9]+)$/)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    );
 });

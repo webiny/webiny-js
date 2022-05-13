@@ -1,8 +1,6 @@
 name: Pull Requests
 
-on:
-  pull_request:
-    branches: [next, v5]
+on: [pull_request]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -23,6 +21,7 @@ jobs:
       jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
+      is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -38,9 +37,18 @@ jobs:
         id: get-timestamp
         run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
 
+      - name: Is a PR from a fork
+        id: is-fork-pr
+        run: echo "::set-output name=is-fork-pr::${{ github.event.pull_request.head.repo.fork }}"
+
+      - name: Ignored Jest packages
+        id: get-ignored-jest-packages
+        if: steps.is-fork-pr.outputs.is-fork-pr == 'true'
+        run: echo "::set-output name=ignored-jest-packages::ddb-es"
+
       - name: List packages with Jest tests
         id: list-jest-packages
-        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js)"
+        run: echo "::set-output name=jest-packages::$(node scripts/listPackagesWithTests.js --ignore-packages=${{ steps.get-ignored-jest-packages.outputs.ignored-jest-packages }})"
 
       - uses: actions/cache@v2
         id: yarn-cache
@@ -133,6 +141,13 @@ jobs:
         node: [14]
         package: ${{ fromJson(needs.init.outputs.jest-packages) }}
     runs-on: ${{ matrix.os }}
+    # PRs from repo forks won't have access to these environment variables / secrets.
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -160,6 +175,7 @@ jobs:
         run: yarn test ${{ matrix.package }}
 
   verdaccio-publish:
+    if: needs.init.outputs.is-fork-pr != 'true' # Do not run this job if a PR has been submitted from a fork.
     needs: init
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
@@ -184,7 +200,7 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
-          
+
       - name: Git status
         run: git status
 
@@ -193,10 +209,10 @@ jobs:
 
       - name: Git status
         run: git status && git diff packages-v6/cli/src/bin.js
-        
+
       - name: Build packages
         run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
-        
+
       - name: Git status
         run: git status
 
@@ -214,13 +230,13 @@ jobs:
 
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-        
+
       - name: Git status
         run: git status
 
       - name: Version packages (no push, no changelog)
         run: yarn lerna:version:verdaccio
-        
+
       - name: Git status
         run: git status
 

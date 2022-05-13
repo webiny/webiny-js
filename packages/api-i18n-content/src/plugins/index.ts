@@ -1,27 +1,20 @@
-import hasPermission from "../utils/hasI18NContentPermission";
 import { I18NContentContext } from "~/types";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { ContextPlugin } from "@webiny/handler";
-import { I18NLocale } from "@webiny/api-i18n/types";
 
+/**
+ * DEPRECATION NOTICE!
+ *
+ * This package remains here purely for backwards compatibility with existing projects.
+ * All i18n logic now lives in `api-i18n` package, and this old context just forwards the calls to that main package.
+ *
+ * It will be completely removed in v6.
+ */
 export default () => {
     return new ContextPlugin<I18NContentContext>(async context => {
-        const getCurrentLocale = (): I18NLocale | null => {
-            return context.i18n.getCurrentLocale("content");
-        };
         context.i18nContent = {
-            locale: getCurrentLocale(),
-            getCurrentLocale: () => {
-                return getCurrentLocale();
-            },
-            hasI18NContentPermission: async () => hasPermission(context),
-            checkI18NContentPermission: async () => {
-                if (await context.i18nContent.hasI18NContentPermission()) {
-                    return;
-                }
-
-                throw new NotAuthorizedError();
-            }
+            getCurrentLocale: () => context.i18n.getContentLocale(),
+            hasI18NContentPermission: () => context.i18n.hasI18NContentPermission(),
+            checkI18NContentPermission: () => context.i18n.checkI18NContentPermission()
         };
     });
 };

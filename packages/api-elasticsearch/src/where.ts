@@ -32,7 +32,7 @@ export const parseWhereKey = (key: string): ParseWhereKeyResult => {
         throw new Error(`Cannot filter by "${field}".`);
     }
 
-    const operator = operation.match(/^_/) ? operation.substr(1) : operation;
+    const operator = operation.match(/^_/) ? operation.slice(1) : operation;
 
     return { field, operator };
 };

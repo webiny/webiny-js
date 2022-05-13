@@ -15,6 +15,7 @@ import {
 import { Tenant } from "@webiny/api-tenancy/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { createTopic } from "@webiny/pubsub";
+import { I18NLocale } from "@webiny/api-i18n/types";
 
 const initialContentModelGroup = {
     name: "Ungrouped",
@@ -25,12 +26,13 @@ const initialContentModelGroup = {
 
 interface CreateSystemCrudParams {
     getTenant: () => Tenant;
+    getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemContext => {
-    const { getTenant, storageOperations, context, getIdentity } = params;
+    const { getTenant, getLocale, storageOperations, context, getIdentity } = params;
 
     const onBeforeInstall = createTopic<BeforeInstallTopicParams>();
     const onAfterInstall = createTopic<AfterInstallTopicParams>();
@@ -67,7 +69,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
             return;
         }
         await storageOperations.system.update({
-            original,
             system
         });
     };
@@ -93,7 +94,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
                     readAPIKey
                 };
                 await storageOperations.system.update({
-                    original,
                     system
                 });
                 return readAPIKey;
@@ -115,7 +115,8 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
              * First trigger before install event.
              */
             await onBeforeInstall.publish({
-                tenant: getTenant().id
+                tenant: getTenant().id,
+                locale: getLocale().code
             });
 
             /**
@@ -144,7 +145,8 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
              * And trigger after install event.
              */
             await onAfterInstall.publish({
-                tenant: getTenant().id
+                tenant: getTenant().id,
+                locale: getLocale().code
             });
         },
         async upgradeSystem(this: HeadlessCms, version) {

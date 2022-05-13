@@ -38,9 +38,7 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
                 stackName: args.env,
                 program: async () => {
                     const app = this.config.app({
-                        env: args.env,
-                        appDir: args.appDir,
-                        projectDir: args.projectDir
+                        env: args.env
                     });
 
                     return await app.run();
@@ -64,7 +62,7 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
             }
         );
 
-        type SharedOptions = Pick<UpOptions, "onOutput"> & { color: string };
+        type SharedOptions = Pick<UpOptions, "onOutput" | "color">;
         const options: SharedOptions = {
             onOutput: line => console.log(trimNewlines(line)),
             color: "always"

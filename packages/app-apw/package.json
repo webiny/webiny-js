@@ -1,0 +1,71 @@
+{
+  "name": "@webiny/app-apw",
+  "version": "5.26.0",
+  "private": true,
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
+    "@babel/runtime": "^7.5.5",
+    "@emotion/core": "^10.0.27",
+    "@emotion/is-prop-valid": "^1.1.1",
+    "@emotion/styled": "^10.0.27",
+    "@types/react": "^16.9.56",
+    "@webiny/app": "^5.26.0",
+    "@webiny/app-admin": "^5.26.0",
+    "@webiny/app-page-builder": "^5.26.0",
+    "@webiny/app-security": "^5.26.0",
+    "@webiny/form": "^5.26.0",
+    "@webiny/react-router": "^5.26.0",
+    "@webiny/ui": "^5.26.0",
+    "@webiny/validation": "^5.26.0",
+    "apollo-cache": "^1.3.5",
+    "apollo-client": "^2.6.10",
+    "apollo-link": "^1.2.14",
+    "apollo-utilities": "^1.3.4",
+    "classnames": "^2.2.6",
+    "dayjs": "^1.10.4",
+    "emotion": "^10.0.17",
+    "graphql": "^15.7.2",
+    "graphql-tag": "^2.10.1",
+    "lodash": "^4.17.11",
+    "nanoid": "^3.1.20",
+    "prop-types": "^15.7.2",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-helmet": "^6.1.0",
+    "react-spinner-material": "1.1.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
+    "@webiny/cli": "^5.26.0",
+    "@webiny/project-utils": "^5.26.0",
+    "babel-plugin-emotion": "^9.2.8",
+    "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.1.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  },
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+}

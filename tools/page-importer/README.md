@@ -34,3 +34,5 @@ yarn run publish
 After you import a bunch of pages they are all in draft status and have the same exact URL.
 You need to run this script to publish them under unique URL.
 It will run in a loop looking for draft pages, changing their URL to something random and publishing them.
+It's possible that you will have to run this script multiple times.
+Though it pages through pages, it may not work fully reliably. So if you see in logs, that process seems to stopped, just rerun it.

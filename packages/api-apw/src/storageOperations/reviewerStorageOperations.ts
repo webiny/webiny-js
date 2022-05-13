@@ -32,8 +32,7 @@ export const createReviewerStorageOperations = ({
             const [entries, meta] = await cms.listLatestEntries(model, {
                 ...params,
                 where: {
-                    ...params.where,
-                    tenant: model.tenant
+                    ...params.where
                 }
             });
             return [entries.map(entry => getFieldValues(entry, baseFields)), meta];

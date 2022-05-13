@@ -12,7 +12,6 @@ import { Typography } from "~/Typography";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
 import { FormElementMessage } from "~/FormElementMessage";
-
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as PrevIcon } from "./icons/navigate_before-24px.svg";
 import { ReactComponent as NextIcon } from "./icons/navigate_next-24px.svg";
@@ -20,17 +19,18 @@ import { ReactComponent as PrevAllIcon } from "./icons/skip_previous-24px.svg";
 import { ReactComponent as NextAllIcon } from "./icons/skip_next-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/baseline-close-24px.svg";
 import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
-
 import { css } from "emotion";
+import { ListItemGraphic } from "~/List";
+import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
 
 const listItemMetaClassName = css({
     display: "table"
 });
+
 const iconButtonClassName = css({
     display: "table-cell !important"
 });
-import { ListItemGraphic } from "~/List";
-import { AutoCompleteProps } from "~/AutoComplete/AutoComplete";
+
 const style = {
     pagination: {
         bar: css({
@@ -59,6 +59,7 @@ const style = {
         })
     }
 };
+
 const listStyles = css({
     "&.multi-autocomplete__options-list": {
         listStyle: "none",
@@ -72,7 +73,8 @@ const listStyles = css({
 interface SelectionItem {
     name: string;
 }
-type MultiAutoCompletePropsValue = SelectionItem[];
+
+type MultiAutoCompletePropsValue = SelectionItem[] | string[];
 
 export interface MultiAutoCompleteProps extends Omit<AutoCompleteBaseProps, "value"> {
     /**
@@ -123,56 +125,6 @@ interface MultiAutoCompleteState {
 const Spinner: React.FC = () => {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 };
-
-const DEFAULT_PER_PAGE = 10;
-
-function paginateMultipleSelection(
-    multipleSelection: MultiAutoCompletePropsValue,
-    limit: number,
-    page: number,
-    search: string
-) {
-    // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
-    let data = Array.isArray(multipleSelection)
-        ? multipleSelection.map((item, index) => ({ ...item, index }))
-        : [];
-
-    if (typeof search === "string" && search) {
-        data = data.filter(item => {
-            return (
-                typeof item.name === "string" &&
-                item.name.toLowerCase().includes(search.toLowerCase())
-            );
-        });
-    }
-
-    const lastPage = Math.ceil(data.length / limit);
-    const totalCount = data.length;
-
-    page = page || lastPage;
-    data = data.slice((page - 1) * limit, page * limit);
-
-    let from = 0;
-    let to = 0;
-    if (data.length) {
-        from = (page - 1) * limit + 1;
-        to = from + (data.length - 1);
-    }
-
-    const meta = {
-        hasData: data.length > 0,
-        totalCount,
-        from,
-        to,
-        page: page,
-        lastPage,
-        limit,
-        hasPrevious: page > 1,
-        hasNext: page < lastPage
-    };
-
-    return { data, meta };
-}
 
 interface RenderOptionsParams
     extends Omit<ControllerStateAndHelpers<any>, "getInputProps" | "openMenu"> {
@@ -260,11 +212,31 @@ export class MultiAutoComplete extends React.Component<
     getOptions() {
         const { unique, value, allowFreeInput, useSimpleValues, options } = this.props;
 
-        const filtered = options.filter(item => {
+        const values = Array.isArray(value) ? [...value] : [];
+
+        const filtered = [...options];
+
+        // If free input is allowed, prepend typed value to the list.
+        if (allowFreeInput && this.state.inputValue) {
+            if (useSimpleValues) {
+                const existingValue = filtered.includes(this.state.inputValue);
+                if (!existingValue) {
+                    filtered.unshift(this.state.inputValue);
+                }
+            } else {
+                const existingValue = filtered.find(
+                    item => this.state.inputValue === getOptionText(item, this.props)
+                );
+                if (!existingValue) {
+                    filtered.unshift({ [this.props.textProp]: this.state.inputValue });
+                }
+            }
+        }
+
+        return filtered.filter(item => {
             // We need to filter received options.
             // 1) If "unique" prop was passed, we don't want to show already picked options again.
             if (unique) {
-                const values = value;
                 if (Array.isArray(values)) {
                     if (
                         values.find(
@@ -291,25 +263,6 @@ export class MultiAutoComplete extends React.Component<
                 .toLowerCase()
                 .includes(this.state.inputValue.toLowerCase());
         });
-
-        // If free input is allowed, prepend typed value to the list.
-        if (allowFreeInput && this.state.inputValue) {
-            if (useSimpleValues) {
-                const existingValue = filtered.includes(this.state.inputValue);
-                if (!existingValue) {
-                    filtered.unshift(this.state.inputValue);
-                }
-            } else {
-                const existingValue = filtered.find(
-                    item => this.state.inputValue === getOptionText(item, this.props)
-                );
-                if (!existingValue) {
-                    filtered.unshift({ [this.props.textProp]: this.state.inputValue });
-                }
-            }
-        }
-
-        return filtered;
     }
 
     /**
@@ -386,6 +339,55 @@ export class MultiAutoComplete extends React.Component<
         );
     }
 
+    paginateMultipleSelection() {
+        const { value } = this.props;
+        const limit = 10;
+        let page = this.state.multipleSelectionPage;
+        const search = this.state.multipleSelectionSearch;
+
+        // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
+        let data = Array.isArray(value)
+            ? value.map((option, index) => {
+                  return { option, index };
+              })
+            : [];
+
+        if (search) {
+            data = data.filter(item => {
+                return getOptionText(item.option, this.props)
+                    .toLowerCase()
+                    .includes(search.toLowerCase());
+            });
+        }
+
+        const lastPage = Math.ceil(data.length / limit);
+        const totalCount = data.length;
+
+        page = page || lastPage;
+        data = data.slice((page - 1) * limit, page * limit);
+
+        let from = 0;
+        let to = 0;
+        if (data.length) {
+            from = (page - 1) * limit + 1;
+            to = from + (data.length - 1);
+        }
+
+        const meta = {
+            hasData: data.length > 0,
+            totalCount,
+            from,
+            to,
+            page: page,
+            lastPage,
+            limit,
+            hasPrevious: page > 1,
+            hasNext: page < lastPage
+        };
+
+        return { data, meta };
+    }
+
     /**
      * Once added, items can also be removed by clicking on the ✕ icon. This is the method that is responsible for
      * rendering selected items (we are using already existing "Chips" component).
@@ -402,12 +404,7 @@ export class MultiAutoComplete extends React.Component<
         } = this.props;
 
         if (useMultipleSelectionList) {
-            const { data, meta } = paginateMultipleSelection(
-                value as SelectionItem[],
-                DEFAULT_PER_PAGE,
-                this.state.multipleSelectionPage,
-                this.state.multipleSelectionSearch
-            );
+            const { data, meta } = this.paginateMultipleSelection();
 
             return (
                 <>
@@ -456,7 +453,7 @@ export class MultiAutoComplete extends React.Component<
                     <List className={style.pagination.list}>
                         {meta.hasData ? (
                             data.map((item, index) => {
-                                const key = `${getOptionValue(item, this.props)}-${index}`;
+                                const key = `${getOptionValue(item.option, this.props)}-${index}`;
                                 if (this.state.reorderFormVisible === key) {
                                     return (
                                         <ListItem key={key}>
@@ -529,10 +526,10 @@ export class MultiAutoComplete extends React.Component<
                                             {item.index + 1}.
                                         </div>{" "}
                                         {renderListItemLabel &&
-                                            renderListItemLabel.call(this, item)}
+                                            renderListItemLabel.call(this, item.option)}
                                         <ListItemMeta className={listItemMetaClassName}>
                                             {renderListItemOptions &&
-                                                renderListItemOptions.call(this, item)}
+                                                renderListItemOptions.call(this, item.option)}
                                             <IconButton
                                                 icon={<DeleteIcon />}
                                                 className={iconButtonClassName}

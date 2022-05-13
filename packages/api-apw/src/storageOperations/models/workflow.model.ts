@@ -69,9 +69,9 @@ export const stepTypeField = () =>
         ]
     });
 
-export const stepSlugField = () =>
+export const stepIdField = () =>
     createModelField({
-        label: "Slug",
+        label: "Id",
         type: "text",
         parent: "workflow steps",
         validation: [
@@ -208,36 +208,35 @@ const applicationField = () =>
 interface CreateWorkflowModelDefinitionParams {
     reviewerModelId: string;
 }
+
 export const createWorkflowModelDefinition = ({
     reviewerModelId
-}: CreateWorkflowModelDefinitionParams): WorkflowModelDefinition => {
-    return {
-        name: "APW - Workflow",
-        /**
-         * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.
-         */
-        modelId: "apwWorkflowModelDefinition",
-        layout: [["workflow_title"], ["workflow_steps"], ["workflow_scope"], ["workflow_app"]],
-        titleFieldId: "title",
-        description: null,
-        fields: [
-            titleField(),
-            stepsField([
-                stepTitleField(),
-                stepTypeField(),
-                stepSlugField(),
-                stepReviewersField(reviewerModelId)
-            ]),
-            scopeField([
-                scopeTypeField(),
-                scopeDataField([
-                    scopeDataPbCategories(),
-                    scopeDataPbPages(),
-                    scopeDataCmsModels(),
-                    scopeDataCmsEntries()
-                ])
-            ]),
-            applicationField()
-        ]
-    };
-};
+}: CreateWorkflowModelDefinitionParams): WorkflowModelDefinition => ({
+    name: "APW - Workflow",
+    /**
+     * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.
+     */
+    modelId: "apwWorkflowModelDefinition",
+    layout: [["workflow_title"], ["workflow_steps"], ["workflow_scope"], ["workflow_app"]],
+    titleFieldId: "title",
+    description: "",
+    fields: [
+        titleField(),
+        stepsField([
+            stepTitleField(),
+            stepTypeField(),
+            stepIdField(),
+            stepReviewersField(reviewerModelId)
+        ]),
+        scopeField([
+            scopeTypeField(),
+            scopeDataField([
+                scopeDataPbCategories(),
+                scopeDataPbPages(),
+                scopeDataCmsModels(),
+                scopeDataCmsEntries()
+            ])
+        ]),
+        applicationField()
+    ]
+});

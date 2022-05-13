@@ -23,7 +23,9 @@ const baseGroup = new CmsGroupPlugin({
     tenant: "root",
     locale: "en-US",
     id: "group",
-    slug: "group"
+    slug: "group",
+    description: "",
+    icon: ""
 });
 
 const biography = crypto.randomBytes(65536).toString("hex");
@@ -76,7 +78,7 @@ export const createPersonModel = (): CmsModel => {
             id: baseGroup.contentModelGroup.id,
             name: baseGroup.contentModelGroup.name
         },
-        modelId: "personModel",
+        modelId: "personEntriesModel",
         locale: "en-US",
         tenant: "root",
         titleFieldId: personModelFields.name.id,
@@ -84,6 +86,7 @@ export const createPersonModel = (): CmsModel => {
         layout: Object.values(personModelFields).map(field => {
             return [field.id];
         }),
+        description: "",
         webinyVersion
     };
 };
@@ -150,8 +153,7 @@ export const createPersonEntries = async (
 
         const entryResult = await storageOperations.entries.create(personModel, {
             entry,
-            storageEntry: entry,
-            input: {} as any
+            storageEntry: entry
         });
 
         entries.push(entryResult);
@@ -185,8 +187,7 @@ export const createPersonEntries = async (
 
             const entryRevisionResult = await storageOperations.entries.create(personModel, {
                 entry: revision,
-                storageEntry: revision,
-                input: {} as any
+                storageEntry: revision
             });
             entries.push(entryRevisionResult);
             /**
@@ -215,4 +216,20 @@ export const createPersonEntries = async (
         result[entry.entryId].revisions.push(entry);
     }
     return result;
+};
+
+interface DeletePersonModelParams {
+    storageOperations: HeadlessCmsStorageOperations;
+}
+export const deletePersonModel = async (params: DeletePersonModelParams) => {
+    const { storageOperations } = params;
+    try {
+        await storageOperations.models.delete({
+            model: createPersonModel()
+        });
+    } catch (ex) {
+        console.log("Trying to delete person model... failed...");
+        console.log(ex.message);
+        console.log(JSON.stringify(ex));
+    }
 };

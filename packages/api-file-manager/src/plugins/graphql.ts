@@ -122,8 +122,16 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 tag: String
                 tag_in: [String!]
                 tag_and_in: [String!]
+                tag_startsWith: String
+                tag_not_startsWith: String
                 id_in: [ID!]
                 id: ID
+                createdBy: ID
+            }
+
+            input TagWhereInput {
+                tag_startsWith: String
+                tag_not_startsWith: String
             }
 
             type FmQuery {
@@ -139,7 +147,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     where: FileWhereInput
                 ): FileListResponse
 
-                listTags: [String]
+                listTags(where: TagWhereInput): [String]
 
                 # Get installed version
                 version: String
@@ -211,8 +219,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 async version(_, __, context) {
-                    const { i18nContent, tenancy, fileManager } = context;
-                    if (!tenancy.getCurrentTenant() || !i18nContent.getCurrentLocale()) {
+                    const { i18n, tenancy, fileManager } = context;
+                    if (!tenancy.getCurrentTenant() || !i18n.getContentLocale()) {
                         return null;
                     }
 

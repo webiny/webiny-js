@@ -14,13 +14,13 @@ import { createEntryEntity } from "~/definitions/entry";
 import { createEntryElasticsearchEntity } from "~/definitions/entryElasticsearch";
 import { createSystemEntity } from "~/definitions/system";
 import { createSettingsEntity } from "~/definitions/settings";
-import { HeadlessCms } from "@webiny/api-headless-cms/types";
-import { createElasticsearchIndexTemplate } from "~/operations/system/createElasticsearchIndexTemplate";
+import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
-import { base as baseElasticsearchIndexTemplate } from "~/elasticsearch/templates/base";
+import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
+import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -29,7 +29,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         esTable,
         documentClient,
         elasticsearch,
-        plugins: customPlugins,
+        plugins: userPlugins,
         modelFieldToGraphQLPlugins
     } = params;
 
@@ -79,7 +79,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * User defined custom plugins.
          */
-        ...(customPlugins || []),
+        ...(userPlugins || []),
         /**
          * Plugins of type CmsModelFieldToGraphQLPlugin.
          */
@@ -105,27 +105,47 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          */
         elasticsearchPlugins(),
         /**
-         * Base index template plugin.
+         * Built-in Elasticsearch index templates.
          */
-        baseElasticsearchIndexTemplate
+        elasticsearchIndexPlugins()
     ]);
 
     return {
-        init: async (cms: HeadlessCms) => {
-            cms.onBeforeSystemInstall.subscribe(async () => {
-                await createElasticsearchIndexTemplate({
+        beforeInit: async context => {
+            context.plugins.register([
+                /**
+                 * Field plugins for DynamoDB.
+                 * We must pass them to the base application.
+                 */
+                dynamoDbPlugins()
+            ]);
+        },
+        init: async context => {
+            /**
+             * We need to create indexes on before model create and on clone (create from).
+             * Other apps create indexes on locale creation.
+             */
+            context.cms.onBeforeModelCreate.subscribe(async ({ model }) => {
+                await createElasticsearchIndex({
                     elasticsearch,
+                    model,
                     plugins
                 });
             });
+            context.cms.onBeforeModelCreateFrom.subscribe(async ({ model }) => {
+                await createElasticsearchIndex({
+                    elasticsearch,
+                    model,
+                    plugins
+                });
+            });
+            context.cms.onAfterModelDelete.subscribe(async ({ model }) => {
+                await deleteElasticsearchIndex({
+                    elasticsearch,
+                    model
+                });
+            });
         },
-        plugins: [
-            /**
-             * Field plugins for DynamoDB.
-             * We must pass them to the base application.
-             */
-            dynamoDbPlugins()
-        ],
         getEntities: () => entities,
         getTable: () => tableInstance,
         getEsTable: () => tableElasticsearchInstance,

@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** use content locale to clone models ([f87270f](https://github.com/webiny/webiny-js/commit/f87270fa81fda2473d2dd5829078fc6622613208))
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** set field as title ([#2399](https://github.com/webiny/webiny-js/issues/2399)) ([ce3ae84](https://github.com/webiny/webiny-js/commit/ce3ae8470241bc61782c256f7676012bdfad2d9b))
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add transformations for the model name to be checked ([#2324](https://github.com/webiny/webiny-js/issues/2324)) ([e33bc4a](https://github.com/webiny/webiny-js/commit/e33bc4aaa9691b58e980652e8d462a2e97f615ef))
+
+
+### Features
+
+* **app-headless-cms:** add ContentEntries module with configurable filters ([3fb1ae5](https://github.com/webiny/webiny-js/commit/3fb1ae5fb3d46aadcf4e53b848189c53cedd0351))
+* **app-headless-cms:** allow filters/sorters to be defined per model ([f43bbfe](https://github.com/webiny/webiny-js/commit/f43bbfe56c32d6a45d20d3d6a659bf28dadff35d))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

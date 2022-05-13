@@ -24,6 +24,13 @@ const fileCData = {
     type: "image/png",
     tags: ["art", "sketch", "webiny", "file-c"]
 };
+const fileDData = {
+    key: "/files/filenameD.png",
+    name: "filenameD.png",
+    size: 123456,
+    type: "image/png",
+    tags: ["scope:apw:file-d", "scope:apw", "scope:apw:media"]
+};
 
 jest.setTimeout(100000);
 
@@ -239,7 +246,7 @@ describe("Files CRUD test", () => {
 
     it("should find files by tags", async () => {
         const [createResponse] = await createFiles({
-            data: [fileAData, fileBData, fileCData]
+            data: [fileAData, fileBData, fileCData, fileDData]
         });
         expect(createResponse).toEqual({
             data: {
@@ -254,9 +261,12 @@ describe("Files CRUD test", () => {
         await until(
             () => listFiles().then(([data]) => data),
             ({ data }: any) => {
-                return data.fileManager.listFiles.data.length === 3;
+                return data.fileManager.listFiles.data.length === 4;
             },
-            { name: "bulk list tags", tries: 10 }
+            {
+                name: "bulk list files",
+                tries: 10
+            }
         );
 
         const [response] = await listFiles({
@@ -287,11 +297,36 @@ describe("Files CRUD test", () => {
                 }
             }
         });
+
+        const [scopedListFilesResponse] = await listFiles({
+            tags: ["scope:apw"]
+        });
+
+        expect(scopedListFilesResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileDData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            cursor: expect.any(String),
+                            totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
     });
 
     it("should list all the tags from files", async () => {
         const [createResponse] = await createFiles({
-            data: [fileAData, fileBData, fileCData]
+            data: [fileAData, fileBData, fileCData, fileDData]
         });
         expect(createResponse).toEqual({
             data: {
@@ -305,16 +340,21 @@ describe("Files CRUD test", () => {
         });
 
         const tags = ["art", "file-a", "file-b", "file-c", "sketch", "webiny"];
+        const scopedTags = ["scope:apw", "scope:apw:file-d", "scope:apw:media"];
 
         await until(
-            () => listTags().then(([data]) => data),
+            () => listTags({ where: { tag_not_startsWith: "scope:apw" } }).then(([data]) => data),
             ({ data }: any) => {
                 return data.fileManager.listTags.length === tags.length;
             },
             { name: "bulk list all tags", tries: 10 }
         );
 
-        const [response] = await listTags();
+        const [response] = await listTags({
+            where: {
+                tag_not_startsWith: "scope:apw"
+            }
+        });
 
         expect(response).toEqual({
             data: {
@@ -323,16 +363,30 @@ describe("Files CRUD test", () => {
                 }
             }
         });
+
+        const [scopedListTagsResponse] = await listTags({
+            where: {
+                tag_startsWith: "scope:apw"
+            }
+        });
+
+        expect(scopedListTagsResponse).toEqual({
+            data: {
+                fileManager: {
+                    listTags: scopedTags
+                }
+            }
+        });
     });
 
     it("should find all files with given multiple tags - and operator", async () => {
         await createFiles({
-            data: [fileAData, fileBData, fileCData]
+            data: [fileAData, fileBData, fileCData, fileDData]
         });
         await until(
             () => listFiles().then(([data]) => data),
             ({ data }: any) => {
-                return data.fileManager.listFiles.data.length === 3;
+                return data.fileManager.listFiles.data.length === 4;
             },
             { name: "list all files" }
         );
@@ -388,6 +442,34 @@ describe("Files CRUD test", () => {
                         meta: {
                             hasMoreItems: false,
                             totalCount: 2,
+                            cursor: expect.any(String)
+                        }
+                    }
+                }
+            }
+        });
+
+        const [dResponse] = await listFiles({
+            where: {
+                tag_and_in: ["scope:apw:media", "scope:apw:file-d"],
+                tag_startsWith: "scope:apw"
+            }
+        });
+
+        expect(dResponse).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: [
+                            {
+                                ...fileDData,
+                                id: expect.any(String)
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
                             cursor: expect.any(String)
                         }
                     }

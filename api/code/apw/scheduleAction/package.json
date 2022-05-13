@@ -1,0 +1,16 @@
+{
+  "name": "api-apw-scheduler-schedule-action",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudwatch-events": "latest",
+    "@webiny/api-apw": "^5.26.0",
+    "@webiny/api-apw-scheduler-so-ddb": "^5.26.0",
+    "@webiny/cli": "^5.26.0",
+    "@webiny/handler-aws": "^5.26.0",
+    "@webiny/project-utils": "^5.26.0"
+  }
+}

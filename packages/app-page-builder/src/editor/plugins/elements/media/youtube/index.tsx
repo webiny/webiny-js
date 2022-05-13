@@ -9,7 +9,7 @@ import { ReactComponent as LogoIcon } from "./youtube-brands.svg";
 import Accordion from "../../../elementSettings/components/Accordion";
 import InputField from "../../../elementSettings/components/InputField";
 import { SimpleButton } from "../../../elementSettings/components/StyledComponents";
-import { PbEditorElementPluginArgs } from "../../../../../types";
+import { OnCreateActions, PbEditorElementPluginArgs } from "../../../../../types";
 import kebabCase from "lodash/kebabCase";
 
 const PreviewBox = styled("div")({
@@ -50,7 +50,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
                 typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
             create: args.create,
             settings: args.settings,
-            onCreate: "open-settings",
+            onCreate: OnCreateActions.OPEN_SETTINGS,
             oembed: {
                 renderEmbed(props) {
                     return <YoutubeEmbed {...props} />;
