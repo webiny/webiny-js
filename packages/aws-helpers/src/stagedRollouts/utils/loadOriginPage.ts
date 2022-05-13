@@ -1,7 +1,7 @@
 import { CloudFrontResponse } from "aws-lambda";
 import { get } from "https";
 import { load, Element } from "cheerio";
-import { parseSrcset, stringifySrcset, SrcSetDefinition } from "srcset";
+import { parse as parseSrcset, stringify as stringifySrcset, SrcSetDefinition } from "srcset";
 import { isHeaderBlacklisted } from "./headerBlacklist";
 import { logDebug } from "./log";
 
