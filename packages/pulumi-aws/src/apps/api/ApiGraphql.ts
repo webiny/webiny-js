@@ -68,7 +68,7 @@ export const ApiGraphql = defineAppModule({
                     .apply(key => key || "SK"),
                 item: pulumi.interpolate`{
               "PK": {"S": "APW#SETTINGS"},
-              "SK": {"S": "A"},
+              "SK": {"S": "${app.ctx.variant || "A"}"},
               "mainGraphqlFunctionArn": {"S": "${graphql.output.arn}"},
               "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
               "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}

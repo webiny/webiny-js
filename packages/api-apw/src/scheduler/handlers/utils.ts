@@ -126,11 +126,13 @@ export interface ApwSettings {
 }
 
 export const getApwSettings = async (): Promise<ApwSettings> => {
+    const variant = process.env.STAGED_ROLLOUTS_VARIANT;
+
     const params = {
         TableName: process.env.DB_TABLE as string,
         Key: {
             PK: `APW#SETTINGS`,
-            SK: "A"
+            SK: variant || "A"
         }
     };
 
