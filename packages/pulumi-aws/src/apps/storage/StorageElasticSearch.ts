@@ -4,6 +4,7 @@ import * as aws from "@pulumi/aws";
 import { defineAppModule, PulumiApp } from "@webiny/pulumi-sdk";
 
 import { getAwsAccountId } from "../awsUtils";
+import { StorageVpc } from "./StorageVpc";
 
 export interface ElasticSearchParams {
     protect: boolean;
@@ -14,6 +15,8 @@ export const ElasticSearch = defineAppModule({
     config(app, params: ElasticSearchParams) {
         const domainName = "webiny-js";
         const accountId = getAwsAccountId(app);
+
+        const vpc = app.getModule(StorageVpc, { optional: true });
 
         const domain = app.addResource(aws.elasticsearch.Domain, {
             name: domainName,
@@ -27,11 +30,12 @@ export const ElasticSearch = defineAppModule({
                         availabilityZoneCount: 2
                     }
                 },
-                // TODO: vpc is currently only in API
-                // vpcOptions: {
-                //     subnetIds: [vpc.subnets.private[0].id, vpc.subnets.private[1].id],
-                //     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-                // },
+                vpcOptions: vpc
+                    ? {
+                          subnetIds: vpc.subnets.private.map(s => s.output.id),
+                          securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
+                      }
+                    : undefined,
                 ebsOptions: {
                     ebsEnabled: true,
                     volumeSize: 10,
@@ -169,12 +173,13 @@ export const ElasticSearch = defineAppModule({
                     ".": new pulumi.asset.FileArchive(
                         path.join(app.ctx.appDir, "code/dynamoToElastic/build")
                     )
-                })
-                // TODO: vpc is currently only in API
-                // vpcConfig: {
-                //     subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                //     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-                // }
+                }),
+                vpcConfig: vpc
+                    ? {
+                          subnetIds: vpc.subnets.private.map(s => s.output.id),
+                          securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
+                      }
+                    : undefined
             }
         });
 
