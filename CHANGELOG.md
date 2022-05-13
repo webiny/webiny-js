@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** use content locale to clone models ([f87270f](https://github.com/webiny/webiny-js/commit/f87270fa81fda2473d2dd5829078fc6622613208))
+* **ui:** use a CSS variable instead of a hardcoded hex value ([fa52f89](https://github.com/webiny/webiny-js/commit/fa52f897aa0fda6a8c132e2406b35035bc186ce9))
+
+
+
+
+
 # [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
 
 
