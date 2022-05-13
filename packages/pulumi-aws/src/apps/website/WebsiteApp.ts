@@ -14,20 +14,31 @@ import { createPublicAppBucket } from "../createAppBucket";
 import { websiteUpload } from "./WebsiteUpload";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
-import { getStorageOutput } from "../getStorageOutput";
-import { getAwsAccountId } from "../awsUtils";
+import { StorageOutput, VpcConfig } from "../common";
 import { websiteRender } from "./WebsiteHookRender";
 
 export interface WebsiteAppConfig {
     /** Custom domain configuration */
     domain?(ctx: ApplicationContext): CustomDomainParams;
+
+    /**
+     * Enables or disables VPC for the API.
+     * For VPC to work you also have to enable it in the `storage` application.
+     * @param ctx Application context
+     */
+    vpc?(ctx: ApplicationContext): boolean | undefined;
 }
 
 export const WebsiteApp = defineApp({
     name: "Website",
     config(app, config: WebsiteAppConfig) {
-        const storage = getStorageOutput(app);
-        const awsAccountId = getAwsAccountId(app);
+        // Register storage output as a module available for all other modules
+        const storage = app.addModule(StorageOutput);
+
+        // Register VPC config module to be available to other modules
+        app.addModule(VpcConfig, {
+            enabled: config?.vpc?.(app.ctx)
+        });
 
         const appBucket = createPublicAppBucket(app, "app");
 
@@ -133,24 +144,18 @@ export const WebsiteApp = defineApp({
             }
         });
 
-        const envVariables = {
-            // Among other things, this determines the amount of information we reveal on runtime errors.
-            // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
-            DEBUG: String(process.env.DEBUG),
-            STAGED_ROLLOUTS_VARIANT: app.ctx.variant || "",
-            DB_TABLE: storage.primaryDynamodbTableName,
-            APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
-            DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
-            DELIVERY_CLOUDFRONT: deliveryCloudfront.output.id,
-            DELIVERY_URL: pulumi.interpolate`https://${deliveryCloudfront.output.domainName}`
-        };
-
         const prerendering = createPrerenderingService(app, {
-            awsAccountId,
-            envVariables,
-            primaryDynamodbTableArn: storage.primaryDynamodbTableArn,
-            fileManagerBucketId: storage.fileManagerBucketId,
-            eventBusArn: storage.eventBusArn
+            env: {
+                // Among other things, this determines the amount of information we reveal on runtime errors.
+                // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
+                DEBUG: String(process.env.DEBUG),
+            STAGED_ROLLOUTS_VARIANT: app.ctx.variant || "",
+                DB_TABLE: storage.primaryDynamodbTableName,
+                APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
+                DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
+                DELIVERY_CLOUDFRONT: deliveryCloudfront.output.id,
+                DELIVERY_URL: pulumi.interpolate`https://${deliveryCloudfront.output.domainName}`
+            }
         });
 
         const domain = config.domain?.(app.ctx);
