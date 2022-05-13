@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.26.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.1...v5.26.0-beta.2) (2022-05-13)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.26.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.0...v5.26.0-beta.1) (2022-05-12)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.26.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.1...v5.26.0-beta.0) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [5.25.1-beta.1](https://github.com/webiny/webiny-js/compare/v5.25.1-beta.0...v5.25.1-beta.1) (2022-05-11)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [5.25.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.25.0...v5.25.1-beta.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* correct `value` prop assignment ([b24a6c8](https://github.com/webiny/webiny-js/commit/b24a6c8e2f572204dc54ff9eaf383e2efbe4c368))
+* format with prettier ([9efe240](https://github.com/webiny/webiny-js/commit/9efe240bb1c1b7f3dd66c9c27182ef7c4b0ac116))
+* **app-admin:** add classname to SimpleFormFooter props ([f4fcdbd](https://github.com/webiny/webiny-js/commit/f4fcdbd5570a8d836e866f40d47bc073b213cc42))
+* **app-admin:** add own prop to FileManager ([2af2257](https://github.com/webiny/webiny-js/commit/2af225797eacd36a78e7853a646857af0b682d8f))
+* **app-admin:** add scope prop in FileManager ([997b6ee](https://github.com/webiny/webiny-js/commit/997b6eefd439e3ac78ef61bae1f47c493696a3f4))
+* **app-admin:** add tags prop in FileManager ([4e0212f](https://github.com/webiny/webiny-js/commit/4e0212f3248e4261d263c546bf6645d4aa3657e7))
+* **app-admin:** export leftPanel styles ([efa2447](https://github.com/webiny/webiny-js/commit/efa2447ae366d1268fe1e6912fff9c1b3e6708be))
+
+
+### Features
+
+* **app-admin:** open thankyou page on new install or upgrade ([#2355](https://github.com/webiny/webiny-js/issues/2355)) ([14b5dda](https://github.com/webiny/webiny-js/commit/14b5dda51085525cb5b2e18ec4819c563a24f671))
+* **app-admin:** send telemetry to GA on first install ([#2365](https://github.com/webiny/webiny-js/issues/2365)) ([46d72f3](https://github.com/webiny/webiny-js/commit/46d72f3cb5ce60988eac6065086ce4acf5c365bc))
+
+
+
+
+
 # [5.25.0](https://github.com/webiny/webiny-js/compare/v5.25.0-beta.6...v5.25.0) (2022-04-04)
 
 **Note:** Version bump only for package @webiny/app-admin

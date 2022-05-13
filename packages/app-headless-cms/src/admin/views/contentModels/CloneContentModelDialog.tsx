@@ -74,7 +74,7 @@ const CloneContentModelDialog: React.FC<Props> = ({ open, onClose, contentModel,
     const { history } = useRouter();
     const { getLocales, getCurrentLocale, setCurrentLocale } = useI18N();
 
-    const currentLocale = getCurrentLocale();
+    const currentLocale = getCurrentLocale("content");
     const [locale, setLocale] = useState<string>(currentLocale || "");
     const [groups, setGroups] = useState<CmsGroupOption[] | null>(null);
 

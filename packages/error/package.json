@@ -1,6 +1,6 @@
 {
   "name": "@webiny/error",
-  "version": "5.25.0",
+  "version": "5.26.0",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {
@@ -16,8 +16,8 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
-    "@webiny/cli": "^5.25.0",
-    "@webiny/project-utils": "^5.25.0",
+    "@webiny/cli": "^5.26.0",
+    "@webiny/project-utils": "^5.26.0",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
   },
