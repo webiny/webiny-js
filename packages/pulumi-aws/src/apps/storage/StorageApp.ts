@@ -9,6 +9,7 @@ import { AppInput, getAppInput } from "../utils";
 import { StorageCognito } from "./StorageCognito";
 import { StorageDynamo } from "./StorageDynamo";
 import { ElasticSearch } from "./StorageElasticSearch";
+import { StorageEventBus } from "./StorageEventBus";
 import { StorageFileManger } from "./StorageFileManager";
 
 export interface StorageAppConfig extends Partial<ApplicationHooks> {
@@ -36,6 +37,9 @@ export const StorageApp = defineApp({
             useEmailAsUsername: legacyConfig.useEmailAsUsername ?? false
         });
 
+        // Setup event bus
+        const eventBus = app.addModule(StorageEventBus);
+
         // Setup file storage bucket
         const fileManagerBucket = app.addModule(StorageFileManger, { protect });
 
@@ -52,13 +56,15 @@ export const StorageApp = defineApp({
             cognitoUserPoolId: cognito.userPool.output.id,
             cognitoUserPoolArn: cognito.userPool.output.arn,
             cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
-            cognitoAppClientId: cognito.userPoolClient.output.id
+            cognitoAppClientId: cognito.userPoolClient.output.id,
+            eventBusArn: eventBus.output.arn
         });
 
         return {
             dynamoDbTable,
             ...cognito,
             fileManagerBucket,
+            eventBus,
             elasticSearch
         };
     }

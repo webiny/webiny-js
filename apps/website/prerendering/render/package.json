@@ -1,5 +1,5 @@
 {
-  "name": "api-prerendering-service-queue-process",
+  "name": "website-prerendering-service-render",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn webiny run build",
@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@webiny/api-prerendering-service": "^5.25.0",
+    "@webiny/api-prerendering-service-aws": "^5.25.0",
     "@webiny/api-prerendering-service-so-ddb": "^5.25.0",
     "@webiny/cli": "^5.25.0",
     "@webiny/handler-aws": "^5.25.0",

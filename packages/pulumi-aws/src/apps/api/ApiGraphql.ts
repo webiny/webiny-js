@@ -14,6 +14,7 @@ interface GraphqlParams {
     primaryDynamodbTableRangeKey: pulumi.Input<string>;
     fileManagerBucketId: pulumi.Input<string>;
     cognitoUserPoolArn: pulumi.Input<string>;
+    eventBusArn: pulumi.Input<string>;
     apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
     apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
     awsAccountId: pulumi.Input<string>;
@@ -195,7 +196,13 @@ function createGraphqlLambdaPolicy(app: PulumiApp, params: GraphqlParams) {
                         Sid: "PermissionForCognitoIdp",
                         Effect: "Allow",
                         Action: "cognito-idp:*",
-                        Resource: pulumi.interpolate`${params.cognitoUserPoolArn}`
+                        Resource: params.cognitoUserPoolArn
+                    },
+                    {
+                        Sid: "PermissionForEventBus",
+                        Effect: "Allow",
+                        Action: "events:PutEvents",
+                        Resource: params.eventBusArn
                     },
                     // Attach permissions for elastic search domain as well (if ES is enabled).
                     ...(params.elasticsearchDomainArn
