@@ -1,7 +1,11 @@
 import { get } from "https";
 import { CloudFrontRequestEvent } from "~/lambdaEdge";
-import { configPath } from "./common";
 import { logDebug } from "./log";
+
+// Config file has a fixed URL within CDN, so it can be properly cached.
+// This way we achieve better performance, because CDN does not have to call WCP API for config every time,
+// but it can use it's own cache for a lookup.
+const configPath = "/_config";
 
 // Config is locally cached within live lambda for a short time (1 minute).
 // Config must be cached per domain.

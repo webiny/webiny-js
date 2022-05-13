@@ -39,12 +39,20 @@ export function createLambdas(app: PulumiApp) {
         const viewerResponse = createCloudfrontFunction("viewerResponse");
         const originRequest = createLambdaEdge("originRequest", awsUsEast1, role.output);
         const adminOriginRequest = createLambdaEdge("adminOriginRequest", awsUsEast1, role.output);
+        // This lambda is responsible for fetching traffic splitting config from WCP
+        // and caching it inside CloudFront cache.
+        const configOriginRequest = createLambdaEdge(
+            "configOriginRequest",
+            awsUsEast1,
+            role.output
+        );
 
         return {
             viewerRequest,
             viewerResponse,
             originRequest,
-            adminOriginRequest
+            adminOriginRequest,
+            configOriginRequest
         };
     });
 
