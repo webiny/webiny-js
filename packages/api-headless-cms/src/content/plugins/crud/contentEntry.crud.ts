@@ -660,10 +660,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             utils.checkOwnership(context, permission, originalEntry);
 
-            const latestEntry = latestStorageEntry
-                ? await entryFromStorageTransform(context, model, latestStorageEntry)
-                : null;
-
             const identity = context.security.getIdentity();
 
             const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
@@ -700,9 +696,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
                 const result = await storageOperations.entries.createRevisionFrom(model, {
                     entry,
-                    storageEntry,
-                    latestEntry,
-                    latestStorageEntry
+                    storageEntry
                 });
 
                 await onAfterEntryCreateRevision.publish({

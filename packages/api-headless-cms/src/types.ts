@@ -2024,14 +2024,6 @@ export interface CmsEntryStorageOperationsCreateRevisionFromParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
     /**
-     * Latest entry, used to calculate the new version.
-     */
-    latestEntry: CmsEntry | null;
-    /**
-     * Latest entry, used to calculate the new version, directly from storage, with transformations.
-     */
-    latestStorageEntry: T | null;
-    /**
      * Real entry, with no transformations on it.
      */
     entry: CmsEntry;
