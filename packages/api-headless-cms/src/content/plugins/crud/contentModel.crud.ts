@@ -15,7 +15,8 @@ import {
     AfterModelCreateFromTopicParams,
     CmsModelCreateInput,
     CmsModelUpdateInput,
-    CmsModelCreateFromInput
+    CmsModelCreateFromInput,
+    GetEntryManagerCallable
 } from "~/types";
 import * as utils from "~/utils";
 import DataLoader from "dataloader";
@@ -41,6 +42,7 @@ import { assignAfterModelCreate } from "./contentModel/afterCreate";
 import { assignAfterModelUpdate } from "./contentModel/afterUpdate";
 import { assignAfterModelDelete } from "./contentModel/afterDelete";
 import { assignAfterModelCreateFrom } from "~/content/plugins/crud/contentModel/afterCreateFrom";
+import { CmsModelProxy } from "~/content/plugins/CmsModelProxy";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -51,6 +53,12 @@ export interface CreateModelsCrudParams {
 }
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
     const { getTenant, getIdentity, getLocale, storageOperations, context } = params;
+
+    const createModelProxy = (model: CmsModel): CmsModelProxy => {
+        return new CmsModelProxy({
+            model
+        });
+    };
 
     const loaders = {
         listModels: new DataLoader(async () => {
@@ -177,9 +185,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return model;
     };
 
-    const getModelManager: CmsModelContext["getModelManager"] = async (
-        target
-    ): Promise<CmsModelManager> => {
+    const getModelManager: GetEntryManagerCallable = async (target): Promise<CmsModelManager> => {
         const modelId = typeof target === "string" ? target : target.modelId;
         if (managers.has(modelId)) {
             return managers.get(modelId) as CmsModelManager;
@@ -245,6 +251,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         onAfterModelUpdate,
         onBeforeModelDelete,
         onAfterModelDelete,
+        createModelProxy,
         clearModelsCache,
         getModel,
         listModels,

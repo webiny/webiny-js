@@ -13,6 +13,7 @@ import { DbContext } from "@webiny/handler-db/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { Topic } from "@webiny/pubsub/types";
+import { CmsModelProxy } from "~/content/plugins/CmsModelProxy";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 export interface HeadlessCms
@@ -1350,6 +1351,13 @@ export interface CmsModelUpdateDirectParams {
 }
 
 /**
+ * Cms Model Manager.
+ * @category CmsModel
+ */
+export interface GetEntryManagerCallable {
+    (model: CmsModel | string): Promise<CmsModelManager>;
+}
+/**
  * Cms Model in the context.
  *
  * @category Context
@@ -1392,8 +1400,8 @@ export interface CmsModelContext {
      *
      * @deprecated use the getEntryManager() method instead
      */
-    getModelManager: (model: CmsModel | string) => Promise<CmsModelManager>;
-    getEntryManager: (model: CmsModel | string) => Promise<CmsModelManager>;
+    getModelManager: GetEntryManagerCallable;
+    getEntryManager: GetEntryManagerCallable;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
@@ -1405,6 +1413,11 @@ export interface CmsModelContext {
      * Clear all the model caches.
      */
     clearModelsCache: () => void;
+    /**
+     * A helper to create model proxy without knowing about CmsModelProxy class.
+     * It is required for entry storage operations.
+     */
+    createModelProxy: (model: CmsModel) => CmsModelProxy;
     /**
      * Events.
      */
