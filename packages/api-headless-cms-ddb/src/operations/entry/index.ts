@@ -150,7 +150,7 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams
     ) => {
-        const { entry, storageEntry, latestEntry } = params;
+        const { entry, storageEntry } = params;
 
         const partitionKey = createPartitionKey(entry);
         /**
@@ -190,7 +190,6 @@ export const createEntriesStorageOperations = (
                 ex.code || "CREATE_REVISION_ERROR",
                 {
                     error: ex,
-                    latestEntry,
                     entry,
                     storageEntry
                 }
