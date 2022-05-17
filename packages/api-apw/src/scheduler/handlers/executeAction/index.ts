@@ -48,7 +48,7 @@ const executeActionLambda = ({
                     locale: args.locale,
                     datetime_startsWith: getIsoStringTillMinutes(datetime)
                 },
-                sort: "datetime_ASC",
+                sort: ["datetime_ASC"],
                 limit: 1000
             });
 
