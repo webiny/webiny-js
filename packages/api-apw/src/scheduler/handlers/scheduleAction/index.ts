@@ -82,7 +82,7 @@ const scheduleActionLambda = ({
                     tenant: args.tenant,
                     locale: args.locale
                 },
-                sort: "datetime_ASC",
+                sort: ["datetime_ASC"],
                 limit: 1
             });
 
