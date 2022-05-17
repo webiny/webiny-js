@@ -1,18 +1,18 @@
-@use "~@material/top-app-bar/_mixins.scss" as topAppBar;
-@use "~@material/elevation/mixins" as elevation;
-@use "~@material/button/mixins" as button;
-@use "~@material/icon-button/mixins" as iconButton;
-@use "~@material/drawer/mixins" as drawer;
-@use "~@material/tab-bar/mixins" as tabBar;
-@use "~@material/tab/mixins" as tab;
-@use "~@material/tab-indicator/mixins" as tabIndicator;
-@use "~@material/list/mixins" as list;
-@use "~@material/switch/mixins" as switch;
-@use "~@material/textfield/mixins" as textfield;
-@use "~@material/select/mixins" as select;
-@use "~@material/checkbox/mixins" as checkbox;
-@use "~@material/radio/mixins" as radio;
-@use "~@material/snackbar/mixins" as snackbar;
+@import "@material/top-app-bar/_mixins.scss" as topAppBar;
+@import "@material/elevation/mixins" as elevation;
+@import "@material/button/mixins" as button;
+@import "@material/icon-button/mixins" as iconButton;
+@import "@material/drawer/mixins" as drawer;
+@import "@material/tab-bar/mixins" as tabBar;
+@import "@material/tab/mixins" as tab;
+@import "@material/tab-indicator/mixins" as tabIndicator;
+@import "@material/list/mixins" as list;
+@import "@material/switch/mixins" as switch;
+@import "@material/textfield/mixins" as textfield;
+@import "@material/select/mixins" as select;
+@import "@material/checkbox/mixins" as checkbox;
+@import "@material/radio/mixins" as radio;
+@import "@material/snackbar/mixins" as snackbar;
 
 // top app bar should use theme-surface as the fill color
 .mdc-top-app-bar {
