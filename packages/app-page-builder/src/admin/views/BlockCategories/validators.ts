@@ -1,5 +1,5 @@
 export const blockCategorySlugValidator = (value: string): boolean => {
-    if (value.match(/^[a-z]+(\-?[a-z]+)*$/)) {
+    if (value.match(/^[a-z]+(\-[a-z]+)*$/)) {
         return true;
     }
 
