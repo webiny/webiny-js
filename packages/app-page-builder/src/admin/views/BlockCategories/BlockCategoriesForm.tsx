@@ -13,6 +13,7 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { validation } from "@webiny/validation";
+import { blockCategorySlugValidator } from "./validators";
 import {
     GET_BLOCK_CATEGORY,
     CREATE_BLOCK_CATEGORY,
@@ -214,7 +215,13 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="slug" validators={validation.create("required")}>
+                                <Bind
+                                    name="slug"
+                                    validators={[
+                                        validation.create("required"),
+                                        blockCategorySlugValidator
+                                    ]}
+                                >
                                     <Input disabled={data.createdOn} label={t`Slug`} />
                                 </Bind>
                             </Cell>
