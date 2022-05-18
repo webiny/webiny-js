@@ -7570,20 +7570,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/card@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@material/card@npm:3.2.0"
-  dependencies:
-    "@material/elevation": ^5.1.0
-    "@material/feature-targeting": ^5.1.0
-    "@material/ripple": ^5.1.0
-    "@material/rtl": ^5.1.0
-    "@material/shape": ^5.1.0
-    "@material/theme": ^5.1.0
-  checksum: 8b9c903e53f22e09680103dbb0f1bf2115656d6d1f4ae61d203f26effab3aca1ea584c100ec8a41c0815b2193214650fc1122aded07b4dc4449d493372f311e1
-  languageName: node
-  linkType: hard
-
 "@material/card@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/card@npm:5.1.0"
@@ -7720,26 +7706,6 @@ __metadata:
   version: 5.1.0
   resolution: "@material/density@npm:5.1.0"
   checksum: c7ff64a67d3a9475df597d8f474c304096d060318ec84f2fe3c1b04e90b695b6e5a11081cf3dab59945c309cfda4db7b52dd16a39f413e4057f514f932b96541
-  languageName: node
-  linkType: hard
-
-"@material/dialog@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@material/dialog@npm:3.2.0"
-  dependencies:
-    "@material/animation": ^3.1.0
-    "@material/base": ^3.1.0
-    "@material/dom": ^3.1.0
-    "@material/elevation": ^3.1.0
-    "@material/feature-targeting": ^3.1.0
-    "@material/ripple": ^3.2.0
-    "@material/rtl": ^3.2.0
-    "@material/shape": ^3.1.0
-    "@material/theme": ^3.1.0
-    "@material/typography": ^3.1.0
-    focus-trap: ^5.0.0
-    tslib: ^1.9.3
-  checksum: e8ed3dfce81a0a720009336d34572f4b1ca198f8a94ee3de37686aa25a348112923d5bd24940927c1318cf5060672df54f8e1175f307685e5cad24b471a41fc0
   languageName: node
   linkType: hard
 
@@ -7895,31 +7861,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/feature-targeting@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@material/feature-targeting@npm:3.1.0"
-  checksum: 2a56b468b889a7152014124197821d901d156a2bc21c4b6bed86fc8a3b4a918188c8e9f842ddf7915e270b768e7eaade77efd09211fc005c89276e4c8a777357
-  languageName: node
-  linkType: hard
-
 "@material/feature-targeting@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/feature-targeting@npm:5.1.0"
   checksum: 7e5699ed3c8afac91fc83764e112aeb7bb089ac2f144b016bfb965542a480bb1747a2278bcea22cfcd5c2011e6b486f1b56197b0656fef73ceaf832fd62c09c3
-  languageName: node
-  linkType: hard
-
-"@material/floating-label@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@material/floating-label@npm:3.2.0"
-  dependencies:
-    "@material/animation": ^3.1.0
-    "@material/base": ^3.1.0
-    "@material/rtl": ^3.2.0
-    "@material/theme": ^3.1.0
-    "@material/typography": ^3.1.0
-    tslib: ^1.9.3
-  checksum: 7ec647350f859277a68bf41f69c880aad553dc20fd715a7948d79616a14a9fe5f06322d4310317e305e5e69d4b95e02cb1cab215ceb4c3b4baecb40ce1f2f473
   languageName: node
   linkType: hard
 
@@ -8012,18 +7957,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/image-list@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@material/image-list@npm:3.1.0"
-  dependencies:
-    "@material/feature-targeting": ^5.1.0
-    "@material/shape": ^5.1.0
-    "@material/theme": ^5.1.0
-    "@material/typography": ^5.1.0
-  checksum: 0ffab1ef00add99890337a9d4ab82b6d3c944945d7f64c33b81b6f2cfa76c5a592e3a7bf9b7b8bd6e762177be8eec0752024c9cb70cc2d381c8ec7123f1cfe34
-  languageName: node
-  linkType: hard
-
 "@material/image-list@npm:^5.1.0":
   version: 5.1.0
   resolution: "@material/image-list@npm:5.1.0"
@@ -8066,20 +7999,6 @@ __metadata:
     "@material/theme": ^5.1.0
     tslib: ^1.9.3
   checksum: 795710554dce077693f1b9968a60a5fab43e6ec333ec348375bc0e700a135b569f87016da818460361f24290cb4aef1a47a003f1fdc9801278a1e7ea8c3e5371
-  languageName: node
-  linkType: hard
-
-"@material/linear-progress@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@material/linear-progress@npm:3.2.0"
-  dependencies:
-    "@material/animation": ^5.1.0
-    "@material/base": ^5.1.0
-    "@material/feature-targeting": ^5.1.0
-    "@material/progress-indicator": ^5.1.0
-    "@material/theme": ^5.1.0
-    tslib: ^1.9.3
-  checksum: fbe8a963d7ea6ea93a836e2756d1aa412a1d714713403be98261cbad8c38b3184f15532251adfdf31eb7ad06c4d11124293deaa1e8e3cc91129d112862596925
   languageName: node
   linkType: hard
 
@@ -8293,13 +8212,6 @@ __metadata:
     "@material/theme": ^5.1.0
     tslib: ^1.9.3
   checksum: 453901acc3ecd1f4b09a2fd0c022c1a3e01226275b1249936c33d411dd1855b51deefa9909367b49ce33fdb0cdb4a30a3d5805e14b55728f6f0dad8a600a40d1
-  languageName: node
-  linkType: hard
-
-"@material/rtl@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@material/rtl@npm:3.2.0"
-  checksum: 9db6c26454ed323089699fbf150f179ddbb3564dae52292fcd6a12c56bc206b2ebf7a4a19b0e9bb06e0a63574d2c1ba4e597b0937b786c3fd5fd08c34029b845
   languageName: node
   linkType: hard
 
@@ -16499,6 +16411,7 @@ __metadata:
     load-script: ^1.0.0
     lodash: ^4.17.11
     material-components-web: ^5.1.0
+    mutation-observer: ^1.0.3
     ncp: ^2.0.0
     nprogress: ^0.2.0
     nuka-carousel: 4.7.1
