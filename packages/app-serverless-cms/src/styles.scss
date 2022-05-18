@@ -1,9 +1,9 @@
 // Import admin app styles
-@import "@webiny/app-admin/styles.scss";
+@import "~@webiny/app-admin/styles.scss";
 //
 // Import `RichTextEditor` styles
-@import "@webiny/app-admin/components/RichTextEditor/styles.scss";
-@import "@webiny/app-admin/components/RichTextEditor/tools/header/styles.scss";
-@import "@webiny/app-admin/components/RichTextEditor/tools/paragraph/styles.scss";
-@import "@webiny/app-admin/components/RichTextEditor/tools/textColor/styles.scss";
-@import "@webiny/app-admin/components/RichTextEditor/tools/image/styles.scss";
+@import "~@webiny/app-admin/components/RichTextEditor/styles.scss";
+@import "~@webiny/app-admin/components/RichTextEditor/tools/header/styles.scss";
+@import "~@webiny/app-admin/components/RichTextEditor/tools/paragraph/styles.scss";
+@import "~@webiny/app-admin/components/RichTextEditor/tools/textColor/styles.scss";
+@import "~@webiny/app-admin/components/RichTextEditor/tools/image/styles.scss";
