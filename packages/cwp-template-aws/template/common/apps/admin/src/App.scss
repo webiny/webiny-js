@@ -14,7 +14,7 @@ $webiny-theme-light-caret-down: url("data:image/svg+xml,%3Csvg%20width%3D%2210px
 $webiny-theme-typography-font-family: "Source Sans Pro";
 
 // Import theme styles
-@import "theme/styles.scss";
+@import "~theme/styles.scss";
 
 // Import admin app styles
-@import "@webiny/app-serverless-cms/styles.scss";
+@import "~@webiny/app-serverless-cms/styles.scss";

@@ -1,39 +1,39 @@
-@import "@material/top-app-bar/_mixins.scss" as topAppBar;
-@import "@material/elevation/mixins" as elevation;
-@import "@material/button/mixins" as button;
-@import "@material/icon-button/mixins" as iconButton;
-@import "@material/drawer/mixins" as drawer;
-@import "@material/tab-bar/mixins" as tabBar;
-@import "@material/tab/mixins" as tab;
-@import "@material/tab-indicator/mixins" as tabIndicator;
-@import "@material/list/mixins" as list;
-@import "@material/switch/mixins" as switch;
-@import "@material/textfield/mixins" as textfield;
-@import "@material/select/mixins" as select;
-@import "@material/checkbox/mixins" as checkbox;
-@import "@material/radio/mixins" as radio;
-@import "@material/snackbar/mixins" as snackbar;
+@use "@material/top-app-bar/_mixins.scss" as topAppBar;
+@use "@material/elevation/mixins" as elevation;
+@use "@material/button/mixins" as button;
+@use "@material/icon-button/mixins" as iconButton;
+@use "@material/drawer/mixins" as drawer;
+@use "@material/tab-bar/mixins" as tabBar;
+@use "@material/tab/mixins" as tab;
+@use "@material/tab-indicator/mixins" as tabIndicator;
+@use "@material/list/mixins" as list;
+@use "@material/switch/mixins" as switch;
+@use "@material/textfield/mixins" as textfield;
+@use "@material/select/mixins" as select;
+@use "@material/checkbox/mixins" as checkbox;
+@use "@material/radio/mixins" as radio;
+@use "@material/snackbar/mixins" as snackbar;
 
 // top app bar should use theme-surface as the fill color
 .mdc-top-app-bar {
-  @include topAppBar.mdc-top-app-bar-fill-color($mdc-theme-surface);
+  @include topAppBar.fill-color($mdc-theme-surface);
 }
 
 .mdc-top-app-bar.primary {
-  @include topAppBar.mdc-top-app-bar-fill-color($mdc-theme-primary);
+  @include topAppBar.fill-color($mdc-theme-primary);
 }
 
 // elevation should use theme-surface as fill color so it can be used as surface
 .mdc-elevation--z1 {
-  @include elevation.mdc-elevation(1, $mdc-theme-on-surface);
+  @include elevation.elevation(1, $mdc-theme-on-surface);
 }
 
 .mdc-elevation--z2 {
-  @include elevation.mdc-elevation(2, $mdc-theme-on-surface);
+  @include elevation.elevation(2, $mdc-theme-on-surface);
 }
 
 .mdc-elevation--z3 {
-  @include elevation.mdc-elevation(3, $mdc-theme-on-surface);
+  @include elevation.elevation(3, $mdc-theme-on-surface);
 }
 
 .mdc-elevation--z1,
@@ -50,7 +50,7 @@
 
 // button styles
 .mdc-button {
-  @include button.mdc-button-shape-radius(2px);
+  @include button.shape-radius(2px);
   .mdc-button__label {
     display: flex;
     align-items: center;
@@ -60,17 +60,17 @@
 // set icon colors
 .mdc-icon,
 .mdc-icon-button {
-  @include iconButton.mdc-icon-button-ink-color($mdc-theme-text-secondary-on-background);
+  @include iconButton.ink-color($mdc-theme-text-secondary-on-background);
 }
 
 // drawer
 .mcd-drawer {
-  @include drawer.mdc-drawer-title-ink-color($mdc-theme-text-primary-on-background);
-  @include drawer.mdc-drawer-subtitle-ink-color($mdc-theme-text-primary-on-background);
-  @include drawer.mdc-drawer-item-icon-ink-color($mdc-theme-text-primary-on-background);
-  @include drawer.mdc-drawer-item-text-ink-color($mdc-theme-text-primary-on-background);
-  @include drawer.mdc-drawer-surface-fill-color($mdc-theme-surface);
-  @include drawer.mdc-drawer-item-shape-radius(0);
+  @include drawer.title-ink-color($mdc-theme-text-primary-on-background);
+  @include drawer.subtitle-ink-color($mdc-theme-text-primary-on-background);
+  @include drawer.item-icon-ink-color($mdc-theme-text-primary-on-background);
+  @include drawer.item-text-ink-color($mdc-theme-text-primary-on-background);
+  @include drawer.surface-fill-color($mdc-theme-surface);
+  @include drawer.item-shape-radius(0);
 }
 
 // fix for drawer positioning
@@ -90,31 +90,31 @@
 
 // tabs
 .mdc-tab-bar {
-  @include tabBar.mdc-tab-bar-width("100%");
+  @include tabBar.width("100%");
 
   .mdc-tab {
-    @include tab.mdc-tab-fixed-width("100px");
-    @include tab.mdc-tab-text-label-color($mdc-theme-text-primary-on-background);
-    @include tab.mdc-tab-icon-color($mdc-theme-text-primary-on-background);
+    @include tab.fixed-width("100px");
+    @include tab.text-label-color($mdc-theme-text-primary-on-background);
+    @include tab.icon-color($mdc-theme-text-primary-on-background);
 
     // fixes tab width
     flex: 1 0;
   }
 
   .mdc-tab-indicator {
-    @include tabIndicator.mdc-tab-indicator-underline-color($mdc-theme-primary);
+    @include tabIndicator.underline-color($mdc-theme-primary);
   }
 }
 
 // list
 .mdc-list {
-  @include list.mdc-list-item-primary-text-ink-color($mdc-theme-text-primary-on-background);
-  @include list.mdc-list-item-secondary-text-ink-color($mdc-theme-text-secondary-on-background);
-  @include list.mdc-list-item-graphic-ink-color($mdc-theme-text-secondary-on-background);
-  @include list.mdc-list-item-meta-ink-color($mdc-theme-text-secondary-on-background);
-  @include list.mdc-list-divider-color($mdc-theme-on-background);
-  @include list.mdc-list-group-subheader-ink-color($mdc-theme-text-primary-on-background);
-  @include list.mdc-list-item-shape-radius(0);
+  @include list.item-primary-text-ink-color($mdc-theme-text-primary-on-background);
+  @include list.item-secondary-text-ink-color($mdc-theme-text-secondary-on-background);
+  @include list.item-graphic-ink-color($mdc-theme-text-secondary-on-background);
+  @include list.item-meta-ink-color($mdc-theme-text-secondary-on-background);
+  @include list.divider-color($mdc-theme-on-background);
+  @include list.group-subheader-ink-color($mdc-theme-text-primary-on-background);
+  @include list.single-line-shape-radius(0);
 
   .mdc-list-item {
     color: $mdc-theme-text-primary-on-background;
@@ -139,7 +139,7 @@
 
 // switch
 .mdc-switch {
-  @include switch.mdc-switch-toggled-off-track-color($mdc-theme-on-surface);
+  @include switch.toggled-off-track-color($mdc-theme-on-surface);
   margin-left: 5px;
   margin-right: 10px;
 }
@@ -154,11 +154,11 @@ Fix the width of input components when inside grids
  */
 .mdc-text-field {
   width: 100%;
-  @include textfield.mdc-text-field-shape-radius(0);
-  @include textfield.mdc-text-field-textarea-shape-radius(0);
-  @include textfield.mdc-text-field-fill-color($mdc-theme-on-background);
-  @include textfield.mdc-text-field-label-color($mdc-theme-text-primary-on-background);
-  @include textfield.mdc-text-field-ink-color($mdc-theme-on-surface);
+  @include textfield.shape-radius(0);
+  @include textfield.textarea-shape-radius(0);
+  @include textfield.fill-color($mdc-theme-on-background);
+  @include textfield.label-color($mdc-theme-text-primary-on-background);
+  @include textfield.ink-color($mdc-theme-on-surface);
   &.mdc-text-field--textarea {
     textarea {
       padding-top: 25px;
@@ -230,19 +230,19 @@ Fix the width of input components when inside grids
         > .mdc-tab-bar {
           position: absolute;
           z-index: 10;
-          @include tabBar.mdc-tab-bar-width(100%);
+          @include tabBar.width(100%);
           background-color: $mdc-theme-secondary;
           .mdc-tab {
-            @include tab.mdc-tab-text-label-color($mdc-theme-on-secondary);
-            @include tab.mdc-tab-icon-color($mdc-theme-on-secondary);
-            @include tab.mdc-tab-fixed-width(100px);
+            @include tab.text-label-color($mdc-theme-on-secondary);
+            @include tab.icon-color($mdc-theme-on-secondary);
+            @include tab.fixed-width(100px);
             justify-content: flex-start;
             font-weight: 600;
           }
           .mdc-tab-indicator {
             padding-bottom: 5px;
             margin-top: -1px;
-            @include tabIndicator.mdc-tab-indicator-underline-color($mdc-theme-on-secondary);
+            @include tabIndicator.underline-color($mdc-theme-on-secondary);
             background-color: $mdc-theme-secondary;
           }
         }
@@ -267,13 +267,13 @@ Fix the width of input components when inside grids
 // select
 .mdc-select {
   width: 100%;
-  @include select.mdc-select-ink-color($mdc-theme-text-primary-on-background);
-  @include select.mdc-select-label-color($mdc-theme-text-secondary-on-background);
-  @include select.mdc-select-bottom-line-color($mdc-theme-text-secondary-on-background);
-  @include select.mdc-select-hover-bottom-line-color($mdc-theme-text-primary-on-background);
-  @include select.mdc-select-container-fill-color($mdc-theme-on-background);
-  @include select.mdc-select-shape-radius(0);
-  @include select.mdc-select-outline-shape-radius(2);
+  @include select.ink-color($mdc-theme-text-primary-on-background);
+  @include select.label-color($mdc-theme-text-secondary-on-background);
+  @include select.bottom-line-color($mdc-theme-text-secondary-on-background);
+  @include select.hover-bottom-line-color($mdc-theme-text-primary-on-background);
+  @include select.container-fill-color($mdc-theme-on-background);
+  @include select.shape-radius(0);
+  @include select.outline-shape-radius(2);
 
   /*
   Fix for select box appearance. For some reason browser prefix css attributes are striped away.
@@ -299,19 +299,20 @@ Fix the width of input components when inside grids
 
 // checkbox
 .mdc-checkbox {
-  @include checkbox.mdc-checkbox-container-colors("text-secondary-on-background");
+  @include checkbox.container-colors("text-secondary-on-background");
 }
 
 // radio button
 .mdc-radio {
-  @include radio.mdc-radio-unchecked-stroke-color("text-secondary-on-background");
+  @include radio.unchecked-stroke-color("text-secondary-on-background");
 }
 
 // snackbar
 .mdc-snackbar {
-  @include snackbar.mdc-snackbar-shape-radius(2px);
-  @include snackbar.mdc-snackbar-z-index(1000);
+  @include snackbar.shape-radius(2px);
+  @include snackbar.z-index(1000);
 }
+
 .mdc-snackbar__action:not(:disabled) {
   color: var(--mdc-theme-primary);
   &::before {

@@ -1,4 +1,4 @@
-@import "@material/theme/mixins" as themeMixins;
+@use "@material/theme/mixins" as themeMixins;
 
 // material variables
 $mdc-theme-primary: $webiny-theme-light-primary;
@@ -14,7 +14,7 @@ $mdc-theme-text-secondary-on-background: $webiny-theme-light-text-secondary-on-b
 $mdc-theme-text-hint-on-dark: $webiny-theme-light-text-hint-on-dark;
 $mdc-typography-font-family: $webiny-theme-typography-font-family;
 
-@import "material-components-web/material-components-web.scss";
+@import "~material-components-web/material-components-web.scss";
 @import "material-theme-assignments.scss";
 
 body {
