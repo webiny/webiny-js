@@ -1,6 +1,6 @@
 import * as React from "react";
 import classSet from "classnames";
-import { Cell, Grid, GridInner, CellProps } from "@webiny/ui/Grid";
+import { Cell, Grid, CellProps } from "@webiny/ui/Grid";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { clone } from "lodash";
@@ -10,12 +10,6 @@ const grid = css({
     "&.mdc-layout-grid": {
         padding: 0,
         backgroundColor: "var(--mdc-theme-background)"
-    }
-});
-
-const gridInner = css({
-    "&.mdc-layout-grid__inner": {
-        gridGap: 0
     }
 });
 
@@ -51,9 +45,7 @@ interface SplitViewProps {
 const SplitView: React.FC<SplitViewProps> = props => {
     return (
         <Grid className={classSet(grid, props.className, "webiny-split-view")}>
-            <GridInner className={gridInner + " webiny-split-view__inner"}>
-                {props.children}
-            </GridInner>
+            {props.children}
         </Grid>
     );
 };
