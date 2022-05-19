@@ -66,7 +66,7 @@ interface WorkflowScopeProps {
     value: ApwWorkflowScope;
 }
 
-function WorkflowScope({ Bind, value }: WorkflowScopeProps) {
+const WorkflowScope: React.FC<WorkflowScopeProps> = ({ Bind, value }) => {
     const type = get(value, "type");
     const noPages = isEmpty(get(value, "data.pages"));
     const noCategories = isEmpty(get(value, "data.categories"));
@@ -76,8 +76,10 @@ function WorkflowScope({ Bind, value }: WorkflowScopeProps) {
                 <Bind name={`scope.type`} validators={validation.create("required")}>
                     <Select label={"Type"} box={"true"}>
                         <option value={""} disabled={true} hidden={true} />
-                        <option value={ApwWorkflowScopeTypes.DEFAULT}>{t`Default`}</option>
-                        <option value={ApwWorkflowScopeTypes.PB}>{t`Page Builder`}</option>
+                        <option value={ApwWorkflowScopeTypes.DEFAULT}>{t`Everything`}</option>
+                        <option
+                            value={ApwWorkflowScopeTypes.PB}
+                        >{t`Specific categories and pages`}</option>
                     </Select>
                 </Bind>
             </Box>
@@ -88,6 +90,6 @@ function WorkflowScope({ Bind, value }: WorkflowScopeProps) {
             </Box>
         </Stack>
     );
-}
+};
 
 export default WorkflowScope;
