@@ -36,6 +36,22 @@ export type SelectProps = FormComponentProps &
         className?: string;
     };
 
+const webinySelect = css`
+    display: grid;
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--webiny-theme-color-primary);
+    
+    .rmwc-select__native-control {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+`
+
 const noLabel = css({
     "&.mdc-select": {
         height: 35,
@@ -115,7 +131,7 @@ export const Select: React.FC<SelectProps> = props => {
                 {...getRmwcProps(other)}
                 options={options}
                 value={value}
-                className={classNames("webiny-ui-select", props.className, {
+                className={classNames("webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded", webinySelect, props.className, {
                     [noLabel]: !props.label
                 })}
                 onChange={e => {

@@ -243,6 +243,7 @@
     "@material/linear-ripple": "^5.1.0",
     "@material/list": "^5.1.0",
     "@material/radio": "^5.1.0",
+    "@material/select": "^5.1.0",
     "@material/snackbar": "^5.1.0",
     "@material/switch": "^5.1.0",
     "@material/tab-scroller": "^5.1.0",
