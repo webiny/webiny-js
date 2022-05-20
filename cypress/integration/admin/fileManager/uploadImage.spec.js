@@ -53,6 +53,13 @@ context("File Manager View - CRUD", () => {
         cy.findByTestId("apps-menu").click();
         // Open "File Manage" view
         cy.findByTestId("admin-drawer-footer-menu-file-manager").click();
+
+        // Check if there are existing file and delete them.
+        cy.fmListFiles({}).then(files => {
+            for (let i = 0; i < files.length; i++) {
+                deleteFile();
+            }
+        });
     });
 
     it("should upload, edit and delete image", () => {
@@ -90,13 +97,6 @@ context("File Manager View - CRUD", () => {
     });
 
     it("only images should contain thumbnail and only images should be displayed as avatar options", () => {
-        // Check if there are existing file and delete them.
-        cy.fmListFiles({}).then(files => {
-            for (let i = 0; i < files.length; i++) {
-                deleteFile();
-            }
-        });
-
         // Add 5 files (text/pdf/png/gif/jpeg).
         const files = [
             { fileName: "textfile.txt", type: "text/plain" },
@@ -122,18 +122,11 @@ context("File Manager View - CRUD", () => {
         cy.get('div[data-role="select-image"]').click();
 
         // Assert that for avatar we can choose only from 3 files (png/gif/jpeg).
-        cy.findAllByTestId('fm-list-wrapper-file').should("have.length", 3);
+        cy.findAllByTestId("fm-list-wrapper-file").should("have.length", 3);
     });
 
     it("should edit and save file using the flip feature", () => {
         const fileName = "sample_2.jpeg";
-
-        // Check if there are existing file and delete them.
-        cy.fmListFiles({}).then(files => {
-            for (let i = 0; i < files.length; i++) {
-                deleteFile();
-            }
-        });
 
         // Drop file
         cy.findByTestId("fm-list-wrapper").dropFile(fileName, "image/jpeg");
@@ -158,7 +151,7 @@ context("File Manager View - CRUD", () => {
         cy.findByTestId("fm-image-editor-dialog")
             .should("be.visible")
             .within(() => {
-                cy.findByTestId('flip-item').click();
+                cy.findByTestId("flip-item").click();
                 cy.get("span").contains("Apply").click();
                 cy.findByText("Save").click();
             });
@@ -208,13 +201,6 @@ context("File Manager View - CRUD", () => {
     it("should test adding duplicate tag", () => {
         const fileName = "sample_2.jpeg";
 
-        // Check if there are existing file and delete them.
-        cy.fmListFiles({}).then(files => {
-            for (let i = 0; i < files.length; i++) {
-                deleteFile();
-            }
-        });
-
         // Drop file
         cy.findByTestId("fm-list-wrapper").dropFile(fileName, "image/jpeg");
         cy.findByText("File upload complete.").should("exist");
@@ -228,13 +214,15 @@ context("File Manager View - CRUD", () => {
                 });
         });
 
-        cy.findByText('File details').should("be.visible");
+        cy.findByText("File details").should("be.visible");
+
+        const tagName = `tag-${Cypress.env("TEST_RUN_ID")}`;
 
         // Edit file
         cy.get("span").contains("Add tags...").click();
-        cy.get('input[placeholder="homepage asset"]').type('tag-${Cypress.env("TEST_RUN_ID")}');
-        cy.get("ul > li > span").contains("rv").click();
-        cy.get('input[placeholder="homepage asset"]').type('tag-${Cypress.env("TEST_RUN_ID")}');
+        cy.get('input[placeholder="homepage asset"]').type(tagName);
+        cy.get("ul > li > span").contains(tagName).click();
+        cy.get('input[placeholder="homepage asset"]').type(tagName);
         cy.get("ul > li > span").contains("No results.").should("be.visible");
     });
 
@@ -274,12 +262,6 @@ context("File Manager View - CRUD", () => {
                 ]
             }
         ];
-
-        cy.fmListFiles({}).then(files => {
-            for (let i = 0; i < files.length; i++) {
-                deleteFile();
-            }
-        });
 
         // Upload 3 files and add 5 tags per file.
         fileDetails.forEach(fileDetail => {
@@ -330,13 +312,6 @@ context("File Manager View - CRUD", () => {
     });
 
     it("should test drag and drop bulk files", () => {
-        // Check if there are existing files and delete them.
-        cy.fmListFiles({}).then(files => {
-            for (let i = 0; i < files.length; i++) {
-                deleteFile();
-            }
-        });
-
         const fileNames = ["sample.jpeg", "sample_2.jpeg", "pngPicture.PNG"];
 
         // Drag and drop bulk 3 files.
