@@ -41,7 +41,7 @@ const webinySelect = css`
     background-color: transparent;
     border-color: transparent;
     color: var(--webiny-theme-color-primary);
-
+    
     .rmwc-select__native-control {
         opacity: 0;
         position: absolute;
@@ -131,6 +131,7 @@ export const Select: React.FC<SelectProps> = props => {
                 {...getRmwcProps(other)}
                 options={options}
                 value={value}
+<<<<<<< HEAD
                 className={classNames(
                     "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
                     webinySelect,
@@ -139,6 +140,11 @@ export const Select: React.FC<SelectProps> = props => {
                         [noLabel]: !props.label
                     }
                 )}
+=======
+                className={classNames("webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded", webinySelect, props.className, {
+                    [noLabel]: !props.label
+                })}
+>>>>>>> f0f7d0a09a (fix(ui): resolvem aterial select to latest vesion)
                 onChange={e => {
                     props.onChange && props.onChange((e.target as any).value);
                 }}
