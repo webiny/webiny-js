@@ -16,8 +16,8 @@ Cypress.Commands.add("dropFile", { prevSubject: "element" }, (subject, fileName,
         });
 });
 
-// drag and drop multiple files
-Cypress.Commands.add("upload_bulk_files", (selector, fileUrlArray, type = "") => {
+// Drag and drop multiple files.
+Cypress.Commands.add("uploadBulkFiles", (selector, fileUrlArray, type = "") => {
     const files = [];
     fileUrlArray.forEach(fileUrl => {
         cy.fixture(fileUrl, "base64")

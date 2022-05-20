@@ -45,7 +45,7 @@ context("Account Module", () => {
         cy.get('div.mdc-layout-grid div > img').should('exist');
 
         // Delete the newly avatar image.
-        cy.get('[data-testid="remove-image"]').click({force: true})
+        cy.findByTestId('remove-image').click({force: true})
         cy.get('div.mdc-layout-grid div > img').should('not.exist');
         cy.findByText("Update account").click();
         cy.findByText("Account saved successfully!");

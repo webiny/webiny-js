@@ -122,7 +122,7 @@ context("File Manager View - CRUD", () => {
         cy.get('div[data-role="select-image"]').click();
 
         // Assert that for avatar we can choose only from 3 files (png/gif/jpeg).
-        cy.get('div[data-testid="fm-list-wrapper-file"]').should("have.length", 3);
+        cy.findAllByTestId('fm-list-wrapper-file').should("have.length", 3);
     });
 
     it("should edit and save file using the flip feature", () => {
@@ -158,7 +158,7 @@ context("File Manager View - CRUD", () => {
         cy.findByTestId("fm-image-editor-dialog")
             .should("be.visible")
             .within(() => {
-                cy.get('[data-testid="flip-item"]').click();
+                cy.findByTestId('flip-item').click();
                 cy.get("span").contains("Apply").click();
                 cy.findByText("Save").click();
             });
@@ -228,13 +228,13 @@ context("File Manager View - CRUD", () => {
                 });
         });
 
-        cy.get("span").contains("File details").should("be.visible");
+        cy.findByText('File details').should("be.visible");
 
         // Edit file
         cy.get("span").contains("Add tags...").click();
-        cy.get('input[placeholder="homepage asset"]').type("rv");
+        cy.get('input[placeholder="homepage asset"]').type('tag-${Cypress.env("TEST_RUN_ID")}');
         cy.get("ul > li > span").contains("rv").click();
-        cy.get('input[placeholder="homepage asset"]').type("rv");
+        cy.get('input[placeholder="homepage asset"]').type('tag-${Cypress.env("TEST_RUN_ID")}');
         cy.get("ul > li > span").contains("No results.").should("be.visible");
     });
 
@@ -330,7 +330,7 @@ context("File Manager View - CRUD", () => {
     });
 
     it("should test drag and drop bulk files", () => {
-        // Check if there are existing file and delete them.
+        // Check if there are existing files and delete them.
         cy.fmListFiles({}).then(files => {
             for (let i = 0; i < files.length; i++) {
                 deleteFile();
@@ -340,7 +340,7 @@ context("File Manager View - CRUD", () => {
         const fileNames = ["sample.jpeg", "sample_2.jpeg", "pngPicture.PNG"];
 
         // Drag and drop bulk 3 files.
-        cy.upload_bulk_files('[data-testid="fm-list-wrapper"]', fileNames);
+        cy.uploadBulkFiles('[data-testid="fm-list-wrapper"]', fileNames);
 
         cy.findByText("File upload complete.").should("be.visible");
 
