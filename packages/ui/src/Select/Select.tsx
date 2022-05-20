@@ -41,7 +41,7 @@ const webinySelect = css`
     background-color: transparent;
     border-color: transparent;
     color: var(--webiny-theme-color-primary);
-    
+
     .rmwc-select__native-control {
         opacity: 0;
         position: absolute;
@@ -50,7 +50,7 @@ const webinySelect = css`
         left: 0;
         right: 0;
     }
-`
+`;
 
 const noLabel = css({
     "&.mdc-select": {
@@ -131,9 +131,14 @@ export const Select: React.FC<SelectProps> = props => {
                 {...getRmwcProps(other)}
                 options={options}
                 value={value}
-                className={classNames("webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded", webinySelect, props.className, {
-                    [noLabel]: !props.label
-                })}
+                className={classNames(
+                    "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
+                    webinySelect,
+                    props.className,
+                    {
+                        [noLabel]: !props.label
+                    }
+                )}
                 onChange={e => {
                     props.onChange && props.onChange((e.target as any).value);
                 }}
