@@ -14,8 +14,9 @@ describe("Block Categories CRUD Test", () => {
 
     test("create, read, update and delete block categories", async () => {
         // Test creating, getting and updating three block categories.
+        const prefixes = ["block-category-one-", "block-category-two-", "block-category-three-"];
         for (let i = 0; i < 3; i++) {
-            const prefix = `block-category-${i}-`;
+            const prefix = prefixes[i];
             let data = {
                 slug: `${prefix}slug`,
                 name: `${prefix}name`
@@ -83,20 +84,20 @@ describe("Block Categories CRUD Test", () => {
                     listBlockCategories: {
                         data: [
                             {
-                                slug: "block-category-0-slug",
-                                name: "block-category-0-name-UPDATED",
+                                slug: "block-category-one-slug",
+                                name: "block-category-one-name-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
                             },
                             {
-                                slug: "block-category-1-slug",
-                                name: "block-category-1-name-UPDATED",
+                                slug: "block-category-two-slug",
+                                name: "block-category-two-name-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
                             },
                             {
-                                slug: "block-category-2-slug",
-                                name: "block-category-2-name-UPDATED",
+                                slug: "block-category-three-slug",
+                                name: "block-category-three-name-UPDATED",
                                 createdOn: /^20/,
                                 createdBy: defaultIdentity
                             }
@@ -109,7 +110,7 @@ describe("Block Categories CRUD Test", () => {
 
         // After deleting all block categories, list should be empty.
         for (let i = 0; i < 3; i++) {
-            const prefix = `block-category-${i}-`;
+            const prefix = prefixes[i];
             const data = {
                 slug: `${prefix}slug`,
                 name: `${prefix}name-UPDATED`
@@ -140,6 +141,41 @@ describe("Block Categories CRUD Test", () => {
                     listBlockCategories: {
                         data: [],
                         error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("cannot create a block category with invalid slug", async () => {
+        const [errorResponse] = await createBlockCategory({
+            data: {
+                slug: `invalid--slug--category`,
+                name: `invalid--slug--category`
+            }
+        });
+
+        const error: ErrorOptions = {
+            code: "VALIDATION_FAILED_INVALID_FIELDS",
+            message: "Validation failed.",
+            data: {
+                invalidFields: {
+                    slug: {
+                        code: "VALIDATION_FAILED_INVALID_FIELD",
+                        data: null,
+                        message:
+                            "Slug must consist of only 'a-z' and '-' and be max 100 characters long (for example: 'some-entry-slug')"
+                    }
+                }
+            }
+        };
+
+        expect(errorResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    createBlockCategory: {
+                        data: null,
+                        error
                     }
                 }
             }

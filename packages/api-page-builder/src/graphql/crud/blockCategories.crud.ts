@@ -29,7 +29,7 @@ import WebinyError from "@webiny/error";
 import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
-    slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
+    slug: string({ validation: validation.create("required,slug") }),
     name: string({ validation: validation.create("required,minLength:1,maxLength:100") })
 })();
 

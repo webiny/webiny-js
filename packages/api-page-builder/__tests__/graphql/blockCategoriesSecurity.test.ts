@@ -23,6 +23,20 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
 
 jest.setTimeout(100000);
 
+const intAsString = [
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten"
+];
+
 describe("Block Categories Security Test", () => {
     const { createBlockCategory } = useGqlHandler({
         permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
@@ -30,12 +44,16 @@ describe("Block Categories Security Test", () => {
     });
 
     test(`"listBlockCategories" only returns entries to which the identity has access to`, async () => {
-        await createBlockCategory({ data: new Mock("list-block-categories-1-") });
-        await createBlockCategory({ data: new Mock("list-block-categories-2-") });
+        await createBlockCategory({ data: new Mock("list-block-categories-one-") });
+        await createBlockCategory({ data: new Mock("list-block-categories-two-") });
 
         const identityBHandler = useGqlHandler({ identity: identityB });
-        await identityBHandler.createBlockCategory({ data: new Mock("list-block-categories-3-") });
-        await identityBHandler.createBlockCategory({ data: new Mock("list-block-categories-4-") });
+        await identityBHandler.createBlockCategory({
+            data: new Mock("list-block-categories-three-")
+        });
+        await identityBHandler.createBlockCategory({
+            data: new Mock("list-block-categories-four-")
+        });
 
         const insufficientPermissions = [
             [[], null],
@@ -83,26 +101,26 @@ describe("Block Categories Security Test", () => {
                                 {
                                     createdBy: identityA,
                                     createdOn: /^20/,
-                                    slug: "list-block-categories-1-slug",
-                                    name: "list-block-categories-1-name"
+                                    slug: "list-block-categories-one-slug",
+                                    name: "list-block-categories-one-name"
                                 },
                                 {
                                     createdBy: identityA,
                                     createdOn: /^20/,
-                                    slug: "list-block-categories-2-slug",
-                                    name: "list-block-categories-2-name"
+                                    slug: "list-block-categories-two-slug",
+                                    name: "list-block-categories-two-name"
                                 },
                                 {
                                     createdBy: identityB,
                                     createdOn: /^20/,
-                                    slug: "list-block-categories-3-slug",
-                                    name: "list-block-categories-3-name"
+                                    slug: "list-block-categories-three-slug",
+                                    name: "list-block-categories-three-name"
                                 },
                                 {
                                     createdBy: identityB,
                                     createdOn: /^20/,
-                                    slug: "list-block-categories-4-slug",
-                                    name: "list-block-categories-4-name"
+                                    slug: "list-block-categories-four-slug",
+                                    name: "list-block-categories-four-name"
                                 }
                             ],
                             error: null
@@ -126,14 +144,14 @@ describe("Block Categories Security Test", () => {
                             {
                                 createdBy: identityA,
                                 createdOn: /^20/,
-                                slug: "list-block-categories-1-slug",
-                                name: "list-block-categories-1-name"
+                                slug: "list-block-categories-one-slug",
+                                name: "list-block-categories-one-name"
                             },
                             {
                                 createdBy: identityA,
                                 createdOn: /^20/,
-                                slug: "list-block-categories-2-slug",
-                                name: "list-block-categories-2-name"
+                                slug: "list-block-categories-two-slug",
+                                name: "list-block-categories-two-name"
                             }
                         ],
                         error: null
@@ -156,14 +174,14 @@ describe("Block Categories Security Test", () => {
                             {
                                 createdBy: identityB,
                                 createdOn: /^20/,
-                                slug: "list-block-categories-3-slug",
-                                name: "list-block-categories-3-name"
+                                slug: "list-block-categories-three-slug",
+                                name: "list-block-categories-three-name"
                             },
                             {
                                 createdBy: identityB,
                                 createdOn: /^20/,
-                                slug: "list-block-categories-4-slug",
-                                name: "list-block-categories-4-name"
+                                slug: "list-block-categories-four-slug",
+                                name: "list-block-categories-four-name"
                             }
                         ],
                         error: null
@@ -212,7 +230,7 @@ describe("Block Categories Security Test", () => {
                 identity: identity as any
             });
 
-            const data = new Mock(`block-category-create-${i}-`);
+            const data = new Mock(`block-category-create-${intAsString[i]}-`);
             const [response] = await createBlockCategory({ data });
             expect(response).toMatchObject({
                 data: {
