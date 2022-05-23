@@ -152,6 +152,9 @@ const SaveDialog = (props: Props) => {
     );
 };
 
-export default React.memo(SaveDialog, (props, nextProps) => {
+const MemoizedSaveDialog = React.memo(SaveDialog, (props, nextProps) => {
     return props.open === nextProps.open;
 });
+
+MemoizedSaveDialog.displayName = "MemoizedSaveDialog";
+export default MemoizedSaveDialog;

@@ -3732,7 +3732,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@editorjs/editorjs@npm:^2.19.0, @editorjs/editorjs@npm:^2.19.3, @editorjs/editorjs@npm:^2.20.1":
+"@editorjs/editorjs@npm:^2.19.0, @editorjs/editorjs@npm:^2.20.1":
   version: 2.22.3
   resolution: "@editorjs/editorjs@npm:2.22.3"
   dependencies:
@@ -3740,6 +3740,17 @@ __metadata:
     codex-tooltip: ^1.0.2
     nanoid: ^3.1.22
   checksum: 41a1207c36ad40be8ad10b863e23349f55e11ba69e9d07301f23cd3d5ee0b8fbef0ba93498f401afac9566d751473a008d812608749dde4f4ca7ccc3de1ace72
+  languageName: node
+  linkType: hard
+
+"@editorjs/editorjs@npm:^2.24.3":
+  version: 2.24.3
+  resolution: "@editorjs/editorjs@npm:2.24.3"
+  dependencies:
+    codex-notifier: ^1.1.2
+    codex-tooltip: ^1.0.5
+    nanoid: ^3.1.22
+  checksum: ced5f8c3fcec0f0cd9bb4d7263e78adbd334583301b188f25ad83cb2902cf16ef1f1b4aaea1a78a6870aca0f19748abce5f2ba6e68ccc12c3bfe5817c4b2061b
   languageName: node
   linkType: hard
 
@@ -10287,35 +10298,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-dynamic-pages@^5.26.0, @webiny/api-dynamic-pages@workspace:packages/api-dynamic-pages":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-dynamic-pages@workspace:packages/api-dynamic-pages"
-  dependencies:
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/plugin-proposal-object-rest-spread": ^7.16.0
-    "@babel/plugin-transform-runtime": ^7.16.4
-    "@babel/preset-env": ^7.16.4
-    "@babel/preset-typescript": ^7.16.0
-    "@babel/runtime": ^7.16.3
-    "@elastic/elasticsearch": 7.12.0
-    "@elastic/elasticsearch-mock": 0.3.0
-    "@webiny/api-page-builder": ^5.26.0
-    "@webiny/api-page-builder-so-ddb-es": ^5.26.0
-    "@webiny/cli": ^5.26.0
-    "@webiny/handler-graphql": ^5.26.0
-    "@webiny/plugins": ^5.26.0
-    "@webiny/project-utils": ^5.26.0
-    dot-prop-immutable: ^2.1.0
-    execa: ^5.0.0
-    jest: ^26.6.3
-    jest-dynalite: ^3.2.0
-    rimraf: ^3.0.2
-    ttypescript: ^1.5.12
-    typescript: 4.5.5
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-dynamodb-to-elasticsearch@^5.25.0, @webiny/api-dynamodb-to-elasticsearch@^5.26.0, @webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch":
   version: 0.0.0-use.local
   resolution: "@webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch"
@@ -10664,29 +10646,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-dynamic-pages@workspace:packages/api-headless-cms-dynamic-pages":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-headless-cms-dynamic-pages@workspace:packages/api-headless-cms-dynamic-pages"
-  dependencies:
-    "@babel/cli": ^7.16.0
-    "@babel/core": ^7.16.0
-    "@babel/plugin-proposal-object-rest-spread": ^7.16.0
-    "@babel/plugin-transform-runtime": ^7.16.4
-    "@babel/preset-env": ^7.16.4
-    "@babel/preset-typescript": ^7.16.0
-    "@babel/runtime": ^7.16.3
-    "@types/node-fetch": ^2.6.1
-    "@webiny/api-dynamic-pages": ^5.26.0
-    "@webiny/api-headless-cms": ^5.26.0
-    "@webiny/cli": ^5.26.0
-    "@webiny/project-utils": ^5.26.0
-    dot-prop-immutable: ^2.1.0
-    node-fetch: ^2.6.1
-    ttypescript: ^1.5.12
-    typescript: 4.5.5
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-headless-cms@^5.26.0, @webiny/api-headless-cms@workspace:packages/api-headless-cms":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
@@ -10907,7 +10866,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-page-builder-so-ddb-es@^5.26.0, @webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es":
+"@webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es"
   dependencies:
@@ -13534,7 +13493,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
-    "@editorjs/editorjs": ^2.19.3
+    "@editorjs/editorjs": ^2.24.3
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
     "@material/base": ^3.1.0

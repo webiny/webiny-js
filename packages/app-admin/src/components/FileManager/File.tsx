@@ -145,7 +145,7 @@ const File: React.FC<FileProps> = props => {
     );
 };
 
-export default React.memo(File, (prev, next) => {
+const MemoizedFile = React.memo(File, (prev, next) => {
     if (prev.selected !== next.selected) {
         return false;
     } else if (prev.file.name !== next.file.name) {
@@ -154,3 +154,6 @@ export default React.memo(File, (prev, next) => {
 
     return true;
 });
+
+MemoizedFile.displayName = "MemoizedFile";
+export default MemoizedFile;
