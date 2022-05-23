@@ -1,5 +1,5 @@
 import { createStorageApp } from "@webiny/pulumi-aws";
 
 export default createStorageApp({
-    elasticSearch: true
+    elasticSearch: false
 });
