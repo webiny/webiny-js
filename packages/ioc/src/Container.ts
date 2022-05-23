@@ -53,6 +53,7 @@ export class Container {
     }
 
     private injectCore<T>(symbol: symbol): T | undefined {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         currentContainer = this;
 
         let instance = this.serviceInstances.get(symbol) as T | undefined;
@@ -111,6 +112,7 @@ export class Container {
     public runInScope<T>(fcn: () => T) {
         const current = currentContainer;
         try {
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
             currentContainer = this;
             return fcn();
         } finally {
@@ -126,6 +128,7 @@ export class Container {
     public async runInScopeAsync<T>(fcn: () => Promise<T>) {
         const current = currentContainer;
         try {
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
             currentContainer = this;
             return await fcn();
         } finally {
