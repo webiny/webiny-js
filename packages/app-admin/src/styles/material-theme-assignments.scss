@@ -298,6 +298,11 @@ Fix the width of input components when inside grids
       @include select.dd-arrow-svg-bg_($mdc-theme-primary, 1);
     }
   }
+  &:not(.mdc-select--disabled).mdc-select--focused {
+    .mdc-floating-label {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
 }
 
 // checkbox
