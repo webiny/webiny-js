@@ -64,7 +64,7 @@ context("Export & Import Pages", () => {
         });
         // User input
         cy.findByTestId("import-pages.input-dialog").within(() => {
-            cy.findByText(/Paste file URL/i).click();
+            cy.findByText(/File URL/i).click();
             // Let's check the copied text
             // eslint-disable-next-line jest/valid-expect-in-promise
             cy.window()
