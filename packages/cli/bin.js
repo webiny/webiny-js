@@ -7,14 +7,14 @@ const semver = require("semver");
 const currentNodeVersion = process.versions.node;
 
 (async () => {
-    if (!semver.satisfies(currentNodeVersion, "^12 || ^14")) {
+    if (!semver.satisfies(currentNodeVersion, ">=14")) {
         console.error(
             chalk.red(
-                "You are running Node " +
-                    currentNodeVersion +
-                    ".\n" +
-                    "Webiny requires Node ^12 or ^14. \n" +
-                    "Please update your version of Node."
+                [
+                    `You are running Node.js ${currentNodeVersion}, but Webiny requires version 14 or higher.`,
+                    `Please switch to one of the required versions and try again.`,
+                    `For more information, please visit https://docs.webiny.com/docs/tutorials/install-webiny#prerequisites.`
+                ].join(" ")
             )
         );
         process.exit(1);
@@ -22,13 +22,15 @@ const currentNodeVersion = process.versions.node;
 
     try {
         const { stdout } = await execa("yarn", ["--version"]);
-        if (!semver.satisfies(stdout, "^2||^3")) {
-            console.error(chalk.red(`"@webiny/cli" requires yarn ^2 or ^3 to be installed!`));
+        if (!semver.satisfies(stdout, ">=2")) {
+            console.error(chalk.red(`"@webiny/cli" requires yarn >=2!`));
             process.exit(1);
         }
     } catch (err) {
-        console.error(chalk.red(`"@webiny/cli" requires yarn ^2 or ^3 to be installed!`));
-        console.log(`Please visit https://yarnpkg.com/ to install "yarn".`);
+        console.error(chalk.red(`"@webiny/cli" requires yarn >=2!`));
+        console.log(
+            `Run ${chalk.blue("yarn set version berry")} to install a compatible version of yarn.`
+        );
         process.exit(1);
     }
 
