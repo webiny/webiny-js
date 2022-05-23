@@ -9,6 +9,9 @@
       "path": "../app-admin/tsconfig.build.json"
     },
     {
+      "path": "../app-admin-core/tsconfig.build.json"
+    },
+    {
       "path": "../app-page-builder/tsconfig.build.json"
     },
     {

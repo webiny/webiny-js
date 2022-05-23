@@ -2,7 +2,7 @@ import React from "react";
 import { AddMenu as Menu } from "@webiny/app-admin";
 import { ReactComponent as ApwIcon } from "~/assets/icons/account_tree_24dp.svg";
 
-const Menus: React.FC = () => {
+export const Menus: React.FC = () => {
     return (
         <Menu label={"Publishing Workflows"} name={"apw"} icon={<ApwIcon />}>
             <Menu
@@ -18,5 +18,3 @@ const Menus: React.FC = () => {
         </Menu>
     );
 };
-
-export default Menus;

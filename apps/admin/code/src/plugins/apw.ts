@@ -1,4 +1,4 @@
 /* Core apw (advanced publishing workflow app) plugins */
-import apw from "@webiny/app-apw/plugins";
+import { plugins } from "@webiny/app-apw";
 
-export default apw();
+export default plugins();

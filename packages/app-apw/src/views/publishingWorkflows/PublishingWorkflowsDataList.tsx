@@ -12,7 +12,7 @@ import {
     ListItemTextSecondary
 } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
-import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
+import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
@@ -42,7 +42,7 @@ const ListSubHeader = styled(Columns)`
 
 interface ListHeaderProps {
     title: string;
-    onClick: (app: string) => void;
+    onClick: (app: ApwWorkflowApplications) => void;
     app: ApwWorkflowApplications;
 }
 
@@ -94,14 +94,14 @@ const PublishingWorkflowsDataList: React.FC = () => {
 
     const scopedWorkflows = useMemo(() => {
         const initialScopes: ApwWorkflowScoped = {
-            pb: [],
+            pageBuilder: [],
             cms: []
         };
         return workflows.reduce<ApwWorkflowScoped>((collection, workflow) => {
-            if (!collection[workflow.scope.type]) {
-                throw new Error(`Scope "${workflow.scope.type}" does not exist.`);
+            if (!collection[workflow.app]) {
+                throw new Error(`Application "${workflow.app}" does not exist.`);
             }
-            collection[workflow.scope.type].push(workflow);
+            collection[workflow.app].push(workflow);
 
             return collection;
         }, initialScopes);
@@ -123,9 +123,8 @@ const PublishingWorkflowsDataList: React.FC = () => {
                      */
                     const title = scopes[app];
                     const items = data[app];
-                    const key = `data-list-app-${app}`;
                     return (
-                        <div key={key}>
+                        <div key={`data-list-app-${app}`}>
                             <ListHeader
                                 title={title}
                                 onClick={createPublishingWorkflow}
@@ -141,9 +140,7 @@ const PublishingWorkflowsDataList: React.FC = () => {
                                         selected={item.id === currentWorkflowId}
                                     >
                                         <ListItemText
-                                            onClick={() =>
-                                                editPublishingWorkflow(item.id, item.app)
-                                            }
+                                            onClick={() => editPublishingWorkflow(item.id)}
                                         >
                                             {item.title}
                                             <ListItemTextSecondary>
@@ -161,7 +158,11 @@ const PublishingWorkflowsDataList: React.FC = () => {
                                                     onClick={() =>
                                                         deletePublishingWorkflow(item.id)
                                                     }
-                                                    data-testid={`default-data-list-${app}.delete`}
+                                                    data-testid={`default-data-list-${item.id}.delete`}
+                                                />
+                                                <EditIcon
+                                                    onClick={() => editPublishingWorkflow(item.id)}
+                                                    data-testid={`default-data-list-${item.id}.edit`}
                                                 />
                                             </ListActions>
                                         </ListItemMeta>

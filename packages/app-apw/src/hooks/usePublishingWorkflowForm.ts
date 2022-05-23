@@ -19,15 +19,21 @@ import {
 } from "~/graphql/workflow.gql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { ApwWorkflowScopeTypes } from "~/types";
+import {
+    ApwWorkflow,
+    ApwWorkflowApplications,
+    ApwWorkflowScopeTypes,
+    ApwWorkflowStep,
+    ApwWorkflowStepTypes
+} from "~/types";
 import { getNanoid } from "~/utils";
 import { useQuery as useRouterQuery } from "~/hooks/useQuery";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
-const initialStepData = {
+const initialStepData: ApwWorkflowStep = {
     title: "",
-    type: "",
+    type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
     reviewers: []
 };
 
@@ -36,18 +42,21 @@ export const getInitialStepData = () => ({
     id: getNanoid()
 });
 
-const newFormData = {
-    title: "Untitled",
-    steps: [getInitialStepData()],
-    scope: {
-        type: ApwWorkflowScopeTypes.PB,
-        data: {
-            pages: [],
-            categories: [],
-            entries: [],
-            models: []
+const createNewFormData = (app: ApwWorkflowApplications): Partial<ApwWorkflow> => {
+    return {
+        app,
+        title: "Untitled",
+        steps: [getInitialStepData()],
+        scope: {
+            type: ApwWorkflowScopeTypes.CUSTOM,
+            data: {
+                pages: [],
+                categories: [],
+                entries: [],
+                models: []
+            }
         }
-    }
+    };
 };
 
 const CREATE_MUTATION_FIELDS = ["title", "steps", "scope", "app"];
@@ -55,12 +64,16 @@ const UPDATE_MUTATION_FIELDS = ["title", "steps", "scope"];
 
 const BASE_URL = "/apw/publishing-workflows";
 
+interface CreatePublishingWorkflowCallable {
+    (app: ApwWorkflowApplications): void;
+}
+
 export type UsePublishingWorkflowFormHook = {
     (): {
         workflow: Record<string, any>;
         loading: boolean;
         showEmptyView: boolean;
-        createPublishingWorkflow: () => void;
+        createPublishingWorkflow: CreatePublishingWorkflowCallable;
         cancelEditing: () => void;
         onSubmit: (formData: any) => Promise<void>;
         isDirty: boolean;
@@ -158,12 +171,15 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
 
     const showEmptyView = !newEntry && !loading && isEmpty(workflow);
 
-    const createPublishingWorkflow = useCallback(() => navigate(BASE_URL + "?new=true"), []);
+    const createPublishingWorkflow: CreatePublishingWorkflowCallable = useCallback(
+        app => navigate(BASE_URL + `?new=true&app=${app}`),
+        []
+    );
 
     const cancelEditing = useCallback(() => navigate(BASE_URL), []);
 
     return {
-        workflow: isEmpty(workflow) ? newFormData : workflow,
+        workflow: isEmpty(workflow) ? createNewFormData(app) : workflow,
         loading,
         showEmptyView,
         createPublishingWorkflow,

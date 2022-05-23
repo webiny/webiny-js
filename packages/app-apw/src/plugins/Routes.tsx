@@ -1,25 +1,27 @@
 import React, { Suspense, lazy } from "react";
 import Helmet from "react-helmet";
-import { Route } from "@webiny/react-router";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
-import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
 import { PublishingWorkflowsView } from "~/views/publishingWorkflows";
 import { ContentReviewDashboard } from "~/views/contentReviewDashboard";
+import { AddRoute } from "@webiny/app-admin";
 
 const ContentReviewEditor = lazy(
     () => import("~/views/contentReviewDashboard/ContentReviewEditor")
 );
 
-const Loader: React.FC<{ children: React.ReactElement }> = ({ children, ...props }) => (
+interface LoaderProps {
+    children: React.ReactElement;
+}
+const Loader: React.FC<LoaderProps> = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-export default [
-    new RoutePlugin({
-        route: (
-            <Route
+export const Routes: React.FC = () => {
+    return (
+        <>
+            <AddRoute
                 exact
                 path={"/apw/publishing-workflows"}
                 render={() => (
@@ -31,11 +33,7 @@ export default [
                     </SecureRoute>
                 )}
             />
-        )
-    }),
-    new RoutePlugin({
-        route: (
-            <Route
+            <AddRoute
                 exact
                 path={"/apw/content-reviews"}
                 render={() => (
@@ -47,11 +45,7 @@ export default [
                     </SecureRoute>
                 )}
             />
-        )
-    }),
-    new RoutePlugin({
-        route: (
-            <Route
+            <AddRoute
                 path={"/apw/content-reviews/:contentReviewId"}
                 render={() => (
                     <SecureRoute permission={"apw"}>
@@ -62,6 +56,6 @@ export default [
                     </SecureRoute>
                 )}
             />
-        )
-    })
-];
+        </>
+    );
+};

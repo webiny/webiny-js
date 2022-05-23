@@ -1,11 +1,11 @@
 import React from "react";
 import { Compose, Plugins } from "@webiny/app-admin";
-import ApwAdminMenus from "./menus";
-import routes from "./routes";
-import defaultBar from "./editor/defaultBar";
-// Plugins for "page builder"
-import { ApwOnPublish } from "./pageBuilder/ApwOnPublish";
-import { ApwOnPageDelete } from "./pageBuilder/ApwOnDelete";
+import defaultBar from "./plugins/editor/defaultBar";
+/**
+ * Plugins for "page builder"
+ */
+import { ApwOnPublish } from "./plugins/pageBuilder/ApwOnPublish";
+import { ApwOnPageDelete } from "./plugins/pageBuilder/ApwOnDelete";
 import {
     PublishPageButtonHoc,
     PublishRevisionHoc,
@@ -13,7 +13,7 @@ import {
     PageRequestChangesHoc,
     PageRequestReviewHoc,
     PageRevisionListItemGraphicHoc
-} from "./pageBuilder/PublishPageHocs";
+} from "./plugins/pageBuilder/PublishPageHocs";
 // TODO: Fix this import so that we can import it from root level maybe
 import PublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
 import { PublishPageMenuOption } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
@@ -21,10 +21,15 @@ import { PublishPageButtonComposable } from "@webiny/app-page-builder/editor/plu
 import RequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
 import RequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
 import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
+import { Routes } from "~/plugins/Routes";
+import { Menus } from "~/plugins/Menus";
+import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
+import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
+import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowScope";
 
-export default () => [routes, defaultBar];
+export const plugins = () => [defaultBar];
 
-export const ApwAdmin = () => {
+export const AdvancedPublishingWorkflow: React.FC = () => {
     return (
         <>
             <Compose with={PublishRevisionHoc} component={PublishRevision} />
@@ -36,8 +41,13 @@ export const ApwAdmin = () => {
                 with={PageRevisionListItemGraphicHoc}
                 component={PageRevisionListItemGraphic}
             />
+            <Compose
+                with={[ApwPageBuilderWorkflowScope, ApwHeadlessCmsWorkflowScope]}
+                component={WorkflowScope}
+            />
             <Plugins>
-                <ApwAdminMenus />
+                <Routes />
+                <Menus />
                 <ApwOnPublish />
                 <ApwOnPageDelete />
             </Plugins>

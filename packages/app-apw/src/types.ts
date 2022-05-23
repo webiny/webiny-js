@@ -17,8 +17,7 @@ export interface CreatedBy {
 
 export enum ApwWorkflowScopeTypes {
     DEFAULT = "default",
-    PB = "pb",
-    CMS = "cms"
+    CUSTOM = "custom"
 }
 
 export enum ApwContentReviewStepStatus {
@@ -28,7 +27,7 @@ export enum ApwContentReviewStepStatus {
 }
 
 export enum ApwWorkflowApplications {
-    PB = "pb",
+    PB = "pageBuilder",
     CMS = "cms"
 }
 

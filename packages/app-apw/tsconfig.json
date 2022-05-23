@@ -9,6 +9,9 @@
       "path": "../app-admin"
     },
     {
+      "path": "../app-admin-core"
+    },
+    {
       "path": "../app-page-builder"
     },
     {

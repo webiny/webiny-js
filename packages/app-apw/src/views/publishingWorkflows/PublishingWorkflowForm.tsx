@@ -1,11 +1,10 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import get from "lodash/get";
 import isEqual from "lodash/isEqual";
 import { Prompt } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
-import { Form } from "@webiny/form";
+import { Form, FormRenderPropParams } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import {
@@ -23,7 +22,8 @@ import { ReactComponent as WorkflowStepIcon } from "~/assets/icons/workflow-step
 
 import WorkflowStep from "./components/WorkflowStep";
 import Title, { WorkflowFormHeader } from "./components/WorkflowTitle";
-import WorkflowScope from "./components/WorkflowScope";
+import { WorkflowScope } from "./components/WorkflowScope";
+import { ApwWorkflow } from "~/types";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
@@ -75,7 +75,7 @@ const PublishingWorkflowForm = () => {
                     setIsDirty(!isEqual(data, workflow));
                 }}
             >
-                {({ data, form, Bind, setValue }) => {
+                {({ data, form, Bind, setValue }: FormRenderPropParams<ApwWorkflow>) => {
                     const addStep = () => setValue("steps", [...data.steps, getInitialStepData()]);
                     const removeStep = (index: number) =>
                         setValue("steps", [
@@ -126,7 +126,7 @@ const PublishingWorkflowForm = () => {
                                         description={t`Define the conditions when this workflow applies.`}
                                         iconClassName={accordionIconStyle}
                                     >
-                                        <WorkflowScope Bind={Bind} value={get(data, "scope")} />
+                                        <WorkflowScope Bind={Bind} workflow={data} />
                                     </AccordionItem>
                                 </Accordion>
                             </SimpleFormContent>

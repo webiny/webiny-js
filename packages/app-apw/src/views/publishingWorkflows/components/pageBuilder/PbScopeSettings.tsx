@@ -9,7 +9,7 @@ import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { BindComponent } from "@webiny/form";
 import { Box, Stack } from "~/components/Layout";
-import { ListItemWithCheckbox } from "./ReviewersList";
+import { ListItemWithCheckbox } from "../ReviewersList";
 import { usePbCategories } from "~/hooks/usePbCategories";
 import { usePbPages } from "~/hooks/usePbPages";
 import { validation } from "@webiny/validation";
@@ -111,7 +111,7 @@ interface PbScopeSettingsProps {
     runValidation: boolean;
 }
 
-const PbScopeSettings: React.FC<PbScopeSettingsProps> = ({ Bind, runValidation }) => {
+export const PbScopeSettings: React.FC<PbScopeSettingsProps> = ({ Bind, runValidation }) => {
     return (
         <Elevation z={1}>
             <Tabs className={tabStyles}>
@@ -133,5 +133,3 @@ const PbScopeSettings: React.FC<PbScopeSettingsProps> = ({ Bind, runValidation }
         </Elevation>
     );
 };
-
-export default PbScopeSettings;
