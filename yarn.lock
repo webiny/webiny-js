@@ -15373,8 +15373,6 @@ __metadata:
     "@editorjs/editorjs": ^2.24.3
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
-    "@material/base": ^5.1.0
-    "@material/textfield": ^5.1.0
     "@rmwc/base": 7.0.3
     "@rmwc/button": 7.0.3
     "@rmwc/checkbox": 7.0.3
@@ -15456,6 +15454,7 @@ __metadata:
     sass: ^1.38.0
     sass-loader: ^12.1.0
     shortid: ^2.2.16
+    tslib: 2.4.0
     ttypescript: ^1.5.13
     typescript: 4.7.4
     webpack: ^4.46.0
@@ -38849,7 +38848,6 @@ __metadata:
     rxjs: ^6.5.5
     semver: ^6.3.0
     ts-jest: ^26.4.4
-    tslib: 2.4.0
     typescript: 4.5.5
     typescript-transform-paths: ^2.2.3
     utf-8-validate: ^5.0.2
@@ -41808,6 +41806,13 @@ __metadata:
   linkType: hard
 
 "tslib@npm:2.4.0":
+  version: 2.4.0
+  resolution: "tslib@npm:2.4.0"
+  checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
+  languageName: node
+  linkType: hard
+
+"tslib@npm:2.4.0, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
   version: 2.4.0
   resolution: "tslib@npm:2.4.0"
   checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
