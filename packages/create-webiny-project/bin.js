@@ -8,12 +8,12 @@ const verifyConfig = require("./utils/verifyConfig");
 
 (async () => {
     const nodeVersion = process.versions.node;
-    if (!semver.satisfies(nodeVersion, "^12 || ^14")) {
+    if (!semver.satisfies(nodeVersion, ">=14")) {
         console.error(
             chalk.red(
                 [
-                    `You are running Node.js ${nodeVersion}, but Webiny requires version 12 or 14.`,
-                    `Please switch to one of the two versions and try again.`,
+                    `You are running Node.js ${nodeVersion}, but Webiny requires version 14 or higher.`,
+                    `Please switch to one of the required versions and try again.`,
                     "For more information, please visit https://docs.webiny.com/docs/tutorials/install-webiny#prerequisites."
                 ].join(" ")
             )
@@ -23,7 +23,7 @@ const verifyConfig = require("./utils/verifyConfig");
 
     try {
         const yarnVersion = await getYarnVersion();
-        if (!semver.satisfies(yarnVersion, "^1.22.0 || ^2 || ^3")) {
+        if (!semver.satisfies(yarnVersion, ">=1.22.0")) {
             console.error(
                 chalk.red(
                     [
