@@ -11,7 +11,7 @@ import readme from "./README.md";
 
 import { ReactComponent as BaselineDoneIcon } from "./icons/baseline-done-24px.svg";
 import { ReactComponent as BaselineEmailIcon } from "./icons/baseline-email-24px.svg";
-import { Chip, ChipIcon, Chips } from "./index";
+import { Chip, Chips } from "./index";
 
 const story = storiesOf("Components/Chips", module);
 
@@ -31,14 +31,8 @@ story.add(
                             </Chips>
 
                             <Chips>
-                                <Chip>
-                                    <ChipIcon icon={<BaselineEmailIcon />} />
-                                    Cookies
-                                </Chip>
-                                <Chip>
-                                    Cookies
-                                    <ChipIcon trailingIcon icon={<BaselineDoneIcon />} />
-                                </Chip>
+                                <Chip icon={<BaselineEmailIcon />} >Cookies</Chip>
+                                <Chip trailingIcon icon={<BaselineDoneIcon />} >Cookies</Chip>
                             </Chips>
                         </div>
                     </StorySandboxExample>

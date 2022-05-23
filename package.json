@@ -222,33 +222,8 @@
     "typescript": "4.7.4",
     "codex-tooltip": "1.0.2",
     "@types/eslint": "8.2.1",
-    "yargs": "^17.3.1",
-<<<<<<< HEAD
-    "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd"
-=======
-    "@material/base": "^5.1.0",
-    "@material/dom": "^5.1.0",
-    "@material/textfield": "^5.1.0",
-    "@material/button": "^5.1.0",
-    "@material/checkbox": "^5.1.0",
-    "@material/chips": "^5.1.0",
-    "@material/data-table": "^5.1.0",
-    "@material/dialog": "^5.1.0",
-    "@material/drawer": "^5.1.0",
-    "@material/elevation": "^5.1.0",
-    "@material/fab": "^5.1.0",
-    "@material/floating-label": "^5.1.0",
-    "@material/form-field": "^5.1.0",
-    "@material/icon-button": "^5.1.0",
-    "@material/linear-ripple": "^5.1.0",
-    "@material/list": "^5.1.0",
-    "@material/radio": "^5.1.0",
-    "@material/select": "^5.1.0",
-    "@material/snackbar": "^5.1.0",
-    "@material/switch": "^5.1.0",
-    "@material/tab-scroller": "^5.1.0",
-    "@material/top-app-bar": "^5.1.0"
->>>>>>> 77a25280f0 (fix(ui): upgrade material-components-web)
+    "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd",
+    "yargs": "^17.3.1"
   },
   "packageManager": "yarn@3.2.1"
 }
