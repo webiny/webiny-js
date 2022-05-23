@@ -31,15 +31,12 @@ story.add(
                             </Chips>
 
                             <Chips>
-<<<<<<< HEAD
                                 <Chip icon={<BaselineEmailIcon />}>Cookies</Chip>
                                 <Chip trailingIcon icon={<BaselineDoneIcon />}>
                                     Cookies
                                 </Chip>
-=======
                                 <Chip icon={<BaselineEmailIcon />} >Cookies</Chip>
                                 <Chip trailingIcon icon={<BaselineDoneIcon />} >Cookies</Chip>
->>>>>>> b12767fcda (fix(ui): rm ChipIcon, responding to review comments)
                             </Chips>
                         </div>
                     </StorySandboxExample>
