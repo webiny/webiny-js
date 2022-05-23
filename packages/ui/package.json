@@ -114,6 +114,30 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },
+  "resolutions": {
+    "@material/base": "^5.1.0",
+    "@material/dom": "^5.1.0",
+    "@material/textfield": "^5.1.0",
+    "@material/button": "^5.1.0",
+    "@material/checkbox": "^5.1.0",
+    "@material/chips": "^5.1.0",
+    "@material/data-table": "^5.1.0",
+    "@material/dialog": "^5.1.0",
+    "@material/drawer": "^5.1.0",
+    "@material/elevation": "^5.1.0",
+    "@material/fab": "^5.1.0",
+    "@material/floating-label": "^5.1.0",
+    "@material/form-field": "^5.1.0",
+    "@material/icon-button": "^5.1.0",
+    "@material/linear-ripple": "^5.1.0",
+    "@material/list": "^5.1.0",
+    "@material/radio": "^5.1.0",
+    "@material/select": "^5.1.0",
+    "@material/snackbar": "^5.1.0",
+    "@material/switch": "^5.1.0",
+    "@material/tab-scroller": "^5.1.0",
+    "@material/top-app-bar": "^5.1.0"
+  },
   "publishConfig": {
     "access": "public",
     "directory": "dist"

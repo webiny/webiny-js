@@ -44,7 +44,6 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 const sassLoader = {
     loader: require.resolve("sass-loader"),
     options: {
-        // webpackImporter: false,
         sourceMap: true,
         sassOptions: {
             includePaths: sassIncludePaths,
