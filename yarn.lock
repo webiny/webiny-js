@@ -11699,7 +11699,6 @@ __metadata:
     "@editorjs/editorjs": ^2.20.1
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
-    "@rmwc/menu": ^5.6.0
     "@svgr/webpack": ^6.1.1
     "@types/react": ^16.14.0
     "@types/react-google-recaptcha": ^1.1.2
@@ -12019,7 +12018,6 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": ^6.0.0
     "@fortawesome/free-solid-svg-icons": ^6.0.0
     "@fortawesome/react-fontawesome": ^0.1.17
-    "@rmwc/menu": ^5.6.0
     "@svgr/webpack": ^6.1.1
     "@types/aos": ^3.0.4
     "@types/is-hotkey": ^0.1.7
