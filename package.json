@@ -126,6 +126,7 @@
     "watch:apps": "yarn webiny ws run watch --scope='@webiny/app*'",
     "watch:api": "yarn webiny ws run watch --scope='@webiny/api*'",
     "clear-dist": "yarn rimraf packages/*/dist",
+    "delete-empty-package-folders": "node scripts/deleteEmptyPackageFolders.js",
     "contributors:add": "contreebutors add --username",
     "contributors:generate": "contreebutors render",
     "commit": "node ./scripts/commitizen.js",
