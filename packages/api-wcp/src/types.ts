@@ -1,6 +1,6 @@
 import { Context } from "@webiny/handler/types";
 import { DecryptedWcpProjectLicense, WcpProjectEnvironment } from "@webiny/wcp/types";
-import { WCP_FEATURES } from "@webiny/wcp";
+import { WCP_FEATURE_LABEL } from "@webiny/wcp";
 
 export interface WcpContext extends Context {
     wcp: WcpContextObject;
@@ -9,8 +9,8 @@ export interface WcpContext extends Context {
 export interface WcpContextObject {
     getProjectLicense: () => DecryptedWcpProjectLicense | null;
     getProjectEnvironment: () => WcpProjectEnvironment | null;
-    canUseFeature: (featureName: keyof typeof WCP_FEATURES) => boolean;
-    ensureCanUseFeature: (featureName: keyof typeof WCP_FEATURES) => void;
+    canUseFeature: (featureName: keyof typeof WCP_FEATURE_LABEL) => boolean;
+    ensureCanUseFeature: (featureName: keyof typeof WCP_FEATURE_LABEL) => void;
 }
 
 export interface CachedWcpProjectLicense {

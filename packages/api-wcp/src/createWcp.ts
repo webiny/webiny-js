@@ -1,4 +1,4 @@
-import { getWcpProjectLicense, getWcpAppUrl, WCP_FEATURES } from "@webiny/wcp";
+import { getWcpProjectLicense, getWcpAppUrl, WCP_FEATURE_LABEL } from "@webiny/wcp";
 import WError from "@webiny/error";
 import { WcpContextObject, CachedWcpProjectLicense } from "./types";
 import { geWcpProjectLicenseCacheKey, getWcpProjectEnvironment } from "./utils";
@@ -31,11 +31,11 @@ export const createWcp = async (): Promise<WcpContextObject> => {
         getProjectLicense: () => {
             return cachedWcpProjectLicense.license;
         },
-        canUseFeature(wcpFeatureId: keyof typeof WCP_FEATURES) {
+        canUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
             const projectLicense = this.getProjectLicense();
             return projectLicense?.package?.features?.[wcpFeatureId]?.enabled === true;
         },
-        ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURES) {
+        ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
             if (this.canUseFeature(wcpFeatureId)) {
                 return;
             }
