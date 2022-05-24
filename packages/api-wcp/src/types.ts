@@ -9,8 +9,8 @@ export interface WcpContext extends Context {
 export interface WcpContextObject {
     getProjectLicense: () => DecryptedWcpProjectLicense | null;
     getProjectEnvironment: () => WcpProjectEnvironment | null;
-    canUseFeature: (featureName: keyof typeof WCP_FEATURE_LABEL) => boolean;
-    ensureCanUseFeature: (featureName: keyof typeof WCP_FEATURE_LABEL) => void;
+    canUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => boolean;
+    ensureCanUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => void;
 }
 
 export interface CachedWcpProjectLicense {
