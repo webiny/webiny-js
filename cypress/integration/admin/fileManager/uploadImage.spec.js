@@ -1,50 +1,3 @@
-const openFileDetails = index => {
-    cy.waitUntil(
-        () =>
-            cy
-                .findByTestId("fm-list-wrapper")
-                .within(() => {
-                    cy.findAllByTestId("fm-list-wrapper-file")
-                        .eq(index)
-                        .within(() => {
-                            cy.findByTestId("fm-file-wrapper-file-info-icon").click({
-                                force: true
-                            });
-                        });
-                })
-                .then(() =>
-                    cy.findByTestId("fm.file-details.drawer").then($el => {
-                        const [aside] = $el;
-                        return aside.classList.contains("mdc-drawer--open");
-                    })
-                ),
-        {
-            description: `Wait until "File Details" model is visible`
-        }
-    );
-};
-
-const deleteFile = () => {
-    openFileDetails(0);
-    // Delete file
-    cy.findByTestId("fm-delete-file-button").click();
-    cy.findByTestId("fm-delete-file-confirmation-dialog").within(() => {
-        cy.findByText("Confirm").click();
-    });
-    cy.findByText("File deleted successfully.");
-
-    cy.waitUntil(
-        () =>
-            cy.findByTestId("fm.file-details.drawer").then($el => {
-                const [aside] = $el;
-                return !aside.classList.contains("mdc-drawer--open");
-            }),
-        {
-            description: "wait until file details is hidden"
-        }
-    );
-};
-
 context("File Manager View - CRUD", () => {
     beforeEach(() => {
         cy.login();
@@ -57,7 +10,7 @@ context("File Manager View - CRUD", () => {
         // Check if there are existing file and delete them.
         cy.fmListFiles({}).then(files => {
             for (let i = 0; i < files.length; i++) {
-                deleteFile();
+                cy.fmDeleteFile(files[i]);
             }
         });
     });
@@ -156,6 +109,11 @@ context("File Manager View - CRUD", () => {
                 cy.findByText("Save").click();
             });
         cy.contains("File upload complete.").should("be.visible");
+        cy.contains("File upload complete.").should("not.exist");
+
+        cy.visit("/");
+        cy.findByTestId("apps-menu").click();
+        cy.findByTestId("admin-drawer-footer-menu-file-manager").click();
 
         //  Assert that there are displayed both initial item and edited one.
         cy.get('div[data-testid="fm-list-wrapper-file"]:nth-child(1)')
