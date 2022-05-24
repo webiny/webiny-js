@@ -50,9 +50,16 @@ const accordionIconStyle = css`
 const workflowStepsDescription = t`Define the workflow steps and assign which users need to provide an approval.`;
 
 const PublishingWorkflowForm = () => {
-    const { workflow, loading, showEmptyView, cancelEditing, onSubmit, isDirty, setIsDirty } =
-        usePublishingWorkflowForm();
-
+    const {
+        workflow,
+        setWorkflow,
+        loading,
+        showEmptyView,
+        cancelEditing,
+        onSubmit,
+        isDirty,
+        setIsDirty
+    } = usePublishingWorkflowForm();
     /*
      *  Render empty view.
      */
@@ -73,6 +80,7 @@ const PublishingWorkflowForm = () => {
                 onSubmit={onSubmit}
                 onChange={data => {
                     setIsDirty(!isEqual(data, workflow));
+                    setWorkflow(data);
                 }}
             >
                 {({ data, form, Bind, setValue }: FormRenderPropParams<ApwWorkflow>) => {

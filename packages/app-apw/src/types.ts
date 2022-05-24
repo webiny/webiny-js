@@ -156,3 +156,16 @@ export interface ApwWorkflow extends BaseFields {
     scope: ApwWorkflowScope;
     app: ApwWorkflowApplications;
 }
+
+export interface CmsModel {
+    name: string;
+    modelId: string;
+}
+export interface CmsEntry {
+    entryId: string;
+    title: string;
+    model: {
+        modelId: string;
+        name: string;
+    };
+}

@@ -9,7 +9,7 @@ import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { BindComponent } from "@webiny/form";
 import { Box, Stack } from "~/components/Layout";
-import { ListItemWithCheckbox } from "../ReviewersList";
+import { ListItemWithCheckbox } from "../ListItemWithCheckbox";
 import { usePbCategories } from "~/hooks/usePbCategories";
 import { usePbPages } from "~/hooks/usePbPages";
 import { validation } from "@webiny/validation";

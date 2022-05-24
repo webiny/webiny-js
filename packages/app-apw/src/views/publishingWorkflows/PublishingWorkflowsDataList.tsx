@@ -94,8 +94,8 @@ const PublishingWorkflowsDataList: React.FC = () => {
 
     const scopedWorkflows = useMemo(() => {
         const initialScopes: ApwWorkflowScoped = {
-            pageBuilder: [],
-            cms: []
+            [ApwWorkflowApplications.PB]: [],
+            [ApwWorkflowApplications.CMS]: []
         };
         return workflows.reduce<ApwWorkflowScoped>((collection, workflow) => {
             if (!collection[workflow.app]) {

@@ -21,9 +21,10 @@ export const ApwHeadlessCmsWorkflowScope: HigherOrderComponent<
         }
         const { workflow, Bind } = props;
         const { scope } = workflow;
-        const type = get(scope, "type");
-        const noPages = isEmpty(get(scope, "data.pages"));
-        const noCategories = isEmpty(get(scope, "data.categories"));
+
+        const noEntries = isEmpty(get(scope, "data.entries"));
+        const noModels = isEmpty(get(scope, "data.models"));
+
         return (
             <Stack space={6}>
                 <Box>
@@ -33,13 +34,13 @@ export const ApwHeadlessCmsWorkflowScope: HigherOrderComponent<
                             <option value={ApwWorkflowScopeTypes.DEFAULT}>{t`Everything`}</option>
                             <option
                                 value={ApwWorkflowScopeTypes.CUSTOM}
-                            >{t`Specific categories and pages`}</option>
+                            >{t`Specific models and entries`}</option>
                         </Select>
                     </Bind>
                 </Box>
                 <Box>
-                    {type === ApwWorkflowScopeTypes.CUSTOM && (
-                        <CmsScopeSettings Bind={Bind} runValidation={noPages && noCategories} />
+                    {scope.type === ApwWorkflowScopeTypes.CUSTOM && (
+                        <CmsScopeSettings Bind={Bind} runValidation={noEntries && noModels} />
                     )}
                 </Box>
             </Stack>

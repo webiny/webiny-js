@@ -11592,6 +11592,8 @@ __metadata:
     "@webiny/app": ^5.26.0
     "@webiny/app-admin": ^5.26.0
     "@webiny/app-admin-core": ^5.26.0
+    "@webiny/app-headless-cms": ^5.26.0
+    "@webiny/app-i18n": ^5.26.0
     "@webiny/app-page-builder": ^5.26.0
     "@webiny/app-security": ^5.26.0
     "@webiny/cli": ^5.26.0

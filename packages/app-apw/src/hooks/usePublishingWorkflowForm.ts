@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useMemo, Dispatch, SetStateAction } from "react";
 import isEmpty from "lodash/isEmpty";
 import { useNavigate } from "@webiny/react-router";
 import get from "lodash/get";
@@ -48,7 +48,7 @@ const createNewFormData = (app: ApwWorkflowApplications): Partial<ApwWorkflow> =
         title: "Untitled",
         steps: [getInitialStepData()],
         scope: {
-            type: ApwWorkflowScopeTypes.CUSTOM,
+            type: ApwWorkflowScopeTypes.DEFAULT,
             data: {
                 pages: [],
                 categories: [],
@@ -68,17 +68,19 @@ interface CreatePublishingWorkflowCallable {
     (app: ApwWorkflowApplications): void;
 }
 
+interface UsePublishingWorkflowFormHookValue {
+    workflow: Partial<ApwWorkflow>;
+    setWorkflow: Dispatch<SetStateAction<Partial<ApwWorkflow>>>;
+    loading: boolean;
+    showEmptyView: boolean;
+    createPublishingWorkflow: CreatePublishingWorkflowCallable;
+    cancelEditing: () => void;
+    onSubmit: (formData: any) => Promise<void>;
+    isDirty: boolean;
+    setIsDirty: (value: boolean) => void;
+}
 export type UsePublishingWorkflowFormHook = {
-    (): {
-        workflow: Record<string, any>;
-        loading: boolean;
-        showEmptyView: boolean;
-        createPublishingWorkflow: CreatePublishingWorkflowCallable;
-        cancelEditing: () => void;
-        onSubmit: (formData: any) => Promise<void>;
-        isDirty: boolean;
-        setIsDirty: (value: boolean) => void;
-    };
+    (): UsePublishingWorkflowFormHookValue;
 };
 
 export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
@@ -87,6 +89,7 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const query = useRouterQuery();
     const currentWorkflowId = query.get("id");
+    const [workflow, setWorkflow] = useState<Partial<ApwWorkflow>>({});
 
     /**
      * Reset "isDirty" flag whenever "currentWorkflowId" changes.
@@ -97,21 +100,29 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
         }
     }, [currentWorkflowId]);
 
-    const newEntry = query.get("new") === "true";
+    const newEntry = useMemo(() => {
+        return query.get("new") === "true";
+    }, [query.get("new")]);
 
     const app = useCurrentApp();
+
+    useEffect(() => {
+        setWorkflow({});
+    }, [app]);
 
     const getQuery = useQuery<GetWorkflowQueryResponse, GetWorkflowQueryVariables>(
         GET_WORKFLOW_QUERY,
         {
             variables: { id: currentWorkflowId as string },
             skip: !currentWorkflowId,
-            onCompleted: data => {
-                const error = get(data, "apw.getWorkflow.error");
-                if (error) {
-                    navigate(BASE_URL);
-                    showSnackbar(error.message);
+            onCompleted: response => {
+                setWorkflow(get(response, "apw.getWorkflow.data", {}));
+                const error = get(response, "apw.getWorkflow.error");
+                if (!error) {
+                    return;
                 }
+                navigate(BASE_URL);
+                showSnackbar(error.message);
             }
         }
     );
@@ -167,12 +178,10 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
         [currentWorkflowId, app]
     );
 
-    const workflow = getQuery.data ? getQuery.data.apw.getWorkflow.data : {};
-
     const showEmptyView = !newEntry && !loading && isEmpty(workflow);
 
     const createPublishingWorkflow: CreatePublishingWorkflowCallable = useCallback(
-        app => navigate(BASE_URL + `?new=true&app=${app}`),
+        target => navigate(BASE_URL + `?new=true&app=${target}`),
         []
     );
 
@@ -180,6 +189,7 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
 
     return {
         workflow: isEmpty(workflow) ? createNewFormData(app) : workflow,
+        setWorkflow,
         loading,
         showEmptyView,
         createPublishingWorkflow,
