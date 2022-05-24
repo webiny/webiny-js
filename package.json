@@ -4,6 +4,7 @@
     "packages": [
       "packages/*",
       "packages-v6/*",
+      "tools/*",
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",

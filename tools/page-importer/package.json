@@ -1,0 +1,32 @@
+{
+  "name": "@webiny/tools-page-importer",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Michał Kędrzyński <michal@webiny.com>"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "import": "dotenv -- node import",
+    "publish": "dotenv -- node publish"
+  },
+  "dependencies": {
+    "dotenv-cli": "^5.1.0",
+    "graphql": "^16.3.0",
+    "graphql-request": "^4.2.0",
+    "graphql-tag": "^2.12.6"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "dotenv-cli"
+      ]
+    }
+  }
+}
