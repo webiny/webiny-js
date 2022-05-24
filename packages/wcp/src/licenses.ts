@@ -12,7 +12,7 @@ export const getWcpProjectLicense = async ({
     projectId: string;
     projectEnvironmentApiKey: string;
 }) => {
-    // Fetch and decrypt the license
+    // Fetch and decrypt the license.
     const getLicenseEndpoint = getWcpApiUrl(`/orgs/${orgId}/projects/${projectId}/license`);
 
     const encryptedLicense: { license: EncryptedWcpProjectLicense } | null = await fetch(
