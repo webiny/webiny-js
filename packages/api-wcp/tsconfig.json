@@ -1,7 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../handler" }, { "path": "../handler-http" }],
+  "references": [
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-error" },
+    { "path": "../handler-graphql" },
+    { "path": "../wcp" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
