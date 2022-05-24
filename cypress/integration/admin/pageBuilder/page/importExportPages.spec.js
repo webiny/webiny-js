@@ -64,7 +64,7 @@ context("Export & Import Pages", () => {
         });
         // User input
         cy.findByTestId("import-pages.input-dialog").within(() => {
-            cy.findByText(/File URL/i).click();
+            cy.findByText(/Paste file URL/i).click();
             // Let's check the copied text
             // eslint-disable-next-line jest/valid-expect-in-promise
             cy.window()
@@ -72,7 +72,7 @@ context("Export & Import Pages", () => {
                 .invoke("readText")
                 // .should("inc", 'npm install -D cypress')
                 .then(text => {
-                    cy.get(`[type="text"]`).type(text);
+                    cy.findByLabelText("File URL").focus().realClick().type(text);
                 });
             cy.findByText(/Continue/i).click();
         });
