@@ -30,7 +30,7 @@ yarn add @webiny/wcp
 
 ## Overview
 
-The `@webiny/wcp` package contains essential Webiny Control Panel-related utilities. 
+The `@webiny/wcp` package contains essential Webiny Control Panel (WCP)-related utilities. 
 
 
 
@@ -38,54 +38,76 @@ The `@webiny/wcp` package contains essential Webiny Control Panel-related utilit
 
 | Example | Description |
 | ------- | ----------- |
-| [Retrieve WCP URLs](./docs/examples/retrievingUrls.md) | Shows how to retrieve WCP API and app URLs. |
+| [Retrieve WCP URLs](./docs/examples/retrievingWcpUrls.md) | Shows how to retrieve WCP API and app URLs. |
 
 ## Reference
 
-### Classes
+### Functions
 
-#### `WError`
+#### `getWcpAppUrl`
 
 <details>
 <summary>Type Declaration</summary>
 <p>
 
 ```ts
-interface ErrorOptions<TData> {
-    message?: string;
-    code?: string;
-    data?: TData;
-}
-
-export default class WError<TData = any> extends Error {
-    message: string;
-    code?: string;
-    data?: TData;
-    
-    constructor(message: string | ErrorOptions<TData>, code?: string, data?: TData);
-    
-    static from<TData = any>(err: any, options?: ErrorOptions<TData>): WError<any>;
-}
+export declare const getWcpAppUrl: (path?: string | undefined) => string;
 ```
 
 </p>
 </details>  
 
-The main class that you instantiate and throw, instead of the native one.
+Returns WCP app URL. The default URL can be overridden via the `WCP_APP_URL` environment variable.
 
 
 ```ts
-import WError from "@webiny/wcp";
+import { getWcpAppUrl } from "@webiny/wcp";
 
-if (new Date().getFullYear() > 2021) {
-  throw new Error({
-    message: "Year must be greater than 2021.",
-    code: "YEAR_NOT_GT_2021",
-    data: {
-      xyz: 123
-    }
-  });
-}
+console.log(getWcpAppUrl); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
 ```
 
-> Note: the `WError` identifier is arbitrary. If preferred, it can pretty much be just `Error` too.
+
+#### `getWcpApiUrl`
+
+<details>
+<summary>Type Declaration</summary>
+<p>
+
+```ts
+export declare const getWcpApiUrl: (path?: string | undefined) => string;
+```
+
+</p>
+</details>  
+
+Returns WCP API URL. The default URL can be overridden via the `WCP_API_URL` environment variable.
+
+
+```ts
+import { getWcpApiUrl } from "@webiny/wcp";
+
+console.log(getWcpApiUrl); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
+```
+
+#### `getWcpGraphQlApiUrl`
+
+<details>
+<summary>Type Declaration</summary>
+<p>
+
+```ts
+export declare const getWcpGraphQlApiUrl: (path?: string | undefined) => string;
+```
+
+</p>
+</details>  
+
+Returns WCP GraphQL API URL.
+
+
+```ts
+import { getWcpGraphQlApiUrl } from "@webiny/wcp";
+
+console.log(getWcpGraphQlApiUrl); // Returns "https://d3mudimnmgk2a9.cloudfront.net/graphql".
+```
+
