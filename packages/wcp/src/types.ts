@@ -16,14 +16,20 @@ export interface DecryptedWcpProjectLicense {
     projectId: string;
     package: {
         features: {
+            seats: {
+                // This is always true because WCP projects immediately get access to seats (by default 1 seat).
+                enabled: true;
+                options: {
+                    maxCount: number;
+                };
+            };
             multiTenancy: {
-                // Multi-tenancy is enabled the moment user's project is connected with WCP.
-                // This means we can assign `true` as the type here.
+                // This is always true because WCP projects immediately get access to multi-tenancy.
                 enabled: true;
             };
             advancedPublishingWorkflow: {
                 enabled: boolean;
             };
-        }
+        };
     };
 }
