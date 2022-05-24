@@ -23,7 +23,7 @@ export const getWcpProjectLicense = async ({
     )
         .then(response => response.json())
         .catch(e => {
-            console.error(
+            console.warn(
                 `An error occurred while trying to retrieve the license for project "${orgId}/${projectId}": ${e.message}`
             );
             return null;
