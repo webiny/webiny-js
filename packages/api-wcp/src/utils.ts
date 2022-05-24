@@ -1,11 +1,6 @@
 import { WcpProjectEnvironment } from "@webiny/wcp/types";
 import { decrypt } from "@webiny/wcp";
 
-process.env.WCP_API_URL = "https://d16nfk35w3a3cu.cloudfront.net";
-process.env.WCP_APP_URL = "http://localhost:3000";
-process.env.WCP_PROJECT_ENVIRONMENT =
-    "eyJpZCI6ImRldiN1d2hsMGZpemZlIiwiYXBpS2V5IjoiNWQxNTU3NjYtNDUzYi00ZjRhLTg2MWMtMTNlM2RmNTFkODEzIiwib3JnIjp7ImlkIjoiYm9yZyJ9LCJwcm9qZWN0Ijp7ImlkIjoiYXdlc29tZS1wcm9qZWN0In19";
-
 export function getWcpProjectEnvironment(): WcpProjectEnvironment | null {
     if (process.env.WCP_PROJECT_ENVIRONMENT) {
         try {
