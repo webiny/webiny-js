@@ -38,7 +38,7 @@ The `@webiny/wcp` package contains essential Webiny Control Panel-related utilit
 
 | Example | Description |
 | ------- | ----------- |
-| [Retrieve WCP URLs](./docs/examples/basicUsage.md) | Shows how to retrieve WCP API and app URLs. |
+| [Retrieve WCP URLs](./docs/examples/retrievingUrls.md) | Shows how to retrieve WCP API and app URLs. |
 
 ## Reference
 
