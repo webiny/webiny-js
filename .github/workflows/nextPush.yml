@@ -407,7 +407,7 @@ jobs:
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: next
-        timeout-minutes: 20
+        timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
@@ -662,7 +662,7 @@ jobs:
 
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         working-directory: next
-        timeout-minutes: 20
+        timeout-minutes: 40
         run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
 
       - name: Upload screenshots to Slack
