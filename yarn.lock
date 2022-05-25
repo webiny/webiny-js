@@ -11309,6 +11309,9 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@webiny/cli": ^5.26.0
+    "@webiny/error": ^5.26.0
+    "@webiny/handler": ^5.26.0
+    "@webiny/handler-graphql": ^5.26.0
     "@webiny/project-utils": ^5.26.0
     "@webiny/wcp": ^5.26.0
     rimraf: ^3.0.2
