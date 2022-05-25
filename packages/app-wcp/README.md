@@ -13,10 +13,10 @@ A set of frontend Webiny Control Panel (WCP)-related utilities.
 - [Overview](#overview)
 - [Examples](#examples)
 - [Reference](#reference)
-  - [Functions](#functions)
-    - [`getWcpAppUrl`](#getWcpAppUrl)
-    - [`getWcpApiUrl`](#getWcpApiUrl)
-    - [`getWcpGraphQlApiUrl`](#getWcpGraphQlApiUrl)
+  - [Components](#components)
+    - [`Wcp`](#Wcp)
+  - [Hooks](#hooks)
+      - [`useWcp`](#useWcp)
 
 ## Installation
 
@@ -34,14 +34,15 @@ yarn add @webiny/app-wcp
 
 The `@webiny/app-wcp` package contains essential Webiny Control Panel (WCP)-related utilities. In other words, the `Wcp` provider React component and the `useWcp` hook which can be used to get the current WCP project and inspect whether a specific feature is available.
 
-> ℹ️ _INFO_
-> This package relies on [`@webiny/api-wcp`](./../api-wcp) when it comes to retrieving project information (via GraphQL).
+> ℹ️ **INFO**
+>
+> The `Wcp` provider retrieves WCP project information from the Webiny's default GraphQL API. Note that this project relies on [`@webiny/api-wcp`](./../api-wcp) when it comes to retrieving project information (via GraphQL).
 
 ## Examples
 
 | Example                           | Description                                             |
 | --------------------------------- | ------------------------------------------------------- |
-| [Setup](./docs/examples/setup.md) | Shows how to set up the `Wcp` provider React component. |
+| [Setup](./docs/examples/setup.md) | Shows how to set up the [`Wcp`](#Wcp) provider React component. |
 
 ## Reference
 
@@ -60,7 +61,7 @@ export declare const Wcp: React.FC;
 </p>
 </details>
 
-The `Wcp` is a provider React component, which retrieves the WCP project information. The component also makes it possible to use the `useWcp` React hook, which can be used to get the current WCP project information or inspect whether a specific WCP feature is allowed to be used within the React app.
+The `Wcp` is a provider React component, which retrieves the WCP project information. The component also makes it possible to use the [`useWcp`](#useWcp) React hook, which can be used to get the current WCP project information or inspect whether a specific WCP feature is allowed to be used within the React app.
 
 ```tsx
 import React from "react";

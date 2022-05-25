@@ -20,4 +20,5 @@ export const App;
 ```
 
 > ℹ️ **INFO**
+> 
 > This package relies on [`@webiny/api-wcp`](./../api-wcp) when it comes to retrieving project information (via GraphQL).
