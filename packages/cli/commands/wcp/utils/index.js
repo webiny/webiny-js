@@ -13,5 +13,5 @@ module.exports = {
     setProjectId,
     setWcpPat,
     getWcpPat,
-    sleep,
+    sleep
 };

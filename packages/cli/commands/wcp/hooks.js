@@ -1,9 +1,5 @@
 const { encrypt } = require("@webiny/wcp");
-const {
-    getUser,
-    getProjectEnvironment,
-    updateUserLastActiveOn
-} = require("./utils");
+const { getUser, getProjectEnvironment, updateUserLastActiveOn } = require("./utils");
 
 let projectEnvironment;
 
