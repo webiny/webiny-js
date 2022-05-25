@@ -181,13 +181,17 @@ export interface ApwWorkflow extends ApwBaseFields {
     app: ApwWorkflowApplications;
 }
 
+interface ApwWorkflowScopeCmsEntry {
+    id: string;
+    modelId: string;
+}
 export interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
     data: {
         categories?: string[];
         pages?: string[];
         models?: string[];
-        entries?: string[];
+        entries?: ApwWorkflowScopeCmsEntry[];
     };
 }
 

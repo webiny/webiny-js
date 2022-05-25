@@ -135,7 +135,7 @@ const scopeTypeField = () =>
                     label: "Default  - Catch all scope that applies to all content that's being published."
                 },
                 {
-                    value: "pb",
+                    value: "pageBuilder",
                     label: "Page category (Page Builder only) - The workflow will apply to all pages inside specific categories."
                 },
                 {
@@ -179,7 +179,7 @@ const scopeDataCmsModels = () =>
     });
 const scopeDataCmsEntries = () =>
     createModelField({
-        label: "Category",
+        label: "Entries",
         parent: "workflow scope data",
         type: "text",
         multipleValues: true

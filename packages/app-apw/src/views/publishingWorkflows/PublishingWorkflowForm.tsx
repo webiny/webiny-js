@@ -100,6 +100,7 @@ const PublishingWorkflowForm = () => {
                             <SimpleFormContent>
                                 <Accordion elevation={0}>
                                     <AccordionItem
+                                        open={!data.id || data.steps.length === 1}
                                         icon={<WorkflowStepIcon />}
                                         title={t`Workflow steps`}
                                         description={workflowStepsDescription}
@@ -129,6 +130,7 @@ const PublishingWorkflowForm = () => {
                                         </ButtonPrimary>
                                     </AccordionItem>
                                     <AccordionItem
+                                        open={!data.id || data.steps.length === 1}
                                         icon={<WorkflowScopeIcon />}
                                         title={t`Scope`}
                                         description={t`Define the conditions when this workflow applies.`}

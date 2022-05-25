@@ -47,7 +47,7 @@ const ListItemTitle: React.FC<ListItemTitleProps> = ({ index, label }) => {
 export const ReviewersList: React.FC<ChildrenRenderProp> = ({ onChange, getValue }) => {
     const { reviewers, loading } = useReviewers();
 
-    if (loading) {
+    if (loading || !reviewers || reviewers.length === 0) {
         return (
             <div style={{ width: "100%", height: "120px" }}>
                 <Typography use={"subtitle2"}>Loading reviewers...</Typography>

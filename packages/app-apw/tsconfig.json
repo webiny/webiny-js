@@ -29,12 +29,12 @@
     {
       "path": "../validation"
     },
-      {
-          "path": "../app-i18n"
-      },
-      {
-          "path": "../app-headless-cms"
-      }
+    {
+      "path": "../app-i18n"
+    },
+    {
+      "path": "../app-headless-cms"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

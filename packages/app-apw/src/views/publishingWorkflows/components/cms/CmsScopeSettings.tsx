@@ -106,7 +106,6 @@ const CmsEntriesList: React.FC<CmsEntriesListProps> = ({ bind, models }) => {
             </div>
         );
     }, []);
-    console.log(bind.value);
     return (
         <Stack space={6} padding={6}>
             <Box>
@@ -129,7 +128,7 @@ const CmsEntriesList: React.FC<CmsEntriesListProps> = ({ bind, models }) => {
                     onChange={(items: CmsEntryOption[] = []) => {
                         const values = items.map(item => {
                             return {
-                                id: item.id,
+                                entryId: item.id,
                                 modelId: item.model.modelId
                             };
                         });
