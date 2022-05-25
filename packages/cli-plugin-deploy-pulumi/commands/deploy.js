@@ -69,6 +69,15 @@ module.exports = async (inputs, context) => {
         return;
     }
 
+
+    await runHook({
+        hookName: "hook-before-deploy",
+        hookFn: application.onBeforeDeploy,
+        skip: inputs.preview,
+        args: hookArgs,
+        context
+    });
+
     await login(projectApplication);
 
     const pulumi = await getPulumi({
@@ -93,14 +102,6 @@ module.exports = async (inputs, context) => {
             await login(projectApplication);
         });
     }
-
-    await runHook({
-        hookName: "hook-before-deploy",
-        hookFn: application.onBeforeDeploy,
-        skip: inputs.preview,
-        args: hookArgs,
-        context
-    });
 
     console.log();
     const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
