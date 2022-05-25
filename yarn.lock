@@ -10212,6 +10212,7 @@ __metadata:
     "@webiny/api-security-so-ddb": ^5.26.0
     "@webiny/api-tenancy": ^5.26.0
     "@webiny/api-tenancy-so-ddb": ^5.26.0
+    "@webiny/api-wcp": ^5.26.0
     "@webiny/cli": ^5.26.0
     "@webiny/db-dynamodb": ^5.26.0
     "@webiny/error": ^5.26.0
@@ -11208,6 +11209,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
+    "@webiny/api-wcp": ^5.26.0
     "@webiny/cli": ^5.26.0
     "@webiny/error": ^5.26.0
     "@webiny/handler": ^5.26.0
@@ -11297,7 +11299,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-wcp@workspace:packages/api-wcp":
+"@webiny/api-wcp@^5.26.0, @webiny/api-wcp@workspace:packages/api-wcp":
   version: 0.0.0-use.local
   resolution: "@webiny/api-wcp@workspace:packages/api-wcp"
   dependencies:
