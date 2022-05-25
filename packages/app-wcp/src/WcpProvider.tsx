@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { WcpProvider as ContextProvider } from "./contexts";
+import { WcpProviderComponent } from "./contexts";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { GetWcpProjectGqlResponse, WcpProject } from "~/types";
@@ -48,5 +48,5 @@ export const WcpProvider: React.FC = ({ children }) => {
         return null;
     }
 
-    return <ContextProvider project={project}>{children}</ContextProvider>;
+    return <WcpProviderComponent project={project}>{children}</WcpProviderComponent>;
 };

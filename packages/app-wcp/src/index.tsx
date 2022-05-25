@@ -1,3 +1,2 @@
-export * from "./contexts";
-export * from "./hooks";
-export * from "./Wcp";
+export { useWcp } from "./hooks/useWcp";
+export { WcpProvider } from "./WcpProvider";
