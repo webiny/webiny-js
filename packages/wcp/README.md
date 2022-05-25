@@ -4,7 +4,7 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-An extended version of the native `Error` class.
+A set of Webiny Control Panel (WCP)-related utilities.
 
 ## Table of Contents
 
@@ -12,8 +12,10 @@ An extended version of the native `Error` class.
 -   [Overview](#overview)
 -   [Examples](#examples)
 -   [Reference](#reference)
-    -   [Classes](#classes)
-        -   [`Error`](#error)
+    -   [Functions](#functions)
+        -   [`getWcpAppUrl`](#getWcpAppUrl)
+        -   [`getWcpApiUrl`](#getWcpApiUrl)
+        -   [`getWcpGraphQlApiUrl`](#getWcpGraphQlApiUrl)
 
 ## Installation
 
@@ -63,7 +65,7 @@ Returns WCP app URL. The default URL can be overridden via the `WCP_APP_URL` env
 ```ts
 import { getWcpAppUrl } from "@webiny/wcp";
 
-console.log(getWcpAppUrl); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
+console.log(getWcpAppUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
 ```
 
 
@@ -86,7 +88,7 @@ Returns WCP API URL. The default URL can be overridden via the `WCP_API_URL` env
 ```ts
 import { getWcpApiUrl } from "@webiny/wcp";
 
-console.log(getWcpApiUrl); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
+console.log(getWcpApiUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
 ```
 
 #### `getWcpGraphQlApiUrl`
@@ -108,6 +110,6 @@ Returns WCP GraphQL API URL.
 ```ts
 import { getWcpGraphQlApiUrl } from "@webiny/wcp";
 
-console.log(getWcpGraphQlApiUrl); // Returns "https://d3mudimnmgk2a9.cloudfront.net/graphql".
+console.log(getWcpGraphQlApiUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net/graphql".
 ```
 
