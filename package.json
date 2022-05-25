@@ -151,7 +151,7 @@
     "validate-packages": "node scripts/validatePackages.js",
     "lerna:version:latest": "yarn lerna version --force-publish --conventional-graduate --yes",
     "lerna:publish:latest": "yarn lerna publish from-package --yes",
-    "lerna:version:beta": "yarn lerna version 5.27.0-beta.0 --conventional-prerelease --force-publish --preid beta --yes",
+    "lerna:version:beta": "yarn lerna version prerelease --conventional-prerelease --force-publish --preid beta --yes",
     "lerna:publish:beta": "yarn lerna publish from-package --dist-tag beta --yes",
     "lerna:version:verdaccio": "yarn lerna version prerelease --conventional-prerelease --force-publish --preid next --no-push --no-changelog --yes",
     "lerna:publish:verdaccio": "yarn lerna publish from-package --dist-tag next --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry --yes",
