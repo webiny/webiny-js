@@ -14,7 +14,7 @@ A set of frontend Webiny Control Panel (WCP)-related utilities.
 - [Examples](#examples)
 - [Reference](#reference)
   - [Components](#components)
-    - [`Wcp`](#Wcp)
+    - [`WcpProvider`](#WcpProvider)
   - [Hooks](#hooks)
     - [`useWcp`](#useWcp)
 
@@ -32,23 +32,23 @@ yarn add @webiny/app-wcp
 
 ## Overview
 
-The `@webiny/app-wcp` package contains essential Webiny Control Panel (WCP)-related utilities, that can be used within a React app. These include the [`Wcp`](#Wcp) provider component and the [`useWcp`](#useWcp) hook, which can be used to retrieve the current WCP project information and inspect whether a specific feature is available.
+The `@webiny/app-wcp` package contains essential Webiny Control Panel (WCP)-related utilities, that can be used within a React app. These include the [`WcpProvider`](#WcpProvider) provider component and the [`useWcp`](#useWcp) hook, which can be used to retrieve the current WCP project information and inspect whether a specific feature is available.
 
 > ℹ️ **INFO**
 >
-> Internally, the [`Wcp`](#Wcp) provider retrieves WCP project information from the Webiny's default GraphQL API. Because of this, note that this project relies on [`@webiny/api-wcp`](./../api-wcp) when it comes to retrieving project information (via GraphQL).
+> Internally, the [`WcpProvider`](#WcpProvider) provider retrieves WCP project information from the Webiny's default GraphQL API. Because of this, note that this project relies on [`@webiny/api-wcp`](./../api-wcp) when it comes to retrieving project information (via GraphQL).
 
 ## Examples
 
 | Example                           | Description                                                     |
 | --------------------------------- | --------------------------------------------------------------- |
-| [Setup](./docs/examples/setup.md) | Shows how to set up the [`Wcp`](#Wcp) provider React component. |
+| [Setup](./docs/examples/setup.md) | Shows how to set up the [`WcpProvider`](#WcpProvider) provider React component. |
 
 ## Reference
 
 ### Components
 
-#### `Wcp`
+#### `WcpProvider`
 
 <details>
 <summary>Type Declaration</summary>
@@ -61,17 +61,17 @@ export declare const Wcp: React.FC;
 </p>
 </details>
 
-The [`Wcp`](#Wcp) is a provider component, which retrieves the WCP project information. The component also makes it possible to use the [`useWcp`](#useWcp) hook, which can be used to get the current WCP project information or inspect whether a specific WCP feature is allowed to be used within the React app.
+The [`WcpProvider`](#WcpProvider) is a provider component, which retrieves the WCP project information. The component also makes it possible to use the [`useWcp`](#useWcp) hook, which can be used to get the current WCP project information or inspect whether a specific WCP feature is allowed to be used within the React app.
 
 ```tsx
 import React from "react";
-import { Wcp } from "./Wcp";
+import { WcpProvider } from "@webiny/app-wcp";
 
 const App = () => {
   return (
-    <Wcp>
+    <WcpProvider>
       <MyApp />
-    </Wcp>
+    </WcpProvider>
   );
 };
 

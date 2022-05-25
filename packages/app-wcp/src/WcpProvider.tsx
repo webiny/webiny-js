@@ -34,7 +34,7 @@ export const GET_WCP_PROJECT = gql`
     }
 `;
 
-export const Wcp: React.FC = ({ children }) => {
+export const WcpProvider: React.FC = ({ children }) => {
     const [project, setProject] = useState<WcpProject | null>(null);
     useQuery<GetWcpProjectGqlResponse>(GET_WCP_PROJECT, {
         skip: !!project,
