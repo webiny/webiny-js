@@ -1,7 +1,7 @@
 import { setupCategory } from "../utils/helpers";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import mocks from "./mocks/workflows";
-import { ApwWorkflowApplications } from "~/types";
+import { ApwWorkflowApplications, WorkflowScopeTypes } from "~/types";
 
 describe("Workflow assignment to a PB Page", () => {
     const options = {
@@ -207,7 +207,7 @@ describe("Workflow assignment to a PB Page", () => {
                     title: `Main review workflow`,
                     app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             entries: [],
                             models: [],
@@ -226,6 +226,28 @@ describe("Workflow assignment to a PB Page", () => {
             () => listWorkflowsQuery({}).then(([data]) => data),
             (response: any) => response.data.apw.listWorkflows.data.length === 1
         );
+
+        const [listWorkflowsResponse] = await listWorkflowsQuery();
+
+        expect(listWorkflowsResponse).toEqual({
+            data: {
+                apw: {
+                    listWorkflows: {
+                        data: [
+                            {
+                                ...workflow
+                            }
+                        ],
+                        meta: {
+                            totalCount: 1,
+                            cursor: null,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
         /**
          * Now page should have this workflow assigned to it.
          */
@@ -247,7 +269,7 @@ describe("Workflow assignment to a PB Page", () => {
                     title: `Main review workflow - 2`,
                     app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             pages: [page.pid, page.pid + "999999"]
                         }
@@ -295,7 +317,7 @@ describe("Workflow assignment to a PB Page", () => {
                     title: `Main review workflow`,
                     app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             pages: [firstPage.pid]
                         }
@@ -340,7 +362,7 @@ describe("Workflow assignment to a PB Page", () => {
                 title: workflow.title,
                 steps: workflow.steps,
                 scope: {
-                    type: "pb",
+                    type: WorkflowScopeTypes.CUSTOM,
                     data: {
                         pages: [secondPage.pid]
                     }
@@ -435,7 +457,7 @@ describe("Workflow assignment to a PB Page", () => {
                     title: `Main review workflow`,
                     app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             pages: [firstPage.pid, secondPage.pid]
                         }
@@ -532,7 +554,7 @@ describe("Workflow assignment to a PB Page", () => {
                     title: `Main review workflow`,
                     app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             pages: [firstPage.pid, secondPage.pid]
                         }
@@ -579,7 +601,7 @@ describe("Workflow assignment to a PB Page", () => {
                 title: workflow.title,
                 steps: workflow.steps,
                 scope: {
-                    type: "pb",
+                    type: WorkflowScopeTypes.CUSTOM,
                     data: {
                         pages: [firstPage.pid]
                     }
