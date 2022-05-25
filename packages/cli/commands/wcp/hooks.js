@@ -56,7 +56,7 @@ module.exports = () => [
     // build / deploy steps. For example, we pass it to GraphQL and Headless CMS Lambda functions.
     {
         type: "hook-before-deploy",
-        name: "hook-before-deploy-environment-api-key-project",
+        name: "hook-before-deploy-project-environment",
         async hook() {
             if (!projectEnvironment) {
                 return;
