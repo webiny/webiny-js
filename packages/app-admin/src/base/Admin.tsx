@@ -1,6 +1,6 @@
 import React from "react";
 import { Admin as BaseAdmin, Provider } from "@webiny/app-admin-core";
-import { Wcp as WcpProvider } from "@webiny/app-wcp";
+import { WcpProvider } from "@webiny/app-wcp";
 import { ApolloClientFactory, createApolloProvider } from "./providers/ApolloProvider";
 import { Base } from "./Base";
 import { createTelemetryProvider } from "./providers/TelemetryProvider";
