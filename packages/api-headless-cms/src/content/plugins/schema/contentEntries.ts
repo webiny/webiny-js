@@ -214,6 +214,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 status: String
                 title: String
                 published: CmsPublishedContentEntry
+                settings: JSON
             }
 
             type CmsContentEntriesResponse {
