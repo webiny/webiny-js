@@ -102,7 +102,7 @@ The [`useWcp`](#useWcp) hook can be used to get the current WCP project informat
 
 ```tsx
 import React from "react";
-import { useWcp } from "@webiny/app-wcp/hooks/useWcp";
+import { useWcp } from "@webiny/app-wcp";
 
 export const MyComponent = () => {
   const { canUseFeature } = useWcp();
