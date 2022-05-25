@@ -1,6 +1,6 @@
 {
   "name": "@webiny/aws-helpers",
-  "version": "5.26.1-beta.0",
+  "version": "5.27.0-beta.0",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
@@ -32,7 +32,7 @@
     "srcset": "^4.0.0"
   },
   "devDependencies": {
-    "@webiny/project-utils": "^5.26.1-beta.0"
+    "@webiny/project-utils": "^5.27.0-beta.0"
   },
   "sideEffects": false,
   "adio": {
