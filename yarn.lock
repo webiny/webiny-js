@@ -12743,6 +12743,7 @@ __metadata:
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
     "@webiny/telemetry": ^5.26.0
+    "@webiny/wcp": ^5.26.0
     boolean: 3.1.4
     camelcase: 5.3.1
     chalk: 4.1.2
