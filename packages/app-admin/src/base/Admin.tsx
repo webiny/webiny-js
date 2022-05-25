@@ -1,5 +1,6 @@
 import React from "react";
 import { Admin as BaseAdmin, Provider } from "@webiny/app-admin-core";
+import { Wcp as WcpProvider } from "@webiny/app-wcp";
 import { ApolloClientFactory, createApolloProvider } from "./providers/ApolloProvider";
 import { Base } from "./Base";
 import { createTelemetryProvider } from "./providers/TelemetryProvider";
@@ -17,19 +18,23 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
     const ApolloProvider = createApolloProvider(createApolloClient);
     const TelemetryProvider = createTelemetryProvider();
     const UiStateProvider = createUiStateProvider();
+
     /**
      * TODO @ts-refactor
      */
     return (
-        <BaseAdmin>
-            <Provider hoc={ApolloProvider} />
-            <Provider hoc={TelemetryProvider} />
-            <Provider hoc={UiStateProvider} />
-            <Provider hoc={SearchProvider} />
-            <Provider hoc={UserMenuProvider} />
-            <Provider hoc={NavigationProvider} />
-            <Base />
-            {children}
-        </BaseAdmin>
+        <ApolloProvider>
+            <WcpProvider>
+                <BaseAdmin>
+                    <Provider hoc={TelemetryProvider} />
+                    <Provider hoc={UiStateProvider} />
+                    <Provider hoc={SearchProvider} />
+                    <Provider hoc={UserMenuProvider} />
+                    <Provider hoc={NavigationProvider} />
+                    <Base />
+                    {children}
+                </BaseAdmin>
+            </WcpProvider>
+        </ApolloProvider>
     );
 };
