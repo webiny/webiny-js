@@ -16,7 +16,7 @@ A set of frontend Webiny Control Panel (WCP)-related utilities.
   - [Components](#components)
     - [`Wcp`](#Wcp)
   - [Hooks](#hooks)
-      - [`useWcp`](#useWcp)
+    - [`useWcp`](#useWcp)
 
 ## Installation
 
@@ -32,7 +32,7 @@ yarn add @webiny/app-wcp
 
 ## Overview
 
-The `@webiny/app-wcp` package contains essential Webiny Control Panel (WCP)-related utilities, that can be used within React applications. These include the [`Wcp`](#Wcp) provider component and the [`useWcp`](#useWcp) hook which can be used to get the current WCP project and inspect whether a specific feature is available.
+The `@webiny/app-wcp` package contains essential Webiny Control Panel (WCP)-related utilities, that can be used within a React app. These include the [`Wcp`](#Wcp) provider component and the [`useWcp`](#useWcp) hook, which can be used to retrieve the current WCP project information and inspect whether a specific feature is available.
 
 > ℹ️ **INFO**
 >
@@ -40,8 +40,8 @@ The `@webiny/app-wcp` package contains essential Webiny Control Panel (WCP)-rela
 
 ## Examples
 
-| Example                           | Description                                             |
-| --------------------------------- | ------------------------------------------------------- |
+| Example                           | Description                                                     |
+| --------------------------------- | --------------------------------------------------------------- |
 | [Setup](./docs/examples/setup.md) | Shows how to set up the [`Wcp`](#Wcp) provider React component. |
 
 ## Reference
@@ -61,7 +61,7 @@ export declare const Wcp: React.FC;
 </p>
 </details>
 
-The `Wcp` is a provider component, which retrieves the WCP project information. The component also makes it possible to use the [`useWcp`](#useWcp) hook, which can be used to get the current WCP project information or inspect whether a specific WCP feature is allowed to be used within the React app.
+The [`Wcp`](#Wcp) is a provider component, which retrieves the WCP project information. The component also makes it possible to use the [`useWcp`](#useWcp) hook, which can be used to get the current WCP project information or inspect whether a specific WCP feature is allowed to be used within the React app.
 
 ```tsx
 import React from "react";
@@ -88,8 +88,8 @@ export const App;
 
 ```ts
 interface UseWcpHook {
-    getProject: () => WcpProject | null;
-    canUseFeature: (featureId: string) => boolean;
+  getProject: () => WcpProject | null;
+  canUseFeature: (featureId: string) => boolean;
 }
 
 export declare function useWcp(): UseWcpHook;
@@ -98,10 +98,19 @@ export declare function useWcp(): UseWcpHook;
 </p>
 </details>
 
-The `useWcp` hook can be used to get the current WCP project information and inspect whether a specific WCP feature is allowed to be used within the React app.
+The [`useWcp`](#useWcp) hook can be used to get the current WCP project information and inspect whether a specific WCP feature is allowed to be used within the React app.
 
-```ts
-import { getWcpAppUrl } from "@webiny/app-wcp";
+```tsx
+import React from "react";
+import { useWcp } from "@webiny/app-wcp/hooks/useWcp";
 
-console.log(getWcpAppUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
+export const ApwAdmin = () => {
+  const { canUseFeature } = useWcp();
+
+  if (canUseFeature("advancedPublishingWorkflow")) {
+    return <span>We can use Advanced Publishing Workflow (APW).</span>;
+  }
+
+  return <span>We cannot use Advanced Publishing Workflow (APW).</span>;
+};
 ```
