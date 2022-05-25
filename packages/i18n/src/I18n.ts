@@ -85,16 +85,18 @@ export default class I18N {
 
         const hasVariables = base.includes("{") && base.includes("}");
         if (hasVariables) {
-            return (values: I18NDataValues) => {
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
+            const $this = this;
+            return function i18n(values: I18NDataValues) {
                 const data: I18NData = {
                     translation: translation as string,
                     base,
                     namespace,
                     values,
-                    i18n: this
+                    i18n: $this
                 };
-                for (const key in this.processors) {
-                    const processor = this.processors[key];
+                for (const key in $this.processors) {
+                    const processor = $this.processors[key];
                     if (processor.canExecute(data)) {
                         return processor.execute(data);
                     }

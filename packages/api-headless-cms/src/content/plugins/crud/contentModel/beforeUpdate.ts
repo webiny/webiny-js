@@ -34,7 +34,8 @@ const getContentModelTitleFieldId = (fields: CmsModelField[], titleFieldId?: str
     const target = fields.find(f => f.fieldId === titleFieldId);
     if (!target) {
         throw new WebinyError(`Field does not exist in the model.`, "VALIDATION_ERROR", {
-            fieldId: titleFieldId
+            fieldId: titleFieldId,
+            fields
         });
     }
 

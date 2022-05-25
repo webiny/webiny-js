@@ -33,7 +33,8 @@ module.exports = {
         "jest/expect-expect": 0,
         // Sometimes we have to use expect() inside try/catch clause (for async calls).
         // This rule raises an error when you do that, so we disabled it.
-        "jest/no-conditional-expect": 0
+        "jest/no-conditional-expect": 0,
+        "jest/no-commented-out-tests": 0
     },
     settings: {
         react: {

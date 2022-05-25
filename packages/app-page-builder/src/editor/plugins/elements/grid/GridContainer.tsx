@@ -65,6 +65,9 @@ const GridContainer: React.FC<GridContainerPropsType> = ({ element: { id } }) =>
     );
 };
 
-export default React.memo(GridContainer, (current, next) => {
+const MemoizedGridContainer = React.memo(GridContainer, (current, next) => {
     return current.element.id === next.element.id;
 });
+
+MemoizedGridContainer.displayName = "MemoizedGridContainer";
+export default MemoizedGridContainer;

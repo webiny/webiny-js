@@ -99,7 +99,15 @@ export const createEntriesStorageOperations = (
     const create = async (model: CmsModel, args: CmsEntryStorageOperationsCreateParams) => {
         const { entry, storageEntry } = args;
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
+
+        const isPublished = entry.status === "published";
+
+        const locked = isPublished ? true : entry.locked;
         /**
          * We need to:
          *  - create new main entry item
@@ -108,6 +116,7 @@ export const createEntriesStorageOperations = (
         const items = [
             entity.putBatch({
                 ...storageEntry,
+                locked,
                 PK: partitionKey,
                 SK: createRevisionSortKey(entry),
                 TYPE: createType(),
@@ -116,6 +125,7 @@ export const createEntriesStorageOperations = (
             }),
             entity.putBatch({
                 ...storageEntry,
+                locked,
                 PK: partitionKey,
                 SK: createLatestSortKey(),
                 TYPE: createLatestType(),
@@ -123,6 +133,23 @@ export const createEntriesStorageOperations = (
                 GSI1_SK: createGSISortKey(storageEntry)
             })
         ];
+
+        /**
+         * We need to create published entry if
+         */
+        if (isPublished) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    locked,
+                    PK: partitionKey,
+                    SK: createPublishedSortKey(),
+                    TYPE: createLatestType(),
+                    GSI1_PK: createGSIPartitionKey(model, "P"),
+                    GSI1_SK: createGSISortKey(storageEntry)
+                })
+            );
+        }
 
         try {
             await batchWriteAll({
@@ -152,7 +179,11 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry, storageEntry } = params;
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
         /**
          * We need to:
          *  - create the main entry item
@@ -203,7 +234,14 @@ export const createEntriesStorageOperations = (
 
     const update = async (model: CmsModel, params: CmsEntryStorageOperationsUpdateParams) => {
         const { entry, storageEntry } = params;
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
+
+        const isPublished = entry.status === "published";
+        const locked = isPublished ? true : entry.locked;
 
         const items = [];
         /**
@@ -214,6 +252,7 @@ export const createEntriesStorageOperations = (
         items.push(
             entity.putBatch({
                 ...storageEntry,
+                locked,
                 PK: partitionKey,
                 SK: createRevisionSortKey(storageEntry),
                 TYPE: createType(),
@@ -221,6 +260,20 @@ export const createEntriesStorageOperations = (
                 GSI1_SK: createGSISortKey(storageEntry)
             })
         );
+
+        if (isPublished) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    locked,
+                    PK: partitionKey,
+                    SK: createPublishedSortKey(),
+                    TYPE: createPublishedType(),
+                    GSI1_PK: createGSIPartitionKey(model, "P"),
+                    GSI1_SK: createGSISortKey(storageEntry)
+                })
+            );
+        }
 
         /**
          * We need the latest entry to update it as well if neccessary.
@@ -231,6 +284,7 @@ export const createEntriesStorageOperations = (
             items.push(
                 entity.putBatch({
                     ...storageEntry,
+                    locked,
                     PK: partitionKey,
                     SK: createLatestSortKey(),
                     TYPE: createLatestType(),
@@ -267,7 +321,11 @@ export const createEntriesStorageOperations = (
 
         const queryAllParams: QueryAllParams = {
             entity,
-            partitionKey: createPartitionKey(entry),
+            partitionKey: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
             options: {
                 gte: " "
             }
@@ -319,7 +377,11 @@ export const createEntriesStorageOperations = (
         params: CmsEntryStorageOperationsDeleteRevisionParams
     ) => {
         const { entry, latestEntry, latestStorageEntry } = params;
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
 
         const items = [
             entity.deleteBatch({
@@ -443,13 +505,12 @@ export const createEntriesStorageOperations = (
         model: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ) => {
-        const { tenant, locale } = model;
         const { entryId, version } = params;
         const queryParams: QueryOneParams = {
             entity,
             partitionKey: createPartitionKey({
-                tenant,
-                locale,
+                tenant: model.tenant,
+                locale: model.locale,
                 id: entryId
             }),
             options: {
@@ -600,7 +661,11 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry, storageEntry } = params;
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
 
         /**
          * We need to:
@@ -662,7 +727,11 @@ export const createEntriesStorageOperations = (
     ) => {
         const { entry, storageEntry } = params;
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
         /**
          * We need to:
          *  - update existing entry
@@ -721,7 +790,11 @@ export const createEntriesStorageOperations = (
     const publish = async (model: CmsModel, params: CmsEntryStorageOperationsPublishParams) => {
         const { entry, storageEntry } = params;
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
 
         /**
          * We need the latest and published entries to see if something needs to be updated along side the publishing one.
@@ -804,7 +877,11 @@ export const createEntriesStorageOperations = (
     const unpublish = async (model: CmsModel, params: CmsEntryStorageOperationsUnpublishParams) => {
         const { entry, storageEntry } = params;
 
-        const partitionKey = createPartitionKey(entry);
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
         /**
          * We need to:
          *  - delete currently published entry

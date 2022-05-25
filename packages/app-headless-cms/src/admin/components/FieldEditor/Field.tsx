@@ -91,7 +91,7 @@ const Field: React.FC<FieldProps> = props => {
         }
 
         showSnackbar(t`Title field set successfully.`);
-    }, [field.fieldId]);
+    }, [field.fieldId, setData]);
 
     const fieldPlugin = getFieldPlugin(field.type);
     const editorFieldOptionPlugins =
