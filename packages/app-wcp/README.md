@@ -104,7 +104,7 @@ The [`useWcp`](#useWcp) hook can be used to get the current WCP project informat
 import React from "react";
 import { useWcp } from "@webiny/app-wcp/hooks/useWcp";
 
-export const ApwAdmin = () => {
+export const MyComponent = () => {
   const { canUseFeature } = useWcp();
 
   if (canUseFeature("advancedPublishingWorkflow")) {
