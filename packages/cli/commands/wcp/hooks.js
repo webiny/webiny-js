@@ -24,19 +24,19 @@ module.exports = () => [
                 );
             }
 
-            // Check login.
-            const user = await getUser();
-            const project = user.projects.find(item => item.id === projectId);
-            if (!project) {
-                throw new Error(
-                    `It seems you don't belong to the current project or the current project has been deleted.`
-                );
-            }
-
             const apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
             if (apiKey) {
                 projectEnvironment = await getProjectEnvironment({ apiKey });
             } else {
+                // If there is no API key, that means we need to retrieve the currently logged-in user.
+                const user = await getUser();
+                const project = user.projects.find(item => item.id === projectId);
+                if (!project) {
+                    throw new Error(
+                        `It seems you don't belong to the current project or the current project has been deleted.`
+                    );
+                }
+
                 projectEnvironment = await getProjectEnvironment({
                     orgId,
                     projectId,
