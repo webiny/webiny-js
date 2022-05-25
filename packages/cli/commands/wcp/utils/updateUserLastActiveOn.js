@@ -1,5 +1,6 @@
 const { request } = require("graphql-request");
 const { localStorage, log } = require("@webiny/cli/utils");
+const { getWcpGraphQlApiUrl } = require("@webiny/wcp");
 
 const UPDATE_LAST_ACTIVE_TO_NOW = /* GraphQL */ `
     mutation UpdateLastActiveToNow {
@@ -22,7 +23,6 @@ module.exports.updateUserLastActiveOn = async () => {
         );
     }
 
-    const { WCP_GRAPHQL_API_URL } = require(".");
     const headers = { authorization: pat };
-    return request(WCP_GRAPHQL_API_URL, UPDATE_LAST_ACTIVE_TO_NOW, {}, headers);
+    return request(getWcpGraphQlApiUrl(), UPDATE_LAST_ACTIVE_TO_NOW, {}, headers);
 };
