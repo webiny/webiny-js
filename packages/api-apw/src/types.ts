@@ -15,6 +15,7 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types";
 import HandlerClient from "@webiny/handler-client/HandlerClient";
+import { WcpContextObject } from "@webiny/api-wcp/types";
 
 export interface ApwFile {
     id: string;
@@ -466,6 +467,7 @@ export interface AdvancedPublishingWorkflow {
 export interface ApwContext extends Context, CmsContext {
     apw: AdvancedPublishingWorkflow;
     pageBuilder: PageBuilderContextObject;
+    wcp: WcpContextObject;
     scheduleAction: ScheduleActionContext["scheduleAction"];
 }
 

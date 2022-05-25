@@ -4,6 +4,8 @@ import contentReviewSchema from "./graphql/contentReview.gql";
 import reviewerSchema from "./graphql/reviewer.gql";
 import commentSchema from "./graphql/comment.gql";
 import changeRequestedSchema from "./graphql/changeRequest.gql";
+import { ContextPlugin } from "@webiny/handler";
+import { ApwContext } from "~/types";
 
 const emptyResolver = () => ({});
 
@@ -64,11 +66,19 @@ const baseSchema = new GraphQLSchemaPlugin({
     }
 });
 
-export default () => [
-    baseSchema,
-    workflowSchema,
-    contentReviewSchema,
-    reviewerSchema,
-    commentSchema,
-    changeRequestedSchema
-];
+export default () => {
+    return new ContextPlugin<ApwContext>(context => {
+        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
+            return;
+        }
+
+        return context.plugins.register([
+            baseSchema,
+            workflowSchema,
+            contentReviewSchema,
+            reviewerSchema,
+            commentSchema,
+            changeRequestedSchema
+        ]);
+    });
+};
