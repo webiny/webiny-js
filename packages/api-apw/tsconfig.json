@@ -27,6 +27,9 @@
       "path": "../api-tenancy"
     },
     {
+      "path": "../api-wcp"
+    },
+    {
       "path": "../db-dynamodb"
     },
     {
@@ -91,6 +94,8 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

@@ -27,6 +27,9 @@
       "path": "../api-tenancy/tsconfig.build.json"
     },
     {
+      "path": "../api-wcp/tsconfig.build.json"
+    },
+    {
       "path": "../db-dynamodb/tsconfig.build.json"
     },
     {
