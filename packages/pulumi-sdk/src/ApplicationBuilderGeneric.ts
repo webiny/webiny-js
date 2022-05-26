@@ -41,6 +41,26 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
 
         const appController = app.createController();
 
+        // Construct environment variables object. Apart from a couple of basic ones like WEBINY_ENV,
+        // we also take into consideration variables that have `WEBINY_` and `WCP_` prefix in their names.
+        const envVars: Record<string, string> = Object.keys(process.env).reduce(
+            (current, environmentVariableName) => {
+                const startsWithWebiny = environmentVariableName.startsWith("WEBINY_");
+                const startsWithWcp = environmentVariableName.startsWith("WCP_");
+
+                if (startsWithWebiny || startsWithWcp) {
+                    current[environmentVariableName] = process.env[environmentVariableName];
+                }
+                return current;
+            },
+            {
+                WEBINY_ENV: args.env,
+                WEBINY_PROJECT_NAME: this.config.name,
+                // Add Pulumi CLI path to env variable, so the CLI would be properly resolved.
+                PATH: args.pulumi.pulumiFolder + PATH_SEPARATOR + (process.env.PATH ?? "")
+            } as Record<string, any>
+        );
+
         const workspace = await LocalWorkspace.create({
             program: () => appController.run(),
             workDir: pulumiWorkDir,
@@ -51,12 +71,7 @@ export class ApplicationBuilderGeneric extends ApplicationBuilder<ApplicationGen
             },
             secretsProvider: PULUMI_SECRETS_PROVIDER,
             pulumiHome: args.pulumi.pulumiFolder,
-            envVars: {
-                WEBINY_ENV: args.env,
-                WEBINY_PROJECT_NAME: this.config.name,
-                // Add Pulumi CLI path to env variable, so the CLI would be properly resolved.
-                PATH: args.pulumi.pulumiFolder + PATH_SEPARATOR + (process.env.PATH ?? "")
-            }
+            envVars
         });
 
         const stackName = getStackName({
