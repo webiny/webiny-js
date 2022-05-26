@@ -51,8 +51,8 @@ const App = (props: AdminProps) => {
             <PageBuilder />
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
-            <ApwAdmin/>
-            <TenantManager/>
+            <ApwAdmin />
+            <TenantManager />
             {props.children}
         </BaseAdmin>
     );
