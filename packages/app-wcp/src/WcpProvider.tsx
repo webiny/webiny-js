@@ -35,16 +35,15 @@ export const GET_WCP_PROJECT = gql`
 `;
 
 export const WcpProvider: React.FC = ({ children }) => {
-    const [project, setProject] = useState<WcpProject | null>(null);
+    const [project, setProject] = useState<WcpProject | null | undefined>(undefined);
     useQuery<GetWcpProjectGqlResponse>(GET_WCP_PROJECT, {
         skip: !!project,
         onCompleted: response => {
-            const { data } = response.wcp.getProject;
-            setProject(data);
+            setProject(response.wcp.getProject.data);
         }
     });
 
-    if (!project) {
+    if (project === undefined) {
         return null;
     }
 
