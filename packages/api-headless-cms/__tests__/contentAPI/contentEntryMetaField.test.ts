@@ -12,13 +12,20 @@ const createMetaData = () => {
         testBoolean: true,
         testString: "yes",
         testNumber: 321,
-        testArray: [
-            "item",
+        testArray: ["item", "true", "54321"],
+        testArrayObjects: [
             {
-                key: "value"
+                obj1: "1",
+                obj2: "2"
             },
-            true,
-            54321
+            {
+                obj3: "3",
+                obj4: "4"
+            },
+            {
+                obj5: "false",
+                obj6: "true"
+            }
         ],
         testObject: {
             key: "value object"
@@ -120,9 +127,15 @@ describe("Content Entry Meta Field", () => {
             ...entry
         });
 
+        const recordToPublish: CmsEntry = {
+            ...createdRecord,
+            status: "published",
+            locked: true
+        };
+
         const publishedRecord = await storageOperations.entries.publish(model, {
-            entry: createdRecord,
-            storageEntry: createdRecord
+            entry: recordToPublish,
+            storageEntry: recordToPublish
         });
 
         expect(publishedRecord).toEqual({
@@ -165,12 +178,15 @@ describe("Content Entry Meta Field", () => {
          */
         const getRecordResult = await storageOperations.entries.get(model, {
             where: {
-                id: createdRecord.id
+                id: createdRecord.id,
+                latest: true
             }
         });
 
-        expect(getRecordResult).toEqual({
+        expect(getRecordResult).toMatchObject({
             ...entry,
+            locked: true,
+            status: "published",
             meta: createMetaData()
         });
 
@@ -185,6 +201,8 @@ describe("Content Entry Meta Field", () => {
             items: [
                 {
                     ...entry,
+                    locked: true,
+                    status: "published",
                     meta: createMetaData()
                 }
             ],
