@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-file-manager-s3",
-  "version": "5.26.0",
+  "version": "5.27.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/plugins": "^5.26.0",
+    "@webiny/plugins": "^5.27.0",
     "apollo-client": "^2.6.10",
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6"
@@ -18,8 +18,8 @@
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
-    "@webiny/cli": "^5.26.0",
-    "@webiny/project-utils": "^5.26.0",
+    "@webiny/cli": "^5.27.0",
+    "@webiny/project-utils": "^5.27.0",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
   },

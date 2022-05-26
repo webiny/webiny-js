@@ -1,6 +1,6 @@
 {
   "name": "@webiny/utils",
-  "version": "5.26.0",
+  "version": "5.27.0",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {
@@ -15,7 +15,7 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@webiny/error": "^5.26.0"
+    "@webiny/error": "^5.27.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -23,8 +23,8 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@babel/runtime": "^7.16.3",
-    "@webiny/cli": "^5.26.0",
-    "@webiny/project-utils": "^5.26.0",
+    "@webiny/cli": "^5.27.0",
+    "@webiny/project-utils": "^5.27.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.5.5"

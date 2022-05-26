@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cwp-template-aws",
-  "version": "5.26.0",
+  "version": "5.27.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,8 +11,8 @@
     "directory": "."
   },
   "dependencies": {
-    "@webiny/cli": "^5.26.0",
-    "@webiny/cli-plugin-deploy-pulumi": "^5.26.0",
+    "@webiny/cli": "^5.27.0",
+    "@webiny/cli-plugin-deploy-pulumi": "^5.27.0",
     "chalk": "4.1.0",
     "execa": "4.1.0",
     "fast-glob": "3.2.7",
