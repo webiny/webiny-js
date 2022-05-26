@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-upgrade",
-  "version": "5.26.0",
+  "version": "5.27.0",
   "main": "index.js",
   "types": "types.ts",
   "license": "MIT",
@@ -12,9 +12,9 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
-    "@webiny/error": "^5.26.0",
-    "@webiny/handler": "^5.26.0",
-    "@webiny/plugins": "^5.26.0",
+    "@webiny/error": "^5.27.0",
+    "@webiny/handler": "^5.27.0",
+    "@webiny/plugins": "^5.27.0",
     "semver": "^7.3.4"
   },
   "devDependencies": {
@@ -22,8 +22,8 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@types/semver": "^7.3.4",
-    "@webiny/cli": "^5.26.0",
-    "@webiny/project-utils": "^5.26.0",
+    "@webiny/cli": "^5.27.0",
+    "@webiny/project-utils": "^5.27.0",
     "jest": "^26.6.3",
     "jest-mock-console": "^1.0.0",
     "rimraf": "^3.0.2",

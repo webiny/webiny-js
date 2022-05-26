@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+
+### Bug Fixes
+
+* **app-admin:** restore onChange handling ([590965f](https://github.com/webiny/webiny-js/commit/590965f11de812426dd21e6bc932fd2839cba1fb))
+* **app-admin:** tweak positioning of toolbar when editor is empty ([183cdd1](https://github.com/webiny/webiny-js/commit/183cdd1bbed78ab67dfa4b76abc86c6d618e6241))
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+
+### Bug Fixes
+
+* replace direct usages of RMWC with the ui package ([3e87916](https://github.com/webiny/webiny-js/commit/3e87916073b66db3246fa25ebfcb797804021eb1))
+* **api-headless-cms:** storage operations generate pk out of model ([#2414](https://github.com/webiny/webiny-js/issues/2414)) ([45ac1c1](https://github.com/webiny/webiny-js/commit/45ac1c188a85548bec4b9fad9822a3eda75bc03a))
+* **ui:** export editorjs type used by APW ([#2421](https://github.com/webiny/webiny-js/issues/2421)) ([b36000e](https://github.com/webiny/webiny-js/commit/b36000e6f0cb77f93fc05c42fef5c431389330b2))
+* improve Rich Text Editor menu positioning ([#2419](https://github.com/webiny/webiny-js/issues/2419)) ([7a689e4](https://github.com/webiny/webiny-js/commit/7a689e4e6c8991e2f0b38c47d04265a9a0c68027))
+
+
+### Features
+
+* **api-apw-scheduler-so-ddb:** filter records ([#2405](https://github.com/webiny/webiny-js/issues/2405)) ([c30901a](https://github.com/webiny/webiny-js/commit/c30901ac549eca5977f3bf03f3c8b5de81b59c51))
+* **api-headless-cms:** remove unnecessary storage entry passed into storage ops ([#2403](https://github.com/webiny/webiny-js/issues/2403)) ([59cf078](https://github.com/webiny/webiny-js/commit/59cf0789389c5f78ee4997854a90d4732d773297))
+* **create-webiny-project:** require node >=14 ([#2420](https://github.com/webiny/webiny-js/issues/2420)) ([82a0454](https://github.com/webiny/webiny-js/commit/82a0454c82fb778a691111578bf5c683ca9a55c8))
+* add elasticsearch config to new pulumi architecture ([#2340](https://github.com/webiny/webiny-js/issues/2340)) ([6a3849b](https://github.com/webiny/webiny-js/commit/6a3849bf7e4befa4578a20db8b2592da17455753))
+* caching traffic splitting config on CDN ([#2402](https://github.com/webiny/webiny-js/issues/2402)) ([55aee53](https://github.com/webiny/webiny-js/commit/55aee53d9feb9ad7aa349626deb383d8bc7ea361)), closes [#2360](https://github.com/webiny/webiny-js/issues/2360)
+* custom domain tweaks ([#2401](https://github.com/webiny/webiny-js/issues/2401)) ([4b14daf](https://github.com/webiny/webiny-js/commit/4b14daf7a610b680154b8b9073ee38e40fe37dd3))
+* moved VPC configuration to storage app ([#2395](https://github.com/webiny/webiny-js/issues/2395)) ([1d1b7bb](https://github.com/webiny/webiny-js/commit/1d1b7bb1fc612741f66101c0ee1fa6df21ae8662))
+* staged rollouts infrastructure ([#2329](https://github.com/webiny/webiny-js/issues/2329)) ([d066ab0](https://github.com/webiny/webiny-js/commit/d066ab08af8735728b4fff8e292674c44ff42c1c)), closes [#2360](https://github.com/webiny/webiny-js/issues/2360)
+* website prerendering using event bus ([#2328](https://github.com/webiny/webiny-js/issues/2328)) ([9a821ed](https://github.com/webiny/webiny-js/commit/9a821edb651d6fb29c39590f47f29c917b94569f)), closes [#2360](https://github.com/webiny/webiny-js/issues/2360)
+
+
+
+
+
 # [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
 
 **Note:** Version bump only for package webiny-js

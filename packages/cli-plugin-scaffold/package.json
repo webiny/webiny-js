@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold",
-  "version": "5.26.0",
+  "version": "5.27.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-flow": "^7.16.0",
     "@types/inquirer": "^7.3.1",
-    "@webiny/cli": "^5.26.0",
-    "@webiny/handler": "^5.26.0",
-    "@webiny/plugins": "^5.26.0",
-    "@webiny/project-utils": "^5.26.0",
+    "@webiny/cli": "^5.27.0",
+    "@webiny/handler": "^5.27.0",
+    "@webiny/plugins": "^5.27.0",
+    "@webiny/project-utils": "^5.27.0",
     "chalk": "^4.1.0",
     "fast-glob": "^3.2.5",
     "find-up": "^5.0.0",

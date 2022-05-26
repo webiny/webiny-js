@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security-cognito",
-  "version": "5.26.0",
+  "version": "5.27.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,16 +12,16 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-cognito-authenticator": "^5.26.0",
-    "@webiny/api-security": "^5.26.0",
-    "@webiny/handler": "^5.26.0"
+    "@webiny/api-cognito-authenticator": "^5.27.0",
+    "@webiny/api-security": "^5.27.0",
+    "@webiny/handler": "^5.27.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@types/jsonwebtoken": "8.5.1",
-    "@webiny/cli": "^5.26.0",
-    "@webiny/project-utils": "^5.26.0",
+    "@webiny/cli": "^5.27.0",
+    "@webiny/project-utils": "^5.27.0",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
   },

@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+**Note:** Version bump only for package @webiny/pulumi-aws
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+
+### Features
+
+* add elasticsearch config to new pulumi architecture ([#2340](https://github.com/webiny/webiny-js/issues/2340)) ([6a3849b](https://github.com/webiny/webiny-js/commit/6a3849bf7e4befa4578a20db8b2592da17455753))
+* caching traffic splitting config on CDN ([#2402](https://github.com/webiny/webiny-js/issues/2402)) ([55aee53](https://github.com/webiny/webiny-js/commit/55aee53d9feb9ad7aa349626deb383d8bc7ea361)), closes [#2360](https://github.com/webiny/webiny-js/issues/2360)
+* custom domain tweaks ([#2401](https://github.com/webiny/webiny-js/issues/2401)) ([4b14daf](https://github.com/webiny/webiny-js/commit/4b14daf7a610b680154b8b9073ee38e40fe37dd3))
+* moved VPC configuration to storage app ([#2395](https://github.com/webiny/webiny-js/issues/2395)) ([1d1b7bb](https://github.com/webiny/webiny-js/commit/1d1b7bb1fc612741f66101c0ee1fa6df21ae8662))
+* staged rollouts infrastructure ([#2329](https://github.com/webiny/webiny-js/issues/2329)) ([d066ab0](https://github.com/webiny/webiny-js/commit/d066ab08af8735728b4fff8e292674c44ff42c1c)), closes [#2360](https://github.com/webiny/webiny-js/issues/2360)
+* website prerendering using event bus ([#2328](https://github.com/webiny/webiny-js/issues/2328)) ([9a821ed](https://github.com/webiny/webiny-js/commit/9a821edb651d6fb29c39590f47f29c917b94569f)), closes [#2360](https://github.com/webiny/webiny-js/issues/2360)
+
+
+
+
+
 # [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
 
 **Note:** Version bump only for package @webiny/pulumi-aws
