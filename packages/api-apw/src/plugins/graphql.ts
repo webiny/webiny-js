@@ -72,7 +72,7 @@ export default () => {
             return;
         }
 
-        return context.plugins.register([
+        context.plugins.register([
             baseSchema,
             workflowSchema,
             contentReviewSchema,
