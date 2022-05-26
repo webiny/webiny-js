@@ -69,7 +69,6 @@ module.exports = async (inputs, context) => {
         return;
     }
 
-
     await runHook({
         hookName: "hook-before-deploy",
         hookFn: application.onBeforeDeploy,
