@@ -16,6 +16,10 @@ export default () => [
      * Hook into CMS events and execute business logic.
      */
     new ContextPlugin<ApwContext>(async context => {
+        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
+            return;
+        }
+
         const { security, apw, tenancy, i18n } = context;
 
         if (isInstallationPending({ tenancy, i18n })) {
