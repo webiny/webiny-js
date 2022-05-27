@@ -31,6 +31,9 @@
     },
     {
       "path": "../app-headless-cms/tsconfig.build.json"
+    },
+    {
+      "path": "../plugins/tsconfig.build.json"
     }
   ],
   "compilerOptions": {

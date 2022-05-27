@@ -31,6 +31,9 @@
     },
     {
       "path": "../app-headless-cms"
+    },
+    {
+      "path": "../plugins"
     }
   ],
   "compilerOptions": {
@@ -58,7 +61,9 @@
       "@webiny/app-i18n/*": ["../app-i18n/src/*"],
       "@webiny/app-i18n": ["../app-i18n/src"],
       "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
-      "@webiny/app-headless-cms": ["../app-headless-cms/src"]
+      "@webiny/app-headless-cms": ["../app-headless-cms/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

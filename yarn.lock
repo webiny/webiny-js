@@ -11634,6 +11634,7 @@ __metadata:
     "@webiny/app-security": ^5.27.0
     "@webiny/cli": ^5.27.0
     "@webiny/form": ^5.27.0
+    "@webiny/plugins": ^5.27.0
     "@webiny/project-utils": ^5.27.0
     "@webiny/react-router": ^5.27.0
     "@webiny/ui": ^5.27.0
@@ -11643,7 +11644,6 @@ __metadata:
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
-    classnames: ^2.2.6
     dayjs: ^1.10.4
     emotion: ^10.0.17
     graphql: ^15.7.2
