@@ -2,7 +2,7 @@ name: Next Branch - Push
 
 on:
   push:
-    branches: [next]
+    branches: [next, before-next]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
