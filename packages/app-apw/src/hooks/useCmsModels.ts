@@ -12,8 +12,11 @@ interface UseCmsModelsResult {
 
 export const useCmsModels = (): UseCmsModelsResult => {
     const { getCurrentLocale } = useI18N();
-    const locale = getCurrentLocale("content") || "en-US";
+    const locale = getCurrentLocale("content");
     const [models, setModels] = useState<CmsModel[] | null>(null);
+    if (!locale) {
+        throw new Error("Missing current content locale.");
+    }
 
     const { loading } = useQueryLocale<ListCmsModelsQueryResponse>(LIST_CMS_MODELS, locale, {
         skip: !!models,

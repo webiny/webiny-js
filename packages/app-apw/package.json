@@ -18,7 +18,6 @@
     "@types/react": "^16.9.56",
     "@webiny/app": "^5.27.0",
     "@webiny/app-admin": "^5.27.0",
-    "@webiny/app-admin-core": "^5.27.0",
     "@webiny/app-headless-cms": "^5.27.0",
     "@webiny/app-i18n": "^5.27.0",
     "@webiny/app-page-builder": "^5.27.0",

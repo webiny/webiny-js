@@ -1,6 +1,5 @@
 import React from "react";
 import { Compose, Plugins } from "@webiny/app-admin";
-import defaultBar from "./plugins/editor/defaultBar";
 /**
  * Plugins for "page builder"
  */
@@ -21,13 +20,11 @@ import { PublishPageButtonComposable } from "@webiny/app-page-builder/editor/plu
 import RequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
 import RequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
 import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
-import { Routes } from "~/plugins/Routes";
-import { Menus } from "~/plugins/Menus";
+import { Module } from "~/plugins/Module";
 import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
 import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
 import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowScope";
-
-export const plugins = () => [defaultBar];
+import { DefaultBar } from "~/plugins/editor/defaultBar";
 
 export const AdvancedPublishingWorkflow: React.FC = () => {
     return (
@@ -46,8 +43,8 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
                 component={WorkflowScope}
             />
             <Plugins>
-                <Routes />
-                <Menus />
+                <DefaultBar />
+                <Module />
                 <ApwOnPublish />
                 <ApwOnPageDelete />
             </Plugins>

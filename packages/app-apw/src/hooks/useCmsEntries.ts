@@ -47,7 +47,10 @@ export const useCmsEntries = ({ bind, models }: UseCmsEntriesParams): UseCmsEntr
 
     const { getCurrentLocale } = useI18N();
 
-    const locale = getCurrentLocale("content") || "en-US";
+    const locale = getCurrentLocale("content");
+    if (!locale) {
+        throw new Error("Missing current content locale.");
+    }
 
     const performSearch = useMemo(() => {
         return debounce((q: string) => setSearch(q), 250);
