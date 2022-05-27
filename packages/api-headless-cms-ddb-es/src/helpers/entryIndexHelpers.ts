@@ -165,7 +165,27 @@ export const extractEntriesFromIndex = ({
                 );
             }
         }
-        list.push({ ...entry, values: indexValues });
+        /**
+         * Let's have a new entry so we do not modify the original one.
+         */
+        const newEntry: CmsEntry = {
+            ...entry,
+            values: indexValues
+        };
+        /**
+         * If we want to remove the rawValues, TYPE, latest, published and __type, we must make them optional or ignore them.
+         */
+        // @ts-ignore
+        delete newEntry["rawValues"];
+        // @ts-ignore
+        delete newEntry["TYPE"];
+        // @ts-ignore
+        delete newEntry["__type"];
+        // @ts-ignore
+        delete newEntry["latest"];
+        // @ts-ignore
+        delete newEntry["published"];
+        list.push({ ...newEntry });
     }
 
     return list;
