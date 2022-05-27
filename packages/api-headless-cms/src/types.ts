@@ -1740,7 +1740,12 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: (model: CmsModel, id: string, input: UpdateCmsEntryInput) => Promise<CmsEntry>;
+    updateEntry: (
+        model: CmsModel,
+        id: string,
+        input: UpdateCmsEntryInput,
+        meta?: Record<string, any>
+    ) => Promise<CmsEntry>;
     /**
      * Method that republishes entry with given identifier.
      * @internal
