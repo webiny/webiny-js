@@ -39,6 +39,7 @@ const processValue: ProcessValue = async params => {
 };
 
 const plugin = new StorageTransformPlugin({
+    name: "headless-cms.storage-transform.object.default",
     fieldType: "object",
     toStorage: async ({ field, value, getStoragePlugin, model, plugins }) => {
         if (!value) {
@@ -60,7 +61,7 @@ const plugin = new StorageTransformPlugin({
             );
         }
 
-        return processValue({
+        return await processValue({
             sourceValue: value,
             getStoragePlugin,
             model,

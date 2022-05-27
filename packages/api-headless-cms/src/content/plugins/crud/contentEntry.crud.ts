@@ -721,7 +721,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        updateEntry: async (model, id, inputData) => {
+        updateEntry: async (model, id, inputData, metaInput) => {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await utils.checkModelAccess(context, model);
 
@@ -780,14 +780,21 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 input: initialValues,
                 validateEntries: false
             });
-
+            /**
+             * If there is nothing sent into the meta, we use the original entry meta values.
+             * Otherwise override the original meta values with new ones.
+             * We do not want to merge, because user might want to remove something and we do not know it.
+             * If users wants to remove a key from meta values, they need to send whole meta input without that key.
+             */
+            const meta = metaInput === undefined ? originalEntry.meta : metaInput;
             /**
              * We always send the full entry to the hooks and storage operations update.
              */
             const entry: CmsEntry = {
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
-                values
+                values,
+                meta
             };
 
             let storageEntry: CmsStorageEntry | null = null;

@@ -1,6 +1,7 @@
 import { StorageTransformPlugin } from "./StorageTransformPlugin";
 
 const plugin = new StorageTransformPlugin({
+    name: "headless-cms.storage-transform.all.default",
     fieldType: "*",
     fromStorage: async ({ value }) => {
         return value;

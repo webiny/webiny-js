@@ -5,7 +5,8 @@ import {
     OnBeforePageCreateFromTopicParams,
     OnBeforePageUpdateTopicParams,
     OnBeforePagePublishTopicParams,
-    OnBeforePageRequestReviewTopicParams
+    OnBeforePageRequestReviewTopicParams,
+    PageSettings
 } from "@webiny/api-page-builder/types";
 import { Context } from "@webiny/handler/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
@@ -68,13 +69,14 @@ export enum ApwContentTypes {
     CMS_ENTRY = "cms_entry"
 }
 
-export interface PageWithWorkflow extends Page {
-    settings: Page["settings"] & {
-        apw: {
-            workflowId: string;
-            contentReviewId: string | null;
-        };
+export interface PageSettingsWithWorkflow extends PageSettings {
+    apw: {
+        workflowId: string;
+        contentReviewId: string | null;
     };
+}
+export interface PageWithWorkflow extends Page {
+    settings: PageSettingsWithWorkflow;
 }
 
 export type ApwOnBeforePageCreateTopicParams = OnBeforePageCreateTopicParams<PageWithWorkflow>;
@@ -91,8 +93,7 @@ export type ApwOnBeforePageRequestReviewTopicParams =
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
-    PB = "pb",
-    CMS = "cms"
+    CUSTOM = "custom"
 }
 
 export enum ApwContentReviewStepStatus {
@@ -181,13 +182,17 @@ export interface ApwWorkflow extends ApwBaseFields {
     app: ApwWorkflowApplications;
 }
 
+interface ApwWorkflowScopeCmsEntry {
+    id: string;
+    modelId: string;
+}
 export interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
     data: {
         categories?: string[];
         pages?: string[];
         models?: string[];
-        entries?: string[];
+        entries?: ApwWorkflowScopeCmsEntry[];
     };
 }
 

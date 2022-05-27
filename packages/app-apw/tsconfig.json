@@ -25,6 +25,15 @@
     },
     {
       "path": "../validation"
+    },
+    {
+      "path": "../app-i18n"
+    },
+    {
+      "path": "../app-headless-cms"
+    },
+    {
+      "path": "../plugins"
     }
   ],
   "compilerOptions": {
@@ -48,7 +57,13 @@
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
+      "@webiny/app-i18n": ["../app-i18n/src"],
+      "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
+      "@webiny/app-headless-cms": ["../app-headless-cms/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

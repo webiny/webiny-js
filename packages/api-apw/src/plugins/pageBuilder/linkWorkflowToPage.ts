@@ -96,19 +96,20 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
         /**
          * If the workflow has pages in it's scope, we'll link that workflow for each of those pages.
          */
-        if (hasPages(workflow)) {
-            const pages = get(scope, "data.pages");
+        if (hasPages(workflow) === false) {
+            return;
+        }
+        const pages = get(scope, "data.pages");
 
-            for (const pid of pages) {
-                await updatePageSettings({
-                    getPage,
-                    updatePage,
-                    uniquePageId: pid,
-                    getNewSettings: settings => {
-                        return set(settings, "apw.workflowId", workflow.id);
-                    }
-                });
-            }
+        for (const pid of pages) {
+            await updatePageSettings({
+                getPage,
+                updatePage,
+                uniquePageId: pid,
+                getNewSettings: settings => {
+                    return set(settings, "apw.workflowId", workflow.id);
+                }
+            });
         }
     });
     /**
@@ -121,31 +122,33 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
          * If the workflow has pages in it's scope and there is a change in that page list,
          * we'll update the workflow link for corresponding pages.
          */
-        if (hasPages(workflow) && shouldUpdatePages(scope, prevScope)) {
-            const previousPages = get(prevScope, "data.pages");
-            const currentPages = get(scope, "data.pages");
+        if (hasPages(workflow) === false || shouldUpdatePages(scope, prevScope) === false) {
+            return;
+        }
 
-            const { removedPages, addedPages } = getPagesDiff(currentPages, previousPages);
-            for (const pid of addedPages) {
-                await updatePageSettings({
-                    getPage,
-                    updatePage,
-                    uniquePageId: pid,
-                    getNewSettings: settings => {
-                        return set(settings, "apw.workflowId", workflow.id);
-                    }
-                });
-            }
-            for (const pid of removedPages) {
-                await updatePageSettings({
-                    getPage,
-                    updatePage,
-                    uniquePageId: pid,
-                    getNewSettings: settings => {
-                        return set(settings, "apw.workflowId", null);
-                    }
-                });
-            }
+        const previousPages = get(prevScope, "data.pages", []);
+        const currentPages = get(scope, "data.pages", []);
+
+        const { removedPages, addedPages } = getPagesDiff(currentPages, previousPages);
+        for (const pid of addedPages) {
+            await updatePageSettings({
+                getPage,
+                updatePage,
+                uniquePageId: pid,
+                getNewSettings: settings => {
+                    return set(settings, "apw.workflowId", workflow.id);
+                }
+            });
+        }
+        for (const pid of removedPages) {
+            await updatePageSettings({
+                getPage,
+                updatePage,
+                uniquePageId: pid,
+                getNewSettings: settings => {
+                    return set(settings, "apw.workflowId", null);
+                }
+            });
         }
     });
 };

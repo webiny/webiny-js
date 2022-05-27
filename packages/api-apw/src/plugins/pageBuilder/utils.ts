@@ -12,8 +12,7 @@ import { ApwPageBuilderMethods } from ".";
 
 const WORKFLOW_PRECEDENCE = {
     [WorkflowScopeTypes.DEFAULT]: 0,
-    [WorkflowScopeTypes.PB]: 1,
-    [WorkflowScopeTypes.CMS]: 1
+    [WorkflowScopeTypes.CUSTOM]: 1
 };
 
 const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
@@ -44,9 +43,7 @@ const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow) => 
 
     if (scopeType === WorkflowScopeTypes.DEFAULT) {
         return true;
-    }
-
-    if (scopeType === WorkflowScopeTypes.PB) {
+    } else if (scopeType === WorkflowScopeTypes.CUSTOM) {
         const categories = get(workflow, "scope.data.categories");
 
         if (Array.isArray(categories) && categories.includes(page.category)) {
@@ -57,9 +54,11 @@ const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow) => 
         if (Array.isArray(pages) && pages.includes(page.pid)) {
             return true;
         }
+        return false;
     }
-
-    return false;
+    throw new WebinyError(`Unknown scope type "${scopeType}".`, "UNKNOWN_SCOPE_TYPE", {
+        workflow
+    });
 };
 
 interface AssignWorkflowToPageParams {
@@ -76,7 +75,9 @@ export const assignWorkflowToPage = async ({ listWorkflow, page }: AssignWorkflo
          * List all workflows for app pageBuilder
          */
         const [entries] = await listWorkflow({
-            where: { app: ApwWorkflowApplications.PB }
+            where: {
+                app: ApwWorkflowApplications.PB
+            }
         });
 
         /*
@@ -110,7 +111,7 @@ export const hasPages = (workflow: ApwWorkflow): Boolean => {
     const { app, scope } = workflow;
     return (
         app === ApwWorkflowApplications.PB &&
-        scope.type === WorkflowScopeTypes.PB &&
+        scope.type === WorkflowScopeTypes.CUSTOM &&
         scope.data &&
         Array.isArray(scope.data.pages)
     );
@@ -121,9 +122,9 @@ export const shouldUpdatePages = (
     prevScope: ApwWorkflowScope
 ): Boolean => {
     /**
-     * Bail out early if the scope was not "PB".
+     * Bail out early if the scope is not "CUSTOM" - at that point all pages should be updated.
      */
-    if (prevScope.type !== WorkflowScopeTypes.PB) {
+    if (prevScope.type !== WorkflowScopeTypes.CUSTOM) {
         return true;
     }
     const prevScopePages: string[] = get(prevScope, "data.pages");

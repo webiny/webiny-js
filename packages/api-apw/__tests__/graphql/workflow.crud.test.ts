@@ -1,4 +1,4 @@
-import { ApwWorkflowStepTypes } from "~/types";
+import { ApwWorkflowApplications, ApwWorkflowStepTypes } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import mocks from "./mocks/workflows";
 
@@ -315,7 +315,10 @@ describe("Workflow crud test", () => {
          */
         for (let i = 0; i < 5; i++) {
             const [createWorkflowResponse] = await createWorkflowMutation({
-                data: mocks.createWorkflow({ app: i % 2 === 0 ? "pageBuilder" : "cms" }, [reviewer])
+                data: mocks.createWorkflow(
+                    { app: i % 2 === 0 ? ApwWorkflowApplications.PB : ApwWorkflowApplications.CMS },
+                    [reviewer]
+                )
             });
 
             workflows.push(createWorkflowResponse.data.apw.createWorkflow.data);

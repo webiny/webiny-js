@@ -328,7 +328,8 @@ describe("latest entries", function () {
                                         version: 1
                                     }
                                 }
-                            ]
+                            ],
+                            data: {}
                         },
                         title: updatedFruitCategory.title,
                         slug: updatedFruitCategory.slug

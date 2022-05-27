@@ -130,8 +130,12 @@ const dataListContent = css({
     overflow: "auto"
 });
 
+interface DataListData {
+    [key: string]: Record<string, any>[];
+}
+
 // This was copied from "./types" so that it can be outputted in docs.
-interface DataListProps {
+interface DataListWithSectionsProps {
     // Pass a function to take full control of list render.
     children?: ((props: any) => React.ReactNode) | null;
 
@@ -139,7 +143,7 @@ interface DataListProps {
     title?: React.ReactNode;
 
     // FormData that needs to be shown in the list.
-    data?: Record<string, any>[] | null;
+    data?: DataListData | null;
 
     // A callback that must refresh current view by repeating the previous query.
     refresh?: (() => void) | null;
@@ -172,13 +176,13 @@ interface DataListProps {
     multiSelectActions?: React.ReactNode;
 
     // Provide callback that will be executed once user selects all list items.
-    multiSelectAll?: (value: boolean, data: Record<string, any>[] | null) => void;
+    multiSelectAll?: (value: boolean, data: DataListData | null) => void;
 
     // Callback which returns true if all items were selected, otherwise returns false.
-    isAllMultiSelected?: (data: Record<string, any>[] | null) => boolean;
+    isAllMultiSelected?: (data: DataListData | null) => boolean;
 
     // Callback which returns true if none of the items were selected, otherwise returns false.
-    isNoneMultiSelected?: (data: Record<string, any>[] | null) => boolean;
+    isNoneMultiSelected?: (data: DataListData | null) => boolean;
 
     showOptions?: {
         refresh?: boolean;
@@ -206,7 +210,7 @@ interface DataListProps {
     perPageOptions?: number[];
 }
 
-const MultiSelectAll: React.FC<DataListProps> = props => {
+const MultiSelectAll: React.FC<DataListWithSectionsProps> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -215,7 +219,7 @@ const MultiSelectAll: React.FC<DataListProps> = props => {
      * We can safely cast because we have defaults.
      */
     const { isAllMultiSelected, isNoneMultiSelected, multiSelectAll, data } =
-        props as Required<DataListProps>;
+        props as Required<DataListWithSectionsProps>;
 
     return (
         <React.Fragment>
@@ -234,7 +238,7 @@ const MultiSelectAll: React.FC<DataListProps> = props => {
     );
 };
 
-const MultiSelectActions: React.FC<DataListProps> = props => {
+const MultiSelectActions: React.FC<DataListWithSectionsProps> = props => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -243,7 +247,7 @@ const MultiSelectActions: React.FC<DataListProps> = props => {
     return <ListHeaderItem>{multiSelectActions}</ListHeaderItem>;
 };
 
-const RefreshButton: React.FC<DataListProps> = props => {
+const RefreshButton: React.FC<DataListWithSectionsProps> = props => {
     const refresh = props.refresh;
     if (!refresh) {
         return null;
@@ -256,7 +260,7 @@ const RefreshButton: React.FC<DataListProps> = props => {
     );
 };
 
-const Sorters: React.FC<DataListProps> = props => {
+const Sorters: React.FC<DataListWithSectionsProps> = props => {
     const sorters = props.sorters;
     if (!sorters) {
         return null;
@@ -282,7 +286,7 @@ const Sorters: React.FC<DataListProps> = props => {
     );
 };
 
-const Filters: React.FC<DataListProps> = props => {
+const Filters: React.FC<DataListWithSectionsProps> = props => {
     const filters = props.filters;
     if (!filters) {
         return null;
@@ -295,7 +299,7 @@ const Filters: React.FC<DataListProps> = props => {
     );
 };
 
-const Pagination: React.FC<DataListProps> = props => {
+const Pagination: React.FC<DataListWithSectionsProps> = props => {
     const { pagination } = props;
     if (!pagination) {
         return null;
@@ -356,15 +360,15 @@ const Pagination: React.FC<DataListProps> = props => {
     );
 };
 
-const Search: React.FC<DataListProps> = props => {
+const Search: React.FC<DataListWithSectionsProps> = props => {
     if (!props.search) {
         return null;
     }
     return <Cell span={7}>{React.cloneElement(props.search, props)}</Cell>;
 };
 
-export const DataList: React.FC<DataListProps> = props => {
-    let render: React.ReactNode | null = null;
+export const DataListWithSections: React.FC<DataListWithSectionsProps> = props => {
+    let render: React.ReactNode = null;
 
     if (props.loading) {
         render = props.loader;
@@ -423,7 +427,7 @@ export const DataList: React.FC<DataListProps> = props => {
     );
 };
 
-DataList.defaultProps = {
+DataListWithSections.defaultProps = {
     children: null,
     title: null,
     data: null,
@@ -452,11 +456,11 @@ DataList.defaultProps = {
     }
 };
 
-export interface ScrollListProps extends ListProps {
+interface ScrollListWithSectionsProps extends ListProps {
     children: React.ReactElement<typeof ListItem>[];
 }
 
-export const ScrollList: React.FC<ScrollListProps> = props => {
+export const ScrollListWithSections: React.FC<ScrollListWithSectionsProps> = props => {
     return (
         <List {...props} className={classNames(props.className, scrollList)}>
             {props.children}

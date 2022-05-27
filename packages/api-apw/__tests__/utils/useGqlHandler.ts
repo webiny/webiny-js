@@ -226,7 +226,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         async getWorkflowQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_WORKFLOW_QUERY, variables } });
         },
-        async listWorkflowsQuery(variables: Record<string, any>) {
+        async listWorkflowsQuery(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_WORKFLOWS_QUERY, variables } });
         },
         async createWorkflowMutation(variables: Record<string, any>) {

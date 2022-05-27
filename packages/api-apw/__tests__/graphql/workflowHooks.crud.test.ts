@@ -1,6 +1,7 @@
 import { setupCategory } from "../utils/helpers";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import mocks from "./mocks/workflows";
+import { ApwWorkflowApplications, WorkflowScopeTypes } from "~/types";
 
 describe("Workflow assignment to a PB Page", () => {
     const options = {
@@ -65,7 +66,7 @@ describe("Workflow assignment to a PB Page", () => {
             const createWorkflowInput = mocks.createWorkflow(
                 {
                     title: `Main review workflow - ${i + 1}`,
-                    app: i % 2 === 0 ? "pageBuilder" : "cms",
+                    app: i % 2 === 0 ? ApwWorkflowApplications.PB : ApwWorkflowApplications.CMS,
                     scope: mocks.scopes[i]
                 },
                 [reviewer]
@@ -117,7 +118,7 @@ describe("Workflow assignment to a PB Page", () => {
                 data: mocks.createWorkflow(
                     {
                         title: `Main review workflow - ${i + 1}`,
-                        app: "pageBuilder",
+                        app: ApwWorkflowApplications.PB,
                         scope: workflowScopes[i]
                     },
                     [reviewer]
@@ -150,7 +151,7 @@ describe("Workflow assignment to a PB Page", () => {
         const [createWorkflowResponse] = await createWorkflowMutation({
             data: {
                 ...mocks.createWorkflow({}, [reviewer]),
-                app: "cms"
+                app: ApwWorkflowApplications.CMS
             }
         });
         const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
@@ -204,10 +205,13 @@ describe("Workflow assignment to a PB Page", () => {
             data: mocks.createWorkflow(
                 {
                     title: `Main review workflow`,
-                    app: "pageBuilder",
+                    app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
+                            entries: [],
+                            models: [],
+                            categories: [],
                             pages: [page.pid]
                         }
                     }
@@ -222,6 +226,28 @@ describe("Workflow assignment to a PB Page", () => {
             () => listWorkflowsQuery({}).then(([data]) => data),
             (response: any) => response.data.apw.listWorkflows.data.length === 1
         );
+
+        const [listWorkflowsResponse] = await listWorkflowsQuery();
+
+        expect(listWorkflowsResponse).toEqual({
+            data: {
+                apw: {
+                    listWorkflows: {
+                        data: [
+                            {
+                                ...workflow
+                            }
+                        ],
+                        meta: {
+                            totalCount: 1,
+                            cursor: null,
+                            hasMoreItems: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
         /**
          * Now page should have this workflow assigned to it.
          */
@@ -241,9 +267,9 @@ describe("Workflow assignment to a PB Page", () => {
             data: mocks.createWorkflow(
                 {
                     title: `Main review workflow - 2`,
-                    app: "pageBuilder",
+                    app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             pages: [page.pid, page.pid + "999999"]
                         }
@@ -289,9 +315,9 @@ describe("Workflow assignment to a PB Page", () => {
             data: mocks.createWorkflow(
                 {
                     title: `Main review workflow`,
-                    app: "pageBuilder",
+                    app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             pages: [firstPage.pid]
                         }
@@ -336,7 +362,7 @@ describe("Workflow assignment to a PB Page", () => {
                 title: workflow.title,
                 steps: workflow.steps,
                 scope: {
-                    type: "pb",
+                    type: WorkflowScopeTypes.CUSTOM,
                     data: {
                         pages: [secondPage.pid]
                     }
@@ -429,9 +455,9 @@ describe("Workflow assignment to a PB Page", () => {
             data: mocks.createWorkflow(
                 {
                     title: `Main review workflow`,
-                    app: "pageBuilder",
+                    app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             pages: [firstPage.pid, secondPage.pid]
                         }
@@ -526,9 +552,9 @@ describe("Workflow assignment to a PB Page", () => {
             data: mocks.createWorkflow(
                 {
                     title: `Main review workflow`,
-                    app: "pageBuilder",
+                    app: ApwWorkflowApplications.PB,
                     scope: {
-                        type: "pb",
+                        type: WorkflowScopeTypes.CUSTOM,
                         data: {
                             pages: [firstPage.pid, secondPage.pid]
                         }
@@ -575,7 +601,7 @@ describe("Workflow assignment to a PB Page", () => {
                 title: workflow.title,
                 steps: workflow.steps,
                 scope: {
-                    type: "pb",
+                    type: WorkflowScopeTypes.CUSTOM,
                     data: {
                         pages: [firstPage.pid]
                     }
