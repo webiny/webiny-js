@@ -23,7 +23,8 @@ context("Search and sort security users", () => {
                             password: "12345678",
                             group: group.id
                         }
-                    }).then(user => {1
+                    }).then(user => {
+                        1;
                         users.push(user);
                     });
                 }
