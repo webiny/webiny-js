@@ -23,7 +23,7 @@ context("Search and sort security users", () => {
                             password: "12345678",
                             group: group.id
                         }
-                    }).then(user => {
+                    }).then(user => {1
                         users.push(user);
                     });
                 }
@@ -86,7 +86,7 @@ context("Search and sort security users", () => {
         });
     });
 
-    it.only("should able to sort users", () => {
+    it("should able to sort users", () => {
         cy.visit(`/admin-users`);
 
         // Sort users from "email A -> Z"
