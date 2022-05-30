@@ -812,6 +812,14 @@ export interface PbMenu {
     slug: string;
     description: string;
 }
+
+export interface PbBlockCategory {
+    name: string;
+    slug: string;
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+
 /**
  * TODO: have types for both API and app in the same package?
  * GraphQL response types

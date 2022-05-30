@@ -9,6 +9,7 @@ import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
 
 import {
+    BlockCategory,
     Category,
     Menu,
     Page,
@@ -501,10 +502,75 @@ export interface SystemCrud {
     onAfterInstall: Topic<OnBeforeInstallTopicParams>;
 }
 
+export interface PbBlockCategoryInput {
+    name: string;
+    slug: string;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeBlockCategoryCreateTopicParams {
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterBlockCategoryCreateTopicParams {
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeBlockCategoryUpdateTopicParams {
+    original: BlockCategory;
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterBlockCategoryUpdateTopicParams {
+    original: BlockCategory;
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeBlockCategoryDeleteTopicParams {
+    blockCategory: BlockCategory;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterBlockCategoryDeleteTopicParams {
+    blockCategory: BlockCategory;
+}
+
+/**
+ * @category BlockCategories
+ */
+export interface BlockCategoriesCrud {
+    getBlockCategory(slug: string, options?: { auth: boolean }): Promise<BlockCategory | null>;
+    listBlockCategories(): Promise<BlockCategory[]>;
+    createBlockCategory(data: PbBlockCategoryInput): Promise<BlockCategory>;
+    updateBlockCategory(slug: string, data: PbBlockCategoryInput): Promise<BlockCategory>;
+    deleteBlockCategory(slug: string): Promise<BlockCategory>;
+    /**
+     * Lifecycle events
+     */
+    onBeforeBlockCategoryCreate: Topic<OnBeforeBlockCategoryCreateTopicParams>;
+    onAfterBlockCategoryCreate: Topic<OnAfterBlockCategoryCreateTopicParams>;
+    onBeforeBlockCategoryUpdate: Topic<OnBeforeBlockCategoryUpdateTopicParams>;
+    onAfterBlockCategoryUpdate: Topic<OnAfterBlockCategoryUpdateTopicParams>;
+    onBeforeBlockCategoryDelete: Topic<OnBeforeBlockCategoryDeleteTopicParams>;
+    onAfterBlockCategoryDelete: Topic<OnAfterBlockCategoryDeleteTopicParams>;
+}
+
 export interface PageBuilderContextObject
     extends PagesCrud,
         PageElementsCrud,
         CategoriesCrud,
+        BlockCategoriesCrud,
         MenusCrud,
         SettingsCrud,
         SystemCrud {

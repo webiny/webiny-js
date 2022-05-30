@@ -10,10 +10,12 @@ import Categories from "../views/Categories/Categories";
 import Menus from "../views/Menus/Menus";
 import Pages from "../views/Pages/Pages";
 import Editor from "../views/Pages/Editor";
+import BlockCategories from "../views/BlockCategories/BlockCategories";
 
 const ROLE_PB_CATEGORY = "pb.category";
 const ROLE_PB_MENUS = "pb.menu";
 const ROLE_PB_PAGES = "pb.page";
+const ROLE_PB_BLOCK = "pb.block";
 
 const plugins: RoutePlugin[] = [
     {
@@ -89,6 +91,24 @@ const plugins: RoutePlugin[] = [
                         </SecureRoute>
                     );
                 }}
+            />
+        )
+    },
+    {
+        name: "route-pb-block-categories",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/block-categories"
+                render={() => (
+                    <SecureRoute permission={ROLE_PB_BLOCK}>
+                        <AdminLayout>
+                            <Helmet title={"Page Builder - Block Categories"} />
+                            <BlockCategories />
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
             />
         )
     }

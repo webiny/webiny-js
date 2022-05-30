@@ -711,6 +711,7 @@ export interface PageBuilderStorageOperations {
     menus: MenuStorageOperations;
     pageElements: PageElementStorageOperations;
     pages: PageStorageOperations;
+    blockCategories: BlockCategoryStorageOperations;
 
     beforeInit?: (context: PbContext) => Promise<void>;
     init?: (context: PbContext) => Promise<void>;
@@ -718,4 +719,96 @@ export interface PageBuilderStorageOperations {
      * An upgrade to run if necessary.
      */
     upgrade?: UpgradePlugin | null;
+}
+
+/**
+ * @category RecordModel
+ */
+export interface BlockCategory {
+    name: string;
+    slug: string;
+    createdOn: string;
+    createdBy: CreatedBy;
+    tenant: string;
+    locale: string;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsGetParams {
+    where: {
+        slug: string;
+        tenant: string;
+        locale: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export type BlockCategoryStorageOperationsListResponse = [BlockCategory[], MetaResponse];
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsCreateParams {
+    input: Record<string, any>;
+    blockCategory: BlockCategory;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: BlockCategory;
+    blockCategory: BlockCategory;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperationsDeleteParams {
+    blockCategory: BlockCategory;
+}
+
+/**
+ * @category StorageOperations
+ * @category BlockCategoryStorageOperations
+ */
+export interface BlockCategoryStorageOperations {
+    /**
+     * Get a single block category item by given params.
+     */
+    get(params: BlockCategoryStorageOperationsGetParams): Promise<BlockCategory>;
+    /**
+     * Get all block categories items by given params.
+     */
+    list(
+        params: BlockCategoryStorageOperationsListParams
+    ): Promise<BlockCategoryStorageOperationsListResponse>;
+    create(params: BlockCategoryStorageOperationsCreateParams): Promise<BlockCategory>;
+    update(params: BlockCategoryStorageOperationsUpdateParams): Promise<BlockCategory>;
+    delete(params: BlockCategoryStorageOperationsDeleteParams): Promise<BlockCategory>;
 }

@@ -5,6 +5,8 @@ import { createPageElementsGraphQL } from "./graphql/pageElements.gql";
 import { createCategoryGraphQL } from "./graphql/categories.gql";
 import { createSettingsGraphQL } from "./graphql/settings.gql";
 import { createInstallGraphQL } from "./graphql/install.gql";
+import { createBlockCategoryGraphQL } from "./graphql/blockCategories.gql";
+
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 export default () => {
@@ -15,6 +17,7 @@ export default () => {
         createPageGraphQL(),
         createPageElementsGraphQL(),
         createSettingsGraphQL(),
+        createBlockCategoryGraphQL(),
         createInstallGraphQL()
     ] as GraphQLSchemaPlugin[];
 };

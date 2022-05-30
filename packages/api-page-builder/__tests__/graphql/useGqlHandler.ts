@@ -52,6 +52,15 @@ import {
 } from "./graphql/categories";
 
 import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+
+import {
+    CREATE_BLOCK_CATEGORY,
+    DELETE_BLOCK_CATEGORY,
+    LIST_BLOCK_CATEGORIES,
+    UPDATE_BLOCK_CATEGORY,
+    GET_BLOCK_CATEGORY
+} from "./graphql/blockCategories";
+
 import path from "path";
 import fs from "fs";
 import { until } from "@webiny/project-utils/testing/helpers/until";
@@ -256,6 +265,23 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         },
         async getDefaultSettings(variables = {}) {
             return invoke({ body: { query: GET_DEFAULT_SETTINGS, variables } });
+        },
+
+        // Block Categories.
+        async createBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_BLOCK_CATEGORY, variables } });
+        },
+        async updateBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_BLOCK_CATEGORY, variables } });
+        },
+        async deleteBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_BLOCK_CATEGORY, variables } });
+        },
+        async listBlockCategories(variables = {}) {
+            return invoke({ body: { query: LIST_BLOCK_CATEGORIES, variables } });
+        },
+        async getBlockCategory(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_BLOCK_CATEGORY, variables } });
         }
     };
 };
