@@ -9064,15 +9064,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-=======
-"@types/node@npm:12.12.50":
-  version: 12.12.50
-  resolution: "@types/node@npm:12.12.50"
-  checksum: ae3b6ae1bf14024fe6a9fa49760199c14b22ae6e5df59ebf31c70cc21d8eed2cc639381c48abbf1a259bf8520d6519264175685b53a3a796585358759c2f3930
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:>= 8":
   version: 17.0.35
   resolution: "@types/node@npm:17.0.35"
@@ -9080,7 +9071,6 @@ __metadata:
   languageName: node
   linkType: hard
 
->>>>>>> next
 "@types/node@npm:^10.0.0":
   version: 10.17.60
   resolution: "@types/node@npm:10.17.60"
@@ -29640,11 +29630,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"minimist@npm:^1.2.6":
-=======
-"minimist@npm:^1.1.3":
->>>>>>> next
+"minimist@npm:^1.1.3, minimist@npm:^1.2.6":
   version: 1.2.6
   resolution: "minimist@npm:1.2.6"
   checksum: d15428cd1e11eb14e1233bcfb88ae07ed7a147de251441d61158619dfb32c4d7e9061d09cab4825fdee18ecd6fce323228c8c47b5ba7cd20af378ca4048fb3fb
