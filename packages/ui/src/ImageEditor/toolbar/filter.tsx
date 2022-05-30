@@ -181,7 +181,11 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Filter"}>
-                <IconButton icon={<FilterIcon />} onClick={() => activateTool("filter")} data-testid={"filter-item"}/>
+                <IconButton
+                    icon={<FilterIcon />}
+                    onClick={() => activateTool("filter")}
+                    data-testid={"filter-item"}
+                />
             </Tooltip>
         );
     },

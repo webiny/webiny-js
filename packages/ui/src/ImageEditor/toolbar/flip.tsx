@@ -47,7 +47,11 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Flip"}>
-                <IconButton icon={<FlipIcon />} onClick={() => activateTool("flip")} data-testid={"flip-item"}/>
+                <IconButton
+                    icon={<FlipIcon />}
+                    onClick={() => activateTool("flip")}
+                    data-testid={"flip-item"}
+                />
             </Tooltip>
         );
     },
