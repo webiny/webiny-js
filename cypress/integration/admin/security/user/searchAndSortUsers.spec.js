@@ -24,7 +24,6 @@ context("Search and sort security users", () => {
                             group: group.id
                         }
                     }).then(user => {
-                        1;
                         users.push(user);
                     });
                 }
