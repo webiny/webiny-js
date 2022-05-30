@@ -37996,6 +37996,7 @@ __metadata:
     rxjs: ^6.5.5
     semver: ^6.3.0
     ts-jest: ^26.4.4
+    tslib: 2.4.0
     typescript: 4.5.5
     typescript-transform-paths: ^2.2.3
     utf-8-validate: ^5.0.2
