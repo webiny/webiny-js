@@ -35,7 +35,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
     return (
         <Bind>
             {bind => {
-                const { value, onChange } = bind;
+                const { onChange } = bind;
+
+                // We need to make sure the value is an array, since this is a multi-value component.
+                const value = bind.value || [];
+
                 return (
                     <FileUploadWrapper className={imageWrapperStyles}>
                         <FileManager multiple={true} images={imagesOnly}>
@@ -51,7 +55,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
 
                                         const urls = files.map(f => f.src);
                                         if (index === -1) {
-                                            onChange([...(value || []), ...urls]);
+                                            onChange([...value, ...urls]);
                                         } else {
                                             onChange([
                                                 ...value.slice(0, index),
