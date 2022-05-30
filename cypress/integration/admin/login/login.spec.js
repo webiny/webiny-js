@@ -98,16 +98,13 @@ context("Login Page", () => {
 
                     cy.findByTestId("logged-in-user-menu-avatar").click();
 
-                    cy.intercept({
-                        method: "POST",
-                        url: "https://cognito-idp.us-east-1.amazonaws.com/"
-                    }).as("amazon_aws_request");
-
                     cy.findByText(/Sign out/i).click();
+
+                    cy.wait(500);
+
                     cy.findByText(/sign in/i).should("exist");
                     cy.findByText(/forgot password?/i).should("exist");
 
-                    cy.wait("@amazon_aws_request");
                     cy.visit("/page-builder/pages");
 
                     cy.findByText(/sign in/i).should("exist");
