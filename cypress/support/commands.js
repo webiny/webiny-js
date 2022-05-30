@@ -21,6 +21,8 @@ import "./headlessCms/cmsDeleteContentModelGroup";
 import "./headlessCms/cmsListBooks";
 import "./security/securityCreateUser";
 import "./security/securityDeleteUser";
+import "./security/securityDeleteAllUsers";
+import "./security/securityListUsers";
 import "./security/securityReadGroup";
 import "./security/securityCreateGroup";
 import "./security/securityDeleteGroup";
