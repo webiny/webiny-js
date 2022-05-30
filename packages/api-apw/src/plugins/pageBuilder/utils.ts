@@ -9,29 +9,7 @@ import {
     WorkflowScopeTypes
 } from "~/types";
 import { ApwPageBuilderMethods } from ".";
-
-const WORKFLOW_PRECEDENCE = {
-    [WorkflowScopeTypes.DEFAULT]: 0,
-    [WorkflowScopeTypes.CUSTOM]: 1
-};
-
-const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
-    const scoreA = WORKFLOW_PRECEDENCE[a.scope.type];
-    const scoreB = WORKFLOW_PRECEDENCE[b.scope.type];
-    /**
-     * In descending order of workflow precedence.
-     */
-    return scoreB - scoreA;
-};
-
-const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
-    const createdOnA = get(a, "createdOn");
-    const createdOnB = get(b, "createdOn");
-    /**
-     * In descending order of workflow createdOn i.e. the most recent one first.
-     */
-    return new Date(createdOnB).getTime() - new Date(createdOnA).getTime();
-};
+import { workflowByCreatedOnDesc, workflowByPrecedenceDesc } from "~/plugins/utils";
 
 const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow) => {
     const application = workflow.app;

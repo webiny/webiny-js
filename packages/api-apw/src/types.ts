@@ -1,4 +1,11 @@
-import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import {
+    CmsContext,
+    CmsEntry as BaseCmsEntry,
+    CmsModel,
+    BeforeEntryPublishTopicParams,
+    AfterEntryPublishTopicParams,
+    AfterEntryUnpublishTopicParams
+} from "@webiny/api-headless-cms/types";
 import {
     Page,
     OnBeforePageCreateTopicParams,
@@ -16,6 +23,16 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types";
 import HandlerClient from "@webiny/handler-client/HandlerClient";
+
+export interface ApwCmsEntry extends BaseCmsEntry {
+    title: string;
+    meta: {
+        apw?: {
+            contentReviewId?: string | null;
+            workflowId?: string | null;
+        };
+    };
+}
 
 export interface ApwFile {
     id: string;
@@ -441,7 +458,7 @@ export interface ApwContentReviewCrud
 export type ContentGetter = (
     id: string,
     settings: { modelId?: string }
-) => Promise<PageWithWorkflow | (CmsEntry & { title: string }) | null>;
+) => Promise<PageWithWorkflow | ApwCmsEntry | null>;
 
 export type ContentPublisher = (
     id: string,
@@ -921,3 +938,19 @@ export type WorkflowModelDefinition = Pick<
     CmsModel,
     "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields"
 >;
+
+/**
+ * Headless CMS
+ */
+export interface OnBeforeCmsEntryPublishTopicParams
+    extends Omit<BeforeEntryPublishTopicParams, "entry"> {
+    entry: ApwCmsEntry;
+}
+export interface OnAfterCmsEntryPublishTopicParams
+    extends Omit<AfterEntryPublishTopicParams, "entry"> {
+    entry: ApwCmsEntry;
+}
+export interface OnAfterCmsEntryUnpublishTopicParams
+    extends Omit<AfterEntryUnpublishTopicParams, "entry"> {
+    entry: ApwCmsEntry;
+}

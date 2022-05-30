@@ -134,6 +134,25 @@ const cleanUpdatedInputData = (
         return acc;
     }, {} as CreateCmsEntryInput);
 };
+/**
+ * This method takes original entry meta and new input.
+ * When new meta is merged onto the existing one, everything that has undefined or null value is removed.
+ */
+const createEntryMeta = (input?: Record<string, any>, original?: Record<string, any>) => {
+    const meta = {
+        ...(original || {}),
+        ...(input || {})
+    };
+
+    for (const key in meta) {
+        if (meta[key] !== undefined || meta[key] !== null) {
+            continue;
+        }
+        delete meta[key];
+    }
+
+    return meta;
+};
 
 interface DeleteEntryParams {
     model: CmsModel;
@@ -781,12 +800,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 validateEntries: false
             });
             /**
-             * If there is nothing sent into the meta, we use the original entry meta values.
-             * Otherwise override the original meta values with new ones.
-             * We do not want to merge, because user might want to remove something and we do not know it.
-             * If users wants to remove a key from meta values, they need to send whole meta input without that key.
+             * If users wants to remove a key from meta values, they need to send meta key with the null value.
              */
-            const meta = metaInput === undefined ? originalEntry.meta : metaInput;
+            const meta = createEntryMeta(metaInput, originalEntry.meta);
             /**
              * We always send the full entry to the hooks and storage operations update.
              */
