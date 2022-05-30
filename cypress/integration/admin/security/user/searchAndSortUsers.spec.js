@@ -12,21 +12,23 @@ context("Search and sort security users", () => {
     const users = [];
 
     before(() => {
-        return cy.securityReadGroup({ slug: "full-access" }).then(group => {
-            for (let i = 0; i < total; i++) {
-                cy.securityCreateUser({
-                    data: {
-                        email: uniqid(`${i}-`, "@gmail.com"),
-                        firstName: uniqid("first name-"),
-                        lastName: uniqid("last name-"),
-                        password: "12345678",
-                        group: group.id
-                    }
-                }).then(user => {
-                    users.push(user);
-                });
-            }
-        });
+        return cy.securityDeleteAllUsers().then(() =>
+            cy.securityReadGroup({ slug: "full-access" }).then(group => {
+                for (let i = 0; i < total; i++) {
+                    cy.securityCreateUser({
+                        data: {
+                            email: uniqid(`${i}-`, "@gmail.com"),
+                            firstName: uniqid("first name-"),
+                            lastName: uniqid("last name-"),
+                            password: "12345678",
+                            group: group.id
+                        }
+                    }).then(user => {
+                        users.push(user);
+                    });
+                }
+            })
+        );
     });
 
     beforeEach(() => {
@@ -84,7 +86,7 @@ context("Search and sort security users", () => {
         });
     });
 
-    it("should able to sort users", () => {
+    it.only("should able to sort users", () => {
         cy.visit(`/admin-users`);
 
         // Sort users from "email A -> Z"
