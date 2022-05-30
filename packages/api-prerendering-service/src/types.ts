@@ -158,7 +158,7 @@ export interface Configuration {
         notFoundPage?: string;
         tenant?: string;
         locale?: string;
-        [key: string]: string | undefined;
+        [key: string]: any | undefined;
     };
 }
 
@@ -166,4 +166,13 @@ export interface Args {
     url?: string;
     path?: string;
     configuration?: Configuration;
+}
+
+export interface RenderPagesEvent extends Args {
+    /** Render pages only in a specific variant. */
+    variant?: string;
+    tag?: {
+        key: string;
+        value?: string;
+    };
 }

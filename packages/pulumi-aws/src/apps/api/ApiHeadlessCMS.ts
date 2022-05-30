@@ -4,13 +4,11 @@ import * as aws from "@pulumi/aws";
 
 import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
 
-import { Vpc } from "./ApiVpc";
-import { createLambdaRole } from "./ApiLambdaUtils";
+import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
+import { StorageOutput, VpcConfig } from "../common";
 
 interface HeadlessCMSParams {
     env: Record<string, any>;
-    primaryDynamodbTableArn: pulumi.Input<string>;
-    vpc: Vpc | undefined;
 }
 
 export type ApiHeadlessCMS = PulumiAppModule<typeof ApiHeadlessCMS>;
@@ -18,11 +16,10 @@ export type ApiHeadlessCMS = PulumiAppModule<typeof ApiHeadlessCMS>;
 export const ApiHeadlessCMS = defineAppModule({
     name: "ApiHeadlessCMS",
     config(app: PulumiApp, params: HeadlessCMSParams) {
-        const policy = createHeadlessCmsLambdaPolicy(app, params);
+        const policy = createHeadlessCmsLambdaPolicy(app);
         const role = createLambdaRole(app, {
             name: "headless-cms-lambda-role",
-            policy: policy.output,
-            vpc: params.vpc
+            policy: policy.output
         });
 
         const graphql = app.addResource(aws.lambda.Function, {
@@ -40,16 +37,12 @@ export const ApiHeadlessCMS = defineAppModule({
                 }),
                 environment: {
                     variables: {
+                        ...getCommonLambdaEnvVariables(app),
                         ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },
-                vpcConfig: params.vpc
-                    ? {
-                          subnetIds: params.vpc.subnets.private.map(subNet => subNet.output.id),
-                          securityGroupIds: [params.vpc.vpc.output.defaultSecurityGroupId]
-                      }
-                    : undefined
+                vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
         });
 
@@ -63,76 +56,104 @@ export const ApiHeadlessCMS = defineAppModule({
     }
 });
 
-function createHeadlessCmsLambdaPolicy(app: PulumiApp, params: HeadlessCMSParams) {
+function createHeadlessCmsLambdaPolicy(app: PulumiApp) {
+    const storageOutput = app.getModule(StorageOutput);
+
     return app.addResource(aws.iam.Policy, {
         name: "HeadlessCmsLambdaPolicy",
         config: {
             description: "This policy enables access to Dynamodb streams",
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "PermissionDynamodb",
-                        Effect: "Allow",
-                        Action: [
-                            "dynamodb:BatchGetItem",
-                            "dynamodb:BatchWriteItem",
-                            "dynamodb:ConditionCheckItem",
-                            "dynamodb:CreateBackup",
-                            "dynamodb:CreateTable",
-                            "dynamodb:CreateTableReplica",
-                            "dynamodb:DeleteBackup",
-                            "dynamodb:DeleteItem",
-                            "dynamodb:DeleteTable",
-                            "dynamodb:DeleteTableReplica",
-                            "dynamodb:DescribeBackup",
-                            "dynamodb:DescribeContinuousBackups",
-                            "dynamodb:DescribeContributorInsights",
-                            "dynamodb:DescribeExport",
-                            "dynamodb:DescribeKinesisStreamingDestination",
-                            "dynamodb:DescribeLimits",
-                            "dynamodb:DescribeReservedCapacity",
-                            "dynamodb:DescribeReservedCapacityOfferings",
-                            "dynamodb:DescribeStream",
-                            "dynamodb:DescribeTable",
-                            "dynamodb:DescribeTableReplicaAutoScaling",
-                            "dynamodb:DescribeTimeToLive",
-                            "dynamodb:DisableKinesisStreamingDestination",
-                            "dynamodb:EnableKinesisStreamingDestination",
-                            "dynamodb:ExportTableToPointInTime",
-                            "dynamodb:GetItem",
-                            "dynamodb:GetRecords",
-                            "dynamodb:GetShardIterator",
-                            "dynamodb:ListBackups",
-                            "dynamodb:ListContributorInsights",
-                            "dynamodb:ListExports",
-                            "dynamodb:ListStreams",
-                            "dynamodb:ListTables",
-                            "dynamodb:ListTagsOfResource",
-                            "dynamodb:PartiQLDelete",
-                            "dynamodb:PartiQLInsert",
-                            "dynamodb:PartiQLSelect",
-                            "dynamodb:PartiQLUpdate",
-                            "dynamodb:PurchaseReservedCapacityOfferings",
-                            "dynamodb:PutItem",
-                            "dynamodb:Query",
-                            "dynamodb:RestoreTableFromBackup",
-                            "dynamodb:RestoreTableToPointInTime",
-                            "dynamodb:Scan",
-                            "dynamodb:UpdateContinuousBackups",
-                            "dynamodb:UpdateContributorInsights",
-                            "dynamodb:UpdateItem",
-                            "dynamodb:UpdateTable",
-                            "dynamodb:UpdateTableReplicaAutoScaling",
-                            "dynamodb:UpdateTimeToLive"
-                        ],
-                        Resource: [
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${params.primaryDynamodbTableArn}/*`
-                        ]
-                    }
-                ]
-            }
+            // Storage is pulumi.Output, so we need to run apply() to resolve policy based on it
+            policy: storageOutput.apply(storage => {
+                const policy: aws.iam.PolicyDocument = {
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Sid: "PermissionDynamodb",
+                            Effect: "Allow",
+                            Action: [
+                                "dynamodb:BatchGetItem",
+                                "dynamodb:BatchWriteItem",
+                                "dynamodb:ConditionCheckItem",
+                                "dynamodb:CreateBackup",
+                                "dynamodb:CreateTable",
+                                "dynamodb:CreateTableReplica",
+                                "dynamodb:DeleteBackup",
+                                "dynamodb:DeleteItem",
+                                "dynamodb:DeleteTable",
+                                "dynamodb:DeleteTableReplica",
+                                "dynamodb:DescribeBackup",
+                                "dynamodb:DescribeContinuousBackups",
+                                "dynamodb:DescribeContributorInsights",
+                                "dynamodb:DescribeExport",
+                                "dynamodb:DescribeKinesisStreamingDestination",
+                                "dynamodb:DescribeLimits",
+                                "dynamodb:DescribeReservedCapacity",
+                                "dynamodb:DescribeReservedCapacityOfferings",
+                                "dynamodb:DescribeStream",
+                                "dynamodb:DescribeTable",
+                                "dynamodb:DescribeTableReplicaAutoScaling",
+                                "dynamodb:DescribeTimeToLive",
+                                "dynamodb:DisableKinesisStreamingDestination",
+                                "dynamodb:EnableKinesisStreamingDestination",
+                                "dynamodb:ExportTableToPointInTime",
+                                "dynamodb:GetItem",
+                                "dynamodb:GetRecords",
+                                "dynamodb:GetShardIterator",
+                                "dynamodb:ListBackups",
+                                "dynamodb:ListContributorInsights",
+                                "dynamodb:ListExports",
+                                "dynamodb:ListStreams",
+                                "dynamodb:ListTables",
+                                "dynamodb:ListTagsOfResource",
+                                "dynamodb:PartiQLDelete",
+                                "dynamodb:PartiQLInsert",
+                                "dynamodb:PartiQLSelect",
+                                "dynamodb:PartiQLUpdate",
+                                "dynamodb:PurchaseReservedCapacityOfferings",
+                                "dynamodb:PutItem",
+                                "dynamodb:Query",
+                                "dynamodb:RestoreTableFromBackup",
+                                "dynamodb:RestoreTableToPointInTime",
+                                "dynamodb:Scan",
+                                "dynamodb:UpdateContinuousBackups",
+                                "dynamodb:UpdateContributorInsights",
+                                "dynamodb:UpdateItem",
+                                "dynamodb:UpdateTable",
+                                "dynamodb:UpdateTableReplicaAutoScaling",
+                                "dynamodb:UpdateTimeToLive"
+                            ],
+                            Resource: [
+                                `${storage.primaryDynamodbTableArn}`,
+                                `${storage.primaryDynamodbTableArn}/*`,
+                                // Attach permissions for elastic search dynamo as well (if ES is enabled).
+                                ...(storage.elasticsearchDynamodbTableArn
+                                    ? [
+                                          `${storage.elasticsearchDynamodbTableArn}`,
+                                          `${storage.elasticsearchDynamodbTableArn}/*`
+                                      ]
+                                    : [])
+                            ]
+                        },
+                        // Attach permissions for elastic search domain as well (if ES is enabled).
+                        ...(storage.elasticsearchDomainArn
+                            ? [
+                                  {
+                                      Sid: "PermissionForES",
+                                      Effect: "Allow" as const,
+                                      Action: "es:*",
+                                      Resource: [
+                                          `${storage.elasticsearchDomainArn}`,
+                                          `${storage.elasticsearchDomainArn}/*`
+                                      ]
+                                  }
+                              ]
+                            : [])
+                    ]
+                };
+
+                return policy;
+            })
         }
     });
 }

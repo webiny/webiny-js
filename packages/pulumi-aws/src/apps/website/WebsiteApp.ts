@@ -1,27 +1,45 @@
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 import {
     defineApp,
     ApplicationContext,
     createGenericApplication,
-    mergeAppHooks
+    mergeAppHooks,
+    updateGatewayConfig,
+    ApplicationConfig
 } from "@webiny/pulumi-sdk";
 
 import { createPublicAppBucket } from "../createAppBucket";
-import { websiteUpload } from "./WebsiteHookUpload";
-import { websiteRender } from "./WebsiteHookRender";
-import { websiteUpdatePbSettings } from "./WebsiteHookUpdatePbSettings";
+import { websiteUpload } from "./WebsiteUpload";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { ApplicationConfig } from "@webiny/pulumi-sdk";
+import { createPrerenderingService } from "./WebsitePrerendering";
+import { StorageOutput, VpcConfig } from "../common";
+import { AppInput, getAppInput } from "../utils";
+import { websiteRender } from "./WebsiteHookRender";
 
 export interface WebsiteAppConfig {
     /** Custom domain configuration */
-    domain?(ctx: ApplicationContext): CustomDomainParams;
+    domain?(ctx: ApplicationContext): CustomDomainParams | undefined | void;
+
+    /**
+     * Enables or disables VPC for the API.
+     * For VPC to work you also have to enable it in the `storage` application.
+     */
+    vpc?: AppInput<boolean | undefined>;
 }
 
 export const WebsiteApp = defineApp({
     name: "Website",
     config(app, config: WebsiteAppConfig) {
+        // Register storage output as a module available for all other modules
+        const storage = app.addModule(StorageOutput);
+
+        // Register VPC config module to be available to other modules
+        app.addModule(VpcConfig, {
+            enabled: getAppInput(app, config.vpc)
+        });
+
         const appBucket = createPublicAppBucket(app, "app");
 
         const appCloudfront = app.addResource(aws.cloudfront.Distribution, {
@@ -126,6 +144,17 @@ export const WebsiteApp = defineApp({
             }
         });
 
+        const prerendering = createPrerenderingService(app, {
+            env: {
+                DB_TABLE: storage.primaryDynamodbTableName,
+                DB_TABLE_ELASTICSEARCH: pulumi.interpolate`${storage.elasticsearchDynamodbTableName}`,
+                APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
+                DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
+                DELIVERY_CLOUDFRONT: deliveryCloudfront.output.id,
+                DELIVERY_URL: pulumi.interpolate`https://${deliveryCloudfront.output.domainName}`
+            }
+        });
+
         const domain = config.domain?.(app.ctx);
         if (domain) {
             applyCustomDomain(deliveryCloudfront, domain);
@@ -138,15 +167,41 @@ export const WebsiteApp = defineApp({
             appId: appCloudfront.output.id,
             appStorage: appBucket.bucket.output.id,
             appUrl: appCloudfront.output.domainName.apply(value => `https://${value}`),
+            appDomain: appCloudfront.output.domainName,
             // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
             // The static HTML snapshots delivered from them still rely on the app's S3 bucket
             // defined above, for serving static assets (JS, CSS, images).
             deliveryId: deliveryCloudfront.output.id,
             deliveryStorage: deliveryBucket.bucket.output.id,
+            deliveryDomain: deliveryCloudfront.output.domainName,
             deliveryUrl: deliveryCloudfront.output.domainName.apply(value => `https://${value}`)
         });
 
+        app.onAfterDeploy(async ({ outputs }) => {
+            await websiteUpload({
+                appDir: app.ctx.appDir,
+                bucket: outputs["appStorage"]
+            });
+        });
+
+        // Update variant gateway configuration.
+        const variant = app.ctx.variant;
+        if (variant) {
+            app.onAfterDeploy(async ({ outputs }) => {
+                // After deployment is made we update a static JSON file with a variant configuration.
+                // TODO: We should update WCP config instead of a static file here
+                await updateGatewayConfig({
+                    app: "website",
+                    cwd: app.ctx.projectDir,
+                    env: app.ctx.env,
+                    variant: variant,
+                    domain: outputs["deliveryDomain"]
+                });
+            });
+        }
+
         return {
+            prerendering,
             app: {
                 ...appBucket,
                 cloudfront: appCloudfront
@@ -184,11 +239,6 @@ export function createWebsiteApp(config?: WebsiteAppConfig & ApplicationConfig<W
         onBeforeBuild: config?.onBeforeBuild,
         onAfterBuild: config?.onAfterBuild,
         onBeforeDeploy: config?.onBeforeDeploy,
-        onAfterDeploy: mergeAppHooks(
-            websiteUpload,
-            websiteRender,
-            websiteUpdatePbSettings,
-            config?.onAfterDeploy
-        )
+        onAfterDeploy: mergeAppHooks(websiteRender, config?.onAfterDeploy)
     });
 }

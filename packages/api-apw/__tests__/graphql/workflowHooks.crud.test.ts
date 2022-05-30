@@ -313,7 +313,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.apw.listWorkflows.data.length === 1
+            (response: any) => response.data.apw.listWorkflows.data.length === 1
         );
 
         const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
@@ -346,7 +346,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => getWorkflowQuery({ id: workflow.id }).then(([data]) => data),
-            response => response.data.apw.getWorkflow.data.savedOn !== workflow.savedOn,
+            (response: any) => response.data.apw.getWorkflow.data.savedOn !== workflow.savedOn,
             {
                 name: "Wait for getWorkflow query"
             }
@@ -453,7 +453,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.apw.listWorkflows.data.length === 1
+            (response: any) => response.data.apw.listWorkflows.data.length === 1
         );
 
         const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
@@ -550,7 +550,7 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => listWorkflowsQuery({}).then(([data]) => data),
-            response => response.data.apw.listWorkflows.data.length === 1
+            (response: any) => response.data.apw.listWorkflows.data.length === 1
         );
 
         const workflow = createWorkflowResponse.data.apw.createWorkflow.data;

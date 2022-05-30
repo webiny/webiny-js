@@ -27,6 +27,7 @@ export interface ListWhere {
 
 export interface ListParams {
     where: ListWhere;
+    sort?: ("datetime_ASC" | "datetime_DESC")[];
     limit?: number;
     after?: string;
 }
@@ -112,9 +113,7 @@ interface BaseApwCrud<TEntry, TCreateEntryParams, TUpdateEntryParams> {
 
 export interface ApwScheduleActionCrud
     extends BaseApwCrud<ApwScheduleAction, ApwScheduleActionData, ApwScheduleActionData> {
-    list(
-        params: ListParams & { sort?: "datetime_ASC" | "datetime_DESC" }
-    ): Promise<[ApwScheduleAction[], ListMeta]>;
+    list(params: ListParams): Promise<[ApwScheduleAction[], ListMeta]>;
 
     getCurrentTask(): Promise<ApwScheduleAction | null>;
 
@@ -159,7 +158,6 @@ export interface ApwScheduleActionListParams extends ListParams {
         tenant: string;
         locale: string;
     };
-    sort?: "datetime_ASC" | "datetime_DESC";
 }
 
 export type StorageOperationsGetScheduleActionParams = StorageOperationsGetParams;

@@ -63,7 +63,7 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Should able to list schedule action items.
          */
-        let [listItemResult, meta] = await scheduleActionCrud.list({ where: {} });
+        const [listItemResult, meta] = await scheduleActionCrud.list({ where: {} });
         expect(listItemResult).toEqual([
             {
                 id: expect.any(String),
@@ -84,21 +84,21 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Doing partial update should return an error.
          */
-        let updateItemResult;
+        let updateItemResultWithError;
         try {
             // @ts-ignore
-            updateItemResult = await scheduleActionCrud.update(scheduledAction.id, {
+            updateItemResultWithError = await scheduleActionCrud.update(scheduledAction.id, {
                 action: ApwScheduleActionTypes.UNPUBLISH
             });
         } catch (e) {
             expect(e.message).toBe("Validation failed.");
-            expect(updateItemResult).toBe(undefined);
+            expect(updateItemResultWithError).toBe(undefined);
         }
 
         /**
          * Should able to update a schedule action item.
          */
-        updateItemResult = await scheduleActionCrud.update(scheduledAction.id, {
+        const updateItemResult = await scheduleActionCrud.update(scheduledAction.id, {
             datetime: new Date().toISOString(),
             action: ApwScheduleActionTypes.UNPUBLISH,
             type: ApwContentTypes.PAGE,
@@ -129,9 +129,11 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Should return empty list in case of no schedule action items.
          */
-        [listItemResult, meta] = await scheduleActionCrud.list({ where: {} });
-        expect(listItemResult).toEqual([]);
-        expect(meta).toEqual({
+        const [listItemEmptyResult, listItemEmptyMeta] = await scheduleActionCrud.list({
+            where: {}
+        });
+        expect(listItemEmptyResult).toEqual([]);
+        expect(listItemEmptyMeta).toEqual({
             hasMoreItems: false,
             totalCount: 0,
             cursor: null
@@ -159,7 +161,7 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Should able to list schedule action items.
          */
-        let [listItemResult, meta] = await scheduleActionCrud.list({ where: {} });
+        const [listItemResult, meta] = await scheduleActionCrud.list({ where: {} });
         expect(listItemResult).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
@@ -190,11 +192,11 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Should able to list schedule action items in descending order of datetime.
          */
-        [listItemResult, meta] = await scheduleActionCrud.list({
+        const [listItemDescendingResult, listItemDescendingMeta] = await scheduleActionCrud.list({
             where: {},
-            sort: "datetime_DESC"
+            sort: ["datetime_DESC"]
         });
-        expect(listItemResult).toEqual(
+        expect(listItemDescendingResult).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
@@ -207,7 +209,7 @@ describe("Schedule action CRUD Test", () => {
                 })
             ])
         );
-        expect(meta).toEqual({
+        expect(listItemDescendingMeta).toEqual({
             hasMoreItems: false,
             totalCount: 5,
             cursor: expect.any(String)
@@ -216,9 +218,9 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Sorted by datetime(ISO string) in ascending order.
          */
-        for (let i = 0; i < listItemResult.length - 1; i++) {
-            const currentItem = listItemResult[i];
-            const nextItem = listItemResult[i + 1];
+        for (let i = 0; i < listItemDescendingResult.length - 1; i++) {
+            const currentItem = listItemDescendingResult[i];
+            const nextItem = listItemDescendingResult[i + 1];
             expect(currentItem.data.datetime > nextItem.data.datetime).toBe(true);
         }
     });
@@ -251,10 +253,10 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Should able to list schedule action items by datetime.
          */
-        let [listItemResult] = await scheduleActionCrud.list({
+        const [listItemFirstDateResult] = await scheduleActionCrud.list({
             where: { datetime_startsWith: firstDateTime }
         });
-        expect(listItemResult).toEqual(
+        expect(listItemFirstDateResult).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
@@ -267,15 +269,15 @@ describe("Schedule action CRUD Test", () => {
                 })
             ])
         );
-        expect(listItemResult.length).toBe(3);
+        expect(listItemFirstDateResult.length).toBe(3);
 
         /**
          * Should able to list schedule action items datetime.
          */
-        [listItemResult] = await scheduleActionCrud.list({
+        const [listItemSecondDateResult] = await scheduleActionCrud.list({
             where: { datetime_startsWith: secondDateTime }
         });
-        expect(listItemResult).toEqual(
+        expect(listItemSecondDateResult).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
@@ -288,7 +290,7 @@ describe("Schedule action CRUD Test", () => {
                 })
             ])
         );
-        expect(listItemResult.length).toBe(2);
+        expect(listItemSecondDateResult.length).toBe(2);
     });
 
     test("Should able to get and update current  schedule action item", async () => {
@@ -337,8 +339,8 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Should return null as currentTask
          */
-        let currentTask = await scheduleActionCrud.getCurrentTask();
-        expect(currentTask).toBe(null);
+        const currentTaskNull = await scheduleActionCrud.getCurrentTask();
+        expect(currentTaskNull).toBe(null);
 
         const [firstAction, secondAction] = scheduledActions;
 
@@ -350,9 +352,9 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Now we should have it.
          */
-        currentTask = await scheduleActionCrud.getCurrentTask();
-        if (currentTask) {
-            expect(currentTask.id).toBe(firstAction.id);
+        const currentTaskFirstAction = await scheduleActionCrud.getCurrentTask();
+        if (currentTaskFirstAction) {
+            expect(currentTaskFirstAction.id).toBe(firstAction.id);
         }
 
         /**
@@ -363,9 +365,9 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Now we should have it.
          */
-        currentTask = await scheduleActionCrud.getCurrentTask();
-        if (currentTask) {
-            expect(currentTask.id).toBe(secondAction.id);
+        const currentTaskSecondAction = await scheduleActionCrud.getCurrentTask();
+        if (currentTaskSecondAction) {
+            expect(currentTaskSecondAction.id).toBe(secondAction.id);
         }
 
         /**
@@ -377,7 +379,7 @@ describe("Schedule action CRUD Test", () => {
         /**
          * Now we should not have it.
          */
-        currentTask = await scheduleActionCrud.getCurrentTask();
-        expect(currentTask).toBe(null);
+        const currentTaskNoTasks = await scheduleActionCrud.getCurrentTask();
+        expect(currentTaskNoTasks).toBe(null);
     });
 });

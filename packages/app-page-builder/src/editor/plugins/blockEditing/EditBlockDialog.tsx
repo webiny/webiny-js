@@ -114,9 +114,12 @@ const EditBlockDialog: React.FC<EditBlockDialogProps> = props => {
     );
 };
 
-export default React.memo(
+const MemoizedEditBlockDialog = React.memo(
     EditBlockDialog,
     (props: EditBlockDialogProps, nextProps: EditBlockDialogProps) => {
         return props.open === nextProps.open && props.loading === nextProps.loading;
     }
 );
+
+MemoizedEditBlockDialog.displayName = "MemoizedEditBlockDialog";
+export default MemoizedEditBlockDialog;

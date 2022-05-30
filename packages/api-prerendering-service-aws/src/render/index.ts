@@ -44,6 +44,10 @@ export default () => {
                 return;
             }
 
+            if (!path.startsWith("/")) {
+                path = `/${path}`;
+            }
+
             path += "*";
 
             console.log(

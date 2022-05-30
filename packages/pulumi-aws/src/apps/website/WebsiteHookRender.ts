@@ -1,4 +1,4 @@
-import LambdaClient from "aws-sdk/clients/lambda";
+import EventBridgeClient from "aws-sdk/clients/eventbridge";
 
 import { defineAppHook } from "@webiny/pulumi-sdk";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
@@ -9,41 +9,40 @@ export const websiteRender = defineAppHook(async (params, context) => {
         return;
     }
 
-    // 2. Get exports from `site` stack, for `args.env` environment.
-    const apiOutput = getStackOutput({ folder: "api", env: params.env });
+    const storageOutput = getStackOutput({ folder: "apps/storage", env: params.env });
 
     context.info("Issuing a complete website render job...");
 
     try {
-        const lambdaClient = new LambdaClient({ region: apiOutput["region"] });
+        const client = new EventBridgeClient({
+            region: storageOutput["region"]
+        });
 
-        const response = await lambdaClient
-            .invoke({
-                FunctionName: apiOutput["psQueueAdd"],
-                Payload: JSON.stringify({
-                    render: {
-                        path: "*",
-                        configuration: {
-                            db: {
-                                namespace: "T#root"
+        const result = await client
+            .putEvents({
+                Entries: [
+                    {
+                        Source: "webiny-cli",
+                        EventBusName: storageOutput["eventBusArn"],
+                        DetailType: "RenderPages",
+                        Detail: JSON.stringify({
+                            path: "*",
+                            variant: params.variant,
+                            configuration: {
+                                db: {
+                                    namespace: "T#root"
+                                }
                             }
-                        }
+                        })
                     }
-                })
+                ]
             })
             .promise();
 
-        const { error } = JSON.parse(response.Payload as string);
-        if (error) {
-            throw error;
+        const entry = result.Entries?.[0];
+        if (entry?.ErrorMessage) {
+            throw new Error(entry.ErrorMessage);
         }
-
-        await lambdaClient
-            .invoke({
-                FunctionName: apiOutput["psQueueProcess"],
-                InvocationType: "Event"
-            })
-            .promise();
 
         context.success("Website re-render job successfully issued.");
         context.info(
