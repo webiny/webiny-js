@@ -105,11 +105,15 @@ export const ButtonSecondary: React.FC<ButtonProps> = props => {
             ripple={ripple}
             onClick={onClick}
             style={style}
+<<<<<<< HEAD
             className={classNames(
                 "webiny-ui-button webiny-ui-button--secondary",
                 webinyButtonStyles,
                 className
             )}
+=======
+            className={classNames("webiny-ui-button webiny-ui-button--secondary", webinyButtonStyles, className)}
+>>>>>>> 3561c09f5a (fix(ui): restore secondary button styles)
             data-testid={props["data-testid"]}
         >
             {children}
