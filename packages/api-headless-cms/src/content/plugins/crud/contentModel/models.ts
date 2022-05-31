@@ -15,21 +15,6 @@ import idValidation from "./idValidation";
 const requiredShortString = validation.create("required,maxLength:255");
 const shortString = validation.create("maxLength:255");
 
-export const CreateContentModelModel = withFields({
-    name: string({ validation: requiredShortString }),
-    modelId: string({ validation: shortString }),
-    description: string({ validation: shortString }),
-    group: string({ validation: requiredShortString })
-})();
-
-export const CreateContentModelModelFrom = withFields({
-    name: string({ validation: requiredShortString }),
-    modelId: string({ validation: shortString }),
-    description: string({ validation: shortString }),
-    group: string({ validation: requiredShortString }),
-    locale: string({ validation: shortString })
-})();
-
 const RendererModel = withFields({
     name: string({ validation: requiredShortString })
 })();
@@ -80,6 +65,23 @@ export const ContentModelFieldModel = withFields({
         })()
     }),
     settings: object({ value: {} })
+})();
+
+export const CreateContentModelModel = withFields({
+    name: string({ validation: requiredShortString }),
+    modelId: string({ validation: shortString }),
+    description: string({ validation: shortString }),
+    group: string({ validation: requiredShortString }),
+    fields: fields({ instanceOf: ContentModelFieldModel, value: [], list: true, required: true }),
+    layout: object({ value: [], required: true })
+})();
+
+export const CreateContentModelModelFrom = withFields({
+    name: string({ validation: requiredShortString }),
+    modelId: string({ validation: shortString }),
+    description: string({ validation: shortString }),
+    group: string({ validation: requiredShortString }),
+    locale: string({ validation: shortString })
 })();
 
 export const UpdateContentModelModel = withFields({
