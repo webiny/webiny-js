@@ -1,8 +1,13 @@
-import { ApwContentTypes, ApwContext } from "~/types";
+import { AdvancedPublishingWorkflow, ApwContentTypes } from "~/types";
 import { fetchModel, updateEntryMeta } from "~/plugins/cms/utils";
 import Error from "@webiny/error";
+import { HeadlessCms } from "@webiny/api-headless-cms/types";
 
-export const linkContentReviewToEntry = (params: ApwContext) => {
+interface LinkContentReviewToEntryParams {
+    apw: AdvancedPublishingWorkflow;
+    cms: HeadlessCms;
+}
+export const linkContentReviewToEntry = (params: LinkContentReviewToEntryParams) => {
     const { apw, cms } = params;
 
     apw.contentReview.onAfterContentReviewCreate.subscribe(async ({ contentReview }) => {

@@ -1,17 +1,21 @@
 import {
+    AdvancedPublishingWorkflow,
     ApwContentReviewStatus,
-    ApwContext,
     OnAfterCmsEntryPublishTopicParams,
     OnAfterCmsEntryUnpublishTopicParams
 } from "~/types";
 import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/createApw/utils";
+import { HeadlessCms } from "@webiny/api-headless-cms/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
-export const updateContentReviewStatus = (params: ApwContext) => {
-    const { apw, cms, security } = params;
+interface UpdateContentReviewStatusParams {
+    apw: AdvancedPublishingWorkflow;
+    cms: HeadlessCms;
+    getIdentity: () => SecurityIdentity;
+}
 
-    const getIdentity = () => {
-        return security.getIdentity();
-    };
+export const updateContentReviewStatus = (params: UpdateContentReviewStatusParams) => {
+    const { apw, cms, getIdentity } = params;
 
     cms.onAfterEntryPublish.subscribe<OnAfterCmsEntryPublishTopicParams>(async ({ entry }) => {
         const contentReviewId = entry.meta?.apw?.contentReviewId;

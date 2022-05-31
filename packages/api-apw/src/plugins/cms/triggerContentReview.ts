@@ -1,7 +1,18 @@
 import Error from "@webiny/error";
-import { ApwContentReviewStatus, ApwContext, OnBeforeCmsEntryPublishTopicParams } from "~/types";
+import {
+    AdvancedPublishingWorkflow,
+    ApwContentReviewStatus,
+    OnBeforeCmsEntryPublishTopicParams
+} from "~/types";
+import { HeadlessCms } from "@webiny/api-headless-cms/types";
 
-export const triggerContentReview = ({ cms, apw }: ApwContext) => {
+interface TriggerContentReviewParams {
+    apw: AdvancedPublishingWorkflow;
+    cms: HeadlessCms;
+}
+export const triggerContentReview = (params: TriggerContentReviewParams) => {
+    const { cms, apw } = params;
+
     cms.onBeforeEntryPublish.subscribe<OnBeforeCmsEntryPublishTopicParams>(async ({ entry }) => {
         const contentReviewId = entry.meta?.apw?.contentReviewId;
         if (contentReviewId) {

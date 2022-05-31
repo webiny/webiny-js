@@ -15,6 +15,7 @@ import { createCustomAuth } from "~/scheduler/handlers/executeAction/security";
 import { isInstallationPending } from "./utils";
 import { extendPbPageSettingsSchema } from "~/plugins/pageBuilder/extendPbPageSettingsSchema";
 import { apwContentPagePlugins } from "~/plugins/pageBuilder/apwContentPagePlugins";
+import { apwCmsHooks } from "~/plugins/cms";
 
 const setupApwContext = (params: CreateApwContextParams) =>
     new ContextPlugin<ApwContext>(async context => {
@@ -81,6 +82,11 @@ const setupApwContext = (params: CreateApwContextParams) =>
         });
 
         apwPageBuilderHooks({ pageBuilder: context.pageBuilder, apw: context.apw, getIdentity });
+        apwCmsHooks({
+            cms: context.cms,
+            apw: context.apw,
+            getIdentity
+        });
     });
 
 export default (params: CreateApwContextParams) => [

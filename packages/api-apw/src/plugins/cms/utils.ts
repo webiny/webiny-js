@@ -7,7 +7,6 @@ import {
     WorkflowScopeTypes
 } from "~/types";
 import { workflowByCreatedOnDesc, workflowByPrecedenceDesc } from "~/plugins/utils";
-import get from "lodash/get";
 
 export const fetchModel = async (
     cms: HeadlessCms,
@@ -88,14 +87,14 @@ const isWorkflowApplicable = (entry: CmsEntry, workflow: ApwWorkflow): boolean =
     if (scopeType === WorkflowScopeTypes.DEFAULT) {
         return true;
     } else if (scopeType === WorkflowScopeTypes.CUSTOM) {
-        const models = get(workflow, "scope.data.models");
+        const models = workflow.scope.data?.models;
 
         if (Array.isArray(models) && models.includes(entry.modelId)) {
             return true;
         }
 
-        const entries = get(workflow, "scope.data.entries");
-        if (Array.isArray(entries) && entries.includes(entry.entryId)) {
+        const entries = workflow.scope.data?.entries || [];
+        if (Array.isArray(entries) && entries.some(value => value.id === entry.entryId)) {
             return true;
         }
         return false;

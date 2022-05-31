@@ -1,18 +1,23 @@
 import set from "lodash/set";
-import { ApwContext } from "~/types";
+import { AdvancedPublishingWorkflow } from "~/types";
 import {
     assignWorkflowToEntry,
     getEntryTitle,
     hasEntries,
     updateEntryMeta
 } from "~/plugins/cms/utils";
+import { HeadlessCms } from "@webiny/api-headless-cms/types";
 
 interface Value {
     id: string;
     modelId: string;
 }
 
-export const linkWorkflowToEntry = (params: ApwContext) => {
+interface LinkWorkflowToEntryParams {
+    apw: AdvancedPublishingWorkflow;
+    cms: HeadlessCms;
+}
+export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
     const { apw, cms } = params;
 
     cms.onBeforeEntryCreate.subscribe(async ({ entry }) => {

@@ -1,10 +1,13 @@
-import { ApwContentTypes, ApwContext } from "~/types";
+import { AdvancedPublishingWorkflow, ApwContentTypes } from "~/types";
 import { fetchModel, getEntryTitle } from "./utils";
+import { HeadlessCms } from "@webiny/api-headless-cms/types";
 
-export const apwEntryPlugins = ({ apw, cms }: ApwContext) => {
-    if (!apw || !cms) {
-        return;
-    }
+interface ApwEntryPlugins {
+    apw: AdvancedPublishingWorkflow;
+    cms: HeadlessCms;
+}
+export const apwEntryPlugins = (params: ApwEntryPlugins) => {
+    const { cms, apw } = params;
 
     apw.addContentGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
         const model = await fetchModel(cms, id, settings.modelId);
