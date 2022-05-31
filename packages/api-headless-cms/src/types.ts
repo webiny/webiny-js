@@ -1001,6 +1001,26 @@ export interface CmsModelCreateInput {
      * Group where to put the content model in.
      */
     group: string;
+    /**
+     * A list of content model fields to define the entry values.
+     */
+    fields?: CmsModelFieldInput[];
+    /**
+     * Admin UI field layout
+     *
+     * ```ts
+     * layout: [
+     *      [field1id, field2id],
+     *      [field3id]
+     * ]
+     * ```
+     */
+    layout?: string[][];
+    /**
+     * The field that is being displayed as entry title.
+     * It is picked as first available text field. Or user can select own field.
+     */
+    titleFieldId?: string;
 }
 
 /**
