@@ -53,7 +53,7 @@ export const getValue = (object: Record<string, any>, key: string) => {
 export const getContentReviewStepInitialStatus = (
     workflowSteps: ApwWorkflowStep[],
     index: number,
-    previousStepStatus: ApwContentReviewStepStatus
+    previousStepStatus?: ApwContentReviewStepStatus
 ): ApwContentReviewStepStatus => {
     /**
      * Always set first step 'active' by default.

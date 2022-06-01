@@ -11,8 +11,13 @@ import { workflowByCreatedOnDesc, workflowByPrecedenceDesc } from "~/plugins/uti
 export const fetchModel = async (
     cms: HeadlessCms,
     id: string,
-    settings: { modelId?: string }
+    settings?: { modelId?: string } | null
 ): Promise<CmsModel> => {
+    if (!settings) {
+        throw new WebinyError("Missing settings.", "SETTINGS_ERROR", {
+            id
+        });
+    }
     const modelId = settings.modelId;
     if (!modelId) {
         throw new WebinyError("Missing modelId in settings.", "MODEL_ID_ERROR", {

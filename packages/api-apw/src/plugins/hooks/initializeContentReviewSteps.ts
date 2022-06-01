@@ -1,4 +1,3 @@
-// TODO @pavel @bruno
 import lodashSet from "lodash/set";
 import { ApwContentReviewStepStatus, ApwContext } from "~/types";
 import { getContentReviewStepInitialStatus, getContentApwSettingsPlugin } from "~/plugins/utils";
@@ -39,7 +38,7 @@ export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
         const workflow = await apw.workflow.get(workflowId);
         const workflowSteps = workflow.steps;
 
-        let previousStepStatus: ApwContentReviewStepStatus;
+        let previousStepStatus: ApwContentReviewStepStatus | undefined = undefined;
         const updatedSteps = workflow.steps.map((step, index) => {
             const status = getContentReviewStepInitialStatus(
                 workflowSteps,
