@@ -24,7 +24,7 @@ import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/cont
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
-import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import {
     createPageBuilderContext,
     createPageBuilderGraphQL
@@ -61,6 +61,16 @@ import {
     UPDATE_CHANGE_REQUEST_MUTATION
 } from "./graphql/changeRequest";
 import { TestContext } from "../types";
+import { CREATE_CONTENT_MODEL_GROUP_MUTATION } from "./graphql/cms.group";
+import { CREATE_CONTENT_MODEL_MUTATION } from "./graphql/cms.model";
+import {
+    contentEntryCreateFromMutationFactory,
+    contentEntryCreateMutationFactory,
+    contentEntryGetQueryFactory,
+    contentEntryUpdateMutationFactory
+} from "./graphql/cms.entry";
+import { ContextPlugin } from "@webiny/handler";
+import { ApwContext } from "~/types";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -125,6 +135,25 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
 
     const handler = createHandler({
         plugins: [
+            {
+                type: "context",
+                name: "context-path-parameters",
+                apply(context) {
+                    context.http = {
+                        ...(context?.http || {}),
+                        request: {
+                            ...(context?.http?.request || {}),
+                            path: {
+                                ...(context?.http?.request?.path || {}),
+                                parameters: {
+                                    ...(context?.http?.request?.path?.parameters || {}),
+                                    key: params.path
+                                }
+                            }
+                        }
+                    };
+                }
+            } as ContextPlugin<ApwContext>,
             ...ops.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
@@ -323,6 +352,57 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async deleteScheduledActionMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_SCHEDULED_ACTION_MUTATION, variables } });
+        },
+        /**
+         * Headless CMS
+         */
+        async createContentModelGroupMutation(variables: Record<string, any>) {
+            return invoke({
+                body: {
+                    query: CREATE_CONTENT_MODEL_GROUP_MUTATION,
+                    variables
+                }
+            });
+        },
+        async createContentModelMutation(variables: Record<string, any>) {
+            return invoke({
+                body: {
+                    query: CREATE_CONTENT_MODEL_MUTATION,
+                    variables
+                }
+            });
+        },
+        async createContentEntryMutation(model: CmsModel, variables: Record<string, any>) {
+            return invoke({
+                body: {
+                    query: contentEntryCreateMutationFactory(model),
+                    variables
+                }
+            });
+        },
+        async updateContentEntryMutation(model: CmsModel, variables: Record<string, any>) {
+            return invoke({
+                body: {
+                    query: contentEntryUpdateMutationFactory(model),
+                    variables
+                }
+            });
+        },
+        async createContentEntryFromMutation(model: CmsModel, variables: Record<string, any>) {
+            return invoke({
+                body: {
+                    query: contentEntryCreateFromMutationFactory(model),
+                    variables
+                }
+            });
+        },
+        async getContentEntryQuery(model: CmsModel, variables: Record<string, any>) {
+            return invoke({
+                body: {
+                    query: contentEntryGetQueryFactory(model),
+                    variables
+                }
+            });
         }
     };
 };

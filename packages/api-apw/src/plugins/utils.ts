@@ -8,6 +8,7 @@ import {
     ApwContentReviewCrud,
     ApwContentReviewStep,
     ApwContentReviewStepStatus,
+    ApwContentTypes,
     ApwContext,
     ApwReviewerCrud,
     ApwWorkflow,
@@ -15,6 +16,9 @@ import {
     ApwWorkflowStepTypes,
     WorkflowScopeTypes
 } from "~/types";
+import { PluginsContainer } from "@webiny/plugins";
+import { ContentApwSettingsPlugin } from "~/ContentApwSettingsPlugin";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
@@ -197,4 +201,21 @@ export const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
      * In descending order of workflow createdOn i.e. the most recent one first.
      */
     return new Date(createdOnB).getTime() - new Date(createdOnA).getTime();
+};
+
+interface GetContentApwSettingsPluginParams {
+    type: ApwContentTypes;
+    plugins: PluginsContainer;
+}
+export const getContentApwSettingsPlugin = <
+    T extends ContentApwSettingsPlugin = ContentApwSettingsPlugin
+>(
+    params: GetContentApwSettingsPluginParams
+): T => {
+    const { type, plugins } = params;
+    const plugin = plugins.byType<T>(ContentApwSettingsPlugin.type).find(p => p.canUse(type));
+    if (plugin) {
+        return plugin;
+    }
+    throw new NotFoundError(`Could not find a "ContentApwSettingsPlugin" for "${type}".`);
 };

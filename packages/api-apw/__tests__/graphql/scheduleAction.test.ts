@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Schedule action in a content review process`, function () {
     const options = {
@@ -19,7 +19,7 @@ describe(`Schedule action in a content review process`, function () {
     } = gqlHandler;
 
     const setup = async () => {
-        return createSetupForContentReview(gqlHandler);
+        return createSetupForPageContentReview(gqlHandler);
     };
 
     const preparePageForPublish = async () => {

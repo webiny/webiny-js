@@ -5,11 +5,14 @@ import { triggerContentReview } from "./triggerContentReview";
 import { linkContentReviewToPage } from "./linkContentReviewToPage";
 import { updateContentReviewStatus } from "./updateContentReviewStatus";
 import { linkWorkflowToPage } from "./linkWorkflowToPage";
+import { PluginsContainer } from "@webiny/plugins";
+import { PageApwSettingsGetterPlugin } from "~/plugins/pageBuilder/PageApwSettingsGetterPlugin";
 
 export interface ApwPageBuilderPluginsParams {
     pageBuilder: PageBuilderContextObject;
     apw: AdvancedPublishingWorkflow;
     getIdentity: () => SecurityIdentity;
+    plugins: PluginsContainer;
 }
 
 export type ApwPageBuilderMethods = Pick<
@@ -26,7 +29,9 @@ export type ApwPageBuilderMethods = Pick<
 >;
 
 export const apwPageBuilderHooks = (params: ApwPageBuilderPluginsParams) => {
-    const { pageBuilder, apw, getIdentity } = params;
+    const { pageBuilder, apw, getIdentity, plugins } = params;
+
+    plugins.register(new PageApwSettingsGetterPlugin());
 
     const pageMethods = {
         onBeforePageCreate: pageBuilder.onBeforePageCreate,

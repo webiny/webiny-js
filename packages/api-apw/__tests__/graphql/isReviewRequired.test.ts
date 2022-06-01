@@ -1,6 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { ApwContentTypes } from "~/types";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe("Is review required test", () => {
     const options = {
@@ -13,7 +13,7 @@ describe("Is review required test", () => {
     const { isReviewRequiredQuery, createContentReviewMutation } = gqlHandler;
 
     const setup = async () => {
-        return createSetupForContentReview(gqlHandler);
+        return createSetupForPageContentReview(gqlHandler);
     };
 
     test(`should able to create, update, get, list and delete "Content Review"`, async () => {

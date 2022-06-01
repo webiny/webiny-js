@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { createContentReviewSetup } from "../utils/helpers";
+import { createPageContentReviewSetup } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 
 const updatedRichText = [
@@ -46,7 +46,7 @@ describe("ChangeRequest crud test", () => {
     } = gqlHandler;
 
     test(`should able to create, update, get, list and delete a "change request"`, async () => {
-        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        const { contentReview } = await createPageContentReviewSetup(gqlHandler);
         const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new entry.

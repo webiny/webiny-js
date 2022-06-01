@@ -16,30 +16,28 @@ export default () => [
      * Hook into CMS events and execute business logic.
      */
     new ContextPlugin<ApwContext>(async context => {
-        const { security, apw, tenancy, i18n } = context;
-
-        if (isInstallationPending({ tenancy, i18n })) {
+        if (isInstallationPending(context)) {
             return;
         }
 
-        validateContentReview({ apw });
+        validateContentReview(context);
 
-        validateChangeRequest({ apw });
+        validateChangeRequest(context);
 
-        validateComment({ apw });
+        validateComment(context);
 
-        createReviewerFromIdentity({ security, apw });
+        createReviewerFromIdentity(context);
 
-        initializeContentReviewSteps({ apw });
+        initializeContentReviewSteps(context);
 
-        updatePendingChangeRequestsCount({ apw });
+        updatePendingChangeRequestsCount(context);
 
-        updateTotalCommentsCount({ apw });
+        updateTotalCommentsCount(context);
 
-        updateLatestCommentId({ apw });
+        updateLatestCommentId(context);
 
-        deleteCommentsAfterChangeRequest({ apw });
+        deleteCommentsAfterChangeRequest(context);
 
-        deleteChangeRequestsWithContentReview({ apw });
+        deleteChangeRequestsWithContentReview(context);
     })
 ];

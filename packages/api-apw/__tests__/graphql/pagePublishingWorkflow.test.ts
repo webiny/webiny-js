@@ -1,4 +1,4 @@
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
 describe("Page publishing workflow", () => {
@@ -24,7 +24,7 @@ describe("Page publishing workflow", () => {
     /**
      * Let's do the setup.
      */
-    const setup = async () => createSetupForContentReview(gqlHandler);
+    const setup = async () => createSetupForPageContentReview(gqlHandler);
 
     test(`Should able to "publish" page for content review process`, async () => {
         const { page, workflow } = await setup();

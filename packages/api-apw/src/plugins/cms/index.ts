@@ -6,10 +6,13 @@ import { triggerContentReview } from "~/plugins/cms/triggerContentReview";
 import { updateContentReviewStatus } from "~/plugins/cms/updateContentReviewStatus";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { PluginsContainer } from "@webiny/plugins";
+import { CmsEntryApwSettingsGetterPlugin } from "~/plugins/cms/CmsEntryApwSettingsGetterPlugin";
 
 interface ApwCmsHooksParams {
     apw: AdvancedPublishingWorkflow;
     cms: HeadlessCms;
+    plugins: PluginsContainer;
     getIdentity: () => SecurityIdentity;
 }
 export const apwCmsHooks = (params: ApwCmsHooksParams) => {
@@ -20,6 +23,8 @@ export const apwCmsHooks = (params: ApwCmsHooksParams) => {
     if (!params.apw || !params.cms) {
         return;
     }
+
+    params.plugins.register(new CmsEntryApwSettingsGetterPlugin());
 
     apwEntryPlugins(params);
 

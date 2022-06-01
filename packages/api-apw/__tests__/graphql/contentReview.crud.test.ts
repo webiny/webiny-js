@@ -1,6 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { ApwContentReviewStepStatus } from "~/types";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe("Content Review crud test", () => {
     const options = {
@@ -27,7 +27,7 @@ describe("Content Review crud test", () => {
     } = gqlHandler;
 
     const setup = async () => {
-        return createSetupForContentReview(gqlHandler);
+        return createSetupForPageContentReview(gqlHandler);
     };
 
     const expectedContent = {

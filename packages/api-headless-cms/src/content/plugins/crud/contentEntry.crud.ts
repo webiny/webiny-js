@@ -55,6 +55,7 @@ import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afte
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
 import { PluginsContainer } from "@webiny/plugins";
 import { Tenant } from "@webiny/api-tenancy/types";
+import lodashMerge from "lodash/merge";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -139,10 +140,7 @@ const cleanUpdatedInputData = (
  * When new meta is merged onto the existing one, everything that has undefined or null value is removed.
  */
 const createEntryMeta = (input?: Record<string, any>, original?: Record<string, any>) => {
-    const meta = {
-        ...(original || {}),
-        ...(input || {})
-    };
+    const meta = lodashMerge(original || {}, input || {});
 
     for (const key in meta) {
         if (meta[key] !== undefined || meta[key] !== null) {

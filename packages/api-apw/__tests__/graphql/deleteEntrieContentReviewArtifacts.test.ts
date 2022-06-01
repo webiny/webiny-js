@@ -1,4 +1,4 @@
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest";
 
@@ -25,7 +25,7 @@ describe(`Delete "content review" and associated "change requests" and "comments
      * Let's do the setup.
      */
     const setup = async () => {
-        const { page } = await createSetupForContentReview(gqlHandler);
+        const { page } = await createSetupForPageContentReview(gqlHandler);
         return {
             page
         };

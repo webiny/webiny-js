@@ -10,7 +10,7 @@ export const apwEntryPlugins = (params: ApwEntryPlugins) => {
     const { cms, apw } = params;
 
     apw.addContentGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
-        const model = await fetchModel(cms, id, settings.modelId);
+        const model = await fetchModel(cms, id, settings);
 
         const item = await cms.getEntryById(model, id);
 
@@ -27,14 +27,14 @@ export const apwEntryPlugins = (params: ApwEntryPlugins) => {
         };
     });
 
-    apw.addContentPublisher(ApwContentTypes.PAGE, async (id, settings) => {
-        const model = await fetchModel(cms, id, settings.modelId);
+    apw.addContentPublisher(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+        const model = await fetchModel(cms, id, settings);
         await cms.publishEntry(model, id);
         return true;
     });
 
-    apw.addContentUnPublisher(ApwContentTypes.PAGE, async (id, settings) => {
-        const model = await fetchModel(cms, id, settings.modelId);
+    apw.addContentUnPublisher(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
+        const model = await fetchModel(cms, id, settings);
         await cms.unpublishEntry(model, id);
         return true;
     });

@@ -1,6 +1,6 @@
 import { ApwContentReviewStepStatus } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe("Retract sign off for a step in content review process", function () {
     const options = {
@@ -19,7 +19,7 @@ describe("Retract sign off for a step in content review process", function () {
     } = gqlHandler;
 
     const setup = async () => {
-        return createSetupForContentReview(gqlHandler);
+        return createSetupForPageContentReview(gqlHandler);
     };
 
     const expectedContent = {

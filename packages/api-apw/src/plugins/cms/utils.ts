@@ -11,7 +11,7 @@ import { workflowByCreatedOnDesc, workflowByPrecedenceDesc } from "~/plugins/uti
 export const fetchModel = async (
     cms: HeadlessCms,
     id: string,
-    settings: any
+    settings: { modelId?: string }
 ): Promise<CmsModel> => {
     const modelId = settings.modelId;
     if (!modelId) {

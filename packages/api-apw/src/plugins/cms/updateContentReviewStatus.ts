@@ -4,7 +4,7 @@ import {
     OnAfterCmsEntryPublishTopicParams,
     OnAfterCmsEntryUnpublishTopicParams
 } from "~/types";
-import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/createApw/utils";
+import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/crud/utils";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 

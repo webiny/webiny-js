@@ -3,7 +3,7 @@ import WebinyError from "@webiny/error";
 import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContext } from "~/types";
-import { createApw } from "~/createApw";
+import { createApw } from "~/crud";
 import { apwPageBuilderHooks } from "./pageBuilder";
 import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
@@ -81,10 +81,16 @@ const setupApwContext = (params: CreateApwContextParams) =>
             handlerClient
         });
 
-        apwPageBuilderHooks({ pageBuilder: context.pageBuilder, apw: context.apw, getIdentity });
+        apwPageBuilderHooks({
+            pageBuilder: context.pageBuilder,
+            apw: context.apw,
+            plugins: context.plugins,
+            getIdentity
+        });
         apwCmsHooks({
             cms: context.cms,
             apw: context.apw,
+            plugins: context.plugins,
             getIdentity
         });
     });

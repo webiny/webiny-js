@@ -1,7 +1,7 @@
 import get from "lodash/get";
 import { ApwContentReviewStatus, ApwOnBeforePagePublishTopicParams } from "~/types";
 import { ApwPageBuilderMethods, ApwPageBuilderPluginsParams } from ".";
-import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/createApw/utils";
+import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/crud/utils";
 
 interface UpdateContentReviewStatusParams
     extends Pick<ApwPageBuilderPluginsParams, "apw" | "getIdentity">,

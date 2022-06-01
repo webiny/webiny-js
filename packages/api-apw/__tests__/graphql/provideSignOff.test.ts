@@ -1,6 +1,6 @@
 import { ApwContentReviewStepStatus } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 
 describe("Provide sign off for a step in content review process", function () {
@@ -20,7 +20,7 @@ describe("Provide sign off for a step in content review process", function () {
     } = gqlHandler;
 
     const setup = async () => {
-        return createSetupForContentReview(gqlHandler);
+        return createSetupForPageContentReview(gqlHandler);
     };
 
     const expectedContent = {

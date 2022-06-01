@@ -150,8 +150,12 @@ describe("Workflow assignment to a PB Page", () => {
         // Create a workflow entry
         const [createWorkflowResponse] = await createWorkflowMutation({
             data: {
-                ...mocks.createWorkflow({}, [reviewer]),
-                app: ApwWorkflowApplications.CMS
+                ...mocks.createWorkflow(
+                    {
+                        app: ApwWorkflowApplications.CMS
+                    },
+                    [reviewer]
+                )
             }
         });
         const workflow = createWorkflowResponse.data.apw.createWorkflow.data;
