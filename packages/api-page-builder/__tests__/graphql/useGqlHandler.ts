@@ -61,6 +61,8 @@ import {
     GET_BLOCK_CATEGORY
 } from "./graphql/blockCategories";
 
+import { CREATE_BLOCK } from "./graphql/blocks";
+
 import path from "path";
 import fs from "fs";
 import { until } from "@webiny/project-utils/testing/helpers/until";
@@ -282,6 +284,11 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
         },
         async getBlockCategory(variables: Record<string, any>) {
             return invoke({ body: { query: GET_BLOCK_CATEGORY, variables } });
+        },
+
+        // Blocks.
+        async createBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_BLOCK, variables } });
         }
     };
 };

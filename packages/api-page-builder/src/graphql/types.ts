@@ -9,6 +9,7 @@ import { Args as PsRenderParams } from "@webiny/api-prerendering-service/render/
 import { Args as PsQueueAddParams } from "@webiny/api-prerendering-service/queue/add/types";
 
 import {
+    Block,
     BlockCategory,
     Category,
     Menu,
@@ -566,11 +567,39 @@ export interface BlockCategoriesCrud {
     onAfterBlockCategoryDelete: Topic<OnAfterBlockCategoryDeleteTopicParams>;
 }
 
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforeBlockCreateTopicParams {
+    block: Block;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterBlockCreateTopicParams {
+    block: Block;
+}
+
+/**
+ * @category Blocks
+ */
+export interface BlocksCrud {
+    createBlock(data: Record<string, any>): Promise<Block>;
+
+    /**
+     * Lifecycle events
+     */
+    onBeforeBlockCreate: Topic<OnBeforeBlockCreateTopicParams>;
+    onAfterBlockCreate: Topic<OnAfterBlockCreateTopicParams>;
+}
+
 export interface PageBuilderContextObject
     extends PagesCrud,
         PageElementsCrud,
         CategoriesCrud,
         BlockCategoriesCrud,
+        BlocksCrud,
         MenusCrud,
         SettingsCrud,
         SystemCrud {
