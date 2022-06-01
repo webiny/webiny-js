@@ -302,6 +302,9 @@ Fix the width of input components when inside grids
     .mdc-floating-label {
       color: rgba(0, 0, 0, 0.6);
     }
+    .mdc-select__dropdown-icon {
+      @include select.dd-arrow-svg-bg_($mdc-theme-primary, 1);
+    }
   }
 }
 
