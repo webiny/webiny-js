@@ -38,7 +38,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
                 const { onChange } = bind;
 
                 // We need to make sure the value is an array, since this is a multi-value component.
-                const value = bind.value || [];
+                const value = (Array.isArray(bind.value) ? bind.value : [bind.value]).filter(Boolean);
 
                 return (
                     <FileUploadWrapper className={imageWrapperStyles}>
