@@ -185,3 +185,14 @@ export const assignBlockCategoryLifecycleEvents = () => {
         });
     });
 };
+
+export const assignBlockLifecycleEvents = () => {
+    return new ContextPlugin<PbContext>(async context => {
+        context.pageBuilder.onBeforeBlockCreate.subscribe(async params => {
+            tracker.track("block:beforeCreate", params);
+        });
+        context.pageBuilder.onAfterBlockCreate.subscribe(async params => {
+            tracker.track("block:afterCreate", params);
+        });
+    });
+};
