@@ -4,7 +4,7 @@ import { Fab, FabProps } from "@rmwc/fab";
 import { Icon, IconProps } from "../Icon/Icon";
 import classNames from "classnames";
 import { SyntheticEvent } from "react";
-import { webinyButtonStyles } from "./Button.styles"; 
+import { webinyButtonStyles } from "./Button.styles";
 export interface ButtonProps {
     // Make button flat (only applicable to Primary button).
     flat?: boolean;
@@ -105,7 +105,11 @@ export const ButtonSecondary: React.FC<ButtonProps> = props => {
             ripple={ripple}
             onClick={onClick}
             style={style}
-            className={classNames("webiny-ui-button webiny-ui-button--secondary", webinyButtonStyles, className)}
+            className={classNames(
+                "webiny-ui-button webiny-ui-button--secondary",
+                webinyButtonStyles,
+                className
+            )}
             data-testid={props["data-testid"]}
         >
             {children}

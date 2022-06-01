@@ -8,7 +8,7 @@ const webinyButtonStyles = css(
     {},
     {
         "&.webiny-ui-button--secondary:not(:disabled)": {
-            borderColor: 'var(--mdc-theme-primary)'
+            borderColor: "var(--mdc-theme-primary)"
         }
     }
 );
