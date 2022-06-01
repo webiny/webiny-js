@@ -217,7 +217,6 @@
     "@types/jsdom": "link:./typings/void",
     "@typescript/lib-dom": "npm:@types/web@*",
     "@types/webpack": "^5.28.0",
-    "tslib": "2.4.0",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "typescript": "4.7.4",
