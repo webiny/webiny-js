@@ -290,14 +290,12 @@ Fix the width of input components when inside grids
       padding-top: 10px;
     }
   }
-
-  .mdc-select__dropdown-icon {
-    bottom: 50%;
-    transform: translateY(50%);
-  }
   &:not(.mdc-select--disabled).mdc-select--focused {
     .mdc-floating-label {
       color: rgba(0, 0, 0, 0.6);
+    }
+    .mdc-select__dropdown-icon {
+      @include select.dd-arrow-svg-bg_($mdc-theme-primary, 1);
     }
   }
 }
