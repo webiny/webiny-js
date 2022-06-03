@@ -3,48 +3,51 @@ import ApolloClient from "apollo-client";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
-import { CmsEditorContentEntry } from "~/types";
+import { CmsEditorContentEntry, CmsModel } from "~/types";
 import { MutationHookOptions } from "@apollo/react-hooks";
 import { AsyncProcessor, composeAsync } from "@webiny/utils";
 
 interface PublishEntryOptions {
     mutationOptions?: MutationHookOptions;
-    client: ApolloClient<object>;
 }
 
 type DeleteEntryOptions = PublishEntryOptions;
 
 interface EntryError {
     message: string;
-    code: string;
-    data: Record<string, any>;
+    code?: string;
+    data?: Record<string, any>;
 }
 
-interface OnEntryPublish {
+interface OnEntryPublishResponse {
+    model: CmsModel;
     entry: CmsEditorContentEntry;
     options: PublishEntryOptions;
     // TODO: Maybe a different input and output type for compose.
-    error?: EntryError;
+    error?: EntryError | null;
+    cache?: ApolloClient<any>["cache"];
 }
 
-type OnEntryDelete = OnEntryPublish;
+type OnEntryDeleteResponse = OnEntryPublishResponse;
 
-type OnEntryPublishSubscriber = AsyncProcessor<OnEntryPublish>;
-type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDelete>;
+type OnEntryPublishSubscriber = AsyncProcessor<OnEntryPublishResponse>;
+type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteResponse>;
 
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
     publishEntry: (
+        model: CmsModel,
         entry: CmsEditorContentEntry,
         options: PublishEntryOptions
-    ) => Promise<OnEntryPublish>;
+    ) => Promise<OnEntryPublishResponse>;
     onEntryPublish: (fn: OnEntryPublishSubscriber) => () => void;
     deleteEntry: (
+        model: CmsModel,
         entry: CmsEditorContentEntry,
-        options: DeleteEntryOptions
-    ) => Promise<OnEntryDelete>;
+        options?: DeleteEntryOptions
+    ) => Promise<OnEntryDeleteResponse>;
     onEntryDelete: (fn: OnEntryDeleteSubscriber) => () => void;
 }
 
@@ -102,8 +105,9 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
         },
         createApolloClient: props.createApolloClient,
         apolloClient: apolloClientsCache[currentLocale],
-        publishEntry: async (entry, options) => {
+        publishEntry: async (model, entry, options = {}) => {
             return await composeAsync([...onEntryPublish.current].reverse())({
+                model,
                 entry,
                 options
             });
@@ -115,8 +119,9 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
                 onEntryPublish.current.splice(index, 1);
             };
         },
-        deleteEntry: async (entry, options) => {
+        deleteEntry: async (model, entry, options = {}) => {
             return await composeAsync([...onEntryDelete.current].reverse())({
+                model,
                 entry,
                 options
             });

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { css } from "emotion";
 import get from "lodash/get";
 import { IconButton } from "@webiny/ui/Button";
@@ -10,16 +10,11 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
-import {
-    CmsEntryDeleteMutationResponse,
-    CmsEntryDeleteMutationVariables,
-    createDeleteMutation
-} from "~/admin/graphql/contentEntries";
 import usePermission from "~/admin/hooks/usePermission";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
 import { removeEntryFromListCache } from "../../cache";
-import { useMutation } from "~/admin/hooks";
+import { useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 
 const t = i18n.ns(
@@ -37,20 +32,12 @@ const menuStyles = css({
 });
 
 const ContentFormOptionsMenu: React.FC = () => {
+    const { deleteEntry } = useCms();
     const { contentModel, entry, loading, setLoading, listQueryVariables } = useContentEntry();
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { showDialog } = useDialog();
     const { canDelete } = usePermission();
-
-    const DELETE_CONTENT = useMemo(() => {
-        return createDeleteMutation(contentModel);
-    }, [contentModel.modelId]);
-
-    const [deleteContentMutation] = useMutation<
-        CmsEntryDeleteMutationResponse,
-        CmsEntryDeleteMutationVariables
-    >(DELETE_CONTENT);
 
     const title = get(entry, "meta.title");
 
@@ -71,33 +58,26 @@ const ContentFormOptionsMenu: React.FC = () => {
     const confirmDelete = useCallback((): void => {
         showConfirmation(async (): Promise<void> => {
             setLoading(true);
-            const [uniqueId] = entry.id.split("#");
-            await deleteContentMutation({
-                variables: { revision: uniqueId },
-                update(cache, response) {
-                    if (!response.data) {
-                        showDialog("Missing response data on Delete Entry Mutation.", {
-                            title: t`Could not delete content`
-                        });
-                        return;
-                    }
-                    const { error } = response.data.content;
-                    if (error) {
-                        showDialog(error.message, { title: t`Could not delete content` });
-                        return;
-                    }
 
-                    setLoading(false);
-                    removeEntryFromListCache(contentModel, cache, entry, listQueryVariables);
+            const { error, cache } = await deleteEntry(contentModel, entry);
 
-                    showSnackbar(
-                        t`{title} was deleted successfully!`({ title: <strong>{title}</strong> })
-                    );
-                    history.push(`/cms/content-entries/${contentModel.modelId}`);
-                }
-            });
-
+            if (error) {
+                showDialog(error.message, { title: t`Could not delete content` });
+                history.push(`/cms/content-entries/${contentModel.modelId}`);
+                return;
+            }
             setLoading(false);
+            /**
+             * If cache obj is returned, we can remove deleted entry from it.
+             * Cache should be returned as it is being sent by the default onEntryDelete method.
+             * If it is not, it is an error which is produced in some added onEntryDelete method.
+             */
+            if (cache) {
+                removeEntryFromListCache(contentModel, cache, entry, listQueryVariables);
+            }
+
+            showSnackbar(t`{title} was deleted successfully!`({ title: <strong>{title}</strong> }));
+            history.push(`/cms/content-entries/${contentModel.modelId}`);
         });
     }, [entry]);
 
