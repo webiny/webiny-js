@@ -374,7 +374,12 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                     getPublishedPage: async (
                         _,
-                        args: { id?: string; path?: string; preview?: boolean },
+                        args: {
+                            id?: string;
+                            path?: string;
+                            preview?: boolean;
+                            returnNotFoundPage?: boolean;
+                        },
                         context
                     ) => {
                         if (args.id) {
@@ -386,11 +391,22 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             );
                         }
 
-                        return resolve(() =>
-                            context.pageBuilder.getPublishedPageByPath({
-                                path: args.path as string
-                            })
-                        );
+                        return resolve(async () => {
+                            try {
+                                return await context.pageBuilder.getPublishedPageByPath({
+                                    path: args.path as string
+                                });
+                            } catch (err) {
+                                if (args.returnNotFoundPage === true && err.code === "NOT_FOUND") {
+                                    // Load NOT FOUND page from settings
+                                    const settings = await context.pageBuilder.getCurrentSettings();
+                                    return context.pageBuilder.getPublishedPageById({
+                                        id: settings.pages.notFound
+                                    });
+                                }
+                                throw err;
+                            }
+                        });
                     },
 
                     oembedData: async (_, args: any) => {
