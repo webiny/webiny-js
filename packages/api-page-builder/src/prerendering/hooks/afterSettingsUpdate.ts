@@ -24,7 +24,7 @@ export default () => {
              * If a change on pages settings (home, notFound) has been made, let's rerender accordingly.
              */
             for (let i = 0; i < meta.diff.pages.length; i++) {
-                const [type, , , page] = meta.diff.pages[i];
+                const [type, prevPageId, , page] = meta.diff.pages[i];
                 switch (type) {
                     case "home":
                         await context.pageBuilder.prerendering.render({
@@ -33,9 +33,14 @@ export default () => {
                         });
                         break;
                     case "notFound":
+                        const prevPage = await context.pageBuilder.getPublishedPageById({
+                            id: prevPageId
+                        });
+
                         await context.pageBuilder.prerendering.render({
                             context,
                             paths: [
+                                // Render the new "not found" page and store it into the NOT_FOUND_FOLDER.
                                 {
                                     path: page.path,
                                     configuration: {
@@ -44,6 +49,11 @@ export default () => {
                                         },
                                         storage: { folder: NOT_FOUND_FOLDER }
                                     }
+                                },
+                                // Render the old "not found" page, to remove any notion of the "not found" concept
+                                // from the snapshot, as well as the PS#RENDER record in the database.
+                                {
+                                    path: prevPage.path
                                 }
                             ]
                         });
