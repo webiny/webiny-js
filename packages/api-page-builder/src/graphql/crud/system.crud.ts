@@ -168,18 +168,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         title: "Not Found",
                         path: "/not-found",
                         content: notFoundPageData,
-                        settings: {},
-                        // Do not show the page in page lists, only direct get is possible.
-                        visibility: {
-                            get: {
-                                latest: true,
-                                published: true
-                            },
-                            list: {
-                                latest: false,
-                                published: false
-                            }
-                        }
+                        settings: {}
                     }
                 ];
 
