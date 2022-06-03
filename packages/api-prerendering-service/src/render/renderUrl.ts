@@ -160,7 +160,7 @@ export const defaultRenderUrlFunction = async (
     const notFoundPage = params?.args?.configuration?.meta?.notFoundPage;
     if (notFoundPage) {
         console.log("Setting locale (__PS_NOT_FOUND_PAGE__) to window object....");
-        windowSet(browserPage, "__PS_NOT_FOUND_PAGE__", true);
+        windowSet(browserPage, "__PS_NOT_FOUND_PAGE__", params.args.path || "");
     }
 
     // Don't load these resources during prerender.
