@@ -279,9 +279,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 displayName: identity.displayName,
                 type: identity.type
             };
-            /**
-             * Just create the initial { compression, content } object.
-             */
 
             const page: Page = {
                 id,
@@ -294,12 +291,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 path: pagePath,
                 version,
                 status: STATUS_DRAFT,
-                visibility: {
-                    list: { latest: true, published: true },
-                    get: { latest: true, published: true }
-                },
-                home: false,
-                notFound: false,
                 locked: false,
                 publishedOn: null,
                 createdFrom: null,
