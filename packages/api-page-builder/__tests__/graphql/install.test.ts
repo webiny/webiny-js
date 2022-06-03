@@ -105,7 +105,7 @@ describe("Install Test", () => {
             listPages,
             ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPages;
-                return data.length === 1 && data[0].status === "published";
+                return data.length === 2 && data[0].status === "published";
             },
             {
                 name: "list pages after listing categories"
@@ -117,12 +117,18 @@ describe("Install Test", () => {
         expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[0].status).toBe(
             "published"
         );
+        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[1].title).toBe(
+            "Not Found"
+        );
+        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[1].status).toBe(
+            "published"
+        );
 
         const [listPublishedPagesAfterInstallResponse] = await until(
             listPublishedPages,
             ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPublishedPages;
-                return data.length === 1 && data[0].status === "published";
+                return data.length === 2 && data[0].status === "published";
             },
             {
                 name: "list published pages after listing categories"
