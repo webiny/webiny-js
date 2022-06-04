@@ -17,6 +17,7 @@ import {
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
+import omit from "lodash/omit";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { Client } from "@elastic/elasticsearch";
@@ -49,6 +50,13 @@ import {
 } from "./keys";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { PageDynamoDbElasticsearchFieldPlugin } from "~/plugins/definitions/PageDynamoDbElasticsearchFieldPlugin";
+
+/**
+ * This function removes attributes that were once present in the Page record, which we no longer need.
+ */
+function removePageAttributes(item: Page): Page {
+    return omit(item, ["home", "notFound", "visibility"]) as Page;
+}
 
 export interface CreatePageStorageOperationsParams {
     entity: Entity<any>;
@@ -932,7 +940,7 @@ export const createPageStorageOperations = (
             );
         }
         const { hits, total } = response.body.hits;
-        const items = hits.map(item => item._source);
+        const items = hits.map(item => item._source).map(item => removePageAttributes(item));
 
         const hasMoreItems = items.length > limit;
         if (hasMoreItems) {
@@ -1050,7 +1058,7 @@ export const createPageStorageOperations = (
         );
 
         return sortItems({
-            items,
+            items: items.map(item => removePageAttributes(item)),
             fields,
             sort
         });
