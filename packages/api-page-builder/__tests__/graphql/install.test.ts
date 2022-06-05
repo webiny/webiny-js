@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
+import { Page } from "~/types";
 
 describe("Install Test", () => {
     const handler = useGqlHandler();
@@ -111,18 +112,16 @@ describe("Install Test", () => {
                 name: "list pages after listing categories"
             }
         );
-        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[0].title).toBe(
-            "Welcome to Webiny"
-        );
-        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[0].status).toBe(
-            "published"
-        );
-        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[1].title).toBe(
-            "Not Found"
-        );
-        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[1].status).toBe(
-            "published"
-        );
+
+        // Create a reusable assertion function
+        const assertPages = (pages: Page[]) => {
+            expect(pages.every(p => p.status === "published")).toBe(true);
+            expect(pages.some(p => p.title === "Welcome to Webiny")).toBe(true);
+            expect(pages.some(p => p.title === "Not Found")).toBe(true);
+        };
+
+        const latestPages: Page[] = listPagesAfterInstallResponse.data.pageBuilder.listPages.data;
+        assertPages(latestPages);
 
         const [listPublishedPagesAfterInstallResponse] = await until(
             listPublishedPages,
@@ -135,13 +134,8 @@ describe("Install Test", () => {
             }
         );
 
-        expect(
-            listPublishedPagesAfterInstallResponse.data.pageBuilder.listPublishedPages.data[0].title
-        ).toBe("Welcome to Webiny");
-        expect(
-            listPublishedPagesAfterInstallResponse.data.pageBuilder.listPublishedPages.data[0]
-                .status
-        ).toBe("published");
+        const publishedPages: Page[] = listPublishedPagesAfterInstallResponse.data.pageBuilder.listPublishedPages.data;
+        assertPages(publishedPages);
 
         // 3. Let's get the ID of the not-found page and try to get it directly.
         const settings = await getSettings().then(([res]) => res.data.pageBuilder.getSettings.data);
