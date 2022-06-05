@@ -56,8 +56,9 @@ const CUSTOM_HANDLERS = {
     }
 };
 
-/**
+const testFilePattern = /test\.j?t?sx?$/;
 
+/**
  * @param folder
  * @returns boolean
  */
@@ -74,8 +75,8 @@ function hasTestFiles(folder) {
             if (hasTFiles) {
                 return true;
             }
-        } else if (filepath.endsWith("test.js") || filepath.endsWith("test.ts")) {
-            return true;
+        } else {
+            return testFilePattern.test(filepath);
         }
     }
     return false;
