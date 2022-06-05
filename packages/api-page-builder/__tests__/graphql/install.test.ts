@@ -106,7 +106,7 @@ describe("Install Test", () => {
             listPages,
             ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPages;
-                return data.length === 2 && data[0].status === "published";
+                return data.length === 2 && data.every((p: Page) => p.status === "published");
             },
             {
                 name: "list pages after listing categories"
@@ -127,7 +127,7 @@ describe("Install Test", () => {
             listPublishedPages,
             ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPublishedPages;
-                return data.length === 2 && data[0].status === "published";
+                return data.length === 2 && data.every((p: Page) => p.status === "published");
             },
             {
                 name: "list published pages after listing categories"
