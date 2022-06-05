@@ -120,10 +120,10 @@ describe("Install Test", () => {
             expect(pages.some(p => p.title === "Not Found")).toBe(true);
         };
 
-        const latestPages: Page[] = listPagesAfterInstallResponse.data.pageBuilder.listPages.data;
-        assertPages(latestPages);
+        let pages: Page[] = listPagesAfterInstallResponse.data.pageBuilder.listPages.data;
+        assertPages(pages);
 
-        const [listPublishedPagesAfterInstallResponse] = await until(
+        const [publishedPages] = await until(
             listPublishedPages,
             ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPublishedPages;
@@ -134,24 +134,22 @@ describe("Install Test", () => {
             }
         );
 
-        const publishedPages: Page[] = listPublishedPagesAfterInstallResponse.data.pageBuilder.listPublishedPages.data;
-        assertPages(publishedPages);
+        pages = publishedPages.data.pageBuilder.listPublishedPages.data;
+        assertPages(pages);
 
         // 3. Let's get the ID of the not-found page and try to get it directly.
         const settings = await getSettings().then(([res]) => res.data.pageBuilder.getSettings.data);
 
         const [getNotFoundPageResponse] = await getPage({ id: settings.pages.notFound });
-        expect(getNotFoundPageResponse.data.pageBuilder.getPage.data.title).toBe("Not Found");
-        expect(getNotFoundPageResponse.data.pageBuilder.getPage.data.status).toBe("published");
+        const page: Page = getNotFoundPageResponse.data.pageBuilder.getPage.data;
+        expect(page.title).toBe("Not Found");
+        expect(page.status).toBe("published");
 
-        const [getPublishedPageResponse] = await getPublishedPage({ id: settings.pages.notFound });
+        const [notFoundPageResponse] = await getPublishedPage({ id: settings.pages.notFound });
+        const notFoundPage: Page = notFoundPageResponse.data.pageBuilder.getPublishedPage.data;
 
-        expect(getPublishedPageResponse.data.pageBuilder.getPublishedPage.data.title).toBe(
-            "Not Found"
-        );
-        expect(getPublishedPageResponse.data.pageBuilder.getPublishedPage.data.status).toBe(
-            "published"
-        );
+        expect(notFoundPage.title).toBe("Not Found");
+        expect(notFoundPage.status).toBe("published");
 
         // 4. Installation must set the "Website" name.
         const [getSettingsResponse] = await getSettings();
