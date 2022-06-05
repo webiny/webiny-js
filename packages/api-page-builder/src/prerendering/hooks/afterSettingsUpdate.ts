@@ -1,4 +1,4 @@
-import { PbContext } from "~/graphql/types";
+import { PathItem, PbContext } from "~/graphql/types";
 import { ContextPlugin } from "@webiny/handler";
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
@@ -33,30 +33,30 @@ export default () => {
                         });
                         break;
                     case "notFound":
-                        const prevPage = await context.pageBuilder.getPublishedPageById({
-                            id: prevPageId
-                        });
-
-                        await context.pageBuilder.prerendering.render({
-                            context,
-                            paths: [
-                                // Render the new "not found" page and store it into the NOT_FOUND_FOLDER.
-                                {
-                                    path: page.path,
-                                    configuration: {
-                                        meta: {
-                                            notFoundPage: true
-                                        },
-                                        storage: { folder: NOT_FOUND_FOLDER }
-                                    }
-                                },
-                                // Render the old "not found" page, to remove any notion of the "not found" concept
-                                // from the snapshot, as well as the PS#RENDER record in the database.
-                                {
-                                    path: prevPage.path
+                        const paths: PathItem[] = [
+                            // Render the new "not found" page and store it into the NOT_FOUND_FOLDER.
+                            {
+                                path: page.path,
+                                configuration: {
+                                    meta: {
+                                        notFoundPage: true
+                                    },
+                                    storage: { folder: NOT_FOUND_FOLDER }
                                 }
-                            ]
-                        });
+                            }
+                        ];
+
+                        if (prevPageId) {
+                            // Render the old "not found" page, to remove any notion of the "not found" concept
+                            // from the snapshot, as well as the PS#RENDER record in the database.
+                            const prevPage = await context.pageBuilder.getPublishedPageById({
+                                id: prevPageId
+                            });
+
+                            paths.push({ path: prevPage.path });
+                        }
+
+                        await context.pageBuilder.prerendering.render({ context, paths });
                         break;
                 }
             }
