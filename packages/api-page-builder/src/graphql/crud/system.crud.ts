@@ -151,23 +151,23 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
 
                 const initialPagesData: Page[] = [
                     /**
-                     * Category is missing but we cannot set it because it will override the created one.
-                     */
-                    // @ts-ignore
-                    {
-                        title: "Welcome to Webiny",
-                        path: "/welcome-to-webiny",
-                        content: welcomeToWebinyPageContent,
-                        settings: {}
-                    },
-                    /**
-                     * Category is missing but we cannot set it because it will override the created one.
+                     * Category is missing, but we cannot set it because it will override the created one.
                      */
                     // @ts-ignore
                     {
                         title: "Not Found",
                         path: "/not-found",
                         content: notFoundPageData,
+                        settings: {}
+                    },
+                    /**
+                     * Category is missing, but we cannot set it because it will override the created one.
+                     */
+                    // @ts-ignore
+                    {
+                        title: "Welcome to Webiny",
+                        path: "/welcome-to-webiny",
+                        content: welcomeToWebinyPageContent,
                         settings: {}
                     }
                 ];
@@ -181,7 +181,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         return this.updatePage(initialPages[index].id, data);
                     })
                 );
-                const [homePage, notFoundPage] = await Promise.all(
+                const [notFoundPage, homePage] = await Promise.all(
                     updatedPages.map(page => this.publishPage(page.id))
                 );
 
