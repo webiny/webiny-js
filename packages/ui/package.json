@@ -70,8 +70,7 @@
     "react-loading-skeleton": "^0.5.0",
     "react-spinner-material": "1.1.4",
     "react-transition-group": "^4.3.0",
-    "shortid": "^2.2.16",
-    "tslib": "2.4.0"
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
