@@ -1,18 +1,16 @@
 context("File Manager View - CRUD", () => {
     beforeEach(() => {
         cy.login();
-        cy.visit("/");
-        // Open drawer
-        cy.findByTestId("apps-menu").click();
-        // Open "File Manage" view
-        cy.findByTestId("admin-drawer-footer-menu-file-manager").click();
 
-        // Check if there are existing file and delete them.
-        cy.fmListFiles({}).then(files => {
-            for (let i = 0; i < files.length; i++) {
-                cy.fmDeleteFile(files[i]);
-            }
-        });
+        cy.fmDeleteAllFiles();
+
+        cy.visit("/");
+
+        // Open main menu.
+        cy.findByTestId("apps-menu").click();
+
+        // Open "File Manage" view.
+        cy.findByTestId("admin-drawer-footer-menu-file-manager").click();
     });
 
     it("should upload, edit and delete image", () => {
@@ -131,7 +129,7 @@ context("File Manager View - CRUD", () => {
             {
                 maximumFileUploadBytesLimit: 500,
                 expectedUploadMessage:
-                    "sample.jpeg: Your proposed upload exceeds the maximum allowed size"
+                    "Max size exceeded."
             },
             {
                 maximumFileUploadBytesLimit: 26214401,
