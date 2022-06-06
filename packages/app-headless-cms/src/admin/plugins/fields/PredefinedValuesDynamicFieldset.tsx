@@ -8,8 +8,8 @@ import { Typography } from "@webiny/ui/Typography";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
-import { CmsEditorField } from "~/types";
-import { BindComponent, BindComponentRenderProp } from "@webiny/form/Bind";
+import { BindComponent, CmsEditorField } from "~/types";
+import { BindComponentRenderProp } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/dynamic-fieldset-predefined-values");
 
@@ -84,7 +84,7 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
         <Grid>
             <Cell span={12}>
                 <Bind>
-                    {(bind: BindComponentRenderProp) => {
+                    {bind => {
                         return (
                             <DynamicFieldset {...bind}>
                                 {({ actions, header, row, empty }) => {
@@ -99,7 +99,12 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
                                                             <Cell span={4}>
                                                                 <Fieldset>
                                                                     <Bind name={"label"}>
-                                                                        <Input label={t`Label`} />
+                                                                        {bind => (
+                                                                            <Input
+                                                                                label={t`Label`}
+                                                                                {...bind}
+                                                                            />
+                                                                        )}
                                                                     </Bind>
                                                                 </Fieldset>
                                                             </Cell>
@@ -109,9 +114,12 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
                                                                         renderValueInput(Bind)
                                                                     ) : (
                                                                         <Bind name={"value"}>
-                                                                            <Input
-                                                                                label={t`Value`}
-                                                                            />
+                                                                            {bind => (
+                                                                                <Input
+                                                                                    label={t`Value`}
+                                                                                    {...bind}
+                                                                                />
+                                                                            )}
                                                                         </Bind>
                                                                     )}
                                                                 </Fieldset>
@@ -119,9 +127,7 @@ const PredefinedValuesDynamicFieldset: React.FC<Props> = ({
                                                             <Cell span={2}>
                                                                 <Fieldset>
                                                                     <Bind name={"selected"}>
-                                                                        {(
-                                                                            selectedBind: BindComponentRenderProp
-                                                                        ) => {
+                                                                        {selectedBind => {
                                                                             return (
                                                                                 <Switch
                                                                                     {...selectedBind}

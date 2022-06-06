@@ -15,7 +15,7 @@ export interface BindComponentRenderPropOnChange<T = any> {
 
 export interface FormAPI<T = Record<string, any>> {
     data: T;
-    submit: (event: React.SyntheticEvent<any, any>) => Promise<void>;
+    submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
     setValue: FormSetValue;
     validate: () => Promise<boolean>;
     validateInput: (name: string) => Promise<boolean | any>;
@@ -40,9 +40,7 @@ export interface BindComponentProps {
     validate?: Function;
 }
 
-export interface BindComponent {
-    (props: BindComponentProps): React.ReactElement | null;
-}
+export type BindComponent = React.FC<BindComponentProps>;
 
 export interface FormRenderPropParamsSubmit {
     (event?: React.SyntheticEvent<any, any>): Promise<void>;
@@ -62,10 +60,6 @@ export interface FormRenderPropParams<T = any> {
     data: T;
     submit: FormRenderPropParamsSubmit;
     setValue: FormSetValue;
-}
-
-export interface FormRenderProp {
-    (params: FormRenderPropParams): React.ReactElement;
 }
 
 export interface FormData {
@@ -91,7 +85,7 @@ export interface FormProps<T extends Record<string, any> = Record<string, any>> 
     onSubmit?: FormOnSubmit;
     onInvalid?: () => void;
     onChange?: FormOnSubmit;
-    children: FormRenderProp;
+    children(params: FormRenderPropParams): React.ReactElement;
     ref: React.MutableRefObject<any>;
 }
 
