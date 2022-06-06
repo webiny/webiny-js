@@ -128,8 +128,7 @@ context("File Manager View - CRUD", () => {
         const fileDetails = [
             {
                 maximumFileUploadBytesLimit: 500,
-                expectedUploadMessage:
-                    "Max size exceeded."
+                expectedUploadMessage: "Max size exceeded."
             },
             {
                 maximumFileUploadBytesLimit: 26214401,
