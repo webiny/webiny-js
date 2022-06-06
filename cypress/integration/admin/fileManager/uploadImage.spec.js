@@ -122,7 +122,7 @@ context("File Manager View - CRUD", () => {
             .contains(fileName);
     });
 
-    it("should test minimum and maximum allowed file upload size", () => {
+    it.skip("should test minimum and maximum allowed file upload size", () => {
         cy.visit("/settings/file-manager/general");
 
         const fileDetails = [
