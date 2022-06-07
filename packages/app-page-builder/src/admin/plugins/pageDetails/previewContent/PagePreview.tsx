@@ -9,6 +9,14 @@ import useResponsiveClassName from "../../../../hooks/useResponsiveClassName";
 import Zoom from "./Zoom";
 import { PbPageData } from "~/types";
 
+const webinyZoomStyles = css`
+    &.mdc-select--no-label:not(.mdc-select--outlined)
+        .mdc-select__anchor
+        .mdc-select__selected-text {
+        padding-top: 0;
+    }
+`;
+
 const pageInnerWrapper = css({
     overflowY: "scroll",
     overflowX: "hidden",
@@ -71,7 +79,11 @@ const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
                         <span>
                             <Typography use={"overline"}>Zoom:&nbsp;</Typography>
                         </span>
-                        <Select value={zoom.toString()} onChange={setZoom}>
+                        <Select
+                            value={zoom.toString()}
+                            onChange={setZoom}
+                            className={webinyZoomStyles}
+                        >
                             <option value={"1"}>100%</option>
                             <option value={"0.75"}>75%</option>
                             <option value={"0.5"}>50%</option>
