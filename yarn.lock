@@ -12582,7 +12582,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.28.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.26.0, @webiny/cli@^5.28.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -13072,7 +13072,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.28.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.26.0, @webiny/project-utils@^5.28.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
