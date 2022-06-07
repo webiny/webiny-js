@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+
+### Bug Fixes
+
+* **api-page-builder:** add empty target for merge function ([3089eea](https://github.com/webiny/webiny-js/commit/3089eea245a0f6a95d976ab19555b434a042c66e))
+* **api-page-builder:** implement returnNotFoundPage parameter handling ([70ef5fb](https://github.com/webiny/webiny-js/commit/70ef5fbbd79177926f53e96d7fe985e3ab507735))
+* **api-page-builder:** insert not found page before the homepage [skip ci] ([8be6d42](https://github.com/webiny/webiny-js/commit/8be6d42a4659ba2a56caa386a2dffdd06e29f1bd))
+* **api-page-builder:** re-render previous not-found page to clean up meta ([9bd95e4](https://github.com/webiny/webiny-js/commit/9bd95e4cc7f986138c76859758a2ffd4f16ce715))
+* **api-page-builder:** remove obsolete PagePlugin ([08f6c59](https://github.com/webiny/webiny-js/commit/08f6c59ae3747cac4b800dca89c2c3764f924726))
+* **api-page-builder:** remove visibility, home, and notFound fields ([7f86beb](https://github.com/webiny/webiny-js/commit/7f86bebf5555c171aff14829a02ae9c4a7bc9e54))
+* **api-page-builder:** render previous not found page only if it exists ([5a8e4f3](https://github.com/webiny/webiny-js/commit/5a8e4f34a111985a59277d233e28b3987056acbc))
+* **api-page-builder:** set notFoundPage meta value ([139e629](https://github.com/webiny/webiny-js/commit/139e629d46cbffbaa88dd9bf78d6da15b8781205))
+* **api-page-builder-so-ddb-es:** omit obsolete attributes ([d522af2](https://github.com/webiny/webiny-js/commit/d522af2f9074cca2e49d2bb52117f6590de599d2))
+* **api-prerendering-service:** inject not found page path ([aa335c8](https://github.com/webiny/webiny-js/commit/aa335c8b1be0c9f71704c174b695f36046c4156e))
+* **api-prerendering-service:** remove unused __PS_NOT_FOUND_PAGE__ variable from window ([f8b6276](https://github.com/webiny/webiny-js/commit/f8b6276a63bc7c99c5bad69b0a19d3d04b96589a))
+* **app-headless-cms:** add Fragment to array of elements ([9664744](https://github.com/webiny/webiny-js/commit/96647448432e8d93f28a94959193e05726514edd))
+* **app-headless-cms:** ensure file field value is an array ([9022b29](https://github.com/webiny/webiny-js/commit/9022b293a0c65859d019b7c08d5a09f09754667c))
+* **app-headless-cms:** ensure value is an array ([28e83c1](https://github.com/webiny/webiny-js/commit/28e83c1194fd9253100704a8ed73a89f7459bb64))
+* **app-page-builder:** pass useMemo dependency ([a518e16](https://github.com/webiny/webiny-js/commit/a518e16b82f723e6db9b2f5173c61f3ef7734008))
+* **publishing:** upgrade and patch lerna ([1cdd569](https://github.com/webiny/webiny-js/commit/1cdd569564d3df1bd22a6084fbc2fdb2e78b2968))
+* **react-composition:** remove redundant devDependencies ([dc60c82](https://github.com/webiny/webiny-js/commit/dc60c82b69e6417a2daf2e733d9b3094975ff4b0))
+* **website:** refactor page querying ([c6cf402](https://github.com/webiny/webiny-js/commit/c6cf402df0c9887613f72506ac493a6dac37a76c))
+* improve package validity check ([349ee4f](https://github.com/webiny/webiny-js/commit/349ee4fb891f7e8b72a766dc3947ad8a1554d56a))
+
+
+### Features
+
+* **api-headless-cms:** create model with fields ([#2443](https://github.com/webiny/webiny-js/issues/2443)) ([d3eeb78](https://github.com/webiny/webiny-js/commit/d3eeb788e2b870cd8ebf91df721424c6563b6fd7))
+* **app-admin-core:** use react-composition package ([7370796](https://github.com/webiny/webiny-js/commit/7370796e59204d9e8aa3da11bc71f41523826820))
+* **react-composition:** extract Composition API into a package ([bd56dad](https://github.com/webiny/webiny-js/commit/bd56dad545f7e05bf5fa0605eff27c212e526141))
+* **react-router:** make Link composable ([de4e04e](https://github.com/webiny/webiny-js/commit/de4e04e2756461a45020f9a289c6c3c7fb094a93))
+* create `delete-empty-package-folders` script ([85a03eb](https://github.com/webiny/webiny-js/commit/85a03eb891296c6fc52c5ec20a8653a96c28f426))
+
+
+
+
+
 # [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
 
 **Note:** Version bump only for package webiny-js
