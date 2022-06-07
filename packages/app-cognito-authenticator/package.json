@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-cognito-authenticator",
-  "version": "5.26.0",
+  "version": "5.28.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -26,8 +26,8 @@
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.16.0",
     "@types/lodash.get": "^4.4.6",
-    "@webiny/cli": "^5.26.0",
-    "@webiny/project-utils": "^5.26.0",
+    "@webiny/cli": "^5.28.0",
+    "@webiny/project-utils": "^5.28.0",
     "babel-plugin-lodash": "^3.3.4",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"

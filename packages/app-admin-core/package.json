@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-admin-core",
-  "version": "5.26.0",
+  "version": "5.28.0",
   "main": "index.js",
   "description": "Core framework of the Webiny admin app.",
   "repository": {
@@ -12,9 +12,10 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@types/react": "^16.14.0",
-    "@webiny/app": "^5.26.0",
-    "@webiny/plugins": "^5.26.0",
-    "@webiny/react-router": "^5.26.0",
+    "@webiny/app": "^5.28.0",
+    "@webiny/plugins": "^5.28.0",
+    "@webiny/react-composition": "^5.28.0",
+    "@webiny/react-router": "^5.28.0",
     "lodash.debounce": "^4.0.8",
     "react": "16.14.0",
     "react-dom": "16.14.0"
@@ -27,8 +28,8 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.8.3",
     "@types/lodash.debounce": "^4.0.6",
-    "@webiny/cli": "^5.26.0",
-    "@webiny/project-utils": "^5.26.0",
+    "@webiny/cli": "^5.28.0",
+    "@webiny/project-utils": "^5.28.0",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",

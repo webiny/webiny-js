@@ -30,7 +30,6 @@ export const UpdateDataModel = withFields({
             validation: validation.create("minLength:2,maxLength:100")
         })
     ),
-    visibility: fields({ instanceOf: VisibilityModel }),
     category: string({ validation: validation.create("maxLength:100") }),
     content: object()
 })();

@@ -52,12 +52,8 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
 
     public override render() {
         const {
-            onChange = () => {
-                return void 0;
-            },
-            onClose = () => {
-                return void 0;
-            },
+            onChange,
+            onClose,
             accept,
             onChangePick,
             multiple,
@@ -83,21 +79,16 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
 
             if (Array.isArray(files) === true) {
                 const items = (files as FileItem[]).map(file => pick(file, fields));
-                onChange(items as FileItem[]);
+                onChange && onChange(items as FileItem[]);
                 return;
             }
             const file = pick(files as FileItem, fields);
 
-            onChange(file as FileItem);
+            onChange && onChange(file as FileItem);
         };
 
         const props: FileManagerViewProps = {
-            onChange:
-                typeof onChange === "function"
-                    ? handleFileOnChange
-                    : () => {
-                          return void 0;
-                      },
+            onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
             onClose,
             accept: accept as string[],
             multiple: multiple as boolean,

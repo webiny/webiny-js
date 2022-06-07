@@ -1,6 +1,7 @@
 import { CmsModelField, CmsModel } from "~/types";
 
-export const validateLayout = ({ layout }: CmsModel, fields: CmsModelField[]): void => {
+export const validateLayout = (model: CmsModel, fields: CmsModelField[] = []): void => {
+    const layout = model.layout || [];
     const flatLayoutIdList = layout.reduce((acc, id) => {
         return acc.concat(Array.isArray(id) ? id : [id]);
     }, []);

@@ -80,11 +80,11 @@ class Image extends React.Component<ImageProps> {
         }
 
         return (
-            <ImagePreviewWrapper>
+            <ImagePreviewWrapper data-testid={"image-preview"}>
                 {imagePreview}
 
                 {typeof removeImage === "function" && (
-                    <RemoveImage onClick={() => removeImage(null)}>
+                    <RemoveImage onClick={() => removeImage(null)} data-testid={"remove-image"}>
                         <RemoveImageIcon />
                     </RemoveImage>
                 )}
