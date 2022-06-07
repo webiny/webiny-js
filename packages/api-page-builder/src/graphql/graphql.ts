@@ -20,6 +20,6 @@ export default () => {
         createSettingsGraphQL(),
         createBlockCategoryGraphQL(),
         createInstallGraphQL(),
-        createBlockGraphQL()
+        createBlockGraphQL
     ] as GraphQLSchemaPlugin[];
 };
