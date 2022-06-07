@@ -35,8 +35,7 @@ export const getWcpProjectLicense = async ({
 
     try {
         // For now, when we say "decrypt", we're basically just base64-decoding the received string.
-        const decryptedLicense = decrypt(encryptedLicense.license);
-        return JSON.parse(decryptedLicense) as DecryptedWcpProjectLicense;
+        return decrypt<DecryptedWcpProjectLicense>(encryptedLicense.license);
     } catch (e) {
         console.warn(
             `An error occurred while trying to decrypt the retrieved license for project "${orgId}/${projectId}": ${e.message}`

@@ -1,6 +1,6 @@
 {
   "name": "create-webiny-project",
-  "version": "5.26.0",
+  "version": "5.28.0",
   "description": "Webiny project bootstrap tool.",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/telemetry": "^5.26.0",
+    "@webiny/telemetry": "^5.28.0",
     "chalk": "4.1.0",
     "execa": "4.1.0",
     "find-up": "5.0.0",

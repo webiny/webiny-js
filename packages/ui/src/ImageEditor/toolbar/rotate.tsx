@@ -44,7 +44,11 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Rotate"}>
-                <IconButton icon={<RotateRight />} onClick={() => activateTool("rotate")} />
+                <IconButton
+                    icon={<RotateRight />}
+                    onClick={() => activateTool("rotate")}
+                    data-testid={"rotate-item"}
+                />
             </Tooltip>
         );
     },

@@ -76,15 +76,6 @@ export const createPageEntity = (params: Params): Entity<any> => {
             status: {
                 type: "string"
             },
-            visibility: {
-                type: "map"
-            },
-            home: {
-                type: "boolean"
-            },
-            notFound: {
-                type: "boolean"
-            },
             createdOn: {
                 type: "string"
             },
