@@ -11163,6 +11163,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-wcp@workspace:packages/api-wcp":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-wcp@workspace:packages/api-wcp"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@babel/plugin-proposal-object-rest-spread": ^7.16.0
+    "@babel/plugin-transform-runtime": ^7.16.4
+    "@babel/preset-env": ^7.16.4
+    "@babel/preset-typescript": ^7.16.0
+    "@babel/runtime": ^7.16.3
+    "@webiny/cli": ^5.26.0
+    "@webiny/error": ^5.26.0
+    "@webiny/handler": ^5.26.0
+    "@webiny/handler-graphql": ^5.26.0
+    "@webiny/project-utils": ^5.26.0
+    "@webiny/wcp": ^5.26.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: 4.5.5
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-admin-cognito@^5.28.0, @webiny/app-admin-cognito@workspace:packages/app-admin-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-cognito@workspace:packages/app-admin-cognito"
@@ -12767,7 +12790,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.28.0, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.26.0, @webiny/error@^5.28.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -12896,7 +12919,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-graphql@^5.28.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
+"@webiny/handler-graphql@^5.26.0, @webiny/handler-graphql@^5.28.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
@@ -12963,7 +12986,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler@^5.28.0, @webiny/handler@workspace:packages/handler":
+"@webiny/handler@^5.26.0, @webiny/handler@^5.28.0, @webiny/handler@workspace:packages/handler":
   version: 0.0.0-use.local
   resolution: "@webiny/handler@workspace:packages/handler"
   dependencies:
@@ -13519,7 +13542,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/wcp@workspace:packages/wcp":
+"@webiny/wcp@^5.26.0, @webiny/wcp@workspace:packages/wcp":
   version: 0.0.0-use.local
   resolution: "@webiny/wcp@workspace:packages/wcp"
   dependencies:
