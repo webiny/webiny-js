@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { HigherOrderComponent, useAdmin } from "~/admin";
+import { HigherOrderComponent, useComposition } from "./Context";
 
 export interface ComposableFC<TProps> extends React.FC<TProps> {
     original: React.FC<TProps>;
@@ -16,7 +16,7 @@ export interface ComposeProps {
 }
 
 export const Compose: React.FC<ComposeProps> = props => {
-    const { addComponentWrappers } = useAdmin();
+    const { composeComponent } = useComposition();
 
     useEffect(() => {
         if (typeof props.component.original === "undefined") {
@@ -28,7 +28,7 @@ export const Compose: React.FC<ComposeProps> = props => {
         }
 
         const hocs = Array.isArray(props.with) ? props.with : [props.with];
-        return addComponentWrappers(props.component.original, hocs);
+        return composeComponent(props.component.original, hocs);
     }, [props.with]);
 
     return null;

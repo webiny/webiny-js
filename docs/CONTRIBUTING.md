@@ -59,12 +59,12 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
 - `handler-*` are utility packages to create serverless function handlers
 - `cli-*` are packages that are use by Webiny CLI
 
-In the root of the project, you'll find the `api` and `apps` folders. You'll find an in-depth explanation of [project organization on our docs portal](https://docs.webiny.com/docs/key-topics/project-organization).
+In the root of the project, you'll find the `api` and `apps` folders. You'll find an in-depth explanation of [project organization on our docs portal](https://www.webiny.com/docs/core-development-concepts/project-organization/project-applications).
 The setup of our Github repo is identical to the one created by `create-webiny-project`.
 
 ## Prerequisites
 
-1. Node `12` or higher (to manage your Node versions we recommend [n](https://www.npmjs.com/package/n) for OSX/Linux, and [nvm-windows](https://github.com/coreybutler/nvm-windows) for Windows)
+1. Node `14` or higher (to manage your Node versions we recommend [n](https://www.npmjs.com/package/n) for OSX/Linux, and [nvm-windows](https://github.com/coreybutler/nvm-windows) for Windows)
 
 2. `yarn 1.22.*` or higher (because our project setup uses workspaces). We prefer using `yarn 2` as it's a lot faster and some issues from `yarn 1` are finally fixed. 
    If you don't already have `yarn`, visit https://yarnpkg.com/ to install it.
