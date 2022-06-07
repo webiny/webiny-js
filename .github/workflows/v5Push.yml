@@ -667,7 +667,8 @@ jobs:
 #          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
   npm-release-beta:
-    needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests, e2e-wby-cms-ddb-es-cypress-tests]
+#    needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests, e2e-wby-cms-ddb-es-cypress-tests]
+    needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests]
     name: NPM release ("beta" tag)
     runs-on: ubuntu-latest
     env:
