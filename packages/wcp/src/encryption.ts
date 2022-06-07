@@ -3,10 +3,11 @@
  * Potentially, we'll revisit this in the future and implement actual encryption.
  */
 
-export const encrypt = (rawString: string) => {
-    return Buffer.from(rawString, "utf-8").toString("base64");
+export const encrypt = <T = Record<string, any>>(rawObject: T): string => {
+    return Buffer.from(JSON.stringify(rawObject), "utf-8").toString("base64");
 };
 
-export const decrypt = (base64String: string) => {
-    return Buffer.from(base64String, "base64").toString("utf-8");
+export const decrypt = <T = Record<string, any>>(encryptedString: string): T => {
+    const decryptedString = Buffer.from(encryptedString, "base64").toString("utf-8");
+    return JSON.parse(decryptedString) as T;
 };
