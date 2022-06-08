@@ -5,7 +5,6 @@ export const DATA_FIELD = /* GraphQL */ `
         preview
         name
         content
-        type
         createdOn
         createdBy {
             id
@@ -23,10 +22,10 @@ export const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_BLOCK = /* GraphQL */ `
-    mutation CreateBlock($data: PbCreateBlockInput!) {
+export const CREATE_PAGE_BLOCK = /* GraphQL */ `
+    mutation CreatePageBlock($data: PbCreatePageBlockInput!) {
         pageBuilder {
-            createBlock(data: $data) {
+            createPageBlock(data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

@@ -4,10 +4,10 @@ import { ErrorOptions } from "@webiny/error";
 
 jest.setTimeout(100000);
 
-describe("Blocks Test", () => {
-    const { createBlock, createBlockCategory } = useGqlHandler();
+describe("Page Blocks Test", () => {
+    const { createPageBlock, createBlockCategory } = useGqlHandler();
 
-    test("create blocks", async () => {
+    test("create page blocks", async () => {
         // Create block category
         await createBlockCategory({
             data: {
@@ -17,20 +17,19 @@ describe("Blocks Test", () => {
         });
 
         for (let i = 0; i < 3; i++) {
-            const prefix = `block-${i}-`;
+            const prefix = `page-block-${i}-`;
             const data = {
                 name: `${prefix}name`,
-                type: "element",
                 blockCategory: "block-category",
                 preview: { src: `https://test.com/${prefix}/src.jpg` },
                 content: { some: `${prefix}content` }
             };
 
-            const [createBlockResponse] = await createBlock({ data });
-            expect(createBlockResponse).toMatchObject({
+            const [createPageBlockResponse] = await createPageBlock({ data });
+            expect(createPageBlockResponse).toMatchObject({
                 data: {
                     pageBuilder: {
-                        createBlock: {
+                        createPageBlock: {
                             data: {
                                 ...data,
                                 createdBy: defaultIdentity,
@@ -44,21 +43,20 @@ describe("Blocks Test", () => {
         }
     });
 
-    test("cannot create block if no such block category", async () => {
-        const [createBlockEmptyCategoryResponse] = await createBlock({
+    test("cannot create page block if no such block category", async () => {
+        const [createPageBlockEmptyCategoryResponse] = await createPageBlock({
             data: {
                 name: "name",
-                type: "block",
                 blockCategory: "",
                 preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
             }
         });
 
-        expect(createBlockEmptyCategoryResponse).toEqual({
+        expect(createPageBlockEmptyCategoryResponse).toEqual({
             data: {
                 pageBuilder: {
-                    createBlock: {
+                    createPageBlock: {
                         data: null,
                         error: {
                             code: "VALIDATION_FAILED_INVALID_FIELDS",
@@ -78,10 +76,9 @@ describe("Blocks Test", () => {
             }
         });
 
-        const [createBlockInvalidCategoryResponse] = await createBlock({
+        const [createPageBlockInvalidCategoryResponse] = await createPageBlock({
             data: {
                 name: "name",
-                type: "element",
                 blockCategory: "invalid-block-category",
                 preview: { src: "https://test.com/src.jpg" },
                 content: { some: "content" }
@@ -91,13 +88,13 @@ describe("Blocks Test", () => {
         const error: ErrorOptions = {
             code: "NOT_FOUND",
             data: null,
-            message: "Cannot create block because failed to find such block category."
+            message: "Cannot create page block because failed to find such block category."
         };
 
-        expect(createBlockInvalidCategoryResponse).toEqual({
+        expect(createPageBlockInvalidCategoryResponse).toEqual({
             data: {
                 pageBuilder: {
-                    createBlock: {
+                    createPageBlock: {
                         data: null,
                         error
                     }

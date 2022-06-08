@@ -61,7 +61,7 @@ import {
     GET_BLOCK_CATEGORY
 } from "./graphql/blockCategories";
 
-import { CREATE_BLOCK } from "./graphql/blocks";
+import { CREATE_PAGE_BLOCK } from "./graphql/pageBlocks";
 
 import path from "path";
 import fs from "fs";
@@ -286,9 +286,9 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
             return invoke({ body: { query: GET_BLOCK_CATEGORY, variables } });
         },
 
-        // Blocks.
-        async createBlock(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_BLOCK, variables } });
+        // Page Blocks.
+        async createPageBlock(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_PAGE_BLOCK, variables } });
         }
     };
 };
