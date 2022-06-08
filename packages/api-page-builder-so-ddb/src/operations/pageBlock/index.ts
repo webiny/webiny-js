@@ -1,42 +1,42 @@
 import WebinyError from "@webiny/error";
 import {
-    BlockStorageOperations,
-    BlockStorageOperationsCreateParams
+    PageBlockStorageOperations,
+    PageBlockStorageOperationsCreateParams
 } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
-import { BlockDataLoader } from "./dataLoader";
+import { PageBlockDataLoader } from "./dataLoader";
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "./keys";
 
 const createType = (): string => {
-    return "pb.block";
+    return "pb.pageBlock";
 };
 
-export interface CreateBlockStorageOperationsParams {
+export interface CreatePageBlockStorageOperationsParams {
     entity: Entity<any>;
     plugins: PluginsContainer;
 }
-export const createBlockStorageOperations = ({
+export const createPageBlockStorageOperations = ({
     entity
-}: CreateBlockStorageOperationsParams): BlockStorageOperations => {
-    const dataLoader = new BlockDataLoader({
+}: CreatePageBlockStorageOperationsParams): PageBlockStorageOperations => {
+    const dataLoader = new PageBlockDataLoader({
         entity
     });
 
-    const create = async (params: BlockStorageOperationsCreateParams) => {
-        const { block } = params;
+    const create = async (params: PageBlockStorageOperationsCreateParams) => {
+        const { pageBlock } = params;
 
         const keys = {
             PK: createPartitionKey({
-                tenant: block.tenant,
-                locale: block.locale
+                tenant: pageBlock.tenant,
+                locale: pageBlock.locale
             }),
-            SK: createSortKey(block)
+            SK: createSortKey(pageBlock)
         };
 
         try {
             await entity.put({
-                ...block,
+                ...pageBlock,
                 TYPE: createType(),
                 ...keys
             });
@@ -45,11 +45,11 @@ export const createBlockStorageOperations = ({
              */
             dataLoader.clear();
 
-            return block;
+            return pageBlock;
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not create block.",
-                ex.code || "BLOCK_CREATE_ERROR",
+                ex.message || "Could not create page block.",
+                ex.code || "PAGE_BLOCK_CREATE_ERROR",
                 {
                     keys
                 }

@@ -20,7 +20,7 @@ export enum ENTITIES {
     PAGE_ELEMENTS = "PbPageElements",
     PAGES = "PbPages",
     BLOCK_CATEGORIES = "PbBlockCategories",
-    BLOCKS = "PbBlocks"
+    PAGE_BLOCKS = "PbPageBlocks"
 }
 
 export interface TableModifier {
@@ -37,7 +37,7 @@ export interface PageBuilderStorageOperations extends BasePageBuilderStorageOper
         | "pageElements"
         | "pages"
         | "blockCategories"
-        | "blocks",
+        | "pageBlocks",
         Entity<any>
     >;
 }

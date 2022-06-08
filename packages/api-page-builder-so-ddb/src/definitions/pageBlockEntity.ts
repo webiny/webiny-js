@@ -7,7 +7,7 @@ interface Params {
     attributes: Attributes;
 }
 
-export const createBlockEntity = (params: Params): Entity<any> => {
+export const createPageBlockEntity = (params: Params): Entity<any> => {
     const { entityName, attributes, table } = params;
     return new Entity({
         name: entityName,
@@ -26,9 +26,6 @@ export const createBlockEntity = (params: Params): Entity<any> => {
                 type: "string"
             },
             name: {
-                type: "string"
-            },
-            type: {
                 type: "string"
             },
             blockCategory: {
