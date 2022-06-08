@@ -1,7 +1,8 @@
 const open = require("open");
 const { GraphQLClient } = require("graphql-request");
-const { WCP_GRAPHQL_API_URL, WCP_APP_URL, setProjectId, setWcpPat, sleep } = require("./utils");
+const { setProjectId, setWcpPat, sleep } = require("./utils");
 const chalk = require("chalk");
+const { getWcpGraphQlApiUrl, getWcpAppUrl } = require("@webiny/wcp");
 
 // 120 retries * 2000ms interval = 4 minutes until the command returns an error.
 const LOGIN_RETRIES_COUNT = 30;
@@ -73,7 +74,7 @@ module.exports.command = () => ({
                 });
             },
             async ({ debug, debugLevel, pat: patFromParams }) => {
-                const graphQLClient = new GraphQLClient(WCP_GRAPHQL_API_URL);
+                const graphQLClient = new GraphQLClient(getWcpGraphQlApiUrl());
 
                 let pat;
 
@@ -115,7 +116,7 @@ module.exports.command = () => ({
                     const queryParams = `pat=${generatedPat}&pat_name=${encodeURIComponent(
                         "Webiny CLI"
                     )}&ref=cli`;
-                    const openUrl = `${WCP_APP_URL}/login/cli?${queryParams}`;
+                    const openUrl = `${getWcpAppUrl()}/login/cli?${queryParams}`;
 
                     debug && context.debug(`Opening ${context.debug.hl(openUrl)}...`);
                     await open(openUrl);
@@ -165,7 +166,7 @@ module.exports.command = () => ({
 
                     if (!result) {
                         throw new Error(
-                            `Could not login. Did you complete the sign in / sign up process at ${WCP_APP_URL}?`
+                            `Could not login. Did you complete the sign in / sign up process at ${getWcpAppUrl()}?`
                         );
                     }
 

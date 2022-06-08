@@ -1,6 +1,7 @@
 const { log } = require("@webiny/cli/utils");
 const { request } = require("graphql-request");
 const { getWcpPat } = require("./getWcpPat");
+const { getWcpGraphQlApiUrl } = require("@webiny/wcp");
 
 const GET_CURRENT_USER = /* GraphQL */ `
     query GetUser {
@@ -61,19 +62,18 @@ module.exports.getUser = async () => {
     }
 
     try {
-        const { WCP_GRAPHQL_API_URL } = require(".");
         const headers = { authorization: pat };
-        user = await request(WCP_GRAPHQL_API_URL, GET_CURRENT_USER, {}, headers).then(
+        user = await request(getWcpGraphQlApiUrl(), GET_CURRENT_USER, {}, headers).then(
             async response => {
                 const user = response.users.getCurrentUser;
 
-                const orgs = await request(WCP_GRAPHQL_API_URL, LIST_ORGS, {}, headers).then(
+                const orgs = await request(getWcpGraphQlApiUrl(), LIST_ORGS, {}, headers).then(
                     async response => {
                         const orgs = response.orgs.listOrgs.data;
                         for (let i = 0; i < orgs.length; i++) {
                             const org = orgs[i];
                             org.projects = await request(
-                                WCP_GRAPHQL_API_URL,
+                                getWcpGraphQlApiUrl(),
                                 LIST_PROJECTS,
                                 { orgId: org.id },
                                 headers
