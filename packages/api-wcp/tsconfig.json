@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-error" },
+    { "path": "../handler-graphql" },
+    { "path": "../wcp" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-http/*": ["../handler-http/src/*"],
+      "@webiny/handler-http": ["../handler-http/src"]
+    },
+    "baseUrl": "."
+  }
+}
