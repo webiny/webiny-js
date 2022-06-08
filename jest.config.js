@@ -4,9 +4,7 @@ const { allWorkspaces } = require("@webiny/project-utils/workspaces");
 
 // Loads environment variables defined in the project root ".env" file.
 const { parsed } = require("dotenv").config({ path: path.join(__dirname, ".env") });
-
-const envVarsNames = Object.keys(parsed);
-if (envVarsNames.length) {
+if (parsed) {
     console.log('The following environment variables were included from the root ".env" file:');
     console.log(
         Object.keys(parsed).reduce((current, item) => {
