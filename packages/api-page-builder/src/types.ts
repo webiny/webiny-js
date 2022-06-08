@@ -712,7 +712,7 @@ export interface PageBuilderStorageOperations {
     pageElements: PageElementStorageOperations;
     pages: PageStorageOperations;
     blockCategories: BlockCategoryStorageOperations;
-    blocks: BlockStorageOperations;
+    pageBlocks: PageBlockStorageOperations;
 
     beforeInit?: (context: PbContext) => Promise<void>;
     init?: (context: PbContext) => Promise<void>;
@@ -817,10 +817,9 @@ export interface BlockCategoryStorageOperations {
 /**
  * @category RecordModel
  */
-export interface Block {
+export interface PageBlock {
     id: string;
     name: string;
-    type: "element" | "block";
     blockCategory: string;
     content: File;
     preview: File;
@@ -832,17 +831,17 @@ export interface Block {
 
 /**
  * @category StorageOperations
- * @category BlockStorageOperations
+ * @category PageBlockStorageOperations
  */
-export interface BlockStorageOperationsCreateParams {
+export interface PageBlockStorageOperationsCreateParams {
     input: Record<string, any>;
-    block: Block;
+    pageBlock: PageBlock;
 }
 
 /**
  * @category StorageOperations
- * @category BlockStorageOperations
+ * @category PageBlockStorageOperations
  */
-export interface BlockStorageOperations {
-    create(params: BlockStorageOperationsCreateParams): Promise<Block>;
+export interface PageBlockStorageOperations {
+    create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
 }

@@ -15,12 +15,12 @@ import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import {
-    OnAfterBlockCreateTopicParams,
-    OnBeforeBlockCreateTopicParams,
+    OnAfterPageBlockCreateTopicParams,
+    OnBeforePageBlockCreateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
-    Block,
-    BlocksCrud,
+    PageBlock,
+    PageBlocksCrud,
     PbContext
 } from "~/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -31,7 +31,6 @@ import { createTopic } from "@webiny/pubsub";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
-    type: string({ validation: validation.create("required,in:element:block") }),
     blockCategory: string({ validation: validation.create("required,slug") }),
     content: object({ validation: validation.create("required") }),
     preview: object({ validation: validation.create("required") })
@@ -39,26 +38,26 @@ const CreateDataModel = withFields({
 
 const PERMISSION_NAME = "pb.block";
 
-export interface CreateBlocksCrudParams {
+export interface CreatePageBlocksCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
-export const createBlocksCrud = (params: CreateBlocksCrudParams): BlocksCrud => {
+export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBlocksCrud => {
     const { context, storageOperations, getLocaleCode, getTenantId } = params;
 
-    const onBeforeBlockCreate = createTopic<OnBeforeBlockCreateTopicParams>();
-    const onAfterBlockCreate = createTopic<OnAfterBlockCreateTopicParams>();
+    const onBeforePageBlockCreate = createTopic<OnBeforePageBlockCreateTopicParams>();
+    const onAfterPageBlockCreate = createTopic<OnAfterPageBlockCreateTopicParams>();
 
     return {
         /**
          * Lifecycle events
          */
-        onBeforeBlockCreate,
-        onAfterBlockCreate,
+        onBeforePageBlockCreate,
+        onAfterPageBlockCreate,
 
-        async createBlock(this: PageBuilderContextObject, input) {
+        async createPageBlock(this: PageBuilderContextObject, input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
             const createDataModel = new CreateDataModel().populate(input);
@@ -67,16 +66,16 @@ export const createBlocksCrud = (params: CreateBlocksCrudParams): BlocksCrud => 
             const blockCategory = await this.getBlockCategory(input.blockCategory);
             if (!blockCategory) {
                 throw new NotFoundError(
-                    `Cannot create block because failed to find such block category.`
+                    `Cannot create page block because failed to find such block category.`
                 );
             }
 
             const id: string = mdbid();
             const identity = context.security.getIdentity();
 
-            const data: Block = await createDataModel.toJSON();
+            const data: PageBlock = await createDataModel.toJSON();
 
-            const block: Block = {
+            const pageBlock: PageBlock = {
                 ...data,
                 tenant: getTenantId(),
                 locale: getLocaleCode(),
@@ -90,24 +89,24 @@ export const createBlocksCrud = (params: CreateBlocksCrudParams): BlocksCrud => 
             };
 
             try {
-                await onBeforeBlockCreate.publish({
-                    block
+                await onBeforePageBlockCreate.publish({
+                    pageBlock
                 });
-                const result = await storageOperations.blocks.create({
+                const result = await storageOperations.pageBlocks.create({
                     input: data,
-                    block
+                    pageBlock
                 });
-                await onAfterBlockCreate.publish({
-                    block
+                await onAfterPageBlockCreate.publish({
+                    pageBlock
                 });
                 return result;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not create block.",
-                    ex.code || "CREATE_BLOCK_ERROR",
+                    ex.message || "Could not create page block.",
+                    ex.code || "CREATE_PAGE_BLOCK_ERROR",
                     {
                         ...(ex.data || {}),
-                        block
+                        pageBlock
                     }
                 );
             }

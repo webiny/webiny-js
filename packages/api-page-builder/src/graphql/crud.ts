@@ -1,6 +1,6 @@
 import { createMenuCrud } from "./crud/menus.crud";
 import { createBlockCategoriesCrud } from "./crud/blockCategories.crud";
-import { createBlocksCrud } from "./crud/blocks.crud";
+import { createPageBlocksCrud } from "./crud/pageBlocks.crud";
 import { createCategoriesCrud } from "./crud/categories.crud";
 import { createPageCrud } from "./crud/pages.crud";
 import { createPageValidation } from "./crud/pages.validation";
@@ -111,7 +111,7 @@ const setup = (params: CreateCrudParams) => {
             getLocaleCode
         });
 
-        const blocks = createBlocksCrud({
+        const pageBlocks = createPageBlocksCrud({
             context,
             storageOperations,
             getTenantId,
@@ -141,7 +141,7 @@ const setup = (params: CreateCrudParams) => {
             ...pageElements,
             ...categories,
             ...blockCategories,
-            ...blocks
+            ...pageBlocks
         };
 
         if (!storageOperations.init) {
