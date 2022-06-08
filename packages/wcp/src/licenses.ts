@@ -10,10 +10,10 @@ interface GetWcpProjectLicenseParams {
 }
 
 const fetchWcpProjectLicense = async ({
-    orgId,
-    projectId,
-    projectEnvironmentApiKey
-}: GetWcpProjectLicenseParams) => {
+                                          orgId,
+                                          projectId,
+                                          projectEnvironmentApiKey
+                                      }: GetWcpProjectLicenseParams) => {
     // Fetch and decrypt the license.
     const getLicenseEndpoint = getWcpApiUrl(`/orgs/${orgId}/projects/${projectId}/license`);
 
@@ -48,7 +48,6 @@ export const getWcpProjectLicense = async (params: GetWcpProjectLicenseParams) =
     }
 
     try {
-        // For now, when we say "decrypt", we're basically just base64-decoding the received string.
         return decrypt<DecryptedWcpProjectLicense>(encryptedLicense);
     } catch (e) {
         const projectId = `${params.orgId}/${params.projectId}`;
