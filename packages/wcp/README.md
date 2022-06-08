@@ -15,7 +15,7 @@ A set of Webiny Control Panel (WCP)-related utilities.
     -   [Functions](#functions)
         -   [`getWcpAppUrl`](#getWcpAppUrl)
         -   [`getWcpApiUrl`](#getWcpApiUrl)
-        -   [`getWcpGraphQlApiUrl`](#getWcpGraphQlApiUrl)
+        -   [`getWcpGqlApiUrl`](#getWcpGqlApiUrl)
 
 ## Installation
 
@@ -91,14 +91,14 @@ import { getWcpApiUrl } from "@webiny/wcp";
 console.log(getWcpApiUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net".
 ```
 
-#### `getWcpGraphQlApiUrl`
+#### `getWcpGqlApiUrl`
 
 <details>
 <summary>Type Declaration</summary>
 <p>
 
 ```ts
-export declare const getWcpGraphQlApiUrl: (path?: string | undefined) => string;
+export declare const getWcpGqlApiUrl: (path?: string | undefined) => string;
 ```
 
 </p>
@@ -108,8 +108,8 @@ Returns WCP GraphQL API URL.
 
 
 ```ts
-import { getWcpGraphQlApiUrl } from "@webiny/wcp";
+import { getWcpGqlApiUrl } from "@webiny/wcp";
 
-console.log(getWcpGraphQlApiUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net/graphql".
+console.log(getWcpGqlApiUrl()); // Returns "https://d3mudimnmgk2a9.cloudfront.net/graphql".
 ```
 

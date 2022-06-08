@@ -39,7 +39,7 @@ export default ({ username, password }) => {
                 const newPassword = "12345678";
                 userAttributes.email = username;
 
-                cognitoUser.completeNewPasswordChallenge(newPassword, userAttributes, {
+                cognitoUser.completeNewPasswordChallenge(newPassword, null, {
                     onSuccess: resolve,
                     onFailure: function (err) {
                         console.log(

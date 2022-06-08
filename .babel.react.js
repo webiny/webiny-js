@@ -1,4 +1,4 @@
-module.exports = ({ path }) => ({
+module.exports = ({ path, esm }) => ({
     presets: [
         [
             "@babel/preset-env",
@@ -12,7 +12,7 @@ module.exports = ({ path }) => ({
                 // This will need to change once we upgrade to corejs@3
                 corejs: 3,
                 // Do not transform modules to CJS
-                modules: false,
+                modules: esm ? false : "auto",
                 // Exclude transforms that make all code slower
                 exclude: ["transform-typeof-symbol"]
             }

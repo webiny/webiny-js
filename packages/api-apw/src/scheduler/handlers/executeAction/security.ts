@@ -4,11 +4,7 @@ import { decodeToken, TOKEN_PREFIX } from "~/scheduler/handlers/utils";
 import { ApwContext } from "~/types";
 
 export const createCustomAuth = ({ storageOperations }: CreateApwContextParams) => {
-    return new ContextPlugin<ApwContext>(({ security, wcp }) => {
-        if (!wcp.canUseFeature("advancedPublishingWorkflow")) {
-            return;
-        }
-
+    return new ContextPlugin<ApwContext>(({ security }) => {
         let hasApwToken = false;
 
         security.addAuthenticator(async token => {

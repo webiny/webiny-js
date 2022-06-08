@@ -17,6 +17,7 @@ import {
     PageStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
+import omit from "lodash/omit";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { Client } from "@elastic/elasticsearch";
@@ -34,8 +35,6 @@ import { DbItem, queryAll, QueryAllParams, queryOne } from "@webiny/db-dynamodb/
 import { SearchPagesPlugin } from "~/plugins/definitions/SearchPagesPlugin";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { getESLatestPageData, getESPublishedPageData } from "./helpers";
-import lodashGet from "lodash/get";
-import { get as entityGet } from "@webiny/db-dynamodb/utils/get";
 import { PluginsContainer } from "@webiny/plugins";
 import {
     createBasicType,
@@ -51,6 +50,13 @@ import {
 } from "./keys";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { PageDynamoDbElasticsearchFieldPlugin } from "~/plugins/definitions/PageDynamoDbElasticsearchFieldPlugin";
+
+/**
+ * This function removes attributes that were once present in the Page record, which we no longer need.
+ */
+function removePageAttributes(item: Page): Page {
+    return omit(item, ["home", "notFound", "visibility"]) as Page;
+}
 
 export interface CreatePageStorageOperationsParams {
     entity: Entity<any>;
@@ -136,27 +142,20 @@ export const createPageStorageOperations = (
                 ...latestKeys
             })
         ];
-        /**
-         * Specifically for the Elasticsearch.
-         * If visibility on the latest list is not false, push it into the ES.
-         */
-        let esData: any = undefined;
-        if (lodashGet(page, "visibility.list.latest") !== false) {
-            esData = getESLatestPageData(plugins, page);
-        }
+
+        const esData = getESLatestPageData(plugins, page);
 
         try {
             await batchWriteAll({
                 table: entity.table,
                 items
             });
-            if (esData) {
-                await esEntity.put({
-                    index: configurations.es(page).index,
-                    data: esData,
-                    ...latestKeys
-                });
-            }
+
+            await esEntity.put({
+                index: configurations.es(page).index,
+                data: esData,
+                ...latestKeys
+            });
             return page;
         } catch (ex) {
             throw new WebinyError(
@@ -195,20 +194,10 @@ export const createPageStorageOperations = (
                 ...keys
             })
         ];
-        /**
-         * In the case the latest page is the page we are currently updating
-         * check for the visibility in the list.
-         * If visibility is set to false - delete the record
-         * Otherwise update it.
-         */
-        let esData: Record<string, any> | null = null;
-        let deleteEsRecord = false;
+
+        const esData = getESLatestPageData(plugins, page);
+
         if (latestPage && latestPage.id === page.id) {
-            if (lodashGet(page, "visibility.list.latest") === false) {
-                deleteEsRecord = true;
-            } else {
-                esData = getESLatestPageData(plugins, page);
-            }
             /**
              * We also update the regular record.
              */
@@ -229,17 +218,11 @@ export const createPageStorageOperations = (
                 items
             });
 
-            if (deleteEsRecord) {
-                await esEntity.delete({
-                    ...latestKeys
-                });
-            } else if (esData) {
-                await esEntity.put({
-                    index: configurations.es(page).index,
-                    data: esData,
-                    ...latestKeys
-                });
-            }
+            await esEntity.put({
+                index: configurations.es(page).index,
+                data: esData,
+                ...latestKeys
+            });
 
             return page;
         } catch (ex) {
@@ -472,8 +455,8 @@ export const createPageStorageOperations = (
         const esItems = [];
         /**
          * If we are publishing the latest revision, let's also update the latest revision entry's
-         * status in ES. Also, if we are publishing the latest revision and the "LATEST page lists
-         * visibility" is not false, then we need to update the latest page revision entry in ES.
+         * status in ES. Also, if we are publishing the latest revision, we need to update the latest
+         * page revision entry in ES.
          */
         if (latestPage.id === page.id) {
             items.push(
@@ -484,16 +467,15 @@ export const createPageStorageOperations = (
                     SK: createLatestSortKey()
                 })
             );
-            if (lodashGet(page, "visibility.list.latest") !== false) {
-                esItems.push(
-                    esEntity.putBatch({
-                        PK: createPartitionKey(page),
-                        SK: createLatestSortKey(),
-                        index: configurations.es(page).index,
-                        data: getESLatestPageData(plugins, page)
-                    })
-                );
-            }
+
+            esItems.push(
+                esEntity.putBatch({
+                    PK: createPartitionKey(page),
+                    SK: createLatestSortKey(),
+                    index: configurations.es(page).index,
+                    data: getESLatestPageData(plugins, page)
+                })
+            );
         }
         /**
          * If we have already published revision of this page:
@@ -521,41 +503,16 @@ export const createPageStorageOperations = (
                 );
             }
         }
-        /**
-         * If we need to display the published page in the list.
-         * Check only if it's not false, because only that should stop the propagation.
-         */
-        if (lodashGet(page, "visibility.list.published") !== false) {
-            esItems.push(
-                esEntity.putBatch({
-                    PK: createPartitionKey(page),
-                    SK: createPublishedSortKey(),
-                    index: configurations.es(page).index,
-                    data: getESPublishedPageData(plugins, page)
-                })
-            );
-        } else {
-            /**
-             * We need to check if record is in the Elasticsearch table.
-             */
-            const keys = {
+
+        esItems.push(
+            esEntity.putBatch({
                 PK: createPartitionKey(page),
-                SK: createPublishedSortKey()
-            };
-            const esRecord = await entityGet({
-                entity: esEntity,
-                keys
-            });
-            /**
-             * And if it is, delete it.
-             */
-            if (esRecord) {
-                /**
-                 * Delete published record if not visible
-                 */
-                esItems.push(esEntity.deleteBatch(keys));
-            }
-        }
+                SK: createPublishedSortKey(),
+                index: configurations.es(page).index,
+                data: getESPublishedPageData(plugins, page)
+            })
+        );
+
         /**
          * Update or insert published path.
          */
@@ -632,11 +589,9 @@ export const createPageStorageOperations = (
         ];
         const esItems = [];
         /*
-         * If we are unpublishing the latest revision, let's also update the latest revision entry's
-         * status in ES. We can only do that if the entry actually exists, or in other words, if the
-         * published page's "LATEST pages lists visibility" setting is not set to false.
+         * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
          */
-        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
+        if (latestPage.id === page.id) {
             items.push(
                 entity.putBatch({
                     ...page,
@@ -654,14 +609,13 @@ export const createPageStorageOperations = (
                 })
             );
         }
-        if (lodashGet(page, "visibility.list.published") !== false) {
-            esItems.push(
-                esEntity.deleteBatch({
-                    PK: createPartitionKey(page),
-                    SK: createPublishedSortKey()
-                })
-            );
-        }
+
+        esItems.push(
+            esEntity.deleteBatch({
+                PK: createPartitionKey(page),
+                SK: createPublishedSortKey()
+            })
+        );
 
         try {
             await batchWriteAll({
@@ -708,18 +662,16 @@ export const createPageStorageOperations = (
                 SK: createSortKey(page)
             })
         ];
-        let esData = undefined;
-        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
-            items.push(
-                entity.putBatch({
-                    ...page,
-                    TYPE: createLatestType(),
-                    PK: createPartitionKey(page),
-                    SK: createLatestSortKey()
-                })
-            );
-            esData = getESLatestPageData(plugins, page);
-        }
+        const esData = getESLatestPageData(plugins, page);
+        items.push(
+            entity.putBatch({
+                ...page,
+                TYPE: createLatestType(),
+                PK: createPartitionKey(page),
+                SK: createLatestSortKey()
+            })
+        );
+
         try {
             await batchWriteAll({
                 table: entity.table,
@@ -778,8 +730,8 @@ export const createPageStorageOperations = (
                 SK: createSortKey(page)
             })
         ];
-        let esData = undefined;
-        if (latestPage.id === page.id && lodashGet(page, "visibility.list.latest") !== false) {
+        const esData = getESLatestPageData(plugins, page);
+        if (latestPage.id === page.id) {
             items.push(
                 entity.putBatch({
                     ...page,
@@ -788,7 +740,6 @@ export const createPageStorageOperations = (
                     SK: createLatestSortKey()
                 })
             );
-            esData = getESLatestPageData(plugins, page);
         }
 
         try {
@@ -989,7 +940,7 @@ export const createPageStorageOperations = (
             );
         }
         const { hits, total } = response.body.hits;
-        const items = hits.map(item => item._source);
+        const items = hits.map(item => item._source).map(item => removePageAttributes(item));
 
         const hasMoreItems = items.length > limit;
         if (hasMoreItems) {
@@ -1107,7 +1058,7 @@ export const createPageStorageOperations = (
         );
 
         return sortItems({
-            items,
+            items: items.map(item => removePageAttributes(item)),
             fields,
             sort
         });

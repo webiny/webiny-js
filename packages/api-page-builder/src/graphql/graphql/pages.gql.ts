@@ -24,16 +24,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     url: String
                 }
 
-                type PbPageVisibilitySettings {
-                    published: Boolean
-                    latest: Boolean
-                }
-
-                type PbPageVisibility {
-                    get: PbPageVisibilitySettings
-                    list: PbPageVisibilitySettings
-                }
-
                 type PbPage {
                     id: ID
                     pid: ID
@@ -49,7 +39,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     version: Int
                     title: String
                     status: String
-                    visibility: PbPageVisibility
                     path: String
                     url: String
                     settings: PbPageSettings
@@ -104,21 +93,10 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     _empty: String
                 }
 
-                input PbPageVisibilitySettingsInput {
-                    published: Boolean
-                    latest: Boolean
-                }
-
-                input PbPageVisibilityInput {
-                    get: PbPageVisibilitySettingsInput
-                    list: PbPageVisibilitySettingsInput
-                }
-
                 input PbUpdatePageInput {
                     title: String
                     category: ID
                     path: String
-                    visibility: PbPageVisibilityInput
                     settings: PbPageSettingsInput
                     content: JSON
                 }
@@ -374,7 +352,12 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                     getPublishedPage: async (
                         _,
-                        args: { id?: string; path?: string; preview?: boolean },
+                        args: {
+                            id?: string;
+                            path?: string;
+                            preview?: boolean;
+                            returnNotFoundPage?: boolean;
+                        },
                         context
                     ) => {
                         if (args.id) {
@@ -386,11 +369,22 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             );
                         }
 
-                        return resolve(() =>
-                            context.pageBuilder.getPublishedPageByPath({
-                                path: args.path as string
-                            })
-                        );
+                        return resolve(async () => {
+                            try {
+                                return await context.pageBuilder.getPublishedPageByPath({
+                                    path: args.path as string
+                                });
+                            } catch (err) {
+                                if (args.returnNotFoundPage === true && err.code === "NOT_FOUND") {
+                                    // Load NOT FOUND page from settings
+                                    const settings = await context.pageBuilder.getCurrentSettings();
+                                    return context.pageBuilder.getPublishedPageById({
+                                        id: settings.pages.notFound
+                                    });
+                                }
+                                throw err;
+                            }
+                        });
                     },
 
                     oembedData: async (_, args: any) => {

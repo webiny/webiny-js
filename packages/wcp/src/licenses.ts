@@ -48,9 +48,7 @@ export const getWcpProjectLicense = async (params: GetWcpProjectLicenseParams) =
     }
 
     try {
-        // For now, when we say "decrypt", we're basically just base64-decoding the received string.
-        const decryptedLicense = decrypt(encryptedLicense);
-        return JSON.parse(decryptedLicense) as DecryptedWcpProjectLicense;
+        return decrypt<DecryptedWcpProjectLicense>(encryptedLicense);
     } catch (e) {
         const projectId = `${params.orgId}/${params.projectId}`;
         console.warn(

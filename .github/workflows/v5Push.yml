@@ -210,9 +210,10 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
@@ -373,6 +374,8 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
@@ -415,254 +418,259 @@ jobs:
           workdir: v5/cypress
           message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
-  e2e-wby-cms-ddb-es-init:
-    name: E2E (DDB+ES) - Init
-    runs-on: ubuntu-latest
-    outputs:
-      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
-      ts: ${{ steps.get-timestamp.outputs.ts }}
-      webiny-version: ${{ steps.get-webiny-version.outputs.webiny-version }}
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
+#  e2e-wby-cms-ddb-es-init:
+#    name: E2E (DDB+ES) - Init
+#    runs-on: ubuntu-latest
+#    outputs:
+#      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
+#      ts: ${{ steps.get-timestamp.outputs.ts }}
+#      webiny-version: ${{ steps.get-webiny-version.outputs.webiny-version }}
+#    steps:
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: 14
+#
+#      - uses: actions/checkout@v2
+#
+#      - name: Get current version of Webiny
+#        id: get-webiny-version
+#        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
+#
+#      - name: Get timestamp
+#        id: get-timestamp
+#        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
+#
+#      - name: List Cypress tests folders
+#        id: list-cypress-folders
+#        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
 
-      - uses: actions/checkout@v2
+#  e2e-wby-cms-ddb-es-project-setup:
+#    name: E2E (DDB+ES) - Project setup
+#    needs: e2e-wby-cms-ddb-es-init
+#    runs-on: ubuntu-latest
+#    outputs:
+#      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
+#    environment: next
+#    env:
+#      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+#      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+#      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+#      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+#      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+#      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+#      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
+#      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
+#      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+#    steps:
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: 14
+#
+#      - uses: actions/checkout@v2
+#        with:
+#          # We want to make sure all commits are present and that the next release version is calculated correctly.
+#          fetch-depth: 0
+#          path: v5
+#          # Uncomment this only if testing the workflow (running it on PR submit).
+#          # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
+#          # ref: ${{ github.event.pull_request.head.ref }}
+#
+#      - uses: actions/cache@v2
+#        id: yarn-cache
+#        with:
+#          path: v5/.yarn/cache
+#          key: yarn-${{ runner.os }}-${{ hashFiles('v5/**/yarn.lock') }}
+#
+#      - uses: actions/cache@v2
+#        id: cached-packages
+#        with:
+#          path: v5/.webiny/cached-packages
+#          key: ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-es-init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+#
+#      - name: Install dependencies
+#        working-directory: v5
+#        run: yarn --immutable
+#
+#      - name: Build packages
+#        working-directory: v5
+#        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+#
+#      # Publish built packages to Verdaccio.
+#      - name: Start Verdaccio local server
+#        working-directory: v5
+#        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+#
+#      - name: Create ".npmrc" file in the project root, with a dummy auth token
+#        working-directory: v5
+#        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+#
+#      - name: Configure NPM to use local registry
+#        run: npm config set registry http://localhost:4873
+#
+#      - name: Set git email
+#        run: git config --global user.email "webiny-bot@webiny.com"
+#
+#      - name: Set git username
+#        run: git config --global user.name "webiny-bot"
+#
+#      - name: Version packages (no push, no changelog)
+#        working-directory: v5
+#        run: yarn lerna:version:verdaccio
+#
+#      - name: Release to Verdaccio
+#        working-directory: v5
+#        run: yarn lerna:publish:verdaccio
+#
+#      - name: Create verdaccio-files artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: verdaccio-files
+#          retention-days: 1
+#          path: |
+#            v5/.verdaccio/
+#            v5/.verdaccio.yaml
+#
+#        # Create a new Webiny project, deploy it, and complete the installation wizard.
+#      - name: Disable Webiny telemetry
+#        run: >
+#          mkdir ~/.webiny &&
+#          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
+#
+#      - name: Create directory
+#        run: mkdir xyz
+#
+#      - name: Create a new Webiny project
+#        working-directory: xyz
+#        run: >
+#          npx create-webiny-project@next test-project
+#          --tag next --no-interactive
+#          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+#          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
+#
+#      - name: Print CLI version
+#        working-directory: xyz/test-project
+#        run: yarn webiny --version
+#
+#      - name: Reduce prerendering service's process-queue schedule
+#        working-directory: xyz/test-project
+#        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
+#
+#      - name: Create project-files artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: project-files
+#          retention-days: 1
+#          path: |
+#            xyz/test-project/
+#            !xyz/test-project/node_modules/**/*
+#            !xyz/test-project/**/node_modules/**/*
+#            !xyz/test-project/.yarn/cache/**/*
+#
+#      - name: Deploy API
+#        working-directory: xyz/test-project
+#        run: yarn webiny deploy api --env dev
+#
+#      - name: Deploy Admin Area
+#        working-directory: xyz/test-project
+#        run: yarn webiny deploy apps/admin --env dev
+#
+#      - name: Deploy Website
+#        working-directory: xyz/test-project
+#        run: yarn webiny deploy apps/website --env dev
+#
+#      # Generates a new cypress.json config.
+#      - name: Create Cypress config
+#        working-directory: v5
+#        run: yarn setup-cypress --projectFolder ../xyz/test-project
+#
+#      # We also want to store the generated Cypress config as a job output.
+#      # This way we don't have to generate it again (which may take ~30s).
+#      - name: Save Cypress config
+#        id: save-cypress-config
+#        working-directory: v5
+#        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
+#
+#      - name: Cypress - run installation wizard test
+#        working-directory: v5
+#        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
+#
+#      - name: Upload screenshots to Slack
+#        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+#        if: failure()
+#        with:
+#          token: ${{ secrets.SLACK_TOKEN }}
+#          channels: C027VQG8080
+#          workdir: v5/cypress
+#          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
 
-      - name: Get current version of Webiny
-        id: get-webiny-version
-        run: echo "::set-output name=webiny-version::$(node --eval "console.log(require('./lerna.json').version)")"
-
-      - name: Get timestamp
-        id: get-timestamp
-        run: echo "::set-output name=ts::$(node --eval "console.log(new Date().getTime())")"
-
-      - name: List Cypress tests folders
-        id: list-cypress-folders
-        run: echo "::set-output name=cypress-folders::$(node scripts/listCypressTestsFolders.js)"
-
-  e2e-wby-cms-ddb-es-project-setup:
-    name: E2E (DDB+ES) - Project setup
-    needs: e2e-wby-cms-ddb-es-init
-    runs-on: ubuntu-latest
-    outputs:
-      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
-    environment: next
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      - uses: actions/checkout@v2
-        with:
-          # We want to make sure all commits are present and that the next release version is calculated correctly.
-          fetch-depth: 0
-          path: v5
-          # Uncomment this only if testing the workflow (running it on PR submit).
-          # Fixes Lerna's detached HEAD issue (https://github.com/lerna/lerna/issues/2443).
-          # ref: ${{ github.event.pull_request.head.ref }}
-
-      - uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: v5/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('v5/**/yarn.lock') }}
-
-      - uses: actions/cache@v2
-        id: cached-packages
-        with:
-          path: v5/.webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-es-init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
-
-      - name: Install dependencies
-        working-directory: v5
-        run: yarn --immutable
-
-      - name: Build packages
-        working-directory: v5
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
-
-      # Publish built packages to Verdaccio.
-      - name: Start Verdaccio local server
-        working-directory: v5
-        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
-
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: v5
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-
-      - name: Configure NPM to use local registry
-        run: npm config set registry http://localhost:4873
-
-      - name: Set git email
-        run: git config --global user.email "webiny-bot@webiny.com"
-
-      - name: Set git username
-        run: git config --global user.name "webiny-bot"
-
-      - name: Version packages (no push, no changelog)
-        working-directory: v5
-        run: yarn lerna:version:verdaccio
-
-      - name: Release to Verdaccio
-        working-directory: v5
-        run: yarn lerna:publish:verdaccio
-
-      - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: verdaccio-files
-          retention-days: 1
-          path: |
-            v5/.verdaccio/
-            v5/.verdaccio.yaml
-
-        # Create a new Webiny project, deploy it, and complete the installation wizard.
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny &&
-          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
-
-      - name: Create directory
-        run: mkdir xyz
-
-      - name: Create a new Webiny project
-        working-directory: xyz
-        run: >
-          npx create-webiny-project@next test-project
-          --tag next --no-interactive
-          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION }}","storageOperations":"ddb-es"}'
-
-      - name: Print CLI version
-        working-directory: xyz/test-project
-        run: yarn webiny --version
-
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: xyz/test-project
-        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
-
-      - name: Create project-files artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: project-files
-          retention-days: 1
-          path: |
-            xyz/test-project/
-            !xyz/test-project/node_modules/**/*
-            !xyz/test-project/**/node_modules/**/*
-            !xyz/test-project/.yarn/cache/**/*
-
-      - name: Deploy API
-        working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
-
-      - name: Deploy Admin Area
-        working-directory: xyz/test-project
-        run: yarn webiny deploy apps/admin --env dev
-
-      - name: Deploy Website
-        working-directory: xyz/test-project
-        run: yarn webiny deploy apps/website --env dev
-
-      # Generates a new cypress.json config.
-      - name: Create Cypress config
-        working-directory: v5
-        run: yarn setup-cypress --projectFolder ../xyz/test-project
-
-      # We also want to store the generated Cypress config as a job output.
-      # This way we don't have to generate it again (which may take ~30s).
-      - name: Save Cypress config
-        id: save-cypress-config
-        working-directory: v5
-        run: echo "::set-output name=cypress-config::$(cat cypress.json | tr -d ' \t\n\r')"
-
-      - name: Cypress - run installation wizard test
-        working-directory: v5
-        run: yarn cypress run --browser chrome --spec "cypress/integration/adminInstallation/**/*.spec.js"
-
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: v5/cypress
-          message-text: Could not complete Admin Area installation wizard. Screenshots have been placed in this thread, good luck.
-
-  e2e-wby-cms-ddb-es-cypress-tests:
-    name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
-    needs: [e2e-wby-cms-ddb-es-init, e2e-wby-cms-ddb-es-project-setup]
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        node: [ 14 ]
-        cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
-    runs-on: ubuntu-latest
-    environment: next
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: v5
-
-      - uses: actions/cache@v2
-        with:
-          path: v5/.webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-es-init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
-
-      - uses: actions/cache@v2
-        with:
-          path: v5/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('v5/**/yarn.lock') }}
-
-      - name: Install dependencies
-        working-directory: v5
-        run: yarn --immutable
-
-      - name: Build packages
-        working-directory: v5
-        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
-
-      - name: Set up Cypress config
-        working-directory: v5
-        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress.json
-
-      - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: v5
-        run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
-
-      - name: Upload screenshots to Slack
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: failure()
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: C027VQG8080
-          workdir: v5/cypress
-          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
+#  e2e-wby-cms-ddb-es-cypress-tests:
+#    name: ${{ matrix.cypress-folder }} (${{ matrix.os }}, Node v${{ matrix.node }})
+#    needs: [e2e-wby-cms-ddb-es-init, e2e-wby-cms-ddb-es-project-setup]
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os: [ ubuntu-latest ]
+#        node: [ 14 ]
+#        cypress-folder: ${{ fromJson(needs.e2e-wby-cms-ddb-es-init.outputs.cypress-folders) }}
+#    runs-on: ubuntu-latest
+#    environment: next
+#    env:
+#      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+#      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
+#      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
+#      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+#      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+#      CYPRESS_DEPLOYSENTINEL_KEY: ${{ secrets.CYPRESS_DEPLOYSENTINEL_KEY }}
+#      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
+#      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
+#      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+#    steps:
+#      - uses: actions/checkout@v2
+#        with:
+#          path: v5
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: v5/.webiny/cached-packages
+#          key: ${{ runner.os }}-${{ needs.e2e-wby-cms-ddb-es-init.outputs.webiny-version }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: v5/.yarn/cache
+#          key: yarn-${{ runner.os }}-${{ hashFiles('v5/**/yarn.lock') }}
+#
+#      - name: Install dependencies
+#        working-directory: v5
+#        run: yarn --immutable
+#
+#      - name: Build packages
+#        working-directory: v5
+#        run: node scripts/buildWithCache.js --build-overrides='${{ env.BUILD_OVERRIDES }}'
+#
+#      - name: Set up Cypress config
+#        working-directory: v5
+#        run: echo '${{ needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' > cypress.json
+#
+#      - name: Cypress - run "${{ matrix.cypress-folder }}" tests
+#        working-directory: v5
+#        run: yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder }}"
+#
+#      - name: Upload screenshots to Slack
+#        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+#        if: failure()
+#        with:
+#          token: ${{ secrets.SLACK_TOKEN }}
+#          channels: C027VQG8080
+#          workdir: v5/cypress
+#          message-text: Cypress tests failed! Screenshots have been placed in this thread, good luck.
 
   npm-release-beta:
-    needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests, e2e-wby-cms-ddb-es-cypress-tests]
+#    needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests, e2e-wby-cms-ddb-es-cypress-tests]
+    needs: [init, code-analysis, jest-tests, e2e-wby-cms-ddb-cypress-tests]
     name: NPM release ("beta" tag)
     runs-on: ubuntu-latest
     env:

@@ -11,15 +11,11 @@ import { validateContentReview } from "./validateContentReview";
 import { validateComment } from "./validateComment";
 import { isInstallationPending } from "../utils";
 
-export default () => [
+export default () =>
     /**
      * Hook into CMS events and execute business logic.
      */
     new ContextPlugin<ApwContext>(async context => {
-        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
-            return;
-        }
-
         const { security, apw, tenancy, i18n } = context;
 
         if (isInstallationPending({ tenancy, i18n })) {
@@ -45,5 +41,4 @@ export default () => [
         deleteCommentsAfterChangeRequest({ apw });
 
         deleteChangeRequestsWithContentReview({ apw });
-    })
-];
+    });

@@ -31,7 +31,7 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
 
             const currentPrerenderingMeta = lodashGet(current, "prerendering.meta");
 
-            const meta = merge(currentPrerenderingMeta || {}, {
+            const meta = merge({}, currentPrerenderingMeta || {}, {
                 tenant: context.tenancy.getCurrentTenant().id,
                 locale: locale.code
             });
@@ -43,6 +43,7 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
                     url: trimEnd(appUrl + item.path, "/"),
                     path: item.path,
                     configuration: merge(
+                        {},
                         {
                             meta,
                             storage: {
