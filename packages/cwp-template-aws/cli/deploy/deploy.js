@@ -1,6 +1,8 @@
+const fs = require("fs");
 const { green } = require("chalk");
 const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 const { sendEvent } = require("@webiny/cli/utils");
+const path = require("path");
 const execa = require("execa");
 const sleep = require("../utils/sleep");
 
@@ -28,20 +30,29 @@ const deploy = (stack, env, inputs) =>
 module.exports = async (inputs, context) => {
     const { env = "dev" } = inputs;
 
-    // 0. Let's just make sure Pulumi is installed. But, let skip installation starting internally.
+    // 1. By calling the install manually here, we get to know if the installation was initiated or not.
     const pulumi = await getPulumi({ install: false });
 
-    // 0.1 Calling the install manually here, we get to know if the installation was initiated or not.
     const installed = await pulumi.install();
 
     // If we just installed Pulumi, let's add a new line.
     installed && console.log();
 
-    // 1. Get exports from `website` stack, for `args.env` environment.
-    const apiOutput = getStackOutput({ folder: "api", env });
-    const adminOutput = getStackOutput({ folder: "apps/admin", env });
-    const websiteOutput = getStackOutput({ folder: "apps/website", env });
-    const isFirstDeployment = !apiOutput && !adminOutput && !websiteOutput;
+    // 2. Check if first deployment.
+
+    // We want to be backwards compatible. That's why we need to take into
+    // consideration that some projects do not have the `storage` application.
+    const hasStorage = fs.statSync(path.join(context.project.root, "apps", "storage"));
+
+    // If we have at least `storage` output or `api` output,
+    // then we can be sure this is not the first deployment.
+    let isFirstDeployment;
+    if (hasStorage) {
+        isFirstDeployment = !getStackOutput({ folder: "apps/storage", env });
+    } else {
+        isFirstDeployment = !getStackOutput({ folder: "api", env });
+    }
+
     if (isFirstDeployment) {
         context.info(
             `This is your first time deploying the project (${green(
@@ -52,8 +63,20 @@ module.exports = async (inputs, context) => {
         await sleep();
     }
 
+    // 3. Start deploying apps one-by-one.
+
     try {
         await sendEvent({ event: "project-deploy-start" });
+
+        // Deploying `storage` project application.
+        if (hasStorage) {
+            isFirstDeployment && console.log();
+            context.info(`Deploying ${green("storage")} project application...`);
+
+            await deploy("apps/storage", env, inputs);
+            context.success(`${green("storage")} project application was deployed successfully!`);
+            isFirstDeployment && (await sleep(2000));
+        }
 
         // Deploying `api` project application.
         isFirstDeployment && console.log();
