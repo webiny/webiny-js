@@ -10,10 +10,10 @@ interface GetWcpProjectLicenseParams {
 }
 
 const fetchWcpProjectLicense = async ({
-                                          orgId,
-                                          projectId,
-                                          projectEnvironmentApiKey
-                                      }: GetWcpProjectLicenseParams) => {
+    orgId,
+    projectId,
+    projectEnvironmentApiKey
+}: GetWcpProjectLicenseParams) => {
     // Fetch and decrypt the license.
     const getLicenseEndpoint = getWcpApiUrl(`/orgs/${orgId}/projects/${projectId}/license`);
 
