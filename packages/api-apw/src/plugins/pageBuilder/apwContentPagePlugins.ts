@@ -3,10 +3,6 @@ import { ApwContentTypes, ApwContext, PageWithWorkflow } from "~/types";
 
 export const apwContentPagePlugins = () =>
     new ContextPlugin<ApwContext>(async context => {
-        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
-            return;
-        }
-
         const { apw, pageBuilder } = context;
 
         if (!apw) {
