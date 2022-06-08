@@ -37,7 +37,9 @@ describe("multiple values in field", () => {
             data: {
                 name: model.name,
                 modelId: model.modelId,
-                group: contentModelGroup.id
+                group: contentModelGroup.id,
+                fields: model.fields,
+                layout: model.layout
             }
         });
 
@@ -46,14 +48,7 @@ describe("multiple values in field", () => {
             process.exit(1);
         }
 
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        return update.data.updateContentModel.data;
+        return create.data.createContentModel.data;
     };
 
     test("multiple value field is correctly created", async () => {

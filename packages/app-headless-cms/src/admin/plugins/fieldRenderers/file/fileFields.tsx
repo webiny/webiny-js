@@ -35,7 +35,13 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
     return (
         <Bind>
             {bind => {
-                const { value, onChange } = bind;
+                const { onChange } = bind;
+
+                // We need to make sure the value is an array, since this is a multi-value component.
+                const value: string[] = (
+                    Array.isArray(bind.value) ? bind.value : [bind.value]
+                ).filter(Boolean);
+
                 return (
                     <FileUploadWrapper className={imageWrapperStyles}>
                         <FileManager multiple={true} images={imagesOnly}>
@@ -51,7 +57,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
 
                                         const urls = files.map(f => f.src);
                                         if (index === -1) {
-                                            onChange([...(value || []), ...urls]);
+                                            onChange([...value, ...urls]);
                                         } else {
                                             onChange([
                                                 ...value.slice(0, index),
@@ -67,18 +73,20 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
                                             <Label>{field.label}</Label>
                                         </Cell>
 
-                                        {value.map((url: string, index: number) => (
-                                            <Cell span={3} key={url}>
-                                                <File
-                                                    url={url}
-                                                    showFileManager={() => selectFiles(index)}
-                                                    onRemove={() =>
-                                                        onChange(dotProp.delete(value, index))
-                                                    }
-                                                    placeholder={t`Select a file"`}
-                                                />
-                                            </Cell>
-                                        ))}
+                                        <>
+                                            {value.map((url: string, index: number) => (
+                                                <Cell span={3} key={url}>
+                                                    <File
+                                                        url={url}
+                                                        showFileManager={() => selectFiles(index)}
+                                                        onRemove={() =>
+                                                            onChange(dotProp.delete(value, index))
+                                                        }
+                                                        placeholder={t`Select a file"`}
+                                                    />
+                                                </Cell>
+                                            ))}
+                                        </>
 
                                         <Cell span={3}>
                                             <File

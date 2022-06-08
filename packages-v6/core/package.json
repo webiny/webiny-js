@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/core",
-  "version": "5.26.0",
+  "version": "5.28.0",
   "types": "./lib/types/index.d.ts",
   "exports": {
     ".": {
@@ -18,10 +18,10 @@
     "@babel/runtime": "^7.17.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "6.1.1",
-    "@webiny/global-config": "^5.26.0",
-    "@webiny/plugins": "^5.26.0",
-    "@webiny/pulumi-sdk-v6": "^5.26.0",
-    "@webiny/telemetry": "^5.26.0",
+    "@webiny/global-config": "^5.28.0",
+    "@webiny/plugins": "^5.28.0",
+    "@webiny/pulumi-sdk-v6": "^5.28.0",
+    "@webiny/telemetry": "^5.28.0",
     "address": "^1.1.2",
     "babel-loader": "^8.2.3",
     "case-sensitive-paths-webpack-plugin": "2.4.0",

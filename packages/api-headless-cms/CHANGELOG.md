@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.28.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.27.0...v5.28.0-beta.0) (2022-06-07)
+
+
+### Features
+
+* **api-headless-cms:** create model with fields ([#2443](https://github.com/webiny/webiny-js/issues/2443)) ([d3eeb78](https://github.com/webiny/webiny-js/commit/d3eeb788e2b870cd8ebf91df721424c6563b6fd7))
+
+
+
+
+
+# [5.27.0](https://github.com/webiny/webiny-js/compare/v5.27.0-beta.0...v5.27.0) (2022-05-26)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.27.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.1-beta.0...v5.27.0-beta.0) (2022-05-25)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+## [5.26.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.26.0...v5.26.1-beta.0) (2022-05-24)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** storage operations generate pk out of model ([#2414](https://github.com/webiny/webiny-js/issues/2414)) ([45ac1c1](https://github.com/webiny/webiny-js/commit/45ac1c188a85548bec4b9fad9822a3eda75bc03a))
+
+
+### Features
+
+* **api-headless-cms:** remove unnecessary storage entry passed into storage ops ([#2403](https://github.com/webiny/webiny-js/issues/2403)) ([59cf078](https://github.com/webiny/webiny-js/commit/59cf0789389c5f78ee4997854a90d4732d773297))
+
+
+
+
+
 # [5.26.0](https://github.com/webiny/webiny-js/compare/v5.26.0-beta.2...v5.26.0) (2022-05-13)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

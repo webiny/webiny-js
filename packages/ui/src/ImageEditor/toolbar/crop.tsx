@@ -21,7 +21,11 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Crop"}>
-                <IconButton icon={<CropIcon />} onClick={() => activateTool("crop")} />
+                <IconButton
+                    icon={<CropIcon />}
+                    onClick={() => activateTool("crop")}
+                    data-testid={"crop-item"}
+                />
             </Tooltip>
         );
     },

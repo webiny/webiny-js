@@ -17,31 +17,31 @@ const CUSTOM_HANDLERS = {
     // Split "api-file-manager" tests.
     "api-file-manager": () => {
         return [
-            "packages/api-file-manager/* --keyword=fm:ddb --keyword=fm:base",
-            "packages/api-file-manager/* --keyword=fm:ddb-es --keyword=fm:base"
+            "packages/api-file-manager/* --keyword=fm:ddb --keyword=fm:base"
+            // "packages/api-file-manager/* --keyword=fm:ddb-es --keyword=fm:base"
         ];
     },
 
     // Split "api-form-builder" tests.
     "api-form-builder": () => {
         return [
-            "packages/api-form-builder/* --keyword=fb:ddb --keyword=fb:base",
-            "packages/api-form-builder/* --keyword=fb:ddb-es --keyword=fb:base"
+            "packages/api-form-builder/* --keyword=fb:ddb --keyword=fb:base"
+            // "packages/api-form-builder/* --keyword=fb:ddb-es --keyword=fb:base"
         ];
     },
 
     // Split "api-page-builder" tests.
     "api-page-builder": () => {
         return [
-            "packages/api-page-builder/* --keyword=pb:ddb --keyword=pb:base",
-            "packages/api-page-builder/* --keyword=pb:ddb-es --keyword=pb:base"
+            "packages/api-page-builder/* --keyword=pb:ddb --keyword=pb:base"
+            // "packages/api-page-builder/* --keyword=pb:ddb-es --keyword=pb:base"
         ];
     },
     // Split "api-headless-cms" tests.
     "api-headless-cms": () => {
         return [
-            "packages/api-headless-cms/* --keyword=cms:ddb --keyword=cms:base",
-            "packages/api-headless-cms/* --keyword=cms:ddb-es --keyword=cms:base"
+            "packages/api-headless-cms/* --keyword=cms:ddb --keyword=cms:base"
+            // "packages/api-headless-cms/* --keyword=cms:ddb-es --keyword=cms:base"
         ];
     },
     // Split "api-apw" tests.
@@ -56,8 +56,9 @@ const CUSTOM_HANDLERS = {
     }
 };
 
-/**
+const testFilePattern = /test\.j?t?sx?$/;
 
+/**
  * @param folder
  * @returns boolean
  */
@@ -74,8 +75,8 @@ function hasTestFiles(folder) {
             if (hasTFiles) {
                 return true;
             }
-        } else if (filepath.endsWith("test.js") || filepath.endsWith("test.ts")) {
-            return true;
+        } else {
+            return testFilePattern.test(filepath);
         }
     }
     return false;

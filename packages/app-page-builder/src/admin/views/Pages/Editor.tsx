@@ -57,6 +57,8 @@ const Editor: React.FC = () => {
         CreatePageFromMutationVariables
     >(CREATE_PAGE_FROM);
 
+    const pageId = decodeURIComponent(params["id"]);
+
     const { page, revisions } = data;
 
     const LoadData = useMemo(() => {
@@ -84,7 +86,7 @@ const Editor: React.FC = () => {
             .query<GetPageQueryResponse, GetPageQueryVariables>({
                 query: GET_PAGE,
                 variables: {
-                    id: decodeURIComponent(params["id"])
+                    id: pageId
                 },
                 fetchPolicy: "network-only"
             })
@@ -137,7 +139,7 @@ const Editor: React.FC = () => {
                 return { default: ({ children }: { children: React.ReactElement }) => children };
             })
         );
-    }, []);
+    }, [pageId]);
 
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>

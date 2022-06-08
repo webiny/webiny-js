@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "5.26.0",
+  "version": "5.28.0",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js"
@@ -13,8 +13,8 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/telemetry": "^5.26.0",
-    "@webiny/wcp": "^5.26.0",
+    "@webiny/telemetry": "^5.28.0",
+    "@webiny/wcp": "^5.28.0",
     "boolean": "3.1.4",
     "camelcase": "5.3.1",
     "chalk": "4.1.2",
