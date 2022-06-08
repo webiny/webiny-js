@@ -1,4 +1,4 @@
-import { Container, useService, useContainer } from "@webiny/ioc";
+import { Container, useService, useContainer } from "~/index";
 
 test("register service by default constructor", () => {
     class Service {}

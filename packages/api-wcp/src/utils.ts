@@ -4,9 +4,7 @@ import { decrypt } from "@webiny/wcp";
 export function getWcpProjectEnvironment(): WcpProjectEnvironment | null {
     if (process.env.WCP_PROJECT_ENVIRONMENT) {
         try {
-            return JSON.parse(
-                decrypt(process.env.WCP_PROJECT_ENVIRONMENT)
-            ) as WcpProjectEnvironment;
+            return decrypt<WcpProjectEnvironment>(process.env.WCP_PROJECT_ENVIRONMENT);
         } catch {
             throw new Error("Could not decrypt WCP_PROJECT_ENVIRONMENT environment variable data.");
         }

@@ -4,9 +4,10 @@ import { ReactElement, ReactNode } from "react";
 import {
     FormRenderPropParams,
     FormAPI,
+    BindComponent as BaseBindComponent,
     BindComponentRenderProp as BaseBindComponentRenderProp,
     BindComponentProps as BaseBindComponentProps
-} from "@webiny/form/types";
+} from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/components/ContentEntryForm/Label";
@@ -447,9 +448,9 @@ export interface CmsEditorFormSettingsPlugin extends Plugin {
     title: string;
     description: string;
     icon: React.ReactElement;
-    render(props: { Bind: BindComponent; form: FormAPI; formData: any }): React.ReactNode;
+    render(props: { Bind: BaseBindComponent; form: FormAPI; formData: any }): React.ReactNode;
     renderHeaderActions?(props: {
-        Bind: BindComponent;
+        Bind: BaseBindComponent;
         form: FormAPI;
         formData: any;
     }): React.ReactNode;
@@ -604,6 +605,7 @@ interface BindComponentRenderProp extends BaseBindComponentRenderProp {
     appendValues: (values: any[]) => void;
     removeValue: (index: number) => void;
 }
+
 interface BindComponentProps extends Omit<BaseBindComponentProps, "children" | "name"> {
     name?: string;
     children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;

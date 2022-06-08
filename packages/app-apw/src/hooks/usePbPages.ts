@@ -4,7 +4,7 @@ import get from "lodash/get";
 import pick from "lodash/pick";
 import debounce from "lodash/debounce";
 import { LIST_PAGES } from "~/graphql/workflow.gql";
-import { BindComponentRenderProp } from "@webiny/form/Bind";
+import { BindComponentRenderProp } from "@webiny/form";
 
 interface UsePbPagesResult {
     loading: boolean;

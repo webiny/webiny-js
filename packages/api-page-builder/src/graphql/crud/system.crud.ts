@@ -151,7 +151,17 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
 
                 const initialPagesData: Page[] = [
                     /**
-                     * Category is missing but we cannot set it because it will override the created one.
+                     * Category is missing, but we cannot set it because it will override the created one.
+                     */
+                    // @ts-ignore
+                    {
+                        title: "Not Found",
+                        path: "/not-found",
+                        content: notFoundPageData,
+                        settings: {}
+                    },
+                    /**
+                     * Category is missing, but we cannot set it because it will override the created one.
                      */
                     // @ts-ignore
                     {
@@ -159,27 +169,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         path: "/welcome-to-webiny",
                         content: welcomeToWebinyPageContent,
                         settings: {}
-                    },
-                    /**
-                     * Category is missing but we cannot set it because it will override the created one.
-                     */
-                    // @ts-ignore
-                    {
-                        title: "Not Found",
-                        path: "/not-found",
-                        content: notFoundPageData,
-                        settings: {},
-                        // Do not show the page in page lists, only direct get is possible.
-                        visibility: {
-                            get: {
-                                latest: true,
-                                published: true
-                            },
-                            list: {
-                                latest: false,
-                                published: false
-                            }
-                        }
                     }
                 ];
 
@@ -192,7 +181,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                         return this.updatePage(initialPages[index].id, data);
                     })
                 );
-                const [homePage, notFoundPage] = await Promise.all(
+                const [notFoundPage, homePage] = await Promise.all(
                     updatedPages.map(page => this.publishPage(page.id))
                 );
 

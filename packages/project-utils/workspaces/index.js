@@ -1,12 +1,12 @@
 const fs = require("fs");
 const { linkWorkspaces } = require("./linkWorkspaces");
 
-const isFolder = p => fs.statSync(p).isDirectory();
+const hasPackageJson = p => fs.existsSync(p + "/package.json");
 
 const allWorkspaces = () => {
     const path = require("path");
     return require("get-yarn-workspaces")()
-        .filter(isFolder)
+        .filter(hasPackageJson)
         .map(pkg => pkg.replace(/\//g, path.sep));
 };
 

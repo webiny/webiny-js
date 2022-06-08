@@ -646,21 +646,10 @@ export interface PbCategoryInput {
     layout: string;
 }
 
-interface PbPageVisibilitySettingsInput {
-    published: boolean;
-    latest: boolean;
-}
-
-interface PbPageVisibilityInput {
-    get: PbPageVisibilitySettingsInput;
-    list: PbPageVisibilitySettingsInput;
-}
-
 export interface PbUpdatePageInput {
     title?: string;
     category?: string;
     path?: string;
-    visibility?: PbPageVisibilityInput;
     settings?: PageSettings;
     content?: Record<string, any> | null;
 }

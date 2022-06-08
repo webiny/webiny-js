@@ -61,19 +61,23 @@
     content: none !important;
   }
 
+  .ce-toolbar__actions {
+    right: unset;
+  }
+
   .ce-toolbar__actions--opened {
     opacity: 1;
     background-color: white;
     border-radius: 5px;
     border: 1px solid #e8e8eb;
     padding: 3px;
+    top: -3px;
   }
 
   .ce-toolbar__content {
     max-width: 650px;
     margin: 0 auto;
     position: absolute;
-    left: 55px;
   }
 }
 
