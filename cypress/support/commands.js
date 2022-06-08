@@ -21,6 +21,8 @@ import "./headlessCms/cmsDeleteContentModelGroup";
 import "./headlessCms/cmsListBooks";
 import "./security/securityCreateUser";
 import "./security/securityDeleteUser";
+import "./security/securityDeleteAllUsers";
+import "./security/securityListUsers";
 import "./security/securityReadGroup";
 import "./security/securityCreateGroup";
 import "./security/securityDeleteGroup";
@@ -29,7 +31,9 @@ import "./security/securityCreateApiKey";
 import "./security/securityDeleteApiKey";
 import "./fileManager/fmListFiles";
 import "./fileManager/fmDeleteFile";
+import "./fileManager/fmDeleteAllFiles";
 import "./fileManager/fmListTags";
+import "cypress-mailosaur";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });

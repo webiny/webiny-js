@@ -10,6 +10,7 @@ import {
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
+import { validateModelFields } from "~/content/plugins/crud/contentModel/validateModelFields";
 
 const disallowedModelIdList: string[] = [
     "contentModel",
@@ -176,12 +177,26 @@ interface AssignBeforeModelCreateParams {
 export const assignBeforeModelCreate = (params: AssignBeforeModelCreateParams) => {
     const { onBeforeModelCreate, onBeforeModelCreateFrom, storageOperations, plugins } = params;
 
-    onBeforeModelCreate.subscribe(
-        createOnBeforeCb({
+    onBeforeModelCreate.subscribe(async ({ model, input }) => {
+        /**
+         * First we need to validate base data of the model.
+         */
+        const cb = createOnBeforeCb({
             storageOperations,
             plugins
-        })
-    );
+        });
+        await cb({
+            model,
+            input
+        });
+        /**
+         * Then we move onto fields...
+         */
+        await validateModelFields({
+            model,
+            plugins
+        });
+    });
 
     onBeforeModelCreateFrom.subscribe(
         createOnBeforeCb({

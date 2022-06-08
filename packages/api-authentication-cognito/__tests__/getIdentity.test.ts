@@ -1,4 +1,4 @@
-import { getIdentity } from "@webiny/api-authentication-cognito";
+import { getIdentity } from "~/index";
 
 describe("getIdentity Test", () => {
     test("full identity information should be returned correctly", async () => {

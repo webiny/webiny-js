@@ -44,13 +44,5 @@ export const createPageFields = (): PageDynamoDbFieldPlugin[] => [
         field: "tags",
         path: "settings.general.tags",
         sortable: false
-    }),
-    new PageDynamoDbFieldPlugin({
-        field: "listLatest",
-        path: "visibility.list.latest"
-    }),
-    new PageDynamoDbFieldPlugin({
-        field: "listPublished",
-        path: "visibility.list.published"
     })
 ];

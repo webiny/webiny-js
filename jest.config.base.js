@@ -24,7 +24,6 @@ module.exports = function ({ path }, presets = []) {
             "^.+\\.(ts|tsx)$": "ts-jest"
         },
         moduleDirectories: ["node_modules"],
-        moduleFileExtensions: ["ts", "js", "tsx"],
         moduleNameMapper: {
             "~/(.*)": `${path}/src/$1`
         },

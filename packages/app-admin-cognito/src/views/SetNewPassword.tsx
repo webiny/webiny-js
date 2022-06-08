@@ -63,7 +63,7 @@ const SetNewPassword: React.FC = () => {
                                     )}
 
                                     <Grid>
-                                        <Cell span={12}>
+                                        <Cell span={12} data-testid="password-reset-code">
                                             <Bind
                                                 name="code"
                                                 validators={validation.create("required")}
@@ -78,7 +78,7 @@ const SetNewPassword: React.FC = () => {
                                                 />
                                             </Bind>
                                         </Cell>
-                                        <Cell span={12}>
+                                        <Cell span={12} data-testid="new-password-input">
                                             <Bind
                                                 name="password"
                                                 validators={validation.create("required")}
@@ -92,7 +92,7 @@ const SetNewPassword: React.FC = () => {
                                                 />
                                             </Bind>
                                         </Cell>
-                                        <Cell span={12}>
+                                        <Cell span={12} data-testid="retype-password-input">
                                             <Bind
                                                 name="retypePassword"
                                                 validators={[
@@ -112,6 +112,7 @@ const SetNewPassword: React.FC = () => {
                                         </Cell>
                                         <Cell span={12} className={alignRight}>
                                             <ButtonPrimary
+                                                data-testid="submit-btn-new-psw"
                                                 onClick={ev => {
                                                     submit(ev);
                                                 }}

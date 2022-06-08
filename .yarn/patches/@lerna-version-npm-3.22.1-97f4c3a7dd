@@ -1,0 +1,13 @@
+diff --git a/command.js b/command.js
+index 974ce66687a1f98ed6b557716565fd3cd45fbb7b..e5754601e49eb7f3c24b974fd8385746e02b4454 100644
+--- a/command.js
++++ b/command.js
+@@ -286,7 +286,7 @@ exports.addBumpPositional = function addBumpPositional(yargs, additionalKeywords
+     describe: `Increment version(s) by explicit version _or_ semver keyword,\n${bumpOptionList}`,
+     type: "string",
+     coerce: choice => {
+-      if (!semver.valid(choice) && semverKeywords.indexOf(choice) === -1) {
++      if (choice && !semver.valid(choice) && semverKeywords.indexOf(choice) === -1) {
+         throw new Error(`bump must be an explicit version string _or_ one of: ${bumpOptionList}`);
+       }
+ 

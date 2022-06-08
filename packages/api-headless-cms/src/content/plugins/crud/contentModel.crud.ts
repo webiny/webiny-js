@@ -262,6 +262,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 throw new NotFoundError(`There is no group "${input.group}".`);
             }
 
+            const fields = await createFieldModels(input.fields);
+
             const identity = getIdentity();
             const model: CmsModel = {
                 name: input.name,
@@ -281,11 +283,13 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 },
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
-                fields: [],
+                fields,
                 lockedFields: [],
-                layout: [],
+                layout: input.layout || [],
                 webinyVersion: context.WEBINY_VERSION
             };
+
+            validateLayout(model, fields);
 
             await onBeforeModelCreate.publish({
                 input,
@@ -453,7 +457,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     name: groupData.name
                 };
             }
-            const modelFields = await createFieldModels(original, inputData);
+            const fields = await createFieldModels(inputData.fields);
             const model: CmsModel = {
                 ...original,
                 ...input,
@@ -461,10 +465,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 tenant: original.tenant || getTenant().id,
                 locale: original.locale || getLocale().code,
                 webinyVersion: context.WEBINY_VERSION,
-                fields: modelFields,
-                savedOn: new Date().toISOString() as any
+                fields,
+                savedOn: new Date().toISOString()
             };
-            validateLayout(model, modelFields);
+            validateLayout(model, fields);
 
             await onBeforeModelUpdate.publish({
                 input,
