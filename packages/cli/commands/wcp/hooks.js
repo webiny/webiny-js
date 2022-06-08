@@ -70,7 +70,7 @@ module.exports = () => [
                 project: { id: projectEnvironment.project.id }
             };
 
-            process.env.WCP_PROJECT_ENVIRONMENT = encrypt(JSON.stringify(wcpProjectEnvironment));
+            process.env.WCP_PROJECT_ENVIRONMENT = encrypt(wcpProjectEnvironment);
         }
     },
     // Within this hook, we're updating user's "last active" field.

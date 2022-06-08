@@ -6,7 +6,7 @@ export const getWcpApiUrl = (path?: string) => {
     return path ? apiUrl + path : apiUrl;
 };
 
-export const getWcpGraphQlApiUrl = (path?: string) => {
+export const getWcpGqlApiUrl = (path?: string) => {
     const graphqlApi = getWcpApiUrl("/graphql");
     return path ? graphqlApi + path : graphqlApi;
 };
