@@ -16,8 +16,8 @@ const OverlaysHOC = (Component: React.FC): React.FC => {
                 {children}
                 <div style={{ zIndex: 30, position: "absolute" }}>
                     <Snackbar />
-                    <Portal />
                 </div>
+                <Portal />
                 <DialogContainer />
             </Component>
         );
