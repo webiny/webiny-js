@@ -38,9 +38,9 @@ import { createBlockCategoryEntity } from "~/definitions/blockCategoryEntity";
 import { createBlockCategoryDynamoDbFields } from "~/operations/blockCategory/fields";
 import { createBlockCategoryStorageOperations } from "~/operations/blockCategory";
 
-import { createBlockEntity } from "~/definitions/blockEntity";
-import { createBlockDynamoDbFields } from "~/operations/block/fields";
-import { createBlockStorageOperations } from "~/operations/block";
+import { createPageBlockEntity } from "~/definitions/pageBlockEntity";
+import { createPageBlockDynamoDbFields } from "~/operations/pageBlock/fields";
+import { createPageBlockStorageOperations } from "~/operations/pageBlock";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -103,9 +103,9 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          */
         createBlockCategoryDynamoDbFields(),
         /**
-         * Block fields required for filtering/sorting.
+         * Page Block fields required for filtering/sorting.
          */
-        createBlockDynamoDbFields()
+        createPageBlockDynamoDbFields()
     ]);
 
     const entities = {
@@ -149,10 +149,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             table: tableInstance,
             attributes: attributes ? attributes[ENTITIES.BLOCK_CATEGORIES] : {}
         }),
-        blocks: createBlockEntity({
-            entityName: ENTITIES.BLOCKS,
+        pageBlocks: createPageBlockEntity({
+            entityName: ENTITIES.PAGE_BLOCKS,
             table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.BLOCKS] : {}
+            attributes: attributes ? attributes[ENTITIES.PAGE_BLOCKS] : {}
         })
     };
 
@@ -198,8 +198,8 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entity: entities.blockCategories,
             plugins
         }),
-        blocks: createBlockStorageOperations({
-            entity: entities.blocks,
+        pageBlocks: createPageBlockStorageOperations({
+            entity: entities.pageBlocks,
             plugins
         })
     };
