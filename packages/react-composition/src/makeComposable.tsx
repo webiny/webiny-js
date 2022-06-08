@@ -1,19 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo } from "react";
 import debounce from "lodash.debounce";
-import { useAdmin } from "./admin";
-import { ComponentType } from "react";
-import { ComposableFC } from "./components/core/Compose";
-
-const useComponent = (Component: ComponentType<any>): ComponentType<any> => {
-    const { wrappers } = useAdmin();
-    const recipe = wrappers.get(Component) as { component: ComponentType };
-
-    if (!recipe) {
-        return Component;
-    }
-
-    return recipe.component;
-};
+import { ComposableFC } from "./Compose";
+import { useComponent } from "./Context";
 
 const ComposableContext = createContext<string[]>([]);
 ComposableContext.displayName = "ComposableContext";
@@ -51,15 +39,16 @@ export function makeComposable<TProps>(name: string, Component?: React.FC<TProps
     if (!Component) {
         Component = createEmptyRenderer(name);
     }
+
     const Composable: ComposableFC<TProps> = props => {
         const parents = useComposableParents();
-        const WrappedComponent = useComponent(Component as React.FC<TProps>);
+        const ComposedComponent = useComponent(Component as React.FC<TProps>);
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 
         return (
             <ComposableContext.Provider value={context}>
-                <WrappedComponent {...props}>{props.children}</WrappedComponent>
+                <ComposedComponent {...props}>{props.children}</ComposedComponent>
             </ComposableContext.Provider>
         );
     };

@@ -2,6 +2,17 @@ const fs = require("fs");
 const path = require("path");
 const { allWorkspaces } = require("@webiny/project-utils/workspaces");
 
+// Loads environment variables defined in the project root ".env" file.
+const { parsed } = require("dotenv").config({ path: path.join(__dirname, ".env") });
+if (parsed) {
+    console.log('The following environment variables were included from the root ".env" file:');
+    console.log(
+        Object.keys(parsed).reduce((current, item) => {
+            return current + `‣ ${item}\n`;
+        }, "")
+    );
+}
+
 const createPackageJestConfigPath = pkg => {
     const jestConfigPath = path.join(pkg, "jest.config.js");
     if (!fs.existsSync(jestConfigPath)) {

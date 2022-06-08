@@ -97,7 +97,7 @@ const UserAccountForm: React.FC = () => {
                         <SimpleFormHeader title={"Account"} />
                         <SimpleFormContent>
                             <Grid>
-                                <Cell span={12}>
+                                <Cell span={12} data-testid={"avatar"}>
                                     <Bind name="avatar">
                                         <AvatarImage round />
                                     </Bind>
@@ -140,7 +140,7 @@ const UserAccountForm: React.FC = () => {
                                 />
                             </Grid>
                         </SimpleFormContent>
-                        <SimpleFormFooter>
+                        <SimpleFormFooter data-testid={"form-footer"}>
                             <ButtonPrimary
                                 onClick={ev => {
                                     form.submit(ev);

@@ -1,10 +1,7 @@
-const { basename, join } = require("path");
+const { basename } = require("path");
 const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 const { version } = require("@webiny/cli/package.json");
-
-// Loads environment variables defined in the project root ".env" file.
-require("dotenv").config({ path: join(__dirname, ".env") });
 
 module.exports = function ({ path }, presets = []) {
     const name = basename(path);
@@ -24,7 +21,6 @@ module.exports = function ({ path }, presets = []) {
             "^.+\\.(ts|tsx)$": "ts-jest"
         },
         moduleDirectories: ["node_modules"],
-        moduleFileExtensions: ["ts", "js", "tsx"],
         moduleNameMapper: {
             "~/(.*)": `${path}/src/$1`
         },

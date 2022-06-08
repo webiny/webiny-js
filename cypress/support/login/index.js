@@ -18,7 +18,7 @@ const hasLoginDataInLocalStorage = () => {
     return false;
 };
 
-Cypress.Commands.add("login", ({ username, password } = DEFAULT_LOGIN) => {
+export const login = async ({ username, password } = DEFAULT_LOGIN) => {
     if (cache[username + password] && hasLoginDataInLocalStorage()) {
         return cache[username + password];
     }
@@ -27,4 +27,8 @@ Cypress.Commands.add("login", ({ username, password } = DEFAULT_LOGIN) => {
         cache[username + password] = response;
         return cache[username + password];
     });
-});
+};
+
+Cypress.Commands.add("login", ({ username, password } = DEFAULT_LOGIN) =>
+    login({ username, password })
+);
