@@ -147,15 +147,47 @@ describe("Block Categories CRUD Test", () => {
         });
     });
 
-    test("cannot create a block category with invalid slug", async () => {
-        const [errorResponse] = await createBlockCategory({
+    test("cannot create a block category with empty or invalid slug", async () => {
+        const [emptySlugErrorResponse] = await createBlockCategory({
+            data: {
+                slug: ``,
+                name: `empty-slug-category`
+            }
+        });
+
+        const emptySlugError: ErrorOptions = {
+            code: "VALIDATION_FAILED_INVALID_FIELDS",
+            message: "Validation failed.",
+            data: {
+                invalidFields: {
+                    slug: {
+                        code: "VALIDATION_FAILED_INVALID_FIELD",
+                        data: null,
+                        message: "Value is required."
+                    }
+                }
+            }
+        };
+
+        expect(emptySlugErrorResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    createBlockCategory: {
+                        data: null,
+                        error: emptySlugError
+                    }
+                }
+            }
+        });
+
+        const [invalidSlugErrorResponse] = await createBlockCategory({
             data: {
                 slug: `invalid--slug--category`,
                 name: `invalid--slug--category`
             }
         });
 
-        const error: ErrorOptions = {
+        const invalidSlugError: ErrorOptions = {
             code: "VALIDATION_FAILED_INVALID_FIELDS",
             message: "Validation failed.",
             data: {
@@ -170,10 +202,55 @@ describe("Block Categories CRUD Test", () => {
             }
         };
 
-        expect(errorResponse).toEqual({
+        expect(invalidSlugErrorResponse).toEqual({
             data: {
                 pageBuilder: {
                     createBlockCategory: {
+                        data: null,
+                        error: invalidSlugError
+                    }
+                }
+            }
+        });
+    });
+
+    test("cannot get a block category by empty slug", async () => {
+        const [errorResponse] = await getBlockCategory({ slug: `` });
+
+        const error: ErrorOptions = {
+            code: "GET_BLOCK_CATEGORY_ERROR",
+            data: null,
+            message: "Could not load block category by empty slug."
+        };
+
+        expect(errorResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    getBlockCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
+    });
+
+    test("cannot update a block category by empty slug", async () => {
+        const [errorResponse] = await updateBlockCategory({
+            slug: ``,
+            data: { slug: ``, name: `empty-slug-category` }
+        });
+
+        const error: ErrorOptions = {
+            code: "GET_BLOCK_CATEGORY_ERROR",
+            data: null,
+            message: "Could not load block category by empty slug."
+        };
+
+        expect(errorResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    updateBlockCategory: {
                         data: null,
                         error
                     }

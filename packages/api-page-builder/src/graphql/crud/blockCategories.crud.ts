@@ -75,6 +75,13 @@ export const createBlockCategoriesCrud = (
         async getBlockCategory(slug, options = { auth: true }) {
             const { auth } = options;
 
+            if (slug === "") {
+                throw new WebinyError(
+                    "Could not load block category by empty slug.",
+                    "GET_BLOCK_CATEGORY_ERROR"
+                );
+            }
+
             const params: BlockCategoryStorageOperationsGetParams = {
                 where: {
                     slug,
@@ -166,15 +173,15 @@ export const createBlockCategoriesCrud = (
         async createBlockCategory(this: PageBuilderContextObject, input) {
             await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
+            const createDataModel = new CreateDataModel().populate(input);
+            await createDataModel.validate();
+
             const existingBlockCategory = await this.getBlockCategory(input.slug, {
                 auth: false
             });
             if (existingBlockCategory) {
                 throw new NotFoundError(`Category with slug "${input.slug}" already exists.`);
             }
-
-            const createDataModel = new CreateDataModel().populate(input);
-            await createDataModel.validate();
 
             const identity = context.security.getIdentity();
 
