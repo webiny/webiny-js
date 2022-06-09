@@ -1,5 +1,5 @@
-import { Args} from "~/types";
+import { Args } from "~/types";
 
-export default (args: Args): boolean => {
+export const getIsNotFoundPage = (args: Args): boolean => {
     return args?.configuration?.meta?.notFoundPage || false;
 };

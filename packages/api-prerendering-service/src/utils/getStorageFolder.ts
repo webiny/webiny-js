@@ -1,6 +1,6 @@
 import { Args, Configuration } from "~/types";
 
-export default (args?: Args, configuration?: Configuration) => {
+export const getStorageFolder = (args?: Args, configuration?: Configuration) => {
     let folder = args?.configuration?.storage?.folder ?? configuration?.storage?.folder;
     if (typeof folder === "string") {
         return folder;

@@ -74,6 +74,12 @@ function createRenderSubscriber(
         }
     });
 
+    /**
+     * TODO: when we get to staged rollouts and variants, maybe we can create per-variant event rules,
+     * to avoid invocation of all variant lambdas just to do a `detail-type` check and exit early.
+     * That way, we would be publishing events scoped to a variant, like "RenderPages-{variant}".
+     */
+
     const eventRule = app.addResource(aws.cloudwatch.EventRule, {
         name: "ps-render-subscriber-event-rule",
         config: {

@@ -106,7 +106,7 @@ export default (params: RenderParams): HandlerPlugin => {
                         if (isNotFound) {
                             const key = path.join(NOT_FOUND_FOLDER, file.name);
 
-                            console.log(`Storing file "${key}" to storage "${NOT_FOUND_FOLDER}".`);
+                            console.log(`Storing file "${key}" to storage "${storageName}".`);
                             await storeFile({
                                 storageName,
                                 key,

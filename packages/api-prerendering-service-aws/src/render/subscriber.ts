@@ -41,7 +41,7 @@ export default (params: HandlerConfig) => {
             return;
         }
 
-        const toRender: Array<{ id: string; groupId: string; body: Args }> = [];
+        const toRender: Array<{ groupId: string; body: Args }> = [];
 
         // Event might contain specific paths to exclude from full rerender.
         const exclude = event.exclude || [];
@@ -83,7 +83,7 @@ export default (params: HandlerConfig) => {
                 Id: messageId,
                 // MessageBody is a string, so we stringify the payload.
                 MessageBody: JSON.stringify(item.body),
-                // For deduplication, we're using the following pattern: `T#root|{page-slug}|{storage-folder}`
+                // We're using the same unique ID as the message itself. For now, we don't want to deduplicate anything.
                 MessageDeduplicationId: messageId,
                 // We're grouping messages using the DB namespace, which looks like this: `T#root` (group by tenant).
                 MessageGroupId: item.groupId
@@ -111,10 +111,6 @@ export default (params: HandlerConfig) => {
             }
 
             const namespace = args.configuration?.db?.namespace || "";
-            const storage = args.configuration?.storage?.folder;
-
-            // Include storage folder in the ID; we sometimes render the same page twice, with different storage folders.
-            const id = [namespace, args.path, storage || "_ROOT_"].filter(Boolean).join("|");
 
             /**
              * We're only sending the data that comes from the business logic. Things like CDN URLs, S3 buckets, etc.
@@ -122,7 +118,6 @@ export default (params: HandlerConfig) => {
              * the database. This way we are sure that we don't store obsolete infrastructure information.
              */
             toRender.push({
-                id,
                 groupId: namespace,
                 body: args
             });

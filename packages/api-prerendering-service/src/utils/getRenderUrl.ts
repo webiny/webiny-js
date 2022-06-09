@@ -1,7 +1,7 @@
 import trimEnd from "lodash/trimEnd";
 import { Args, Configuration } from "~/types";
 
-export default (args: Args, configuration: Configuration) => {
+export const getRenderUrl = (args: Args, configuration: Configuration) => {
     if (args.url) {
         return args.url;
     }
