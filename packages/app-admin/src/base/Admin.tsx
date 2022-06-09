@@ -8,6 +8,7 @@ import { createUiStateProvider } from "./providers/UiStateProvider";
 import { SearchProvider } from "./ui/Search";
 import { UserMenuProvider } from "./ui/UserMenu";
 import { NavigationProvider } from "./ui/Navigation";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -24,7 +25,7 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
      */
     return (
         <ApolloProvider>
-            <WcpProvider>
+            <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
                 <BaseAdmin>
                     <Provider hoc={TelemetryProvider} />
                     <Provider hoc={UiStateProvider} />
