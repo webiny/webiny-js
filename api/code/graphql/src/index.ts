@@ -1,6 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -45,6 +46,8 @@ const documentClient = new DocumentClient({
 
 export const handler = createHandler({
     plugins: [
+        createWcpContext(),
+        createWcpGraphQL(),
         dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),

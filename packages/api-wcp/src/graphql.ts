@@ -63,13 +63,13 @@ export const createWcpGraphQL = () => {
                     try {
                         const projectEnvironment = context.wcp.getProjectEnvironment();
                         if (!projectEnvironment) {
-                            return null;
+                            return new Response(null);
                         }
 
                         // We only return the project if we've managed to retrieve its license.
                         const projectLicense = context.wcp.getProjectLicense();
                         if (!projectLicense) {
-                            return null;
+                            return new Response(null);
                         }
 
                         return new Response({

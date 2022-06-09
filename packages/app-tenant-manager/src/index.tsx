@@ -1,4 +1,4 @@
-import { Compose, LocaleSelector } from "@webiny/app-admin";
+import { Compose, LocaleSelector, useWcp } from "@webiny/app-admin";
 import React, { Fragment, memo } from "react";
 import { AddTenantFormField } from "./components/AddTenantFormField";
 import { CurrentTenant } from "./components/CurrentTenant";
@@ -17,6 +17,11 @@ const TenantIndicator = (LocaleSelector: React.FC): React.FC => {
 };
 
 const TenantManagerExtension: React.FC = () => {
+    const { canUseFeature } = useWcp();
+    if (!canUseFeature("advancedPublishingWorkflow")) {
+        return null;
+    }
+
     /**
      * TODO @ts-refactor @pavel
      * Remove Compose.with as any

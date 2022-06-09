@@ -5,6 +5,7 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../app-admin-rmwc" },
+    { "path": "../app-apw" },
     { "path": "../app-file-manager" },
     { "path": "../app-file-manager-s3" },
     { "path": "../app-form-builder" },
@@ -16,6 +17,7 @@
     { "path": "../app-security" },
     { "path": "../app-security-access-management" },
     { "path": "../app-tenancy" },
+    { "path": "../app-tenant-manager" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -30,6 +32,8 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-admin-rmwc/*": ["../app-admin-rmwc/src/*"],
       "@webiny/app-admin-rmwc": ["../app-admin-rmwc/src"],
+      "@webiny/app-apw/*": ["../app-apw/src/*"],
+      "@webiny/app-apw": ["../app-apw/src"],
       "@webiny/app-file-manager/*": ["../app-file-manager/src/*"],
       "@webiny/app-file-manager": ["../app-file-manager/src"],
       "@webiny/app-file-manager-s3/*": ["../app-file-manager-s3/src/*"],
@@ -52,6 +56,8 @@
       "@webiny/app-security-access-management": ["../app-security-access-management/src"],
       "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
       "@webiny/app-tenancy": ["../app-tenancy/src"],
+      "@webiny/app-tenant-manager/*": ["../app-tenant-manager/src/*"],
+      "@webiny/app-tenant-manager": ["../app-tenant-manager/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

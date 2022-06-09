@@ -1,5 +1,5 @@
 import React from "react";
-import { Compose, Plugins } from "@webiny/app-admin";
+import { Compose, Plugins, useWcp } from "@webiny/app-admin";
 import ApwAdminMenus from "./menus";
 import routes from "./routes";
 import defaultBar from "./editor/defaultBar";
@@ -25,6 +25,11 @@ import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plug
 export default () => [routes, defaultBar];
 
 export const ApwAdmin = () => {
+    const { canUseFeature } = useWcp();
+    if (!canUseFeature("advancedPublishingWorkflow")) {
+        return null;
+    }
+
     return (
         <>
             <Compose with={PublishRevisionHoc} component={PublishRevision} />
