@@ -155,7 +155,7 @@ export interface Configuration {
         url?: string;
     };
     meta?: {
-        notFoundPage?: string;
+        notFoundPage?: boolean;
         tenant?: string;
         locale?: string;
         [key: string]: any | undefined;
@@ -165,6 +165,7 @@ export interface Configuration {
 export interface Args {
     url?: string;
     path?: string;
+    exclude?: string[];
     configuration?: Configuration;
 }
 

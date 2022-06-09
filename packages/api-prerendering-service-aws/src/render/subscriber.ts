@@ -1,6 +1,7 @@
 import { EventBridgeEvent } from "aws-lambda";
 import SqsClient, { SendMessageBatchRequestEntry } from "aws-sdk/clients/sqs";
 import lodashChunk from "lodash/chunk";
+import { nanoid } from "nanoid";
 
 import {
     Args,
@@ -8,7 +9,8 @@ import {
     RenderPagesEvent
 } from "@webiny/api-prerendering-service/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import { Context, HandlerPlugin as DefaultHandlerPlugin } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
+import { HandlerPlugin } from "@webiny/handler";
 
 export type HandlerArgs = EventBridgeEvent<"RenderPages", RenderPagesEvent>;
 
@@ -21,102 +23,109 @@ export interface HandlerConfig {
     sqsQueueUrl: string;
 }
 
-export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
-
-export default (params: HandlerConfig): HandlerPlugin => {
+export default (params: HandlerConfig) => {
     const { storageOperations } = params;
     const sqsClient = new SqsClient();
 
-    return {
-        type: "handler",
-        async handle(context) {
-            if (context.invocationArgs["detail-type"] !== "RenderPages") {
-                return;
-            }
+    return new HandlerPlugin<HandlerContext>(async context => {
+        if (context.invocationArgs["detail-type"] !== "RenderPages") {
+            return;
+        }
 
-            const event = context.invocationArgs.detail;
-            const namespace = event.configuration?.db?.namespace ?? "";
-            const variant = event.variant;
+        const event = context.invocationArgs.detail;
+        const namespace = event.configuration?.db?.namespace ?? "";
+        const variant = event.variant;
 
-            // Check if there is only specific variant rerender is requested.
-            if (variant && variant !== process.env.STAGED_ROLLOUTS_VARIANT) {
-                return;
-            }
+        // Check if a specific variant rerender is requested.
+        if (variant && variant !== process.env.STAGED_ROLLOUTS_VARIANT) {
+            return;
+        }
 
-            const toRender = new Map<string, Args>();
+        const toRender: Array<{ id: string; groupId: string; body: Args }> = [];
 
-            if (event.path === "*") {
-                const renders = await storageOperations.listRenders({
-                    where: { namespace }
-                });
+        // Event might contain specific paths to exclude from full rerender.
+        const exclude = event.exclude || [];
 
-                for (const render of renders) {
-                    if (render.args) {
-                        addRender(render.args);
-                    }
-                }
-            } else if (event.tag) {
-                const renders = await storageOperations.listRenders({
-                    where: {
-                        namespace,
-                        tag: event.tag
-                    }
-                });
+        if (event.path === "*") {
+            const renders = await storageOperations.listRenders({
+                where: { namespace }
+            });
 
-                for (const render of renders) {
-                    if (render.args) {
-                        addRender(render.args);
-                    }
-                }
-            } else {
-                addRender(event);
-            }
-
-            const entries: SendMessageBatchRequestEntry[] = [];
-
-            let i = 0;
-            for (const [id, render] of toRender.entries()) {
-                entries.push({
-                    Id: i.toString(),
-                    MessageBody: JSON.stringify(render),
-                    MessageDeduplicationId: id,
-                    MessageGroupId: id
-                });
-                i++;
-            }
-
-            // console.log(JSON.stringify([...toRender.values()]));
-
-            const entriesChunked = lodashChunk(entries, 10);
-            for (const chunk of entriesChunked) {
-                const result = await sqsClient
-                    .sendMessageBatch({
-                        QueueUrl: params.sqsQueueUrl,
-                        Entries: chunk
-                    })
-                    .promise();
-
-                if (result.Failed.length) {
-                    console.error("Failed to deliver some of messages");
-                    console.error(JSON.stringify(result.Failed));
+            for (const render of renders) {
+                if (render.args) {
+                    addRender(render.args);
                 }
             }
+        } else if (event.tag) {
+            const renders = await storageOperations.listRenders({
+                where: {
+                    namespace,
+                    tag: event.tag
+                }
+            });
 
-            function addRender(args: Args) {
-                const namespace = args.configuration?.db?.namespace || "";
-                const id = `${namespace}/${args.path}`;
+            for (const render of renders) {
+                if (render.args) {
+                    addRender(render.args);
+                }
+            }
+        } else {
+            addRender(event);
+        }
 
-                toRender.set(id, {
-                    path: args.path,
-                    configuration: {
-                        db: args.configuration?.db,
-                        meta: {
-                            locale: args.configuration?.meta?.locale,
-                            tenant: args.configuration?.meta?.tenant
-                        }
-                    }
-                });
+        const entries: SendMessageBatchRequestEntry[] = [];
+
+        for (const item of toRender) {
+            const messageId = nanoid(8);
+
+            entries.push({
+                // A batch entry ID can only contain alphanumeric characters, hyphens and underscores.
+                Id: messageId,
+                // MessageBody is a string, so we stringify the payload.
+                MessageBody: JSON.stringify(item.body),
+                // For deduplication, we're using the following pattern: `T#root|{page-slug}|{storage-folder}`
+                MessageDeduplicationId: messageId,
+                // We're grouping messages using the DB namespace, which looks like this: `T#root` (group by tenant).
+                MessageGroupId: item.groupId
+            });
+        }
+
+        const entriesChunked = lodashChunk(entries, 10);
+        for (const chunk of entriesChunked) {
+            const result = await sqsClient
+                .sendMessageBatch({
+                    QueueUrl: params.sqsQueueUrl,
+                    Entries: chunk
+                })
+                .promise();
+
+            if (result.Failed.length) {
+                console.error("Failed to deliver some of messages");
+                console.error(JSON.stringify(result.Failed));
             }
         }
-    };
+
+        function addRender(args: Args) {
+            if (args.path && exclude.includes(args.path)) {
+                return;
+            }
+
+            const namespace = args.configuration?.db?.namespace || "";
+            const storage = args.configuration?.storage?.folder;
+
+            // Include storage folder in the ID; we sometimes render the same page twice, with different storage folders.
+            const id = [namespace, args.path, storage || "_ROOT_"].filter(Boolean).join("|");
+
+            /**
+             * We're only sending the data that comes from the business logic. Things like CDN URLs, S3 buckets, etc.
+             * are all injected into the appropriate Lambda functions at deploy time, so that information is detached from
+             * the database. This way we are sure that we don't store obsolete infrastructure information.
+             */
+            toRender.push({
+                id,
+                groupId: namespace,
+                body: args
+            });
+        }
+    });
 };

@@ -14,7 +14,7 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
             forceDestroy: true,
             website: {
                 indexDocument: "index.html",
-                errorDocument: "index.html"
+                errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
         }
     });

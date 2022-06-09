@@ -1502,6 +1502,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws/dynamodb-data-marshaller@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "@aws/dynamodb-data-marshaller@npm:0.7.3"
+  dependencies:
+    "@aws/dynamodb-auto-marshaller": ^0.7.1
+    "@aws/dynamodb-expressions": ^0.7.3
+    tslib: ^1.8.1
+    utf8-bytes: ^0.0.1
+  peerDependencies:
+    aws-sdk: ^2.7.0
+  checksum: e6e02dd1e3c6b0957362114747e77db345293a7d6322c7caf421cf096898f4edf8a9f74eec83d320270d600558ad2ffbb4286865cb616d703e27ccb0f4c8b63f
+  languageName: node
+  linkType: hard
+
+"@aws/dynamodb-expressions@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "@aws/dynamodb-expressions@npm:0.7.3"
+  dependencies:
+    "@aws/dynamodb-auto-marshaller": ^0.7.1
+    tslib: ^1.8.1
+  peerDependencies:
+    aws-sdk: ^2.7.0
+  checksum: 4ee9fcf936141102c4e9aac31bc97e45f59857222bcf52dfd479e95cfedb910171480a4a7c2914d94320db850996f10c82e0a9cc78346c42d8d7e4d3b1b0b8c7
+  languageName: node
+  linkType: hard
+
 "@babel/cli@npm:^7.16.0, @babel/cli@npm:^7.17.0, @babel/cli@npm:^7.5.5":
   version: 7.17.10
   resolution: "@babel/cli@npm:7.17.10"
@@ -10883,6 +10909,7 @@ __metadata:
     "@webiny/plugins": ^5.28.0
     "@webiny/project-utils": ^5.28.0
     lodash: ^4.17.21
+    nanoid: ^4.0.0
     rimraf: ^3.0.2
     typescript: 4.5.5
   languageName: unknown
@@ -29898,6 +29925,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "nanoid@npm:4.0.0"
+  bin:
+    nanoid: bin/nanoid.js
+  checksum: 7d5946df5c6d383694195b781ae7b5067c149d164ec71e910d6b06676309c3459b68af570b944fb5ecd5065d19df464f05700d141d70bb712ff8ca06642fd8df
+  languageName: node
+  linkType: hard
+
 "nanomatch@npm:^1.2.9":
   version: 1.2.13
   resolution: "nanomatch@npm:1.2.13"
@@ -35641,6 +35677,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@4tw/cypress-drag-drop": ^1.4.0
+    "@aws/dynamodb-data-marshaller": ^0.7.3
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
     "@commitlint/cli": ^11.0.0
@@ -39383,6 +39420,13 @@ __metadata:
   version: 1.0.4
   resolution: "utf8-byte-length@npm:1.0.4"
   checksum: f188ca076ec094d58e7009fcc32623c5830c7f0f3e15802bfa4fdd1e759454a481fc4ac05e0fa83b7736e77af628a9ee0e57dcc89683d688fde3811473e42143
+  languageName: node
+  linkType: hard
+
+"utf8-bytes@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "utf8-bytes@npm:0.0.1"
+  checksum: be2e90e3395dce550ba52d2136d26c10b980cc4cc58159a6ecdd8bb4b47f90720bf42c384eaca4292581fabfe530d4a23b2941d8047948e27fd07e0d704ed3bc
   languageName: node
   linkType: hard
 

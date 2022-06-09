@@ -609,6 +609,7 @@ export interface TagItem {
 
 export interface PathItem {
     path: string;
+    exclude?: string[];
     configuration?: {
         db?: {
             namespace: string;
@@ -623,13 +624,11 @@ export interface PathItem {
 
 export interface RenderParams {
     queue?: boolean;
-    context: PbContext;
     tags?: TagItem[];
     paths?: PathItem[];
 }
 
 export interface FlushParams {
-    context: PbContext;
     tags?: TagItem[];
     paths?: PathItem[];
 }

@@ -1,7 +1,13 @@
 import renderUrl, { File } from "./renderUrl";
 import path from "path";
 import S3 from "aws-sdk/clients/s3";
-import { getStorageName, getStorageFolder, getDbNamespace, getRenderUrl } from "~/utils";
+import {
+    getStorageName,
+    getStorageFolder,
+    getDbNamespace,
+    getRenderUrl,
+    getIsNotFoundPage
+} from "~/utils";
 import { HandlerPlugin, RenderHookPlugin } from "./types";
 import {
     Configuration,
@@ -40,6 +46,8 @@ export interface RenderParams extends Configuration {
     storageOperations: PrerenderingServiceStorageOperations;
 }
 
+const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
+
 export default (params: RenderParams): HandlerPlugin => {
     const { storageOperations, ...configuration } = params;
 
@@ -49,8 +57,6 @@ export default (params: RenderParams): HandlerPlugin => {
             const { invocationArgs } = context;
             const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
             const handlerHookPlugins = context.plugins.byType<RenderHookPlugin>("ps-render-hook");
-
-            console.log("Received args: ", JSON.stringify(invocationArgs));
 
             try {
                 await sleep();
@@ -69,6 +75,7 @@ export default (params: RenderParams): HandlerPlugin => {
                     const storageName = getStorageName(args, configuration);
                     const storageFolder = getStorageFolder(args, configuration);
                     const url = getRenderUrl(args, configuration);
+                    const isNotFound = getIsNotFoundPage(args);
 
                     // Check if render data for given URL already exists. If so, delete it.
                     const currentRender = await storageOperations.getRender({
@@ -95,6 +102,18 @@ export default (params: RenderParams): HandlerPlugin => {
                             body: file.body,
                             contentType: file.type
                         });
+
+                        if (isNotFound) {
+                            const key = path.join(NOT_FOUND_FOLDER, file.name);
+
+                            console.log(`Storing file "${key}" to storage "${NOT_FOUND_FOLDER}".`);
+                            await storeFile({
+                                storageName,
+                                key,
+                                body: file.body,
+                                contentType: file.type
+                            });
+                        }
                     }
 
                     const render: Render = {

@@ -12,7 +12,7 @@ import { PbContext } from "~/graphql/types";
 export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
     context.pageBuilder.setPrerenderingHandlers({
         async render(args): Promise<void> {
-            const { paths, tags, context, queue = false } = args;
+            const { paths, tags, queue = false } = args;
 
             const current = await context.pageBuilder.getCurrentSettings();
             const appUrl = lodashGet(current, "prerendering.app.url");
@@ -40,8 +40,9 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
 
             if (Array.isArray(paths)) {
                 const render = paths.map<PsRenderParams>(item => ({
-                    url: trimEnd(appUrl + item.path, "/"),
+                    url: item.path === "*" ? undefined : trimEnd(appUrl + item.path, "/"),
                     path: item.path,
+                    exclude: item.exclude,
                     configuration: merge(
                         {},
                         {
@@ -132,8 +133,6 @@ export const prerenderingHandlers = new ContextPlugin<PbContext>(context => {
         },
 
         async flush(args): Promise<void> {
-            const { context } = args;
-
             const current = await context.pageBuilder.getCurrentSettings();
             const appUrl = lodashGet(current, "prerendering.app.url");
             const storageName = lodashGet(current, "prerendering.storage.name");

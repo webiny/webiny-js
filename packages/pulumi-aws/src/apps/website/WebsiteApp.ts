@@ -1,5 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import { Converter } from "aws-sdk/clients/dynamodb";
 
 import {
     defineApp,
@@ -155,6 +156,41 @@ export const WebsiteApp = defineApp({
             }
         });
 
+        const deliveryUrl = deliveryCloudfront.output.domainName.apply(value => `https://${value}`);
+        const appUrl = appCloudfront.output.domainName.apply(value => `https://${value}`);
+
+        app.addResource(aws.dynamodb.TableItem, {
+            name: "pbSettings",
+            config: {
+                tableName: storage.primaryDynamodbTableName,
+                hashKey: storage.primaryDynamodbTableHashKey,
+                rangeKey: pulumi
+                    .output(storage.primaryDynamodbTableRangeKey)
+                    .apply(key => key || "SK"),
+                item: pulumi.interpolate`{
+                    "PK": "PB#SETTINGS",
+                    "SK": "${app.ctx.variant || "default"}",
+                    "websiteUrl": "${deliveryUrl}",
+                    "websitePreviewUrl": "${appUrl}",
+                    "prerendering": {
+                        "app": {
+                            "url": "${appUrl}"
+                        },
+                        "storage": {
+                            "name": "${deliveryBucket.bucket.output.id}"
+                        },
+                        "meta": {
+                            "cloudfront": {
+                                "distributionId": "${deliveryCloudfront.output.id}"
+                            }
+                        }
+                    }
+                }`
+                    // We're using the native DynamoDB converter to avoid building those nested objects ourselves.
+                    .apply(v => JSON.stringify(Converter.marshall(JSON.parse(v))))
+            }
+        });
+
         const domain = config.domain?.(app.ctx);
         if (domain) {
             applyCustomDomain(deliveryCloudfront, domain);
@@ -166,7 +202,7 @@ export const WebsiteApp = defineApp({
             // The files that are generated in that process are stored in the `deliveryStorage` S3 bucket further below.
             appId: appCloudfront.output.id,
             appStorage: appBucket.bucket.output.id,
-            appUrl: appCloudfront.output.domainName.apply(value => `https://${value}`),
+            appUrl,
             appDomain: appCloudfront.output.domainName,
             // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
             // The static HTML snapshots delivered from them still rely on the app's S3 bucket
@@ -174,7 +210,7 @@ export const WebsiteApp = defineApp({
             deliveryId: deliveryCloudfront.output.id,
             deliveryStorage: deliveryBucket.bucket.output.id,
             deliveryDomain: deliveryCloudfront.output.domainName,
-            deliveryUrl: deliveryCloudfront.output.domainName.apply(value => `https://${value}`)
+            deliveryUrl
         });
 
         app.onAfterDeploy(async ({ outputs }) => {

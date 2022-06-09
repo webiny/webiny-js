@@ -1,4 +1,4 @@
-import path from "path";
+import trimEnd from "lodash/trimEnd";
 import { Args, Configuration } from "~/types";
 
 export default (args: Args, configuration: Configuration) => {
@@ -7,5 +7,6 @@ export default (args: Args, configuration: Configuration) => {
     }
 
     const websiteUrl = args?.configuration?.website?.url || configuration?.website?.url;
-    return path.join(websiteUrl as string, args.path as string);
+
+    return [trimEnd(websiteUrl, "/"), args.path].join("");
 };
