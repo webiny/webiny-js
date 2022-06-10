@@ -39,6 +39,9 @@ export type InputProps = FormComponentProps &
 
         // CSS class name
         className?: string;
+
+        // For testing purposes.
+        "data-testid"?: string;
     };
 
 /**
@@ -152,6 +155,7 @@ export class Input extends React.Component<InputProps> {
                     trailingIcon={trailingIcon}
                     rows={this.props.rows}
                     className={classNames("webiny-ui-input", webinyInputStyles)}
+                    data-testid={props["data-testid"]}
                 />
 
                 {validationIsValid === false && (
