@@ -19,21 +19,21 @@ export interface ResourceOverride<TCtor extends ResourceConstructor> {
     (args: ResourceArgs<TCtor>): void;
 }
 
-export interface PulumiResourceParams<T extends ResourceConstructor> {
+export interface PulumiAppResourceParams<T extends ResourceConstructor> {
     name: string;
     config: ResourceArgs<T>;
     opts?: pulumi.CustomResourceOptions;
     output: pulumi.Output<pulumi.Unwrap<ResourceType<T>>>;
 }
 
-export class PulumiResource<T extends ResourceConstructor> {
+export class PulumiAppResource<T extends ResourceConstructor> {
     public readonly output: pulumi.Output<pulumi.Unwrap<ResourceType<T>>>;
     public config: ResourceArgs<T>;
     public opts: pulumi.CustomResourceOptions;
 
     public readonly create: () => void;
 
-    constructor(ctor: T, params: PulumiResourceParams<T>) {
+    constructor(ctor: T, params: PulumiAppResourceParams<T>) {
         this.config = params.config;
         this.opts = params.opts ?? {};
 
