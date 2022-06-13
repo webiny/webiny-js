@@ -147,7 +147,7 @@ context("Login Page", () => {
                     cy.get("div.react-spinner-material").should("not.exist");
                     cy.get('input[type="password"]').click();
                     cy.get('input[type="password"]').type("12345678");
-                    cy.get("button.webiny-ui-button > span").click(); // SET PASSWORD btn
+                    cy.findByTestId("submit-sign-in-form-button").click(); // SET PASSWORD btn
 
                     cy.findByTestId("logged-in-user-menu-avatar").click();
                     cy.findByText(/Sign out/i).click();
@@ -155,8 +155,8 @@ context("Login Page", () => {
 
                     // Recover password.
                     cy.findByText(/forgot password?/i).click();
-                    cy.findByLabelText(/email/i).type(newUserAccountEmail);
-                    cy.findByText(/send me the code?/i).click();
+                    cy.findAllByLabelText(/email/i).first().type(newUserAccountEmail);
+                    cy.findByTestId("send-code").click();
                     cy.contains("We have sent you a code to reset your password!").should(
                         "be.visible"
                     );
@@ -179,7 +179,7 @@ context("Login Page", () => {
                         cy.findByText(/sign in/i).should("exist");
                         cy.findByLabelText(/your e-mail/i).type(newUserAccountEmail);
                         cy.findByLabelText(/your password/i).type(newPassword);
-                        cy.findByText(/submit/i).click();
+                        cy.findByTestId("submit-sign-in-form-button").click();
                         cy.findByPlaceholderText(/search.../i).should("exist");
                         cy.findByText(/pages/i).should("exist");
                     });
