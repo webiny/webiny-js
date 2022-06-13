@@ -1,5 +1,4 @@
 import EventBridgeClient from "aws-sdk/clients/eventbridge";
-
 import { defineAppHook } from "@webiny/pulumi-sdk";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
@@ -28,11 +27,7 @@ export const websiteRender = defineAppHook(async (params, context) => {
                         Detail: JSON.stringify({
                             path: "*",
                             variant: params.variant,
-                            configuration: {
-                                db: {
-                                    namespace: "T#root"
-                                }
-                            }
+                            tenant: "root"
                         })
                     }
                 ]
