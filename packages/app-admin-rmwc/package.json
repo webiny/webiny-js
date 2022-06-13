@@ -11,6 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.27",
+    "@rmwc/base": "7.0.3",
     "@types/react": "^16.14.0",
     "@webiny/app": "^5.29.0",
     "@webiny/app-admin": "^5.29.0",

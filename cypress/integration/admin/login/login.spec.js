@@ -8,7 +8,7 @@ context("Login Page", () => {
 
         cy.findByLabelText(/your e-mail/i).type("admin@webiny.com");
         cy.findByLabelText(/your password/i).type("12345678");
-        cy.findByText(/submit/i).click();
+        cy.findByTestId("submit-sign-in-form-button").click();
 
         cy.findByPlaceholderText(/search.../i).should("exist");
         cy.findByText(/pages/i).should("exist");
@@ -142,7 +142,7 @@ context("Login Page", () => {
                     // Activate user password.
                     cy.findByLabelText(/your e-mail/i).type(newUserAccountEmail);
                     cy.findByLabelText(/your password/i).type("12345678");
-                    cy.findByText(/submit/i).click();
+                    cy.findByTestId("submit-sign-in-form-button").click();
                     cy.get("div.react-spinner-material").should("be.visible");
                     cy.get("div.react-spinner-material").should("not.exist");
                     cy.get('input[type="password"]').click();
