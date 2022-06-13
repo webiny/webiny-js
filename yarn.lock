@@ -9435,20 +9435,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/floating-label@npm:7.0.3, @rmwc/floating-label@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "@rmwc/floating-label@npm:7.0.3"
-  dependencies:
-    "@material/floating-label": ^5.1.0
-    "@rmwc/base": ^7.0.3
-    "@rmwc/types": ^7.0.3
-  peerDependencies:
-    react: ">=16.8.x"
-    react-dom: ">=16.8.x"
-  checksum: c30110a8b96ae3f6afb5190c77b0cef099643f83d3fee86a598f8e9ccbb01008db38d609580967751d0daa684d58149f0aab7efd2885be8222b4b314e9a25c9e
-  languageName: node
-  linkType: hard
-
 "@rmwc/floating-label@npm:^7.0.3":
   version: 7.0.3
   resolution: "@rmwc/floating-label@npm:7.0.3"
@@ -9504,20 +9490,6 @@ __metadata:
     react: ">=16.8.x"
     react-dom: ">=16.8.x"
   checksum: a8d44450f7d90934cdd0cd871b78159e88b04fa364adacbed0c1a714c1f432f0ddb8229d2eb2219f5a306c020230bd31f0f3a86a0d52cd64e47959cccc0bdfb0
-  languageName: node
-  linkType: hard
-
-"@rmwc/icon@npm:7.0.3, @rmwc/icon@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "@rmwc/icon@npm:7.0.3"
-  dependencies:
-    "@rmwc/base": ^7.0.3
-    "@rmwc/provider": ^7.0.3
-    "@rmwc/types": ^7.0.3
-  peerDependencies:
-    react: ">=16.8.x"
-    react-dom: ">=16.8.x"
-  checksum: 29b4b0201d6be979b392543edb47fc2f57272373d1e5f2cc547579a8db8bef6fe63e126fcee45ff382a1d50e875f3b8b959447f4978e828bb4cbbfddda5402ef
   languageName: node
   linkType: hard
 
@@ -9593,20 +9565,6 @@ __metadata:
     react: ">=16.8.x"
     react-dom: ">=16.8.x"
   checksum: ccbd8c1680362ef4f91c19260aaa441b89bcf74f51c457f0bd400063ff1e87dc6af712db5bf46bd9aa24492fbccf0d80e5b8a946edecb410181341c1c8de8330
-  languageName: node
-  linkType: hard
-
-"@rmwc/notched-outline@npm:7.0.3, @rmwc/notched-outline@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "@rmwc/notched-outline@npm:7.0.3"
-  dependencies:
-    "@material/notched-outline": ^5.1.0
-    "@rmwc/base": ^7.0.3
-    "@rmwc/types": ^7.0.3
-  peerDependencies:
-    react: ">=16.8.x"
-    react-dom: ">=16.8.x"
-  checksum: 870d1bbe1a67eff5b4db233cad830366a40c953ec614fa82213d8edc5f7f93725c37a6bd0d950caf93788815cbee563fb8dde95640d9a1c6295feb66c344c9e4
   languageName: node
   linkType: hard
 
@@ -9806,7 +9764,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/types@npm:7.0.3, @rmwc/types@npm:^7.0.3":
+"@rmwc/types@npm:^7.0.3":
   version: 7.0.3
   resolution: "@rmwc/types@npm:7.0.3"
   checksum: c8ebf7d80d0f6f360a4f6eecfe1e30bb0a3b94d2305045b88832c2c03b0dc475b3394d65ddcd4b1018a3ecb82dad2db166bed845450bd65bf1a03d1a837d3fcf
@@ -16180,7 +16138,6 @@ __metadata:
     "@editorjs/editorjs": ^2.24.3
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
-    "@rmwc/base": 7.0.3
     "@rmwc/button": 7.0.3
     "@rmwc/checkbox": 7.0.3
     "@rmwc/chip": 7.0.3
@@ -16188,14 +16145,10 @@ __metadata:
     "@rmwc/drawer": 7.0.3
     "@rmwc/elevation": 7.0.3
     "@rmwc/fab": 7.0.3
-    "@rmwc/floating-label": 7.0.3
     "@rmwc/grid": ^7.0.3
-    "@rmwc/icon": 7.0.3
     "@rmwc/icon-button": 7.0.3
-    "@rmwc/line-ripple": 7.0.3
     "@rmwc/list": 7.0.3
     "@rmwc/menu": 7.0.3
-    "@rmwc/notched-outline": 7.0.3
     "@rmwc/radio": 7.0.3
     "@rmwc/ripple": 7.0.3
     "@rmwc/select": 7.0.3
@@ -16205,7 +16158,6 @@ __metadata:
     "@rmwc/tabs": 7.0.3
     "@rmwc/textfield": 7.0.3
     "@rmwc/top-app-bar": 7.0.3
-    "@rmwc/types": 7.0.3
     "@rmwc/typography": 7.0.3
     "@storybook/addon-info": ^5.2.8
     "@storybook/addon-knobs": ^5.0.5
@@ -16238,7 +16190,6 @@ __metadata:
     load-script: ^1.0.0
     lodash: ^4.17.11
     material-components-web: ^5.1.0
-    mutation-observer: ^1.0.3
     ncp: ^2.0.0
     nprogress: ^0.2.0
     nuka-carousel: 4.7.1
@@ -28101,13 +28052,6 @@ __metadata:
   version: 0.11.0
   resolution: "hyperform@npm:0.11.0"
   checksum: dc35af1ad23be39967c47016fb7e9caa6605f4cc3ff5f2dd4fcfff723a2417c4d6a240b6a40d7ee71228fb77160c3300d0a40b7157e7c97df7bf13e13c562e35
-  languageName: node
-  linkType: hard
-
-"hyperform@npm:^0.9.9":
-  version: 0.9.23
-  resolution: "hyperform@npm:0.9.23"
-  checksum: 8130a84a4e8fa8b86433a44e5c2cfbdddbdef8c315619b5b4a7f0798332a3523f0bc5a5f1f65cc3351f16ff1140b076d98553d7431919d25d0b6a00b5d7d5fcb
   languageName: node
   linkType: hard
 
