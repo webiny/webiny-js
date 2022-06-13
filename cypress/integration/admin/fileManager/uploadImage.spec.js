@@ -37,12 +37,12 @@ context("File Manager View - CRUD", () => {
         cy.findByTestId("fm-image-editor-dialog")
             .should("be.visible")
             .within(() => {
-                cy.findByText("Cancel").click();
+                cy.findByTestId("dialog-cancel").click();
             });
         // Delete file.
         cy.findByTestId("fm-delete-file-button").click();
         cy.findByTestId("fm-delete-file-confirmation-dialog").within(() => {
-            cy.findByText("Confirm").click();
+            cy.findByTestId("confirmationdialog-confirm-action").click();
         });
         cy.findByText("File deleted successfully.");
     });
@@ -103,8 +103,8 @@ context("File Manager View - CRUD", () => {
             .should("be.visible")
             .within(() => {
                 cy.findByTestId("flip-item").click();
-                cy.get("span").contains("Apply").click();
-                cy.findByText("Save").click();
+                cy.findByTestId("button-apply").click();
+                cy.findByTestId("dialog-accept").click();
             });
         cy.contains("File upload complete.").should("be.visible");
         cy.contains("File upload complete.").should("not.exist");
@@ -175,7 +175,7 @@ context("File Manager View - CRUD", () => {
         const tagName = `tag-${Cypress.env("TEST_RUN_ID")}`;
 
         // Edit file
-        cy.get("span").contains("Add tags...").click();
+        cy.findByTestId("fm.tags.add").click();
         cy.get('input[placeholder="homepage asset"]').type(tagName);
         cy.get("ul > li > span").contains(tagName).click();
         cy.get('input[placeholder="homepage asset"]').type(tagName);
@@ -234,7 +234,7 @@ context("File Manager View - CRUD", () => {
 
             cy.get("span").contains("File details").should("be.visible");
 
-            cy.get("span").contains("Add tags...").click();
+            cy.findByTestId("fm.tags.add").click();
 
             cy.get('input[placeholder="homepage asset"]').type(fileDetail.tagValues[0]);
             cy.get("ul > li > span").contains(fileDetail.tagValues[0]).click();
@@ -251,7 +251,7 @@ context("File Manager View - CRUD", () => {
             cy.get('input[placeholder="homepage asset"]').type(fileDetail.tagValues[4]);
             cy.get("ul > li > span").contains(fileDetail.tagValues[4]).click();
 
-            cy.get("span").contains("Submit").click();
+            cy.findByTestId("fm.tags.submit").click();
             cy.contains("Tags successfully updated.").should("be.visible");
 
             cy.visit("/settings/file-manager/general");
