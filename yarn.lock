@@ -10880,7 +10880,6 @@ __metadata:
     "@webiny/handler": ^5.28.0
     "@webiny/handler-args": ^5.28.0
     "@webiny/handler-client": ^5.28.0
-    "@webiny/plugins": ^5.28.0
     "@webiny/project-utils": ^5.28.0
     lodash: ^4.17.21
     nanoid: ^4.0.0
@@ -10936,7 +10935,6 @@ __metadata:
     "@webiny/plugins": ^5.28.0
     "@webiny/project-utils": ^5.28.0
     chrome-aws-lambda: ^5.5.0
-    dot-prop: ^6.0.1
     lodash: ^4.17.20
     mdbid: ^1.0.0
     object-hash: ^2.1.1

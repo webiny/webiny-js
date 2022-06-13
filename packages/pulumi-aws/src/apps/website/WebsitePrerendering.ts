@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import { Converter } from "aws-sdk/clients/dynamodb";
 
 import { PulumiApp } from "@webiny/pulumi-sdk";
 // @ts-ignore
@@ -11,7 +12,12 @@ import { StorageOutput, VpcConfig } from "../common";
 import { getAwsAccountId } from "../awsUtils";
 
 interface PreRenderingServiceParams {
-    env: Record<string, pulumi.Input<string>>;
+    dbTableName: pulumi.Output<string>;
+    dbTableHashKey: pulumi.Output<string>;
+    dbTableRangeKey: pulumi.Output<string>;
+    appUrl: pulumi.Output<string>;
+    bucket: pulumi.Output<string>;
+    cloudfrontId: pulumi.Output<string>;
 }
 
 export function createPrerenderingService(app: PulumiApp, params: PreRenderingServiceParams) {
@@ -24,20 +30,57 @@ export function createPrerenderingService(app: PulumiApp, params: PreRenderingSe
     });
 
     const policy = createLambdaPolicy(app, queue.output);
-    const subscriber = createRenderSubscriber(app, queue.output, policy.output, params);
     const renderer = createRenderer(app, queue.output, policy.output, params);
+    const subscriber = createRenderSubscriber(app, policy.output, params);
     const flush = createFlushService(app, policy.output, params);
+    const settings = createPrerenderingSettingsDbItem(app, queue.output, params);
 
     return {
         subscriber,
         renderer,
-        flush
+        flush,
+        settings
     };
+}
+
+function createPrerenderingSettingsDbItem(
+    app: PulumiApp,
+    queue: pulumi.Output<aws.sqs.Queue>,
+    params: PreRenderingServiceParams
+) {
+    /**
+     * To handle everything related to prerendering, we need the following information:
+     * - appUrl - SPA URL used to prerender HTML
+     * - bucket - name of the S3 bucket used for storage of HTML snapshots
+     * - cloudfrontId - for cache invalidation
+     * - sqsQueueUrl - an SQS queue for prerendering tasks (messages)
+     */
+    const tableItem = app.addResource(aws.dynamodb.TableItem, {
+        name: "psSettings",
+        config: {
+            tableName: params.dbTableName,
+            hashKey: params.dbTableHashKey,
+            rangeKey: params.dbTableRangeKey,
+            item: pulumi.interpolate`{
+                "PK": "PS#SETTINGS",
+                "SK": "${app.ctx.variant || "default"}",
+                "data": {
+                    "appUrl": "${params.appUrl}",
+                    "bucket": "${params.bucket}",
+                    "cloudfrontId": "${params.cloudfrontId}",
+                    "sqsQueueUrl": "${queue.url}"
+                }
+            }`
+                // We're using the native DynamoDB converter to avoid building those nested objects ourselves.
+                .apply(v => JSON.stringify(Converter.marshall(JSON.parse(v))))
+        }
+    });
+
+    return { tableItem };
 }
 
 function createRenderSubscriber(
     app: PulumiApp,
-    queue: pulumi.Output<aws.sqs.Queue>,
     policy: pulumi.Output<aws.iam.Policy>,
     params: PreRenderingServiceParams
 ) {
@@ -60,8 +103,7 @@ function createRenderSubscriber(
             environment: {
                 variables: {
                     ...getCommonLambdaEnvVariables(app),
-                    ...params.env,
-                    SQS_QUEUE: queue.url
+                    DB_TABLE: params.dbTableName
                 }
             },
             description: "Subscribes to render events on event bus",
@@ -143,7 +185,7 @@ function createRenderer(
             environment: {
                 variables: {
                     ...getCommonLambdaEnvVariables(app),
-                    ...params.env
+                    DB_TABLE: params.dbTableName
                 }
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
@@ -197,10 +239,10 @@ function createFlushService(
             environment: {
                 variables: {
                     ...getCommonLambdaEnvVariables(app),
-                    ...params.env
+                    DB_TABLE: params.dbTableName
                 }
             },
-            description: "Subscribes to fluhs events on event bus",
+            description: "Subscribes to flush events on event bus",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
                     path.join(app.ctx.appDir, "prerendering/flush/build")

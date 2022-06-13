@@ -146,14 +146,12 @@ export const WebsiteApp = defineApp({
         });
 
         const prerendering = createPrerenderingService(app, {
-            env: {
-                DB_TABLE: storage.primaryDynamodbTableName,
-                DB_TABLE_ELASTICSEARCH: pulumi.interpolate`${storage.elasticsearchDynamodbTableName}`,
-                APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
-                DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
-                DELIVERY_CLOUDFRONT: deliveryCloudfront.output.id,
-                DELIVERY_URL: pulumi.interpolate`https://${deliveryCloudfront.output.domainName}`
-            }
+            dbTableName: storage.primaryDynamodbTableName,
+            dbTableHashKey: storage.primaryDynamodbTableHashKey,
+            dbTableRangeKey: storage.primaryDynamodbTableRangeKey,
+            appUrl: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
+            bucket: deliveryBucket.bucket.output.bucket,
+            cloudfrontId: deliveryCloudfront.output.id
         });
 
         const deliveryUrl = deliveryCloudfront.output.domainName.apply(value => `https://${value}`);
