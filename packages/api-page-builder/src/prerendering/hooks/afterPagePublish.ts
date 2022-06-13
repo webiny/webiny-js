@@ -40,11 +40,7 @@ export default () => {
                         paths: [
                             {
                                 path: page.path,
-                                configuration: {
-                                    meta: {
-                                        notFoundPage: true
-                                    }
-                                }
+                                tags: [{ key: "notFoundPage", value: true }]
                             }
                         ]
                     })

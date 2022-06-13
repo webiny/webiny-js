@@ -1,24 +1,20 @@
-import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
-import { Render, Args as BaseArgs, Configuration as BaseConfiguration } from "~/types";
+import { Context } from "@webiny/handler/types";
+import { FlushEvent, PrerenderingSettings, Render } from "~/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
 
-export type Args = BaseArgs;
-export type Configuration = Omit<BaseConfiguration, "storage">;
+export type HandlerArgs = FlushEvent | FlushEvent[];
 
-export type HandlerArgs = Args | Args[];
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
-    //
+export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {}
+
+export interface HookCallbackFunction {
+    (args: {
+        log: (...args: string[]) => void;
+        context: HandlerContext;
+        render: Render;
+        settings: PrerenderingSettings;
+    }): void | Promise<void>;
 }
-export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
-
-export type HookCallbackFunction = (args: {
-    log: (...args: string[]) => void;
-    context: HandlerContext;
-    configuration: Configuration;
-    args: Args;
-    render: Render | null;
-}) => void | Promise<void>;
 
 export interface FlushHookPlugin extends Plugin {
     type: "ps-flush-hook";

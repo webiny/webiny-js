@@ -46,14 +46,10 @@ describe(`"renderUrl" Function Test`, () => {
     it("should insert tenant and locale data into the received HTML", async () => {
         const [[html], meta] = await render("https://some-url.com", {
             context: {} as any,
-            configuration: {},
             args: {
-                configuration: {
-                    meta: {
-                        tenant: "root",
-                        locale: "en-US"
-                    }
-                }
+                path: "/",
+                tenant: "root",
+                locale: "en-US"
             },
             renderUrlFunction: async () => {
                 return {
