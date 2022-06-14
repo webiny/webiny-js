@@ -3,6 +3,6 @@
  * https://www.webiny.com/docs/key-topics/cloud-infrastructure/website/introduction
  */
 
-import { createWebsiteApp } from "@webiny/pulumi-aws";
+import { createWebsiteApp } from "@webiny/pulumi-app-aws";
 
 export default createWebsiteApp();

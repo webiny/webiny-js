@@ -88,8 +88,6 @@
     "react": "16.14.0",
     "typescript": "4.5.5",
     "react-dom": "16.14.0",
-    "codex-tooltip": "1.0.2",
-    "@pulumi/pulumi": "3.19.0",
-    "@pulumi/aws": "4.28.0"
+    "codex-tooltip": "1.0.2"
   }
 }
