@@ -72,8 +72,8 @@ describe("Headless CMS - Content Entries", () => {
             cy.findAllByTestId("new-record-button").first().click();
             // b) Fill entry details
             cy.findByTestId("cms-content-form").within(() => {
-                cy.findByLabelText("Title").type(newEntryTitle);
-                cy.findByLabelText("Edition").type(newEntryEdition);
+                cy.findByTestId("fr.input.text.Title").type(newEntryTitle);
+                cy.findByTestId("fr.input.number.Edition").type(newEntryEdition);
             });
             // c) Save entry
             cy.findByTestId("cms-content-save-content-button").click();
@@ -97,9 +97,9 @@ describe("Headless CMS - Content Entries", () => {
             cy.get(".react-spinner-material").should("not.exist");
 
             // Publish entry
-            cy.findByText(/save & publish/i).click();
+            cy.findByTestId("cms-content-save-publish-content-button").click();
             cy.findByTestId("cms-confirm-save-and-publish").within(() => {
-                cy.findByText("Confirm").click();
+                cy.findByRole("button", { name: "Confirm" }).click();
             });
             cy.get(".react-spinner-material").should("not.exist");
             cy.findByText(/Successfully published revision/i).should("exist");
@@ -115,8 +115,11 @@ describe("Headless CMS - Content Entries", () => {
             });
 
             // Edit an entry
-            cy.findByLabelText("Title").clear().type(newEntryTitle2);
+            cy.findByTestId("fr.input.text.Title").clear().type(newEntryTitle2);
             cy.findByTestId("cms-content-save-content-button").click();
+
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
             // Check the new entry in list
             cy.findByTestId("default-data-list").within(() => {
                 cy.get("li")
@@ -132,9 +135,10 @@ describe("Headless CMS - Content Entries", () => {
             cy.get(".react-spinner-material").should("not.exist");
 
             // Publish entry
-            cy.findByText(/save & publish/i).click();
+            cy.findByTestId("cms-content-save-publish-content-button").click();
+
             cy.findByTestId("cms-confirm-save-and-publish").within(() => {
-                cy.findByText("Confirm").click();
+                cy.findByRole("button", { name: "Confirm" }).click();
             });
             cy.get(".react-spinner-material").should("not.exist");
             cy.findByText(/Successfully published revision/i).should("exist");
@@ -184,7 +188,7 @@ describe("Headless CMS - Content Entries", () => {
             cy.findByTestId("cms.content-form.header.delete").click();
             cy.findByTestId("cms.content-form.header.delete-dialog").within(() => {
                 cy.findByText(/Delete content entry/i);
-                cy.findByText(/Confirm/i).click();
+                cy.findByRole("button", { name: "Confirm" }).click();
             });
             cy.findByText(/deleted successfully!/i).should("exist");
         });
