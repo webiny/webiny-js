@@ -55,7 +55,7 @@ describe("Headless CMS - Content Entries", () => {
             cy.visit("/cms/content-models");
 
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("div")
+                cy.get("li")
                     .first()
                     .within(() => {
                         cy.findByText(newModel).should("exist");
@@ -71,8 +71,10 @@ describe("Headless CMS - Content Entries", () => {
             // a) Click on "New Entry" button
             cy.findAllByTestId("new-record-button").first().click();
             // b) Fill entry details
-            cy.findByLabelText("Title").type(newEntryTitle);
-            cy.findByLabelText("Edition").type(newEntryEdition);
+            cy.findByTestId("cms-content-form").within(() => {
+                cy.findByLabelText("Title").type(newEntryTitle);
+                cy.findByLabelText("Edition").type(newEntryEdition);
+            });
             // c) Save entry
             cy.findByTestId("cms-content-save-content-button").click();
             // Loading should not be visible
@@ -82,7 +84,7 @@ describe("Headless CMS - Content Entries", () => {
 
             // Check the new entry in list
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("div")
+                cy.get("li")
                     .first()
                     .within(() => {
                         cy.findByText(newEntryTitle).should("exist");
@@ -103,7 +105,7 @@ describe("Headless CMS - Content Entries", () => {
             cy.findByText(/Successfully published revision/i).should("exist");
             // Check publish status
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("div")
+                cy.get("li")
                     .first()
                     .within(() => {
                         cy.findByText(newEntryTitle).should("exist");
@@ -117,7 +119,7 @@ describe("Headless CMS - Content Entries", () => {
             cy.findByTestId("cms-content-save-content-button").click();
             // Check the new entry in list
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("div")
+                cy.get("li")
                     .first()
                     .within(() => {
                         cy.findByText(newEntryTitle2).should("exist");
@@ -138,7 +140,7 @@ describe("Headless CMS - Content Entries", () => {
             cy.findByText(/Successfully published revision/i).should("exist");
             // Check publish status
             cy.findByTestId("default-data-list").within(() => {
-                cy.get("div")
+                cy.get("li")
                     .first()
                     .within(() => {
                         cy.findByText(newEntryTitle2).should("exist");
@@ -151,12 +153,12 @@ describe("Headless CMS - Content Entries", () => {
             cy.findByTestId("cms.content-form.tabs.revisions").click();
             // check revisions
             cy.findByTestId("cms.content-form.revisions").within(() => {
-                cy.get("div")
+                cy.get("li")
                     .first()
                     .within(() => {
                         cy.findByTestId("cms.revision.status.published").should("exist");
                     });
-                cy.get("div")
+                cy.get("li")
                     .next()
                     .within(() => {
                         cy.findByTestId("cms.revision.status.locked").should("exist");
@@ -165,7 +167,7 @@ describe("Headless CMS - Content Entries", () => {
 
             // unpublish latest revision
             cy.findByTestId("cms.content-form.revisions").within(() => {
-                cy.get("div")
+                cy.get("li")
                     .first()
                     .within(() => {
                         cy.findByTestId("cms.revision.status.published").should("exist");

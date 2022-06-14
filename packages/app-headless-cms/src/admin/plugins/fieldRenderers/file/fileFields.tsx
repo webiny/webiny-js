@@ -83,6 +83,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
                                                             onChange(dotProp.delete(value, index))
                                                         }
                                                         placeholder={t`Select a file"`}
+                                                        data-testid={`fr.input.file.${field.label}.${index}`}
                                                     />
                                                 </Cell>
                                             ))}
@@ -97,6 +98,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ getBind, Label, field }) 
                                                 {...bind}
                                                 showFileManager={() => selectFiles()}
                                                 placeholder={t`Select a file"`}
+                                                data-testid={`fr.input.file.${field.label}`}
                                             />
                                         </Cell>
                                     </GridInner>
