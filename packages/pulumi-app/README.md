@@ -30,9 +30,37 @@ yarn add @webiny/pulumi-app
 
 ## Overview
 
-The `@webiny/pulumi-app` package enables creation of flexible Pulumi programs. In other words, Pulumi apps contain the essential Pulumi program code, but also enables the developer to update any cloud infrastructure resource configuration or even add new resources.
+The `@webiny/pulumi-app` package enables creation of flexible Pulumi apps (programs). 
 
+More specifically, a Pulumi app not only encapsulates the essential Pulumi program code defined by developers, but also provides a way to adjust any defined cloud infrastructure resource configuration and even add new resources into the mix.
 
+This is useful when you just want to export a simple constructor function to the user, and not bother them with all the internals. And, as mentioned, in those rare cases when the user actually needs to perform further adjustments, a Pulumi app provides a way to do it.   
+
+> 💡 **TIP**
+>
+> Pulumi apps are heavily used in real Webiny projects. As mentioned, this is because of their ability to abstract the actual cloud infrastructure code from the user, and, at the same time, to provide a way for the user to perform adjustments when needed.
+
+The following example shows how a Pulumi app looks in the actual code:
+
+```ts
+// Using the app and overriding cloud infrastructure settings.
+// This is imported in our Pulumi program's entrypoint file (index.ts).
+import createXyzApp from "@webiny/xyz-app";
+
+export = async () => {
+    const xyzApp = createXyzApp({
+        pulumi: app => {
+            // Let's imagine the `xyz` Pulumi app deploys an Amazon S3 bucket.
+            // Then, we would be able to do something like the following:
+            app.resources.bucket.config.acl(aws.s3.CannedAcl.Private);
+            app.resources.bucket.config.forceDestroy(true);
+        }
+    });
+
+    return xyzApp.runProgram();
+};
+
+```
 
 ## Examples
 
@@ -51,7 +79,14 @@ The `@webiny/pulumi-app` package enables creation of flexible Pulumi programs. I
 <p>
 
 ```ts
-export declare const Wcp: React.FC;
+export interface CreatePulumiAppParams<TResources extends Record<string, unknown>> {
+    name: string;
+    path: string;
+    config?: Record<string, any>;
+    program(app: PulumiApp): TResources | Promise<TResources>;
+}
+
+export declare function createPulumiApp<TResources extends Record<string, unknown>>(params: CreatePulumiAppParams<TResources>): PulumiApp<TResources>;
 ```
 
 </p>
