@@ -43,7 +43,6 @@ This is useful when you just want to export a simple constructor function to the
 The following example shows how a Pulumi app looks in the actual code:
 
 ```ts
-// Using the app and overriding cloud infrastructure settings.
 // This is imported in our Pulumi program's entrypoint file (index.ts).
 import createXyzApp from "@webiny/xyz-app";
 
