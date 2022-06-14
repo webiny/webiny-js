@@ -7,11 +7,11 @@ The following example shows how to create a simple Pulumi app that deploys a sin
 import * as aws from "@pulumi/aws";
 import { createPulumiApp } from "@webiny/pulumi-app";
 
-export interface CreateAdminAppConfig {
+export interface CreateMyAppConfig {
     pulumi?: (app: ReturnType<typeof createMyApp>) => void;
 }
 
-const createMyApp = (projectAppConfig: CreateAdminAppConfig) => {
+const createMyApp = (projectAppConfig: CreateMyAppConfig) => {
     const app = createPulumiApp({
         name: "my-app",
         path: "relative/path/from/cwd",
