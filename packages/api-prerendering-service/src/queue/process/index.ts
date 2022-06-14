@@ -80,7 +80,7 @@ export default (params: Configuration) => {
 
                 uniqueJobsObject[hash(job.args)] = job;
                 if (job.args.render) {
-                    const { path, tenant } = job.args.render;
+                    const { path, tenant = "root" } = job.args.render;
                     if (path === "*") {
                         renderAllJobs[tenant] = job;
                     }
