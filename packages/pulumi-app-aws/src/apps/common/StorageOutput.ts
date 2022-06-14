@@ -9,7 +9,7 @@ export const StorageOutput = createAppModule({
         return app.addHandler(async () => {
             const output = getStackOutput({
                 folder: "apps/storage",
-                env: app.run.params.env
+                env: app.config.run.env
             });
 
             if (!output) {

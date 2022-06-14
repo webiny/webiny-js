@@ -19,7 +19,7 @@ export interface CreateWebsiteAppConfig {
      */
     vpc?: PulumiAppInput<boolean | undefined>;
 
-    pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
 }
 
 export function createWebsiteApp(projectAppConfig: CreateWebsiteAppConfig = {}) {
@@ -33,11 +33,11 @@ export function createWebsiteApp(projectAppConfig: CreateWebsiteAppConfig = {}) 
                 deploy: false
             }
         },
-        pulumi: createApiPulumiApp(projectAppConfig)
+        pulumi: createWebsitePulumiApp(projectAppConfig)
     };
 }
 
-const createApiPulumiApp = (projectAppConfig: CreateWebsiteAppConfig) => {
+export const createWebsitePulumiApp = (projectAppConfig: CreateWebsiteAppConfig = {}) => {
     const app = createPulumiApp({
         name: "website",
         path: "apps/website",

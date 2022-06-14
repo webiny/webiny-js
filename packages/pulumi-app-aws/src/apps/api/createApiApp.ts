@@ -42,7 +42,7 @@ export function createApiApp(projectAppConfig: CreateApiAppConfig = {}) {
     };
 }
 
-const createApiPulumiApp = (projectAppConfig: CreateApiAppConfig) => {
+export const createApiPulumiApp = (projectAppConfig: CreateApiAppConfig = {}) => {
     const app = createPulumiApp({
         name: "api",
         path: "api",

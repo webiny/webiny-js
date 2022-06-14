@@ -28,76 +28,88 @@ export interface CreateStorageAppConfig {
      * Additional settings for backwards compatibility.
      */
     legacy?: PulumiAppInput<StorageAppLegacyConfig>;
+
+    pulumi?: (app: ReturnType<typeof createStoragePulumiApp>) => void;
 }
 
 export interface StorageAppLegacyConfig {
     useEmailAsUsername?: boolean;
 }
 
-export function createStorageApp(projectAppConfig?: CreateStorageAppConfig) {
+export function createStorageApp(projectAppConfig: CreateStorageAppConfig = {}) {
     return {
         id: "storage",
         name: "Storage",
         description: "Your project's persistent storages.",
-        pulumi: createPulumiApp({
-            name: "storage",
-            path: "apps/storage",
-            config: projectAppConfig,
-            program: app => {
-                const protect = app.run.params.protect || false;
-                const legacyConfig = app.run.params.legacyConfig || {};
-
-                // Setup DynamoDB table
-                const dynamoDbTable = app.addModule(StorageDynamo, { protect });
-
-                // Setup VPC
-                // const vpcEnabled = getAppInput(app, config.vpc) ?? app.ctx.env === "prod";
-                const vpcEnabled = projectAppConfig?.vpc || app.run.params.env === "prod";
-                const vpc = vpcEnabled ? app.addModule(StorageVpc) : null;
-
-                // Setup Cognito
-                const cognito = app.addModule(StorageCognito, {
-                    protect,
-                    useEmailAsUsername: legacyConfig.useEmailAsUsername ?? false
-                });
-
-                // Setup event bus
-                const eventBus = app.addModule(StorageEventBus);
-
-                // Setup file storage bucket
-                const fileManagerBucket = app.addModule(StorageFileManger, { protect });
-
-                const elasticSearch = getPulumiAppInput(app, projectAppConfig?.elasticSearch)
-                    ? app.addModule(ElasticSearch, { protect })
-                    : null;
-
-                app.addOutputs({
-                    fileManagerBucketId: fileManagerBucket.output.id,
-                    primaryDynamodbTableArn: dynamoDbTable.output.arn,
-                    primaryDynamodbTableName: dynamoDbTable.output.name,
-                    primaryDynamodbTableHashKey: dynamoDbTable.output.hashKey,
-                    primaryDynamodbTableRangeKey: dynamoDbTable.output.rangeKey,
-                    cognitoUserPoolId: cognito.userPool.output.id,
-                    cognitoUserPoolArn: cognito.userPool.output.arn,
-                    cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
-                    cognitoAppClientId: cognito.userPoolClient.output.id,
-                    eventBusArn: eventBus.output.arn
-                });
-
-                tagResources({
-                    WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
-                    WbyEnvironment: String(process.env["WEBINY_ENV"])
-                });
-
-                return {
-                    dynamoDbTable,
-                    vpc,
-                    ...cognito,
-                    fileManagerBucket,
-                    eventBus,
-                    elasticSearch
-                };
-            }
-        })
+        pulumi: createStoragePulumiApp(projectAppConfig)
     };
+}
+
+export function createStoragePulumiApp(projectAppConfig: CreateStorageAppConfig = {}) {
+    const app = createPulumiApp({
+        name: "storage",
+        path: "apps/storage",
+        config: projectAppConfig,
+        program: app => {
+            const protect = app.config.run.protect || false;
+            const legacyConfig = app.config.run.legacyConfig || {};
+
+            // Setup DynamoDB table
+            const dynamoDbTable = app.addModule(StorageDynamo, { protect });
+
+            // Setup VPC
+            // const vpcEnabled = getAppInput(app, config.vpc) ?? app.ctx.env === "prod";
+            const vpcEnabled = projectAppConfig?.vpc || app.config.run.env === "prod";
+            const vpc = vpcEnabled ? app.addModule(StorageVpc) : null;
+
+            // Setup Cognito
+            const cognito = app.addModule(StorageCognito, {
+                protect,
+                useEmailAsUsername: legacyConfig.useEmailAsUsername ?? false
+            });
+
+            // Setup event bus
+            const eventBus = app.addModule(StorageEventBus);
+
+            // Setup file storage bucket
+            const fileManagerBucket = app.addModule(StorageFileManger, { protect });
+
+            const elasticSearch = getPulumiAppInput(app, projectAppConfig?.elasticSearch)
+                ? app.addModule(ElasticSearch, { protect })
+                : null;
+
+            app.addOutputs({
+                fileManagerBucketId: fileManagerBucket.output.id,
+                primaryDynamodbTableArn: dynamoDbTable.output.arn,
+                primaryDynamodbTableName: dynamoDbTable.output.name,
+                primaryDynamodbTableHashKey: dynamoDbTable.output.hashKey,
+                primaryDynamodbTableRangeKey: dynamoDbTable.output.rangeKey,
+                cognitoUserPoolId: cognito.userPool.output.id,
+                cognitoUserPoolArn: cognito.userPool.output.arn,
+                cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
+                cognitoAppClientId: cognito.userPoolClient.output.id,
+                eventBusArn: eventBus.output.arn
+            });
+
+            tagResources({
+                WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
+                WbyEnvironment: String(process.env["WEBINY_ENV"])
+            });
+
+            return {
+                dynamoDbTable,
+                vpc,
+                ...cognito,
+                fileManagerBucket,
+                eventBus,
+                elasticSearch
+            };
+        }
+    });
+
+    if (projectAppConfig.pulumi) {
+        projectAppConfig.pulumi(app);
+    }
+
+    return app;
 }

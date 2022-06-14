@@ -9,7 +9,7 @@ export interface CreateAdminAppConfig {
     /** Custom domain configuration */
     domain?(app: PulumiApp): CustomDomainParams | undefined | void;
 
-    pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
 }
 
 export function createAdminApp(projectAppConfig: CreateAdminAppConfig = {}) {
@@ -23,11 +23,11 @@ export function createAdminApp(projectAppConfig: CreateAdminAppConfig = {}) {
                 deploy: false
             }
         },
-        pulumi: createApiPulumiApp(projectAppConfig)
+        pulumi: createAdminPulumiApp(projectAppConfig)
     };
 }
 
-const createApiPulumiApp = (projectAppConfig: CreateAdminAppConfig) => {
+export const createAdminPulumiApp = (projectAppConfig: CreateAdminAppConfig) => {
     const app = createPulumiApp({
         name: "admin",
         path: "apps/admin",
