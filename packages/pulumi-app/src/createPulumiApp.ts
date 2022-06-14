@@ -24,15 +24,15 @@ export type PulumiProgram<TResources = Record<string, any>> = (
     app: PulumiApp
 ) => TResources | Promise<TResources>;
 
+export type CreateConfig = Record<string, any>;
+export type RunConfig = Record<string, any>;
+
 export interface CreatePulumiAppParams<TResources extends Record<string, unknown>> {
     name: string;
     path: string;
-    config?: Record<string, any>;
+    config?: CreateConfig;
     program(app: PulumiApp): TResources | Promise<TResources>;
 }
-
-export type CreateConfig = Record<string, any>;
-export type RunConfig = Record<string, any>;
 
 export interface PulumiApp<TResources = Record<string, unknown>> {
     resourceHandlers: ResourceHandler[];
@@ -49,7 +49,7 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
         run: RunConfig;
     };
 
-    run(params: Record<string, any>): Record<string, any>;
+    run(params: RunConfig): Record<string, any>;
 
     onResource(handler: ResourceHandler): void;
 
