@@ -1,10 +1,5 @@
 const { createWatchApp, createBuildApp } = require("./bundling/app");
-const {
-    createBuildFunction,
-    createWatchFunction,
-    buildLambdaEdge,
-    buildCloudFrontFunction
-} = require("./bundling/function");
+const { createBuildFunction, createWatchFunction } = require("./bundling/function");
 const { createWatchPackage, createBuildPackage } = require("./packages");
 
 module.exports = {
@@ -14,8 +9,6 @@ module.exports = {
     // Functions.
     createBuildFunction,
     createWatchFunction,
-    buildLambdaEdge,
-    buildCloudFrontFunction,
 
     // Packages.
     createWatchPackage,

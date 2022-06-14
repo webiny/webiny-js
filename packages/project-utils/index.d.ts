@@ -1,5 +1,4 @@
 import { Configuration as WebpackConfig } from "webpack";
-import { OutputChunk } from 'rollup';
 
 // Build commands.
 export type BuildCommand<TOptions = Record<string, any>> = (options: TOptions) => Promise<void>;
@@ -33,7 +32,7 @@ interface BuildFunctionConfig {
     cwd: string;
     logs?: boolean;
     debug?: boolean;
-    /** 
+    /**
      * Enables or disables source map generation for the function.
      * By default is set to `true`
      */
@@ -52,8 +51,6 @@ interface BuildFunctionConfig {
 
 export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
 export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
-export function buildLambdaEdge(content: string) : Promise<OutputChunk>;
-export function buildCloudFrontFunction(content: string) : Promise<OutputChunk>;
 
 // Build commands - packages.
 interface BuildPackageConfig {
