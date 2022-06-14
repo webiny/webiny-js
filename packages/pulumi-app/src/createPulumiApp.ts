@@ -31,6 +31,9 @@ export interface CreatePulumiAppParams<TResources extends Record<string, unknown
     program(app: PulumiApp): TResources | Promise<TResources>;
 }
 
+export type CreateConfig = Record<string, any>;
+export type RunConfig = Record<string, any>;
+
 export interface PulumiApp<TResources = Record<string, unknown>> {
     resourceHandlers: ResourceHandler[];
     handlers: (() => void | Promise<void>)[];
@@ -41,10 +44,12 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
     name: string;
     program: PulumiProgram<TResources>;
     resources: TResources;
-    config: Record<string, any>;
-    run: { params: Record<string, any> };
+    config: {
+        create: CreateConfig;
+        run: RunConfig;
+    };
 
-    runProgram(params: Record<string, any>): Record<string, any>;
+    run(params: Record<string, any>): Record<string, any>;
 
     onResource(handler: ResourceHandler): void;
 
@@ -103,11 +108,13 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         resources: {} as TResources,
         name: params.name,
         program: params.program,
-        config: params.config || {},
-        run: { params: {} },
+        config: {
+            create: params.config || {},
+            run: {}
+        },
 
-        async runProgram(params) {
-            app.run.params = params;
+        async run(config) {
+            app.config.run = config;
 
             Object.assign(app.resources, await app.program(app));
 
@@ -115,7 +122,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
                 await handler();
             }
 
-            app.run.params = {};
+            app.config.run = {};
 
             return app.outputs;
         },
