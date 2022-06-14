@@ -28,7 +28,7 @@ export interface CreateRenderStorageOperationsParams {
 
 export interface CreateTagPathLinkPartitionKeyParams {
     tenant: string;
-    tag: Pick<Tag, "key">;
+    tag: Tag;
 }
 
 export interface CreateTagPathLinkSortKeyParams {
@@ -41,26 +41,22 @@ export const createRenderStorageOperations = (
 ): PrerenderingServiceRenderStorageOperations => {
     const { entity, tagPathLinkEntity } = params;
 
-    const createRenderPartitionKey = (tenant: string): string => {
+    const createRenderPartitionKey = (tenant: string, path: string): string => {
         /**
          * For backwards compatibility remove the T# if it exists.
          */
         if (tenant.startsWith("T#")) {
             tenant = tenant.replace(/^T#/, "");
         }
+        return `T#${tenant}#PS#RENDER#${path}`;
+    };
+
+    const createRenderSortKey = (): string => {
+        return "A";
+    };
+
+    const createRenderGSI1PartitionKey = (tenant: string): string => {
         return `T#${tenant}#PS#RENDER`;
-    };
-
-    const createRenderSortKey = (path: string): string => {
-        return path;
-    };
-
-    const createRenderGSI1PartitionKey = (): string => {
-        return `PS#RENDER`;
-    };
-
-    const createRenderGSI1SortKey = (render: Render): string => {
-        return `${render.tenant}#${render.locale}#${render.path}`;
     };
 
     const createRenderType = (): string => {
@@ -73,7 +69,7 @@ export const createRenderStorageOperations = (
         if (tenant.startsWith("T#")) {
             tenant = tenant.replace(/^T#/, "");
         }
-        return `T#${tenant}#PS#TAG#${tag.key}`;
+        return `T#${tenant}#PS#TAG#${tag.key}#${tag.value}`;
     };
 
     const createTagPathLinkSortKey = (params: CreateTagPathLinkSortKeyParams): string => {
@@ -83,6 +79,22 @@ export const createRenderStorageOperations = (
             values.push(path);
         }
         return values.join("#");
+    };
+
+    const createTagPathLinkGSI1PartitionKey = (
+        params: CreateTagPathLinkPartitionKeyParams
+    ): string => {
+        let { tenant } = params;
+        if (tenant.startsWith("T#")) {
+            tenant = tenant.replace(/^T#/, "");
+        }
+        return `T#${tenant}#PS#TAG`;
+    };
+
+    const createTagPathLinkGSI1SortKey = (params: CreateTagPathLinkSortKeyParams): string => {
+        const { tag, path } = params;
+
+        return `${tag.key}#${tag.value}#${path}`;
     };
 
     const createTagPathLinkType = (): string => {
@@ -95,8 +107,8 @@ export const createRenderStorageOperations = (
         const { where } = params;
 
         const keys = {
-            PK: createRenderPartitionKey(where.tenant),
-            SK: createRenderSortKey(where.path)
+            PK: createRenderPartitionKey(where.tenant, where.path),
+            SK: createRenderSortKey()
         };
 
         try {
@@ -123,8 +135,8 @@ export const createRenderStorageOperations = (
         const { render } = params;
 
         const keys = {
-            PK: createRenderPartitionKey(render.tenant),
-            SK: createRenderSortKey(render.path)
+            PK: createRenderPartitionKey(render.tenant, render.path),
+            SK: createRenderSortKey()
         };
 
         try {
@@ -132,8 +144,8 @@ export const createRenderStorageOperations = (
                 ...keys,
                 data: render,
                 TYPE: createRenderType(),
-                GSI1_PK: createRenderGSI1PartitionKey(),
-                GSI1_SK: createRenderGSI1SortKey(render)
+                GSI1_PK: createRenderGSI1PartitionKey(render.tenant),
+                GSI1_SK: render.path
             });
 
             return render;
@@ -154,8 +166,8 @@ export const createRenderStorageOperations = (
         const { render } = params;
 
         const keys = {
-            PK: createRenderPartitionKey(render.tenant),
-            SK: createRenderSortKey(render.path)
+            PK: createRenderPartitionKey(render.tenant, render.path),
+            SK: createRenderSortKey()
         };
 
         try {
@@ -193,8 +205,8 @@ export const createRenderStorageOperations = (
 
         const items = links.map(link => {
             return entity.getBatch({
-                PK: createRenderPartitionKey(tenant),
-                SK: createRenderSortKey(link.path)
+                PK: createRenderPartitionKey(tenant, link.path),
+                SK: createRenderSortKey()
             });
         });
         try {
@@ -224,8 +236,9 @@ export const createRenderStorageOperations = (
 
         const queryAllParams: QueryAllParams = {
             entity,
-            partitionKey: createRenderPartitionKey(tenant),
+            partitionKey: createRenderGSI1PartitionKey(tenant),
             options: {
+                index: "GSI1",
                 gte: " "
             }
         };
@@ -262,7 +275,9 @@ export const createRenderStorageOperations = (
                 SK: createTagPathLinkSortKey({
                     tag: item,
                     path: item.path
-                })
+                }),
+                GSI1_PK: createTagPathLinkGSI1PartitionKey({ tag: item, tenant: item.tenant }),
+                GSI1_SK: createTagPathLinkGSI1SortKey({ tag: item, path: item.path })
             });
         });
 
@@ -324,16 +339,17 @@ export const createRenderStorageOperations = (
         const { where } = params;
         const { tenant, tag } = where;
 
-        const partitionKey = createTagPathLinkPartitionKey({
+        const partitionKey = createTagPathLinkGSI1PartitionKey({
             tenant,
             tag
         });
 
-        const options: DynamoDBToolboxQueryOptions = {};
+        const options: DynamoDBToolboxQueryOptions = { index: "GSI1" };
+
         if (tag.value) {
-            options.beginsWith = `${tag.value}#`;
+            options.beginsWith = `${tag.key}#${tag.value}#`;
         } else {
-            options.gte = " ";
+            options.beginsWith = `${tag.key}#`;
         }
 
         const queryAllParams: QueryAllParams = {
