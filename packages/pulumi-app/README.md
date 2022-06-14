@@ -98,11 +98,11 @@ Creates a new Pulumi app.
 import * as aws from "@pulumi/aws";
 import { createPulumiApp } from "@webiny/pulumi-app";
 
-export interface CreateMyAppConfig {
+export interface CreateMyAppParams {
     pulumi?: (app: ReturnType<typeof createMyApp>) => void;
 }
 
-const createMyApp = (projectAppConfig: CreateMyAppConfig) => {
+const createMyApp = (projectAppConfig: CreateMyAppParams) => {
     const app = createPulumiApp({
         name: "my-app",
         path: "relative/path/from/cwd",
