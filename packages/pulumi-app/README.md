@@ -32,7 +32,7 @@ yarn add @webiny/pulumi-app
 
 The `@webiny/pulumi-app` package enables creation of flexible Pulumi apps (programs). 
 
-More specifically, a Pulumi app not only encapsulates the essential Pulumi program code defined by developers, but also provides a way to adjust any defined cloud infrastructure resource configuration and even add new resources into the mix.
+More specifically, a Pulumi app not only encapsulates the essential Pulumi program code defined by developers, but also, once defined, provides a way to adjust any defined cloud infrastructure resource configuration and even add new resources into the mix.
 
 This is useful when you just want to export a simple constructor function to the user, and not bother them with all the internals. And, as mentioned, in those rare cases when the user actually needs to perform further adjustments, a Pulumi app provides a way to do it.   
 
