@@ -1,11 +1,10 @@
 const path = require("path");
 const { red } = require("chalk");
-const { login, getPulumi, loadEnvVariables } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
+const { login, getPulumi, createProjectApplicationWorkspace } = require("../utils");
 
 module.exports = async (inputs, context) => {
-    const { env, folder, json, variant } = inputs;
-    await loadEnvVariables(inputs, context);
+    const { env, folder, json } = inputs;
 
     const cwd = process.cwd();
 
@@ -14,14 +13,15 @@ module.exports = async (inputs, context) => {
         cwd: path.join(cwd, inputs.folder)
     });
 
+    // If needed, let's create a project application workspace.
+    if (projectApplication.type === "v5-workspaces") {
+        await createProjectApplicationWorkspace(projectApplication, { env });
+    }
+
     // Will also install Pulumi, if not already installed.
     await login(projectApplication);
 
-    const pulumi = await getPulumi({
-        folder: inputs.folder
-    });
-
-    const stackName = variant ? `${env}.${variant}` : env;
+    const pulumi = await getPulumi({ projectApplication });
 
     let stackExists = true;
     try {
@@ -29,11 +29,12 @@ module.exports = async (inputs, context) => {
         const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
 
         await pulumi.run({
-            command: ["stack", "select", stackName],
+            command: ["stack", "select", env],
             args: {
                 secretsProvider: PULUMI_SECRETS_PROVIDER
             },
             execa: {
+                cwd: projectApplication.paths.workspace,
                 env: {
                     PULUMI_CONFIG_PASSPHRASE
                 }
@@ -49,7 +50,7 @@ module.exports = async (inputs, context) => {
             args: {
                 json
             },
-            execa: { stdio: "inherit" }
+            execa: { cwd: projectApplication.paths.workspace, stdio: "inherit" }
         });
     }
 
