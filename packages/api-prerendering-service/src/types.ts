@@ -192,5 +192,5 @@ export interface PrerenderingSettings {
     appUrl: string;
     bucket: string;
     cloudfrontId: string;
-    sqsQueueUrl: string;
+    sqsQueueUrl?: string;
 }
