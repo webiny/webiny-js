@@ -38,7 +38,7 @@ This is useful when you just want to export a simple constructor function to the
 
 > 💡 **TIP**
 >
-> Pulumi apps are heavily used in real Webiny projects. As mentioned, this is because of their ability to abstract the actual cloud infrastructure code from the user, and, at the same time, to provide a way for the user to perform adjustments when needed.
+> Pulumi apps are heavily used in real Webiny projects. As mentioned, this is because of their ability to abstract the actual cloud infrastructure code from the user, and, at the same time, provide a way for the user to perform adjustments when needed.
 
 The following example shows how a Pulumi app looks in the actual code:
 
