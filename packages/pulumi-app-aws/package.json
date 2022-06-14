@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A set of custom Pulumi components for Webiny, to use with AWS.",
+  "description": "A set of Pulumi apps that deploy Webiny CMS into Amazon Web Services (AWS).",
   "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
