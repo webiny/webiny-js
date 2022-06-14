@@ -10,21 +10,50 @@ The following examples show how each of the included Pulumi apps are initialized
 
 ```ts
 // This is imported in our Pulumi program's entrypoint file (index.ts).
-import { createStorageApp } from "@webiny/pulumi-app-aws";
+import { createStoragePulumiApp } from "@webiny/pulumi-app-aws";
 
 export = async () => {
-    const storageApp = createStorageApp({
-        pulumi: app => {
-            // Let's update `acl` and `forceDestroy` config values.
-            app.resources.bucket.config.acl(aws.s3.CannedAcl.Private);
-            app.resources.bucket.config.forceDestroy(true);
-        }
-    });
+  const storageApp = createStorageApp();
 
-    return myApp.runProgram();
+  return myApp.runProgram();
 };
-
 ```
 
+## API App
 
-Note that the URLs can be overridden with `WCP_APP_URL` and `WCP_API_URL` environment variables.
+```ts
+// This is imported in our Pulumi program's entrypoint file (index.ts).
+import { createApiPulumiApp } from "@webiny/pulumi-app-aws";
+
+export = async () => {
+  const apiApp = createApiApp();
+
+  return myApp.runProgram();
+};
+```
+
+## Admin App
+
+```ts
+// This is imported in our Pulumi program's entrypoint file (index.ts).
+import { createAdminPulumiApp } from "@webiny/pulumi-app-aws";
+
+export = async () => {
+  const adminApp = createAdminApp();
+
+  return myApp.runProgram();
+};
+```
+
+## Website App
+
+```ts
+// This is imported in our Pulumi program's entrypoint file (index.ts).
+import { createWebsitePulumiApp } from "@webiny/pulumi-app-aws";
+
+export = async () => {
+  const websiteApp = createWebsiteApp();
+
+  return myApp.runProgram();
+};
+```

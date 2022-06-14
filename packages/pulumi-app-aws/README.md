@@ -47,70 +47,283 @@ A set of Pulumi apps that deploy Webiny CMS into Amazon Web Services (AWS).
 
 ## Reference
 
-### Functions
+### Apps
 
-#### `createPulumiApp`
+#### `createStorageApp`
 
 <details>
 <summary>Type Declaration</summary>
 <p>
 
 ```ts
-export interface CreatePulumiAppParams<TResources extends Record<string, unknown>> {
-    name: string;
-    path: string;
-    config?: Record<string, any>;
-    program(app: PulumiApp): TResources | Promise<TResources>;
+export interface CreateStorageAppConfig {
+    /**
+     * Secures against deleting database by accident.
+     * By default enabled in production environments.
+     */
+    protect?: PulumiAppInput<boolean>;
+    /**
+     * Enables ElasticSearch infrastructure.
+     * Note that it requires also changes in application code.
+     */
+    elasticSearch?: PulumiAppInput<boolean>;
+    /**
+     * Enables VPC for the application.
+     * By default enabled in production environments.
+     */
+    vpc?: PulumiAppInput<boolean>;
+    /**
+     * Additional settings for backwards compatibility.
+     */
+    legacy?: PulumiAppInput<StorageAppLegacyConfig>;
+    
+    pulumi?: (app: ReturnType<typeof createStoragePulumiApp>) => void;
 }
 
-export declare function createPulumiApp<TResources extends Record<string, unknown>>(params: CreatePulumiAppParams<TResources>): PulumiApp<TResources>;
+export interface StorageAppLegacyConfig {
+    useEmailAsUsername?: boolean;
+}
+
+export declare function createStorageApp(projectAppConfig?: CreateStorageAppConfig): import("@webiny/pulumi-app").PulumiApp<{
+    fileManagerBucket: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/s3").Bucket>;
+    eventBus: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/cloudwatch").EventBus>;
+    elasticSearch: {
+        domain: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/elasticsearch").Domain>;
+        domainPolicy: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/elasticsearch").DomainPolicy>;
+        table: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/dynamodb").Table>;
+        dynamoToElastic: {
+            role: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Role>;
+            policy: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Policy>;
+            lambda: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
+            eventSourceMapping: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").EventSourceMapping>;
+        };
+    } | null;
+    userPool: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/cognito").UserPool>;
+    userPoolClient: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/cognito").UserPoolClient>;
+    dynamoDbTable: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/dynamodb").Table>;
+    vpc: {
+        vpc: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/ec2").Vpc>;
+        subnets: {
+            public: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/ec2").Subnet>[];
+            private: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/ec2").Subnet>[];
+        };
+    } | null;
+}>;
 ```
 
 </p>
 </details>
 
-Creates a new Pulumi app.
+Creates Storage Pulumi app.
 
 ```ts
-// Defining the app.
-import * as aws from "@pulumi/aws";
-import { createPulumiApp } from "@webiny/pulumi-app-aws";
+// This is imported in our Pulumi program's entrypoint file (index.ts).
+import { createStoragePulumiApp } from "@webiny/pulumi-app-aws";
 
-export interface CreateMyAppParams {
-    pulumi?: (app: ReturnType<typeof createMyApp>) => void;
+export = async () => {
+  const storageApp = createStorageApp();
+
+  return storageApp.runProgram();
+};
+```
+
+#### `createApiApp`
+
+<details>
+<summary>Type Declaration</summary>
+<p>
+
+```ts
+export interface CreateApiAppConfig {
+    /**
+     * Enables or disables VPC for the API.
+     * For VPC to work you also have to enable it in the Storage application.
+     */
+    vpc?: PulumiAppInput<boolean>;
+    /** Custom domain configuration */
+    domain?(app: PulumiApp): CustomDomainParams | undefined | void;
+    pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
 }
 
-const createMyApp = (projectAppConfig: CreateMyAppParams) => {
-    const app = createPulumiApp({
-        name: "my-app",
-        path: "relative/path/from/cwd",
-        program: async app => {
-            const bucket = app.addResource(aws.s3.Bucket, {
-                name: "my-app",
-                config: {
-                    acl: aws.s3.CannedAcl.PublicRead,
-                    forceDestroy: false,
-                    website: {
-                        indexDocument: "index.html",
-                        errorDocument: "index.html"
-                    }
-                }
-            });
+export declare const createApiPulumiApp: (projectAppConfig?: CreateApiAppConfig) => PulumiApp<{
+    fileManager: {
+        functions: {
+            transform: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
+            manage: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
+            download: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
+        };
+        bucketNotification: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/s3").BucketNotification>;
+    };
+    graphql: {
+        role: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Role>;
+        policy: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Policy>;
+        functions: {
+            graphql: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
+        };
+    };
+    headlessCms: {
+        role: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Role>;
+        policy: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Policy>;
+        functions: {
+            graphql: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
+        };
+    };
+    apiGateway: {
+        api: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/apigatewayv2").Api>;
+        stage: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/apigatewayv2").Stage>;
+        routes: Record<string, {
+            integration: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/apigatewayv2").Integration>;
+            route: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/apigatewayv2").Route>;
+            permission: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Permission>;
+        }>;
+        addRoute: (name: string, params: import("..").ApiRouteParams) => void;
+    };
+    cloudfront: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/cloudfront").Distribution>;
+    apwScheduler: {
+        executeAction: {
+            role: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Role>;
+            policy: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Policy>;
+            lambda: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
+        };
+        scheduleAction: {
+            role: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Role>;
+            policy: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/iam").Policy>;
+            lambda: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
+        };
+        eventRule: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/cloudwatch").EventRule>;
+        eventTarget: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/cloudwatch").EventTarget>;
+    };
+}>;
+```
 
-            app.addOutputs({
-                appStorage: bucket.output.id
-            });
+</p>
+</details>
 
-            return {
-                bucket
-            };
-        }
-    });
+Creates API Pulumi app.
 
-    if (projectAppConfig.pulumi) {
-        projectAppConfig.pulumi(app);
-    }
+```ts
+// This is imported in our Pulumi program's entrypoint file (index.ts).
+import { createApiPulumiApp } from "@webiny/pulumi-app-aws";
 
-    return app;
+export = async () => {
+  const apiApp = createApiApp();
+
+  return apiApp.runProgram();
+};
+```
+
+#### `createAdminApp`
+
+<details>
+<summary>Type Declaration</summary>
+<p>
+
+```ts
+import * as aws from "@pulumi/aws";
+import { PulumiApp } from "@webiny/pulumi-app";
+import { CustomDomainParams } from "../customDomain";
+
+export interface CreateAdminAppConfig {
+    /** Custom domain configuration */
+    domain?(app: PulumiApp): CustomDomainParams | undefined | void;
+    pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
+}
+
+export declare const createAdminPulumiApp: (projectAppConfig: CreateAdminAppConfig) => PulumiApp<{
+    cloudfront: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.cloudfront.Distribution>;
+    bucket: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.s3.Bucket>;
+    origin: aws.types.input.cloudfront.DistributionOrigin;
+}>;
+```
+
+</p>
+</details>
+
+Creates Admin Pulumi app.
+
+```ts
+// This is imported in our Pulumi program's entrypoint file (index.ts).
+import { createAdminPulumiApp } from "@webiny/pulumi-app-aws";
+
+export = async () => {
+  const adminApp = createAdminApp();
+
+  return adminApp.runProgram();
+};
+```
+
+#### `createWebsiteApp`
+
+<details>
+<summary>Type Declaration</summary>
+<p>
+
+```ts
+import * as pulumi from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
+import { PulumiApp } from "@webiny/pulumi-app";
+import { CustomDomainParams } from "../customDomain";
+import { PulumiAppInput } from "../utils";
+export interface CreateWebsiteAppConfig {
+    /** Custom domain configuration */
+    domain?(app: PulumiApp): CustomDomainParams | undefined | void;
+    /**
+     * Enables or disables VPC for the API.
+     * For VPC to work you also have to enable it in the `storage` application.
+     */
+    vpc?: PulumiAppInput<boolean | undefined>;
+    pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
+}
+export declare const createWebsitePulumiApp: (projectAppConfig?: CreateWebsiteAppConfig) => PulumiApp<{
+    prerendering: {
+        subscriber: {
+            policy: pulumi.Output<aws.iam.Policy>;
+            role: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.iam.Role>;
+            lambda: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.lambda.Function>;
+            eventRule: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.cloudwatch.EventRule>;
+            eventPermission: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.lambda.Permission>;
+            eventTarget: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.cloudwatch.EventTarget>;
+        };
+        renderer: {
+            policy: pulumi.Output<aws.iam.Policy>;
+            role: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.iam.Role>;
+            lambda: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.lambda.Function>;
+            eventSourceMapping: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.lambda.EventSourceMapping>;
+        };
+        flush: {
+            policy: pulumi.Output<aws.iam.Policy>;
+            role: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.iam.Role>;
+            lambda: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.lambda.Function>;
+            eventRule: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.cloudwatch.EventRule>;
+            eventPermission: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.lambda.Permission>;
+            eventTarget: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.cloudwatch.EventTarget>;
+        };
+    };
+    app: {
+        cloudfront: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.cloudfront.Distribution>;
+        bucket: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.s3.Bucket>;
+        origin: aws.types.input.cloudfront.DistributionOrigin;
+    };
+    delivery: {
+        cloudfront: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.cloudfront.Distribution>;
+        bucket: import("@webiny/pulumi-app").PulumiAppResource<typeof aws.s3.Bucket>;
+        origin: aws.types.input.cloudfront.DistributionOrigin;
+    };
+}>;
+```
+
+</p>
+</details>
+
+Creates Website Pulumi app.
+
+```ts
+// This is imported in our Pulumi program's entrypoint file (index.ts).
+import { createWebsitePulumiApp } from "@webiny/pulumi-app-aws";
+
+export = async () => {
+  const websiteApp = createWebsiteApp();
+
+  return websiteApp.runProgram();
 };
 ```
