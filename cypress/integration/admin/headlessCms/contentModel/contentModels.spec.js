@@ -7,7 +7,7 @@ context("Headless CMS - Content Models CRUD", () => {
         // 1. Visit /cms/content-models
         cy.visit("/cms/content-models");
         // 2. Create a new content model
-        const uniqueId = uniqid()
+        const uniqueId = uniqid();
         const newModelDescription = `Creating a new model for testing.`;
 
         // 2.1 Add name
@@ -19,7 +19,7 @@ context("Headless CMS - Content Models CRUD", () => {
 
             cy.findByTestId("cms.newcontentmodeldialog.name").type(`Book - ${uniqueId}`);
             cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
-            cy.findByRole("button", { name: "+ Create Model"}).click();
+            cy.findByRole("button", { name: "+ Create Model" }).click();
         });
         // 3. Editor
         cy.wait(1000);
@@ -54,7 +54,7 @@ context("Headless CMS - Content Models CRUD", () => {
         cy.wait(1000);
         // Saving the "Book" model should complete successfully.
         cy.findByTestId("cms-editor-top-bar").within(() => {
-           cy.findByTestId("cms.editor.defaultbar.save").click();
+            cy.findByTestId("cms.editor.defaultbar.save").click();
         });
         cy.findByText(`Your content model was saved successfully!`).should("exist");
         // Get back to the list view
@@ -93,8 +93,10 @@ context("Headless CMS - Content Models CRUD", () => {
             // c) Add required validator
             cy.findByTestId("cms.editor.field-validator.required").within(() => {
                 cy.findByLabelText("Enabled").check();
-                cy.findByTestId("cms.editfield.validators.required").clear().type("Title is required.").blur();
-                cy.wait(1000)
+                cy.findByTestId("cms.editfield.validators.required")
+                    .clear()
+                    .type("Title is required.").blur();
+                cy.wait(1000);
             });
             // d) Save field
             cy.findByTestId("cms.editor.field.settings.save").click();

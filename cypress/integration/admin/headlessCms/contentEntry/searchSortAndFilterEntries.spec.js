@@ -20,8 +20,8 @@ const createContentEntry = ({ model, entries }) => {
     // a) Click on "New Entry" button
     cy.findAllByTestId("new-record-button").first().click();
     // b) Fill entry details
-    cy.findByLabelText("Title").type(newEntryTitle);
-    cy.findByLabelText("Edition").type(newEntryEdition.toString());
+    cy.findByLabelTestId("fr.input.text.Title").type(newEntryTitle);
+    cy.findByLabelTestId("fr.input.number.Edition").type(newEntryEdition.toString());
     // c) Save entry
     cy.findByTestId("cms-content-save-content-button").click();
     // d) Verify success message
