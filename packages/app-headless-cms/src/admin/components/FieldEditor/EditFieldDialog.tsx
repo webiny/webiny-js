@@ -286,8 +286,12 @@ const EditFieldDialog: React.FC<EditFieldDialogProps> = ({ field, onSubmit, ...p
                                 </Tabs>
                             </DialogContent>
                             <DialogActions>
-                                <ButtonDefault onClick={onClose}>{t`Cancel`}</ButtonDefault>
+                                <ButtonDefault
+                                    data-testid="cms.editor.field.settings.cancel"
+                                    onClick={onClose}
+                                >{t`Cancel`}</ButtonDefault>
                                 <ButtonPrimary
+                                    data-testid="cms.editor.field.settings.save"
                                     onClick={ev => {
                                         form.submit(ev);
                                     }}

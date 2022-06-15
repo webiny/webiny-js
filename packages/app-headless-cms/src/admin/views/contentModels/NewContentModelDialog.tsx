@@ -199,6 +199,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                             <Input
                                                 label={t`Name`}
                                                 description={t`The name of the content model. Use the singular form, e.g. Person, not Persons.`}
+                                                data-testid="cms.newcontentmodeldialog.name"
                                             />
                                         </Bind>
                                     </Cell>
@@ -211,6 +212,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                 description={t`Choose a content model group`}
                                                 label={t`Content model group`}
                                                 options={contentModelGroups}
+                                                data-testid="cms.newcontentmodeldialog.selectgroup"
                                             />
                                         </Bind>
                                     </Cell>
@@ -223,6 +225,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                     maxLength={200}
                                                     characterCount
                                                     label={t`Description`}
+                                                    data-testid="cms.newcontentmodeldialog.description"
                                                 />
                                             )}
                                         </Bind>
