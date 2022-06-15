@@ -144,7 +144,11 @@ context("I18N app", () => {
         });
         cy.findByTestId("default-data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
+<<<<<<< HEAD
             cy.findAllByTestId("dialog-accept").next().click();
+=======
+            cy.findByTestId("dialog-accept").next().click();
+>>>>>>> 4cbc7e5c5e (fix(cypress): i18n createLocale updates (wip))
         });
         // Locale shouldn't be in the list
         cy.findByTestId("default-data-list").within(() => {
