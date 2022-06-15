@@ -8,7 +8,7 @@ context("I18N app", () => {
         // Create new locale
         cy.findAllByTestId("new-record-button").first().click();
 
-        cy.findByLabelText("Code").type(newCode);
+        cy.findByTestId("l18n.locale.code").focus().type(newCode);
         /**
          * Testing "Autocomplete" component is tricky.
          * We're making sure option exist before triggering a click because;
@@ -16,10 +16,12 @@ context("I18N app", () => {
          *
          * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
          */
-        cy.findByText(newCode).as("code").should("exist");
+        cy.get("[role='listbox'] > [role='option']").within(() => {
+            cy.findByText(newCode).as("code").should("exist");
+        })
         cy.get("@code").click();
 
-        cy.findByText(/Save/i).click();
+        cy.findByTestId("l18n.locale.save").click();
         // Loading should be completed
         cy.get(".react-spinner-material").should("not.exist");
         // Confirm that "Default locale" is selected
@@ -29,8 +31,8 @@ context("I18N app", () => {
         });
         // Select newly created locale from selector
         cy.findByTestId("app-i18n-content.menu").click();
-        cy.findAllByTestId(`app-i18n-content.menu-item.de-DE`).should("exist");
-        cy.findAllByTestId(`app-i18n-content.menu-item.de-DE`).click();
+        cy.findByTestId(`app-i18n-content.menu-item.${newCode}`).should("exist");
+        cy.findByTestId(`app-i18n-content.menu-item.${newCode}`).click();
         // Loading should be completed
         cy.get(".react-spinner-material").should("not.exist");
         // Confirm that "new locale" is selected
@@ -40,12 +42,12 @@ context("I18N app", () => {
         });
         // Switch back to the "Default locale"
         cy.findByTestId("app-i18n-content.menu").click();
-        cy.findAllByTestId(`app-i18n-content.menu-item.en-US`).click();
+        cy.findByTestId(`app-i18n-content.menu-item.${newCode}`).click();
         // Loading should be completed
         cy.get(".react-spinner-material").should("not.exist");
         // Delete new locale
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByTestId("default-data-list.delete").click({ force: true });
@@ -53,11 +55,11 @@ context("I18N app", () => {
         });
         cy.findByTestId("default-data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
-            cy.findByText(/confirm$/i).click();
+            cy.findByTestId("dialog-accept").next().click();
         });
         // Locale shouldn't be in the list
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newCode).should("not.exist");
@@ -75,7 +77,7 @@ context("I18N app", () => {
         const formContainer = cy.get("webiny-form-container");
 
         formContainer.within(() => {
-            cy.findByLabelText("Code").type(newCode);
+            cy.findByTestId("l18n.locale.code").type(newCode);
             /**
              * Testing "Autocomplete" component is tricky.
              * We're making sure option exist before triggering a click because
@@ -87,7 +89,7 @@ context("I18N app", () => {
             cy.get("@code").click();
         });
 
-        cy.findByText(/Save/i).click();
+        cy.findByTestId("l18n.locale.save").click();
         // Loading should be completed
         cy.get(".react-spinner-material").should("not.exist");
         // Check newly created locale in selector
@@ -95,14 +97,13 @@ context("I18N app", () => {
         cy.findAllByTestId(`app-i18n-content.menu-item.${newCode}`).should("exist");
         // Set it as "Default locale"
         cy.findByLabelText("Default").check();
-        cy.findByText(/Save locale/i).click();
+        cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
         // Check the change in data list
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
-
                 .within(() => {
                     cy.findByText(newCode);
                     cy.findByText("Default locale");
@@ -115,7 +116,7 @@ context("I18N app", () => {
 
         // Select "en-US" locale
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .next()
                 .within(() => {
@@ -126,13 +127,13 @@ context("I18N app", () => {
         cy.get(".react-spinner-material").should("not.exist");
         // Update it as "default"
         cy.findByLabelText("Default").check();
-        cy.findByText(/Save locale/i).click();
+        cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
 
         // Deleting new locale
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByTestId("default-data-list.delete").click({ force: true });
@@ -140,11 +141,11 @@ context("I18N app", () => {
         });
         cy.findByTestId("default-data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
-            cy.findByText(/confirm$/i).click();
+            cy.findByTestId("dialog-accept").next().click();
         });
         // Locale shouldn't be in the list
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByText(newCode).should("not.exist");
