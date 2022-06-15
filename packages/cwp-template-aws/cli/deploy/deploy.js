@@ -40,9 +40,15 @@ module.exports = async (inputs, context) => {
 
     // 2. Check if first deployment.
 
-    // We want to be backwards compatible. That's why we need to take into
+    // 2.1 Check the location of `api` project application (can be `api` or `apps/api`).
+    let apiFolder = "apps/api";
+    if (fs.existsSync(path.join(context.project.root, "api"))) {
+        apiFolder = "api";
+    }
+
+    // 2.2 We want to be backwards compatible. That's why we need to take into
     // consideration that some projects do not have the `core` application.
-    const hasCore = fs.statSync(path.join(context.project.root, "apps", "core"));
+    const hasCore = fs.existsSync(path.join(context.project.root, "apps", "core"));
 
     // If we have at least `core` output or `api` output,
     // then we can be sure this is not the first deployment.
@@ -50,7 +56,7 @@ module.exports = async (inputs, context) => {
     if (hasCore) {
         isFirstDeployment = !getStackOutput({ folder: "apps/core", env });
     } else {
-        isFirstDeployment = !getStackOutput({ folder: "api", env });
+        isFirstDeployment = !getStackOutput({ folder: apiFolder, env });
     }
 
     if (isFirstDeployment) {
@@ -80,10 +86,10 @@ module.exports = async (inputs, context) => {
 
         // Deploying `api` project application.
         console.log();
-        context.info(`Deploying ${green("api")} project application...`);
+        context.info(`Deploying ${green(apiFolder)} project application...`);
 
-        await deploy("api", env, inputs);
-        context.success(`${green("api")} project application was deployed successfully!`);
+        await deploy(apiFolder, env, inputs);
+        context.success(`${green(apiFolder)} project application was deployed successfully!`);
         isFirstDeployment && (await sleep(2000));
 
         // Deploying `apps/admin` project application.
@@ -116,7 +122,7 @@ module.exports = async (inputs, context) => {
     }
 
     const outputs = {
-        api: getStackOutput({ folder: "api", env }),
+        api: getStackOutput({ folder: apiFolder, env }),
         apps: {
             admin: getStackOutput({ folder: "apps/admin", env }),
             site: getStackOutput({ folder: "apps/website", env })
