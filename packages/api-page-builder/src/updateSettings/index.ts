@@ -79,7 +79,9 @@ export default (
                     settings
                 });
 
-                await migrate(storageOperations, settings.prerendering);
+                if (process.env.NODE_ENV !== "test") {
+                    await migrate(storageOperations, settings.prerendering);
+                }
 
                 delete settings.locale;
                 delete settings.tenant;
