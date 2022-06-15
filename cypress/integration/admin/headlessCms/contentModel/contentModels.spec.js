@@ -7,7 +7,7 @@ context("Headless CMS - Content Models CRUD", () => {
         // 1. Visit /cms/content-models
         cy.visit("/cms/content-models");
         // 2. Create a new content model
-        const newModel = `Book ${uniqid()}`;
+        const uniqueId = uniqid()
         const newModelDescription = `Creating a new model for testing.`;
 
         // 2.1 Add name
@@ -16,13 +16,13 @@ context("Headless CMS - Content Models CRUD", () => {
         cy.findByTestId("new-record-button").click();
         cy.findByTestId("cms-new-content-model-modal").within(() => {
             cy.findByText("New Content Model").should("exist");
-            cy.findByText("Ungrouped");
-            cy.findByLabelText("Name").type(newModel);
-            cy.findByLabelText("Description").type(newModelDescription);
-            cy.findByText("+ Create Model").click();
+
+            cy.findByTestId("cms.newcontentmodeldialog.name").type(`Book - ${uniqueId}`);
+            cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
+            cy.findByRole("button", { name: "+ Create Model"}).click();
         });
         // 3. Editor
-
+        cy.wait(1000);
         // 3.1 Editor -> Preview tab -> check message
         cy.findByTestId("cms.editor.tab.preview").click();
         cy.findByText(
@@ -37,8 +37,8 @@ context("Headless CMS - Content Models CRUD", () => {
             }
         );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
-            cy.findByLabelText("Label").type("Title");
-            cy.findByText("Save Field").click();
+            cy.findByTestId("cms.editor.field.settings.general.label").focus().type("Title");
+            cy.findByTestId("cms.editor.field.settings.save").click();
         });
         cy.wait(1000);
 
@@ -47,13 +47,14 @@ context("Headless CMS - Content Models CRUD", () => {
             { force: true }
         );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
-            cy.findByLabelText("Label").type("Edition");
-            cy.findByText("Save Field").click();
+            cy.findByTestId("cms.editor.field.settings.general.label").focus().type("Edition");
+            cy.wait(500);
+            cy.findByTestId("cms.editor.field.settings.save").click();
         });
         cy.wait(1000);
         // Saving the "Book" model should complete successfully.
         cy.findByTestId("cms-editor-top-bar").within(() => {
-            cy.findByText("Save").click();
+           cy.findByTestId("cms.editor.defaultbar.save").click();
         });
         cy.findByText(`Your content model was saved successfully!`).should("exist");
         // Get back to the list view
@@ -61,10 +62,10 @@ context("Headless CMS - Content Models CRUD", () => {
         cy.wait(1000);
         // 3.3 Check newly created model in data list
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByText(newModel).should("exist");
+                    cy.findByText(`Book - ${uniqueId}`).should("exist");
                 });
         });
 
@@ -72,10 +73,10 @@ context("Headless CMS - Content Models CRUD", () => {
 
         // 4.1 Click edit button from models list
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByText(newModel).should("exist");
+                    cy.findByText(`Book - ${uniqueId}`).should("exist");
                     cy.findByTestId("cms-edit-content-model-button").click({ force: true });
                 });
         });
@@ -92,22 +93,22 @@ context("Headless CMS - Content Models CRUD", () => {
             // c) Add required validator
             cy.findByTestId("cms.editor.field-validator.required").within(() => {
                 cy.findByLabelText("Enabled").check();
-                cy.findByLabelText("Message").clear().type("Title is required.").blur();
-                cy.wait(200);
+                cy.findByTestId("cms.editfield.validators.required").clear().type("Title is required.").blur();
+                cy.wait(1000)
             });
             // d) Save field
-            cy.findByText("Save Field").click();
+            cy.findByTestId("cms.editor.field.settings.save").click();
         });
         // e) Save model
         cy.findByTestId("cms-editor-top-bar").within(() => {
-            cy.findByText("Save").click();
+            cy.findByTestId("cms.editor.defaultbar.save").click();
         });
         cy.findByText("Your content model was saved successfully!");
 
         // 5. Test validator in preview
         cy.findByTestId("cms.editor.tab.preview").click();
-        cy.findByLabelText("Title").focus();
-        cy.findByLabelText("Edition").type("2");
+        cy.findByTestId("fr.input.text.Title").focus();
+        cy.findByTestId("fr.input.number.Edition").type("2");
         cy.findByText("Title is required.").should("exist");
         // Get back to the list view
         cy.findByTestId("cms-editor-back-button").click();
@@ -115,10 +116,10 @@ context("Headless CMS - Content Models CRUD", () => {
 
         // Delete new model
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByText(newModel).should("exist");
+                    cy.findByText(`Book - ${uniqueId}`).should("exist");
                     // a. Click on delete button
                     cy.findByTestId("cms-delete-content-model-button").click({
                         force: true
@@ -128,9 +129,9 @@ context("Headless CMS - Content Models CRUD", () => {
         });
         // b. Confirm delete model
         cy.findByTestId("cms-delete-content-model-dialog").within(() => {
-            cy.findByText("Confirm").click();
+            cy.findAllByTestId("dialog-accept").next().click();
         });
         // c. Check success message
-        cy.findByText(`Content model ${newModel} deleted successfully!.`);
+        cy.findByText(`Content model ${`Book - ${uniqueId}`} deleted successfully!.`);
     });
 });
