@@ -9,6 +9,7 @@ import { createRenderEntity } from "./entities/render";
 import { createRenderLegacyEntity } from "./entities/renderLegacy";
 import { createTagPathLinkEntity } from "./entities/tagPathLink";
 import { createTagPathLinkLegacyEntity } from "./entities/tagPathLinkLegacy";
+import { createTable } from "./table";
 
 interface PsSettingsItem {
     data: PrerenderingSettings;
@@ -42,7 +43,9 @@ export async function migrate(
     settings: Settings["prerendering"]
 ) {
     // @ts-ignore
-    const table = storageOperations.getTable();
+    const pbTable = storageOperations.getTable();
+
+    const table = createTable({ documentClient: pbTable.DocumentClient });
 
     const settingsEntity = createSettingsEntity({
         entityName: "PrerenderingServiceSettings",
