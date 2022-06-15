@@ -93,16 +93,11 @@ context("Headless CMS - Content Models CRUD", () => {
             // c) Add required validator
             cy.findByTestId("cms.editor.field-validator.required").within(() => {
                 cy.findByLabelText("Enabled").check();
-<<<<<<< HEAD
                 cy.findByTestId("cms.editfield.validators.required")
                     .clear()
                     .type("Title is required.")
                     .blur();
                 cy.wait(1000);
-=======
-                cy.findByTestId("cms.editfield.validators.required").clear().type("Title is required.").blur();
-                cy.wait(1000)
->>>>>>> ee4b5ff84c (fix(cypress): update content models tests)
             });
             // d) Save field
             cy.findByTestId("cms.editor.field.settings.save").click();
