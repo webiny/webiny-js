@@ -46,5 +46,20 @@
   },
   "devDependencies": {
     "@webiny/cli-plugin-deploy-pulumi": "^5.28.0"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/api-admin-users-cognito",
+        "@webiny/api-admin-users-cognito-so-ddb",
+        "@webiny/api-security-cognito",
+        "@webiny/api-security-okta"
+      ],
+      "src": [
+        "@webiny/api-tenant-manager",
+        "@webiny/api-theme-manager",
+        "@webiny/api-security-okta"
+      ]
+    }
   }
 }
