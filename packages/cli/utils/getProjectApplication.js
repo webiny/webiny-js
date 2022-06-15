@@ -1,5 +1,4 @@
 const { dirname, basename, join, relative } = require("path");
-const fs = require("fs");
 const findUp = require("find-up");
 const getProject = require("./getProject");
 const { importModule } = require("./importModule");
