@@ -22,10 +22,24 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
             preview: JSON!
         }
 
+        input PbListPageBlocksWhereInput {
+            blockCategory: String
+        }
+
         # Response types
         type PbPageBlockResponse {
             data: PbPageBlock
             error: PbError
+        }
+
+        type PbPageBlockListResponse {
+            data: [PbPageBlock]
+            error: PbError
+        }
+
+        extend type PbQuery {
+            listPageBlocks(where: PbListPageBlocksWhereInput): PbPageBlockListResponse
+            getPageBlock(id: ID!): PbPageBlockResponse
         }
 
         extend type PbMutation {
@@ -33,6 +47,18 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
         }
     `,
     resolvers: {
+        PbQuery: {
+            getPageBlock: async (_, args: any, context) => {
+                return resolve(() => {
+                    return context.pageBuilder.getPageBlock(args.id);
+                });
+            },
+            listPageBlocks: async (_, __, context) => {
+                return resolve(() => {
+                    return context.pageBuilder.listPageBlocks();
+                });
+            }
+        },
         PbMutation: {
             createPageBlock: async (_, args: any, context) => {
                 return resolve(() => {

@@ -833,6 +833,39 @@ export interface PageBlock {
  * @category StorageOperations
  * @category PageBlockStorageOperations
  */
+export interface PageBlockStorageOperationsGetParams {
+    where: {
+        id: string;
+        tenant: string;
+        locale: string;
+    };
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export interface PageBlockStorageOperationsListParams {
+    where: {
+        tenant: string;
+        locale: string;
+        createdBy?: string;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string | null;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export type PageBlockStorageOperationsListResponse = [PageBlock[], MetaResponse];
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
 export interface PageBlockStorageOperationsCreateParams {
     input: Record<string, any>;
     pageBlock: PageBlock;
@@ -843,5 +876,15 @@ export interface PageBlockStorageOperationsCreateParams {
  * @category PageBlockStorageOperations
  */
 export interface PageBlockStorageOperations {
+    /**
+     * Get a single page block item by given params.
+     */
+    get(params: PageBlockStorageOperationsGetParams): Promise<PageBlock | null>;
+    /**
+     * Get all page block items by given params.
+     */
+    list(
+        params: PageBlockStorageOperationsListParams
+    ): Promise<PageBlockStorageOperationsListResponse>;
     create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
 }

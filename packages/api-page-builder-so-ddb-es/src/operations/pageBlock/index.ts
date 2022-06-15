@@ -1,10 +1,18 @@
 import WebinyError from "@webiny/error";
 import {
+    PageBlock,
     PageBlockStorageOperations,
-    PageBlockStorageOperationsCreateParams
+    PageBlockStorageOperationsCreateParams,
+    PageBlockStorageOperationsGetParams,
+    PageBlockStorageOperationsListParams
 } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
+import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
+import { sortItems } from "@webiny/db-dynamodb/utils/sort";
+import { filterItems } from "@webiny/db-dynamodb/utils/filter";
 import { PageBlockDataLoader } from "./dataLoader";
+import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
+import { PageBlockDynamoDbFieldPlugin } from "~/plugins/definitions/PageBlockDynamoDbFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
 import { createPartitionKey, createSortKey } from "./keys";
 
@@ -17,11 +25,80 @@ export interface CreatePageBlockStorageOperationsParams {
     plugins: PluginsContainer;
 }
 export const createPageBlockStorageOperations = ({
-    entity
+    entity,
+    plugins
 }: CreatePageBlockStorageOperationsParams): PageBlockStorageOperations => {
     const dataLoader = new PageBlockDataLoader({
         entity
     });
+
+    const get = async (params: PageBlockStorageOperationsGetParams) => {
+        const { where } = params;
+
+        try {
+            return await dataLoader.getOne(where);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not load page block by given parameters.",
+                ex.code || "PAGE_BLOCK_GET_ERROR",
+                {
+                    where
+                }
+            );
+        }
+    };
+
+    const list = async (params: PageBlockStorageOperationsListParams) => {
+        const { where, sort, limit } = params;
+
+        const { tenant, locale, ...restWhere } = where;
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createPartitionKey({ tenant, locale }),
+            options: {
+                gt: " "
+            }
+        };
+
+        let items: PageBlock[] = [];
+
+        try {
+            items = await queryAll<PageBlock>(queryAllParams);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not list page blocks by given parameters.",
+                ex.code || "PAGE_BLOCK_LIST_ERROR",
+                {
+                    partitionKey: queryAllParams.partitionKey,
+                    options: queryAllParams.options
+                }
+            );
+        }
+
+        const fields = plugins.byType<PageBlockDynamoDbFieldPlugin>(
+            PageBlockDynamoDbFieldPlugin.type
+        );
+
+        const filteredItems = filterItems<PageBlock>({
+            plugins,
+            where: restWhere,
+            items,
+            fields
+        });
+
+        const sortedItems = sortItems<PageBlock>({
+            items: filteredItems,
+            sort,
+            fields
+        });
+
+        return createListResponse({
+            items: sortedItems,
+            limit: limit || 100000,
+            totalCount: filteredItems.length,
+            after: null
+        });
+    };
 
     const create = async (params: PageBlockStorageOperationsCreateParams) => {
         const { pageBlock } = params;
@@ -58,6 +135,8 @@ export const createPageBlockStorageOperations = ({
     };
 
     return {
+        get,
+        list,
         create
     };
 };
