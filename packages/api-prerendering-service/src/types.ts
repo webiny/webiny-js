@@ -100,7 +100,7 @@ export interface PrerenderingServiceStorageOperationsCreateTagPathLinksParams {
 export interface PrerenderingServiceStorageOperationsDeleteTagPathLinksParams {
     tags: Tag[];
     tenant: string;
-    path?: string;
+    path: string;
 }
 
 export interface PrerenderingServiceStorageOperationsListTagPathLinksParams {

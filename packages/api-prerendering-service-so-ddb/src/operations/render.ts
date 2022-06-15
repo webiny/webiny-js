@@ -29,6 +29,12 @@ export interface CreateRenderStorageOperationsParams {
 export interface CreateTagPathLinkPartitionKeyParams {
     tenant: string;
     tag: Tag;
+    path: string;
+}
+
+export interface CreateTagPathLinkGSI1PartitionKeyParams {
+    tenant: string;
+    tag: Tag;
 }
 
 export interface CreateTagPathLinkSortKeyParams {
@@ -64,12 +70,12 @@ export const createRenderStorageOperations = (
     };
 
     const createTagPathLinkPartitionKey = (params: CreateTagPathLinkPartitionKeyParams): string => {
-        const { tag } = params;
+        const { tag, path } = params;
         let { tenant } = params;
         if (tenant.startsWith("T#")) {
             tenant = tenant.replace(/^T#/, "");
         }
-        return `T#${tenant}#PS#TAG#${tag.key}#${tag.value}`;
+        return `T#${tenant}#PS#TAG#${tag.key}#${tag.value}#${path}`;
     };
 
     const createTagPathLinkSortKey = (params: CreateTagPathLinkSortKeyParams): string => {
@@ -82,7 +88,7 @@ export const createRenderStorageOperations = (
     };
 
     const createTagPathLinkGSI1PartitionKey = (
-        params: CreateTagPathLinkPartitionKeyParams
+        params: CreateTagPathLinkGSI1PartitionKeyParams
     ): string => {
         let { tenant } = params;
         if (tenant.startsWith("T#")) {
@@ -270,7 +276,8 @@ export const createRenderStorageOperations = (
                 TYPE: createTagPathLinkType(),
                 PK: createTagPathLinkPartitionKey({
                     tenant: item.tenant,
-                    tag: item
+                    tag: item,
+                    path: item.path
                 }),
                 SK: createTagPathLinkSortKey({
                     tag: item,
@@ -306,7 +313,8 @@ export const createRenderStorageOperations = (
             return tagPathLinkEntity.deleteBatch({
                 PK: createTagPathLinkPartitionKey({
                     tag,
-                    tenant
+                    tenant,
+                    path
                 }),
                 SK: createTagPathLinkSortKey({
                     tag,

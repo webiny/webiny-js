@@ -201,7 +201,7 @@ export async function migrate(
         return entity.putBatch({
             PK: `T#${tenant}#PS#TAG#${tagLink.key}#${tagLink.value}#${url.pathname}`,
             SK: `${tagLink.value}#${url.pathname}`,
-            TYPE: tagLink.TYPE,
+            TYPE: "ps.tagPathLink",
             GSI1_PK: `T#${tenant}#PS#TAG`,
             GSI1_SK: `${tagLink.key}#${tagLink.value}#${url.pathname}`,
             data: {
