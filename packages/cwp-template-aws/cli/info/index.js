@@ -9,7 +9,7 @@ const printEnvOutput = async (env, context) => {
     console.log(line);
 
     let stacksDeployedCount = 0;
-    let output = getStackOutput({ folder: "api", env });
+    let output = getStackOutput({ folder: "apps/api", env });
     if (output) {
         stacksDeployedCount++;
         console.log(
@@ -22,7 +22,7 @@ const printEnvOutput = async (env, context) => {
             ].join("\n")
         );
     } else {
-        context.info(`Stack ${green("api")} not deployed yet.`);
+        context.info(`Stack ${green("apps/api")} not deployed yet.`);
     }
 
     output = getStackOutput({ folder: "apps/admin", env });

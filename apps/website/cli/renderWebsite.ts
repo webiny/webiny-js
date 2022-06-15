@@ -19,7 +19,7 @@ export default {
         }
 
         // 2. Get exports from `web  site` stack, for `args.env` environment.
-        const apiOutput = getStackOutput({ folder: "api", env: args.env });
+        const apiOutput = getStackOutput({ folder: "apps/api", env: args.env });
 
         context.info("Issuing a complete website render job...");
 

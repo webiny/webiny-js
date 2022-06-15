@@ -35,7 +35,7 @@ const storageResources = [
 
 module.exports = async inputs => {
     const apiPulumi = await getAppPulumi({
-        folder: "api"
+        folder: "apps/api"
     });
 
     // First we export API stack into variable as JSON
@@ -59,7 +59,7 @@ module.exports = async inputs => {
 
     // Now we can import API and storage.
     await importStack({
-        app: "api",
+        app: "apps/api",
         pulumi: apiPulumi,
         env: inputs.env,
         state: apiState
@@ -70,7 +70,7 @@ module.exports = async inputs => {
     });
 
     await importStack({
-        app: "storage",
+        app: "apps/core",
         pulumi: storagePulumi,
         env: inputs.env,
         state: storageState
@@ -174,14 +174,14 @@ function processStorageState({ state, env }) {
     // We are replacing it, so it will be recognized by pulumi code.
     for (const resource of storageResources) {
         const apiResourceUrn = getResourceUrn({
-            app: "api",
+            app: "apps/api",
             env: env,
             name: resource.oldName,
             type: resource.type
         });
 
         const storageResourceUrn = getResourceUrn({
-            app: "storage",
+            app: "apps/storage",
             env: env,
             name: resource.newName,
             type: resource.type
@@ -212,7 +212,7 @@ function processApiState({ state, env }) {
 
     for (const resource of storageResources) {
         const resourceUrn = getResourceUrn({
-            app: "api",
+            app: "apps/api",
             env: env,
             name: resource.oldName,
             type: resource.type

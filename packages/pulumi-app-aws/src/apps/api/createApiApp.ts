@@ -45,7 +45,7 @@ export function createApiApp(projectAppConfig: CreateApiAppConfig = {}) {
 export const createApiPulumiApp = (projectAppConfig: CreateApiAppConfig = {}) => {
     const app = createPulumiApp({
         name: "api",
-        path: "api",
+        path: "apps/api",
         config: projectAppConfig,
         program: async app => {
             // Enables logs forwarding.

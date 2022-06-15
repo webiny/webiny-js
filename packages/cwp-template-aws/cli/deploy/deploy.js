@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { green } = require("chalk");
 const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-const { sendEvent } = require("@webiny/cli/utils");
+const { sendEvent, getApiProjectApplicationFolder } = require("@webiny/cli/utils");
 const path = require("path");
 const execa = require("execa");
 const sleep = require("../utils/sleep");
@@ -41,10 +41,7 @@ module.exports = async (inputs, context) => {
     // 2. Check if first deployment.
 
     // 2.1 Check the location of `api` project application (can be `api` or `apps/api`).
-    let apiFolder = "apps/api";
-    if (fs.existsSync(path.join(context.project.root, "api"))) {
-        apiFolder = "api";
-    }
+    const apiFolder = getApiProjectApplicationFolder(context.project);
 
     // 2.2 We want to be backwards compatible. That's why we need to take into
     // consideration that some projects do not have the `core` application.
