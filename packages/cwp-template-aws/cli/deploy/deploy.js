@@ -41,14 +41,14 @@ module.exports = async (inputs, context) => {
     // 2. Check if first deployment.
 
     // We want to be backwards compatible. That's why we need to take into
-    // consideration that some projects do not have the `storage` application.
-    const hasStorage = fs.statSync(path.join(context.project.root, "apps", "storage"));
+    // consideration that some projects do not have the `core` application.
+    const hasCore = fs.statSync(path.join(context.project.root, "apps", "core"));
 
-    // If we have at least `storage` output or `api` output,
+    // If we have at least `core` output or `api` output,
     // then we can be sure this is not the first deployment.
     let isFirstDeployment;
-    if (hasStorage) {
-        isFirstDeployment = !getStackOutput({ folder: "apps/storage", env });
+    if (hasCore) {
+        isFirstDeployment = !getStackOutput({ folder: "apps/core", env });
     } else {
         isFirstDeployment = !getStackOutput({ folder: "api", env });
     }
@@ -68,13 +68,13 @@ module.exports = async (inputs, context) => {
     try {
         await sendEvent({ event: "project-deploy-start" });
 
-        // Deploying `storage` project application.
-        if (hasStorage) {
+        // Deploying `core` project application.
+        if (hasCore) {
             isFirstDeployment && console.log();
-            context.info(`Deploying ${green("storage")} project application...`);
+            context.info(`Deploying ${green("core")} project application...`);
 
-            await deploy("apps/storage", env, inputs);
-            context.success(`${green("storage")} project application was deployed successfully!`);
+            await deploy("apps/core", env, inputs);
+            context.success(`${green("core")} project application was deployed successfully!`);
             isFirstDeployment && (await sleep(2000));
         }
 

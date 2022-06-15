@@ -14,7 +14,7 @@ A small framework for creating flexible Pulumi programs.
 - [Examples](#examples)
 - [Reference](#reference)
     - [Apps](#functions)
-        - [`createStorageApp`](#createStorageApp)
+        - [`createCoreApp`](#createCoreApp)
         - [`createApiApp`](#createApiApp)
         - [`createAdminApp`](#createAdminApp)
         - [`createWebsiteApp`](#createWebsiteApp)
@@ -49,14 +49,14 @@ A set of Pulumi apps that deploy Webiny CMS into Amazon Web Services (AWS).
 
 ### Apps
 
-#### `createStorageApp`
+#### `createCoreApp`
 
 <details>
 <summary>Type Declaration</summary>
 <p>
 
 ```ts
-export interface CreateStorageAppConfig {
+export interface CreateCoreAppConfig {
     /**
      * Secures against deleting database by accident.
      * By default enabled in production environments.
@@ -75,16 +75,16 @@ export interface CreateStorageAppConfig {
     /**
      * Additional settings for backwards compatibility.
      */
-    legacy?: PulumiAppInput<StorageAppLegacyConfig>;
+    legacy?: PulumiAppInput<CoreAppLegacyConfig>;
     
     pulumi?: (app: ReturnType<typeof createStoragePulumiApp>) => void;
 }
 
-export interface StorageAppLegacyConfig {
+export interface CoreAppLegacyConfig {
     useEmailAsUsername?: boolean;
 }
 
-export declare function createStorageApp(projectAppConfig?: CreateStorageAppConfig): import("@webiny/pulumi-app").PulumiApp<{
+export declare function createCoreApp(projectAppConfig?: CreateCoreAppConfig): import("@webiny/pulumi-app").PulumiApp<{
     fileManagerBucket: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/s3").Bucket>;
     eventBus: import("@webiny/pulumi-app").PulumiAppResource<typeof import("@pulumi/aws/cloudwatch").EventBus>;
     elasticSearch: {
@@ -121,9 +121,9 @@ Creates Storage Pulumi app.
 import { createStoragePulumiApp } from "@webiny/pulumi-app-aws";
 
 export = async () => {
-  const storageApp = createStorageApp();
+  const coreApp = createCoreApp();
 
-  return storageApp.runProgram();
+  return coreApp.runProgram();
 };
 ```
 

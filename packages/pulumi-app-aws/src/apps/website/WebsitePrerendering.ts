@@ -7,7 +7,7 @@ import { PulumiApp } from "@webiny/pulumi-app";
 import { getLayerArn } from "@webiny/aws-layers";
 
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
-import { StorageOutput, VpcConfig } from "../common";
+import { CoreOutput, VpcConfig } from "../common";
 import { getAwsAccountId } from "../awsUtils";
 
 interface PreRenderingServiceParams {
@@ -41,7 +41,7 @@ function createRenderSubscriber(
     policy: pulumi.Output<aws.iam.Policy>,
     params: PreRenderingServiceParams
 ) {
-    const storage = app.getModule(StorageOutput);
+    const core = app.getModule(CoreOutput);
 
     const role = createLambdaRole(app, {
         name: "ps-render-subscriber-role",
@@ -77,7 +77,7 @@ function createRenderSubscriber(
     const eventRule = app.addResource(aws.cloudwatch.EventRule, {
         name: "ps-render-subscriber-event-rule",
         config: {
-            eventBusName: storage.eventBusArn,
+            eventBusName: core.eventBusArn,
             eventPattern: JSON.stringify({
                 "detail-type": ["RenderPages"]
             })
@@ -98,7 +98,7 @@ function createRenderSubscriber(
         name: "ps-render-subscriber-event-target",
         config: {
             rule: eventRule.output.name,
-            eventBusName: storage.eventBusArn,
+            eventBusName: core.eventBusArn,
             arn: lambda.output.arn
         }
     });
@@ -172,7 +172,7 @@ function createFlushService(
     policy: pulumi.Output<aws.iam.Policy>,
     params: PreRenderingServiceParams
 ) {
-    const storage = app.getModule(StorageOutput);
+    const core = app.getModule(CoreOutput);
 
     const role = createLambdaRole(app, {
         name: "ps-flush-lambda-role",
@@ -207,7 +207,7 @@ function createFlushService(
     const eventRule = app.addResource(aws.cloudwatch.EventRule, {
         name: "ps-flush-event-rule",
         config: {
-            eventBusName: storage.eventBusArn,
+            eventBusName: core.eventBusArn,
             eventPattern: JSON.stringify({
                 "detail-type": ["FlushPages"]
             })
@@ -228,7 +228,7 @@ function createFlushService(
         name: "ps-flush-event-target",
         config: {
             rule: eventRule.output.name,
-            eventBusName: storage.eventBusArn,
+            eventBusName: core.eventBusArn,
             arn: lambda.output.arn
         }
     });
@@ -244,7 +244,7 @@ function createFlushService(
 }
 
 function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>) {
-    const storage = app.getModule(StorageOutput);
+    const core = app.getModule(CoreOutput);
     const awsAccountId = getAwsAccountId(app);
 
     return app.addResource(aws.iam.Policy, {
@@ -267,7 +267,7 @@ function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>)
                             "dynamodb:Scan",
                             "dynamodb:UpdateItem"
                         ],
-                        Resource: storage.apply(s => {
+                        Resource: core.apply(s => {
                             // Add permissions to DynamoDB table
                             const resources = [
                                 `${s.primaryDynamodbTableArn}`,
@@ -296,7 +296,7 @@ function createLambdaPolicy(app: PulumiApp, queue: pulumi.Output<aws.sqs.Queue>)
                             "s3:PutObjectAcl"
                         ],
                         Resource: [
-                            pulumi.interpolate`arn:aws:s3:::${storage.fileManagerBucketId}/*`,
+                            pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`,
                             /**
                              * We're using the hard-coded value for "delivery" S3 bucket because;
                              * It is created during deployment of the `apps/website` stack which is after the api stack,

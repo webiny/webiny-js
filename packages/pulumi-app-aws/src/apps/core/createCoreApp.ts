@@ -1,14 +1,14 @@
 import { createPulumiApp } from "@webiny/pulumi-app";
 import { PulumiAppInput, getPulumiAppInput } from "../utils";
-import { StorageCognito } from "./StorageCognito";
-import { StorageDynamo } from "./StorageDynamo";
-import { ElasticSearch } from "./StorageElasticSearch";
-import { StorageEventBus } from "./StorageEventBus";
-import { StorageFileManger } from "./StorageFileManager";
-import { StorageVpc } from "./StorageVpc";
+import { CoreCognito } from "./CoreCognito";
+import { CoreDynamo } from "./CoreDynamo";
+import { ElasticSearch } from "./CoreElasticSearch";
+import { CoreEventBus } from "./CoreEventBus";
+import { CoreFileManger } from "./CoreFileManager";
+import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
 
-export interface CreateStorageAppConfig {
+export interface CreateCoreAppConfig {
     /**
      * Secures against deleting database by accident.
      * By default enabled in production environments.
@@ -27,52 +27,52 @@ export interface CreateStorageAppConfig {
     /**
      * Additional settings for backwards compatibility.
      */
-    legacy?: PulumiAppInput<StorageAppLegacyConfig>;
+    legacy?: PulumiAppInput<CoreAppLegacyConfig>;
 
-    pulumi?: (app: ReturnType<typeof createStoragePulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createCorePulumiApp>) => void;
 }
 
-export interface StorageAppLegacyConfig {
+export interface CoreAppLegacyConfig {
     useEmailAsUsername?: boolean;
 }
 
-export function createStorageApp(projectAppConfig: CreateStorageAppConfig = {}) {
+export function createCoreApp(projectAppConfig: CreateCoreAppConfig = {}) {
     return {
-        id: "storage",
-        name: "Storage",
-        description: "Your project's persistent storages.",
-        pulumi: createStoragePulumiApp(projectAppConfig)
+        id: "core",
+        name: "Core",
+        description: "Your project's persistent cores.",
+        pulumi: createCorePulumiApp(projectAppConfig)
     };
 }
 
-export function createStoragePulumiApp(projectAppConfig: CreateStorageAppConfig = {}) {
+export function createCorePulumiApp(projectAppConfig: CreateCoreAppConfig = {}) {
     const app = createPulumiApp({
-        name: "storage",
-        path: "apps/storage",
+        name: "core",
+        path: "apps/core",
         config: projectAppConfig,
         program: app => {
             const protect = app.config.run.protect || false;
             const legacyConfig = app.config.run.legacyConfig || {};
 
             // Setup DynamoDB table
-            const dynamoDbTable = app.addModule(StorageDynamo, { protect });
+            const dynamoDbTable = app.addModule(CoreDynamo, { protect });
 
             // Setup VPC
             // const vpcEnabled = getAppInput(app, config.vpc) ?? app.ctx.env === "prod";
             const vpcEnabled = projectAppConfig?.vpc || app.config.run.env === "prod";
-            const vpc = vpcEnabled ? app.addModule(StorageVpc) : null;
+            const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
 
             // Setup Cognito
-            const cognito = app.addModule(StorageCognito, {
+            const cognito = app.addModule(CoreCognito, {
                 protect,
                 useEmailAsUsername: legacyConfig.useEmailAsUsername ?? false
             });
 
             // Setup event bus
-            const eventBus = app.addModule(StorageEventBus);
+            const eventBus = app.addModule(CoreEventBus);
 
-            // Setup file storage bucket
-            const fileManagerBucket = app.addModule(StorageFileManger, { protect });
+            // Setup file core bucket
+            const fileManagerBucket = app.addModule(CoreFileManger, { protect });
 
             const elasticSearch = getPulumiAppInput(app, projectAppConfig?.elasticSearch)
                 ? app.addModule(ElasticSearch, { protect })

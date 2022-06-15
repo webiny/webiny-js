@@ -7,14 +7,14 @@ import { getLayerArn } from "@webiny/aws-layers";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-app";
 
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
-import { StorageOutput, VpcConfig } from "../common";
+import { CoreOutput, VpcConfig } from "../common";
 
 export type ApiFileManager = PulumiAppModule<typeof ApiFileManager>;
 
 export const ApiFileManager = createAppModule({
     name: "ApiFileManager",
     config(app: PulumiApp) {
-        const storage = app.getModule(StorageOutput);
+        const core = app.getModule(CoreOutput);
 
         const policy = createFileManagerLambdaPolicy(app);
         const role = createLambdaRole(app, {
@@ -40,7 +40,7 @@ export const ApiFileManager = createAppModule({
                 environment: {
                     variables: {
                         ...getCommonLambdaEnvVariables(),
-                        S3_BUCKET: storage.fileManagerBucketId
+                        S3_BUCKET: core.fileManagerBucketId
                     }
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
@@ -64,7 +64,7 @@ export const ApiFileManager = createAppModule({
                 environment: {
                     variables: {
                         ...getCommonLambdaEnvVariables(),
-                        S3_BUCKET: storage.fileManagerBucketId
+                        S3_BUCKET: core.fileManagerBucketId
                     }
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
@@ -88,7 +88,7 @@ export const ApiFileManager = createAppModule({
                 environment: {
                     variables: {
                         ...getCommonLambdaEnvVariables(),
-                        S3_BUCKET: storage.fileManagerBucketId,
+                        S3_BUCKET: core.fileManagerBucketId,
                         IMAGE_TRANSFORMER_FUNCTION: transform.output.arn
                     }
                 },
@@ -102,7 +102,7 @@ export const ApiFileManager = createAppModule({
                 action: "lambda:InvokeFunction",
                 function: manage.output.arn,
                 principal: "s3.amazonaws.com",
-                sourceArn: pulumi.interpolate`arn:aws:s3:::${storage.fileManagerBucketId}`
+                sourceArn: pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}`
             },
             opts: {
                 dependsOn: [manage.output]
@@ -112,7 +112,7 @@ export const ApiFileManager = createAppModule({
         const bucketNotification = app.addResource(aws.s3.BucketNotification, {
             name: "bucketNotification",
             config: {
-                bucket: storage.fileManagerBucketId,
+                bucket: core.fileManagerBucketId,
                 lambdaFunctions: [
                     {
                         lambdaFunctionArn: manage.output.arn,
@@ -139,7 +139,7 @@ export const ApiFileManager = createAppModule({
 });
 
 function createFileManagerLambdaPolicy(app: PulumiApp) {
-    const storage = app.getModule(StorageOutput);
+    const core = app.getModule(CoreOutput);
 
     return app.addResource(aws.iam.Policy, {
         name: "FileManagerLambdaPolicy",
@@ -158,7 +158,7 @@ function createFileManagerLambdaPolicy(app: PulumiApp) {
                         Sid: "PermissionForS3",
                         Effect: "Allow",
                         Action: "s3:*",
-                        Resource: pulumi.interpolate`arn:aws:s3:::${storage.fileManagerBucketId}/*`
+                        Resource: pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`
                     }
                 ]
             }

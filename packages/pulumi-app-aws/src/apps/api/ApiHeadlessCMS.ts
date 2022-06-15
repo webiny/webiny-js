@@ -5,7 +5,7 @@ import * as aws from "@pulumi/aws";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-app";
 
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
-import { StorageOutput, VpcConfig } from "../common";
+import { CoreOutput, VpcConfig } from "../common";
 
 interface HeadlessCMSParams {
     env: Record<string, any>;
@@ -57,14 +57,14 @@ export const ApiHeadlessCMS = createAppModule({
 });
 
 function createHeadlessCmsLambdaPolicy(app: PulumiApp) {
-    const storageOutput = app.getModule(StorageOutput);
+    const coreOutput = app.getModule(CoreOutput);
 
     return app.addResource(aws.iam.Policy, {
         name: "HeadlessCmsLambdaPolicy",
         config: {
             description: "This policy enables access to Dynamodb streams",
-            // Storage is pulumi.Output, so we need to run apply() to resolve policy based on it
-            policy: storageOutput.apply(storage => {
+            // Core is pulumi.Output, so we need to run apply() to resolve policy based on it
+            policy: coreOutput.apply(core => {
                 const policy: aws.iam.PolicyDocument = {
                     Version: "2012-10-17",
                     Statement: [
@@ -124,27 +124,27 @@ function createHeadlessCmsLambdaPolicy(app: PulumiApp) {
                                 "dynamodb:UpdateTimeToLive"
                             ],
                             Resource: [
-                                `${storage.primaryDynamodbTableArn}`,
-                                `${storage.primaryDynamodbTableArn}/*`,
+                                `${core.primaryDynamodbTableArn}`,
+                                `${core.primaryDynamodbTableArn}/*`,
                                 // Attach permissions for elastic search dynamo as well (if ES is enabled).
-                                ...(storage.elasticsearchDynamodbTableArn
+                                ...(core.elasticsearchDynamodbTableArn
                                     ? [
-                                          `${storage.elasticsearchDynamodbTableArn}`,
-                                          `${storage.elasticsearchDynamodbTableArn}/*`
+                                          `${core.elasticsearchDynamodbTableArn}`,
+                                          `${core.elasticsearchDynamodbTableArn}/*`
                                       ]
                                     : [])
                             ]
                         },
                         // Attach permissions for elastic search domain as well (if ES is enabled).
-                        ...(storage.elasticsearchDomainArn
+                        ...(core.elasticsearchDomainArn
                             ? [
                                   {
                                       Sid: "PermissionForES",
                                       Effect: "Allow" as const,
                                       Action: "es:*",
                                       Resource: [
-                                          `${storage.elasticsearchDomainArn}`,
-                                          `${storage.elasticsearchDomainArn}/*`
+                                          `${core.elasticsearchDomainArn}`,
+                                          `${core.elasticsearchDomainArn}/*`
                                       ]
                                   }
                               ]

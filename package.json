@@ -7,7 +7,7 @@
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",
-      "apps/storage/code/*",
+      "apps/core/code/*",
       "api/code/apw/*",
       "api/code/fileManager/*",
       "api/code/graphql",

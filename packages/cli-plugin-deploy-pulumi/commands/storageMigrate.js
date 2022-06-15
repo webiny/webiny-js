@@ -66,7 +66,7 @@ module.exports = async inputs => {
     });
 
     const storagePulumi = await getAppPulumi({
-        folder: "apps/storage"
+        folder: "apps/core"
     });
 
     await importStack({

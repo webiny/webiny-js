@@ -5,7 +5,7 @@ import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { PulumiAppInput } from "../utils";
 import { createPrerenderingService } from "./WebsitePrerendering";
-import { StorageOutput, VpcConfig } from "../common";
+import { CoreOutput, VpcConfig } from "../common";
 import { getPulumiAppInput } from "../utils";
 import { tagResources } from "~/utils";
 
@@ -15,7 +15,7 @@ export interface CreateWebsiteAppConfig {
 
     /**
      * Enables or disables VPC for the API.
-     * For VPC to work you also have to enable it in the `storage` application.
+     * For VPC to work you also have to enable it in the `core` application.
      */
     vpc?: PulumiAppInput<boolean | undefined>;
 
@@ -43,8 +43,8 @@ export const createWebsitePulumiApp = (projectAppConfig: CreateWebsiteAppConfig 
         path: "apps/website",
         config: projectAppConfig,
         program: async app => {
-            // Register storage output as a module available for all other modules
-            const storage = app.addModule(StorageOutput);
+            // Register core output as a module available for all other modules
+            const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules
             app.addModule(VpcConfig, {
@@ -157,8 +157,8 @@ export const createWebsitePulumiApp = (projectAppConfig: CreateWebsiteAppConfig 
 
             const prerendering = createPrerenderingService(app, {
                 env: {
-                    DB_TABLE: storage.primaryDynamodbTableName,
-                    DB_TABLE_ELASTICSEARCH: pulumi.interpolate`${storage.elasticsearchDynamodbTableName}`,
+                    DB_TABLE: core.primaryDynamodbTableName,
+                    DB_TABLE_ELASTICSEARCH: pulumi.interpolate`${core.elasticsearchDynamodbTableName}`,
                     APP_URL: pulumi.interpolate`https://${appCloudfront.output.domainName}`,
                     DELIVERY_BUCKET: deliveryBucket.bucket.output.bucket,
                     DELIVERY_CLOUDFRONT: deliveryCloudfront.output.id,

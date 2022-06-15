@@ -1,8 +1,8 @@
 import * as aws from "@pulumi/aws";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-app";
 
-export type StorageFileManger = PulumiAppModule<typeof StorageFileManger>;
-export const StorageFileManger = createAppModule({
+export type CoreFileManger = PulumiAppModule<typeof CoreFileManger>;
+export const CoreFileManger = createAppModule({
     name: "FileManagerBucket",
     config(app: PulumiApp, params: { protect: boolean }) {
         return app.addResource(aws.s3.Bucket, {

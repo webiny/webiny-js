@@ -1,16 +1,16 @@
 import * as aws from "@pulumi/aws";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-app";
 
-export interface StorageCognitoParams {
+export interface CoreCognitoParams {
     protect: boolean;
     useEmailAsUsername: boolean;
 }
 
-export type StorageCognito = PulumiAppModule<typeof StorageCognito>;
+export type CoreCognito = PulumiAppModule<typeof CoreCognito>;
 
-export const StorageCognito = createAppModule({
+export const CoreCognito = createAppModule({
     name: "Cognito",
-    config(app: PulumiApp, params: StorageCognitoParams) {
+    config(app: PulumiApp, params: CoreCognitoParams) {
         const userPool = app.addResource(aws.cognito.UserPool, {
             name: "user-pool",
             config: {

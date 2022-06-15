@@ -1,19 +1,19 @@
 import { createAppModule, PulumiAppModule } from "@webiny/pulumi-app";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
-export type StorageOutput = PulumiAppModule<typeof StorageOutput>;
+export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
-export const StorageOutput = createAppModule({
-    name: "StorageOutput",
+export const CoreOutput = createAppModule({
+    name: "CoreOutput",
     config(app) {
         return app.addHandler(async () => {
             const output = getStackOutput({
-                folder: "apps/storage",
+                folder: "apps/core",
                 env: app.config.run.env
             });
 
             if (!output) {
-                throw new Error("Storage application is not deployed.");
+                throw new Error("Core application is not deployed.");
             }
 
             return {

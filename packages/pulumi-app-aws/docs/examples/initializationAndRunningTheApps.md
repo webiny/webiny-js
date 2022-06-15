@@ -13,7 +13,7 @@ The following examples show how each of the included Pulumi apps are initialized
 import { createStoragePulumiApp } from "@webiny/pulumi-app-aws";
 
 export = async () => {
-  const storageApp = createStorageApp();
+  const coreApp = createCoreApp();
 
   return myApp.runProgram();
 };

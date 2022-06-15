@@ -4,7 +4,7 @@ import * as aws from "@pulumi/aws";
 import { createAppModule, PulumiApp } from "@webiny/pulumi-app";
 
 import { getAwsAccountId } from "../awsUtils";
-import { StorageVpc } from "./StorageVpc";
+import { CoreVpc } from "./CoreVpc";
 
 export interface ElasticSearchParams {
     protect: boolean;
@@ -16,7 +16,7 @@ export const ElasticSearch = createAppModule({
         const domainName = "webiny-js";
         const accountId = getAwsAccountId(app);
 
-        const vpc = app.getModule(StorageVpc, { optional: true });
+        const vpc = app.getModule(CoreVpc, { optional: true });
 
         const domain = app.addResource(aws.elasticsearch.Domain, {
             name: domainName,

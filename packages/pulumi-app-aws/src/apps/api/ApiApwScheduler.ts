@@ -2,7 +2,7 @@ import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-app";
-import { StorageOutput } from "../common";
+import { CoreOutput } from "../common";
 import { getCommonLambdaEnvVariables } from "../lambdaUtils";
 
 interface ScheduleActionParams {
@@ -130,7 +130,7 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
 }
 
 function createExecuteActionLambdaPolicy(app: PulumiApp) {
-    const storage = app.getModule(StorageOutput);
+    const core = app.getModule(CoreOutput);
 
     return app.addResource(aws.iam.Policy, {
         name: "ApwSchedulerExecuteActionLambdaPolicy",
@@ -150,8 +150,8 @@ function createExecuteActionLambdaPolicy(app: PulumiApp) {
                         Effect: "Allow",
                         Action: ["dynamodb:Query", "dynamodb:GetItem", "dynamodb:DeleteItem"],
                         Resource: [
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]
@@ -235,7 +235,7 @@ function createScheduleActionLambda(
 }
 
 function createScheduleActionLambdaPolicy(app: PulumiApp) {
-    const storage = app.getModule(StorageOutput);
+    const core = app.getModule(CoreOutput);
 
     return app.addResource(aws.iam.Policy, {
         name: "ApwSchedulerScheduleActionLambdaPolicy",
@@ -261,8 +261,8 @@ function createScheduleActionLambdaPolicy(app: PulumiApp) {
                             "dynamodb:DeleteItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {
