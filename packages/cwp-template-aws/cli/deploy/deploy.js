@@ -79,7 +79,7 @@ module.exports = async (inputs, context) => {
         }
 
         // Deploying `api` project application.
-        isFirstDeployment && console.log();
+        console.log();
         context.info(`Deploying ${green("api")} project application...`);
 
         await deploy("api", env, inputs);
