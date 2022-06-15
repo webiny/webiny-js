@@ -57,7 +57,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
          */
         onBeforePageBlockCreate,
         onAfterPageBlockCreate,
- 
+
         async getPageBlock(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"

@@ -5,12 +5,7 @@ import { ErrorOptions } from "@webiny/error";
 jest.setTimeout(100000);
 
 describe("Page Blocks Test", () => {
-    const {
-        createPageBlock,
-        getPageBlock,
-        listPageBlocks,
-        createBlockCategory
-    } = useGqlHandler();
+    const { createPageBlock, getPageBlock, listPageBlocks, createBlockCategory } = useGqlHandler();
 
     test("create, read page blocks", async () => {
         const ids = [];

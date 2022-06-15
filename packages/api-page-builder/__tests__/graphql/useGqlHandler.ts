@@ -61,11 +61,7 @@ import {
     GET_BLOCK_CATEGORY
 } from "./graphql/blockCategories";
 
-import {
-    CREATE_PAGE_BLOCK,
-    LIST_PAGE_BLOCKS,
-    GET_PAGE_BLOCK
-} from "./graphql/pageBlocks";
+import { CREATE_PAGE_BLOCK, LIST_PAGE_BLOCKS, GET_PAGE_BLOCK } from "./graphql/pageBlocks";
 
 import path from "path";
 import fs from "fs";
