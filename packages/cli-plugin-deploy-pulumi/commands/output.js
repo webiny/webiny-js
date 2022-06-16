@@ -59,6 +59,6 @@ module.exports = async (inputs, context) => {
     }
 
     context.error(
-        `Project application ${red(folder)} (${red(stackName)} environment) does not exist.`
+        `Project application ${red(folder)} (${red(env)} environment) does not exist.`
     );
 };
