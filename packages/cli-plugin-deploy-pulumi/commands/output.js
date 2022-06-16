@@ -50,7 +50,7 @@ module.exports = async (inputs, context) => {
             args: {
                 json
             },
-            execa: { cwd: projectApplication.paths.workspace, stdio: "inherit" }
+            execa: { stdio: "inherit" }
         });
     }
 
