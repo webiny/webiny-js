@@ -57,15 +57,15 @@ export function createCorePulumiApp(projectAppConfig: CreateCoreAppConfig = {}) 
         path: "apps/core",
         config: projectAppConfig,
         program: app => {
-            const protect = app.config.run.protect || false;
-            const legacyConfig = app.config.run.legacyConfig || {};
+            const protect = app.getInput(projectAppConfig.protect) || app.config.run.env === 'prod';
+            const legacyConfig = app.getInput(projectAppConfig.legacy) || {};
 
             // Setup DynamoDB table
             const dynamoDbTable = app.addModule(CoreDynamo, { protect });
 
             // Setup VPC
             // const vpcEnabled = getAppInput(app, config.vpc) ?? app.ctx.env === "prod";
-            const vpcEnabled = projectAppConfig?.vpc || app.config.run.env === "prod";
+            const vpcEnabled = app.getInput(projectAppConfig?.vpc) || app.config.run.env === "prod";
             const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
 
             // Setup Cognito

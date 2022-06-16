@@ -1,4 +1,4 @@
-import { createPulumiApp, PulumiApp, PulumiAppInput } from "@webiny/pulumi";
+import { createPulumiApp, PulumiAppInput, PulumiAppInputCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
     ApiApwScheduler,
@@ -20,7 +20,7 @@ export interface CreateApiAppConfig {
     vpc?: PulumiAppInput<boolean>;
 
     /** Custom domain configuration */
-    domain?(app: PulumiApp): CustomDomainParams | undefined | void;
+    domain?: PulumiAppInputCallback<CustomDomainParams>;
 
     /**
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
@@ -170,7 +170,7 @@ export const createApiPulumiApp = (projectAppConfig: CreateApiAppConfig = {}) =>
 
             const cloudfront = app.addModule(ApiCloudfront);
 
-            const domain = projectAppConfig.domain?.(app);
+            const domain = app.getInput(projectAppConfig.domain);
             if (domain) {
                 applyCustomDomain(cloudfront, domain);
             }

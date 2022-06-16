@@ -1,13 +1,13 @@
 import * as aws from "@pulumi/aws";
 
-import { createPulumiApp, PulumiApp } from "@webiny/pulumi";
+import { createPulumiApp, PulumiAppInputCallback } from "@webiny/pulumi";
 import { tagResources } from "~/utils";
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
 export interface CreateAdminAppConfig {
     /** Custom domain configuration */
-    domain?(app: PulumiApp): CustomDomainParams | undefined | void;
+    domain?: PulumiAppInputCallback<CustomDomainParams>;
 
     /**
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
@@ -76,7 +76,7 @@ export const createAdminPulumiApp = (projectAppConfig: CreateAdminAppConfig) => 
                 }
             });
 
-            const domain = projectAppConfig.domain?.(app);
+            const domain = app.getInput(projectAppConfig.domain);
             if (domain) {
                 applyCustomDomain(cloudfront, domain);
             }
