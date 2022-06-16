@@ -7,7 +7,7 @@ import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "../common";
 import { tagResources } from "~/utils";
 
-export interface CreateWebsiteAppConfig {
+export interface CreateWebsiteAppParams {
     /** Custom domain configuration */
     domain?: PulumiAppInputCallback<CustomDomainParams>;
 
@@ -24,7 +24,7 @@ export interface CreateWebsiteAppConfig {
     pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
 }
 
-export function createWebsiteApp(projectAppConfig: CreateWebsiteAppConfig = {}) {
+export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) {
     return {
         id: "website",
         name: "Website",
@@ -35,22 +35,22 @@ export function createWebsiteApp(projectAppConfig: CreateWebsiteAppConfig = {}) 
                 deploy: false
             }
         },
-        pulumi: createWebsitePulumiApp(projectAppConfig)
+        pulumi: createWebsitePulumiApp(projectAppParams)
     };
 }
 
-export const createWebsitePulumiApp = (projectAppConfig: CreateWebsiteAppConfig = {}) => {
+export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams = {}) => {
     const app = createPulumiApp({
         name: "website",
         path: "apps/website",
-        config: projectAppConfig,
+        config: projectAppParams,
         program: async app => {
             // Register core output as a module available for all other modules
             const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules
             app.addModule(VpcConfig, {
-                enabled: app.getInput(projectAppConfig.vpc)
+                enabled: app.getInput(projectAppParams.vpc)
             });
 
             const appBucket = createPublicAppBucket(app, "app");
@@ -168,7 +168,7 @@ export const createWebsitePulumiApp = (projectAppConfig: CreateWebsiteAppConfig 
                 }
             });
 
-            const domain = app.getInput(projectAppConfig.domain);
+            const domain = app.getInput(projectAppParams.domain);
             if (domain) {
                 applyCustomDomain(deliveryCloudfront, domain);
             }
@@ -209,8 +209,8 @@ export const createWebsitePulumiApp = (projectAppConfig: CreateWebsiteAppConfig 
         }
     });
 
-    if (projectAppConfig.pulumi) {
-        projectAppConfig.pulumi(app);
+    if (projectAppParams.pulumi) {
+        projectAppParams.pulumi(app);
     }
 
     return app;

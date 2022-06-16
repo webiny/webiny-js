@@ -12,7 +12,7 @@ import { CoreOutput, VpcConfig } from "./../common";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { tagResources } from "~/utils";
 
-export interface CreateApiAppConfig {
+export interface CreateApiAppParams {
     /**
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the Core application.
@@ -29,7 +29,7 @@ export interface CreateApiAppConfig {
     pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
 }
 
-export function createApiApp(projectAppConfig: CreateApiAppConfig = {}) {
+export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
     return {
         id: "api",
         name: "API",
@@ -42,15 +42,15 @@ export function createApiApp(projectAppConfig: CreateApiAppConfig = {}) {
                 depth: 5
             }
         },
-        pulumi: createApiPulumiApp(projectAppConfig)
+        pulumi: createApiPulumiApp(projectAppParams)
     };
 }
 
-export const createApiPulumiApp = (projectAppConfig: CreateApiAppConfig = {}) => {
+export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) => {
     const app = createPulumiApp({
         name: "api",
         path: "apps/api",
-        config: projectAppConfig,
+        config: projectAppParams,
         program: async app => {
             // Enables logs forwarding.
             // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
@@ -61,7 +61,7 @@ export const createApiPulumiApp = (projectAppConfig: CreateApiAppConfig = {}) =>
 
             // Register VPC config module to be available to other modules
             app.addModule(VpcConfig, {
-                enabled: app.getInput(projectAppConfig.vpc)
+                enabled: app.getInput(projectAppParams.vpc)
             });
 
             const pageBuilder = app.addModule(ApiPageBuilder, {
@@ -170,7 +170,7 @@ export const createApiPulumiApp = (projectAppConfig: CreateApiAppConfig = {}) =>
 
             const cloudfront = app.addModule(ApiCloudfront);
 
-            const domain = app.getInput(projectAppConfig.domain);
+            const domain = app.getInput(projectAppParams.domain);
             if (domain) {
                 applyCustomDomain(cloudfront, domain);
             }
@@ -206,8 +206,8 @@ export const createApiPulumiApp = (projectAppConfig: CreateApiAppConfig = {}) =>
         }
     });
 
-    if (projectAppConfig.pulumi) {
-        projectAppConfig.pulumi(app);
+    if (projectAppParams.pulumi) {
+        projectAppParams.pulumi(app);
     }
 
     return app;

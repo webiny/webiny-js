@@ -5,7 +5,7 @@ import { tagResources } from "~/utils";
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
-export interface CreateAdminAppConfig {
+export interface CreateAdminAppParams {
     /** Custom domain configuration */
     domain?: PulumiAppInputCallback<CustomDomainParams>;
 
@@ -16,7 +16,7 @@ export interface CreateAdminAppConfig {
     pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
 }
 
-export function createAdminApp(projectAppConfig: CreateAdminAppConfig = {}) {
+export function createAdminApp(projectAppParams: CreateAdminAppParams = {}) {
     return {
         id: "admin",
         name: "Admin",
@@ -27,15 +27,15 @@ export function createAdminApp(projectAppConfig: CreateAdminAppConfig = {}) {
                 deploy: false
             }
         },
-        pulumi: createAdminPulumiApp(projectAppConfig)
+        pulumi: createAdminPulumiApp(projectAppParams)
     };
 }
 
-export const createAdminPulumiApp = (projectAppConfig: CreateAdminAppConfig) => {
+export const createAdminPulumiApp = (projectAppParams: CreateAdminAppParams) => {
     const app = createPulumiApp({
         name: "admin",
         path: "apps/admin",
-        config: projectAppConfig,
+        config: projectAppParams,
         program: async app => {
             const bucket = createPublicAppBucket(app, "admin-app");
 
@@ -76,7 +76,7 @@ export const createAdminPulumiApp = (projectAppConfig: CreateAdminAppConfig) => 
                 }
             });
 
-            const domain = app.getInput(projectAppConfig.domain);
+            const domain = app.getInput(projectAppParams.domain);
             if (domain) {
                 applyCustomDomain(cloudfront, domain);
             }
@@ -99,8 +99,8 @@ export const createAdminPulumiApp = (projectAppConfig: CreateAdminAppConfig) => 
         }
     });
 
-    if (projectAppConfig.pulumi) {
-        projectAppConfig.pulumi(app);
+    if (projectAppParams.pulumi) {
+        projectAppParams.pulumi(app);
     }
 
     return app;

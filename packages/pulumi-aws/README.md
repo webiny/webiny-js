@@ -56,7 +56,7 @@ A set of Pulumi apps that deploy Webiny CMS into Amazon Web Services (AWS).
 <p>
 
 ```ts
-export interface CreateCoreAppConfig {
+export interface CreateCoreAppParams {
     /**
      * Secures against deleting database by accident.
      * By default enabled in production environments.
@@ -84,7 +84,7 @@ export interface CoreAppLegacyConfig {
     useEmailAsUsername?: boolean;
 }
 
-export declare function createCoreApp(projectAppConfig?: CreateCoreAppConfig): import("@webiny/pulumi").PulumiApp<{
+export declare function createCoreApp(projectAppParams?: CreateCoreAppParams): import("@webiny/pulumi").PulumiApp<{
     fileManagerBucket: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/s3").Bucket>;
     eventBus: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/cloudwatch").EventBus>;
     elasticSearch: {
@@ -134,7 +134,7 @@ export = async () => {
 <p>
 
 ```ts
-export interface CreateApiAppConfig {
+export interface CreateApiAppParams {
     /**
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the Storage application.
@@ -145,7 +145,7 @@ export interface CreateApiAppConfig {
     pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
 }
 
-export declare const createApiPulumiApp: (projectAppConfig?: CreateApiAppConfig) => PulumiApp<{
+export declare const createApiPulumiApp: (projectAppParams?: CreateApiAppParams) => PulumiApp<{
     fileManager: {
         functions: {
             transform: import("@webiny/pulumi").PulumiAppResource<typeof import("@pulumi/aws/lambda").Function>;
@@ -223,13 +223,13 @@ import * as aws from "@pulumi/aws";
 import { PulumiApp } from "@webiny/pulumi";
 import { CustomDomainParams } from "../customDomain";
 
-export interface CreateAdminAppConfig {
+export interface CreateAdminAppParams {
     /** Custom domain configuration */
     domain?(app: PulumiApp): CustomDomainParams | undefined | void;
     pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
 }
 
-export declare const createAdminPulumiApp: (projectAppConfig: CreateAdminAppConfig) => PulumiApp<{
+export declare const createAdminPulumiApp: (projectAppParams: CreateAdminAppParams) => PulumiApp<{
     cloudfront: import("@webiny/pulumi").PulumiAppResource<typeof aws.cloudfront.Distribution>;
     bucket: import("@webiny/pulumi").PulumiAppResource<typeof aws.s3.Bucket>;
     origin: aws.types.input.cloudfront.DistributionOrigin;
@@ -263,7 +263,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { PulumiApp, PulumiAppInput } from "@webiny/pulumi";
 import { CustomDomainParams } from "../customDomain";
-export interface CreateWebsiteAppConfig {
+export interface CreateWebsiteAppParams {
     /** Custom domain configuration */
     domain?(app: PulumiApp): CustomDomainParams | undefined | void;
     /**
@@ -273,7 +273,7 @@ export interface CreateWebsiteAppConfig {
     vpc?: PulumiAppInput<boolean | undefined>;
     pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
 }
-export declare const createWebsitePulumiApp: (projectAppConfig?: CreateWebsiteAppConfig) => PulumiApp<{
+export declare const createWebsitePulumiApp: (projectAppParams?: CreateWebsiteAppParams) => PulumiApp<{
     prerendering: {
         subscriber: {
             policy: pulumi.Output<aws.iam.Policy>;

@@ -7,7 +7,7 @@ import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
 
-export interface CreateCoreAppConfig {
+export interface CreateCoreAppParams {
     /**
      * Secures against deleting database by accident.
      * By default enabled in production environments.
@@ -42,30 +42,30 @@ export interface CoreAppLegacyConfig {
     useEmailAsUsername?: boolean;
 }
 
-export function createCoreApp(projectAppConfig: CreateCoreAppConfig = {}) {
+export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
     return {
         id: "core",
         name: "Core",
         description: "Your project's persistent cores.",
-        pulumi: createCorePulumiApp(projectAppConfig)
+        pulumi: createCorePulumiApp(projectAppParams)
     };
 }
 
-export function createCorePulumiApp(projectAppConfig: CreateCoreAppConfig = {}) {
+export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) {
     const app = createPulumiApp({
         name: "core",
         path: "apps/core",
-        config: projectAppConfig,
+        config: projectAppParams,
         program: app => {
-            const protect = app.getInput(projectAppConfig.protect) || app.config.run.env === 'prod';
-            const legacyConfig = app.getInput(projectAppConfig.legacy) || {};
+            const protect = app.getInput(projectAppParams.protect) || app.config.run.env === 'prod';
+            const legacyConfig = app.getInput(projectAppParams.legacy) || {};
 
             // Setup DynamoDB table
             const dynamoDbTable = app.addModule(CoreDynamo, { protect });
 
             // Setup VPC
             // const vpcEnabled = getAppInput(app, config.vpc) ?? app.ctx.env === "prod";
-            const vpcEnabled = app.getInput(projectAppConfig?.vpc) || app.config.run.env === "prod";
+            const vpcEnabled = app.getInput(projectAppParams?.vpc) || app.config.run.env === "prod";
             const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
 
             // Setup Cognito
@@ -80,7 +80,7 @@ export function createCorePulumiApp(projectAppConfig: CreateCoreAppConfig = {}) 
             // Setup file core bucket
             const fileManagerBucket = app.addModule(CoreFileManger, { protect });
 
-            const elasticSearch = app.getInput(projectAppConfig?.elasticSearch)
+            const elasticSearch = app.getInput(projectAppParams?.elasticSearch)
                 ? app.addModule(ElasticSearch, { protect })
                 : null;
 
@@ -113,8 +113,8 @@ export function createCorePulumiApp(projectAppConfig: CreateCoreAppConfig = {}) 
         }
     });
 
-    if (projectAppConfig.pulumi) {
-        projectAppConfig.pulumi(app);
+    if (projectAppParams.pulumi) {
+        projectAppParams.pulumi(app);
     }
 
     return app;
