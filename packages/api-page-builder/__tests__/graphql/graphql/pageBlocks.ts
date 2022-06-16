@@ -32,3 +32,25 @@ export const CREATE_PAGE_BLOCK = /* GraphQL */ `
         }
     }
 `;
+
+export const LIST_PAGE_BLOCKS = /* GraphQL */ `
+    query ListPageBlocks {
+        pageBuilder {
+            listPageBlocks {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const GET_PAGE_BLOCK = /* GraphQL */ `
+    query GetPageBlock($id: ID!) {
+        pageBuilder {
+            getPageBlock(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;

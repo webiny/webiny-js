@@ -567,6 +567,12 @@ export interface BlockCategoriesCrud {
     onAfterBlockCategoryDelete: Topic<OnAfterBlockCategoryDeleteTopicParams>;
 }
 
+export interface ListPageBlocksParams {
+    sort?: string[];
+    where?: {
+        blockCategory?: string;
+    };
+}
 /**
  * @category Lifecycle events
  */
@@ -585,6 +591,8 @@ export interface OnAfterPageBlockCreateTopicParams {
  * @category PageBlocks
  */
 export interface PageBlocksCrud {
+    getPageBlock(id: string): Promise<PageBlock | null>;
+    listPageBlocks(params?: ListPageBlocksParams): Promise<PageBlock[]>;
     createPageBlock(data: Record<string, any>): Promise<PageBlock>;
 
     /**

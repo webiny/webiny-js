@@ -5,9 +5,12 @@ import { ErrorOptions } from "@webiny/error";
 jest.setTimeout(100000);
 
 describe("Page Blocks Test", () => {
-    const { createPageBlock, createBlockCategory } = useGqlHandler();
+    const { createPageBlock, getPageBlock, listPageBlocks, createBlockCategory } = useGqlHandler();
 
-    test("create page blocks", async () => {
+    test("create, read page blocks", async () => {
+        const ids = [];
+        const prefixes = ["page-block-one-", "page-block-two-", "page-block-three-"];
+
         // Create block category
         await createBlockCategory({
             data: {
@@ -16,12 +19,13 @@ describe("Page Blocks Test", () => {
             }
         });
 
+        // Test creating, getting three page blocks.
         for (let i = 0; i < 3; i++) {
-            const prefix = `page-block-${i}-`;
+            const prefix = prefixes[i];
             const data = {
                 name: `${prefix}name`,
-                blockCategory: "block-category",
-                preview: { src: `https://test.com/${prefix}/src.jpg` },
+                blockCategory: `block-category`,
+                preview: { src: `https://test.com/${prefix}name/src.jpg` },
                 content: { some: `${prefix}content` }
             };
 
@@ -40,10 +44,77 @@ describe("Page Blocks Test", () => {
                     }
                 }
             });
+
+            ids.push(createPageBlockResponse.data.pageBuilder.createPageBlock.data.id);
+
+            const [getPageBlockResponse] = await getPageBlock({ id: ids[i] });
+            expect(getPageBlockResponse).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getPageBlock: {
+                            data,
+                            error: null
+                        }
+                    }
+                }
+            });
         }
+
+        // List should show three page blocks.
+        const [listPageBlocksResponse] = await listPageBlocks();
+        expect(listPageBlocksResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPageBlocks: {
+                        data: [
+                            {
+                                blockCategory: "block-category",
+                                content: {
+                                    some: "page-block-one-content"
+                                },
+                                createdBy: defaultIdentity,
+                                createdOn: /^20/,
+                                id: ids[0],
+                                name: "page-block-one-name",
+                                preview: {
+                                    src: "https://test.com/page-block-one-name/src.jpg"
+                                }
+                            },
+                            {
+                                blockCategory: "block-category",
+                                content: {
+                                    some: "page-block-two-content"
+                                },
+                                createdBy: defaultIdentity,
+                                createdOn: /^20/,
+                                id: ids[1],
+                                name: "page-block-two-name",
+                                preview: {
+                                    src: "https://test.com/page-block-two-name/src.jpg"
+                                }
+                            },
+                            {
+                                blockCategory: "block-category",
+                                content: {
+                                    some: "page-block-three-content"
+                                },
+                                createdBy: defaultIdentity,
+                                createdOn: /^20/,
+                                id: ids[2],
+                                name: "page-block-three-name",
+                                preview: {
+                                    src: "https://test.com/page-block-three-name/src.jpg"
+                                }
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
     });
 
-    test("cannot create page block if no such block category", async () => {
+    test("cannot create page block with empty or missing block category", async () => {
         const [createPageBlockEmptyCategoryResponse] = await createPageBlock({
             data: {
                 name: "name",
@@ -97,6 +168,24 @@ describe("Page Blocks Test", () => {
                     createPageBlock: {
                         data: null,
                         error
+                    }
+                }
+            }
+        });
+    });
+
+    test("cannot get a page block by empty id", async () => {
+        const [getPageBlockEmptyIdResponse] = await getPageBlock({ id: "" });
+        expect(getPageBlockEmptyIdResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPageBlock: {
+                        data: null,
+                        error: {
+                            code: "GET_PAGE_BLOCK_ERROR",
+                            data: null,
+                            message: "Could not load page block by empty id."
+                        }
                     }
                 }
             }
