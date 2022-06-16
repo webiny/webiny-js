@@ -156,7 +156,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
 
             const resource: PulumiAppResource<T> = {
                 name: params.name,
-                config: createConfigProxy(config),
+                config: createPulumiAppResourceConfigProxy(config),
                 opts,
                 output: pulumi.output(promise)
             };
@@ -255,7 +255,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
     return app;
 }
 
-function createConfigProxy<T extends object>(obj: T) {
+function createPulumiAppResourceConfigProxy<T extends object>(obj: T) {
     return new Proxy(obj, {
         get(target, p: string) {
             type V = T[keyof T];
