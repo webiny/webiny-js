@@ -13,21 +13,28 @@ export interface CreateCoreAppConfig {
      * By default enabled in production environments.
      */
     protect?: PulumiAppInput<boolean>;
+
     /**
      * Enables ElasticSearch infrastructure.
      * Note that it requires also changes in application code.
      */
     elasticSearch?: PulumiAppInput<boolean>;
+
     /**
      * Enables VPC for the application.
      * By default enabled in production environments.
      */
     vpc?: PulumiAppInput<boolean>;
+
     /**
      * Additional settings for backwards compatibility.
      */
     legacy?: PulumiAppInput<CoreAppLegacyConfig>;
 
+    /**
+     * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
+     * or add additional ones into the mix.
+     */
     pulumi?: (app: ReturnType<typeof createCorePulumiApp>) => void;
 }
 

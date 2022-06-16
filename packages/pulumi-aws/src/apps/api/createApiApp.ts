@@ -22,6 +22,10 @@ export interface CreateApiAppConfig {
     /** Custom domain configuration */
     domain?(app: PulumiApp): CustomDomainParams | undefined | void;
 
+    /**
+     * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
+     * or add additional ones into the mix.
+     */
     pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
 }
 

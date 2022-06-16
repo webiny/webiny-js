@@ -17,6 +17,10 @@ export interface CreateWebsiteAppConfig {
      */
     vpc?: PulumiAppInput<boolean | undefined>;
 
+    /**
+     * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
+     * or add additional ones into the mix.
+     */
     pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
 }
 
