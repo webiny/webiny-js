@@ -17,8 +17,8 @@ export interface ResourceHandler {
     (resource: PulumiAppResource<PulumiAppResourceConstructor>): void;
 }
 
-export type PulumiAppInputCallback<T> = (app: PulumiApp) => T;
-export type PulumiAppInput<T> = T | PulumiAppInputCallback<T>;
+export type PulumiAppParamCallback<T> = (app: PulumiApp) => T;
+export type PulumiAppParam<T> = T | PulumiAppParamCallback<T>;
 
 export type PulumiProgram<TResources = Record<string, any>> = (
     app: PulumiApp
@@ -44,7 +44,7 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
     name: string;
     program: PulumiProgram<TResources>;
     resources: TResources;
-    config: {
+    params: {
         create: CreateConfig;
         run: RunConfig;
     };
@@ -79,7 +79,7 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
 
     addHandler<T>(handler: () => Promise<T> | T): pulumi.Output<pulumi.Unwrap<T>>;
 
-    getInput<T>(input: T | ((app: PulumiApp) => T)): T;
+    getParam<T>(param: T | ((app: PulumiApp) => T)): T;
 }
 
 export function createPulumiApp<TResources extends Record<string, unknown>>(
@@ -108,13 +108,13 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         resources: {} as TResources,
         name: params.name,
         program: params.program,
-        config: {
+        params: {
             create: params.config || {},
             run: {}
         },
 
         async run(config) {
-            app.config.run = config;
+            app.params.run = config;
 
             Object.assign(app.resources, await app.program(app));
 
@@ -122,7 +122,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
                 await handler();
             }
 
-            app.config.run = {};
+            app.params.run = {};
 
             return app.outputs;
         },
@@ -243,12 +243,12 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
             return pulumi.output(promise);
         },
 
-        getInput<T>(input: PulumiAppInput<T>) {
-            if (typeof input === "function") {
-                return (input as PulumiAppInputCallback<T>)(app);
+        getParam<T>(param: PulumiAppParam<T>) {
+            if (typeof param === "function") {
+                return (param as PulumiAppParamCallback<T>)(app);
             }
 
-            return input;
+            return param;
         }
     };
 

@@ -61,21 +61,21 @@ export interface CreateCoreAppParams {
      * Secures against deleting database by accident.
      * By default enabled in production environments.
      */
-    protect?: PulumiAppInput<boolean>;
+    protect?: PulumiAppParam<boolean>;
     /**
      * Enables ElasticSearch infrastructure.
      * Note that it requires also changes in application code.
      */
-    elasticSearch?: PulumiAppInput<boolean>;
+    elasticSearch?: PulumiAppParam<boolean>;
     /**
      * Enables VPC for the application.
      * By default enabled in production environments.
      */
-    vpc?: PulumiAppInput<boolean>;
+    vpc?: PulumiAppParam<boolean>;
     /**
      * Additional settings for backwards compatibility.
      */
-    legacy?: PulumiAppInput<CoreAppLegacyConfig>;
+    legacy?: PulumiAppParam<CoreAppLegacyConfig>;
     
     pulumi?: (app: ReturnType<typeof createStoragePulumiApp>) => void;
 }
@@ -139,7 +139,7 @@ export interface CreateApiAppParams {
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the Storage application.
      */
-    vpc?: PulumiAppInput<boolean>;
+    vpc?: PulumiAppParam<boolean>;
     /** Custom domain configuration */
     domain?(app: PulumiApp): CustomDomainParams | undefined | void;
     pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
@@ -261,7 +261,7 @@ export = async () => {
 ```ts
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { PulumiApp, PulumiAppInput } from "@webiny/pulumi";
+import { PulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CustomDomainParams } from "../customDomain";
 export interface CreateWebsiteAppParams {
     /** Custom domain configuration */
@@ -270,7 +270,7 @@ export interface CreateWebsiteAppParams {
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the `storage` application.
      */
-    vpc?: PulumiAppInput<boolean | undefined>;
+    vpc?: PulumiAppParam<boolean | undefined>;
     pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
 }
 export declare const createWebsitePulumiApp: (projectAppParams?: CreateWebsiteAppParams) => PulumiApp<{

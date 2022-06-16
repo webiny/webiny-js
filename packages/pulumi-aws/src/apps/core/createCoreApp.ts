@@ -1,4 +1,4 @@
-import { createPulumiApp, PulumiAppInput } from "@webiny/pulumi";
+import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
 import { ElasticSearch } from "./CoreElasticSearch";
@@ -12,24 +12,24 @@ export interface CreateCoreAppParams {
      * Secures against deleting database by accident.
      * By default enabled in production environments.
      */
-    protect?: PulumiAppInput<boolean>;
+    protect?: PulumiAppParam<boolean>;
 
     /**
      * Enables ElasticSearch infrastructure.
      * Note that it requires also changes in application code.
      */
-    elasticSearch?: PulumiAppInput<boolean>;
+    elasticSearch?: PulumiAppParam<boolean>;
 
     /**
      * Enables VPC for the application.
      * By default enabled in production environments.
      */
-    vpc?: PulumiAppInput<boolean>;
+    vpc?: PulumiAppParam<boolean>;
 
     /**
      * Additional settings for backwards compatibility.
      */
-    legacy?: PulumiAppInput<CoreAppLegacyConfig>;
+    legacy?: PulumiAppParam<CoreAppLegacyConfig>;
 
     /**
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
@@ -57,15 +57,14 @@ export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) 
         path: "apps/core",
         config: projectAppParams,
         program: app => {
-            const protect = app.getInput(projectAppParams.protect) || app.config.run.env === 'prod';
-            const legacyConfig = app.getInput(projectAppParams.legacy) || {};
+            const protect = app.getParam(projectAppParams.protect) || app.params.run.env === 'prod';
+            const legacyConfig = app.getParam(projectAppParams.legacy) || {};
 
             // Setup DynamoDB table
             const dynamoDbTable = app.addModule(CoreDynamo, { protect });
 
             // Setup VPC
-            // const vpcEnabled = getAppInput(app, config.vpc) ?? app.ctx.env === "prod";
-            const vpcEnabled = app.getInput(projectAppParams?.vpc) || app.config.run.env === "prod";
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) || app.params.run.env === "prod";
             const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
 
             // Setup Cognito
@@ -80,7 +79,7 @@ export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) 
             // Setup file core bucket
             const fileManagerBucket = app.addModule(CoreFileManger, { protect });
 
-            const elasticSearch = app.getInput(projectAppParams?.elasticSearch)
+            const elasticSearch = app.getParam(projectAppParams?.elasticSearch)
                 ? app.addModule(ElasticSearch, { protect })
                 : null;
 

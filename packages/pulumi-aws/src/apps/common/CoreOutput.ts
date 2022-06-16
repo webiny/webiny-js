@@ -9,7 +9,7 @@ export const CoreOutput = createAppModule({
         return app.addHandler(async () => {
             const output = getStackOutput({
                 folder: "apps/core",
-                env: app.config.run.env
+                env: app.params.run.env
             });
 
             if (!output) {

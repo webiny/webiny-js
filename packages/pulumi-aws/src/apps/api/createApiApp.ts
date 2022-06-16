@@ -1,4 +1,4 @@
-import { createPulumiApp, PulumiAppInput, PulumiAppInputCallback } from "@webiny/pulumi";
+import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
     ApiApwScheduler,
@@ -17,10 +17,10 @@ export interface CreateApiAppParams {
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the Core application.
      */
-    vpc?: PulumiAppInput<boolean>;
+    vpc?: PulumiAppParam<boolean>;
 
     /** Custom domain configuration */
-    domain?: PulumiAppInputCallback<CustomDomainParams>;
+    domain?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
@@ -61,7 +61,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) =>
 
             // Register VPC config module to be available to other modules
             app.addModule(VpcConfig, {
-                enabled: app.getInput(projectAppParams.vpc)
+                enabled: app.getParam(projectAppParams.vpc)
             });
 
             const pageBuilder = app.addModule(ApiPageBuilder, {
@@ -170,7 +170,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) =>
 
             const cloudfront = app.addModule(ApiCloudfront);
 
-            const domain = app.getInput(projectAppParams.domain);
+            const domain = app.getParam(projectAppParams.domain);
             if (domain) {
                 applyCustomDomain(cloudfront, domain);
             }
