@@ -1,5 +1,4 @@
-import { createPulumiApp } from "@webiny/pulumi";
-import { PulumiAppInput, getPulumiAppInput } from "../utils";
+import { createPulumiApp, PulumiAppInput } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
 import { ElasticSearch } from "./CoreElasticSearch";
@@ -74,7 +73,7 @@ export function createCorePulumiApp(projectAppConfig: CreateCoreAppConfig = {}) 
             // Setup file core bucket
             const fileManagerBucket = app.addModule(CoreFileManger, { protect });
 
-            const elasticSearch = getPulumiAppInput(app, projectAppConfig?.elasticSearch)
+            const elasticSearch = app.getInput(projectAppConfig?.elasticSearch)
                 ? app.addModule(ElasticSearch, { protect })
                 : null;
 

@@ -1,12 +1,10 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { createPulumiApp, PulumiApp } from "@webiny/pulumi";
+import { createPulumiApp, PulumiApp, PulumiAppInput } from "@webiny/pulumi";
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { PulumiAppInput } from "../utils";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "../common";
-import { getPulumiAppInput } from "../utils";
 import { tagResources } from "~/utils";
 
 export interface CreateWebsiteAppConfig {
@@ -48,7 +46,7 @@ export const createWebsitePulumiApp = (projectAppConfig: CreateWebsiteAppConfig 
 
             // Register VPC config module to be available to other modules
             app.addModule(VpcConfig, {
-                enabled: getPulumiAppInput(app, projectAppConfig.vpc)
+                enabled: app.getInput(projectAppConfig.vpc)
             });
 
             const appBucket = createPublicAppBucket(app, "app");

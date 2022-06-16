@@ -261,9 +261,8 @@ export = async () => {
 ```ts
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { PulumiApp } from "@webiny/pulumi";
+import { PulumiApp, PulumiAppInput } from "@webiny/pulumi";
 import { CustomDomainParams } from "../customDomain";
-import { PulumiAppInput } from "../utils";
 export interface CreateWebsiteAppConfig {
     /** Custom domain configuration */
     domain?(app: PulumiApp): CustomDomainParams | undefined | void;
