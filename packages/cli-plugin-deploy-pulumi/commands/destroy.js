@@ -1,7 +1,7 @@
 const path = require("path");
 const { red, green } = require("chalk");
 const { getProjectApplication } = require("@webiny/cli/utils");
-const { getPulumi, processHooks, login, createProjectApplicationWorkspace } = require("../utils");
+const { getPulumi, processHooks, login, createProjectApplicationWorkspace, loadEnvVariables } = require("../utils");
 
 module.exports = async (inputs, context) => {
     const { env, folder } = inputs;
@@ -20,6 +20,9 @@ module.exports = async (inputs, context) => {
     if (projectApplication.type === "v5-workspaces") {
         await createProjectApplicationWorkspace(projectApplication, { env });
     }
+
+    // Load env vars specified via .env files located in project application folder.
+    await loadEnvVariables(inputs, context);
 
     const pulumi = await getPulumi({ projectApplication });
 

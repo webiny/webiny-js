@@ -17,7 +17,8 @@ const {
     login,
     getPulumi,
     getRandomColorForString,
-    createProjectApplicationWorkspace
+    createProjectApplicationWorkspace,
+    loadEnvVariables
 } = require("../utils");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
@@ -48,6 +49,9 @@ module.exports = async (inputs, context) => {
         if (projectApplication.type === "v5-workspaces") {
             await createProjectApplicationWorkspace(projectApplication, { env: inputs.env });
         }
+
+        // Load env vars specified via .env files located in project application folder.
+        await loadEnvVariables(inputs, context);
     }
 
     inputs.build = inputs.build !== false;

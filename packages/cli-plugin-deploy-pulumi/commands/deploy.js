@@ -7,7 +7,8 @@ const {
     processHooks,
     login,
     notify,
-    createProjectApplicationWorkspace
+    createProjectApplicationWorkspace,
+    loadEnvVariables
 } = require("../utils");
 
 module.exports = async (inputs, context) => {
@@ -42,6 +43,9 @@ module.exports = async (inputs, context) => {
     if (projectApplication.type === "v5-workspaces") {
         await createProjectApplicationWorkspace(projectApplication, { env });
     }
+
+    // Load env vars specified via .env files located in project application folder.
+    await loadEnvVariables(inputs, context);
 
     const hookArgs = { context, env, inputs, projectApplication };
 
