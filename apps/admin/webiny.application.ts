@@ -3,6 +3,6 @@
  * https://www.webiny.com/docs/key-topics/cloud-infrastructure/admin/introduction
  */
 
-import { createAdminApp } from "@webiny/pulumi-app-aws";
+import { createAdminApp } from "@webiny/pulumi-aws";
 
 export default createAdminApp();

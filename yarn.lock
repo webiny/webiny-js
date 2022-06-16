@@ -13067,9 +13067,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pulumi-app-aws@workspace:packages/pulumi-app-aws":
+"@webiny/pulumi-aws@workspace:packages/pulumi-aws":
   version: 0.0.0-use.local
-  resolution: "@webiny/pulumi-app-aws@workspace:packages/pulumi-app-aws"
+  resolution: "@webiny/pulumi-aws@workspace:packages/pulumi-aws"
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
@@ -13083,7 +13083,7 @@ __metadata:
     "@webiny/cli": ^5.28.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.28.0
     "@webiny/project-utils": ^5.28.0
-    "@webiny/pulumi-app": ^5.28.0
+    "@webiny/pulumi": ^5.28.0
     chalk: ^4.1.0
     lodash: ^4.5.0
     mime: 2.5.2
@@ -13093,9 +13093,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pulumi-app@^5.28.0, @webiny/pulumi-app@workspace:packages/pulumi-app":
+"@webiny/pulumi@^5.28.0, @webiny/pulumi@workspace:packages/pulumi":
   version: 0.0.0-use.local
-  resolution: "@webiny/pulumi-app@workspace:packages/pulumi-app"
+  resolution: "@webiny/pulumi@workspace:packages/pulumi"
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
