@@ -101,6 +101,7 @@ class MenuItems extends React.Component<MenuItemsProps, MenuItemsState> {
                                         <Menu
                                             handle={<ButtonPrimary>+ Add menu item</ButtonPrimary>}
                                             anchor={"topEnd"}
+                                            data-testid="pb.menu.create.items.button"
                                         >
                                             <List className={menuItems}>
                                                 {pbMenuItemPlugins.map(pl => (

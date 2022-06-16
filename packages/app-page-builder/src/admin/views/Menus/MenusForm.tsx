@@ -183,17 +183,17 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
                         <Grid>
                             <Cell span={6}>
                                 <Bind name="title" validators={validation.create("required")}>
-                                    <Input label={t`Name`} />
+                                    <Input label={t`Name`} data-testid="pb.menu.create.name" />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
                                 <Bind name="slug" validators={validation.create("required")}>
-                                    <Input disabled={data.createdOn} label={t`Slug`} />
+                                    <Input disabled={data.createdOn} label={t`Slug`} data-testid="pb.menu.create.slug" />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="description">
-                                    <Input rows={5} label={t`Description`} />
+                                    <Input rows={5} label={t`Description`} data-testid="pb.menu.create.description"/>
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -208,6 +208,7 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
                             >{t`Cancel`}</ButtonDefault>
                             {canSave && (
                                 <ButtonPrimary
+                                    data-testid="pb.menu.save.button"
                                     onClick={ev => {
                                         form.submit(ev);
                                     }}
