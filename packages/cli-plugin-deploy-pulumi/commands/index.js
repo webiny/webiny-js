@@ -58,6 +58,7 @@ module.exports = [
                     });
                 },
                 async argv => {
+                    console.log('ajmoooooo', argv)
                     await deploy(argv, context);
                     process.exit(0);
                 }

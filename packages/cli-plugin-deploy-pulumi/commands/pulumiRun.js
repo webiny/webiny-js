@@ -1,30 +1,8 @@
-const path = require("path");
-const { red } = require("chalk");
-const { getProjectApplication } = require("@webiny/cli/utils");
-const { login, getPulumi, createProjectApplicationWorkspace, loadEnvVariables } = require("../utils");
+const { createPulumiCommand } = require("../utils");
 
-module.exports = async (inputs, context) => {
+module.exports = createPulumiCommand("pulumi", async ({ inputs, context, pulumi }) => {
     const [, ...command] = inputs._;
     const { env, folder, debug, variant } = inputs;
-
-    const cwd = process.cwd();
-
-    // Get project application metadata.
-    const projectApplication = getProjectApplication({
-        cwd: path.join(cwd, inputs.folder)
-    });
-
-    // If needed, let's create a project application workspace.
-    if (projectApplication.type === "v5-workspaces") {
-        await createProjectApplicationWorkspace(projectApplication, { env });
-    }
-
-    // Load env vars specified via .env files located in project application folder.
-    await loadEnvVariables(inputs, context);
-
-    await login(projectApplication);
-
-    const pulumi = await getPulumi({ projectApplication });
 
     if (env) {
         debug &&
@@ -54,7 +32,9 @@ module.exports = async (inputs, context) => {
 
         if (!stackExists) {
             throw new Error(
-                `Project application ${red(folder)} (${red(env)} environment) does not exist.`
+                `Project application ${context.error.hl(folder)} (${context.error.hl(
+                    env
+                )} environment) does not exist.`
             );
         }
     }
@@ -80,4 +60,4 @@ module.exports = async (inputs, context) => {
             }
         }
     });
-};
+});

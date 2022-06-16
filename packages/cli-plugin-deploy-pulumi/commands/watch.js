@@ -27,6 +27,8 @@ const WATCH_DISABLED_ENVIRONMENTS = ["prod", "production"];
 
 const PULUMI_WATCH_SUPPORTED = os.platform() !== "win32";
 
+// Note: we are not using `createPulumiCommand` here because this command has a bit specific
+// behaviour which is not encapsulated by `createPulumiCommand`. Maybe we can improve in the future.
 module.exports = async (inputs, context) => {
     // 1. Initial checks for deploy and build commands.
     if (!inputs.folder && !inputs.package) {
