@@ -14,6 +14,7 @@ import { createUserLoaders } from "./createAdminUsers/users.loaders";
 import { attachUserValidation } from "./createAdminUsers/users.validation";
 import { getWcpApiUrl } from "../../wcp/src/urls";
 import { getWcpProjectEnvironment } from "../../api-wcp/src/utils";
+import fetch from "node-fetch";
 
 interface AdminUsersConfig {
     getIdentity(): SecurityIdentity;
