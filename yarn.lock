@@ -13489,7 +13489,6 @@ __metadata:
     rimraf: ^3.0.2
     semver: ^7.3.5
     tar: ^6.0.5
-    trim-newlines: ^3.0.1
     typescript: 4.5.5
   languageName: unknown
   linkType: soft
