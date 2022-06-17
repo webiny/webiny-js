@@ -32,7 +32,7 @@
     "lodash": "^4.5.0",
     "md5": "^2.3.0",
     "mdbid": "^1.0.0",
-    "node-fetch": "3.2.6"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
