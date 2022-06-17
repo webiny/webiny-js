@@ -6,6 +6,7 @@ import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
 import { CoreOutput, VpcConfig } from "../common";
 import { tagResources } from "~/utils";
+import { applyTenantRouter } from "~/apps/tenantRouter";
 
 export interface CreateWebsiteAppParams {
     /** Custom domain configuration */
@@ -156,6 +157,10 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams 
             const domain = app.getParam(projectAppParams.domain);
             if (domain) {
                 applyCustomDomain(deliveryCloudfront, domain);
+            }
+
+            if (process.env.WEBINY_MULTI_TENANCY === "true") {
+                applyTenantRouter(app, deliveryCloudfront);
             }
 
             app.addOutputs({
