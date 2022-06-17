@@ -46,8 +46,8 @@
     "@webiny/handler-http": "^5.25.0",
     "@webiny/plugins": "^5.25.0",
     "@webiny/project-utils": "^5.28.0",
-    "rimraf": "^3.0.2",
     "node-fetch": "3.2.6",
+    "rimraf": "^3.0.2",
     "typescript": "4.5.5"
   },
   "publishConfig": {
