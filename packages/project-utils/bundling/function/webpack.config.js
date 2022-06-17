@@ -50,9 +50,6 @@ module.exports = options => {
                 "process.env.WEBINY_ENABLE_VERSION_HEADER": JSON.stringify(
                     process.env.WEBINY_ENABLE_VERSION_HEADER || "false"
                 ),
-                "process.env.WEBINY_MULTI_TENANCY": JSON.stringify(
-                    process.env.WEBINY_MULTI_TENANCY || false
-                ),
                 ...definitions
             }),
             tsChecksEnabled &&

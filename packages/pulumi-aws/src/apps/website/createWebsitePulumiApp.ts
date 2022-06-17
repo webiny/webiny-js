@@ -159,7 +159,7 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams 
                 applyCustomDomain(deliveryCloudfront, domain);
             }
 
-            if (process.env.WEBINY_MULTI_TENANCY === "true") {
+            if (process.env.WCP_PROJECT_ENVIRONMENT) {
                 applyTenantRouter(app, deliveryCloudfront);
             }
 

@@ -31,8 +31,4 @@ module.exports.applyDefaults = () => {
     if (!("REACT_APP_WEBINY_VERSION" in process.env)) {
         process.env.REACT_APP_WEBINY_VERSION = version;
     }
-
-    if ("WEBINY_MULTI_TENANCY" in process.env) {
-        process.env.REACT_APP_WEBINY_MULTI_TENANCY = process.env.WEBINY_MULTI_TENANCY;
-    }
 };
