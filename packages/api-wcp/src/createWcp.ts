@@ -12,6 +12,7 @@ const cachedWcpProjectLicense: CachedWcpProjectLicense = {
 
 export const createWcp = async (): Promise<WcpContextObject> => {
     if (wcpProjectEnvironment) {
+        // TODO rename geWcpProjectLicenseCacheKey > getWcpProjectLicenseCacheKey
         const currentCacheKey = geWcpProjectLicenseCacheKey();
         if (cachedWcpProjectLicense.cacheKey !== currentCacheKey) {
             cachedWcpProjectLicense.cacheKey = currentCacheKey;

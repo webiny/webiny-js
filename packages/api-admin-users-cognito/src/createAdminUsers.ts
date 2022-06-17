@@ -12,6 +12,8 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { AdminUser, AdminUsers, AdminUsersStorageOperations, CreatedBy, System } from "./types";
 import { createUserLoaders } from "./createAdminUsers/users.loaders";
 import { attachUserValidation } from "./createAdminUsers/users.validation";
+import { getWcpApiUrl } from "../../wcp/src/urls";
+import { getWcpProjectEnvironment } from "../../api-wcp/src/utils";
 
 interface AdminUsersConfig {
     getIdentity(): SecurityIdentity;
@@ -94,34 +96,69 @@ export const createAdminUsers = ({
             };
 
             let result;
-            await this.onUserBeforeCreate.publish({ user, inputData: data });
-            /**
-             * Always delete `password` from the user data!
-             */
-            delete (user as any)["password"];
-            try {
-                result = await storageOperations.createUser({ user });
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not create user.",
-                    code: "CREATE_USER_ERROR",
-                    data: { user: result || user }
+
+            const wcpProjectEnvironment = getWcpProjectEnvironment();
+            const postUserSeatsEndpoint = getWcpApiUrl(
+                `/orgs/${wcpProjectEnvironment?.org.id}/projects/${wcpProjectEnvironment?.project.id}/package/seats`
+            );
+            if (wcpProjectEnvironment) {
+                const response = await fetch(postUserSeatsEndpoint, {
+                    method: "POST",
+                    headers: { authorization: wcpProjectEnvironment.apiKey },
+                    body: JSON.stringify({ operation: "increment" })
                 });
+                const parsedResponse = await response.json();
+                if (parsedResponse.statusCode !== 200) {
+                    throw new WebinyError(parsedResponse.body.message);
+                }
             }
             try {
-                await this.onUserAfterCreate.publish({ user: result, inputData: data });
-            } catch (err) {
-                console.log("@webiny/api-admin-users-cognito/src/createAdminUsers.ts");
-                // Not sure if we care about errors in `onAfterCreate`.
-                // Maybe add an `onCreateError` event for potential cleanup operations?
-                // For now, just log it.
-                console.log(err);
+                await this.onUserBeforeCreate.publish({ user, inputData: data });
+
+                /**
+                 * Always delete `password` from the user data!
+                 */
+                delete (user as any)["password"];
+
+                try {
+                    // Check if we can create the user.
+                    result = await storageOperations.createUser({ user });
+                } catch (err) {
+                    throw WebinyError.from(err, {
+                        message: "Could not create user.",
+                        code: "CREATE_USER_ERROR",
+                        data: { user: result || user }
+                    });
+                }
+                try {
+                    await this.onUserAfterCreate.publish({ user: result, inputData: data });
+                } catch (err) {
+                    console.log("@webiny/api-admin-users-cognito/src/createAdminUsers.ts");
+                    // Not sure if we care about errors in `onAfterCreate`.
+                    // Maybe add an `onCreateError` event for potential cleanup operations?
+                    // For now, just log it.
+                    console.log(err);
+                }
+
+                loaders.getUser.clear(result.id).prime(result.id, result);
+
+                return result;
+            } catch (e) {
+                if (wcpProjectEnvironment) {
+                    const response = await fetch(postUserSeatsEndpoint, {
+                        method: "POST",
+                        headers: { authorization: wcpProjectEnvironment.apiKey },
+                        body: JSON.stringify({ operation: "decrement" })
+                    });
+                    const parsedResponse = await response.json();
+                    if (parsedResponse.statusCode !== 200) {
+                        throw new WebinyError(parsedResponse.body.message);
+                    }
+                }
+                throw e;
             }
-
-            loaders.getUser.clear(result.id).prime(result.id, result);
-
-            return result;
         },
+
         async deleteUser(this: AdminUsers, id: string) {
             await checkPermission();
 
@@ -139,6 +176,23 @@ export const createAdminUsers = ({
             try {
                 await this.onUserBeforeDelete.publish({ user });
                 await storageOperations.deleteUser({ user });
+
+                const wcpProjectEnvironment = getWcpProjectEnvironment();
+                if (wcpProjectEnvironment) {
+                    const postUserSeatsEndpoint = getWcpApiUrl(
+                        `/orgs/${wcpProjectEnvironment.org.id}/projects/${wcpProjectEnvironment.project.id}/package/seats`
+                    );
+                    const response = await fetch(postUserSeatsEndpoint, {
+                        method: "POST",
+                        headers: { authorization: wcpProjectEnvironment.apiKey },
+                        body: JSON.stringify({ operation: "decrement" })
+                    });
+                    const parsedResponse = await response.json();
+                    if (parsedResponse.statusCode !== 200) {
+                        throw new WebinyError(parsedResponse.body.message);
+                    }
+                }
+
                 loaders.clearLoadersCache([{ tenant: getTenant(), id }]);
                 await this.onUserAfterDelete.publish({ user });
             } catch (err) {
