@@ -103,15 +103,11 @@ export const createAdminUsers = ({
                 `/orgs/${wcpProjectEnvironment?.org.id}/projects/${wcpProjectEnvironment?.project.id}/package/seats`
             );
             if (wcpProjectEnvironment) {
-                const response = await fetch(postUserSeatsEndpoint, {
+                await fetch(postUserSeatsEndpoint, {
                     method: "POST",
                     headers: { authorization: wcpProjectEnvironment.apiKey },
                     body: JSON.stringify({ operation: "increment" })
                 });
-                const parsedResponse = await response.json();
-                if (parsedResponse.statusCode !== 200) {
-                    throw new WebinyError(parsedResponse.body.message);
-                }
             }
             try {
                 await this.onUserBeforeCreate.publish({ user, inputData: data });
@@ -146,15 +142,11 @@ export const createAdminUsers = ({
                 return result;
             } catch (e) {
                 if (wcpProjectEnvironment) {
-                    const response = await fetch(postUserSeatsEndpoint, {
+                    await fetch(postUserSeatsEndpoint, {
                         method: "POST",
                         headers: { authorization: wcpProjectEnvironment.apiKey },
                         body: JSON.stringify({ operation: "decrement" })
                     });
-                    const parsedResponse = await response.json();
-                    if (parsedResponse.statusCode !== 200) {
-                        throw new WebinyError(parsedResponse.body.message);
-                    }
                 }
                 throw e;
             }
@@ -183,15 +175,11 @@ export const createAdminUsers = ({
                     const postUserSeatsEndpoint = getWcpApiUrl(
                         `/orgs/${wcpProjectEnvironment.org.id}/projects/${wcpProjectEnvironment.project.id}/package/seats`
                     );
-                    const response = await fetch(postUserSeatsEndpoint, {
+                    await fetch(postUserSeatsEndpoint, {
                         method: "POST",
                         headers: { authorization: wcpProjectEnvironment.apiKey },
                         body: JSON.stringify({ operation: "decrement" })
                     });
-                    const parsedResponse = await response.json();
-                    if (parsedResponse.statusCode !== 200) {
-                        throw new WebinyError(parsedResponse.body.message);
-                    }
                 }
 
                 loaders.clearLoadersCache([{ tenant: getTenant(), id }]);
