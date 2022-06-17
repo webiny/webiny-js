@@ -1,12 +1,17 @@
 const path = require("path");
 const { green } = require("chalk");
-const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 const buildPackages = require("./deploy/buildPackages");
-const { ApplicationBuilderGeneric, ApplicationBuilderLegacy } = require("@webiny/pulumi-sdk");
+const {
+    getPulumi,
+    processHooks,
+    login,
+    notify,
+    createProjectApplicationWorkspace
+} = require("../utils");
 
 module.exports = async (inputs, context) => {
-    const { env, folder, build, deploy, variant } = inputs;
+    const { env, folder, build, deploy } = inputs;
 
     // If folder not specified, that means we want to deploy the whole project (all project applications).
     // For that, we look if there are registered plugins that perform that.
@@ -33,19 +38,16 @@ module.exports = async (inputs, context) => {
     // Get project application metadata. Will throw an error if invalid folder specified.
     const projectApplication = getProjectApplication({ cwd: path.join(process.cwd(), folder) });
 
-    await loadEnvVariables(inputs, context);
+    // If needed, let's create a project application workspace.
+    if (projectApplication.type === "v5-workspaces") {
+        await createProjectApplicationWorkspace(projectApplication, { env });
+    }
 
-    const hookArgs = { context, env, variant, inputs, projectApplication };
-
-    const application =
-        projectApplication.config instanceof ApplicationBuilderGeneric
-            ? projectApplication.config
-            : new ApplicationBuilderLegacy(projectApplication.config);
+    const hookArgs = { context, env, inputs, projectApplication };
 
     if (build) {
         await runHook({
-            hookName: "hook-before-build",
-            hookFn: application.onBeforeBuild,
+            hook: "hook-before-build",
             args: hookArgs,
             context
         });
@@ -53,8 +55,7 @@ module.exports = async (inputs, context) => {
         await buildPackages({ projectApplication, inputs, context });
 
         await runHook({
-            hookName: "hook-after-build",
-            hookFn: application.onAfterBuild,
+            hook: "hook-after-build",
             args: hookArgs,
             context
         });
@@ -69,52 +70,75 @@ module.exports = async (inputs, context) => {
         return;
     }
 
+    await login(projectApplication);
+
+    const pulumi = await getPulumi({ projectApplication });
+
+    const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+    const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
+
+    await pulumi.run({
+        command: ["stack", "select", env],
+        args: {
+            create: true,
+            secretsProvider: PULUMI_SECRETS_PROVIDER
+        },
+        execa: {
+            env: {
+                PULUMI_CONFIG_PASSPHRASE
+            }
+        }
+    });
+
     await runHook({
-        hookName: "hook-before-deploy",
-        hookFn: application.onBeforeDeploy,
+        hook: "hook-before-deploy",
         skip: inputs.preview,
         args: hookArgs,
         context
     });
-
-    await login(projectApplication);
-
-    const pulumi = await getPulumi({
-        folder: inputs.folder
-    });
-
-    const stack = await application.createOrSelectStack({
-        appDir: projectApplication.root,
-        projectDir: projectApplication.project.root,
-        env,
-        variant,
-        pulumi: pulumi
-    });
-
-    if (stack.app) {
-        // This is basically a hack to fix issue with pulumi context changing during deploy.
-        // If we run getStackOutput inside pulumi app it changes current pulumi context to other app.
-        // That causes errors on deploy.
-        // Legit fix would be to have a single pulumi login for all the apps, instead of logging to each app separately.
-        // Currently we just add logging back to the app we deploy as a last handler in the app.
-        stack.app.addHandler(async () => {
-            await login(projectApplication);
-        });
-    }
 
     console.log();
     const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
     context.info(continuing);
     console.log();
 
-    if (inputs.refresh) {
-        await stack.refresh();
-    }
-
     if (inputs.preview) {
-        await stack.preview();
+        await pulumi.run({
+            command: "preview",
+            args: {
+                debug: inputs.debug
+                // Preview command does not accept "--secrets-provider" argument.
+                // secretsProvider: PULUMI_SECRETS_PROVIDER
+            },
+            execa: {
+                stdio: "inherit",
+                env: {
+                    WEBINY_ENV: env,
+                    WEBINY_PROJECT_NAME: context.project.name,
+                    PULUMI_CONFIG_PASSPHRASE
+                }
+            }
+        });
     } else {
-        await stack.up();
+        await pulumi.run({
+            command: "up",
+            args: {
+                yes: true,
+                skipPreview: true,
+                secretsProvider: PULUMI_SECRETS_PROVIDER,
+                debug: inputs.debug
+            },
+            execa: {
+                // We pipe "stderr" so that we can intercept potential received error messages,
+                // and hopefully, show extra information / help to the user.
+                stdio: ["inherit", "inherit", "pipe"],
+                env: {
+                    WEBINY_ENV: env,
+                    WEBINY_PROJECT_NAME: context.project.name,
+                    PULUMI_CONFIG_PASSPHRASE
+                }
+            }
+        });
     }
 
     const duration = getDuration();
@@ -127,8 +151,7 @@ module.exports = async (inputs, context) => {
     console.log();
 
     await runHook({
-        hookName: "hook-after-deploy",
-        hookFn: application.onAfterDeploy,
+        hook: "hook-after-deploy",
         skip: inputs.preview,
         args: hookArgs,
         context
@@ -137,17 +160,12 @@ module.exports = async (inputs, context) => {
     notify({ message: `"${folder}" stack deployed in ${duration}.` });
 };
 
-async function runHook({ hookName, hookFn, skip, args, context }) {
+async function runHook({ hook, skip, args, context }) {
     if (skip) {
-        context.info(`Skipped "${hookName}" hook.`);
+        context.info(`Skipped "${hook}" hook.`);
     } else {
-        context.info(`Running "${hookName}" hook...`);
-        // run the application defined hook
-        if (hookFn) {
-            const { context, ...options } = args;
-            await hookFn(options, context);
-        }
-        await processHooks(hookName, args);
-        context.success(`Hook "${hookName}" completed.`);
+        context.info(`Running "${hook}" hook...`);
+        await processHooks(hook, args);
+        context.success(`Hook "${hook}" completed.`);
     }
 }
