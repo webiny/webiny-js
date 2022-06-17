@@ -28,10 +28,10 @@
     "@webiny/api-prerendering-service-aws": "^5.28.0",
     "@webiny/api-security": "^5.28.0",
     "@webiny/api-security-cognito": "^5.28.0",
-    "@webiny/api-security-okta": "^5.28.0",
     "@webiny/api-security-so-ddb": "^5.28.0",
     "@webiny/api-tenancy": "^5.28.0",
     "@webiny/api-tenancy-so-ddb": "^5.28.0",
+    "@webiny/api-tenant-manager": "^5.28.0",
     "@webiny/api-wcp": "^5.28.0",
     "@webiny/cli": "^5.28.0",
     "@webiny/db-dynamodb": "^5.28.0",
@@ -44,20 +44,7 @@
     "@webiny/handler-logs": "^5.28.0",
     "@webiny/project-utils": "^5.28.0"
   },
-  "adio": {
-    "ignore": {
-      "dependencies": [
-        "@webiny/api-admin-users-cognito",
-        "@webiny/api-admin-users-cognito-so-ddb",
-        "@webiny/api-security-cognito",
-        "@webiny/api-security-okta"
-      ],
-      "src": [
-        "@webiny/cli-plugin-deploy-pulumi",
-        "@webiny/api-tenant-manager",
-        "@webiny/api-theme-manager",
-        "@webiny/api-security-okta"
-      ]
-    }
+  "devDependencies": {
+    "@webiny/cli-plugin-deploy-pulumi": "^5.28.0"
   }
 }

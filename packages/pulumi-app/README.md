@@ -56,7 +56,7 @@ export = async () => {
         }
     });
 
-    return xyzApp.runProgram();
+    return xyzApp.run();
 };
 
 ```

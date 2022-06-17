@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../../tsconfig.json",
   "include": ["src"],
   "references": [
     {
@@ -63,13 +63,13 @@
       "path": "../../../packages/api-security-cognito/tsconfig.build.json"
     },
     {
-      "path": "../../../packages/api-security-okta/tsconfig.build.json"
-    },
-    {
       "path": "../../../packages/api-security-so-ddb/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-tenancy/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-tenant-manager/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-tenancy-so-ddb/tsconfig.build.json"
@@ -163,13 +163,14 @@
       "@webiny/api-security": ["../../../packages/api-security/src"],
       "@webiny/api-security-cognito/*": ["../../../packages/api-security-cognito/src/*"],
       "@webiny/api-security-cognito": ["../../../packages/api-security-cognito/src"],
-      "@webiny/api-security-okta": ["../../../packages/api-security-okta/src"],
       "@webiny/api-security-so-ddb/*": ["../../../packages/api-security-so-ddb/src/*"],
       "@webiny/api-security-so-ddb": ["../../../packages/api-security-so-ddb/src"],
       "@webiny/api-tenancy/*": ["../../../packages/api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../../../packages/api-tenancy/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../../../packages/api-tenancy-so-ddb/src/*"],
       "@webiny/api-tenancy-so-ddb": ["../../../packages/api-tenancy-so-ddb/src"],
+      "@webiny/api-tenant-manager/*": ["../../../packages/api-tenant-manager/src/*"],
+      "@webiny/api-tenant-manager": ["../../../packages/api-tenant-manager/src"],
       "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"],
       "@webiny/handler-args/*": ["../../../packages/handler-args/src/*"],
