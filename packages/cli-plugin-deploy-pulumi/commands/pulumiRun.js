@@ -1,34 +1,13 @@
-const path = require("path");
-const { red } = require("chalk");
-const { getProjectApplication } = require("@webiny/cli/utils");
-const { getStackName } = require("@webiny/pulumi-sdk");
-const { login, getPulumi, createProjectApplicationWorkspace } = require("../utils");
+const { createPulumiCommand } = require("../utils");
 
-module.exports = async (inputs, context) => {
+module.exports = createPulumiCommand("pulumi", async ({ inputs, context, pulumi }) => {
     const [, ...command] = inputs._;
     const { env, folder, debug, variant } = inputs;
-
-    const stackName = getStackName({ env, variant });
-    const cwd = process.cwd();
-
-    // Get project application metadata.
-    const projectApplication = getProjectApplication({
-        cwd: path.join(cwd, inputs.folder)
-    });
-
-    // If needed, let's create a project application workspace.
-    if (projectApplication.type === "v5-workspaces") {
-        await createProjectApplicationWorkspace(projectApplication, { env });
-    }
-
-    await login(projectApplication);
-
-    const pulumi = await getPulumi({ projectApplication });
 
     if (env) {
         debug &&
             context.debug(
-                `Environment provided - selecting ${context.debug.hl(stackName)} Pulumi stack.`
+                `Environment provided - selecting ${context.debug.hl(env)} Pulumi stack.`
             );
 
         let stackExists = true;
@@ -37,7 +16,7 @@ module.exports = async (inputs, context) => {
             const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
 
             await pulumi.run({
-                command: ["stack", "select", stackName],
+                command: ["stack", "select", env],
                 args: {
                     secretsProvider: PULUMI_SECRETS_PROVIDER
                 },
@@ -53,7 +32,9 @@ module.exports = async (inputs, context) => {
 
         if (!stackExists) {
             throw new Error(
-                `Project application ${red(folder)} (${red(stackName)} environment) does not exist.`
+                `Project application ${context.error.hl(folder)} (${context.error.hl(
+                    env
+                )} environment) does not exist.`
             );
         }
     }
@@ -79,4 +60,4 @@ module.exports = async (inputs, context) => {
             }
         }
     });
-};
+});

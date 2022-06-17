@@ -1,5 +1,5 @@
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
-import { uploadFolderToS3 } from "@webiny/pulumi-app-aws";
+import { uploadFolderToS3 } from "@webiny/pulumi-aws";
 import * as path from "path";
 import * as fs from "fs";
 

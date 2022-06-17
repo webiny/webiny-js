@@ -31,7 +31,7 @@ const getPackages = pattern => {
 };
 
 const WEBINY_PACKAGES = getPackages("/packages/");
-const SAMPLE_PACKAGES = [...getPackages("/api/"), ...getPackages("/apps/")];
+const SAMPLE_PACKAGES = getPackages("/apps/");
 
 const PREVIEW = argv.preview;
 

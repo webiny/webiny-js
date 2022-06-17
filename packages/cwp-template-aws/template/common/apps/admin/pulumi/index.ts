@@ -1,4 +1,4 @@
-import { tagResources } from "@webiny/pulumi-app-aws";
+import { tagResources } from "@webiny/pulumi-aws";
 
 import App from "./app";
 import Cloudfront from "./cloudfront";

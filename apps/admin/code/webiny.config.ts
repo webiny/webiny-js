@@ -22,9 +22,8 @@ export default {
             invariant(options.env, NO_ENV_MESSAGE);
 
             const output = getStackOutput({
-                folder: "api",
+                folder: "apps/api",
                 env: options.env,
-                variant: options.variant,
                 map: API_MAP
             });
             invariant(output, NO_API_MESSAGE(options.env));
@@ -41,9 +40,8 @@ export default {
             invariant(options.env, NO_ENV_MESSAGE);
 
             const output = getStackOutput({
-                folder: "api",
+                folder: "apps/api",
                 env: options.env,
-                variant: options.variant,
                 map: API_MAP
             });
             invariant(output, NO_API_MESSAGE(options.env));

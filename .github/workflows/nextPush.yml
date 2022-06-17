@@ -312,7 +312,7 @@ jobs:
 
       - name: Reduce prerendering service's process-queue schedule
         working-directory: xyz/test-project
-        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
+        run: sed -i 's/5 minutes/1 minute/g' apps/api/pulumi/dev/prerenderingService.ts
 
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2
@@ -566,7 +566,7 @@ jobs:
 
       - name: Reduce prerendering service's process-queue schedule
         working-directory: xyz/test-project
-        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
+        run: sed -i 's/5 minutes/1 minute/g' apps/api/pulumi/dev/prerenderingService.ts
 
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2

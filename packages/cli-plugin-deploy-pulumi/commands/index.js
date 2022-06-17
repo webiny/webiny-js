@@ -27,10 +27,10 @@ module.exports = [
                         describe: `Environment`,
                         type: "string"
                     });
-                    yargs.option("variant", {
-                        describe: `Variant (only for staged rollouts)`,
-                        type: "string"
-                    });
+                    // yargs.option("variant", {
+                    //     describe: `Variant (only for staged rollouts)`,
+                    //     type: "string"
+                    // });
                     yargs.option("build", {
                         default: true,
                         describe: `Build packages before deploying`,
@@ -170,10 +170,10 @@ module.exports = [
                         describe: `Environment`,
                         type: "string"
                     });
-                    yargs.option("variant", {
-                        describe: `Variant (staged rollouts only)`,
-                        type: "string"
-                    });
+                    // yargs.option("variant", {
+                    //     describe: `Variant (staged rollouts only)`,
+                    //     type: "string"
+                    // });
                     yargs.option("json", {
                         describe: `Emit output as JSON`,
                         type: "boolean"
@@ -205,10 +205,10 @@ module.exports = [
                         describe: `Environment`,
                         type: "string"
                     });
-                    yargs.option("variant", {
-                        describe: `Variant (only for staged rollouts)`,
-                        type: "string"
-                    });
+                    // yargs.option("variant", {
+                    //     describe: `Variant (only for staged rollouts)`,
+                    //     type: "string"
+                    // });
                     yargs.option("debug", {
                         default: false,
                         describe: `Turn on debug logs`,
@@ -217,23 +217,6 @@ module.exports = [
                 },
                 async argv => {
                     await require("./pulumiRun")(argv, context);
-                    process.exit(0);
-                }
-            );
-
-            yargs.command(
-                "storage-migrate",
-                `Extracts a storage application from API.`,
-                () => {
-                    yargs.example("$0 storage-migrate --env dev");
-
-                    yargs.option("env", {
-                        describe: `Environment`,
-                        type: "string"
-                    });
-                },
-                async argv => {
-                    await require("./storageMigrate")(argv, context);
                     process.exit(0);
                 }
             );

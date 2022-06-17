@@ -17,7 +17,8 @@ const {
     login,
     getPulumi,
     getRandomColorForString,
-    createProjectApplicationWorkspace
+    createProjectApplicationWorkspace,
+    loadEnvVariables
 } = require("../utils");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
@@ -26,6 +27,8 @@ const WATCH_DISABLED_ENVIRONMENTS = ["prod", "production"];
 
 const PULUMI_WATCH_SUPPORTED = os.platform() !== "win32";
 
+// Note: we are not using `createPulumiCommand` here because this command has a bit specific
+// behaviour which is not encapsulated by `createPulumiCommand`. Maybe we can improve in the future.
 module.exports = async (inputs, context) => {
     // 1. Initial checks for deploy and build commands.
     if (!inputs.folder && !inputs.package) {
@@ -48,6 +51,9 @@ module.exports = async (inputs, context) => {
         if (projectApplication.type === "v5-workspaces") {
             await createProjectApplicationWorkspace(projectApplication, { env: inputs.env });
         }
+
+        // Load env vars specified via .env files located in project application folder.
+        await loadEnvVariables(inputs, context);
     }
 
     inputs.build = inputs.build !== false;
