@@ -31,8 +31,8 @@
     "dynamodb-toolbox": "^0.3.4",
     "lodash": "^4.5.0",
     "md5": "^2.3.0",
-    "node-fetch": "3.2.6",
-    "mdbid": "^1.0.0"
+    "mdbid": "^1.0.0",
+    "node-fetch": "3.2.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -47,6 +47,7 @@
     "@webiny/plugins": "^5.25.0",
     "@webiny/project-utils": "^5.28.0",
     "rimraf": "^3.0.2",
+    "node-fetch": "3.2.6",
     "typescript": "4.5.5"
   },
   "publishConfig": {
