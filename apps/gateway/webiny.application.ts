@@ -3,6 +3,6 @@
  * https://www.webiny.com/docs/key-topics/cloud-infrastructure/website/introduction
  */
 
-import { createGatewayApp } from "@webiny/pulumi-aws";
+import { createGatewayApp } from "@webiny/pulumi-app-aws";
 
 export default createGatewayApp({});

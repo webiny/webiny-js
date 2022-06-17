@@ -3,6 +3,6 @@
  * https://www.webiny.com/docs/key-topics/cloud-infrastructure/api/introduction
  */
 
-import { createApiApp } from "@webiny/pulumi-aws";
+import { createApiApp } from "@webiny/pulumi-app-aws";
 
 export default createApiApp();
