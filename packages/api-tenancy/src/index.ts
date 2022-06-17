@@ -13,12 +13,9 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
     return new ContextPlugin<TenancyContext>(async context => {
         let tenantId = "root";
 
-        const multiTenancy = process.env.WEBINY_MULTI_TENANCY === "true";
+        const multiTenancy = context.wcp.canUseFeature("multiTenancy");
 
         if (multiTenancy) {
-            // If multi-tenancy is enabled, ensure we can actually use it.
-            context.wcp.ensureCanUseFeature("multiTenancy");
-
             const { headers = {}, method } = context.http.request;
 
             tenantId = headers["x-tenant"];
