@@ -17,7 +17,7 @@ export default {
         const websiteOutput = getStackOutput({ folder: "apps/website", env: args.env });
 
         // 2. Get exports from `api` stack, again, for `args.env` environment.
-        const apiOutput = getStackOutput({ folder: "api", env: args.env });
+        const apiOutput = getStackOutput({ folder: "apps/api", env: args.env });
         if (!apiOutput) {
             context.warning(`API was not deployed yet. Could not update page builder settings.`);
             return;

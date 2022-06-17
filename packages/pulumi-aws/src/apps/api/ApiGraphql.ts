@@ -2,9 +2,9 @@ import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
-import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
+import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
-import { StorageOutput, VpcConfig } from "../common";
+import { CoreOutput, VpcConfig } from "../common";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 interface GraphqlParams {
@@ -15,10 +15,10 @@ interface GraphqlParams {
 
 export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
 
-export const ApiGraphql = defineAppModule({
+export const ApiGraphql = createAppModule({
     name: "ApiGraphql",
     config(app: PulumiApp, params: GraphqlParams) {
-        const storage = app.getModule(StorageOutput);
+        const core = app.getModule(CoreOutput);
 
         const policy = createGraphqlLambdaPolicy(app);
         const role = createLambdaRole(app, {
@@ -36,12 +36,12 @@ export const ApiGraphql = defineAppModule({
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive(
-                        path.join(app.ctx.appDir, "code/graphql/build")
+                        path.join(app.paths.absolute, "code/graphql/build")
                     )
                 }),
                 environment: {
                     variables: {
-                        ...getCommonLambdaEnvVariables(app),
+                        ...getCommonLambdaEnvVariables(),
                         ...params.env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
@@ -59,14 +59,14 @@ export const ApiGraphql = defineAppModule({
         app.addResource(aws.dynamodb.TableItem, {
             name: "apwSettings",
             config: {
-                tableName: storage.primaryDynamodbTableName,
-                hashKey: storage.primaryDynamodbTableHashKey,
+                tableName: core.primaryDynamodbTableName,
+                hashKey: core.primaryDynamodbTableHashKey,
                 rangeKey: pulumi
-                    .output(storage.primaryDynamodbTableRangeKey)
+                    .output(core.primaryDynamodbTableRangeKey)
                     .apply(key => key || "SK"),
                 item: pulumi.interpolate`{
               "PK": {"S": "APW#SETTINGS"},
-              "SK": {"S": "${app.ctx.variant || "A"}"},
+              "SK": {"S": "${app.params.run.variant || "A"}"},
               "mainGraphqlFunctionArn": {"S": "${graphql.output.arn}"},
               "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
               "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}
@@ -85,7 +85,7 @@ export const ApiGraphql = defineAppModule({
 });
 
 function createGraphqlLambdaPolicy(app: PulumiApp) {
-    const storageOutput = app.getModule(StorageOutput);
+    const coreOutput = app.getModule(CoreOutput);
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
@@ -93,8 +93,8 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
         name: "ApiGraphqlLambdaPolicy",
         config: {
             description: "This policy enables access to Dynamodb, S3, Lambda and Cognito IDP",
-            // Storage is pulumi.Output, so we need to run apply() to resolve policy based on it
-            policy: storageOutput.apply(storage => {
+            // Core is pulumi.Output, so we need to run apply() to resolve policy based on it
+            policy: coreOutput.apply(core => {
                 const policy: aws.iam.PolicyDocument = {
                     Version: "2012-10-17",
                     Statement: [
@@ -154,13 +154,13 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                                 "dynamodb:UpdateTimeToLive"
                             ],
                             Resource: [
-                                `${storage.primaryDynamodbTableArn}`,
-                                `${storage.primaryDynamodbTableArn}/*`,
+                                `${core.primaryDynamodbTableArn}`,
+                                `${core.primaryDynamodbTableArn}/*`,
                                 // Attach permissions for elastic search dynamo as well (if ES is enabled).
-                                ...(storage.elasticsearchDynamodbTableArn
+                                ...(core.elasticsearchDynamodbTableArn
                                     ? [
-                                          `${storage.elasticsearchDynamodbTableArn}`,
-                                          `${storage.elasticsearchDynamodbTableArn}/*`
+                                          `${core.elasticsearchDynamodbTableArn}`,
+                                          `${core.elasticsearchDynamodbTableArn}/*`
                                       ]
                                     : [])
                             ]
@@ -175,7 +175,7 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                                 "s3:PutObject",
                                 "s3:GetObject"
                             ],
-                            Resource: `arn:aws:s3:::${storage.fileManagerBucketId}/*`
+                            Resource: `arn:aws:s3:::${core.fileManagerBucketId}/*`
                         },
                         {
                             Sid: "PermissionForLambda",
@@ -187,24 +187,24 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                             Sid: "PermissionForCognitoIdp",
                             Effect: "Allow",
                             Action: "cognito-idp:*",
-                            Resource: `${storage.cognitoUserPoolArn}`
+                            Resource: `${core.cognitoUserPoolArn}`
                         },
                         {
                             Sid: "PermissionForEventBus",
                             Effect: "Allow",
                             Action: "events:PutEvents",
-                            Resource: storage.eventBusArn
+                            Resource: core.eventBusArn
                         },
                         // Attach permissions for elastic search domain as well (if ES is enabled).
-                        ...(storage.elasticsearchDomainArn
+                        ...(core.elasticsearchDomainArn
                             ? [
                                   {
                                       Sid: "PermissionForES",
                                       Effect: "Allow" as const,
                                       Action: "es:*",
                                       Resource: [
-                                          `${storage.elasticsearchDomainArn}`,
-                                          `${storage.elasticsearchDomainArn}/*`
+                                          `${core.elasticsearchDomainArn}`,
+                                          `${core.elasticsearchDomainArn}/*`
                                       ]
                                   }
                               ]

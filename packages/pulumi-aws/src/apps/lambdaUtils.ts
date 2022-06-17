@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { PulumiApp } from "@webiny/pulumi-sdk";
+import { PulumiApp } from "@webiny/pulumi";
 
 import { VpcConfig } from "./common";
 
@@ -66,7 +66,7 @@ export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
     return role;
 }
 
-export function getCommonLambdaEnvVariables(app: PulumiApp) {
+export function getCommonLambdaEnvVariables() {
     // Apart from a couple of basic environment variables like STAGED_ROLLOUTS_VARIANT and DEBUG,
     // we also take into consideration variables that have `WEBINY_` and `WCP_` prefix in their names.
     const envVars: Record<string, string> = Object.keys(process.env).reduce(
@@ -80,7 +80,7 @@ export function getCommonLambdaEnvVariables(app: PulumiApp) {
             return current;
         },
         {
-            STAGED_ROLLOUTS_VARIANT: app.ctx.variant || "",
+            // STAGED_ROLLOUTS_VARIANT: app.ctx.variant || "",
             // Among other things, this determines the amount of information we reveal on runtime errors.
             // https://www.webiny.com/docs/how-to-guides/environment-variables/#debug-environment-variable
             DEBUG: String(process.env.DEBUG)

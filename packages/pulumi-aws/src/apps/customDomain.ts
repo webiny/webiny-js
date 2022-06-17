@@ -1,6 +1,6 @@
 import { Input } from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { PulumiAppResource } from "@webiny/pulumi-sdk";
+import { PulumiAppResource } from "@webiny/pulumi";
 
 export interface CustomDomainParams {
     domain: Input<string>;

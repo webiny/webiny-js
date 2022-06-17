@@ -28,7 +28,7 @@ if (TEST_TYPE !== "unit") {
         Object.assign(process.env, {
             // We assign `region`, `dynamoDbTable`, and `apiUrl` as AWS_REGION, DB_TABLE, and API_URL
             // environment variables. If needed, you can export additional values from the mentioned
-            // `api/pulumi/dev/index.ts` file and assign them here.
+            // `apps/api/pulumi/dev/index.ts` file and assign them here.
             AWS_REGION: stackOutput.region,
             DB_TABLE: stackOutput.dynamoDbTable,
             API_URL: stackOutput.apiUrl,

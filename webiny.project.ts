@@ -22,7 +22,9 @@ export default {
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
                     import("@webiny/cli-plugin-scaffold-react-app"),
                     import("@webiny/cli-plugin-scaffold-react-component"),
-                    import("@webiny/cli-plugin-scaffold-ci")
+                    import("@webiny/cli-plugin-scaffold-ci"),
+                    import("./apps/admin/cli"),
+                    import("./apps/website/cli")
                 ]);
 
                 return modules
