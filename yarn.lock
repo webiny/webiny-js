@@ -13418,6 +13418,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/pulumi-app@workspace:packages/pulumi-app":
+  version: 0.0.0-use.local
+  resolution: "@webiny/pulumi-app@workspace:packages/pulumi-app"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@pulumi/pulumi": ^3.34.0
+    "@types/lodash": ^4.14.178
+    "@types/node": ^10.0.0
+    "@webiny/cli": ^5.28.0
+    "@webiny/project-utils": ^5.28.0
+    find-up: ^5.0.0
+    rimraf: ^3.0.2
+    typescript: 4.5.5
+  languageName: unknown
+  linkType: soft
+
 "@webiny/pulumi-aws@workspace:packages/pulumi-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-aws@workspace:packages/pulumi-aws"
@@ -13489,7 +13506,6 @@ __metadata:
     rimraf: ^3.0.2
     semver: ^7.3.5
     tar: ^6.0.5
-    trim-newlines: ^3.0.1
     typescript: 4.5.5
   languageName: unknown
   linkType: soft

@@ -1,6 +1,6 @@
 // There is a circular dependency between the two.
 // This trick allow us to make it work.
-type PulumiApp = import("./PulumiApp").PulumiApp;
+type PulumiApp = import("./createPulumiApp").PulumiApp;
 
 export interface PulumiAppModuleCallback<TModule, TConfig> {
     (this: void, app: PulumiApp, config: TConfig): TModule;
@@ -24,7 +24,7 @@ export class PulumiAppModuleDefinition<TModule, TConfig> {
     }
 }
 
-export function defineAppModule<TModule, TConfig = void>(
+export function createAppModule<TModule, TConfig = void>(
     params: PulumiAppModuleParams<TModule, TConfig>
 ) {
     return new PulumiAppModuleDefinition(params);
