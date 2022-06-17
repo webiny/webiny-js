@@ -92,7 +92,12 @@ export function applyTenantRouter(
                 role: role.output.arn,
                 timeout: 5,
                 memorySize: 128,
-                code: createFunctionArchive({ region, dynamoDbTable })
+                // TODO: @michal
+                code: createFunctionArchive({
+                    region,
+                    // @ts-ignore
+                    dynamoDbTable
+                })
             },
             {
                 provider: awsUsEast1
