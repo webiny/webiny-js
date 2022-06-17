@@ -29,23 +29,6 @@ export interface CreateApiAppParams {
     pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
 }
 
-export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
-    return {
-        id: "api",
-        name: "API",
-        description:
-            "Represents cloud infrastructure needed for supporting your project's (GraphQL) API.",
-        cli: {
-            // Default args for the "yarn webiny watch ..." command.
-            watch: {
-                // Watch five levels of dependencies, starting from this project application.
-                depth: 5
-            }
-        },
-        pulumi: createApiPulumiApp(projectAppParams)
-    };
-}
-
 export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) => {
     const app = createPulumiApp({
         name: "api",

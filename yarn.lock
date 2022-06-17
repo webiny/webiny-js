@@ -13067,7 +13067,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/pulumi-aws@workspace:packages/pulumi-aws":
+"@webiny/pulumi-aws@^5.28.0, @webiny/pulumi-aws@workspace:packages/pulumi-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-aws@workspace:packages/pulumi-aws"
   dependencies:
@@ -13227,6 +13227,26 @@ __metadata:
     typescript: 4.5.5
   peerDependencies:
     react: ^16.14.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/serverless-cms-aws@workspace:packages/severless-cms-aws":
+  version: 0.0.0-use.local
+  resolution: "@webiny/serverless-cms-aws@workspace:packages/severless-cms-aws"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@babel/preset-env": ^7.16.4
+    "@babel/preset-typescript": ^7.16.0
+    "@babel/runtime": ^7.16.3
+    "@pulumi/aws": ^5.8.0
+    "@pulumi/pulumi": ^3.34.0
+    "@webiny/cli": ^5.28.0
+    "@webiny/project-utils": ^5.28.0
+    "@webiny/pulumi": ^5.28.0
+    "@webiny/pulumi-aws": ^5.28.0
+    ttypescript: ^1.5.12
+    typescript: 4.5.5
   languageName: unknown
   linkType: soft
 

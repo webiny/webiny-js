@@ -1,1 +1,1 @@
-export * from "./createAdminApp";
+export * from "./createAdminPulumiApp";

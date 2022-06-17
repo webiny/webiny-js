@@ -1,4 +1,4 @@
-import { createCoreApp } from "@webiny/pulumi-aws";
+import { createCoreApp } from "@webiny/serverless-cms-aws";
 
 export default createCoreApp({
     elasticSearch: false

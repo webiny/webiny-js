@@ -24,21 +24,6 @@ export interface CreateWebsiteAppParams {
     pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
 }
 
-export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) {
-    return {
-        id: "website",
-        name: "Website",
-        description: "Your project's public website.",
-        cli: {
-            // Default args for the "yarn webiny watch ..." command (we don't need deploy option while developing).
-            watch: {
-                deploy: false
-            }
-        },
-        pulumi: createWebsitePulumiApp(projectAppParams)
-    };
-}
-
 export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams = {}) => {
     const app = createPulumiApp({
         name: "website",

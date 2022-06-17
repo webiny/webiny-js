@@ -42,15 +42,6 @@ export interface CoreAppLegacyConfig {
     useEmailAsUsername?: boolean;
 }
 
-export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
-    return {
-        id: "core",
-        name: "Core",
-        description: "Your project's persistent cores.",
-        pulumi: createCorePulumiApp(projectAppParams)
-    };
-}
-
 export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) {
     const app = createPulumiApp({
         name: "core",

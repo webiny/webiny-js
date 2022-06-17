@@ -16,21 +16,6 @@ export interface CreateAdminAppParams {
     pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
 }
 
-export function createAdminApp(projectAppParams: CreateAdminAppParams = {}) {
-    return {
-        id: "admin",
-        name: "Admin",
-        description: "Your project's admin area.",
-        cli: {
-            // Default args for the "yarn webiny watch ..." command (we don't need deploy option while developing).
-            watch: {
-                deploy: false
-            }
-        },
-        pulumi: createAdminPulumiApp(projectAppParams)
-    };
-}
-
 export const createAdminPulumiApp = (projectAppParams: CreateAdminAppParams) => {
     const app = createPulumiApp({
         name: "admin",

@@ -5,4 +5,4 @@ export * from "./ApiGateway";
 export * from "./ApiGraphql";
 export * from "./ApiHeadlessCMS";
 export * from "./ApiPageBuilder";
-export * from "./createApiApp";
+export * from "./createApiPulumiApp";
