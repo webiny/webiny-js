@@ -9,7 +9,11 @@ describe("Block Categories CRUD Test", () => {
         deleteBlockCategory,
         listBlockCategories,
         getBlockCategory,
-        updateBlockCategory
+        updateBlockCategory,
+        createPageBlock,
+        listPageBlocks,
+        deletePageBlock,
+        until
     } = useGqlHandler();
 
     test("create, read, update and delete block categories", async () => {
@@ -257,5 +261,138 @@ describe("Block Categories CRUD Test", () => {
                 }
             }
         });
+    });
+
+    test("cannot delete block category if in use by at least one page block", async () => {
+        await createBlockCategory({
+            data: {
+                slug: `delete-block-cat`,
+                name: `name`
+            }
+        });
+
+        const b1 = await createPageBlock({
+            data: {
+                name: `page-block-one-name`,
+                blockCategory: `delete-block-cat`,
+                preview: { src: `https://test.com/page-block-one-name/src.jpg` },
+                content: { some: `page-block-one-content` }
+            }
+        }).then(([res]) => res.data.pageBuilder.createPageBlock.data);
+        const b2 = await createPageBlock({
+            data: {
+                name: `page-block-two-name`,
+                blockCategory: `delete-block-cat`,
+                preview: { src: `https://test.com/page-block-two-name/src.jpg` },
+                content: { some: `page-block-two-content` }
+            }
+        }).then(([res]) => res.data.pageBuilder.createPageBlock.data);
+        const b3 = await createPageBlock({
+            data: {
+                name: `page-block-three-name`,
+                blockCategory: `delete-block-cat`,
+                preview: { src: `https://test.com/page-block-three-name/src.jpg` },
+                content: { some: `page-block-three-content` }
+            }
+        }).then(([res]) => res.data.pageBuilder.createPageBlock.data);
+
+        await until(
+            listPageBlocks,
+            ([res]: any) => res.data.pageBuilder.listPageBlocks.data.length === 3,
+            {
+                tries: 10,
+                name: "list page blocks before delete"
+            }
+        );
+
+        const error: ErrorOptions = {
+            code: "CANNOT_DELETE_BLOCK_CATEGORY_PAGE_BLOCK_EXISTING",
+            data: null,
+            message: "Cannot delete block category because some page blocks are linked to it."
+        };
+
+        const [deleteBlockCategoryResult] = await deleteBlockCategory({ slug: "delete-block-cat" });
+
+        expect(deleteBlockCategoryResult).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteBlockCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
+
+        await deletePageBlock({ id: b1.id });
+
+        const [deleteBlockCategoryAfterDeletePageBlock1Result] = await deleteBlockCategory({
+            slug: "delete-block-cat"
+        });
+
+        expect(deleteBlockCategoryAfterDeletePageBlock1Result).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteBlockCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
+
+        await deletePageBlock({ id: b2.id });
+
+        const [deleteBlockCategoryAfterDeletePageBlock2Result] = await deleteBlockCategory({
+            slug: "delete-block-cat"
+        });
+
+        expect(deleteBlockCategoryAfterDeletePageBlock2Result).toEqual({
+            data: {
+                pageBuilder: {
+                    deleteBlockCategory: {
+                        data: null,
+                        error
+                    }
+                }
+            }
+        });
+
+        const [deletePageBlockResponse] = await deletePageBlock({ id: b3.id });
+
+        expect(deletePageBlockResponse).toEqual({
+            data: {
+                pageBuilder: {
+                    deletePageBlock: {
+                        data: {
+                            ...b3
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        await until(
+            listPageBlocks,
+            ([res]: any) => {
+                return res.data.pageBuilder.listPageBlocks.data.length === 0;
+            },
+            {
+                tries: 10,
+                name: "list page blocks after delete"
+            }
+        );
+
+        await deleteBlockCategory({ slug: "delete-block-cat" }).then(([res]) =>
+            expect(res.data.pageBuilder.deleteBlockCategory).toMatchObject({
+                data: {
+                    createdBy: defaultIdentity,
+                    slug: `delete-block-cat`,
+                    name: `name`
+                },
+                error: null
+            })
+        );
     });
 });

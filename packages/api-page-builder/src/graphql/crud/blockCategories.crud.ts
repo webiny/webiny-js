@@ -284,6 +284,21 @@ export const createBlockCategoriesCrud = (
             const identity = context.security.getIdentity();
             checkOwnPermissions(identity, permission, blockCategory);
 
+            // Before deleting, we need to check if there are any page blocks in this block category.
+            // If so, prevent delete operation.
+            const pageBlocks = await this.listPageBlocks({
+                where: {
+                    blockCategory: slug
+                }
+            });
+
+            if (pageBlocks?.length > 0) {
+                throw new WebinyError(
+                    "Cannot delete block category because some page blocks are linked to it.",
+                    "CANNOT_DELETE_BLOCK_CATEGORY_PAGE_BLOCK_EXISTING"
+                );
+            }
+
             try {
                 await onBeforeBlockCategoryDelete.publish({
                     blockCategory
