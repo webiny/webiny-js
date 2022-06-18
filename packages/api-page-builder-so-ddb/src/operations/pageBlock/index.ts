@@ -204,8 +204,6 @@ export const createPageBlockStorageOperations = ({
         }
     };
 
-
-
     return {
         get,
         list,
