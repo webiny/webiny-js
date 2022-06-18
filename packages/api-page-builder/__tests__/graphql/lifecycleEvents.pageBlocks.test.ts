@@ -6,18 +6,18 @@ import { assignPageBlockLifecycleEvents, tracker } from "./mocks/lifecycleEvents
 const blockCategory = "block-category-lifecycle-events";
 
 const pageBlockData = {
-    name: "Block Lifecycle Events",
+    name: "Page Block Lifecycle Events",
     blockCategory,
     preview: { src: "https://test.com/src.jpg" },
-    content: { some: "block-content" }
+    content: { some: "page-block-content" }
 };
 
-describe("PageBlock Lifecycle Events", () => {
+describe("Page Block Lifecycle Events", () => {
     const handler = useGqlHandler({
         plugins: [assignPageBlockLifecycleEvents()]
     });
 
-    const { createPageBlock, createBlockCategory } = handler;
+    const { createPageBlock, updatePageBlock, deletePageBlock, createBlockCategory } = handler;
 
     const createDummyPageBlock = async (): Promise<PageBlock> => {
         const [response] = await createPageBlock({
@@ -69,5 +69,57 @@ describe("PageBlock Lifecycle Events", () => {
         expect(tracker.isExecutedOnce("pageBlock:afterUpdate")).toEqual(false);
         expect(tracker.isExecutedOnce("pageBlock:beforeDelete")).toEqual(false);
         expect(tracker.isExecutedOnce("pageBlock:afterDelete")).toEqual(false);
+    });
+
+    test("should trigger update lifecycle events", async () => {
+        const [response] = await updatePageBlock({
+            id: dummyPageBlock.id,
+            data: {
+                name: `${pageBlockData.name} Updated`
+            }
+        });
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePageBlock: {
+                        data: {
+                            ...pageBlockData,
+                            name: `${pageBlockData.name} Updated`
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        expect(tracker.isExecutedOnce("pageBlock:beforeCreate")).toEqual(false);
+        expect(tracker.isExecutedOnce("pageBlock:afterCreate")).toEqual(false);
+        expect(tracker.isExecutedOnce("pageBlock:beforeUpdate")).toEqual(true);
+        expect(tracker.isExecutedOnce("pageBlock:afterUpdate")).toEqual(true);
+        expect(tracker.isExecutedOnce("pageBlock:beforeDelete")).toEqual(false);
+        expect(tracker.isExecutedOnce("pageBlock:afterDelete")).toEqual(false);
+    });
+
+    test("should trigger delete lifecycle events", async () => {
+        const [response] = await deletePageBlock({
+            id: dummyPageBlock.id
+        });
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    deletePageBlock: {
+                        data: pageBlockData,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        expect(tracker.isExecutedOnce("pageBlock:beforeCreate")).toEqual(false);
+        expect(tracker.isExecutedOnce("pageBlock:afterCreate")).toEqual(false);
+        expect(tracker.isExecutedOnce("pageBlock:beforeUpdate")).toEqual(false);
+        expect(tracker.isExecutedOnce("pageBlock:afterUpdate")).toEqual(false);
+        expect(tracker.isExecutedOnce("pageBlock:beforeDelete")).toEqual(true);
+        expect(tracker.isExecutedOnce("pageBlock:afterDelete")).toEqual(true);
     });
 });

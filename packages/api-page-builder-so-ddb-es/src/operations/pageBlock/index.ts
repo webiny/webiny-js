@@ -3,8 +3,10 @@ import {
     PageBlock,
     PageBlockStorageOperations,
     PageBlockStorageOperationsCreateParams,
+    PageBlockStorageOperationsDeleteParams,
     PageBlockStorageOperationsGetParams,
-    PageBlockStorageOperationsListParams
+    PageBlockStorageOperationsListParams,
+    PageBlockStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
 import { Entity } from "dynamodb-toolbox";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
@@ -134,9 +136,81 @@ export const createPageBlockStorageOperations = ({
         }
     };
 
+    const update = async (params: PageBlockStorageOperationsUpdateParams) => {
+        const { original, pageBlock } = params;
+        const keys = {
+            PK: createPartitionKey({
+                tenant: original.tenant,
+                locale: original.locale
+            }),
+            SK: createSortKey(pageBlock)
+        };
+
+        try {
+            await entity.put({
+                ...pageBlock,
+                TYPE: createType(),
+                ...keys
+            });
+            /**
+             * Always clear data loader cache when modifying the records.
+             */
+            dataLoader.clear();
+
+            return pageBlock;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not update page block.",
+                ex.code || "PAGE_BLOCK_UPDATE_ERROR",
+                {
+                    keys,
+                    original,
+                    pageBlock
+                }
+            );
+        }
+    };
+
+    const deletePageBlock = async (params: PageBlockStorageOperationsDeleteParams) => {
+        const { pageBlock } = params;
+        const keys = {
+            PK: createPartitionKey({
+                tenant: pageBlock.tenant,
+                locale: pageBlock.locale
+            }),
+            SK: createSortKey(pageBlock)
+        };
+
+        try {
+            await entity.delete({
+                ...pageBlock,
+                ...keys
+            });
+            /**
+             * Always clear data loader cache when modifying the records.
+             */
+            dataLoader.clear();
+
+            return pageBlock;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not delete page block.",
+                ex.code || "PAGE_BLOCK_DELETE_ERROR",
+                {
+                    keys,
+                    pageBlock
+                }
+            );
+        }
+    };
+
+
+
     return {
         get,
         list,
-        create
+        create,
+        update,
+        delete: deletePageBlock
     };
 };

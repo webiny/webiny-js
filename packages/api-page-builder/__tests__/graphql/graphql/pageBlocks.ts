@@ -33,6 +33,17 @@ export const CREATE_PAGE_BLOCK = /* GraphQL */ `
     }
 `;
 
+export const UPDATE_PAGE_BLOCK = /* GraphQL */ `
+    mutation UpdatePageBlock($id: ID!, $data: PbUpdatePageBlockInput!) {
+        pageBuilder {
+            updatePageBlock(id: $id, data: $data) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const LIST_PAGE_BLOCKS = /* GraphQL */ `
     query ListPageBlocks {
         pageBuilder {
@@ -48,6 +59,17 @@ export const GET_PAGE_BLOCK = /* GraphQL */ `
     query GetPageBlock($id: ID!) {
         pageBuilder {
             getPageBlock(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const DELETE_PAGE_BLOCK = /* GraphQL */ `
+    mutation DeletePageBlock($id: ID!) {
+        pageBuilder {
+            deletePageBlock(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

@@ -16,7 +16,11 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import {
     OnAfterPageBlockCreateTopicParams,
+    OnAfterPageBlockDeleteTopicParams,
+    OnAfterPageBlockUpdateTopicParams,
     OnBeforePageBlockCreateTopicParams,
+    OnBeforePageBlockDeleteTopicParams,
+    OnBeforePageBlockUpdateTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PageBlock,
@@ -37,6 +41,13 @@ const CreateDataModel = withFields({
     preview: object({ validation: validation.create("required") })
 })();
 
+const UpdateDataModel = withFields({
+    name: string({ validation: validation.create("maxLength:100") }),
+    blockCategory: string({ validation: validation.create("slug") }),
+    content: object(),
+    preview: object()
+})();
+
 const PERMISSION_NAME = "pb.block";
 
 export interface CreatePageBlocksCrudParams {
@@ -50,6 +61,10 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
 
     const onBeforePageBlockCreate = createTopic<OnBeforePageBlockCreateTopicParams>();
     const onAfterPageBlockCreate = createTopic<OnAfterPageBlockCreateTopicParams>();
+    const onBeforePageBlockUpdate = createTopic<OnBeforePageBlockUpdateTopicParams>();
+    const onAfterPageBlockUpdate = createTopic<OnAfterPageBlockUpdateTopicParams>();
+    const onBeforePageBlockDelete = createTopic<OnBeforePageBlockDeleteTopicParams>();
+    const onAfterPageBlockDelete = createTopic<OnAfterPageBlockDeleteTopicParams>();
 
     return {
         /**
@@ -57,6 +72,10 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
          */
         onBeforePageBlockCreate,
         onAfterPageBlockCreate,
+        onBeforePageBlockUpdate,
+        onAfterPageBlockUpdate,
+        onBeforePageBlockDelete,
+        onAfterPageBlockDelete,
 
         async getPageBlock(id) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
@@ -184,6 +203,101 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                 throw new WebinyError(
                     ex.message || "Could not create page block.",
                     ex.code || "CREATE_PAGE_BLOCK_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        pageBlock
+                    }
+                );
+            }
+        },
+
+        async updatePageBlock(this: PageBuilderContextObject, id, input) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "w"
+            });
+            const original = await this.getPageBlock(id);
+            if (!original) {
+                throw new NotFoundError(`Page block "${id}" not found.`);
+            }
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, original);
+
+            const updateDataModel = new UpdateDataModel().populate(input);
+            await updateDataModel.validate();
+
+            if (input.hasOwnProperty("blockCategory")) {
+                const blockCategory = await this.getBlockCategory(input.blockCategory);
+                if (!blockCategory) {
+                    throw new NotFoundError(
+                        `Cannot update page block because failed to find such block category.`
+                    );
+                }
+            }
+
+            const data = await updateDataModel.toJSON({ onlyDirty: true });
+
+            const pageBlock: PageBlock = {
+                ...original,
+                ...data
+            };
+
+            try {
+                await onBeforePageBlockUpdate.publish({
+                    original,
+                    pageBlock
+                });
+                const result = await storageOperations.pageBlocks.update({
+                    input: data,
+                    original,
+                    pageBlock
+                });
+                await onAfterPageBlockUpdate.publish({
+                    original,
+                    pageBlock: result
+                });
+                return result;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not update page block.",
+                    ex.code || "UPDATE_PAGE_BLOCK_ERROR",
+                    {
+                        ...(ex.data || {}),
+                        original,
+                        pageBlock
+                    }
+                );
+            }
+        },
+
+        async deletePageBlock(this: PageBuilderContextObject, slug) {
+            const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                rwd: "d"
+            });
+
+            const pageBlock = await this.getPageBlock(slug);
+            if (!pageBlock) {
+                throw new NotFoundError(`Page block "${slug}" not found.`);
+            }
+
+            const identity = context.security.getIdentity();
+            checkOwnPermissions(identity, permission, pageBlock);
+
+            try {
+                await onBeforePageBlockDelete.publish({
+                    pageBlock
+                });
+                const result = await storageOperations.pageBlocks.delete({
+                    pageBlock
+                });
+                await onAfterPageBlockDelete.publish({
+                    pageBlock: result
+                });
+                return result;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete page block.",
+                    ex.code || "DELETE_PAGE_BLOCK_ERROR",
                     {
                         ...(ex.data || {}),
                         pageBlock

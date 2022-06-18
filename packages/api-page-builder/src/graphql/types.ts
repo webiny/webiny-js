@@ -588,18 +588,54 @@ export interface OnAfterPageBlockCreateTopicParams {
 }
 
 /**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageBlockUpdateTopicParams {
+    original: PageBlock;
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageBlockUpdateTopicParams {
+    original: PageBlock;
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnBeforePageBlockDeleteTopicParams {
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category Lifecycle events
+ */
+export interface OnAfterPageBlockDeleteTopicParams {
+    pageBlock: PageBlock;
+}
+
+/**
  * @category PageBlocks
  */
 export interface PageBlocksCrud {
     getPageBlock(id: string): Promise<PageBlock | null>;
     listPageBlocks(params?: ListPageBlocksParams): Promise<PageBlock[]>;
     createPageBlock(data: Record<string, any>): Promise<PageBlock>;
+    updatePageBlock(id: string, data: Record<string, any>): Promise<PageBlock>;
+    deletePageBlock(id: string): Promise<PageBlock>;
 
     /**
      * Lifecycle events
      */
     onBeforePageBlockCreate: Topic<OnBeforePageBlockCreateTopicParams>;
     onAfterPageBlockCreate: Topic<OnAfterPageBlockCreateTopicParams>;
+    onBeforePageBlockUpdate: Topic<OnBeforePageBlockUpdateTopicParams>;
+    onAfterPageBlockUpdate: Topic<OnAfterPageBlockUpdateTopicParams>;
+    onBeforePageBlockDelete: Topic<OnBeforePageBlockDeleteTopicParams>;
+    onAfterPageBlockDelete: Topic<OnAfterPageBlockDeleteTopicParams>;
 }
 
 export interface PageBuilderContextObject

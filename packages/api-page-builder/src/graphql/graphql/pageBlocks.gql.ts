@@ -22,6 +22,13 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
             preview: JSON!
         }
 
+        input PbUpdatePageBlockInput {
+            name: String
+            blockCategory: String
+            content: JSON
+            preview: JSON
+        }
+
         input PbListPageBlocksWhereInput {
             blockCategory: String
         }
@@ -44,6 +51,8 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
 
         extend type PbMutation {
             createPageBlock(data: PbCreatePageBlockInput!): PbPageBlockResponse
+            updatePageBlock(id: ID!, data: PbUpdatePageBlockInput!): PbPageBlockResponse
+            deletePageBlock(id: ID!): PbPageBlockResponse
         }
     `,
     resolvers: {
@@ -63,6 +72,16 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
             createPageBlock: async (_, args: any, context) => {
                 return resolve(() => {
                     return context.pageBuilder.createPageBlock(args.data);
+                });
+            },
+            updatePageBlock: async (_, args: any, context) => {
+                return resolve(() => {
+                    return context.pageBuilder.updatePageBlock(args.id, args.data);
+                });
+            },
+            deletePageBlock: async (_, args: any, context) => {
+                return resolve(() => {
+                    return context.pageBuilder.deletePageBlock(args.id);
                 });
             }
         }
