@@ -57,12 +57,17 @@ const PageBuilderMenu: React.FC = () => {
                         />
                     </HasPermission>
                 </Menu>
-                <Menu name="pageBuilder.blocks" label={"Blocks"}>
+                <Menu name="pageBuilder.blocks" label={"Page Blocks"}>
                     <HasPermission name={"pb.block"}>
                         <Menu
                             name="pageBuilder.blocks.categories"
                             label={"Categories"}
                             path="/page-builder/block-categories"
+                        />
+                        <Menu
+                            name="pageBuilder.blocks.pageBlocks"
+                            label={"Blocks"}
+                            path="/page-builder/page-blocks"
                         />
                     </HasPermission>
                 </Menu>

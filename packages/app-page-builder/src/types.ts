@@ -820,6 +820,16 @@ export interface PbBlockCategory {
     createdBy: PbIdentity;
 }
 
+export interface PbPageBlock {
+    id: string;
+    name: string;
+    blockCategory: string;
+    content: File;
+    preview: File;
+    createdOn: string;
+    createdBy: PbIdentity;
+}
+
 /**
  * TODO: have types for both API and app in the same package?
  * GraphQL response types
