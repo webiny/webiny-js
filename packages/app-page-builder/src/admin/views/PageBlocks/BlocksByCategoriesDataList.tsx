@@ -53,7 +53,7 @@ const BlocksByCategoriesDataList = () => {
     const listQuery = useQuery(LIST_PAGE_BLOCKS_AND_CATEGORIES);
 
     const blockCategoriesData: PbBlockCategory[] =
-    listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
+        listQuery?.data?.pageBuilder?.listBlockCategories?.data || [];
     const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
 
     const filterData = useCallback(
@@ -140,7 +140,10 @@ const BlocksByCategoriesDataList = () => {
                             pageBlock => pageBlock.blockCategory === item.slug
                         ).length;
                         return (
-                            <ListItem key={item.slug} selected={item.slug === selectedBlocksCategory}>
+                            <ListItem
+                                key={item.slug}
+                                selected={item.slug === selectedBlocksCategory}
+                            >
                                 <ListItemText
                                     onClick={() =>
                                         history.push(

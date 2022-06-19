@@ -83,7 +83,9 @@ const PageBlocksDataList = ({ canEdit, canDelete }: PageBlocksDataListProps) => 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
     const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
     const pageBlocksList = useMemo((): PbPageBlock[] => {
-        return pageBlocksData.filter(pageBlock => pageBlock.blockCategory === selectedBlocksCategory);
+        return pageBlocksData.filter(
+            pageBlock => pageBlock.blockCategory === selectedBlocksCategory
+        );
     }, [selectedBlocksCategory, pageBlocksData]);
 
     const loading = [listQuery].find(item => item.loading);
@@ -97,12 +99,8 @@ const PageBlocksDataList = ({ canEdit, canDelete }: PageBlocksDataListProps) => 
                         <ListItem key={pageBlock.id}>
                             <ListItemText>{pageBlock.name}</ListItemText>
                             <Controls>
-                                {canEdit(pageBlock) && (
-                                    <EditButton/>
-                                )}
-                                {canDelete(pageBlock) && (
-                                    <DeleteButton/>
-                                )}
+                                {canEdit(pageBlock) && <EditButton />}
+                                {canDelete(pageBlock) && <DeleteButton />}
                             </Controls>
                         </ListItem>
                     ))}
