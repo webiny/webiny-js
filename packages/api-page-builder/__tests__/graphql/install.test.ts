@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { defaultIdentity } from "../tenancySecurity";
+import { Page } from "~/types";
 
 describe("Install Test", () => {
     const handler = useGqlHandler();
@@ -105,53 +106,50 @@ describe("Install Test", () => {
             listPages,
             ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPages;
-                return data.length === 1 && data[0].status === "published";
+                return data.length === 2 && data.every((p: Page) => p.status === "published");
             },
             {
                 name: "list pages after listing categories"
             }
         );
-        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[0].title).toBe(
-            "Welcome to Webiny"
-        );
-        expect(listPagesAfterInstallResponse.data.pageBuilder.listPages.data[0].status).toBe(
-            "published"
-        );
 
-        const [listPublishedPagesAfterInstallResponse] = await until(
+        // Create a reusable assertion function
+        const assertPages = (pages: Page[]) => {
+            expect(pages.every(p => p.status === "published")).toBe(true);
+            expect(pages.some(p => p.title === "Welcome to Webiny")).toBe(true);
+            expect(pages.some(p => p.title === "Not Found")).toBe(true);
+        };
+
+        let pages: Page[] = listPagesAfterInstallResponse.data.pageBuilder.listPages.data;
+        assertPages(pages);
+
+        const [publishedPages] = await until(
             listPublishedPages,
             ([res]: any) => {
                 const { data } = res.data.pageBuilder.listPublishedPages;
-                return data.length === 1 && data[0].status === "published";
+                return data.length === 2 && data.every((p: Page) => p.status === "published");
             },
             {
                 name: "list published pages after listing categories"
             }
         );
 
-        expect(
-            listPublishedPagesAfterInstallResponse.data.pageBuilder.listPublishedPages.data[0].title
-        ).toBe("Welcome to Webiny");
-        expect(
-            listPublishedPagesAfterInstallResponse.data.pageBuilder.listPublishedPages.data[0]
-                .status
-        ).toBe("published");
+        pages = publishedPages.data.pageBuilder.listPublishedPages.data;
+        assertPages(pages);
 
         // 3. Let's get the ID of the not-found page and try to get it directly.
         const settings = await getSettings().then(([res]) => res.data.pageBuilder.getSettings.data);
 
         const [getNotFoundPageResponse] = await getPage({ id: settings.pages.notFound });
-        expect(getNotFoundPageResponse.data.pageBuilder.getPage.data.title).toBe("Not Found");
-        expect(getNotFoundPageResponse.data.pageBuilder.getPage.data.status).toBe("published");
+        const page: Page = getNotFoundPageResponse.data.pageBuilder.getPage.data;
+        expect(page.title).toBe("Not Found");
+        expect(page.status).toBe("published");
 
-        const [getPublishedPageResponse] = await getPublishedPage({ id: settings.pages.notFound });
+        const [notFoundPageResponse] = await getPublishedPage({ id: settings.pages.notFound });
+        const notFoundPage: Page = notFoundPageResponse.data.pageBuilder.getPublishedPage.data;
 
-        expect(getPublishedPageResponse.data.pageBuilder.getPublishedPage.data.title).toBe(
-            "Not Found"
-        );
-        expect(getPublishedPageResponse.data.pageBuilder.getPublishedPage.data.status).toBe(
-            "published"
-        );
+        expect(notFoundPage.title).toBe("Not Found");
+        expect(notFoundPage.status).toBe("published");
 
         // 4. Installation must set the "Website" name.
         const [getSettingsResponse] = await getSettings();

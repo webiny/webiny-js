@@ -157,12 +157,6 @@ export const defaultRenderUrlFunction = async (
         windowSet(browserPage, "__PS_RENDER_LOCALE__", locale);
     }
 
-    const notFoundPage = params?.args?.configuration?.meta?.notFoundPage;
-    if (notFoundPage) {
-        console.log("Setting locale (__PS_NOT_FOUND_PAGE__) to window object....");
-        windowSet(browserPage, "__PS_NOT_FOUND_PAGE__", true);
-    }
-
     // Don't load these resources during prerender.
     const skipResources = ["image", "stylesheet"];
     await browserPage.setRequestInterception(true);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Auth } from "@aws-amplify/auth";
 import { AuthOptions } from "@aws-amplify/auth/lib-esm/types";
 import ApolloClient from "apollo-client";
@@ -8,7 +8,6 @@ import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 import { CognitoIdToken } from "@webiny/app-cognito-authenticator/types";
 import { Authenticator } from "@webiny/app-cognito-authenticator/Authenticator";
-import CheckingUser from "~/views/CheckingUser";
 import SignIn from "~/views/SignIn";
 import RequireNewPassword from "~/views/RequireNewPassword";
 import ForgotPassword from "~/views/ForgotPassword";
@@ -16,6 +15,7 @@ import SetNewPassword from "~/views/SetNewPassword";
 import SignedIn from "~/views/SignedIn";
 import { useSecurity } from "@webiny/app-security";
 import { config as appConfig } from "@webiny/app/config";
+import LoggingIn from "~/views/LoggingIn";
 
 const createApolloLinkPlugin = (): ApolloLinkPlugin => {
     return new ApolloLinkPlugin(() => {
@@ -80,11 +80,14 @@ export const createAuthentication: AuthenticationFactory = ({
 
     const Authentication: React.FC<AuthenticationProps> = props => {
         const { children } = props;
+        const [loadingIdentity, setLoadingIdentity] = useState(false);
         const { setIdentity } = useSecurity();
         const client = useApolloClient();
 
         const onToken = useCallback(async (token: CognitoIdToken) => {
             const { payload, logout } = token;
+
+            setLoadingIdentity(true);
 
             try {
                 const { id, displayName, type, permissions, ...data } = await getIdentityData({
@@ -111,6 +114,8 @@ export const createAuthentication: AuthenticationFactory = ({
                 } else {
                     console.error(err);
                 }
+            } finally {
+                setLoadingIdentity(false);
             }
         }, []);
 
@@ -120,8 +125,7 @@ export const createAuthentication: AuthenticationFactory = ({
 
         return (
             <Authenticator onToken={onToken}>
-                <CheckingUser />
-                <SignIn />
+                {loadingIdentity ? <LoggingIn /> : <SignIn />}
                 <RequireNewPassword />
                 <ForgotPassword />
                 <SetNewPassword />

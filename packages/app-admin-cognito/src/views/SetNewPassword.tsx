@@ -16,10 +16,10 @@ import {
 } from "@webiny/app-cognito-authenticator/hooks/useSetNewPassword";
 
 const SetNewPassword: React.FC = () => {
-    const { checkingUser, changeState } = useAuthenticator();
+    const { changeState } = useAuthenticator();
     const { shouldRender, setPassword, error, loading } = useSetNewPassword();
 
-    if (!shouldRender || checkingUser) {
+    if (!shouldRender) {
         return null;
     }
 

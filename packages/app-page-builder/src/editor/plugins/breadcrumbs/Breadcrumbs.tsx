@@ -65,25 +65,28 @@ const Breadcrumbs: React.FC = () => {
         setActiveElementId(id);
     }, []);
 
-    const createBreadCrumbs = useCallback(async (activeElement: PbEditorElement) => {
-        const list: ItemsState[] = [];
-        let element = activeElement;
-        while (element) {
-            list.push({
-                id: element.id,
-                type: element.type
-            });
+    const createBreadCrumbs = useCallback(
+        async (activeElement: PbEditorElement) => {
+            const list: ItemsState[] = [];
+            let element = activeElement;
+            while (element) {
+                list.push({
+                    id: element.id,
+                    type: element.type
+                });
 
-            if (!element.parent) {
-                break;
+                if (!element.parent) {
+                    break;
+                }
+
+                element = (await snapshot.getPromise(
+                    elementByIdSelector(element.parent)
+                )) as PbEditorElement;
             }
-
-            element = (await snapshot.getPromise(
-                elementByIdSelector(element.parent)
-            )) as PbEditorElement;
-        }
-        setItems(list.reverse());
-    }, []);
+            setItems(list.reverse());
+        },
+        [snapshot]
+    );
 
     useEffect(() => {
         if (!element) {
