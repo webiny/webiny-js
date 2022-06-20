@@ -11,7 +11,7 @@ import { BindComponent } from "@webiny/form";
 import { Box, Stack } from "~/components/Layout";
 import { ListItemWithCheckbox } from "../ListItemWithCheckbox";
 import { validation } from "@webiny/validation";
-import { BindComponentRenderProp } from "@webiny/form/Bind";
+import { BindComponentRenderProp } from "@webiny/form";
 import { useCmsModels } from "~/hooks/useCmsModels";
 import { CmsEntryOption, useCmsEntries } from "~/hooks/useCmsEntries";
 import { CmsModel } from "~/types";
