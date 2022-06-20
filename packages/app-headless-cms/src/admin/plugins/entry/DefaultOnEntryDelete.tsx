@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { useCms } from "~/admin/hooks";
-import { CmsEditorContentEntry, CmsModel } from "~/types";
+import { CmsModel } from "~/types";
 import { createDeleteMutation } from "~/admin/graphql/contentEntries";
 import { DocumentNode } from "graphql";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { OnEntryDeleteResponse } from "~/admin/contexts/Cms";
 
 interface Mutations {
     [key: string]: DocumentNode;
@@ -14,11 +15,6 @@ interface CreateMutationKeyParams {
     locale: string;
 }
 
-interface HandleOnDeleteParams {
-    model: CmsModel;
-    entry: CmsEditorContentEntry;
-}
-
 const createMutationKey = (params: CreateMutationKeyParams): string => {
     const { model, locale } = params;
     return `${model.modelId}_${locale}_${model.savedOn}`;
@@ -26,7 +22,7 @@ const createMutationKey = (params: CreateMutationKeyParams): string => {
 
 const OnEntryDelete: React.FC = () => {
     const { getCurrentLocale } = useI18N();
-    const { onEntryDelete, getApolloClient } = useCms();
+    const { onEntryDelete } = useCms();
 
     const mutations = useRef<Mutations>({});
 
@@ -38,7 +34,7 @@ const OnEntryDelete: React.FC = () => {
         return mutations.current[key];
     };
 
-    const handleOnDelete = async ({ model, entry }: HandleOnDeleteParams) => {
+    const handleOnDelete = async ({ model, client, id }: OnEntryDeleteResponse) => {
         const locale = getCurrentLocale();
         if (!locale) {
             return {
@@ -47,19 +43,17 @@ const OnEntryDelete: React.FC = () => {
                 }
             };
         }
-        const client = getApolloClient(locale);
         const mutation = getMutation(model, locale);
 
         const response = await client.mutate({
             mutation,
             variables: {
-                revision: entry.id
+                revision: id
             }
         });
 
         if (!response.data) {
             return {
-                cache: client.cache,
                 error: {
                     message: "Missing response data on Delete Entry Mutation."
                 }
@@ -68,12 +62,10 @@ const OnEntryDelete: React.FC = () => {
         const { error } = response.data.content;
         if (error) {
             return {
-                cache: client.cache,
                 error
             };
         }
         return {
-            cache: client.cache,
             data: true,
             error: null
         };

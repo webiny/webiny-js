@@ -58,8 +58,13 @@ const ContentFormOptionsMenu: React.FC = () => {
     const confirmDelete = useCallback((): void => {
         showConfirmation(async (): Promise<void> => {
             setLoading(true);
+            // mutation
 
-            const { error, cache } = await deleteEntry(contentModel, entry);
+            const { error, client } = await deleteEntry({
+                model: contentModel,
+                entry,
+                id: entry.id
+            });
 
             if (error) {
                 showDialog(error.message, { title: t`Could not delete content` });
@@ -72,8 +77,8 @@ const ContentFormOptionsMenu: React.FC = () => {
              * Cache should be returned as it is being sent by the default onEntryDelete method.
              * If it is not, it is an error which is produced in some added onEntryDelete method.
              */
-            if (cache) {
-                removeEntryFromListCache(contentModel, cache, entry, listQueryVariables);
+            if (client && client.cache) {
+                removeEntryFromListCache(contentModel, client.cache, entry, listQueryVariables);
             }
 
             showSnackbar(t`{title} was deleted successfully!`({ title: <strong>{title}</strong> }));

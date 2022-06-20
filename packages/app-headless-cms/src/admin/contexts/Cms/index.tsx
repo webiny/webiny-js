@@ -19,35 +19,40 @@ interface EntryError {
     data?: Record<string, any>;
 }
 
-interface OnEntryPublishResponse {
+export interface OnEntryPublishResponse {
     model: CmsModel;
     entry: CmsEditorContentEntry;
+    id: string;
     options: PublishEntryOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: EntryError | null;
-    cache?: ApolloClient<any>["cache"];
+    client: ApolloClient<any>;
 }
 
-type OnEntryDeleteResponse = OnEntryPublishResponse;
+export type OnEntryDeleteResponse = OnEntryPublishResponse;
 
-type OnEntryPublishSubscriber = AsyncProcessor<OnEntryPublishResponse>;
+type OnEntryRevisionPublishSubscriber = AsyncProcessor<OnEntryPublishResponse>;
 type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteResponse>;
 
+interface PublishEntryRevisionParams {
+    model: CmsModel;
+    entry: CmsEditorContentEntry;
+    options?: PublishEntryOptions;
+    id: string;
+}
+interface DeleteEntryParams {
+    model: CmsModel;
+    entry: CmsEditorContentEntry;
+    id: string;
+    options?: DeleteEntryOptions;
+}
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
-    publishEntry: (
-        model: CmsModel,
-        entry: CmsEditorContentEntry,
-        options: PublishEntryOptions
-    ) => Promise<OnEntryPublishResponse>;
-    onEntryPublish: (fn: OnEntryPublishSubscriber) => () => void;
-    deleteEntry: (
-        model: CmsModel,
-        entry: CmsEditorContentEntry,
-        options?: DeleteEntryOptions
-    ) => Promise<OnEntryDeleteResponse>;
+    publishEntryRevision: (params: PublishEntryRevisionParams) => Promise<OnEntryPublishResponse>;
+    onEntryRevisionPublish: (fn: OnEntryRevisionPublishSubscriber) => () => void;
+    deleteEntry: (params: DeleteEntryParams) => Promise<OnEntryDeleteResponse>;
     onEntryDelete: (fn: OnEntryDeleteSubscriber) => () => void;
 }
 
@@ -79,7 +84,7 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
     const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
     const { getCurrentLocale } = useI18N();
 
-    const onEntryPublish = useRef<OnEntryPublishSubscriber[]>([]);
+    const onEntryRevisionPublish = useRef<OnEntryRevisionPublishSubscriber[]>([]);
     const onEntryDelete = useRef<OnEntryDeleteSubscriber[]>([]);
 
     const currentLocale = getCurrentLocale("content");
@@ -94,35 +99,41 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
         return <CircularProgress />;
     }
 
+    const getApolloClient = (locale: string) => {
+        if (!apolloClientsCache[locale]) {
+            apolloClientsCache[locale] = props.createApolloClient({
+                uri: `${apiUrl}/cms/manage/${locale}`
+            });
+        }
+        return apolloClientsCache[locale];
+    };
+
     const value: CmsContext = {
-        getApolloClient(locale: string) {
-            if (!apolloClientsCache[locale]) {
-                apolloClientsCache[locale] = props.createApolloClient({
-                    uri: `${apiUrl}/cms/manage/${locale}`
-                });
-            }
-            return apolloClientsCache[locale];
-        },
+        getApolloClient,
         createApolloClient: props.createApolloClient,
         apolloClient: apolloClientsCache[currentLocale],
-        publishEntry: async (model, entry, options = {}) => {
-            return await composeAsync([...onEntryPublish.current].reverse())({
+        publishEntryRevision: async ({ model, entry, options = {}, id }) => {
+            return await composeAsync([...onEntryRevisionPublish.current].reverse())({
                 model,
                 entry,
+                id,
+                client: apolloClientsCache[currentLocale],
                 options
             });
         },
-        onEntryPublish: fn => {
-            onEntryPublish.current.push(fn);
+        onEntryRevisionPublish: fn => {
+            onEntryRevisionPublish.current.push(fn);
             return () => {
-                const index = onEntryPublish.current.length;
-                onEntryPublish.current.splice(index, 1);
+                const index = onEntryRevisionPublish.current.length;
+                onEntryRevisionPublish.current.splice(index, 1);
             };
         },
-        deleteEntry: async (model, entry, options = {}) => {
+        deleteEntry: async ({ model, entry, options = {}, id }) => {
             return await composeAsync([...onEntryDelete.current].reverse())({
                 model,
                 entry,
+                id,
+                client: apolloClientsCache[currentLocale],
                 options
             });
         },

@@ -5,15 +5,15 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsEditorContentEntry } from "~/types";
 import * as GQL from "~/admin/graphql/contentEntries";
 import * as GQLCache from "./cache";
-import { useApolloClient } from "~/admin/hooks";
+import { useApolloClient, useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
-    CmsEntryDeleteMutationResponse,
-    CmsEntryDeleteMutationVariables,
-    CmsEntryPublishMutationResponse,
-    CmsEntryPublishMutationVariables,
+    // CmsEntryDeleteMutationResponse,
+    // CmsEntryDeleteMutationVariables,
+    // CmsEntryPublishMutationResponse,
+    // CmsEntryPublishMutationVariables,
     CmsEntryRequestChangesMutationResponse,
     CmsEntryRequestChangesMutationVariables,
     CmsEntryRequestReviewMutationResponse,
@@ -58,6 +58,7 @@ export interface UseRevisionProps {
 }
 
 export const useRevision = ({ revision }: UseRevisionProps) => {
+    const { publishEntryRevision, deleteEntry } = useCms();
     const { contentModel, entry, setLoading, listQueryVariables } = useContentEntry();
 
     const { history } = useRouter();
@@ -67,8 +68,8 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
     const {
         CREATE_REVISION,
-        DELETE_REVISION,
-        PUBLISH_REVISION,
+        // DELETE_REVISION,
+        // PUBLISH_REVISION,
         UNPUBLISH_REVISION,
         REQUEST_REVIEW,
         REQUEST_CHANGES
@@ -76,7 +77,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
         return {
             CREATE_REVISION: GQL.createCreateFromMutation(contentModel),
             DELETE_REVISION: GQL.createDeleteMutation(contentModel),
-            PUBLISH_REVISION: GQL.createPublishMutation(contentModel),
+            // PUBLISH_REVISION: GQL.createPublishMutation(contentModel),
             UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel),
             REQUEST_REVIEW: GQL.createRequestReviewMutation(contentModel),
             REQUEST_CHANGES: GQL.createRequestChangesMutation(contentModel)
@@ -164,91 +165,143 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                 ({ entry }): DeleteRevisionHandler =>
                 async (id): Promise<void> => {
                     setLoading(true);
-                    await client.mutate<
-                        CmsEntryDeleteMutationResponse,
-                        CmsEntryDeleteMutationVariables
-                    >({
-                        mutation: DELETE_REVISION,
-                        variables: {
-                            revision: id || revision.id
-                        },
-                        update: (cache, result) => {
-                            if (!result || !result.data) {
-                                showSnackbar(
-                                    `Missing result in update callback on Delete Mutation.`
-                                );
-                                return;
-                            }
-                            const { error } = result.data.content;
-                            if (error) {
-                                showSnackbar(error.message);
-                                return;
-                            }
 
-                            // We have other revisions, update entry's cache
-                            const revisions = GQLCache.removeRevisionFromEntryCache(
-                                contentModel,
-                                cache,
-                                revision
-                            );
-
-                            if (revision.id !== entry.id) {
-                                return;
-                            }
-                            GQLCache.updateLatestRevisionInListCache(
-                                contentModel,
-                                cache,
-                                revisions[0],
-                                listQueryVariables
-                            );
-                            // Redirect to the first revision in the list of all entry revisions.
-                            history.push(
-                                `/cms/content-entries/${modelId}?id=` +
-                                    encodeURIComponent(revisions[0].id)
-                            );
-                        }
+                    const { error, client } = await deleteEntry({
+                        model: contentModel,
+                        entry: revision,
+                        id: id || revision.id
                     });
+
+                    if (error) {
+                        showSnackbar(error.message);
+                        return;
+                    }
+
+                    // We have other revisions, update entry's cache
+                    const revisions = GQLCache.removeRevisionFromEntryCache(
+                        contentModel,
+                        client.cache,
+                        revision
+                    );
+
+                    if (revision.id !== entry.id) {
+                        return;
+                    }
+                    GQLCache.updateLatestRevisionInListCache(
+                        contentModel,
+                        client.cache,
+                        revisions[0],
+                        listQueryVariables
+                    );
+                    // Redirect to the first revision in the list of all entry revisions.
+                    history.push(
+                        `/cms/content-entries/${modelId}?id=` + encodeURIComponent(revisions[0].id)
+                    );
+
+                    // await client.mutate<
+                    //     CmsEntryDeleteMutationResponse,
+                    //     CmsEntryDeleteMutationVariables
+                    // >({
+                    //     mutation: DELETE_REVISION,
+                    //     variables: {
+                    //         revision: id || revision.id
+                    //     },
+                    //     update: (cache, result) => {
+                    //         if (!result || !result.data) {
+                    //             showSnackbar(
+                    //                 `Missing result in update callback on Delete Mutation.`
+                    //             );
+                    //             return;
+                    //         }
+                    //         const { error } = result.data.content;
+                    //         if (error) {
+                    //             showSnackbar(error.message);
+                    //             return;
+                    //         }
+                    //
+                    //         // We have other revisions, update entry's cache
+                    //         const revisions = GQLCache.removeRevisionFromEntryCache(
+                    //             contentModel,
+                    //             cache,
+                    //             revision
+                    //         );
+                    //
+                    //         if (revision.id !== entry.id) {
+                    //             return;
+                    //         }
+                    //         GQLCache.updateLatestRevisionInListCache(
+                    //             contentModel,
+                    //             cache,
+                    //             revisions[0],
+                    //             listQueryVariables
+                    //         );
+                    //         // Redirect to the first revision in the list of all entry revisions.
+                    //         history.push(
+                    //             `/cms/content-entries/${modelId}?id=` +
+                    //                 encodeURIComponent(revisions[0].id)
+                    //         );
+                    //     }
+                    // });
 
                     setLoading(false);
                 },
             publishRevision: (): PublishRevisionHandler => async id => {
                 setLoading(true);
-                await client.mutate<
-                    CmsEntryPublishMutationResponse,
-                    CmsEntryPublishMutationVariables
-                >({
-                    mutation: PUBLISH_REVISION,
-                    variables: {
-                        revision: id || revision.id
-                    },
-                    update(cache, result) {
-                        if (!result || !result.data) {
-                            showSnackbar(`Missing result in update callback on Publish Mutation.`);
-                            return;
-                        }
-                        const { data: published, error } = result.data.content;
-                        if (error) {
-                            showSnackbar(error.message);
-                            return;
-                        } else if (!published) {
-                            showSnackbar("Missing published data on Publish Mutation Response.");
-                            return;
-                        }
 
-                        GQLCache.unpublishPreviouslyPublishedRevision(
-                            contentModel,
-                            cache,
-                            published.id
-                        );
-
-                        showSnackbar(
-                            <span>
-                                Successfully published revision{" "}
-                                <strong>#{published.meta.version}</strong>!
-                            </span>
-                        );
-                    }
+                const response = await publishEntryRevision({
+                    model: contentModel,
+                    entry: revision,
+                    id: id || revision.id
                 });
+
+                const { error } = response;
+                if (error) {
+                    showSnackbar(error.message);
+                    return;
+                }
+
+                showSnackbar(
+                    <span>
+                        Successfully published revision <strong>#{entry.meta.version}</strong>!
+                    </span>
+                );
+
+                // await client.mutate<
+                //     CmsEntryPublishMutationResponse,
+                //     CmsEntryPublishMutationVariables
+                // >({
+                //     mutation: PUBLISH_REVISION,
+                //     variables: {
+                //         revision: id || revision.id
+                //     },
+                //     update(cache, result) {
+                //         if (!result || !result.data) {
+                //             showSnackbar(`Missing result in update callback on Publish Mutation.`);
+                //             return;
+                //         }
+                //         const { data: published, error } = result.data.content;
+                //         if (error) {
+                //             showSnackbar(error.message);
+                //             return;
+                //         } else if (!published) {
+                //             showSnackbar("Missing published data on Publish Mutation Response.");
+                //             return;
+                //         }
+                //
+                //         GQLCache.unpublishPreviouslyPublishedRevision(
+                //             contentModel,
+                //             cache,
+                //             published.id
+                //         );
+                //
+                //         showSnackbar(
+                //             <span>
+                //                 Successfully published revision{" "}
+                //                 <strong>#{published.meta.version}</strong>!
+                //             </span>
+                //         );
+                //     }
+                // });
 
                 setLoading(false);
             },

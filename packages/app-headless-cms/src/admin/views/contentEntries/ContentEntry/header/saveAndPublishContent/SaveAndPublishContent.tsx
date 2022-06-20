@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -27,24 +27,25 @@ const SaveAndPublishButton: React.FC = () => {
 
     const { canEdit, canPublish } = usePermission();
 
+    const onPublishClick = useCallback(
+        (ev: React.MouseEvent) => {
+            showConfirmation(async () => {
+                const entry = await form.current.submit(ev);
+                if (!entry) {
+                    return;
+                }
+                await publishRevision();
+            });
+        },
+        [showConfirmation]
+    );
+
     if (!canEdit(entry, "cms.contentEntry") || !canPublish("cms.contentEntry")) {
         return null;
     }
 
     return (
-        <ButtonPrimary
-            className={buttonStyles}
-            onClick={ev => {
-                showConfirmation(async () => {
-                    const entry = await form.current.submit(ev);
-                    if (!entry) {
-                        return;
-                    }
-                    await publishRevision(entry.id);
-                });
-            }}
-            disabled={loading}
-        >
+        <ButtonPrimary className={buttonStyles} onClick={onPublishClick} disabled={loading}>
             {t`Save & Publish`}
         </ButtonPrimary>
     );
