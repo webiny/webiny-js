@@ -1,99 +1,16 @@
 import * as React from "react";
-import { get } from "lodash";
-import { Form } from "./Form";
-import invariant from "invariant";
-import { FormAPI } from "~/types";
+import { useBind } from "~/Form";
+import { BindComponent } from "~/types";
 
-export type BindComponentRenderPropValidation = {
-    isValid: boolean;
-    message: string;
-    results?: { [key: string]: any };
-};
+export const Bind: BindComponent = ({ children, ...props }) => {
+    const bind = useBind(props);
 
-export type BindComponentRenderPropOnChange = (value: any) => Promise<void>;
-
-export type BindComponentRenderProp<T = any> = {
-    form: FormAPI;
-    onChange: BindComponentRenderPropOnChange;
-    value: T;
-    validate: () => Promise<boolean | any>;
-    validation: BindComponentRenderPropValidation;
-};
-
-export type BindComponentPropsValue = string | number | boolean | null | undefined;
-export interface BindComponentProps {
-    // TODO @ts-refactor verify that this property can be undefined
-    name?: string;
-    beforeChange?: (
-        value: BindComponentPropsValue,
-        cb: (value: BindComponentPropsValue) => void
-    ) => void;
-    afterChange?: (
-        value: BindComponentPropsValue,
-        cb: (value: BindComponentPropsValue) => void
-    ) => void;
-    defaultValue?: any;
-    validators?: Function | Array<Function>;
-    children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
-    validate?: Function;
-}
-
-export type BindComponent = (props: BindComponentProps) => React.ReactElement | null;
-
-const createBind = (form: Form) => {
-    const Bind: BindComponent = props => {
-        const { name, validators = [], children, defaultValue, beforeChange, afterChange } = props;
-
-        invariant(name, `Bind component must have a "name" prop.`);
-
-        // Track component rendering
-        form.lastRender.push(name);
-
-        // Store validators and custom messages
-        form.inputs[name] = {
-            defaultValue,
-            validators
-        };
-
-        // Build new input props
-        const newProps = {
-            disabled: false,
-            form,
-            validate: form.getValidateFn(name),
-            validation: form.state.validation[name] || {
-                isValid: null,
-                message: null,
-                results: null
-            },
-            value: get(form.state, `data.${name}`, defaultValue),
-            onChange: form.getOnChangeFn({ name, beforeChange, afterChange })
-        };
-
-        // If Form has a `disabled` prop we must evaluate it to see if form input needs to be disabled
-        if (form.props.disabled) {
-            const inputDisabledByForm =
-                typeof form.props.disabled === "function"
-                    ? form.props.disabled({ data: { ...form.state.data } })
-                    : form.props.disabled;
-            // Only override the input prop if the entire Form is disabled
-            if (inputDisabledByForm) {
-                newProps.disabled = true;
-            }
+    if (React.isValidElement(children)) {
+        if (!bind.disabled) {
+            bind.disabled = children.props.disabled;
         }
+        return React.cloneElement(children, { ...children.props, ...bind });
+    }
 
-        form.inputs[name].props = newProps;
-
-        if (React.isValidElement(children)) {
-            if (!newProps.disabled) {
-                newProps.disabled = children.props.disabled;
-            }
-            return React.cloneElement(children, { ...children.props, ...newProps });
-        }
-
-        return typeof children === "function" ? children(newProps) : null;
-    };
-
-    return Bind;
+    return typeof children === "function" ? children(bind) : null;
 };
-
-export { createBind };

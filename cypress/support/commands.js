@@ -31,6 +31,7 @@ import "./security/securityCreateApiKey";
 import "./security/securityDeleteApiKey";
 import "./fileManager/fmListFiles";
 import "./fileManager/fmDeleteFile";
+import "./fileManager/fmDeleteAllFiles";
 import "./fileManager/fmListTags";
 import "cypress-mailosaur";
 

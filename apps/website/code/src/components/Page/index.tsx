@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import Render from "./Render";
 import trim from "lodash/trim";
@@ -10,6 +10,7 @@ import {
     SettingsQueryResponse,
     SettingsQueryResponseData
 } from "./graphql";
+import { useSearchParams, useLocation } from "@webiny/react-router";
 
 declare global {
     interface Window {
@@ -20,50 +21,37 @@ declare global {
 // Make sure the final path looks like `/xyz`. We don't want to run into situations where the prerendering engine is
 // visiting `/xyz`, but delivery URL is forcing `/xyz/`. This ensures the path is standardized, and the GraphQL
 // queries are the same on both sides.
-const trimPath = (value: string): string | null => {
-    if (typeof value === "string") {
-        return "/" + trim(value, "/");
-    }
-    return null;
+const trimPath = (value: string) => {
+    return "/" + trim(value, "/");
 };
-
-// Not-found page has `__PS_NOT_FOUND_PAGE__` flag set to true. If so, let's hard-code
-// the "/not-found" path, which is what we already have in the Apollo Cache.
-const isNotFoundPage = window.__PS_NOT_FOUND_PAGE__;
 
 // We want to write the initial path which returned the not-found page. That way, we still
 // allow navigating to other pages, in the `getPath` function below.
 const notFoundInitialPath = trimPath(location.pathname);
 
-const getPath = (): string | null => {
-    let path: string | null = location.pathname;
-    if (typeof path !== "string") {
-        return null;
-    }
-
-    path = trimPath(path);
-    if (path === null) {
-        return null;
-    }
-
-    // Let's check if the not-found page was just served to the user. If so, let's just return page content for the
-    // "/not-found" path, which is already present in the initially served HTML and ready to be used by Apollo Cache.
-    if (isNotFoundPage && path === notFoundInitialPath) {
-        return "/not-found";
-    }
-
-    return path;
-};
-
 /**
  * This component will fetch the published page's data and pass it to the `Render` function. Note that if the
  * `preview` query parameter is present, we're getting the page directly by its ID, instead of the URL.
- * The `preview` query parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
+ * The `preview` search parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
 const Page: React.FC = () => {
-    const path = getPath();
-    const query = new URLSearchParams(location.search);
-    const id = query.get("preview");
+    const { pathname } = useLocation();
+    const [search] = useSearchParams();
+
+    const getPath = useCallback(() => {
+        const path = trimPath(pathname);
+
+        // Let's check if the not-found page was served to the user. If so, let's return page content for the
+        // "__PS_NOT_FOUND_PAGE__" path, which is already present in the initially served HTML and ready to be used by Apollo Cache.
+        if (window.__PS_NOT_FOUND_PAGE__ && path === notFoundInitialPath) {
+            return window.__PS_NOT_FOUND_PAGE__;
+        }
+
+        return path;
+    }, [pathname]);
+
+    // When using page preview, we're passing page ID via search params.
+    const id = search.get("preview");
 
     // Here we get the page data for current URL, including its content.
     const getPublishedPageQuery = useQuery<PublishedPageQueryResponse, PublishedPageQueryVariables>(
@@ -71,8 +59,7 @@ const Page: React.FC = () => {
         {
             variables: {
                 id,
-                path,
-                returnErrorPage: true, // API will immediately return the data for the error page, if one occurred.
+                path: getPath(),
                 returnNotFoundPage: true, // API will immediately return the data for the not-found page, if none was found.
                 preview: !!id
             }
