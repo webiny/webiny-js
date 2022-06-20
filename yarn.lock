@@ -11911,6 +11911,7 @@ __metadata:
     "@webiny/react-router": ^5.28.0
     "@webiny/telemetry": ^5.28.0
     "@webiny/ui": ^5.28.0
+    "@webiny/utils": ^5.28.0
     "@webiny/validation": ^5.28.0
     aos: ^2.3.4
     apollo-cache: ^1.3.5
