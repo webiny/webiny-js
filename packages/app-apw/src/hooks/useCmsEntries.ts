@@ -9,7 +9,7 @@ import {
     SearchCmsEntriesQueryResponse,
     SearchCmsEntriesQueryVariables
 } from "~/graphql/workflow.gql";
-import { BindComponentRenderProp } from "@webiny/form/Bind";
+import { BindComponentRenderProp } from "@webiny/form";
 import { CmsEntry, CmsModel } from "~/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useQueryLocale } from "@webiny/app-headless-cms/admin/hooks";

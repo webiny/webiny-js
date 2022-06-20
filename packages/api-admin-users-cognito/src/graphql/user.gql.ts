@@ -167,7 +167,16 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     throw new NotAuthorizedError();
                 }
 
+                // Current user might not have permissions to execute `getUser` (this method can load any user in the system),
+                // but loading your own user record should be allowed. For that reason, let's temporarily disable authorization.
+                context.security.disableAuthorization();
+
+                // Get user record using the identity ID.
                 const user = await context.adminUsers.getUser({ where: { id: identity.id } });
+
+                // Now we can re-enable authorization.
+                context.security.enableAuthorization();
+
                 if (!user) {
                     return new NotFoundResponse(`User with ID ${identity.id} was not found!`);
                 }
@@ -192,15 +201,21 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                     throw new Error("Not authorized!");
                 }
 
+                // Current user might not have permissions for `adminUsers`.
+                context.security.disableAuthorization();
+
                 let user = await adminUsers.getUser({ where: { id: identity.id } });
                 if (!user) {
                     // TODO: check if current identity belongs to a different tenant.
-                    // If so, switch to that other tenant, and update his profile there.
+                    // TODO: If so, switch to that other tenant, and update his profile there.
                     return new NotFoundResponse("User not found!");
                 }
 
                 try {
                     user = await adminUsers.updateUser(user.id, args.data);
+
+                    // Now we can re-enable authorization.
+                    context.security.enableAuthorization();
 
                     return new Response(user);
                 } catch (e) {

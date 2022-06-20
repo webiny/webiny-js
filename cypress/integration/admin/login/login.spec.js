@@ -132,19 +132,11 @@ context("Login Page", () => {
                         group: group.id
                     }
                 })
-                .then(user => {
-                    // Login with new user.
-                    cy.login({ username: user.email, password });
+                .then(() => {
+                    // Clear local storage to log out any logged-in user.
+                    cy.clearLocalStorage();
 
                     cy.visit("/");
-                    // Verify the access.
-                    cy.findByText(`Hi ${user.firstName} ${user.lastName}!`).should("be.visible");
-                    cy.findByText(/To get started - pick one of the actions below:/i).should(
-                        "be.visible"
-                    );
-
-                    cy.findByTestId("logged-in-user-menu-avatar").click();
-                    cy.findByText(/Sign out/i).click();
                     cy.findByText(/sign in/i).should("exist");
 
                     // Activate user password.

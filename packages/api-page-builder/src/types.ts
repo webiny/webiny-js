@@ -93,18 +93,6 @@ export interface Page {
     settings?: PageSettings;
     locked: boolean;
     status: PageStatus;
-    visibility: {
-        list: {
-            latest: boolean;
-            published: boolean;
-        };
-        get: {
-            latest: boolean;
-            published: boolean;
-        };
-    };
-    home: boolean;
-    notFound: boolean;
     createdOn: string;
     savedOn: string;
     createdBy: CreatedBy;

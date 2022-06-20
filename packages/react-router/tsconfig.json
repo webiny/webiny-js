@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [{ "path": "../plugins" }],
+  "references": [{ "path": "../plugins" }, { "path": "../react-composition" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -9,7 +9,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-composition": ["../react-composition/src"]
     },
     "baseUrl": "."
   }
