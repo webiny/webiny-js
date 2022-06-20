@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/serverless-cms-aws-handlers",
+  "name": "@webiny/serverless-cms-aws",
   "version": "5.28.0",
   "repository": {
     "type": "git",
@@ -16,7 +16,8 @@
     "@pulumi/aws": "^5.8.0",
     "@pulumi/pulumi": "^3.34.0",
     "@webiny/pulumi": "^5.28.0",
-    "@webiny/pulumi-aws": "^5.28.0"
+    "@webiny/pulumi-aws": "^5.28.0",
+    "@webiny/serverless-cms-aws-handlers": "^5.28.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

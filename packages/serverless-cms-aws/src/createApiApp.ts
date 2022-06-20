@@ -1,5 +1,7 @@
 import { PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import { createApiPulumiApp, CustomDomainParams } from "@webiny/pulumi-aws";
+import { PluginCollection } from "@webiny/plugins/types";
+import plugins from "./api/plugins";
 
 export interface CreateApiAppParams {
     /**
@@ -16,6 +18,8 @@ export interface CreateApiAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
+
+    plugins?: PluginCollection;
 }
 
 export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
@@ -31,6 +35,8 @@ export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
                 depth: 5
             }
         },
-        pulumi: createApiPulumiApp(projectAppParams)
+        pulumi: createApiPulumiApp(projectAppParams),
+
+        plugins: [...plugins, projectAppParams.plugins ? [...projectAppParams.plugins] : []]
     };
 }

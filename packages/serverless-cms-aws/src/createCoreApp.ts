@@ -1,5 +1,7 @@
 import { PulumiAppParam } from "@webiny/pulumi";
 import { createCorePulumiApp, CoreAppLegacyConfig } from "@webiny/pulumi-aws";
+import { PluginCollection } from "@webiny/plugins/types";
+import { generateDdbToEsHandler } from "./core/plugins";
 
 export interface CreateCoreAppParams {
     /**
@@ -30,13 +32,24 @@ export interface CreateCoreAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: ReturnType<typeof createCorePulumiApp>) => void;
+
+    plugins?: PluginCollection;
 }
 
 export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
+    const builtInPlugins = [];
+    if (!projectAppParams.elasticSearch) {
+        builtInPlugins.push(generateDdbToEsHandler);
+    }
+
+    const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
+
     return {
         id: "core",
         name: "Core",
         description: "Your project's stateful cloud infrastructure resources.",
-        pulumi: createCorePulumiApp(projectAppParams)
+        pulumi: createCorePulumiApp(projectAppParams),
+
+        plugins: [...builtInPlugins, ...customPlugins]
     };
 }

@@ -1,5 +1,7 @@
 import { PulumiAppParamCallback } from "@webiny/pulumi";
 import { createAdminPulumiApp, CustomDomainParams } from "@webiny/pulumi-aws";
+import * as plugins from "./admin/plugins";
+import { PluginCollection } from "@webiny/plugins/types";
 
 export interface CreateAdminAppParams {
     /** Custom domain configuration */
@@ -10,6 +12,8 @@ export interface CreateAdminAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
+
+    plugins?: PluginCollection
 }
 
 export function createAdminApp(projectAppParams: CreateAdminAppParams = {}) {
@@ -23,6 +27,7 @@ export function createAdminApp(projectAppParams: CreateAdminAppParams = {}) {
                 deploy: false
             }
         },
-        pulumi: createAdminPulumiApp(projectAppParams)
+        pulumi: createAdminPulumiApp(projectAppParams),
+        plugins: [plugins, projectAppParams.plugins]
     };
 }

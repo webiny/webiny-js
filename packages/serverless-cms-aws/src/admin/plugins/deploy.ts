@@ -2,6 +2,7 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { uploadFolderToS3 } from "@webiny/pulumi-aws";
 import * as path from "path";
 import * as fs from "fs";
+import { CliContext } from "@webiny/cli/types";
 
 /**
  * This plugin uploads the Admin Area React application to the deployed Amazon S3 bucket.
@@ -9,15 +10,10 @@ import * as fs from "fs";
  * and relevant cloud infrastructure resources have been deployed (via `webiny deploy` command).
  * https://www.webiny.com/docs/how-to-guides/deployment/deploy-your-project/
  */
-export default {
+export const deployAdminPlugin = {
     type: "hook-after-deploy",
     name: "hook-after-deploy-admin",
-    async hook(params, context) {
-        // Only handle Admin Area React application.
-        if (params.projectApplication.id !== "admin") {
-            return;
-        }
-
+    async hook(params: Record<string, any>, context: CliContext) {
         if (params.inputs.build === false) {
             context.info(`"--no-build" argument detected - skipping React application upload.`);
             return;
