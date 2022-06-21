@@ -11,25 +11,11 @@ const documentClient = new DocumentClient({
 
 export const handler = createHandler(
     flushPlugins({
-        storage: {
-            name: String(process.env.DELIVERY_BUCKET)
-        },
-        website: {
-            url: String(process.env.APP_URL)
-        },
-        meta: {
-            // TODO Add proper typing.
-            cloudfront: {
-                distributionId: String(process.env.DELIVERY_CLOUDFRONT)
-            }
-        },
         storageOperations: createPrerenderingServiceStorageOperations({
-            table(table) {
-                return {
-                    ...table,
-                    name: String(process.env.DB_TABLE)
-                };
-            },
+            table: table => ({
+                ...table,
+                name: String(process.env.DB_TABLE)
+            }),
             documentClient
         })
     }),

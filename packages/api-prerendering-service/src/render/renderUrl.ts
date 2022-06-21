@@ -21,7 +21,7 @@ import {
     RenderUrlPostHtmlParams
 } from "./types";
 import { Browser, Page } from "puppeteer";
-import { TagUrlLink } from "~/types";
+import { TagPathLink } from "~/types";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {
     page.evaluateOnNewDocument(`
@@ -33,7 +33,7 @@ const windowSet = (page: Page, name: string, value: string | boolean) => {
 };
 
 interface Meta {
-    url: string;
+    path: string;
     id: string;
     ts: number;
     render: RenderResult;
@@ -45,7 +45,7 @@ export interface File {
     body: any;
     name: string;
     meta: {
-        tags?: TagUrlLink[];
+        tags?: TagPathLink[];
         [key: string]: any;
     };
 }
@@ -80,7 +80,7 @@ export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta
         render.content = render.content.replace(regex, subst);
     }
 
-    const allArgs: RenderUrlPostHtmlParams = { render, args, url, id, ts };
+    const allArgs: RenderUrlPostHtmlParams = { render, args, path: args.args.path, id, ts };
     const { html } = await posthtml([
         noopener(),
         absoluteAssetUrls(),
@@ -145,13 +145,13 @@ export const defaultRenderUrlFunction = async (
     // Can be used to add additional logic - e.g. skip a GraphQL query to be made when in pre-rendering process.
     windowSet(browserPage, "__PS_RENDER__", true);
 
-    const tenant = params?.args?.configuration?.meta?.tenant;
+    const tenant = params.args.tenant;
     if (tenant) {
         console.log("Setting tenant (__PS_RENDER_TENANT__) to window object....");
         windowSet(browserPage, "__PS_RENDER_TENANT__", tenant);
     }
 
-    const locale = params?.args?.configuration?.meta?.locale;
+    const locale = params.args.locale;
     if (locale) {
         console.log("Setting locale (__PS_RENDER_LOCALE__) to window object....");
         windowSet(browserPage, "__PS_RENDER_LOCALE__", locale);

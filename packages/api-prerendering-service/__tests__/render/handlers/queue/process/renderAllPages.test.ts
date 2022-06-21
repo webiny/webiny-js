@@ -1,11 +1,20 @@
 import useHandler from "./useHandler";
 import mocks from "./mocks/renderAllPages";
+// @ts-ignore
 import mdbid from "mdbid";
 
 describe("Render All Pages Test", () => {
+    const plugin = {
+        type: "handler-client-handler-render-handler",
+        name: "handler-client-handler-render-handler",
+        invoke() {
+            // Continue
+        }
+    };
+
     // eslint-disable-next-line
     it('should rerender all existing pages when "path: *" is present in the jobs list', async () => {
-        const { handler, storageOperations } = useHandler();
+        const { handler, storageOperations } = useHandler(plugin);
 
         for (let i = 0; i < 3; i++) {
             await storageOperations.createQueueJob({
@@ -42,7 +51,7 @@ describe("Render All Pages Test", () => {
 
     // eslint-disable-next-line
     it("should have multiple render-all-pages jobs for different DB namespaces", async () => {
-        const { handler, storageOperations } = useHandler();
+        const { handler, storageOperations } = useHandler(plugin);
 
         for (let i = 0; i < 3; i++) {
             await storageOperations.createQueueJob({
@@ -58,7 +67,7 @@ describe("Render All Pages Test", () => {
 
         for (let i = 0; i < 3; i++) {
             await storageOperations.createQueueJob({
-                queueJob: mocks.renderAllJob({ index: mdbid(), namespace: "namespace-" + i })
+                queueJob: mocks.renderAllJob({ index: mdbid(), tenant: "tenant-" + i })
             });
         }
 

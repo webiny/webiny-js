@@ -1,12 +1,10 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { Attributes } from "~/types";
 
 interface Params {
     entityName: string;
     table: Table;
-    attributes?: Attributes;
 }
-export const createTenantEntity = ({ entityName, table, attributes }: Params): Entity<any> => {
+export const createTenantLegacyEntity = ({ entityName, table }: Params): Entity<any> => {
     return new Entity({
         table,
         name: entityName,
@@ -23,9 +21,6 @@ export const createTenantEntity = ({ entityName, table, attributes }: Params): E
             GSI1_SK: {
                 type: "string"
             },
-            TYPE: {
-                type: "string"
-            },
             id: {
                 type: "string"
             },
@@ -39,15 +34,6 @@ export const createTenantEntity = ({ entityName, table, attributes }: Params): E
                 type: "string",
                 default: "active"
             },
-            createdOn: {
-                type: "string"
-            },
-            savedOn: {
-                type: "string"
-            },
-            createdBy: {
-                type: "map"
-            },
             parent: {
                 type: "string"
             },
@@ -57,8 +43,7 @@ export const createTenantEntity = ({ entityName, table, attributes }: Params): E
             settings: {
                 type: "map",
                 default: {}
-            },
-            ...(attributes || {})
+            }
         }
     });
 };

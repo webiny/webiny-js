@@ -4,7 +4,7 @@ import lodashChunk from "lodash/chunk";
 import { nanoid } from "nanoid";
 
 import {
-    Args,
+    RenderEvent,
     PrerenderingServiceStorageOperations,
     RenderPagesEvent
 } from "@webiny/api-prerendering-service/types";
@@ -20,7 +20,6 @@ export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
 
 export interface HandlerConfig {
     storageOperations: PrerenderingServiceStorageOperations;
-    sqsQueueUrl: string;
 }
 
 export default (params: HandlerConfig) => {
@@ -33,7 +32,7 @@ export default (params: HandlerConfig) => {
         }
 
         const event = context.invocationArgs.detail;
-        const namespace = event.configuration?.db?.namespace ?? "";
+        const tenant = event.tenant;
         const variant = event.variant;
 
         // Check if a specific variant rerender is requested.
@@ -41,34 +40,32 @@ export default (params: HandlerConfig) => {
             return;
         }
 
-        const toRender: Array<{ groupId: string; body: Args }> = [];
+        const settings = await storageOperations.getSettings();
+        if (!settings.sqsQueueUrl) {
+            console.error("SQS Queue URL was not found in Prerendering Settings!");
+            return;
+        }
+
+        const toRender: Array<{ groupId: string; body: RenderEvent }> = [];
 
         // Event might contain specific paths to exclude from full rerender.
         const exclude = event.exclude || [];
 
         if (event.path === "*") {
             const renders = await storageOperations.listRenders({
-                where: { namespace }
+                where: { tenant }
             });
 
-            for (const render of renders) {
-                if (render.args) {
-                    addRender(render.args);
-                }
-            }
+            renders.forEach(addRender);
         } else if (event.tag) {
             const renders = await storageOperations.listRenders({
                 where: {
-                    namespace,
+                    tenant,
                     tag: event.tag
                 }
             });
 
-            for (const render of renders) {
-                if (render.args) {
-                    addRender(render.args);
-                }
-            }
+            renders.forEach(addRender);
         } else {
             addRender(event);
         }
@@ -94,7 +91,7 @@ export default (params: HandlerConfig) => {
         for (const chunk of entriesChunked) {
             const result = await sqsClient
                 .sendMessageBatch({
-                    QueueUrl: params.sqsQueueUrl,
+                    QueueUrl: settings.sqsQueueUrl,
                     Entries: chunk
                 })
                 .promise();
@@ -105,12 +102,10 @@ export default (params: HandlerConfig) => {
             }
         }
 
-        function addRender(args: Args) {
-            if (args.path && exclude.includes(args.path)) {
+        function addRender(render: RenderEvent) {
+            if (render.path && exclude.includes(render.path)) {
                 return;
             }
-
-            const namespace = args.configuration?.db?.namespace || "";
 
             /**
              * We're only sending the data that comes from the business logic. Things like CDN URLs, S3 buckets, etc.
@@ -118,8 +113,8 @@ export default (params: HandlerConfig) => {
              * the database. This way we are sure that we don't store obsolete infrastructure information.
              */
             toRender.push({
-                groupId: namespace,
-                body: args
+                groupId: render.tenant,
+                body: render
             });
         }
     });

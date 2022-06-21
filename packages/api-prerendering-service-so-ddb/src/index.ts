@@ -2,10 +2,12 @@ import WebinyError from "@webiny/error";
 import { ENTITIES, PrerenderingServiceFactory, PrerenderingServiceFactoryParams } from "~/types";
 import { createTable } from "~/definitions/table";
 import { createRenderEntity } from "~/definitions/render";
+import { createSettingsEntity } from "~/definitions/settings";
 import { createQueueJobEntity } from "~/definitions/queueJob";
 import { createRenderStorageOperations } from "~/operations/render";
+import { createSettingsStorageOperations } from "~/operations/settings";
 import { createQueueJobStorageOperations } from "~/operations/queueJob";
-import { createTagUrlLinkEntity } from "~/definitions/tagUrlLink";
+import { createTagPathLinkEntity } from "~/definitions/tagPathLink";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -37,15 +39,20 @@ export const createPrerenderingServiceStorageOperations: PrerenderingServiceFact
             table: tableInstance,
             attributes: attributes ? attributes[ENTITIES.RENDER] : {}
         }),
+        settings: createSettingsEntity({
+            entityName: ENTITIES.SETTINGS,
+            table: tableInstance,
+            attributes: attributes ? attributes[ENTITIES.SETTINGS] : {}
+        }),
         queueJob: createQueueJobEntity({
             entityName: ENTITIES.QUEUE_JOB,
             table: tableInstance,
             attributes: attributes ? attributes[ENTITIES.QUEUE_JOB] : {}
         }),
-        tagUrlLink: createTagUrlLinkEntity({
-            entityName: ENTITIES.TAG_URL_LINK,
+        tagPathLink: createTagPathLinkEntity({
+            entityName: ENTITIES.TAG_PATH_LINK,
             table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.TAG_URL_LINK] : {}
+            attributes: attributes ? attributes[ENTITIES.TAG_PATH_LINK] : {}
         })
     };
 
@@ -54,10 +61,13 @@ export const createPrerenderingServiceStorageOperations: PrerenderingServiceFact
         getEntities: () => entities,
         ...createRenderStorageOperations({
             entity: entities.render,
-            tagUrlLinkEntity: entities.tagUrlLink
+            tagPathLinkEntity: entities.tagPathLink
         }),
         ...createQueueJobStorageOperations({
             entity: entities.queueJob
+        }),
+        ...createSettingsStorageOperations({
+            entity: entities.settings
         })
     };
 };

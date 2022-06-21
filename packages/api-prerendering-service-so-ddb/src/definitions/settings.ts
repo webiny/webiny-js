@@ -1,13 +1,13 @@
 import { Entity, Table } from "dynamodb-toolbox";
 import { Attributes } from "~/types";
 
-export interface CreateRenderEntityParams {
+export interface CreateSettingsEntityParams {
     table: Table;
     entityName: string;
     attributes: Attributes;
 }
 
-export const createRenderEntity = (params: CreateRenderEntityParams): Entity<any> => {
+export const createSettingsEntity = (params: CreateSettingsEntityParams): Entity<any> => {
     const { entityName, attributes, table } = params;
     return new Entity({
         name: entityName,
@@ -20,12 +20,6 @@ export const createRenderEntity = (params: CreateRenderEntityParams): Entity<any
                 sortKey: true
             },
             TYPE: {
-                type: "string"
-            },
-            GSI1_PK: {
-                type: "string"
-            },
-            GSI1_SK: {
                 type: "string"
             },
             data: {

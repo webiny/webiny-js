@@ -1,14 +1,12 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { Attributes } from "~/types";
 
 export interface CreateRenderEntityParams {
     table: Table;
     entityName: string;
-    attributes: Attributes;
 }
 
-export const createRenderEntity = (params: CreateRenderEntityParams): Entity<any> => {
-    const { entityName, attributes, table } = params;
+export const createRenderLegacyEntity = (params: CreateRenderEntityParams): Entity<any> => {
+    const { entityName, table } = params;
     return new Entity({
         name: entityName,
         table,
@@ -22,16 +20,21 @@ export const createRenderEntity = (params: CreateRenderEntityParams): Entity<any
             TYPE: {
                 type: "string"
             },
-            GSI1_PK: {
+            namespace: {
                 type: "string"
             },
-            GSI1_SK: {
+            url: {
                 type: "string"
             },
-            data: {
+            args: {
                 type: "map"
             },
-            ...(attributes || {})
+            configuration: {
+                type: "map"
+            },
+            files: {
+                type: "list"
+            }
         }
     });
 };

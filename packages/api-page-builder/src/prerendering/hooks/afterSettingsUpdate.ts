@@ -24,11 +24,7 @@ export default () => {
                         // Render the new "not found" page and store it into the NOT_FOUND_FOLDER.
                         toRender.push({
                             path: page.path,
-                            configuration: {
-                                meta: {
-                                    notFoundPage: true
-                                }
-                            }
+                            tags: [{ key: "notFoundPage", value: true }]
                         });
 
                         if (prevPageId) {

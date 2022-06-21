@@ -1,14 +1,12 @@
 import { Entity, Table } from "dynamodb-toolbox";
-import { Attributes } from "~/types";
 
-export interface CreateRenderEntityParams {
+interface CreateTagPathLinkEntityParams {
     table: Table;
     entityName: string;
-    attributes: Attributes;
 }
 
-export const createRenderEntity = (params: CreateRenderEntityParams): Entity<any> => {
-    const { entityName, attributes, table } = params;
+export const createTagPathLinkLegacyEntity = (params: CreateTagPathLinkEntityParams) => {
+    const { entityName, table } = params;
     return new Entity({
         name: entityName,
         table,
@@ -22,16 +20,18 @@ export const createRenderEntity = (params: CreateRenderEntityParams): Entity<any
             TYPE: {
                 type: "string"
             },
-            GSI1_PK: {
+            namespace: {
                 type: "string"
             },
-            GSI1_SK: {
+            url: {
                 type: "string"
             },
-            data: {
-                type: "map"
+            value: {
+                type: "string"
             },
-            ...(attributes || {})
+            key: {
+                type: "string"
+            }
         }
     });
 };

@@ -18,7 +18,6 @@
     "@webiny/handler": "^5.28.0",
     "@webiny/handler-args": "^5.28.0",
     "@webiny/handler-client": "^5.28.0",
-    "@webiny/plugins": "^5.28.0",
     "lodash": "^4.17.21",
     "nanoid": "^4.0.0"
   },

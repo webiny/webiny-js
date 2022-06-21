@@ -1,13 +1,13 @@
 import { Entity, Table } from "dynamodb-toolbox";
 import { Attributes } from "~/types";
 
-export interface CreateRenderEntityParams {
+interface CreateTagPathLinkEntityParams {
     table: Table;
     entityName: string;
     attributes: Attributes;
 }
 
-export const createRenderEntity = (params: CreateRenderEntityParams): Entity<any> => {
+export const createTagPathLinkEntity = (params: CreateTagPathLinkEntityParams) => {
     const { entityName, attributes, table } = params;
     return new Entity({
         name: entityName,
