@@ -80,7 +80,7 @@ export default (params: Configuration) => {
 
                 uniqueJobsObject[hash(job.args)] = job;
                 if (job.args.render) {
-                    const { path, tenant } = job.args.render;
+                    const { path, tenant = "root" } = job.args.render;
                     if (path === "*") {
                         renderAllJobs[tenant] = job;
                     }
@@ -167,8 +167,6 @@ export default (params: Configuration) => {
                     }
 
                     if (path) {
-                        uniqueJobsPerOperationPerTenant.render[tenant][path] = render;
-
                         if (path === "*") {
                             const renders = await storageOperations.listRenders({
                                 where: { tenant }
@@ -240,15 +238,13 @@ export default (params: Configuration) => {
 
                     if (chunks.length === 0) {
                         log(
-                            `There is nothing to issue for "${tenant}" DB namespace. Continuing with the next one.`
+                            `There is nothing to issue for "${tenant}" tenant. Continuing with the next one.`
                         );
                         continue;
                     }
 
                     log(
-                        `Splat render jobs for "${tenant}" DB namespace into ${
-                            chunks.length
-                        } ${pluralize(
+                        `Split render jobs for "${tenant}" tenant into ${chunks.length} ${pluralize(
                             "chunk",
                             chunks.length
                         )} (10 items per chunk). Issuing render jobs...`
@@ -265,7 +261,7 @@ export default (params: Configuration) => {
                     }
 
                     log(
-                        `Issued render jobs for "${tenant}" DB namespace. Render handler was invoked ${
+                        `Issued render jobs for "${tenant}" tenant. Render handler was invoked ${
                             chunks.length
                         } ${pluralize("time", chunks.length)}.`
                     );

@@ -55,6 +55,7 @@ export const createSettingsStorageOperations = (
         try {
             await entity.put({
                 ...keys,
+                TYPE: "ps.settings",
                 data: settings
             });
 

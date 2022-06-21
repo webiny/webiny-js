@@ -41,6 +41,10 @@ export default (params: HandlerConfig) => {
         }
 
         const settings = await storageOperations.getSettings();
+        if (!settings.sqsQueueUrl) {
+            console.error("SQS Queue URL was not found in Prerendering Settings!");
+            return;
+        }
 
         const toRender: Array<{ groupId: string; body: RenderEvent }> = [];
 

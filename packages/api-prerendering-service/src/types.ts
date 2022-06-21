@@ -100,7 +100,7 @@ export interface PrerenderingServiceStorageOperationsCreateTagPathLinksParams {
 export interface PrerenderingServiceStorageOperationsDeleteTagPathLinksParams {
     tags: Tag[];
     tenant: string;
-    path?: string;
+    path: string;
 }
 
 export interface PrerenderingServiceStorageOperationsListTagPathLinksParams {
@@ -192,5 +192,5 @@ export interface PrerenderingSettings {
     appUrl: string;
     bucket: string;
     cloudfrontId: string;
-    sqsQueueUrl: string;
+    sqsQueueUrl?: string;
 }

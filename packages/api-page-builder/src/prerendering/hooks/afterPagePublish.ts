@@ -47,8 +47,8 @@ export default () => {
                 );
             }
             /**
-             * If we had a published page and the URL on which it was published is different than
-             * the URL of the just published page, then let's flush the page on old URL.
+             * If we had a published page and the URL on which it was published is different from
+             * the URL of the page that was just published, then let's flush the page on old URL.
              */
             if (publishedPage && publishedPage.path !== page.path) {
                 promises.push(
