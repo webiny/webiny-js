@@ -10328,7 +10328,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es":
+"@webiny/api-page-builder-so-ddb-es@^5.28.0, @webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es"
   dependencies:
@@ -12859,6 +12859,7 @@ __metadata:
     "@webiny/api-elasticsearch": ^5.28.0
     "@webiny/api-file-manager": ^5.28.0
     "@webiny/api-file-manager-ddb": ^5.28.0
+    "@webiny/api-file-manager-ddb-es": ^5.28.0
     "@webiny/api-file-manager-s3": ^5.28.0
     "@webiny/api-i18n": ^5.28.0
     "@webiny/api-i18n-content": ^5.28.0
@@ -12867,6 +12868,7 @@ __metadata:
     "@webiny/api-page-builder-import-export": ^5.28.0
     "@webiny/api-page-builder-import-export-so-ddb": ^5.28.0
     "@webiny/api-page-builder-so-ddb": ^5.28.0
+    "@webiny/api-page-builder-so-ddb-es": ^5.28.0
     "@webiny/api-prerendering-service-aws": ^5.28.0
     "@webiny/api-prerendering-service-so-ddb": ^5.28.0
     "@webiny/api-security": ^5.28.0
