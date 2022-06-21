@@ -43,9 +43,19 @@ export interface RenderParams {
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 
+function isMultiTenancyEnabled() {
+    // This check is for backwards compatibility with pre-5.29.0 projects.
+    if (process.env.WEBINY_MULTI_TENANCY === "true") {
+        return true;
+    }
+
+    // For >=5.29.0 projects, check for `WCP_PROJECT_ENVIRONMENT` variable.
+    return process.env.hasOwnProperty("WCP_PROJECT_ENVIRONMENT");
+}
+
 export default (params: RenderParams) => {
     const { storageOperations } = params;
-    const isMultiTenant = process.env.WEBINY_MULTI_TENANCY === "true";
+    const isMultiTenant = isMultiTenancyEnabled();
     const log = console.log;
 
     return new HandlerPlugin<HandlerContext>(async context => {
