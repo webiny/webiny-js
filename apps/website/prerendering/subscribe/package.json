@@ -1,0 +1,16 @@
+{
+  "name": "website-prerendering-service-subscribe",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "dependencies": {
+    "@webiny/api-prerendering-service": "^5.26.0",
+    "@webiny/api-prerendering-service-aws": "^5.26.0",
+    "@webiny/api-prerendering-service-so-ddb": "^5.26.0",
+    "@webiny/cli": "^5.26.0",
+    "@webiny/handler-aws": "^5.26.0",
+    "@webiny/project-utils": "^5.26.0"
+  }
+}
