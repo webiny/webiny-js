@@ -3,7 +3,6 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "packages-v6/*",
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",
