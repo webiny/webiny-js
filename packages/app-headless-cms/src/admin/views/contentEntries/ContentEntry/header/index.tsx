@@ -4,7 +4,7 @@ import RevisionSelector from "./revisionSelector/RevisionSelector";
 import RequestReview from "./requestReview/RequestReview";
 import RequestChanges from "./requestChanges/RequestChanges";
 import SaveContentButton from "./saveContent/SaveContent";
-import SaveAndPublishButton from "./saveAndPublishContent/SaveAndPublishContent";
+import { SaveAndPublishButton } from "./saveAndPublishContent/SaveAndPublishContent";
 import ContentFormOptionsMenu from "./contentFormOptionsMenu/ContentFormOptionsMenu";
 
 const plugins: CmsContentDetailsPlugin[] = [

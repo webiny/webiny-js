@@ -1,17 +1,22 @@
 import React, { useEffect } from "react";
 import get from "lodash/get";
-import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
-import { useAdminPageBuilder } from "@webiny/app-page-builder/admin/hooks/useAdminPageBuilder";
-import { DELETE_CONTENT_REVIEW_MUTATION } from "~/graphql/contentReview.gql";
+import {
+    DELETE_CONTENT_REVIEW_MUTATION,
+    DeleteApwContentReviewMutationVariables,
+    DeleteApwContentReviewMutationResponse
+} from "~/graphql/contentReview.gql";
 import { ApwContentTypes } from "~/types";
 import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+import { FetchResult } from "apollo-link";
+import { useApolloClient } from "@apollo/react-hooks";
 
-const t = i18n.ns("app-apw/page-builder/dialog");
+const t = i18n.ns("app-apw/cms/dialog");
 
-export const ApwOnPageDelete: React.FC = () => {
-    const pageBuilder = useAdminPageBuilder();
+export const ApwOnEntryDelete: React.FC = () => {
+    const { onEntryDelete } = useCms();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
@@ -19,7 +24,7 @@ export const ApwOnPageDelete: React.FC = () => {
         title: t`Delete review`,
         message: (
             <p>
-                {t`Before deleting the page you first need to delete the ongoing review.
+                {t`Before deleting the CMS Entry you first need to delete the ongoing review.
                 {separator}
                  Do you wish to continue and delete the review?`({ separator: <br /> })}
             </p>
@@ -27,11 +32,14 @@ export const ApwOnPageDelete: React.FC = () => {
     });
 
     useEffect(() => {
-        return pageBuilder.onPageDelete(next => async params => {
-            const { page } = params;
+        return onEntryDelete(next => async params => {
+            const { id } = params;
             const input = {
-                id: page.id,
-                type: ApwContentTypes.PAGE
+                id,
+                type: ApwContentTypes.CMS_ENTRY,
+                settings: {
+                    modelId: params.model.modelId
+                }
             };
             const { data } = await client.query({
                 query: IS_REVIEW_REQUIRED_QUERY,
@@ -41,10 +49,19 @@ export const ApwOnPageDelete: React.FC = () => {
                 fetchPolicy: "network-only"
             });
             const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
-            if (contentReviewId) {
-                const response = await new Promise(resolve => {
+            const error = get(data, "apw.isReviewRequired.error", null);
+            if (error) {
+                // showSnackbar(error.message);
+                return next({ ...params, error });
+            } else if (contentReviewId) {
+                const response = await new Promise<
+                    FetchResult<DeleteApwContentReviewMutationResponse>
+                >(resolve => {
                     showDeleteReviewConfirmation(async () => {
-                        const response = await client.mutate({
+                        const response = await client.mutate<
+                            DeleteApwContentReviewMutationResponse,
+                            DeleteApwContentReviewMutationVariables
+                        >({
                             mutation: DELETE_CONTENT_REVIEW_MUTATION,
                             variables: {
                                 id: contentReviewId
@@ -59,13 +76,10 @@ export const ApwOnPageDelete: React.FC = () => {
                 if (error) {
                     showSnackbar(error.message);
                     return next({ ...params, error });
-                } else {
-                    showSnackbar(`Content review deleted successfully!`);
-                    return next(params);
                 }
-            } else {
-                return next(params);
+                showSnackbar(`Content review deleted successfully!`);
             }
+            return next(params);
         });
     }, []);
 

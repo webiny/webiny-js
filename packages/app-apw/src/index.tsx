@@ -13,16 +13,28 @@ import {
     PageRequestReviewHoc,
     PageRevisionListItemGraphicHoc
 } from "./plugins/pageBuilder/PublishPageHocs";
-// TODO: Fix this import so that we can import it from root level maybe
+/**
+ * TODO: Fix this import so that we can import it from root level maybe
+ */
 import PublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
 import { PublishPageMenuOption } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
 import { PublishPageButtonComposable } from "@webiny/app-page-builder/editor/plugins/defaultBar/components/PublishPageButton";
 import RequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
 import RequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
 import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
-import { Module } from "~/plugins/Module";
 import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
+/**
+ * Plugins for "Headless CMS"
+ */
+import { ApwOnEntryDelete } from "~/plugins/cms/ApwOnEntryDelete";
+import { ApwOnEntryPublish } from "~/plugins/cms/ApwOnEntryPublish";
+import { SaveAndPublishButton as HeadlessCmsEntrySaveAndPublishButton } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/saveAndPublishContent/SaveAndPublishContent";
 import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
+import { PublishEntryButtonHoc } from "~/plugins/cms/PublishEntryHocs";
+/**
+ *
+ */
+import { Module } from "~/plugins/Module";
 import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowScope";
 import { DefaultBar } from "~/plugins/editor/defaultBar";
 
@@ -42,11 +54,17 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
                 with={[ApwPageBuilderWorkflowScope, ApwHeadlessCmsWorkflowScope]}
                 component={WorkflowScope}
             />
+            <Compose
+                with={PublishEntryButtonHoc}
+                component={HeadlessCmsEntrySaveAndPublishButton}
+            />
             <Plugins>
                 <DefaultBar />
                 <Module />
                 <ApwOnPublish />
                 <ApwOnPageDelete />
+                <ApwOnEntryDelete />
+                <ApwOnEntryPublish />
             </Plugins>
         </>
     );

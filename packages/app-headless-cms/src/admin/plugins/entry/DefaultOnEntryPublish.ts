@@ -82,6 +82,10 @@ const OnEntryPublish: React.FC = () => {
         return onEntryRevisionPublish(next => async params => {
             const result = await next(params);
 
+            if (result.error) {
+                return result;
+            }
+
             const response = await handleOnPublish(params);
 
             return {

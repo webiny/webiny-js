@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import get from "lodash/get";
 import { useNavigate } from "@webiny/react-router";
-import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
-import { useAdminPageBuilder } from "@webiny/app-page-builder/admin/hooks/useAdminPageBuilder";
 import { ApwContentReviewContent, ApwContentTypes } from "~/types";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
@@ -13,15 +11,17 @@ import {
 } from "~/graphql/contentReview.gql";
 import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
 import { routePaths } from "~/utils";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+import { useApolloClient } from "@apollo/react-hooks";
 
-const t = i18n.ns("app-apw/page-builder/dialog");
+const t = i18n.ns("app-apw/cms/dialog");
 
 type CreateContentReviewInput = Pick<ApwContentReviewContent, "id" | "type">;
 
-export const ApwOnPublish: React.FC = () => {
-    const pageBuilder = useAdminPageBuilder();
-    const [input, setInput] = useState<CreateContentReviewInput | null>(null);
+export const ApwOnEntryPublish: React.FC = () => {
+    const { onEntryRevisionPublish } = useCms();
     const client = useApolloClient();
+    const [input, setInput] = useState<CreateContentReviewInput | null>(null);
     const { showSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
@@ -73,11 +73,14 @@ export const ApwOnPublish: React.FC = () => {
     }, [input]);
 
     useEffect(() => {
-        return pageBuilder.onPagePublish(next => async params => {
-            const { page } = params;
+        return onEntryRevisionPublish(next => async params => {
+            const { id } = params;
             const input = {
-                id: page.id,
-                type: ApwContentTypes.PAGE
+                id,
+                type: ApwContentTypes.CMS_ENTRY,
+                settings: {
+                    modelId: params.model.modelId
+                }
             };
             const { data } = await client.query({
                 query: IS_REVIEW_REQUIRED_QUERY,

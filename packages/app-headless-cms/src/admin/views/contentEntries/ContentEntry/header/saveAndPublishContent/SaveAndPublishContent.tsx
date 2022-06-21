@@ -6,6 +6,7 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevision";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import usePermission from "~/admin/hooks/usePermission";
+import { makeComposable } from "@webiny/react-composition";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
@@ -13,7 +14,7 @@ const buttonStyles = css({
     marginLeft: 16
 });
 
-const SaveAndPublishButton: React.FC = () => {
+const SaveAndPublishButtonComponent: React.FC = () => {
     const { form, loading, entry } = useContentEntry();
     const { publishRevision } = useRevision({ revision: entry });
 
@@ -51,4 +52,7 @@ const SaveAndPublishButton: React.FC = () => {
     );
 };
 
-export default SaveAndPublishButton;
+export const SaveAndPublishButton = makeComposable(
+    "SaveAndPublishButton",
+    SaveAndPublishButtonComponent
+);

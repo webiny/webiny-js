@@ -75,6 +75,10 @@ const OnEntryDelete: React.FC = () => {
         return onEntryDelete(next => async params => {
             const result = await next(params);
 
+            if (result.error) {
+                return result;
+            }
+
             const response = await handleOnDelete({
                 ...params
             });

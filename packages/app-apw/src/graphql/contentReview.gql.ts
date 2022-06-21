@@ -170,7 +170,7 @@ export const CREATE_CONTENT_REVIEW_MUTATION = /* GraphQL */ gql`
  * ##################
  * Create "ContentReview" Mutation Response
  */
-export interface DeleteContentReviewMutationResponse {
+export interface DeleteApwContentReviewMutationResponse {
     apw: {
         deleteContentReview: {
             data: boolean;

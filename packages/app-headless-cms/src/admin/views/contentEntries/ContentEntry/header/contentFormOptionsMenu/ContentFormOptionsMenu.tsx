@@ -66,12 +66,14 @@ const ContentFormOptionsMenu: React.FC = () => {
                 id: entry.id
             });
 
+            setLoading(false);
+
             if (error) {
                 showDialog(error.message, { title: t`Could not delete content` });
-                history.push(`/cms/content-entries/${contentModel.modelId}`);
+                // history.push(`/cms/content-entries/${contentModel.modelId}`);
                 return;
             }
-            setLoading(false);
+
             /**
              * If cache obj is returned, we can remove deleted entry from it.
              * Cache should be returned as it is being sent by the default onEntryDelete method.
