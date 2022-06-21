@@ -9599,6 +9599,7 @@ __metadata:
     "@webiny/api-security-so-ddb": ^5.25.0
     "@webiny/api-tenancy": ^5.28.0
     "@webiny/api-tenancy-so-ddb": ^5.25.0
+    "@webiny/api-wcp": ^5.28.0
     "@webiny/cli": ^5.28.0
     "@webiny/db-dynamodb": ^5.28.0
     "@webiny/error": ^5.28.0
@@ -10011,6 +10012,7 @@ __metadata:
     "@webiny/api-tenancy": ^5.28.0
     "@webiny/api-tenancy-so-ddb": ^5.28.0
     "@webiny/api-upgrade": ^5.28.0
+    "@webiny/api-wcp": ^5.28.0
     "@webiny/cli": ^5.28.0
     "@webiny/error": ^5.28.0
     "@webiny/handler": ^5.28.0
@@ -10127,6 +10129,7 @@ __metadata:
     "@webiny/api-tenancy": ^5.28.0
     "@webiny/api-tenancy-so-ddb": ^5.28.0
     "@webiny/api-upgrade": ^5.28.0
+    "@webiny/api-wcp": ^5.28.0
     "@webiny/cli": ^5.28.0
     "@webiny/error": ^5.28.0
     "@webiny/handler": ^5.28.0
@@ -10195,6 +10198,7 @@ __metadata:
     "@webiny/api-security-so-ddb": ^5.28.0
     "@webiny/api-tenancy": ^5.28.0
     "@webiny/api-tenancy-so-ddb": ^5.28.0
+    "@webiny/api-wcp": ^5.28.0
     "@webiny/cli": ^5.28.0
     "@webiny/db-dynamodb": ^5.28.0
     "@webiny/error": ^5.28.0
@@ -10227,6 +10231,7 @@ __metadata:
     "@webiny/api-security-so-ddb": ^5.25.0
     "@webiny/api-tenancy": ^5.28.0
     "@webiny/api-tenancy-so-ddb": ^5.25.0
+    "@webiny/api-wcp": ^5.28.0
     "@webiny/cli": ^5.28.0
     "@webiny/error": ^5.28.0
     "@webiny/handler": ^5.28.0
@@ -10427,6 +10432,7 @@ __metadata:
     "@webiny/api-tenancy": ^5.28.0
     "@webiny/api-tenancy-so-ddb": ^5.28.0
     "@webiny/api-upgrade": ^5.28.0
+    "@webiny/api-wcp": ^5.28.0
     "@webiny/cli": ^5.28.0
     "@webiny/error": ^5.28.0
     "@webiny/handler": ^5.28.0
@@ -10623,6 +10629,7 @@ __metadata:
     "@webiny/api-authentication": ^5.28.0
     "@webiny/api-tenancy": ^5.28.0
     "@webiny/api-tenancy-so-ddb": ^5.28.0
+    "@webiny/api-wcp": ^5.28.0
     "@webiny/cli": ^5.28.0
     "@webiny/error": ^5.28.0
     "@webiny/handler": ^5.28.0
@@ -10699,6 +10706,7 @@ __metadata:
     "@webiny/api-security-so-ddb": ^5.28.0
     "@webiny/api-tenancy": ^5.28.0
     "@webiny/api-tenancy-so-ddb": ^5.28.0
+    "@webiny/api-wcp": ^5.28.0
     "@webiny/cli": ^5.28.0
     "@webiny/handler": ^5.28.0
     "@webiny/handler-aws": ^5.28.0

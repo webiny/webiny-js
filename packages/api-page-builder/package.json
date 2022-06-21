@@ -61,6 +61,7 @@
     "@webiny/api-i18n-ddb": "^5.28.0",
     "@webiny/api-security-so-ddb": "^5.28.0",
     "@webiny/api-tenancy-so-ddb": "^5.28.0",
+    "@webiny/api-wcp": "^5.28.0",
     "@webiny/cli": "^5.28.0",
     "@webiny/project-utils": "^5.28.0",
     "jest": "^26.6.3",
