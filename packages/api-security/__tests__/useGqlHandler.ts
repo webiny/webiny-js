@@ -1,3 +1,4 @@
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import groupAuthorization from "~/plugins/groupAuthorization";
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 import { createHandler } from "@webiny/handler-aws";
@@ -6,6 +7,7 @@ import { PluginCollection } from "@webiny/plugins/types";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { authenticateUsingHttpHeader } from "~/plugins/authenticateUsingHttpHeader";
 import { createSecurityGraphQL, createSecurityContext } from "~/index";
+
 // Graphql
 import {
     UPDATE_SECURITY_GROUP,
@@ -57,6 +59,8 @@ export default (opts: UseGqlHandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
+            createWcpContext(),
+            createWcpGraphQL(),
             graphqlHandlerPlugins(),
             // TODO: tenancy storage operations need to be loaded dynamically, but for now this will do since we only have DDB storage for this app.
             createTenancyContext({
