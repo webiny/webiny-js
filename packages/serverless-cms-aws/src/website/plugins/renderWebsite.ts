@@ -1,4 +1,4 @@
-const LambdaClient = require("aws-sdk/clients/lambda");
+import EventBridgeClient from "aws-sdk/clients/eventbridge";
 import { CliContext } from "@webiny/cli/types";
 const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 
@@ -6,46 +6,42 @@ const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
  * On every deployment of the Website project application, this plugin ensures all pages created
  * with the Webiny Page Builder application are re-rendered.
  */
-export default {
+export const renderWebsite = {
     type: "hook-after-deploy",
     name: "hook-after-deploy-website-render",
     async hook(params: Record<string, any>, context: CliContext) {
-        const { env } = params;
+        if (params.inputs.build === false) {
+            context.info(`"--no-build" argument detected - skipping Website re-rendering.`);
+            return;
+        }
 
-        const apiOutput = getStackOutput({ folder: "apps/api", env });
+        const coreOutput = getStackOutput({ folder: "apps/core", env: params.env });
 
         context.info("Issuing a complete website render job...");
 
         try {
-            const lambdaClient = new LambdaClient({ region: apiOutput.region });
+            const client = new EventBridgeClient({ region: coreOutput["region"] });
 
-            const response = await lambdaClient
-                .invoke({
-                    FunctionName: apiOutput.psQueueAdd,
-                    Payload: JSON.stringify({
-                        render: {
-                            path: "*",
-                            configuration: {
-                                db: {
-                                    namespace: "T#root"
-                                }
-                            }
+            const result = await client
+                .putEvents({
+                    Entries: [
+                        {
+                            Source: "webiny-cli",
+                            EventBusName: coreOutput["eventBusArn"],
+                            DetailType: "RenderPages",
+                            Detail: JSON.stringify({
+                                path: "*",
+                                tenant: "root"
+                            })
                         }
-                    })
+                    ]
                 })
                 .promise();
 
-            const { error } = JSON.parse(response.Payload);
-            if (error) {
-                throw error;
+            const entry = result.Entries?.[0];
+            if (entry?.ErrorMessage) {
+                throw new Error(entry.ErrorMessage);
             }
-
-            await lambdaClient
-                .invoke({
-                    FunctionName: apiOutput.psQueueProcess,
-                    InvocationType: "Event"
-                })
-                .promise();
 
             context.success("Website re-render job successfully issued.");
             context.info(

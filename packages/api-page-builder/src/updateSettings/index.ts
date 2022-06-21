@@ -2,9 +2,11 @@ import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { PageBuilderStorageOperations, PbContext, Settings } from "~/types";
+import { migrate } from "./migration/migrate";
 
 export interface HandlerArgs {
     data: Settings;
+    migrate?: boolean;
 }
 
 interface HandlerResponseError {
@@ -77,6 +79,10 @@ export default (
                     original: original as Settings,
                     settings
                 });
+
+                if (process.env.NODE_ENV !== "test") {
+                    await migrate(storageOperations, settings.prerendering, args.migrate === true);
+                }
 
                 delete settings.locale;
                 delete settings.tenant;

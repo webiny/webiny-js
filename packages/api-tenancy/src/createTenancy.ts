@@ -3,7 +3,7 @@ import { createSystemMethods } from "~/createTenancy/createSystemMethods";
 import { createTenantsMethods } from "~/createTenancy/createTenantsMethods";
 
 export interface TenancyConfig {
-    tenant: string;
+    tenant: string | null;
     storageOperations: TenancyStorageOperations;
     multiTenancy?: boolean;
 }

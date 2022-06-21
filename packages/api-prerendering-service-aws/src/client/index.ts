@@ -1,102 +1,94 @@
 import EventBridgeClient, { PutEventsRequestEntry } from "aws-sdk/clients/eventbridge";
-
 import WebinyError from "@webiny/error";
 import { ClientContext } from "@webiny/handler-client/types";
-import { ContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
-
-import { Args as RenderArgs } from "@webiny/api-prerendering-service/render/types";
-import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
+import { FlushJob, RenderJob } from "@webiny/api-prerendering-service/types";
 
 export interface PrerenderingServiceClientArgs {
     eventBus: string;
 }
 
 export default (configuration: PrerenderingServiceClientArgs) => {
-    return [
-        {
-            type: "context",
-            apply(context) {
-                const client = new EventBridgeClient();
+    return new ContextPlugin<ClientContext & PrerenderingServiceClientContext>(context => {
+        const client = new EventBridgeClient();
 
-                context.prerenderingServiceClient = {
-                    async render(args) {
-                        // There is no more rendering directly without queue,
-                        // so this method is almost identical to queue.add
-                        await sendEvents(renderEvents(args));
-                    },
-                    async flush(args) {
-                        await sendEvents(flushEvents(args));
-                    },
-                    queue: {
-                        async add(args) {
-                            if (!Array.isArray(args)) {
-                                args = [args];
-                            }
+        context.prerenderingServiceClient = {
+            async render(tasks) {
+                // In this package, rendering is always done through a queue, so this method is almost identical to `queue.add`.
+                await sendEvents(renderEvents(tasks));
+            },
+            async flush(tasks) {
+                await sendEvents(flushEvents(tasks));
+            },
+            queue: {
+                async add(tasks) {
+                    if (!Array.isArray(tasks)) {
+                        tasks = [tasks];
+                    }
 
-                            const events: PutEventsRequestEntry[] = [];
+                    const events: PutEventsRequestEntry[] = [];
 
-                            for (const arg of args) {
-                                if (arg.render) {
-                                    events.push(...renderEvents(arg.render));
-                                }
+                    for (const task of tasks) {
+                        if (task.render) {
+                            events.push(...renderEvents(task.render));
+                        }
 
-                                if (arg.flush) {
-                                    events.push(...flushEvents(arg.flush));
-                                }
-                            }
-
-                            await sendEvents(events);
-                        },
-                        async process() {
-                            // Nothing - processing is made by SQS queue.
+                        if (task.flush) {
+                            events.push(...flushEvents(task.flush));
                         }
                     }
-                };
 
-                function renderEvents(args: RenderArgs | RenderArgs[]): PutEventsRequestEntry[] {
-                    if (!Array.isArray(args)) {
-                        args = [args];
-                    }
-
-                    return args.map(arg => ({
-                        Source: "webiny-api",
-                        EventBusName: configuration.eventBus,
-                        DetailType: "RenderPages",
-                        Detail: JSON.stringify(arg)
-                    }));
-                }
-
-                function flushEvents(args: FlushArgs | FlushArgs[]): PutEventsRequestEntry[] {
-                    if (!Array.isArray(args)) {
-                        args = [args];
-                    }
-
-                    return args.map(arg => ({
-                        Source: "webiny-api",
-                        EventBusName: configuration.eventBus,
-                        DetailType: "FlushPages",
-                        Detail: JSON.stringify(arg)
-                    }));
-                }
-
-                async function sendEvents(events: PutEventsRequestEntry[]) {
-                    const result = await client
-                        .putEvents({
-                            Entries: events
-                        })
-                        .promise();
-
-                    if (result.FailedEntryCount) {
-                        throw new WebinyError({
-                            message: "Failed to send some events to the event bus",
-                            data: {
-                                entries: result.Entries
-                            }
-                        });
-                    }
+                    await sendEvents(events);
+                },
+                async process() {
+                    // Nothing to do here
+                    // Processing is done by the SQS queue.
                 }
             }
-        } as ContextPlugin<ClientContext, PrerenderingServiceClientContext>
-    ];
+        };
+
+        function renderEvents(tasks: RenderJob | RenderJob[]): PutEventsRequestEntry[] {
+            if (!Array.isArray(tasks)) {
+                tasks = [tasks];
+            }
+
+            return tasks.map(task => ({
+                Source: "webiny-api",
+                EventBusName: configuration.eventBus,
+                DetailType: "RenderPages",
+                Detail: JSON.stringify(task)
+            }));
+        }
+
+        function flushEvents(tasks: FlushJob | FlushJob[]): PutEventsRequestEntry[] {
+            if (!Array.isArray(tasks)) {
+                tasks = [tasks];
+            }
+
+            return tasks.map(task => ({
+                Source: "webiny-api",
+                EventBusName: configuration.eventBus,
+                DetailType: "FlushPages",
+                Detail: JSON.stringify(task)
+            }));
+        }
+
+        async function sendEvents(events: PutEventsRequestEntry[]) {
+            const result = await client
+                .putEvents({
+                    Entries: events
+                })
+                .promise();
+
+            if (result.FailedEntryCount) {
+                throw new WebinyError({
+                    message: "Failed to send some events to the event bus",
+                    data: {
+                        entries: result.Entries
+                    }
+                });
+            }
+        }
+    });
 };

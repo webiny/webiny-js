@@ -172,5 +172,6 @@ if (projects.length === 0) {
 module.exports = {
     projects,
     modulePathIgnorePatterns: ["dist"],
-    testTimeout: 30000
+    testTimeout: 30000,
+    watchman: false
 };

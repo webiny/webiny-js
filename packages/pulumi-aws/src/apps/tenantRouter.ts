@@ -32,8 +32,8 @@ export function applyTenantRouter(
 ) {
     const region = String(process.env.AWS_REGION);
 
-    // Register core output as a module available for all other modules
-    const core = app.addModule(CoreOutput);
+    // Get Core app output
+    const core = app.getModule(CoreOutput);
 
     // `primaryDynamodbTableName` is a string, hence the type cast here.
     const dynamoDbTable = core.primaryDynamodbTableName as unknown as string;

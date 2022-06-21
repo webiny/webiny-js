@@ -5,7 +5,7 @@ import * as aws from "@pulumi/aws";
 //@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
-import { CoreOutput, VpcConfig } from "../common";
+import { CoreOutput } from "../common";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
@@ -34,91 +34,15 @@ export const ApiPageBuilder = createAppModule({
             });
         });
 
-        const updateSettings = createUpdateSettingsResources(app, params);
         const exportPages = createExportPagesResources(app, params);
         const importPages = createImportPagesResources(app, params);
 
         return {
-            updateSettings,
             exportPages,
             importPages
         };
     }
 });
-
-function createUpdateSettingsResources(app: PulumiApp, params: PageBuilderParams) {
-    const policy = createUpdateSettingsLambdaPolicy(app);
-    const role = createLambdaRole(app, {
-        name: "pb-update-settings-lambda-role",
-        policy: policy.output
-    });
-
-    const update = app.addResource(aws.lambda.Function, {
-        name: "pb-update-settings",
-        config: {
-            role: role.output.arn,
-            runtime: "nodejs14.x",
-            handler: "handler.handler",
-            timeout: 10,
-            memorySize: 128,
-            description:
-                "Updates default Page Builder app's settings, e.g. website or prerendering URLs, default title, etc.",
-            code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "code/pageBuilder/updateSettings/build")
-                )
-            }),
-            environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
-                    ...params.env
-                }
-            },
-            vpcConfig: app.getModule(VpcConfig).functionVpcConfig
-        }
-    });
-
-    return {
-        role,
-        policy,
-        functions: {
-            update
-        }
-    };
-}
-
-function createUpdateSettingsLambdaPolicy(app: PulumiApp) {
-    const core = app.getModule(CoreOutput);
-
-    return app.addResource(aws.iam.Policy, {
-        name: "PbUpdateSettingsLambdaPolicy",
-        config: {
-            description: "This policy enables access to Dynamodb",
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "AllowDynamoDBAccess",
-                        Effect: "Allow",
-                        Action: [
-                            "dynamodb:BatchGetItem",
-                            "dynamodb:BatchWriteItem",
-                            "dynamodb:PutItem",
-                            "dynamodb:DeleteItem",
-                            "dynamodb:GetItem",
-                            "dynamodb:Query",
-                            "dynamodb:UpdateItem"
-                        ],
-                        Resource: [
-                            pulumi.interpolate`${core.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${core.primaryDynamodbTableArn}/*`
-                        ]
-                    }
-                ]
-            }
-        }
-    });
-}
 
 function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
     const core = app.getModule(CoreOutput);
