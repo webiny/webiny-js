@@ -6,6 +6,8 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-apw": "^5.28.0",
+    "@webiny/api-apw-scheduler-so-ddb": "^5.28.0",
     "@webiny/api-headless-cms": "^5.28.0",
     "@webiny/api-headless-cms-ddb": "^5.28.0",
     "@webiny/api-i18n": "^5.28.0",

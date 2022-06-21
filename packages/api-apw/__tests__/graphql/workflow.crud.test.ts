@@ -1,5 +1,5 @@
 import { ApwWorkflowApplications, ApwWorkflowStepTypes } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import mocks from "./mocks/workflows";
 
 describe("Workflow crud test", () => {
@@ -16,7 +16,7 @@ describe("Workflow crud test", () => {
         securityIdentity,
         reviewer: reviewerGQL,
         until
-    } = useContentGqlHandler({
+    } = usePageBuilderHandler({
         ...options
     });
 

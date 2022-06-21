@@ -1,5 +1,5 @@
 import { createSetupForEntryContentReview } from "../utils/cms.helpers";
-import { useCmsHandler } from "../utils/useCmsHandler";
+import { useContentHeadlessCmsHandler } from "../utils/useContentHeadlessCmsHandler";
 import { ApwContentTypes } from "~/scheduler/types";
 
 const updatedProductName = "Updated Webiny product";
@@ -9,7 +9,7 @@ describe("Cms Entry Publishing Workflow", () => {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useCmsHandler({
+    const gqlHandler = useContentHeadlessCmsHandler({
         ...options
     });
     const {
@@ -18,9 +18,6 @@ describe("Cms Entry Publishing Workflow", () => {
         updateContentEntryMutation,
         createContentEntryFromMutation,
         getContentReviewQuery,
-        // updatePage,
-        // createPage,
-        // getPageQuery,
         provideSignOffMutation,
         retractSignOffMutation,
         publishContentMutation,

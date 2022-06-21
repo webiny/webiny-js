@@ -18,7 +18,9 @@
     { "path": "../../../packages/handler-client/tsconfig.build.json" },
     { "path": "../../../packages/handler-db/tsconfig.build.json" },
     { "path": "../../../packages/handler-http/tsconfig.build.json" },
-    { "path": "../../../packages/handler-logs/tsconfig.build.json" }
+    { "path": "../../../packages/handler-logs/tsconfig.build.json" },
+    { "path": "../../../packages/api-apw/tsconfig.build.json" },
+    { "path": "../../../packages/api-apw-scheduler-so-ddb/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "paths": {
@@ -56,7 +58,11 @@
       "@webiny/handler-http/*": ["../../../packages/handler-http/src/*"],
       "@webiny/handler-http": ["../../../packages/handler-http/src"],
       "@webiny/handler-logs/*": ["../../../packages/handler-logs/src/*"],
-      "@webiny/handler-logs": ["../../../packages/handler-logs/src"]
+      "@webiny/handler-logs": ["../../../packages/handler-logs/src"],
+      "@webiny/api-apw/*": ["../../../packages/api-apw/src/*"],
+      "@webiny/api-apw": ["../../../packages/api-apw/src"],
+      "@webiny/api-apw-scheduler-so-ddb/*": ["../../../packages/api-apw-scheduler-so-ddb/src/*"],
+      "@webiny/api-apw-scheduler-so-ddb": ["../../../packages/api-apw-scheduler-so-ddb/src"]
     },
     "baseUrl": "."
   }

@@ -9,6 +9,7 @@ import {
     ApwContentReviewStepStatus,
     ApwContentTypes,
     ApwReviewerCrud,
+    ApwScheduleActionData,
     ApwWorkflowStepTypes,
     CreateApwParams,
     OnAfterContentReviewCreateTopicParams,
@@ -350,12 +351,13 @@ export function createContentReviewMethods(
              * If datetime is present it means we're scheduling this action.
              */
             if (datetime) {
-                const scheduledActionId = await this.scheduleAction({
+                const data: ApwScheduleActionData = {
                     action: ApwScheduleActionTypes.PUBLISH,
                     type: content.type,
                     entryId: content.id,
                     datetime
-                });
+                };
+                const scheduledActionId = await this.scheduleAction(data);
                 /**
                  * Update scheduled related meta data.
                  */

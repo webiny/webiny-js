@@ -128,6 +128,8 @@ export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams)
             }
         });
 
+        console.log(`Found ${entries.length} workflows.`);
+
         /*
          *  Re-order them based on workflow scope and pre-defined rule i.e.
          *  "specific" entry -> entry for a "category" -> "default".
@@ -143,8 +145,10 @@ export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams)
          */
         for (const workflow of sortedWorkflows) {
             if (isWorkflowApplicable(entry, workflow) === false) {
+                console.log(`Not applying workflow ${workflow.id} to entry ${entry.id}.`);
                 continue;
             }
+            console.log(`Applying workflow ${workflow.id} to entry ${entry.id}.`);
             entry.meta = {
                 ...(entry.meta || {}),
                 apw: {

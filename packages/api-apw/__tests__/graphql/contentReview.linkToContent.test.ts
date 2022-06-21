@@ -1,12 +1,12 @@
 import { createSetupForPageContentReview } from "../utils/helpers";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 describe("Content Review assignment to a PB Page", () => {
     const options = {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
 

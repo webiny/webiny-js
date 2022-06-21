@@ -80,25 +80,33 @@ const setupApwContext = (params: CreateApwContextParams) =>
             scheduler,
             handlerClient
         });
-
-        apwPageBuilderHooks({
-            pageBuilder: context.pageBuilder,
-            apw: context.apw,
-            plugins: context.plugins,
-            getIdentity
-        });
-        apwCmsHooks({
-            cms: context.cms,
-            apw: context.apw,
-            plugins: context.plugins,
-            getIdentity
-        });
     });
 
-export default (params: CreateApwContextParams) => [
+const setupApwPageBuilder = () => {
+    return new ContextPlugin<ApwContext>(async context => {
+        apwPageBuilderHooks(context);
+    });
+};
+
+const setupApwHeadlessCms = () => {
+    return new ContextPlugin<ApwContext>(async context => {
+        apwCmsHooks(context);
+    });
+};
+
+export const createApwPageBuilderContext = (params: CreateApwContextParams) => [
     extendPbPageSettingsSchema(),
     setupApwContext(params),
+    setupApwPageBuilder(),
+    setupApwHeadlessCms(),
     apwContentPagePlugins(),
+    apwHooks(),
+    createCustomAuth(params)
+];
+
+export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => [
+    setupApwContext(params),
+    setupApwHeadlessCms(),
     apwHooks(),
     createCustomAuth(params)
 ];

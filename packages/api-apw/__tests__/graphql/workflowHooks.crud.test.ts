@@ -1,5 +1,5 @@
 import { setupCategory } from "../utils/helpers";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import mocks from "./mocks/workflows";
 import { ApwWorkflowApplications, WorkflowScopeTypes } from "~/types";
 
@@ -21,7 +21,7 @@ describe("Workflow assignment to a PB Page", () => {
         until,
         reviewer: reviewerGQL,
         securityIdentity
-    } = useContentGqlHandler({
+    } = usePageBuilderHandler({
         ...options
     });
 

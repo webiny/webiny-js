@@ -11679,6 +11679,7 @@ __metadata:
     "@webiny/form": ^5.28.0
     "@webiny/plugins": ^5.28.0
     "@webiny/project-utils": ^5.28.0
+    "@webiny/react-composition": ^5.28.0
     "@webiny/react-router": ^5.28.0
     "@webiny/ui": ^5.28.0
     "@webiny/utils": ^5.28.0
@@ -14407,6 +14408,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-headless-cms@workspace:api/code/headlessCMS"
   dependencies:
+    "@webiny/api-apw": ^5.28.0
+    "@webiny/api-apw-scheduler-so-ddb": ^5.28.0
     "@webiny/api-headless-cms": ^5.28.0
     "@webiny/api-headless-cms-ddb": ^5.28.0
     "@webiny/api-i18n": ^5.28.0

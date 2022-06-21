@@ -1,6 +1,6 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { createPageContentReviewSetup } from "../utils/helpers";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 const updatedRichText = [
     {
@@ -32,7 +32,7 @@ describe("ChangeRequest crud test", () => {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
 

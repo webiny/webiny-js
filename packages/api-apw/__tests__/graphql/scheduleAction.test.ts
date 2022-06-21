@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
 describe(`Schedule action in a content review process`, function () {
@@ -6,7 +6,7 @@ describe(`Schedule action in a content review process`, function () {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
     const {

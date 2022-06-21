@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { defaultIdentity } from "../utils/defaultIdentity";
 
 const identityRoot = { id: "root", displayName: "root", type: "admin" };
@@ -9,18 +9,18 @@ describe("Reviewer crud test", () => {
         path: "manage/en-US"
     };
 
-    const { securityIdentity, reviewer, until } = useContentGqlHandler({
+    const { securityIdentity, reviewer, until } = usePageBuilderHandler({
         ...options,
         plugins: [defaultIdentity()]
     });
 
-    const { securityIdentity: securityIdentityRoot } = useContentGqlHandler({
+    const { securityIdentity: securityIdentityRoot } = usePageBuilderHandler({
         ...options,
         plugins: [defaultIdentity()],
         identity: identityRoot
     });
 
-    const { securityIdentity: securityIdentityRootUpdated } = useContentGqlHandler({
+    const { securityIdentity: securityIdentityRootUpdated } = usePageBuilderHandler({
         ...options,
         plugins: [defaultIdentity()],
         identity: {

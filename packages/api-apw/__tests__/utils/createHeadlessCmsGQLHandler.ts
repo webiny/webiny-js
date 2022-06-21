@@ -15,7 +15,7 @@ import {
     UPDATE_WORKFLOW_MUTATION
 } from "./graphql/workflow";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createApwContext, createApwGraphQL } from "~/index";
+import { createApwHeadlessCmsContext, createApwGraphQL } from "~/index";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 /**
@@ -25,13 +25,6 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
 import { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import {
-    createPageBuilderContext,
-    createPageBuilderGraphQL
-} from "@webiny/api-page-builder/graphql";
-import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
-import { CREATE_CATEGORY, GET_CATEGORY } from "./graphql/categories";
-import { CREATE_PAGE, GET_PAGE, PUBLISH_PAGE, DELETE_PAGE, UPDATE_PAGE } from "./graphql/pages";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
     DELETE_CONTENT_REVIEW_MUTATION,
@@ -76,7 +69,7 @@ export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
 }
 
-export interface GQLHandlerCallableParams {
+export interface CreateHeadlessCmsGQLHandlerParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
@@ -104,7 +97,7 @@ const documentClient = new DocumentClient({
     secretAccessKey: "test"
 });
 
-export const useGqlHandler = (params: GQLHandlerCallableParams) => {
+export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerParams) => {
     const ops = getStorageOperations({
         plugins: params.storageOperationPlugins || [],
         documentClient
@@ -194,16 +187,8 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             i18nContext(),
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
-            createPageBuilderGraphQL(),
-            /**
-             * We're using ddb-only storageOperations here because current jest setup doesn't allow
-             * usage of more than one storageOperations at a time with the help of --keyword flag.
-             */
-            createPageBuilderContext({
-                storageOperations: createPageBuilderStorageOperations({ documentClient })
-            }),
             ...headlessCmsApp,
-            createApwContext({
+            createApwHeadlessCmsContext({
                 storageOperations: ops.storageOperations
             }),
             createApwGraphQL(),
@@ -298,29 +283,6 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         },
         async deleteChangeRequestMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_CHANGE_REQUEST_MUTATION, variables } });
-        },
-        // Categories
-        async getCategory(variables: Record<string, any>) {
-            return invoke({ body: { query: GET_CATEGORY, variables } });
-        },
-        async createCategory(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_CATEGORY, variables } });
-        },
-        // Pages
-        async createPage(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_PAGE, variables } });
-        },
-        async updatePage(variables: Record<string, any>) {
-            return invoke({ body: { query: UPDATE_PAGE, variables } });
-        },
-        async publishPage(variables: Record<string, any>) {
-            return invoke({ body: { query: PUBLISH_PAGE, variables } });
-        },
-        async getPageQuery(variables: Record<string, any>) {
-            return invoke({ body: { query: GET_PAGE, variables } });
-        },
-        async deletePageMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: DELETE_PAGE, variables } });
         },
         // Content Review
         async isReviewRequiredQuery(variables: Record<string, any>) {

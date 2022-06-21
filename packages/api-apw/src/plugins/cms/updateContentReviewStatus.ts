@@ -6,16 +6,16 @@ import {
 } from "~/types";
 import { INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META } from "~/crud/utils";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import { Security } from "@webiny/api-security/types";
 
 interface UpdateContentReviewStatusParams {
     apw: AdvancedPublishingWorkflow;
     cms: HeadlessCms;
-    getIdentity: () => SecurityIdentity;
+    security: Security;
 }
 
 export const updateContentReviewStatus = (params: UpdateContentReviewStatusParams) => {
-    const { apw, cms, getIdentity } = params;
+    const { apw, cms, security } = params;
 
     cms.onAfterEntryPublish.subscribe<OnAfterCmsEntryPublishTopicParams>(async ({ entry }) => {
         const contentReviewId = entry.meta?.apw?.contentReviewId;
@@ -27,7 +27,7 @@ export const updateContentReviewStatus = (params: UpdateContentReviewStatusParam
         }
 
         const contentReview = await apw.contentReview.get(contentReviewId);
-        const identity = getIdentity();
+        const identity = security.getIdentity();
         /**
          * If content review is "readyToBePublished set its status as "published" after page publish.
          */

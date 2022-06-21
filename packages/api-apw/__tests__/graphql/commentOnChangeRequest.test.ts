@@ -1,6 +1,6 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createPageContentReviewSetup } from "../utils/helpers";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 const richTextMock = [
     {
@@ -45,7 +45,7 @@ describe("Comment on a change request test", () => {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
 
