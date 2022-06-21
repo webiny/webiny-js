@@ -15,7 +15,7 @@ const CUSTOM_HANDLERS = {
     i18n: () => [],
 
     // TODO: bring back project-utils tests.
-    'project-utils': () => [],
+    "project-utils": () => [],
 
     // Split "api-file-manager" tests.
     "api-file-manager": () => {
