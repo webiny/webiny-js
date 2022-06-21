@@ -4,7 +4,6 @@
   "references": [
     { "path": "../error" },
     { "path": "../handler" },
-    { "path": "../handler-error" },
     { "path": "../handler-graphql" },
     { "path": "../wcp" }
   ],
@@ -14,10 +13,14 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"]
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

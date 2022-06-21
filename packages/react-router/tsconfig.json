@@ -10,6 +10,7 @@
       "~/*": ["./src/*"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"]
     },
     "baseUrl": "."

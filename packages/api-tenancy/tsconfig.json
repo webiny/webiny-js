@@ -2,13 +2,13 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-wcp" },
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-db" },
     { "path": "../handler-graphql" },
     { "path": "../handler-http" },
-    { "path": "../pubsub" }
+    { "path": "../pubsub" },
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -16,8 +16,6 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
-      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -29,7 +27,9 @@
       "@webiny/handler-http/*": ["../handler-http/src/*"],
       "@webiny/handler-http": ["../handler-http/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
-      "@webiny/pubsub": ["../pubsub/src"]
+      "@webiny/pubsub": ["../pubsub/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"]
     },
     "baseUrl": "."
   }

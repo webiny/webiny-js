@@ -4,9 +4,8 @@
   "references": [],
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./lib/types",
-    "declarationDir": "./lib/types",
-    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "declarationDir": "./dist",
     "paths": { "~/*": ["./src/*"] },
     "baseUrl": "."
   }
