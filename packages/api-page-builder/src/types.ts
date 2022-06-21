@@ -875,6 +875,24 @@ export interface PageBlockStorageOperationsCreateParams {
  * @category StorageOperations
  * @category PageBlockStorageOperations
  */
+export interface PageBlockStorageOperationsUpdateParams {
+    input: Record<string, any>;
+    original: PageBlock;
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
+export interface PageBlockStorageOperationsDeleteParams {
+    pageBlock: PageBlock;
+}
+
+/**
+ * @category StorageOperations
+ * @category PageBlockStorageOperations
+ */
 export interface PageBlockStorageOperations {
     /**
      * Get a single page block item by given params.
@@ -886,5 +904,8 @@ export interface PageBlockStorageOperations {
     list(
         params: PageBlockStorageOperationsListParams
     ): Promise<PageBlockStorageOperationsListResponse>;
+
     create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
+    update(params: PageBlockStorageOperationsUpdateParams): Promise<PageBlock>;
+    delete(params: PageBlockStorageOperationsDeleteParams): Promise<PageBlock>;
 }
