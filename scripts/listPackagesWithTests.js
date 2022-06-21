@@ -14,6 +14,9 @@ const CUSTOM_HANDLERS = {
     // Ignore "i18n" package.
     i18n: () => [],
 
+    // TODO: bring back project-utils tests.
+    'project-utils': () => [],
+
     // Split "api-file-manager" tests.
     "api-file-manager": () => {
         return [
@@ -48,6 +51,7 @@ const CUSTOM_HANDLERS = {
     "api-apw": () => {
         // TODO 1: we had to disable these temporarily because APW relies on WCP, and in our
         // TODO 1: CI/CD, we're not testing a WCP-enabled Webiny project yet (which causes errors).
+        // TODO 1: Let's bring this ASAP or at least before releasing APW in Q3/2022.
         return [];
 
         // return [
