@@ -1,7 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [],
+  "references": [
+    { "path": "../react-composition/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
