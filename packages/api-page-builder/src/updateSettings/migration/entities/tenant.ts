@@ -21,6 +21,9 @@ export const createTenantEntity = ({ entityName, table }: Params): Entity<any> =
             GSI1_SK: {
                 type: "string"
             },
+            TYPE: {
+                type: "string"
+            },
             id: {
                 type: "string"
             },
@@ -33,6 +36,15 @@ export const createTenantEntity = ({ entityName, table }: Params): Entity<any> =
             status: {
                 type: "string",
                 default: "active"
+            },
+            createdOn: {
+                type: "string"
+            },
+            savedOn: {
+                type: "string"
+            },
+            createdBy: {
+                type: "map"
             },
             parent: {
                 type: "string"

@@ -6,6 +6,7 @@ import { migrate } from "./migration/migrate";
 
 export interface HandlerArgs {
     data: Settings;
+    migrate?: boolean;
 }
 
 interface HandlerResponseError {
@@ -80,7 +81,7 @@ export default (
                 });
 
                 if (process.env.NODE_ENV !== "test") {
-                    await migrate(storageOperations, settings.prerendering);
+                    await migrate(storageOperations, settings.prerendering, args.migrate === true);
                 }
 
                 delete settings.locale;

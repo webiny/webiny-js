@@ -67,10 +67,9 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
         },
 
         async listTenants<TTenant extends Tenant = Tenant>(
-            params: ListTenantsParams
+            params?: ListTenantsParams
         ): Promise<TTenant[]> {
-            const { parent } = params;
-            return storageOperations.listTenants({ parent });
+            return storageOperations.listTenants(params);
         },
 
         async createTenant<TTenant extends Tenant = Tenant>(
@@ -86,6 +85,8 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
                     domains: (data.settings && data.settings.domains) || []
                     // themes: (data.settings && data.settings.themes) || []
                 },
+                savedOn: new Date().toISOString(),
+                createdOn: new Date().toISOString(),
                 parent: data.parent || null,
                 webinyVersion: process.env.WEBINY_VERSION
             };
@@ -108,7 +109,7 @@ export function createTenantsMethods(storageOperations: TenancyStorageOperations
             data: Partial<TTenant>
         ) {
             const tenant = await this.getTenantById(id);
-            const updateData = { ...data };
+            const updateData = { ...data, savedOn: new Date().toISOString() };
 
             await this.onTenantBeforeUpdate.publish({ tenant, inputData: data, updateData });
 

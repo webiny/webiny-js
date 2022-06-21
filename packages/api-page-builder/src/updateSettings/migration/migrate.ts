@@ -1,15 +1,17 @@
-import { queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
+import { DbItem, queryAll, queryOne } from "@webiny/db-dynamodb/utils/query";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { PrerenderingSettings } from "@webiny/api-prerendering-service/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity, Table } from "dynamodb-toolbox";
 import { PageBuilderStorageOperations, Settings } from "~/types";
 import { createSettingsEntity } from "./entities/settings";
 import { createTenantEntity } from "./entities/tenant";
+import { createTenantLegacyEntity } from "./entities/tenantLegacy";
 import { createRenderEntity } from "./entities/render";
 import { createRenderLegacyEntity } from "./entities/renderLegacy";
 import { createTagPathLinkEntity } from "./entities/tagPathLink";
 import { createTagPathLinkLegacyEntity } from "./entities/tagPathLinkLegacy";
 import { createTable } from "./table";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 interface PsSettingsItem {
     data: PrerenderingSettings;
@@ -40,7 +42,8 @@ interface PsOldTagLink {
 
 export async function migrate(
     storageOperations: PageBuilderStorageOperations,
-    settings: Settings["prerendering"]
+    settings: Settings["prerendering"],
+    migrate: boolean
 ) {
     // @ts-ignore
     const pbTable = storageOperations.getTable();
@@ -61,7 +64,7 @@ export async function migrate(
     });
 
     // If PS#SETTINGS exist, it means we already executed the migration.
-    if (settingsItem) {
+    if (settingsItem && !migrate) {
         return;
     }
 
@@ -77,9 +80,18 @@ export async function migrate(
     });
 
     // Load all tenants (the system might have more than 1 tenant).
-    const tenantEntity = createTenantEntity({ entityName: "TenancyTenant", table });
-    const childTenants = await queryAll<{ id: string }>({
-        entity: tenantEntity,
+    const tenantLegacyEntity = createTenantLegacyEntity({ entityName: "TenancyTenant", table });
+
+    const rootTenant = await queryOne<Tenant>({
+        entity: tenantLegacyEntity,
+        partitionKey: `T#root`,
+        options: {
+            eq: "A"
+        }
+    });
+
+    const childTenants = await queryAll<Tenant>({
+        entity: tenantLegacyEntity,
         partitionKey: `T#root`,
         options: {
             index: "GSI1",
@@ -87,8 +99,13 @@ export async function migrate(
         }
     });
 
-    // Create an array of tenant IDs, and include the `root` tenant,
-    const tenants = ["root", ...childTenants.map(t => t.id)];
+    // Update tenant records
+    const tenantEntity = createTenantEntity({ entityName: "TenancyTenant", table });
+    const allTenants = [rootTenant, ...childTenants].filter(Boolean) as DbItem<Tenant>[];
+    await updateTenants(allTenants, tenantEntity, table);
+
+    // Create an array of tenant IDs
+    const tenants = allTenants.map(t => t.id);
 
     for (const tenant of tenants) {
         /**
@@ -172,26 +189,6 @@ export async function migrate(
         });
 
         await batchWriteAll({ table, items: newPageTagLinks });
-
-        // Delete old records from the database
-        // await batchWriteAll({
-        //     table,
-        //     items: oldRenders.map(getBatchMapper(renderLegacyEntity))
-        // });
-        //
-        // await batchWriteAll({
-        //     table,
-        //     items: oldMenuTagLinks.map(getBatchMapper(tagPathLinkLegacyEntity))
-        // });
-        //
-        // await batchWriteAll({
-        //     table,
-        //     items: oldPageTagLinks.map(getBatchMapper(tagPathLinkLegacyEntity))
-        // });
-        //
-        // function getBatchMapper(entity) {
-        //     return item => entity.deleteBatch({ PK: item.PK, SK: item.SK });
-        // }
     }
 
     function createNewTagLink(entity: Entity<any>, tagLink: PsOldTagLink) {
@@ -211,5 +208,26 @@ export async function migrate(
                 tenant
             }
         });
+    }
+
+    async function updateTenants(tenants: DbItem<Tenant>[], entity: Entity<any>, table: Table) {
+        const items = tenants.map(tenant => {
+            // @ts-ignore
+            const createdOn = tenant["created"] || new Date().toISOString();
+            // @ts-ignore
+            const savedOn = tenant["modified"] || new Date().toISOString();
+
+            return entity.putBatch({
+                ...tenant,
+                TYPE: "tenancy.tenant",
+                GSI1_PK: "TENANTS",
+                GSI1_SK: `T#${tenant.parent || ""}#${createdOn}`,
+                createdOn,
+                savedOn,
+                webinyVersion: process.env.WEBINY_VERSION
+            });
+        });
+
+        await batchWriteAll({ table, items });
     }
 }
