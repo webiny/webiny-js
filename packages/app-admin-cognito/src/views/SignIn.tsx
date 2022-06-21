@@ -17,10 +17,10 @@ import StateContainer from "./StateContainer";
 import { alignRight, alignCenter, InnerContent, Title, errorMessage } from "./StyledComponents";
 
 const SignIn: React.FC = () => {
-    const { message, changeState, checkingUser } = useAuthenticator();
+    const { message, changeState } = useAuthenticator();
     const { signIn, loading, error, shouldRender } = useSignIn();
 
-    if (!shouldRender || checkingUser) {
+    if (!shouldRender) {
         return null;
     }
 
@@ -38,7 +38,7 @@ const SignIn: React.FC = () => {
                 {({ Bind, submit }) => (
                     <Elevation z={2}>
                         <InnerContent>
-                            {loading && <CircularProgress />}
+                            {loading && <CircularProgress label={"Signing in..."} />}
                             <Title>
                                 <h1>
                                     <Typography use="headline4">Sign In</Typography>
