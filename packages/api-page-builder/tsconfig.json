@@ -22,7 +22,8 @@
     { "path": "../api-file-manager-ddb" },
     { "path": "../api-i18n-ddb" },
     { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy-so-ddb" }
+    { "path": "../api-tenancy-so-ddb" },
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -71,7 +72,9 @@
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
       "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"]
     },
     "baseUrl": "."
   }

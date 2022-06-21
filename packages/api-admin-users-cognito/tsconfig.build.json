@@ -14,7 +14,8 @@
     { "path": "../handler-http/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../pubsub/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" },
+    { "path": "../api-wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

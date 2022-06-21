@@ -7,6 +7,7 @@
     { "path": "../handler-graphql" },
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" },
+    { "path": "../api-wcp" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-http" }
@@ -27,6 +28,8 @@
       "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

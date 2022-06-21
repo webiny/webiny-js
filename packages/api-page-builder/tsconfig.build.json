@@ -22,7 +22,8 @@
     { "path": "../api-file-manager-ddb/tsconfig.build.json" },
     { "path": "../api-i18n-ddb/tsconfig.build.json" },
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
-    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" }
+    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
+    { "path": "../api-wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
