@@ -33,6 +33,13 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
     const appRelativePath = params.path;
     const appRootPath = path.join(projectRootPath, appRelativePath);
 
+    const projectAppWorkspacePath = path.join(
+        projectRootPath,
+        ".webiny",
+        "workspaces",
+        appRelativePath
+    );
+
     const app: PulumiApp<TResources> = {
         resourceHandlers: [],
         handlers: [],
@@ -40,7 +47,8 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
         modules: new Map<symbol, unknown>(),
         paths: {
             absolute: appRootPath,
-            relative: appRelativePath
+            relative: appRelativePath,
+            workspace: projectAppWorkspacePath
         },
 
         resources: {} as TResources,

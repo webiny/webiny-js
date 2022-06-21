@@ -38,7 +38,7 @@ export interface CreateCoreAppParams {
 
 export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
     const builtInPlugins = [];
-    if (!projectAppParams.elasticSearch) {
+    if (projectAppParams.elasticSearch) {
         builtInPlugins.push(generateDdbToEsHandler);
     }
 
@@ -49,7 +49,6 @@ export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
         name: "Core",
         description: "Your project's stateful cloud infrastructure resources.",
         pulumi: createCorePulumiApp(projectAppParams),
-
-        plugins: [...builtInPlugins, ...customPlugins]
+        plugins: [builtInPlugins, customPlugins]
     };
 }

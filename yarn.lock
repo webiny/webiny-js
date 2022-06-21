@@ -13230,9 +13230,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/serverless-cms-aws@workspace:packages/severless-cms-aws":
+"@webiny/serverless-cms-aws@workspace:packages/serverless-cms-aws":
   version: 0.0.0-use.local
-  resolution: "@webiny/serverless-cms-aws@workspace:packages/severless-cms-aws"
+  resolution: "@webiny/serverless-cms-aws@workspace:packages/serverless-cms-aws"
   dependencies:
     "@babel/cli": ^7.16.0
     "@babel/core": ^7.16.0
@@ -18305,18 +18305,6 @@ __metadata:
   checksum: 3c7b1c333dc6a4b2e9905f52e4df6bbd34ff9f9c97ecd3ca55378a6bc1c191bb12a3252e6289c7b436e9188cff0360d393c0161626851d2301607860bbbdcfd5
   languageName: node
   linkType: hard
-
-"core-dynamo-to-elastic@workspace:apps/core/code/dynamoToElastic":
-  version: 0.0.0-use.local
-  resolution: "core-dynamo-to-elastic@workspace:apps/core/code/dynamoToElastic"
-  dependencies:
-    "@webiny/api-dynamodb-to-elasticsearch": ^5.28.0
-    "@webiny/api-elasticsearch": ^5.28.0
-    "@webiny/cli": ^5.28.0
-    "@webiny/handler-aws": ^5.28.0
-    "@webiny/project-utils": ^5.28.0
-  languageName: unknown
-  linkType: soft
 
 "core-js-compat@npm:^3.18.0, core-js-compat@npm:^3.19.1, core-js-compat@npm:^3.21.0, core-js-compat@npm:^3.22.1":
   version: 3.23.1

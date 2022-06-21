@@ -1,3 +1,2 @@
-import { generateCommonHandlers } from "./generateCommonHandlers";
-
-export default [generateCommonHandlers];
+export * from "./generateDdbHandlers";
+export * from "./generateDdbEsHandlers";

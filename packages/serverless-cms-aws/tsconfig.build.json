@@ -3,7 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../pulumi/tsconfig.build.json" },
-    { "path": "../pulumi-aws/tsconfig.build.json" },
+    { "path": "../pulumi-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

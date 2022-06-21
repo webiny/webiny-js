@@ -52,12 +52,16 @@ interface BuildFunctionConfig {
 export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
 export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
 
+export function createBuildHandler(options: BuildFunctionConfig): BuildCommand;
+export function createWatchHandler(options: BuildFunctionConfig): BuildCommand;
+
 // Build commands - packages.
 interface BuildPackageConfig {
     [key: string]: any;
     cwd: string;
     logs?: boolean;
     debug?: boolean;
+
     overrides?: {
         tsConfig?: Record<string, any> | ((tsConfig: Record<string, any>) => Record<string, any>);
     };

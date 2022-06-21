@@ -1,1 +1,1 @@
-export * from "./deploy"
+export * from "./uploadAppToS3";

@@ -48,7 +48,7 @@ export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) 
         path: "apps/core",
         config: projectAppParams,
         program: app => {
-            const protect = app.getParam(projectAppParams.protect) || app.params.run.env === 'prod';
+            const protect = app.getParam(projectAppParams.protect) || app.params.run.env === "prod";
             const legacyConfig = app.getParam(projectAppParams.legacy) || {};
 
             // Setup DynamoDB table

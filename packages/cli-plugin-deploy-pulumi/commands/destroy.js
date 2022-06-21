@@ -3,12 +3,7 @@ const { createPulumiCommand, processHooks } = require("../utils");
 module.exports = createPulumiCommand(
     "destroy",
     async ({ inputs, context, projectApplication, pulumi }) => {
-        const { env, folder } = inputs;
-
-        const start = new Date();
-        const getDuration = () => {
-            return (new Date() - start) / 1000;
-        };
+        const { env, folder, getDuration } = inputs;
 
         let stackExists = true;
         try {

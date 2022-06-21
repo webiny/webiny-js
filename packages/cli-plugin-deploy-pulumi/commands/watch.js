@@ -49,7 +49,12 @@ module.exports = async (inputs, context) => {
 
         // If needed, let's create a project application workspace.
         if (projectApplication.type === "v5-workspaces") {
-            await createProjectApplicationWorkspace(projectApplication, { env: inputs.env });
+            await createProjectApplicationWorkspace({
+                projectApplication,
+                env: inputs.env,
+                context,
+                inputs
+            });
         }
 
         // Load env vars specified via .env files located in project application folder.

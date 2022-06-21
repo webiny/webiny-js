@@ -17,7 +17,7 @@ module.exports = (name, commandFunction) => {
                 );
             }
 
-            return plugin.deploy(inputs, context);
+            return plugin[name](inputs, context);
         }
 
         if (!inputs.env) {
@@ -37,8 +37,22 @@ module.exports = (name, commandFunction) => {
         });
 
         // If needed, let's create a project application workspace.
-        if (projectApplication.type === "v5-workspaces") {
-            await createProjectApplicationWorkspace(projectApplication, { env: inputs.env });
+        // Note that we don't want to perform the workspace creation
+        // if one of the inputs was `build` and was set to false.
+        if (inputs.build !== false) {
+            if (projectApplication.type === "v5-workspaces") {
+                await createProjectApplicationWorkspace({
+                    projectApplication,
+                    context,
+                    inputs,
+                    env: inputs.env
+                });
+
+                // Check if there are any plugins that need to be registered.
+                if (projectApplication.config.plugins) {
+                    context.plugins.register(projectApplication.config.plugins);
+                }
+            }
         }
 
         // Load env vars specified via .env files located in project application folder.

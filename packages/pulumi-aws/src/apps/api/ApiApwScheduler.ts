@@ -110,7 +110,7 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
             description: "Handle execute action workflow in apw scheduler",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.absolute, "code/apw/executeAction/build")
+                    path.join(app.paths.workspace, "code/apw/executeAction/build")
                 )
             }),
             environment: {
@@ -212,7 +212,7 @@ function createScheduleActionLambda(
             description: "Handle schedule action workflow in apw scheduler",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.absolute, "code/apw/scheduleAction/build")
+                    path.join(app.paths.workspace, "code/apw/scheduleAction/build")
                 )
             }),
             environment: {

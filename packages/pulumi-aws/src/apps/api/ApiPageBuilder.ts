@@ -65,7 +65,7 @@ function createUpdateSettingsResources(app: PulumiApp, params: PageBuilderParams
                 "Updates default Page Builder app's settings, e.g. website or prerendering URLs, default title, etc.",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.absolute, "code/pageBuilder/updateSettings/build")
+                    path.join(app.paths.workspace, "code/pageBuilder/updateSettings/build")
                 )
             }),
             environment: {
@@ -140,7 +140,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             description: "Handle page export's combine workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.absolute, "code/pageBuilder/exportPages/combine/build")
+                    path.join(app.paths.workspace, "code/pageBuilder/exportPages/combine/build")
                 )
             }),
             environment: {
@@ -164,7 +164,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             description: "Handle page export's process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.absolute, "code/pageBuilder/exportPages/process/build")
+                    path.join(app.paths.workspace, "code/pageBuilder/exportPages/process/build")
                 )
             }),
             environment: {
@@ -265,7 +265,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             description: "Handle import page queue process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.absolute, "code/pageBuilder/importPages/process/build")
+                    path.join(app.paths.workspace, "code/pageBuilder/importPages/process/build")
                 )
             }),
             environment: {
@@ -289,7 +289,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             description: "Handle import page queue create workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.absolute, "code/pageBuilder/importPages/create/build")
+                    path.join(app.paths.workspace, "code/pageBuilder/importPages/create/build")
                 )
             }),
             environment: {

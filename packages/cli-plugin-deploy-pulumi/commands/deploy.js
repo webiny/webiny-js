@@ -3,30 +3,8 @@ const { createPulumiCommand, processHooks, login, notify } = require("../utils")
 
 module.exports = createPulumiCommand(
     "deploy",
-    async ({ inputs, context, projectApplication, pulumi }) => {
+    async ({ inputs, context, projectApplication, pulumi, getDuration }) => {
         const { env, folder, build, deploy } = inputs;
-
-        // If folder not specified, that means we want to deploy the whole project (all project applications).
-        // For that, we look if there are registered plugins that perform that.
-        if (!folder) {
-            const plugin = context.plugins.byName("cli-command-deployment-deploy-all");
-            if (!plugin) {
-                throw new Error(
-                    `Cannot continue - "cli-command-deployment-deploy-all" plugin not found.`
-                );
-            }
-
-            return plugin.deploy(inputs, context);
-        }
-
-        if (!env) {
-            throw new Error(`Please specify environment, for example "dev".`);
-        }
-
-        const start = new Date();
-        const getDuration = () => {
-            return (new Date() - start) / 1000 + "s";
-        };
 
         const hookArgs = { context, env, inputs, projectApplication };
 

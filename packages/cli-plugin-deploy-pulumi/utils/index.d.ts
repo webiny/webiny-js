@@ -6,7 +6,7 @@ export function getStackOutput<TStackOutput = Record<string, unknown>>(
     map?: Record<string, string>
 ): TStackOutput;
 
-export function getStackOutput<TStackOutput = Record<string, unknown>>(options: {
+export function getStackOutput<TStackOutput = Record<string, any>>(options: {
     folder: string;
     env: string;
     // variant?: string; TODO: finish staged deployments.

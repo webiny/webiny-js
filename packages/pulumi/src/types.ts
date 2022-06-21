@@ -33,7 +33,7 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
     outputs: Record<string, any>;
     modules: Map<symbol, unknown>;
 
-    paths: { absolute: string; relative: string };
+    paths: { absolute: string; relative: string; workspace: string };
     name: string;
     program: PulumiProgram<TResources>;
     resources: TResources;

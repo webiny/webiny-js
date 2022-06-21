@@ -1,5 +1,7 @@
 import { PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import { createWebsitePulumiApp, CustomDomainParams } from "@webiny/pulumi-aws";
+import { PluginCollection } from "@webiny/plugins/types";
+import { uploadAppToS3, generateCommonHandlers } from "./website/plugins";
 
 export interface CreateWebsiteAppParams {
     /** Custom domain configuration */
@@ -16,10 +18,14 @@ export interface CreateWebsiteAppParams {
      * or add additional ones into the mix.
      */
     pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
+
+    plugins?: PluginCollection;
 }
 
 export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) {
-    // ubaci pluginove / registriraj
+    const builtInPlugins = [uploadAppToS3, generateCommonHandlers];
+    const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
+
     return {
         id: "website",
         name: "Website",
@@ -31,8 +37,6 @@ export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) 
             }
         },
         pulumi: createWebsitePulumiApp(projectAppParams),
-        plugins: [
-            // cli
-        ]
+        plugins: [builtInPlugins, customPlugins]
     };
 }

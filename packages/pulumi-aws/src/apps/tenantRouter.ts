@@ -35,7 +35,8 @@ export function applyTenantRouter(
     // Register core output as a module available for all other modules
     const core = app.addModule(CoreOutput);
 
-    const dynamoDbTable = core.primaryDynamodbTableName;
+    // `primaryDynamodbTableName` is a string, hence the type cast here.
+    const dynamoDbTable = core.primaryDynamodbTableName as unknown as string;
 
     const inlinePolicies = Promise.all([aws.getCallerIdentity({})]).then(([identity]) => [
         {
@@ -95,7 +96,6 @@ export function applyTenantRouter(
                 // TODO: @michal
                 code: createFunctionArchive({
                     region,
-                    // @ts-ignore
                     dynamoDbTable
                 })
             },

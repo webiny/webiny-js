@@ -1,7 +1,7 @@
 import { PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import { createApiPulumiApp, CustomDomainParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
-import plugins from "./api/plugins";
+import { generateDdbHandlers, generateDdbEsHandlers } from "./api/plugins";
 
 export interface CreateApiAppParams {
     /**
@@ -14,6 +14,12 @@ export interface CreateApiAppParams {
     domain?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
+     * Enables ElasticSearch infrastructure.
+     * Note that it requires also changes in application code.
+     */
+    elasticSearch?: PulumiAppParam<boolean>;
+
+    /**
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
@@ -23,6 +29,15 @@ export interface CreateApiAppParams {
 }
 
 export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
+    const builtInPlugins = [];
+    if (projectAppParams.elasticSearch) {
+        builtInPlugins.push(generateDdbEsHandlers);
+    } else {
+        builtInPlugins.push(generateDdbHandlers);
+    }
+
+    const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
+
     return {
         id: "api",
         name: "API",
@@ -36,7 +51,6 @@ export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
             }
         },
         pulumi: createApiPulumiApp(projectAppParams),
-
-        plugins: [...plugins, projectAppParams.plugins ? [...projectAppParams.plugins] : []]
+        plugins: [builtInPlugins, customPlugins]
     };
 }
