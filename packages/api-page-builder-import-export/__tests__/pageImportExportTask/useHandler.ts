@@ -1,3 +1,4 @@
+import { createWcpContext } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import pageImportExportTaskPlugins from "~/graphql/crud/pageImportExportTasks.crud";
@@ -16,6 +17,7 @@ export default (params: Params = {}) => {
     const { storageOperations } = __getStorageOperations();
     const handler = createHandler(
         // storageOperations(),
+        createWcpContext(),
         ...createTenancyAndSecurity(),
         graphqlHandler(),
         {
