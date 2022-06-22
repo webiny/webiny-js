@@ -1,33 +1,29 @@
-import { CliContext } from "@webiny/cli/types";
 import * as fs from "fs";
 import * as path from "path";
+import { getHandlerPath } from "~/utils";
+import { HANDLERS_PATHS } from "./handlersPaths";
 
 export const generateDdbEsHandlers = {
     type: "hook-before-build",
     name: "hook-before-build-generate-api-ddb-es-handlers",
-    // @ts-ignore
-    async hook({ projectApplication }, context: CliContext) {
-        const handlersPaths = [
-            "graphql",
-            "pageBuilder/exportPages/combine",
-            "pageBuilder/exportPages/process",
-            "pageBuilder/importPages/create",
-            "pageBuilder/importPages/process"
-        ];
+    async hook({ projectApplication }: Record<string, any>) {
+        for (let i = 0; i < HANDLERS_PATHS.length; i++) {
+            const current = HANDLERS_PATHS[i];
 
-        context.info("Generating system AWS Lambda functions code...");
+            const from = getHandlerPath("ddb-es", "api", ...current, "handler.js");
+            const to = path.join(
+                projectApplication.paths.workspace,
+                "code",
+                ...current,
+                "build",
+                "handler.js"
+            );
 
-        for (let i = 0; i < handlersPaths.length; i++) {
-            const [from, relativeTo] = handlersPaths[i];
-
-            const to = path.join(projectApplication.paths.workspace, relativeTo);
-            if (!fs.existsSync(to)) {
-                fs.mkdirSync(to, { recursive: true });
+            if (!fs.existsSync(path.dirname(to))) {
+                fs.mkdirSync(path.dirname(to), { recursive: true });
             }
 
             fs.copyFileSync(from, to);
         }
-
-        process.exit();
     }
 };

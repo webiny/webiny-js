@@ -6,8 +6,7 @@ import { HANDLERS_PATHS } from "./handlersPaths";
 export const generateDdbHandlers = {
     type: "hook-before-build",
     name: "hook-before-build-generate-api-ddb-handlers",
-    // @ts-ignore
-    async hook({ projectApplication }) {
+    async hook({ projectApplication }: Record<string, any>) {
         for (let i = 0; i < HANDLERS_PATHS.length; i++) {
             const current = HANDLERS_PATHS[i];
 

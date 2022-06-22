@@ -10,16 +10,11 @@ const get = require("lodash/get");
 const merge = require("lodash/merge");
 const browserOutput = require("./watch/output/browserOutput");
 const terminalOutput = require("./watch/output/terminalOutput");
+const simpleOutput = require("./watch/output/simpleOutput");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
 const watchPackages = require("./watch/watchPackages");
-const {
-    login,
-    getPulumi,
-    getRandomColorForString,
-    createProjectApplicationWorkspace,
-    loadEnvVariables
-} = require("../utils");
+const { login, getPulumi, getRandomColorForString, loadEnvVariables } = require("../utils");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
 // is still in preview mode, so it's definitely not wise to use it on production environments.
@@ -47,15 +42,17 @@ module.exports = async (inputs, context) => {
         // If exists - read default inputs from "webiny.application.ts" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
 
-        // If needed, let's create a project application workspace.
-        if (projectApplication.type === "v5-workspaces") {
-            await createProjectApplicationWorkspace({
-                projectApplication,
-                env: inputs.env,
-                context,
-                inputs
-            });
-        }
+        // We don't do anything here. We assume the workspace has already been created
+        // upon running the `webiny deploy` command. We rely on that.
+        // TODO: maybe we can improve this in the future, depending on the feedback.
+        // if (projectApplication.type === "v5-workspaces") {
+        // await createProjectApplicationWorkspace({
+        //     projectApplication,
+        //     env: inputs.env,
+        //     context,
+        //     inputs
+        // });
+        // }
 
         // Load env vars specified via .env files located in project application folder.
         await loadEnvVariables(inputs, context);
@@ -119,8 +116,24 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    let output = inputs.output === "browser" ? browserOutput : terminalOutput;
-    await output.initialize(inputs);
+    let output = terminalOutput;
+    if (inputs.output === "browser") {
+    }
+
+    switch (inputs.output) {
+        case "browser":
+            output = browserOutput;
+            break;
+        case "simple":
+            output = simpleOutput;
+            break;
+        default:
+            output = terminalOutput;
+    }
+
+    if (typeof output.initialize === "function") {
+        await output.initialize(inputs);
+    }
 
     const logging = {
         url: null
@@ -194,7 +207,7 @@ module.exports = async (inputs, context) => {
             });
 
             const buildFoldersGlob = [
-                projectApplication.project.root,
+                projectApplication.project.workspace,
                 inputs.folder,
                 "**/build"
             ].join("/");

@@ -1,27 +1,25 @@
-import { CliContext } from "@webiny/cli/types";
 import * as fs from "fs";
 import * as path from "path";
 import { getHandlerPath } from "~/utils";
-
-const handlersPaths = [
-    [
-        getHandlerPath("ddb-es", "core", "ddb-to-es", "handler.js"),
-        path.join("code", "dynamoToElastic", "build", "handler.js")
-    ]
-];
+import { HANDLERS_PATHS } from "./handlersPaths";
 
 export const generateDdbToEsHandler = {
-    type: "hook-before-build",
-    name: "hook-before-build-generate-ddb-es-handler",
-    // @ts-ignore
-    async hook({ projectApplication }, context: CliContext) {
-        context.info("Generating system AWS Lambda functions code...");
+    type: "hook-after-build",
+    name: "hook-after-build-generate-ddb-es-handler",
+    async hook({ projectApplication }: Record<string, any>) {
+        for (let i = 0; i < HANDLERS_PATHS.length; i++) {
+            const current = HANDLERS_PATHS[i];
 
-        for (let i = 0; i < handlersPaths.length; i++) {
-            const [from, relativeTo] = handlersPaths[i];
+            const from = getHandlerPath("ddb-es", "core", ...current, "handler.js");
+            const to = path.join(
+                projectApplication.paths.workspace,
+                "code",
+                ...current,
+                "build",
+                "handler.js"
+            );
 
-            const to = path.join(projectApplication.paths.workspace, relativeTo);
-            if (!fs.existsSync(to)) {
+            if (!fs.existsSync(path.dirname(to))) {
                 fs.mkdirSync(path.dirname(to), { recursive: true });
             }
 

@@ -1,5 +1,6 @@
 const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
 const { green } = require("chalk");
+const path = require("path");
 
 const line = `-------------------------`;
 
@@ -64,7 +65,7 @@ module.exports = {
             `Lists all relevant URLs for deployed project applications.`,
             yargs => {
                 yargs.option("env", {
-                    describe: `Environment`,
+                    describe: `Environment (required if Pulumi state files are not stored locally)`,
                     type: "string",
                     required: false
                 });
@@ -79,19 +80,21 @@ module.exports = {
                 if (!env) {
                     // Get all existing environments
                     const glob = require("fast-glob");
-                    const pulumiFiles = await glob(["**/Pulumi.*.yaml"], {
-                        cwd: context.project.root,
-                        onlyFiles: true,
-                        ignore: ["**/node_modules/**"]
-                    });
 
-                    const existingEnvs = new Set();
-                    const regex = /Pulumi\.(\w+)\.yaml/;
-                    pulumiFiles.forEach(file => {
-                        if (file.match(regex)) {
-                            existingEnvs.add(RegExp.$1);
+                    // We just get stack files for deployed Admin apps. That's enough to determine
+                    // into which environments the user has deployed their Webiny project.
+                    const pulumiAdminStackFilesPaths = glob.sync(
+                        ".pulumi/**/apps/admin/.pulumi/stacks/*.json",
+                        {
+                            cwd: context.project.root,
+                            onlyFiles: true,
+                            dot: true
                         }
-                    });
+                    );
+
+                    const existingEnvs = pulumiAdminStackFilesPaths.map(current =>
+                        path.basename(current, ".json")
+                    );
 
                     for (const env of existingEnvs) {
                         await printEnvOutput(env, context);
