@@ -1,14 +1,14 @@
 const util = require("util");
-const fs = require("fs");
+const fs = require("fs-extra");
 const ncpBase = require("ncp");
 const ncp = util.promisify(ncpBase.ncp);
 
 module.exports = async projectApplication => {
-    if (fs.existsSync(projectApplication.paths.workspace)) {
-        fs.rmdirSync(projectApplication.paths.workspace, { recursive: true });
+    if (await fs.pathExists(projectApplication.paths.workspace)) {
+        await fs.remove(projectApplication.paths.workspace);
     }
 
-    fs.mkdirSync(projectApplication.paths.workspace, { recursive: true });
+    await fs.ensureDir(projectApplication.paths.workspace);
     await ncp(projectApplication.paths.absolute, projectApplication.paths.workspace);
 
     // Wait a bit and make sure the files are ready to have its content replaced.
