@@ -8,7 +8,7 @@ const COMMON_HANDLERS_PATHS = [
     ["fileManager", "transform"]
 ];
 
-export const generateDdbEsHandlers = {
+export const generateCommonHandlers = {
     type: "hook-before-build",
     name: "hook-before-build-generate-common-handlers",
     async hook({ projectApplication }: Record<string, any>) {
