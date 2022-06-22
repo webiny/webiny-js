@@ -1,5 +1,4 @@
 export const HANDLERS_PATHS = [
-    ["graphql"],
     ["pageBuilder", "exportPages", "combine"],
     ["pageBuilder", "exportPages", "process"],
     ["pageBuilder", "importPages", "create"],
