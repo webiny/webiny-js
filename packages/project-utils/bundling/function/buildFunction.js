@@ -30,6 +30,7 @@ module.exports = async options => {
     }
 
     const webpack = require("webpack");
+
     return new Promise(async (resolve, reject) => {
         return webpack(webpackConfig).run(async (err, stats) => {
             let messages = {};
@@ -69,22 +70,4 @@ module.exports = async options => {
             resolve();
         });
     });
-
-    // TODO: move to createApiApp
-    // const project = getProject({ cwd });
-    // if (!project.config.id) {
-    //     return result;
-    // }
-    //
-    // const handlerFile = await fs.readFile(path.join(options.cwd, "build", "handler.js"), {
-    //     encoding: "utf8",
-    //     flag: "r"
-    // });
-    //
-    // const isTracked = handlerFile.includes("wcp-telemetry-tracker");
-    // if (isTracked) {
-    //     await injectHandlerTelemetry(cwd);
-    // }
-    //
-    // return result;
 };
