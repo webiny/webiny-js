@@ -8,6 +8,10 @@ module.exports = () => [
         type: "hook-before-deploy",
         name: "hook-before-deploy-environment-get-environment",
         async hook(args, context) {
+            if (process.env.WCP_PROJECT_ENVIRONMENT) {
+                return;
+            }
+
             // If the project isn't activated, do nothing.
             if (!context.project.config.id) {
                 return;
