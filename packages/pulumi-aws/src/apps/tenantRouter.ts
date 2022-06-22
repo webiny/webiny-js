@@ -36,27 +36,30 @@ export function applyTenantRouter(
     const core = app.getModule(CoreOutput);
 
     // `primaryDynamodbTableName` is a string, hence the type cast here.
-    const dynamoDbTable = core.primaryDynamodbTableName as unknown as string;
+    const dynamoDbTable = core.primaryDynamodbTableName;
 
-    const inlinePolicies = Promise.all([aws.getCallerIdentity({})]).then(([identity]) => [
-        {
-            name: "tenant-router-policy",
-            policy: JSON.stringify({
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "PermissionForDynamodb",
-                        Effect: "Allow",
-                        Action: ["dynamodb:GetItem"],
-                        Resource: [
-                            `arn:aws:dynamodb:${region}:${identity.accountId}:table/${dynamoDbTable}`,
-                            `arn:aws:dynamodb:${region}:${identity.accountId}:table/${dynamoDbTable}/*`
-                        ]
-                    }
-                ]
-            })
-        }
-    ]);
+    // Because of JSON.stringify, we need to resolve promises upfront.
+    const inlinePolicies = pulumi
+        .all([aws.getCallerIdentity({}), dynamoDbTable])
+        .apply(([identity, dynamoDbTable]) => [
+            {
+                name: "tenant-router-policy",
+                policy: JSON.stringify({
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Sid: "PermissionForDynamodb",
+                            Effect: "Allow",
+                            Action: ["dynamodb:GetItem", "dynamodb:Query"],
+                            Resource: [
+                                `arn:aws:dynamodb:${region}:${identity.accountId}:table/${dynamoDbTable}`,
+                                `arn:aws:dynamodb:${region}:${identity.accountId}:table/${dynamoDbTable}/*`
+                            ]
+                        }
+                    ]
+                })
+            }
+        ]);
 
     const role = app.addResource(aws.iam.Role, {
         name: `${PREFIX}-role`,
@@ -93,10 +96,11 @@ export function applyTenantRouter(
                 role: role.output.arn,
                 timeout: 5,
                 memorySize: 128,
-                // TODO: @michal
-                code: createFunctionArchive({
-                    region,
-                    dynamoDbTable
+                code: dynamoDbTable.apply(dynamoDbTable => {
+                    return createFunctionArchive({
+                        region,
+                        dynamoDbTable
+                    });
                 })
             },
             {

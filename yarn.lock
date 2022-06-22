@@ -279,7 +279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudwatch-events@npm:^3.54.1, @aws-sdk/client-cloudwatch-events@npm:latest":
+"@aws-sdk/client-cloudwatch-events@npm:^3.54.1":
   version: 3.110.0
   resolution: "@aws-sdk/client-cloudwatch-events@npm:3.110.0"
   dependencies:

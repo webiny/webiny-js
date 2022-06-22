@@ -50,16 +50,18 @@ async function getTenantIdByDomain(domain) {
 }
 
 async function getTenantsCount() {
-    const { Count } = await documentClient.query({
-        TableName: DB_TABLE_NAME,
-        IndexName: "GSI1",
-        Select: "COUNT",
-        KeyConditionExpression: "GSI1_PK = :GSI1_PK and GSI1_SK > :GSI1_SK",
-        ExpressionAttributeValues: {
-            ":GSI1_PK": "TENANTS",
-            ":GSI1_SK": " "
-        }
-    });
+    const { Count } = await documentClient
+        .query({
+            TableName: DB_TABLE_NAME,
+            IndexName: "GSI1",
+            Select: "COUNT",
+            KeyConditionExpression: "GSI1_PK = :GSI1_PK and GSI1_SK > :GSI1_SK",
+            ExpressionAttributeValues: {
+                ":GSI1_PK": "TENANTS",
+                ":GSI1_SK": " "
+            }
+        })
+        .promise();
 
     return Count;
 }
