@@ -8,7 +8,7 @@ export const injectWcpTelemetryClientCode = {
     name: "hook-after-build-inject-wcp-telemetry",
     async hook({ projectApplication }: Record<string, any>) {
         if (!projectApplication.project.config.id) {
-            return result;
+            return;
         }
 
         const workspacePath = projectApplication.paths.workspace;
@@ -18,7 +18,7 @@ export const injectWcpTelemetryClientCode = {
         ];
 
         // 1. Download telemetry client code.
-        const latestTelemetryClientUrl = getWcpApiUrl("clients/latest.js");
+        const latestTelemetryClientUrl = getWcpApiUrl("/clients/latest.js");
         const response = await fetch(latestTelemetryClientUrl);
 
         const telemetryCodeAsString = await response.text();
