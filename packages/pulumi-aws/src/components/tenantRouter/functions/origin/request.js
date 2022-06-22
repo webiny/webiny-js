@@ -59,7 +59,7 @@ async function hasMultipleTenants() {
             IndexName: "GSI1",
             Limit: 1,
             Select: "COUNT",
-            KeyConditionExpression: "GSI1_PK = :GSI1_PK and begins_with(GSI1_SK :GSI1_SK)",
+            KeyConditionExpression: "GSI1_PK = :GSI1_PK and begins_with(GSI1_SK, :GSI1_SK)",
             ExpressionAttributeValues: {
                 ":GSI1_PK": "TENANTS",
                 ":GSI1_SK": "T#root#"
