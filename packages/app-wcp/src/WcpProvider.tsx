@@ -47,6 +47,11 @@ export const WcpProvider: React.FC<WcpProviderProps> = ({ children, loader }) =>
     const [project, setProject] = useState<WcpProject | null | undefined>(undefined);
     useQuery<GetWcpProjectGqlResponse>(GET_WCP_PROJECT, {
         skip: project !== undefined,
+        context: {
+            headers: {
+                "x-tenant": "root"
+            }
+        },
         onCompleted: response => {
             setProject(response.wcp.getProject.data);
         }
