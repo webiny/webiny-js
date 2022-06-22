@@ -17,7 +17,6 @@ const {
     login,
     getPulumi,
     getRandomColorForString,
-    createProjectApplicationWorkspace,
     loadEnvVariables
 } = require("../utils");
 
@@ -47,17 +46,17 @@ module.exports = async (inputs, context) => {
         // If exists - read default inputs from "webiny.application.ts" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
 
-        // If needed, let's create a project application workspace.
-        if (projectApplication.type === "v5-workspaces") {
-            // We don't do anything here. We assume the workspace has already been created
-            // upon running the `webiny deploy` command. We rely on that. Maybe we can improve this.
-            // await createProjectApplicationWorkspace({
-            //     projectApplication,
-            //     env: inputs.env,
-            //     context,
-            //     inputs
-            // });
-        }
+        // We don't do anything here. We assume the workspace has already been created
+        // upon running the `webiny deploy` command. We rely on that.
+        // TODO: maybe we can improve this in the future, depending on the feedback.
+        // if (projectApplication.type === "v5-workspaces") {
+        // await createProjectApplicationWorkspace({
+        //     projectApplication,
+        //     env: inputs.env,
+        //     context,
+        //     inputs
+        // });
+        // }
 
         // Load env vars specified via .env files located in project application folder.
         await loadEnvVariables(inputs, context);
@@ -215,7 +214,7 @@ module.exports = async (inputs, context) => {
                 }
             }
 
-            console.log('pathArg', pathArg)
+            console.log("pathArg", pathArg);
             // Log used values if debugging has been enabled.
             if (inputs.debug) {
                 const message = pathArg
