@@ -1,6 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import {
@@ -11,7 +12,7 @@ import { createStorageOperations as createPageBuilderStorageOperations } from "@
 import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
-import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
+import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
@@ -30,6 +31,7 @@ import { createStorageOperations as createHeadlessCmsStorageOperations } from "@
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import securityPlugins from "./security";
+import tenantManager from "@webiny/api-tenant-manager";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
 
 // Imports plugins created via scaffolding utilities.
@@ -48,6 +50,8 @@ const elasticsearchClient = createElasticsearchClient({
 
 export const handler = createHandler({
     plugins: [
+        createWcpContext(),
+        createWcpGraphQL(),
         dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
@@ -57,20 +61,14 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins({ documentClient }),
+        tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         fileManagerPlugins(),
         fileManagerDynamoDbElasticStorageOperation(),
         fileManagerS3(),
         prerenderingServicePlugins({
-            handlers: {
-                render: process.env.PRERENDERING_RENDER_HANDLER,
-                flush: process.env.PRERENDERING_FLUSH_HANDLER,
-                queue: {
-                    add: process.env.PRERENDERING_QUEUE_ADD_HANDLER,
-                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER
-                }
-            }
+            eventBus: String(process.env.EVENT_BUS)
         }),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
