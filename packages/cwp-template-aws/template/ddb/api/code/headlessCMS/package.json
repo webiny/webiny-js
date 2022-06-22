@@ -16,6 +16,7 @@
     "@webiny/api-security-so-ddb": "latest",
     "@webiny/api-tenancy": "latest",
     "@webiny/api-tenancy-so-ddb": "latest",
+    "@webiny/api-wcp": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",

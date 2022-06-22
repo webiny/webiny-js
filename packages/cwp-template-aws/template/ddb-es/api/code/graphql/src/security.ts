@@ -1,6 +1,6 @@
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
@@ -50,8 +50,8 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      * Sync Admin Users with Cognito User Pool.
      */
     syncWithCognito({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID
+        region: String(process.env.COGNITO_REGION),
+        userPoolId: String(process.env.COGNITO_USER_POOL_ID)
     }),
 
     /**
@@ -73,8 +73,8 @@ export default ({ documentClient }: { documentClient: DocumentClient }) => [
      * This plugin will verify the JWT token against the provided User Pool.
      */
     cognitoAuthentication({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID,
+        region: String(process.env.COGNITO_REGION),
+        userPoolId: String(process.env.COGNITO_USER_POOL_ID),
         identityType: "admin"
     }),
 

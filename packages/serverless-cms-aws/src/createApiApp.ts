@@ -1,7 +1,12 @@
 import { PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import { createApiPulumiApp, CustomDomainParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
-import { generateDdbHandlers, generateDdbEsHandlers } from "./api/plugins";
+import {
+    generateDdbHandlers,
+    generateDdbEsHandlers,
+    generateCommonHandlers,
+    injectWcpTelemetryClientCode
+} from "./api/plugins";
 
 export interface CreateApiAppParams {
     /**
@@ -29,7 +34,7 @@ export interface CreateApiAppParams {
 }
 
 export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
-    const builtInPlugins = [];
+    const builtInPlugins = [injectWcpTelemetryClientCode, generateCommonHandlers];
     if (projectAppParams.elasticSearch) {
         builtInPlugins.push(generateDdbEsHandlers);
     } else {
