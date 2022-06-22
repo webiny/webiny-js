@@ -49,39 +49,40 @@ async function getTenantIdByDomain(domain) {
     return Item ? Item.tenant : undefined;
 }
 
-async function getTenantsCount() {
+/**
+ * Check if "root" tenant has at least one child tenant.
+ */
+async function hasMultipleTenants() {
     const { Count } = await documentClient
         .query({
             TableName: DB_TABLE_NAME,
             IndexName: "GSI1",
+            Limit: 1,
             Select: "COUNT",
-            KeyConditionExpression: "GSI1_PK = :GSI1_PK and GSI1_SK > :GSI1_SK",
+            KeyConditionExpression: "GSI1_PK = :GSI1_PK and begins_with(GSI1_SK :GSI1_SK)",
             ExpressionAttributeValues: {
                 ":GSI1_PK": "TENANTS",
-                ":GSI1_SK": " "
+                ":GSI1_SK": "T#root#"
             }
         })
         .promise();
 
-    return Count;
+    return Count > 0;
 }
 
 async function handleOriginRequest(request) {
     const requestedDomain = request.headers.host[0].value;
     const originDomain = request.origin.custom.domainName;
 
-    // Check how many tenants we currently have.
-    const tenantsCount = await getTenantsCount();
-
     let tenant;
-    if (tenantsCount <= 1) {
-        console.log(`Only one tenant is present, falling back to "root".`);
+    if (await hasMultipleTenants()) {
+        // Find tenant by domain. This record is stored to the DB using the Tenant Manager app.
+        console.log(`Multiple tenants are present; loading by domain...`);
+        tenant = await getTenantIdByDomain(requestedDomain);
+    } else {
+        console.log(`Only one tenant is present; falling back to "root".`);
         // If the system only has one tenant, we don't need to map by domain at all.
         tenant = "root";
-    } else {
-        // Find tenant by domain. This record is stored to the DB using the Tenant Manager app.
-        console.log(`${tenantsCount} tenants are present, loading by domain.`);
-        tenant = await getTenantIdByDomain(requestedDomain);
     }
 
     if (tenant) {
