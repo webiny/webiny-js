@@ -78,7 +78,8 @@ const setupApwContext = (params: CreateApwContextParams) =>
                 getCmsContext: () => context
             }),
             scheduler,
-            handlerClient
+            handlerClient,
+            plugins: context.plugins
         });
     });
 

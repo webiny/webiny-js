@@ -148,7 +148,6 @@ export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams)
                 console.log(`Not applying workflow ${workflow.id} to entry ${entry.id}.`);
                 continue;
             }
-            console.log(`Applying workflow ${workflow.id} to entry ${entry.id}.`);
             entry.meta = {
                 ...(entry.meta || {}),
                 apw: {

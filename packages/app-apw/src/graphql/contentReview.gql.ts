@@ -36,6 +36,9 @@ const getDataFields = (fields = "") => `{
             displayName
         }
         scheduledOn
+        settings {
+            modelId
+        }
     }
     steps {
         status

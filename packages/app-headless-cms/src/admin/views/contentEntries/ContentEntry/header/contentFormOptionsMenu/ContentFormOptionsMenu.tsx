@@ -13,9 +13,9 @@ import { i18n } from "@webiny/app/i18n";
 import usePermission from "~/admin/hooks/usePermission";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
-import { removeEntryFromListCache } from "../../cache";
 import { useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
+import { parseIdentifier } from "@webiny/utils";
 
 const t = i18n.ns(
     "app-headless-cms/admin/plugins/content-details/header/content-form-options-menu"
@@ -58,29 +58,20 @@ const ContentFormOptionsMenu: React.FC = () => {
     const confirmDelete = useCallback((): void => {
         showConfirmation(async (): Promise<void> => {
             setLoading(true);
-            // mutation
 
-            const { error, client } = await deleteEntry({
+            const { id: entryId } = parseIdentifier(entry.id);
+            const { error } = await deleteEntry({
                 model: contentModel,
                 entry,
-                id: entry.id
+                id: entryId,
+                listQueryVariables
             });
 
             setLoading(false);
 
             if (error) {
                 showDialog(error.message, { title: t`Could not delete content` });
-                // history.push(`/cms/content-entries/${contentModel.modelId}`);
                 return;
-            }
-
-            /**
-             * If cache obj is returned, we can remove deleted entry from it.
-             * Cache should be returned as it is being sent by the default onEntryDelete method.
-             * If it is not, it is an error which is produced in some added onEntryDelete method.
-             */
-            if (client && client.cache) {
-                removeEntryFromListCache(contentModel, client.cache, entry, listQueryVariables);
             }
 
             showSnackbar(t`{title} was deleted successfully!`({ title: <strong>{title}</strong> }));

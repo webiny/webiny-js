@@ -29,8 +29,12 @@ import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/compone
 import { ApwOnEntryDelete } from "~/plugins/cms/ApwOnEntryDelete";
 import { ApwOnEntryPublish } from "~/plugins/cms/ApwOnEntryPublish";
 import { SaveAndPublishButton as HeadlessCmsEntrySaveAndPublishButton } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/saveAndPublishContent/SaveAndPublishContent";
+import { PublishEntryRevisionListItem } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/PublishEntryRevisionListItem";
 import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
-import { PublishEntryButtonHoc } from "~/plugins/cms/PublishEntryHocs";
+import {
+    EntryRevisionListItemGraphicHoc,
+    PublishEntryButtonHoc
+} from "~/plugins/cms/PublishEntryHocs";
 /**
  *
  */
@@ -57,6 +61,10 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
             <Compose
                 with={PublishEntryButtonHoc}
                 component={HeadlessCmsEntrySaveAndPublishButton}
+            />
+            <Compose
+                with={EntryRevisionListItemGraphicHoc}
+                component={PublishEntryRevisionListItem}
             />
             <Plugins>
                 <DefaultBar />

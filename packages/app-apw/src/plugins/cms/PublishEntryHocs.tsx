@@ -11,8 +11,13 @@ import { ReactComponent as AddTaskIcon } from "~/assets/icons/add_task.svg";
 import { useContentReviewId } from "./useContentReviewId";
 import { routePaths } from "~/utils";
 import { useContentEntry } from "@webiny/app-headless-cms/admin/views/contentEntries/hooks/useContentEntry";
+import { css } from "emotion";
 
-const t = i18n.ns("app-apw/page-builder/publish-page");
+const t = i18n.ns("app-apw/cms/publish-entry");
+
+const entryReviewClassName = css({
+    marginLeft: 16
+});
 
 export const PublishEntryRevisionHoc: HigherOrderComponent = OriginalRenderer => {
     return function PublishRevision() {
@@ -64,7 +69,7 @@ export const PublishEntryMenuOptionHoc: HigherOrderComponent = OriginalRenderer 
                 <ListItemGraphic>
                     <Icon icon={<AddTaskIcon />} />
                 </ListItemGraphic>
-                {t`Page review`}
+                {t`Entry review`}
             </MenuItem>
         );
     };
@@ -83,6 +88,7 @@ export const PublishEntryButtonHoc: HigherOrderComponent = OriginalRenderer => {
 
         return (
             <ButtonPrimary
+                className={entryReviewClassName}
                 onClick={() =>
                     navigate(`${routePaths.CONTENT_REVIEWS}/${encodeURIComponent(contentReviewId)}`)
                 }
@@ -107,21 +113,22 @@ export const EntryRequestChangesHoc: HigherOrderComponent = () => {
 };
 
 export const EntryRevisionListItemGraphicHoc: HigherOrderComponent = OriginalRenderer => {
-    return function EntryRevisionListItemGraphic(props) {
+    return function EntryRevisionListItemGraphic() {
         const { entry, contentModel: model } = useContentEntry();
 
         const contentReviewId = useContentReviewId(entry.id, model);
 
-        if (contentReviewId && props.revision.status === "draft") {
+        if (contentReviewId && entry.meta.status === "draft") {
             return (
-                <ListItemGraphic>
-                    <Tooltip content={t`Under Review`} placement={"bottom"}>
+                <>
+                    <ListItemGraphic>
                         <AddTaskIcon />
-                    </Tooltip>
-                </ListItemGraphic>
+                    </ListItemGraphic>
+                    {t`Entry Review`}
+                </>
             );
         }
 
-        return <OriginalRenderer {...props} />;
+        return <OriginalRenderer />;
     };
 };

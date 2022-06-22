@@ -6,6 +6,7 @@ import { config as appConfig } from "@webiny/app/config";
 import { CmsEditorContentEntry, CmsModel } from "~/types";
 import { MutationHookOptions } from "@apollo/react-hooks";
 import { AsyncProcessor, composeAsync } from "@webiny/utils";
+import { ListQueryVariables } from "~/admin/views/contentEntries/ContentEntriesContext";
 
 interface PublishEntryOptions {
     mutationOptions?: MutationHookOptions;
@@ -27,6 +28,7 @@ export interface OnEntryPublishResponse {
     // TODO: Maybe a different input and output type for compose.
     error?: EntryError | null;
     client: ApolloClient<any>;
+    listQueryVariables: ListQueryVariables;
 }
 
 export type OnEntryDeleteResponse = OnEntryPublishResponse;
@@ -39,12 +41,14 @@ interface PublishEntryRevisionParams {
     entry: CmsEditorContentEntry;
     options?: PublishEntryOptions;
     id: string;
+    listQueryVariables: ListQueryVariables;
 }
 interface DeleteEntryParams {
     model: CmsModel;
     entry: CmsEditorContentEntry;
     id: string;
     options?: DeleteEntryOptions;
+    listQueryVariables: ListQueryVariables;
 }
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
@@ -112,13 +116,11 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
         getApolloClient,
         createApolloClient: props.createApolloClient,
         apolloClient: apolloClientsCache[currentLocale],
-        publishEntryRevision: async ({ model, entry, options = {}, id }) => {
+        publishEntryRevision: async params => {
             return await composeAsync([...onEntryRevisionPublish.current].reverse())({
-                model,
-                entry,
-                id,
+                ...params,
                 client: apolloClientsCache[currentLocale],
-                options
+                options: params.options || {}
             });
         },
         onEntryRevisionPublish: fn => {
@@ -128,13 +130,11 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
                 onEntryRevisionPublish.current.splice(index, 1);
             };
         },
-        deleteEntry: async ({ model, entry, options = {}, id }) => {
+        deleteEntry: async params => {
             return await composeAsync([...onEntryDelete.current].reverse())({
-                model,
-                entry,
-                id,
+                ...params,
                 client: apolloClientsCache[currentLocale],
-                options
+                options: params.options || {}
             });
         },
         onEntryDelete: fn => {

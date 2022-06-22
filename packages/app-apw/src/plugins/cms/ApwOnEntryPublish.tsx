@@ -74,9 +74,9 @@ export const ApwOnEntryPublish: React.FC = () => {
 
     useEffect(() => {
         return onEntryRevisionPublish(next => async params => {
-            const { id } = params;
-            const input = {
-                id,
+            const { id, entry } = params;
+            const inputData = {
+                id: id || entry.id,
                 type: ApwContentTypes.CMS_ENTRY,
                 settings: {
                     modelId: params.model.modelId
@@ -85,7 +85,7 @@ export const ApwOnEntryPublish: React.FC = () => {
             const { data } = await client.query({
                 query: IS_REVIEW_REQUIRED_QUERY,
                 variables: {
-                    data: input
+                    data: inputData
                 }
             });
             const contentReviewId = get(data, "apw.isReviewRequired.data.contentReviewId");
@@ -103,7 +103,7 @@ export const ApwOnEntryPublish: React.FC = () => {
 
             const isReviewRequired = get(data, "apw.isReviewRequired.data.isReviewRequired");
             if (isReviewRequired) {
-                setInput(input);
+                setInput(inputData);
                 return next({
                     ...params,
                     error: {
@@ -119,9 +119,10 @@ export const ApwOnEntryPublish: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (input) {
-            showRequestReviewConfirmation(handleRequestReview, resetShowReview);
+        if (!input) {
+            return;
         }
+        showRequestReviewConfirmation(handleRequestReview, resetShowReview);
     }, [input]);
 
     return null;

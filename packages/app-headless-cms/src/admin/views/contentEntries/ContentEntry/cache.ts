@@ -22,7 +22,7 @@ const sortEntries = (
     if (!sort) {
         return list;
     } else if (Array.isArray(sort) === false) {
-        console.log("Sort is not an Array of strings.");
+        console.warn("Sort is not an Array of strings.");
         return list;
     } else if (sort.length === 0) {
         return list;
@@ -122,9 +122,12 @@ export const removeRevisionFromEntryCache = (
     cache: DataProxy,
     revision: CmsContentEntryRevision
 ): CmsContentEntryRevision[] => {
+    const { id } = parseIdentifier(revision.id);
     const gqlParams = {
         query: GQL.createRevisionsQuery(model),
-        variables: { id: revision.id.split("#")[0] }
+        variables: {
+            id
+        }
     };
 
     const response = cache.readQuery<
@@ -140,20 +143,25 @@ export const removeRevisionFromEntryCache = (
         return [];
     }
 
-    const { revisions: revisionsData } = response;
+    const { revisions } = response;
 
-    const revisions = revisionsData.data.filter(item => {
+    const data = revisions.data.filter(item => {
         return item.id !== revision.id;
     });
 
-    cache.writeQuery({
+    const query = {
         ...gqlParams,
         data: {
-            revisions
+            revisions: {
+                ...revisions,
+                data
+            }
         }
-    });
+    };
 
-    return revisions;
+    cache.writeQuery(query);
+
+    return data;
 };
 
 export const addRevisionToRevisionsCache = (

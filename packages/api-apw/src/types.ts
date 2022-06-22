@@ -23,6 +23,7 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types";
 import HandlerClient from "@webiny/handler-client/HandlerClient";
+import { PluginsContainer } from "@webiny/plugins";
 
 export interface ApwCmsEntry extends BaseCmsEntry {
     title: string;
@@ -433,7 +434,7 @@ export interface ApwContentReviewCrud
 
     isReviewRequired(data: ApwContentReviewContent): Promise<{
         isReviewRequired: boolean;
-        contentReviewId?: string;
+        contentReviewId?: string | null;
     }>;
 
     publishContent(id: string, datetime?: string): Promise<Boolean>;
@@ -505,6 +506,7 @@ export interface CreateApwParams {
     storageOperations: ApwStorageOperations;
     scheduler: ApwScheduleActionCrud;
     handlerClient: HandlerClient;
+    plugins: PluginsContainer;
 }
 
 interface StorageOperationsGetReviewerParams {

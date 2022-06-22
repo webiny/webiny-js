@@ -1,10 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import { useCms } from "~/admin/hooks";
-import { CmsModel } from "~/types";
-import { createDeleteMutation } from "~/admin/graphql/contentEntries";
+import { CmsErrorResponse, CmsModel } from "~/types";
+import {
+    CmsEntryDeleteMutationResponse,
+    CmsEntryDeleteMutationVariables,
+    createDeleteMutation
+} from "~/admin/graphql/contentEntries";
 import { DocumentNode } from "graphql";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { OnEntryDeleteResponse } from "~/admin/contexts/Cms";
+import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 
 interface Mutations {
     [key: string]: DocumentNode;
@@ -34,18 +39,30 @@ const OnEntryDelete: React.FC = () => {
         return mutations.current[key];
     };
 
-    const handleOnDelete = async ({ model, client, id }: OnEntryDeleteResponse) => {
+    const handleOnDelete = async ({
+        entry,
+        model,
+        client,
+        id,
+        listQueryVariables = {}
+    }: OnEntryDeleteResponse) => {
         const locale = getCurrentLocale();
         if (!locale) {
+            const error: CmsErrorResponse = {
+                message: "Missing locale.",
+                code: "MISSING_LOCALE",
+                data: {}
+            };
             return {
-                error: {
-                    message: "Missing locale."
-                }
+                error
             };
         }
         const mutation = getMutation(model, locale);
 
-        const response = await client.mutate({
+        const response = await client.mutate<
+            CmsEntryDeleteMutationResponse,
+            CmsEntryDeleteMutationVariables
+        >({
             mutation,
             variables: {
                 revision: id
@@ -53,10 +70,13 @@ const OnEntryDelete: React.FC = () => {
         });
 
         if (!response.data) {
+            const error: CmsErrorResponse = {
+                message: "Missing response data on Delete Entry Mutation.",
+                code: "MISSING_RESPONSE_DATA",
+                data: {}
+            };
             return {
-                error: {
-                    message: "Missing response data on Delete Entry Mutation."
-                }
+                error
             };
         }
         const { error } = response.data.content;
@@ -65,7 +85,39 @@ const OnEntryDelete: React.FC = () => {
                 error
             };
         }
+        /**
+         * TODO figure out how to do this in a smart way.
+         * If there is no hash in the ID, we are deleting whole entry.
+         */
+        if (id.match("#") === null) {
+            GQLCache.removeEntryFromListCache(model, client.cache, entry, listQueryVariables);
+            return {
+                data: true,
+                error: null
+            };
+        }
+
+        // We have other revisions, update entry's cache
+        const revisions = GQLCache.removeRevisionFromEntryCache(model, client.cache, {
+            ...entry,
+            id
+        });
+
+        if (entry.id !== id) {
+            return {
+                data: true,
+                error: null
+            };
+        }
+        GQLCache.updateLatestRevisionInListCache(
+            model,
+            client.cache,
+            revisions[0],
+            listQueryVariables
+        );
+
         return {
+            entry: revisions[0] || entry,
             data: true,
             error: null
         };
@@ -84,7 +136,7 @@ const OnEntryDelete: React.FC = () => {
             });
             return {
                 ...result,
-                ...(response || {})
+                ...response
             };
         });
     }, []);

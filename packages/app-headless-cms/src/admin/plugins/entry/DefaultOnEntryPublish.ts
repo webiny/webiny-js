@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { DocumentNode } from "graphql";
-import { createPublishMutation } from "~/admin/graphql/contentEntries";
-import { CmsModel } from "~/types";
+import {
+    CmsEntryPublishMutationResponse,
+    CmsEntryPublishMutationVariables,
+    createPublishMutation
+} from "~/admin/graphql/contentEntries";
+import { CmsErrorResponse, CmsModel } from "~/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useCms } from "~/admin/hooks";
 import { OnEntryPublishResponse } from "~/admin/contexts/Cms";
@@ -41,15 +45,21 @@ const OnEntryPublish: React.FC = () => {
     const handleOnPublish = async ({ model, client, id }: OnEntryPublishResponse) => {
         const locale = getCurrentLocale();
         if (!locale) {
+            const error: CmsErrorResponse = {
+                message: "Missing locale.",
+                code: "MISSING_LOCALE",
+                data: {}
+            };
             return {
-                error: {
-                    message: "Missing locale."
-                }
+                error
             };
         }
         const mutation = getMutation(model, locale);
 
-        const response = await client.mutate({
+        const response = await client.mutate<
+            CmsEntryPublishMutationResponse,
+            CmsEntryPublishMutationVariables
+        >({
             mutation,
             variables: {
                 revision: id
@@ -57,10 +67,13 @@ const OnEntryPublish: React.FC = () => {
         });
 
         if (!response.data) {
+            const error: CmsErrorResponse = {
+                message: "Missing response data on Publish Entry Mutation.",
+                code: "MISSING_RESPONSE_DATA",
+                data: {}
+            };
             return {
-                error: {
-                    message: "Missing response data on Publish Entry Mutation."
-                }
+                error
             };
         }
         const { error } = response.data.content;

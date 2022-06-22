@@ -33,9 +33,9 @@ export const ApwOnEntryDelete: React.FC = () => {
 
     useEffect(() => {
         return onEntryDelete(next => async params => {
-            const { id } = params;
+            const { entry } = params;
             const input = {
-                id,
+                id: entry.id,
                 type: ApwContentTypes.CMS_ENTRY,
                 settings: {
                     modelId: params.model.modelId

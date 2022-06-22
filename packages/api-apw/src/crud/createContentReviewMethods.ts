@@ -7,7 +7,6 @@ import {
     ApwContentReviewCrud,
     ApwContentReviewStatus,
     ApwContentReviewStepStatus,
-    ApwContentTypes,
     ApwReviewerCrud,
     ApwScheduleActionData,
     ApwWorkflowStepTypes,
@@ -34,12 +33,15 @@ import {
     getPendingRequiredSteps,
     INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META
 } from "./utils";
+import { getContentApwSettingsPlugin } from "~/utils/contentApwSettingsPlugin";
+import { PluginsContainer } from "@webiny/plugins";
 
 export interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
     getContentGetter: AdvancedPublishingWorkflow["getContentGetter"];
     getContentPublisher: AdvancedPublishingWorkflow["getContentPublisher"];
     getContentUnPublisher: AdvancedPublishingWorkflow["getContentUnPublisher"];
+    plugins: PluginsContainer;
 }
 
 export function createContentReviewMethods(
@@ -55,7 +57,8 @@ export function createContentReviewMethods(
         scheduler,
         handlerClient,
         getTenant,
-        getLocale
+        getLocale,
+        plugins
     } = params;
 
     const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
@@ -313,17 +316,21 @@ export function createContentReviewMethods(
             const content = await contentGetter(data.id, data.settings);
 
             let isReviewRequired = false;
-            let contentReviewId = null;
+            let contentReviewId: string | null = null;
 
-            if (data.type === ApwContentTypes.PAGE) {
-                contentReviewId = get(content, "settings.apw.contentReviewId");
+            const contentApwSettingsPlugin = getContentApwSettingsPlugin({
+                plugins,
+                type: data.type
+            });
 
-                const workflowId = get(content, "settings.apw.workflowId");
-
+            if (contentApwSettingsPlugin) {
+                contentReviewId = contentApwSettingsPlugin.getContentReviewId(content);
+                const workflowId = contentApwSettingsPlugin.getWorkflowId(content);
                 if (workflowId) {
                     isReviewRequired = true;
                 }
             }
+
             return {
                 isReviewRequired,
                 contentReviewId
