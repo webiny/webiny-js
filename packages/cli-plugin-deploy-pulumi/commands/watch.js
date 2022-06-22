@@ -49,12 +49,14 @@ module.exports = async (inputs, context) => {
 
         // If needed, let's create a project application workspace.
         if (projectApplication.type === "v5-workspaces") {
-            await createProjectApplicationWorkspace({
-                projectApplication,
-                env: inputs.env,
-                context,
-                inputs
-            });
+            // We don't do anything here. We assume the workspace has already been created
+            // upon running the `webiny deploy` command. We rely on that. Maybe we can improve this.
+            // await createProjectApplicationWorkspace({
+            //     projectApplication,
+            //     env: inputs.env,
+            //     context,
+            //     inputs
+            // });
         }
 
         // Load env vars specified via .env files located in project application folder.
@@ -194,7 +196,7 @@ module.exports = async (inputs, context) => {
             });
 
             const buildFoldersGlob = [
-                projectApplication.project.root,
+                projectApplication.project.workspace,
                 inputs.folder,
                 "**/build"
             ].join("/");
@@ -213,6 +215,7 @@ module.exports = async (inputs, context) => {
                 }
             }
 
+            console.log('pathArg', pathArg)
             // Log used values if debugging has been enabled.
             if (inputs.debug) {
                 const message = pathArg
