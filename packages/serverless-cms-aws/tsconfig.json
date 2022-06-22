@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../wcp" },
     { "path": "../api-apw" },
     { "path": "../api-apw-scheduler-so-ddb" },
     { "path": "../api-dynamodb-to-elasticsearch" },
@@ -38,6 +39,7 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/wcp": ["../api-apw/src"],
       "@webiny/api-apw/*": ["../api-apw/src/*"],
       "@webiny/api-apw": ["../api-apw/src"],
       "@webiny/api-apw-scheduler-so-ddb/*": ["../api-apw-scheduler-so-ddb/src/*"],

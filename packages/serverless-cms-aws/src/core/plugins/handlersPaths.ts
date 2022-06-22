@@ -1,3 +1,1 @@
-export const HANDLERS_PATHS = [
-    ["dynamoToElastic"],
-];
+export const HANDLERS_PATHS = [["dynamoToElastic"]];

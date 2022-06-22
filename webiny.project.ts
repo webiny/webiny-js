@@ -1,5 +1,6 @@
 // @ts-nocheck
 export default {
+    id: "webiny/webiny-js",
     name: "webiny-js",
     cli: {
         // No need to track anything when developing Webiny.

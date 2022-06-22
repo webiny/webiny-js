@@ -46,8 +46,10 @@
     "@webiny/plugins": "^5.28.0",
     "@webiny/pulumi": "^5.28.0",
     "@webiny/pulumi-aws": "^5.28.0",
+    "@webiny/wcp": "^5.28.0",
     "fast-glob": "^3.2.5",
-    "find-up": "^5.0.0"
+    "find-up": "^5.0.0",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

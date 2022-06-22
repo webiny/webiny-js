@@ -20,9 +20,6 @@ export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) =>
     const TelemetryProvider = createTelemetryProvider();
     const UiStateProvider = createUiStateProvider();
 
-    /**
-     * TODO @ts-refactor
-     */
     return (
         <ApolloProvider>
             <WcpProvider loader={<CircularProgress label={"Loading..."} />}>

@@ -22,10 +22,6 @@ const TenantManagerExtension: React.FC = () => {
         return null;
     }
 
-    /**
-     * TODO @ts-refactor @pavel
-     * Remove Compose.with as any
-     */
     return (
         <Fragment>
             <Compose component={LocaleSelector} with={TenantIndicator} />

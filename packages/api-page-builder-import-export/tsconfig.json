@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api-wcp" },
     { "path": "../api-file-manager" },
     { "path": "../api-page-builder" },
     { "path": "../api-security" },
