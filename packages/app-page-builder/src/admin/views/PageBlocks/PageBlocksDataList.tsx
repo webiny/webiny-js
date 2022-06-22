@@ -1,14 +1,21 @@
 import React, { useMemo } from "react";
 import styled from "@emotion/styled";
 import { useQuery } from "@apollo/react-hooks";
+import isEmpty from "lodash/isEmpty";
 
 import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { CircularProgress } from "@webiny/ui/Progress";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { Typography } from "@webiny/ui/Typography";
+import { i18n } from "@webiny/app/i18n";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import { PbPageBlock } from "~/types";
-import { LIST_PAGE_BLOCKS_AND_CATEGORIES } from "./graphql";
+import { LIST_PAGE_BLOCKS } from "./graphql";
 import { CreatableItem } from "./PageBlocks";
+
+const t = i18n.ns("app-page-builder/admin/page-blocks/data-list");
 
 const List = styled("div")({
     display: "grid",
@@ -70,43 +77,74 @@ const EditButton = styled(EditIcon)({
     }
 });
 
+const NoRecordsWrapper = styled("div")({
+    textAlign: "center",
+    padding: 100,
+    color: "var(--mdc-theme-on-surface)"
+});
+
 type PageBlocksDataListProps = {
     canEdit: (item: CreatableItem) => boolean;
     canDelete: (item: CreatableItem) => boolean;
 };
 
 const PageBlocksDataList = ({ canEdit, canDelete }: PageBlocksDataListProps) => {
-    const { location } = useRouter();
-
-    const listQuery = useQuery(LIST_PAGE_BLOCKS_AND_CATEGORIES);
+    const { history, location } = useRouter();
+    const { showSnackbar } = useSnackbar();
 
     const selectedBlocksCategory = new URLSearchParams(location.search).get("category");
-    const pageBlocksData: PbPageBlock[] = listQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
-    const pageBlocksList = useMemo((): PbPageBlock[] => {
-        return pageBlocksData.filter(
-            pageBlock => pageBlock.blockCategory === selectedBlocksCategory
-        );
-    }, [selectedBlocksCategory, pageBlocksData]);
 
-    const loading = [listQuery].find(item => item.loading);
+    const listPageBlocksQuery = useQuery(LIST_PAGE_BLOCKS, {
+        variables: { blockCategory: selectedBlocksCategory as string },
+        skip: !selectedBlocksCategory,
+        onCompleted: data => {
+            const error = data?.pageBuilder?.listPageBlocks?.error;
+            if (error) {
+                history.push("/page-builder/page-blocks");
+                showSnackbar(error.message);
+            }
+        }
+    });
+
+    const pageBlocksData: PbPageBlock[] =
+        listPageBlocksQuery?.data?.pageBuilder?.listPageBlocks?.data || [];
+
+    const loading = [listPageBlocksQuery].find(item => item.loading);
+
+    const showEmptyView = !loading && !selectedBlocksCategory;
+    // Render "No content selected" view.
+    if (showEmptyView) {
+        return (
+            <EmptyView
+                title={t`Click on the left side list to display list of page blocks for selected category`}
+                action={null}
+            />
+        );
+    }
+
+    const showNoRecordsView = !loading && isEmpty(pageBlocksData);
+    // Render "No records found" view.
+    if (showNoRecordsView) {
+        return (
+            <NoRecordsWrapper>
+                <Typography use="overline">No records found.</Typography>
+            </NoRecordsWrapper>
+        );
+    }
 
     return (
-        <>
-            {pageBlocksList.length > 0 && (
-                <List>
-                    {loading && <CircularProgress />}
-                    {pageBlocksList.map(pageBlock => (
-                        <ListItem key={pageBlock.id}>
-                            <ListItemText>{pageBlock.name}</ListItemText>
-                            <Controls>
-                                {canEdit(pageBlock) && <EditButton />}
-                                {canDelete(pageBlock) && <DeleteButton />}
-                            </Controls>
-                        </ListItem>
-                    ))}
-                </List>
-            )}
-        </>
+        <List>
+            {loading && <CircularProgress />}
+            {pageBlocksData.map(pageBlock => (
+                <ListItem key={pageBlock.id}>
+                    <ListItemText>{pageBlock.name}</ListItemText>
+                    <Controls>
+                        {canEdit(pageBlock) && <EditButton />}
+                        {canDelete(pageBlock) && <DeleteButton />}
+                    </Controls>
+                </ListItem>
+            ))}
+        </List>
     );
 };
 

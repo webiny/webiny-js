@@ -42,3 +42,23 @@ export const LIST_PAGE_BLOCKS_AND_CATEGORIES = gql`
         }
     }
 `;
+
+export interface ListPageBlocksQueryVariables {
+    blockCategory: string;
+}
+export const LIST_PAGE_BLOCKS = gql`
+    query ListPageBlocks($blockCategory: String!) {
+        pageBuilder {
+            listPageBlocks(where: {blockCategory:$blockCategory}) {
+                data {
+                    ${PAGE_BLOCK_BASE_FIELDS}
+                }
+                error {
+                    code
+                    data
+                    message
+                }
+            }
+        }
+    }
+`;
