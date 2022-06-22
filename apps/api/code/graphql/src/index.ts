@@ -4,7 +4,6 @@ import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
-import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import {
     createPageBuilderContext,
     createPageBuilderGraphQL
@@ -59,7 +58,6 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        i18nContentPlugins(),
         fileManagerPlugins(),
         fileManagerDynamoDbStorageOperation(),
         fileManagerS3(),
