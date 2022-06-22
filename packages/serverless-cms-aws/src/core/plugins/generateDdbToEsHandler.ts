@@ -3,7 +3,7 @@ import * as path from "path";
 import { getHandlerPath } from "~/utils";
 import { HANDLERS_PATHS } from "./handlersPaths";
 
-export const generateDdbHandlers = {
+export const generateDdbToEsHandler = {
     type: "hook-after-build",
     name: "hook-after-build-generate-ddb-es-handler",
     async hook({ projectApplication }: Record<string, any>) {
