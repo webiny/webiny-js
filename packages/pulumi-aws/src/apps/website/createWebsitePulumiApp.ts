@@ -10,7 +10,7 @@ import { applyTenantRouter } from "~/apps/tenantRouter";
 
 export interface CreateWebsiteAppParams {
     /** Custom domain configuration */
-    domain?: PulumiAppParamCallback<CustomDomainParams>;
+    domains?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
      * Enables or disables VPC for the API.
@@ -152,9 +152,9 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams 
                 cloudfrontId: deliveryCloudfront.output.id
             });
 
-            const domain = app.getParam(projectAppParams.domain);
-            if (domain) {
-                applyCustomDomain(deliveryCloudfront, domain);
+            const domains = app.getParam(projectAppParams.domains);
+            if (domains) {
+                applyCustomDomain(deliveryCloudfront, domains);
             }
 
             if (process.env.WCP_PROJECT_ENVIRONMENT) {
