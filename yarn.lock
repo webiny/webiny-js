@@ -13034,8 +13034,6 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@pulumi/aws": ^5.8.0
     "@pulumi/pulumi": ^3.34.0
-    "@webiny/api-apw": ^5.28.0
-    "@webiny/api-apw-scheduler-so-ddb": ^5.28.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.28.0
     "@webiny/api-elasticsearch": ^5.28.0
     "@webiny/api-file-manager": ^5.28.0

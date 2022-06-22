@@ -65,7 +65,9 @@
     "watch": "yarn webiny run watch"
   },
   "adio": {
-    "ignoreDirs": ["backup/"],
+    "ignoreDirs": [
+      "backup/"
+    ],
     "ignore": {
       "dependencies": [
         "@aws-sdk/client-cloudwatch-events",
