@@ -40,10 +40,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "@webiny/wcp": ["../api-apw/src"],
-      "@webiny/api-apw/*": ["../api-apw/src/*"],
-      "@webiny/api-apw": ["../api-apw/src"],
-      "@webiny/api-apw-scheduler-so-ddb/*": ["../api-apw-scheduler-so-ddb/src/*"],
-      "@webiny/api-apw-scheduler-so-ddb": ["../api-apw-scheduler-so-ddb/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],

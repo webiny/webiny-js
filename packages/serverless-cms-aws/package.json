@@ -16,8 +16,6 @@
     "@aws-sdk/client-cloudwatch-events": "^3.54.1",
     "@pulumi/aws": "^5.8.0",
     "@pulumi/pulumi": "^3.34.0",
-    "@webiny/api-apw": "^5.28.0",
-    "@webiny/api-apw-scheduler-so-ddb": "^5.28.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.28.0",
     "@webiny/api-elasticsearch": "^5.28.0",
     "@webiny/api-file-manager": "^5.28.0",
@@ -67,8 +65,10 @@
     "watch": "yarn webiny run watch"
   },
   "adio": {
+    "ignoreDirs": ["backup/"],
     "ignore": {
       "dependencies": [
+        "@aws-sdk/client-cloudwatch-events",
         "@pulumi/pulumi",
         "@pulumi/aws"
       ]
