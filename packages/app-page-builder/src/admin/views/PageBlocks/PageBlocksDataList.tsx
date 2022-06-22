@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { useQuery } from "@apollo/react-hooks";
 import isEmpty from "lodash/isEmpty";
