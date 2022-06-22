@@ -1,4 +1,0 @@
-name: projectApplicationName
-runtime: nodejs
-description: Represents cloud infrastructure needed for hosting the "Project application name" GraphQL API.
-main: pulumi/
