@@ -1,8 +1,9 @@
 const { createPulumiCommand, processHooks } = require("../utils");
 
-module.exports = createPulumiCommand(
-    "destroy",
-    async ({ inputs, context, projectApplication, pulumi }) => {
+module.exports = createPulumiCommand({
+    name: "destroy",
+    createProjectApplicationWorkspace: false,
+    command: async ({ inputs, context, projectApplication, pulumi }) => {
         const { env, folder, getDuration } = inputs;
 
         let stackExists = true;
@@ -60,4 +61,4 @@ module.exports = createPulumiCommand(
 
         await processHooks("hook-after-destroy", hooksParams);
     }
-);
+});

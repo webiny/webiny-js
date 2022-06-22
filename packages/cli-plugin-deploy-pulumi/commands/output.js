@@ -1,8 +1,9 @@
 const { createPulumiCommand } = require("../utils");
 
-module.exports = createPulumiCommand(
-    "output",
-    async ({ inputs, context, pulumi, projectApplication }) => {
+module.exports = createPulumiCommand({
+    name: "output",
+    createProjectApplicationWorkspace: false,
+    command: async ({ inputs, context, pulumi, projectApplication }) => {
         const { env, folder, json } = inputs;
 
         let stackExists = true;
@@ -46,4 +47,4 @@ module.exports = createPulumiCommand(
             )} environment) does not exist.`
         );
     }
-);
+});
