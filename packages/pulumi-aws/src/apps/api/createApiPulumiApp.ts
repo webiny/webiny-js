@@ -1,14 +1,13 @@
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
-    ApiApwScheduler,
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
     ApiHeadlessCMS,
     ApiPageBuilder
 } from "~/apps";
-import { CoreOutput, VpcConfig } from "./../common";
+import { CoreOutput, VpcConfig } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { tagResources } from "~/utils";
 
@@ -20,7 +19,7 @@ export interface CreateApiAppParams {
     vpc?: PulumiAppParam<boolean>;
 
     /** Custom domain configuration */
-    domain?: PulumiAppParamCallback<CustomDomainParams>;
+    domains?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
@@ -30,7 +29,7 @@ export interface CreateApiAppParams {
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) => {
-    const app = createPulumiApp({
+    return createPulumiApp({
         name: "api",
         path: "apps/api",
         config: projectAppParams,
@@ -66,18 +65,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) =>
 
             const fileManager = app.addModule(ApiFileManager);
 
-            const apwScheduler = app.addModule(ApiApwScheduler, {
-                primaryDynamodbTableArn: core.primaryDynamodbTableArn,
-
-                env: {
-                    COGNITO_REGION: String(process.env.AWS_REGION),
-                    COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    S3_BUCKET: core.fileManagerBucketId,
-                    WEBINY_LOGS_FORWARD_URL
-                }
-            });
-
             const graphql = app.addModule(ApiGraphql, {
                 env: {
                     COGNITO_REGION: String(process.env.AWS_REGION),
@@ -99,9 +86,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) =>
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
                     WEBINY_LOGS_FORWARD_URL
-                },
-                apwSchedulerEventRule: apwScheduler.eventRule.output,
-                apwSchedulerEventTarget: apwScheduler.eventTarget.output
+                }
             });
 
             const headlessCms = app.addModule(ApiHeadlessCMS, {
@@ -153,9 +138,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) =>
 
             const cloudfront = app.addModule(ApiCloudfront);
 
-            const domain = app.getParam(projectAppParams.domain);
-            if (domain) {
-                applyCustomDomain(cloudfront, domain);
+            const domains = app.getParam(projectAppParams.domains);
+            if (domains) {
+                applyCustomDomain(cloudfront, domains);
             }
 
             app.addOutputs({
@@ -165,10 +150,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) =>
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
-                apwSchedulerScheduleAction: apwScheduler.scheduleAction.lambda.output.arn,
-                apwSchedulerExecuteAction: apwScheduler.executeAction.lambda.output.arn,
-                apwSchedulerEventRule: apwScheduler.eventRule.output.name,
-                apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
             });
@@ -178,20 +159,19 @@ export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) =>
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
 
+            if (projectAppParams.pulumi) {
+                // TODO: @adrian - this is the place where we need to apply customizations.
+                // @ts-ignore
+                projectAppParams.pulumi(app);
+            }
+
             return {
                 fileManager,
                 graphql,
                 headlessCms,
                 apiGateway,
-                cloudfront,
-                apwScheduler
+                cloudfront
             };
         }
     });
-
-    if (projectAppParams.pulumi) {
-        projectAppParams.pulumi(app);
-    }
-
-    return app;
 };
