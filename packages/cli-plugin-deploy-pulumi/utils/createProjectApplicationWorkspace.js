@@ -5,7 +5,7 @@ const ncp = util.promisify(ncpBase.ncp);
 const { replaceInPath } = require("replace-in-path");
 const { createProjectApplicationWorkspace } = require("@webiny/cli/utils");
 
-module.exports = async ({ projectApplication, context, inputs }) => {
+module.exports = async ({ projectApplication, inputs }) => {
     await createProjectApplicationWorkspace(projectApplication);
 
     // Copy Pulumi-related files.

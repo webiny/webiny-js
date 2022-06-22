@@ -5,7 +5,11 @@ const login = require("./login");
 const loadEnvVariables = require("./loadEnvVariables");
 const getPulumi = require("./getPulumi");
 
-module.exports = (name, commandFunction) => {
+const createPulumiCommand = ({
+    name,
+    command,
+    createProjectApplicationWorkspace: createProjectApplicationWorkspaceParam
+}) => {
     return async (inputs, context) => {
         // If folder not specified, that means we want to deploy the whole project (all project applications).
         // For that, we look if there are registered plugins that perform that.
@@ -37,9 +41,7 @@ module.exports = (name, commandFunction) => {
         });
 
         // If needed, let's create a project application workspace.
-        // Note that we don't want to perform the workspace creation
-        // if one of the inputs was `build` and was set to false.
-        if (inputs.build !== false) {
+        if (createProjectApplicationWorkspaceParam !== false) {
             if (projectApplication.type === "v5-workspaces") {
                 await createProjectApplicationWorkspace({
                     projectApplication,
@@ -62,6 +64,8 @@ module.exports = (name, commandFunction) => {
 
         const pulumi = await getPulumi({ projectApplication });
 
-        return commandFunction({ inputs, context, projectApplication, pulumi, getDuration });
+        return command({ inputs, context, projectApplication, pulumi, getDuration });
     };
 };
+
+module.exports = createPulumiCommand;
