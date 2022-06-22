@@ -5,7 +5,7 @@ import { uploadAppToS3, generateCommonHandlers, renderWebsite } from "./website/
 
 export interface CreateWebsiteAppParams {
     /** Custom domain configuration */
-    domain?: PulumiAppParamCallback<CustomDomainParams>;
+    domains?: PulumiAppParamCallback<CustomDomainParams>;
 
     /**
      * Enables or disables VPC for the API.
