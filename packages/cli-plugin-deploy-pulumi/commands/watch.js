@@ -10,15 +10,11 @@ const get = require("lodash/get");
 const merge = require("lodash/merge");
 const browserOutput = require("./watch/output/browserOutput");
 const terminalOutput = require("./watch/output/terminalOutput");
+const simpleOutput = require("./watch/output/simpleOutput");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
 const watchPackages = require("./watch/watchPackages");
-const {
-    login,
-    getPulumi,
-    getRandomColorForString,
-    loadEnvVariables
-} = require("../utils");
+const { login, getPulumi, getRandomColorForString, loadEnvVariables } = require("../utils");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
 // is still in preview mode, so it's definitely not wise to use it on production environments.
@@ -120,8 +116,24 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    let output = inputs.output === "browser" ? browserOutput : terminalOutput;
-    await output.initialize(inputs);
+    let output = terminalOutput;
+    if (inputs.output === "browser") {
+    }
+
+    switch (inputs.output) {
+        case "browser":
+            output = browserOutput;
+            break;
+        case "simple":
+            output = simpleOutput;
+            break;
+        default:
+            output = terminalOutput;
+    }
+
+    if (typeof output.initialize === "function") {
+        await output.initialize(inputs);
+    }
 
     const logging = {
         url: null
@@ -214,7 +226,6 @@ module.exports = async (inputs, context) => {
                 }
             }
 
-            console.log("pathArg", pathArg);
             // Log used values if debugging has been enabled.
             if (inputs.debug) {
                 const message = pathArg
