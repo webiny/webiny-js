@@ -13,9 +13,15 @@ export function applyCustomDomain(
     params: CustomDomainParams
 ) {
     cloudfront.config.defaultCacheBehavior(value => {
-        const headers = value.forwardedValues!.headers || [];
-        value.forwardedValues!.headers = [...headers, "Host"];
-        return value;
+        return {
+            ...value,
+            forwardedValues: {
+                ...value.forwardedValues,
+                queryString: value.forwardedValues?.queryString || false,
+                cookies: value.forwardedValues?.cookies || { forward: "none" },
+                headers: [...(value.forwardedValues?.headers || []), "Host"]
+            }
+        };
     });
 
     cloudfront.config.aliases([params.domain]);

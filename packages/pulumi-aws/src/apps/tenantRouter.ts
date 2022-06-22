@@ -106,20 +106,16 @@ export function applyTenantRouter(
     });
 
     cloudfront.config.defaultCacheBehavior(value => {
-        const associations = value.lambdaFunctionAssociations || [];
-        value.lambdaFunctionAssociations = [
-            // @ts-ignore
-            ...associations,
-            {
-                eventType: "origin-request",
-                includeBody: false,
-                // @ts-ignore
-                // TODO: @michal - these Unwrapped types require `string` (lambdaArn)
-                // but it should be `Input<string>` (check existing project)
-                lambdaArn: originLambda.qualifiedArn
-            }
-        ];
-
-        return value;
+        return {
+            ...value,
+            lambdaFunctionAssociations: [
+                ...(value.lambdaFunctionAssociations || []),
+                {
+                    eventType: "origin-request",
+                    includeBody: false,
+                    lambdaArn: originLambda.qualifiedArn
+                }
+            ]
+        };
     });
 }
