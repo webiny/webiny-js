@@ -13,7 +13,12 @@ describe("Update Settings Handler Test", () => {
                     app: {
                         url: "https://www.app.com/"
                     },
-                    storage: { name: "storage-name" }
+                    storage: { name: "storage-name" },
+                    meta: {
+                        cloudfront: {
+                            distributionId: "distributionId"
+                        }
+                    }
                 },
                 social: {
                     facebook: "https://www.facebook.com/",
@@ -28,37 +33,7 @@ describe("Update Settings Handler Test", () => {
         });
 
         expect(result).toEqual({
-            data: {
-                name: "test 1",
-                websiteUrl: "https://www.test.com",
-                websitePreviewUrl: "https://preview.test.com",
-                favicon: null,
-                logo: null,
-                prerendering: {
-                    meta: null,
-                    app: {
-                        url: "https://www.app.com"
-                    },
-                    storage: {
-                        name: "storage-name"
-                    }
-                },
-                social: {
-                    facebook: "https://www.facebook.com/",
-                    twitter: "https://www.twitter.com/",
-                    instagram: "https://www.instagram.com/",
-                    image: {
-                        id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
-                    }
-                },
-                pages: {
-                    home: null,
-                    notFound: null
-                },
-                // TODO [REMOVE]:  this has to be here until we make PB settings properly extendable
-                theme: null
-            },
+            data: true,
             error: null
         });
     });
