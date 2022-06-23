@@ -8,6 +8,7 @@ import { RenderEvent, FlushEvent, QueueAddJob } from "@webiny/api-prerendering-s
 
 import {
     Category,
+    DefaultSettings,
     Menu,
     Page,
     PageElement,
@@ -458,12 +459,11 @@ export interface SettingsCrud {
     getSettings: (options?: DefaultSettingsCrudOptions) => Promise<Settings | null>;
     getDefaultSettings: (
         options?: Pick<DefaultSettingsCrudOptions, "tenant">
-    ) => Promise<Settings | null>;
+    ) => Promise<DefaultSettings | null>;
     updateSettings: (
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
-    getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
     /**
      * Lifecycle events
      */

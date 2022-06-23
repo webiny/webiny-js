@@ -100,7 +100,7 @@ async function handleOriginRequest(request) {
     } else {
         console.log(`Failed to find a tenant for domain "${requestedDomain}"`);
         return {
-            status: "400",
+            status: 400,
             statusDescription: "Unable to map tenant. Check your tenant to domain mapping."
         };
     }

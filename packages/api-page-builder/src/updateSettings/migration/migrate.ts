@@ -40,11 +40,42 @@ interface PsOldTagLink {
     url: string;
 }
 
+export async function putDefaultSettings(
+    storageOperations: PageBuilderStorageOperations,
+    settings: SettingsInput
+) {
+    // @ts-ignore
+    const pbTable = storageOperations.getTable();
+
+    const table = createTable({ documentClient: pbTable.DocumentClient });
+
+    const settingsEntity = createSettingsEntity({
+        entityName: "PrerenderingServiceSettings",
+        table
+    });
+
+    await settingsEntity.put({
+        PK: "PS#SETTINGS",
+        SK: "default",
+        TYPE: "ps.settings",
+        data: {
+            appUrl: settings.app.url,
+            deliveryUrl: settings.websiteUrl,
+            bucket: settings.storage.name,
+            cloudfrontId: settings.meta.cloudfront.distributionId
+        }
+    });
+}
+
+export type SettingsInput = Settings["prerendering"] & {
+    websiteUrl: string;
+};
+
 export async function migrate(
     storageOperations: PageBuilderStorageOperations,
-    settings: Settings["prerendering"],
+    settings: SettingsInput,
     migrate: boolean
-) {
+): Promise<boolean> {
     // @ts-ignore
     const pbTable = storageOperations.getTable();
 
@@ -65,7 +96,8 @@ export async function migrate(
 
     // If PS#SETTINGS exist, it means we already executed the migration.
     if (settingsItem && !migrate) {
-        return;
+        // Signal that the migration was not executed.
+        return false;
     }
 
     await settingsEntity.put({
@@ -74,6 +106,7 @@ export async function migrate(
         TYPE: "ps.settings",
         data: {
             appUrl: settings.app.url,
+            deliveryUrl: settings.websiteUrl,
             bucket: settings.storage.name,
             cloudfrontId: settings.meta.cloudfront.distributionId
         }
@@ -230,4 +263,7 @@ export async function migrate(
 
         await batchWriteAll({ table, items });
     }
+
+    // Signal that the migration was executed.
+    return true;
 }

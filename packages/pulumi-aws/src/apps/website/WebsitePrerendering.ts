@@ -16,6 +16,7 @@ interface PreRenderingServiceParams {
     dbTableHashKey: pulumi.Output<string>;
     dbTableRangeKey: pulumi.Output<string>;
     appUrl: pulumi.Output<string>;
+    deliveryUrl: pulumi.Output<string>;
     bucket: pulumi.Output<string>;
     cloudfrontId: pulumi.Output<string>;
 }
@@ -66,6 +67,7 @@ function createPrerenderingSettingsDbItem(
                 "SK": "${app.params.run.variant || "default"}",
                 "data": {
                     "appUrl": "${params.appUrl}",
+                    "deliveryUrl": "${params.deliveryUrl}",
                     "bucket": "${params.bucket}",
                     "cloudfrontId": "${params.cloudfrontId}",
                     "sqsQueueUrl": "${queue.url}"
