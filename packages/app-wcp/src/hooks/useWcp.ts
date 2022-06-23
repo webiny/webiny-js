@@ -17,6 +17,11 @@ export function useWcp(): UseWcpHook {
 
     const canUseFeature: UseWcpHook["canUseFeature"] = useCallback(
         featureId => {
+            // For backwards compatibility with projects created prior to 5.29.0 release.
+            if (context.project === null && featureId === "multiTenancy") {
+                return process.env.REACT_APP_WEBINY_MULTI_TENANCY === "true";
+            }
+
             return context.project?.package?.features?.[featureId]?.enabled === true;
         },
         [context.project]

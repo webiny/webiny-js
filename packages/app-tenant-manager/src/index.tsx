@@ -18,7 +18,7 @@ const TenantIndicator = (LocaleSelector: React.FC): React.FC => {
 
 const TenantManagerExtension: React.FC = () => {
     const { canUseFeature } = useWcp();
-    if (!canUseFeature("advancedPublishingWorkflow")) {
+    if (!canUseFeature("multiTenancy")) {
         return null;
     }
 
