@@ -32,10 +32,10 @@ const SaveAndPublishButtonComponent: React.FC = () => {
         (ev: React.MouseEvent) => {
             showConfirmation(async () => {
                 const entry = await form.current.submit(ev);
-                if (!entry) {
+                if (!entry || !entry.id) {
                     return;
                 }
-                await publishRevision();
+                await publishRevision(entry.id);
             });
         },
         [showConfirmation]

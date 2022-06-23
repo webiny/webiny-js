@@ -5,11 +5,11 @@ export const MenuGroupRenderer = (PrevMenuItem: React.FC): React.FC => {
     return function MenuGroup() {
         const { menuItem } = useMenuItem();
 
-        const name = menuItem ? menuItem.name : "";
+        const label = menuItem ? menuItem.label || "" : "";
         /**
          * We render the group only if it is not an APW group
          */
-        if (name.match(/apw/i) === null) {
+        if (label.match(/^apw$/i) === null) {
             return <PrevMenuItem />;
         }
         return null;
