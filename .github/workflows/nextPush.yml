@@ -144,8 +144,6 @@ jobs:
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.init.outputs.ts }}_
-      WCP_PROJECT_ENVIRONMENT: ${{ secrets.INTEGRATION_WCP_PROJECT_ENVIRONMENT }}
-      WCP_PROJECT_LICENSE: ${{ secrets.INTEGRATION_WCP_PROJECT_LICENSE }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -309,10 +307,6 @@ jobs:
       - name: Print CLI version
         working-directory: xyz/test-project
         run: yarn webiny --version
-
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: xyz/test-project
-        run: sed -i 's/5 minutes/1 minute/g' apps/api/pulumi/dev/prerenderingService.ts
 
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2
@@ -563,10 +557,6 @@ jobs:
       - name: Print CLI version
         working-directory: xyz/test-project
         run: yarn webiny --version
-
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: xyz/test-project
-        run: sed -i 's/5 minutes/1 minute/g' apps/api/pulumi/dev/prerenderingService.ts
 
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2

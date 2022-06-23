@@ -4,6 +4,7 @@
     "packages": [
       "packages/*",
       "apps/admin/code",
+      "apps/admin/code/prerendering/*",
       "apps/website/code",
       "apps/theme",
       "apps/core/code/*",
@@ -13,10 +14,7 @@
       "apps/api/code/headlessCMS",
       "apps/api/code/pageBuilder/updateSettings",
       "apps/api/code/pageBuilder/importPages/*",
-      "apps/api/code/pageBuilder/exportPages/*",
-      "apps/api/code/prerenderingService/render",
-      "apps/api/code/prerenderingService/flush",
-      "apps/api/code/prerenderingService/queue/*"
+      "apps/api/code/pageBuilder/exportPages/*"
     ]
   },
   "author": "Webiny Ltd.",
