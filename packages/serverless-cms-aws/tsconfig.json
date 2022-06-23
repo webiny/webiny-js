@@ -2,9 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../wcp" },
-    { "path": "../api-apw" },
-    { "path": "../api-apw-scheduler-so-ddb" },
     { "path": "../api-dynamodb-to-elasticsearch" },
     { "path": "../api-elasticsearch" },
     { "path": "../api-file-manager" },
@@ -31,7 +28,8 @@
     { "path": "../handler-logs" },
     { "path": "../plugins" },
     { "path": "../pulumi" },
-    { "path": "../pulumi-aws" }
+    { "path": "../pulumi-aws" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -39,7 +37,6 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/wcp": ["../api-apw/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
@@ -97,7 +94,9 @@
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
       "@webiny/pulumi-aws/*": ["../pulumi-aws/src/*"],
-      "@webiny/pulumi-aws": ["../pulumi-aws/src"]
+      "@webiny/pulumi-aws": ["../pulumi-aws/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

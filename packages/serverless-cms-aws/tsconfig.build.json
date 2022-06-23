@@ -2,9 +2,6 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../wcp/tsconfig.build.json" },
-    { "path": "../api-apw/tsconfig.build.json" },
-    { "path": "../api-apw-scheduler-so-ddb/tsconfig.build.json" },
     { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
     { "path": "../api-elasticsearch/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
@@ -31,7 +28,8 @@
     { "path": "../handler-logs/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
-    { "path": "../pulumi-aws/tsconfig.build.json" }
+    { "path": "../pulumi-aws/tsconfig.build.json" },
+    { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
