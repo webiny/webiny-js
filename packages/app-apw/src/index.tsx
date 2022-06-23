@@ -16,11 +16,11 @@ import {
 /**
  * TODO: Fix this import so that we can import it from root level maybe
  */
-import PublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
+import PagePublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
 import { PublishPageMenuOption } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
 import { PublishPageButtonComposable } from "@webiny/app-page-builder/editor/plugins/defaultBar/components/PublishPageButton";
-import RequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
-import RequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
+import PageRequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
+import PageRequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
 import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
 import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
 /**
@@ -30,8 +30,12 @@ import { ApwOnEntryDelete } from "~/plugins/cms/ApwOnEntryDelete";
 import { ApwOnEntryPublish } from "~/plugins/cms/ApwOnEntryPublish";
 import { SaveAndPublishButton as HeadlessCmsEntrySaveAndPublishButton } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/saveAndPublishContent/SaveAndPublishContent";
 import { PublishEntryRevisionListItem } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/PublishEntryRevisionListItem";
+import { RequestReview as EntryRequestReview } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/requestReview/RequestReview";
+import { RequestChanges as EntryRequestChanges } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/requestChanges/RequestChanges";
 import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
 import {
+    EntryRequestChangesHoc,
+    EntryRequestReviewHoc,
     EntryRevisionListItemGraphicHoc,
     PublishEntryButtonHoc
 } from "~/plugins/cms/PublishEntryHocs";
@@ -45,11 +49,11 @@ import { DefaultBar } from "~/plugins/editor/defaultBar";
 export const AdvancedPublishingWorkflow: React.FC = () => {
     return (
         <>
-            <Compose with={PublishRevisionHoc} component={PublishRevision} />
+            <Compose with={PublishRevisionHoc} component={PagePublishRevision} />
             <Compose with={PublishPageMenuOptionHoc} component={PublishPageMenuOption} />
             <Compose with={PublishPageButtonHoc} component={PublishPageButtonComposable} />
-            <Compose with={PageRequestReviewHoc} component={RequestReview} />
-            <Compose with={PageRequestChangesHoc} component={RequestChanges} />
+            <Compose with={PageRequestReviewHoc} component={PageRequestReview} />
+            <Compose with={PageRequestChangesHoc} component={PageRequestChanges} />
             <Compose
                 with={PageRevisionListItemGraphicHoc}
                 component={PageRevisionListItemGraphic}
@@ -66,6 +70,8 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
                 with={EntryRevisionListItemGraphicHoc}
                 component={PublishEntryRevisionListItem}
             />
+            <Compose with={EntryRequestReviewHoc} component={EntryRequestReview} />
+            <Compose with={EntryRequestChangesHoc} component={EntryRequestChanges} />
             <Plugins>
                 <DefaultBar />
                 <Module />
