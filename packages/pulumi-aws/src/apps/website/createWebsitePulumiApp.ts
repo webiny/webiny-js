@@ -22,11 +22,11 @@ export interface CreateWebsitePulumiAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void | Promise<void>;
 }
 
 export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppParams = {}) => {
-    const app = createPulumiApp({
+    return createPulumiApp({
         name: "website",
         path: "apps/website",
         config: projectAppParams,
@@ -183,6 +183,10 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
 
+            if (projectAppParams.pulumi) {
+                await projectAppParams.pulumi(app as ReturnType<typeof createWebsitePulumiApp>);
+            }
+
             return {
                 prerendering,
                 app: {
@@ -196,10 +200,4 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
             };
         }
     });
-
-    if (projectAppParams.pulumi) {
-        projectAppParams.pulumi(app);
-    }
-
-    return app;
 };

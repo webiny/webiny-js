@@ -25,7 +25,7 @@ export interface CreateApiPulumiAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void | Promise<void>;
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
@@ -160,9 +160,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             });
 
             if (projectAppParams.pulumi) {
-                // TODO: @adrian - this is the place where we need to apply customizations.
-                // @ts-ignore
-                projectAppParams.pulumi(app);
+                await projectAppParams.pulumi(app as ReturnType<typeof createApiPulumiApp>);
             }
 
             return {

@@ -35,7 +35,7 @@ export interface CreateCorePulumiAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createCorePulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createCorePulumiApp>) => void | Promise<void>;
 }
 
 export interface CoreAppLegacyConfig {
@@ -43,11 +43,11 @@ export interface CoreAppLegacyConfig {
 }
 
 export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
-    const app = createPulumiApp({
+    return createPulumiApp({
         name: "core",
         path: "apps/core",
         config: projectAppParams,
-        program: app => {
+        program: async app => {
             const protect = app.getParam(projectAppParams.protect) || app.params.run.env === "prod";
             const legacyConfig = app.getParam(projectAppParams.legacy) || {};
 
@@ -92,6 +92,10 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
 
+            if (projectAppParams.pulumi) {
+                await projectAppParams.pulumi(app as ReturnType<typeof createCorePulumiApp>);
+            }
+
             return {
                 dynamoDbTable,
                 vpc,
@@ -102,10 +106,4 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             };
         }
     });
-
-    if (projectAppParams.pulumi) {
-        projectAppParams.pulumi(app);
-    }
-
-    return app;
 }
