@@ -29,6 +29,7 @@ interface UseContentReviewsListHook {
         contentReviews: Array<ApwContentReview>;
         filter: string;
         fetchMore: () => Promise<void>;
+        fetchMoreLoading: boolean;
         setFilter: (filter: string) => void;
         sort: string | null;
         setSort: (sort: string) => void;
@@ -48,6 +49,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     const navigate = useNavigate();
 
     const [lastLoadedCursor, setLastLoadedCursor] = useState<string | null>(null);
+    const [fetchMoreLoading, setFetchMoreLoading] = useState<boolean>(false);
 
     const performSearch = useMemo(() => {
         return debounce(value => setTitle(value), 250);
@@ -98,15 +100,18 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
             !meta.cursor ||
             !meta.hasMoreItems ||
             loading ||
+            fetchMoreLoading ||
             meta.cursor === lastLoadedCursor
         ) {
             return;
         }
 
         setLastLoadedCursor(meta.cursor);
+        setFetchMoreLoading(true);
 
         queryMore({
             updateQuery: (prev, result) => {
+                setFetchMoreLoading(false);
                 if (!result || !result.fetchMoreResult) {
                     return prev;
                 }
@@ -131,7 +136,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
                 after: meta.cursor
             }
         });
-    }, [data, where, sort, loading, lastLoadedCursor]);
+    }, [data, where, sort, loading, lastLoadedCursor, fetchMoreLoading]);
 
     return {
         contentReviews,
@@ -139,6 +144,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         filter,
         setFilter,
         fetchMore,
+        fetchMoreLoading,
         sort,
         setSort,
         serializeSorters,
