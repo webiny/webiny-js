@@ -315,6 +315,10 @@ jobs:
             !xyz/test-project/**/node_modules/**/*
             !xyz/test-project/.yarn/cache/**/*
 
+      - name: Deploy Core
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/core --env dev
+
       - name: Deploy API
         working-directory: xyz/test-project
         run: yarn webiny deploy apps/api --env dev
@@ -557,6 +561,10 @@ jobs:
 #            !xyz/test-project/node_modules/**/*
 #            !xyz/test-project/**/node_modules/**/*
 #            !xyz/test-project/.yarn/cache/**/*
+#
+#      - name: Deploy Core
+#        working-directory: xyz/test-project
+#        run: yarn webiny deploy apps/core --env dev
 #
 #      - name: Deploy API
 #        working-directory: xyz/test-project
