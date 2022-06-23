@@ -20,6 +20,7 @@
     "@webiny/cli-plugin-deploy-pulumi": "^5.28.0",
     "@webiny/plugins": "^5.28.0",
     "@webiny/project-utils": "^5.28.0",
+    "@webiny/serverless-cms-aws": "^5.28.0",
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
     "invariant": "^2.2.4",

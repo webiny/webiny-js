@@ -10692,7 +10692,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service@^5.26.0, @webiny/api-prerendering-service@^5.28.0, @webiny/api-prerendering-service@workspace:packages/api-prerendering-service":
+"@webiny/api-prerendering-service@^5.28.0, @webiny/api-prerendering-service@workspace:packages/api-prerendering-service":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service@workspace:packages/api-prerendering-service"
   dependencies:
@@ -13022,7 +13022,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/serverless-cms-aws@workspace:packages/serverless-cms-aws":
+"@webiny/serverless-cms-aws@^5.28.0, @webiny/serverless-cms-aws@workspace:packages/serverless-cms-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/serverless-cms-aws@workspace:packages/serverless-cms-aws"
   dependencies:
@@ -13637,6 +13637,7 @@ __metadata:
     "@webiny/cli-plugin-deploy-pulumi": ^5.28.0
     "@webiny/plugins": ^5.28.0
     "@webiny/project-utils": ^5.28.0
+    "@webiny/serverless-cms-aws": ^5.28.0
     core-js: ^3.0.1
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
@@ -39282,7 +39283,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "website-prerendering-service-flush@workspace:apps/website/prerendering/flush"
   dependencies:
-    "@webiny/api-prerendering-service": ^5.26.0
     "@webiny/api-prerendering-service-aws": ^5.26.0
     "@webiny/api-prerendering-service-so-ddb": ^5.26.0
     "@webiny/cli": ^5.26.0
@@ -39295,7 +39295,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "website-prerendering-service-render@workspace:apps/website/prerendering/render"
   dependencies:
-    "@webiny/api-prerendering-service": ^5.26.0
     "@webiny/api-prerendering-service-aws": ^5.26.0
     "@webiny/api-prerendering-service-so-ddb": ^5.26.0
     "@webiny/cli": ^5.26.0
@@ -39308,7 +39307,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "website-prerendering-service-subscribe@workspace:apps/website/prerendering/subscribe"
   dependencies:
-    "@webiny/api-prerendering-service": ^5.26.0
     "@webiny/api-prerendering-service-aws": ^5.26.0
     "@webiny/api-prerendering-service-so-ddb": ^5.26.0
     "@webiny/cli": ^5.26.0
@@ -39333,6 +39331,7 @@ __metadata:
     "@webiny/plugins": ^5.28.0
     "@webiny/project-utils": ^5.28.0
     "@webiny/react-router": ^5.28.0
+    "@webiny/serverless-cms-aws": ^5.28.0
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-link-batch-http: ^1.2.14

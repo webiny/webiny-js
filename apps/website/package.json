@@ -14,6 +14,7 @@
     "@webiny/plugins": "^5.28.0",
     "@webiny/project-utils": "^5.28.0",
     "@webiny/react-router": "^5.28.0",
+    "@webiny/serverless-cms-aws": "^5.28.0",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
@@ -52,6 +53,11 @@
   },
   "adio": {
     "ignore": {
+      "src": [
+        "@webiny/handler-aws",
+        "@webiny/api-prerendering-service-aws",
+        "@webiny/api-prerendering-service-so-ddb"
+      ],
       "dependencies": [
         "@webiny/cli"
       ]

@@ -7,7 +7,7 @@
       "apps/website",
       "apps/website/prerendering/*",
       "apps/theme",
-      "apps/core/*",
+      "apps/core/dynamoToElastic",
       "apps/api/apw/*",
       "apps/api/fileManager/*",
       "apps/api/graphql",
