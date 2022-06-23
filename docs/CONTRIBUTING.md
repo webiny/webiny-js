@@ -90,7 +90,7 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
 
 4. Deploy your API to use with local React apps: 
    ```
-   yarn webiny deploy api --env=dev
+   yarn webiny deploy apps/api --env=dev
    ```
 
 6. Begin working on the `admin` app:
