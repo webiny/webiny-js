@@ -20,6 +20,7 @@ import {
 } from "@webiny/cli-plugin-scaffold/utils";
 import getContextMeta from "./getContextMeta";
 import { getApiProjectApplicationFolder } from "@webiny/cli/utils";
+import { projectHasCodeFolders } from "./utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -47,16 +48,23 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             "Extends your GraphQL API with new CRUD query and mutation operations." +
             (link.isSupported ? "\n  " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
         questions: ({ context }) => {
+            const projectWithCodeFolders = projectHasCodeFolders(context.project.root);
+
             return [
                 {
                     name: "pluginsFolderPath",
                     message: "Enter plugins folder path:",
                     default: () => {
+                        let suffixPath = "/graphql/src/plugins";
+                        if (projectWithCodeFolders) {
+                            suffixPath = "/code" + suffixPath;
+                        }
+
                         return (
                             context.localStorage.get(LAST_USED_GQL_API_PLUGINS_PATH) ||
                             `${getApiProjectApplicationFolder(
                                 context.project
-                            )}/code/graphql/src/plugins`
+                            )}${suffixPath}`
                         );
                     },
                     validate: (pluginsFolderPath: string) => {
@@ -344,11 +352,17 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log();
             console.log(chalk.bold("Next Steps"));
 
+            const projectWithCodeFolders = projectHasCodeFolders(context.project.root);
+            let suffixPath = "/graphql";
+            if (projectWithCodeFolders) {
+                suffixPath = "/code" + suffixPath;
+            }
+
             console.log(
                 `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
                     `yarn webiny watch ${getApiProjectApplicationFolder(
                         context.project
-                    )}/code/graphql --env dev`
+                    )}${suffixPath} --env dev`
                 )} command`
             );
 
