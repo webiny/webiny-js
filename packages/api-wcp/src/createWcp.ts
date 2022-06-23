@@ -33,6 +33,11 @@ export const createWcp = async (): Promise<WcpContextObject> => {
         },
         canUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
             const projectLicense = this.getProjectLicense();
+
+            // For backwards compatibility, we need to check the legacy ENV variable `WEBINY_MULTI_TENANCY`.
+            if (!projectLicense && wcpFeatureId === "multiTenancy") {
+                return process.env.WEBINY_MULTI_TENANCY === "true";
+            }
             return projectLicense?.package?.features?.[wcpFeatureId]?.enabled === true;
         },
         ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
