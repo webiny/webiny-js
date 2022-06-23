@@ -2,7 +2,6 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
-        id
         data {
             websiteUrl
             websitePreviewUrl
@@ -64,14 +63,17 @@ export interface GetSettingsResponseData {
     };
 }
 
+export interface GetDefaultSettingsResponseData {
+    websiteUrl: string;
+    websitePreviewUrl: string;
+}
+
 export interface GetSettingsResponse {
-    id: string;
     data: GetSettingsResponseData;
     error: Error | null;
 }
 export interface GetDefaultSettingsResponse {
-    id: string;
-    data: GetSettingsResponseData;
+    data: GetDefaultSettingsResponseData;
     error: Error | null;
 }
 
@@ -85,7 +87,12 @@ export const GET_SETTINGS = gql`
     query PbGetSettings {
         pageBuilder {
             getSettings ${fields}
-            getDefaultSettings ${fields}
+            getDefaultSettings {
+                data {
+                    websiteUrl
+                    websitePreviewUrl
+                }
+            }
         }
     }
 `;

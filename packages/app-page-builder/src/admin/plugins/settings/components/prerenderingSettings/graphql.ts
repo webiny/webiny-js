@@ -2,7 +2,6 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
-        id
         data {
             prerendering {
                 storage {
@@ -25,7 +24,12 @@ export const GET_SETTINGS = gql`
     query PbGetSettings{
         pageBuilder {
             getSettings ${fields}
-            getDefaultSettings ${fields}
+            getDefaultSettings {
+                data {
+                    websiteUrl
+                    websitePreviewUrl
+                }
+            }
         }
     }
 `;
