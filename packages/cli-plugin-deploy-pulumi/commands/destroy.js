@@ -3,8 +3,8 @@ const { createPulumiCommand, processHooks } = require("../utils");
 module.exports = createPulumiCommand({
     name: "destroy",
     createProjectApplicationWorkspace: false,
-    command: async ({ inputs, context, projectApplication, pulumi }) => {
-        const { env, folder, getDuration } = inputs;
+    command: async ({ inputs, context, projectApplication, pulumi, getDuration }) => {
+        const { env, folder } = inputs;
 
         let stackExists = true;
         try {
