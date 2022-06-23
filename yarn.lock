@@ -14172,6 +14172,7 @@ __metadata:
     "@webiny/handler-http": ^5.28.0
     "@webiny/handler-logs": ^5.28.0
     "@webiny/project-utils": ^5.28.0
+    graphql-request: ^3.4.0
   languageName: unknown
   linkType: soft
 
@@ -23530,7 +23531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-request@npm:^3.3.0, graphql-request@npm:^3.7.0":
+"graphql-request@npm:^3.3.0, graphql-request@npm:^3.4.0, graphql-request@npm:^3.7.0":
   version: 3.7.0
   resolution: "graphql-request@npm:3.7.0"
   dependencies:
