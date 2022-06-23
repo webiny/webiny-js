@@ -12,7 +12,7 @@ export function getWcpProjectEnvironment(): WcpProjectEnvironment | null {
     return null;
 }
 
-export const geWcpProjectLicenseCacheKey = () => {
+export const getWcpProjectLicenseCacheKey = () => {
     // We're dividing an hour into 5-minute blocks. In an hour, that's 12 blocks total.
     // So, while we're in the same 5-minute block, the cached license will be returned.
     // Once we exit it, the license will again be fetched from the WCP API.

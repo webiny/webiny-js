@@ -1,7 +1,7 @@
 import { getWcpProjectLicense, getWcpAppUrl, WCP_FEATURE_LABEL } from "@webiny/wcp";
 import WError from "@webiny/error";
 import { WcpContextObject, CachedWcpProjectLicense } from "./types";
-import { geWcpProjectLicenseCacheKey, getWcpProjectEnvironment } from "./utils";
+import { getWcpProjectLicenseCacheKey, getWcpProjectEnvironment } from "./utils";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
 
@@ -12,7 +12,7 @@ const cachedWcpProjectLicense: CachedWcpProjectLicense = {
 
 export const createWcp = async (): Promise<WcpContextObject> => {
     if (wcpProjectEnvironment) {
-        const currentCacheKey = geWcpProjectLicenseCacheKey();
+        const currentCacheKey = getWcpProjectLicenseCacheKey();
         if (cachedWcpProjectLicense.cacheKey !== currentCacheKey) {
             cachedWcpProjectLicense.cacheKey = currentCacheKey;
             // Will pull the project license from the WCP API.
