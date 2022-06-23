@@ -97,7 +97,7 @@ describe("page full URL test", () => {
         await handler({
             data: {
                 name: "test 1",
-                websiteUrl: "https://www.test.com/",
+                websiteUrl: "https://www\.test\.com/",
                 websitePreviewUrl: "https://preview.test.com/",
                 prerendering: {
                     app: {
@@ -170,9 +170,9 @@ describe("page full URL test", () => {
         );
 
         expect(listPagesResponse.data.pageBuilder.listPages.data).toMatchObject([
-            { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
-            { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
-            { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) }
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) },
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) },
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) }
         ]);
 
         for (const page of initialPages) {
@@ -193,9 +193,9 @@ describe("page full URL test", () => {
         );
 
         expect(listPublishedPagesResponse.data.pageBuilder.listPublishedPages.data).toMatchObject([
-            { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
-            { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) },
-            { url: expect.stringMatching(/^https:\/\/www.test.com\/some-url\/untitled-/) }
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) },
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) },
+            { url: expect.stringMatching(/^https:\/\/www\.test\.com\/some-url\/untitled-/) }
         ]);
     });
 });
