@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useCallback } from "react";
+import debounce from "lodash/debounce";
+import SearchUI from "@webiny/app-admin/components/SearchUI";
 import styled from "@emotion/styled";
 import { DataList, List, DataListModalOverlayAction, ListItem } from "@webiny/ui/List";
 import { i18n } from "@webiny/app/i18n";
-import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ApwContentReviewListItem } from "~/types";
 import { ContentReviewListItem } from "./components/ContentReviewItem";
 import { useContentReviewsList } from "~/hooks/useContentReviewsList";
 import { ContentReviewsFilterModal } from "./components/ContentReviewsFilterOverlay";
+import { Scrollbar } from "@webiny/ui/Scrollbar";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
@@ -36,7 +38,7 @@ const SORTERS = [
     }
 ];
 
-export function ContentReviewDataList() {
+export const ContentReviewDataList: React.FC = () => {
     const {
         contentReviews,
         loading,
@@ -46,10 +48,21 @@ export function ContentReviewDataList() {
         status,
         setStatus,
         setFilter,
+        fetchMore,
         filter
     } = useContentReviewsList({
         sorters: SORTERS
     });
+
+    const onScrollFrame = useCallback(
+        debounce((scrollFrame: any) => {
+            if (scrollFrame.top <= 0.9) {
+                return;
+            }
+            fetchMore();
+        }, 500),
+        [loading, fetchMore]
+    );
 
     return (
         <DataList
@@ -79,15 +92,19 @@ export function ContentReviewDataList() {
                 />
             }
         >
-            {({ data }) => (
-                <List>
-                    {data.map((item: ApwContentReviewListItem) => (
-                        <DataListItem key={item.id} onClick={() => editContentReview(item)}>
-                            <ContentReviewListItem {...item} />
-                        </DataListItem>
-                    ))}
-                </List>
-            )}
+            {({ data }) => {
+                return (
+                    <Scrollbar data-testid="content-review-data-list" onScrollFrame={onScrollFrame}>
+                        <List>
+                            {data.map((item: ApwContentReviewListItem) => (
+                                <DataListItem key={item.id} onClick={() => editContentReview(item)}>
+                                    <ContentReviewListItem {...item} />
+                                </DataListItem>
+                            ))}
+                        </List>
+                    </Scrollbar>
+                );
+            }}
         </DataList>
     );
-}
+};
