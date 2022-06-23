@@ -13,8 +13,8 @@ export const injectWcpTelemetryClientCode = {
 
         const workspacePath = projectApplication.paths.workspace;
         const handlersPaths = [
-            path.join(workspacePath, "code", "graphql", "build"),
-            path.join(workspacePath, "code", "headlessCMS", "build")
+            path.join(workspacePath, "graphql", "build"),
+            path.join(workspacePath, "headlessCMS", "build")
         ];
 
         // 1. Download telemetry client code.

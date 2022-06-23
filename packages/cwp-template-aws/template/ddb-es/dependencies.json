@@ -51,11 +51,11 @@
   },
   "workspaces": {
     "packages": [
-      "apps/admin/code",
-      "apps/website/code",
+      "apps/admin",
+      "apps/website",
       "apps/theme",
-      "apps/api/code/graphql",
-      "apps/api/code/headlessCMS"
+      "apps/api/graphql",
+      "apps/api/headlessCMS"
     ]
   },
   "scripts": {

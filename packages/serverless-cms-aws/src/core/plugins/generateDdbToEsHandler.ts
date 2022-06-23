@@ -13,7 +13,6 @@ export const generateDdbToEsHandler = {
             const from = getHandlerPath("ddb-es", "core", ...current, "handler.js");
             const to = path.join(
                 projectApplication.paths.workspace,
-                "code",
                 ...current,
                 "build",
                 "handler.js"

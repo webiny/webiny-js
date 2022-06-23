@@ -15,7 +15,6 @@ export const generateCommonHandlers = {
             const from = getHandlerPath("common", "website", ...current, "handler.js");
             const to = path.join(
                 projectApplication.paths.workspace,
-                "code",
                 ...current,
                 "build",
                 "handler.js"

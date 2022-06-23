@@ -32,7 +32,7 @@ export const ApiGraphql = createAppModule({
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive(
-                        path.join(app.paths.workspace, "code/graphql/build")
+                        path.join(app.paths.workspace, "graphql/build")
                     )
                 }),
                 environment: {

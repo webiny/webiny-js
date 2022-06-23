@@ -3,18 +3,18 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "apps/admin/code",
-      "apps/admin/code/prerendering/*",
-      "apps/website/code",
+      "apps/admin",
+      "apps/website",
+      "apps/website/prerendering/*",
       "apps/theme",
-      "apps/core/code/*",
-      "apps/api/code/apw/*",
-      "apps/api/code/fileManager/*",
-      "apps/api/code/graphql",
-      "apps/api/code/headlessCMS",
-      "apps/api/code/pageBuilder/updateSettings",
-      "apps/api/code/pageBuilder/importPages/*",
-      "apps/api/code/pageBuilder/exportPages/*"
+      "apps/core/*",
+      "apps/api/apw/*",
+      "apps/api/fileManager/*",
+      "apps/api/graphql",
+      "apps/api/headlessCMS",
+      "apps/api/pageBuilder/updateSettings",
+      "apps/api/pageBuilder/importPages/*",
+      "apps/api/pageBuilder/exportPages/*"
     ]
   },
   "author": "Webiny Ltd.",

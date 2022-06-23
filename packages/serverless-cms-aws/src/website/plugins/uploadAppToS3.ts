@@ -18,7 +18,7 @@ export const uploadAppToS3 = {
 
         context.info("Uploading React application...");
 
-        const buildFolderPath = path.join(projectApplication.paths.absolute, "code", "build");
+        const buildFolderPath = path.join(projectApplication.paths.absolute, "build");
         if (!fs.existsSync(buildFolderPath)) {
             throw new Error("Cannot continue, build folder not found.");
         }

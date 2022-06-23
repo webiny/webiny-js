@@ -64,7 +64,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             description: "Handle page export's combine workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "code/pageBuilder/exportPages/combine/build")
+                    path.join(app.paths.workspace, "pageBuilder/exportPages/combine/build")
                 )
             }),
             environment: {
@@ -88,7 +88,7 @@ function createExportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             description: "Handle page export's process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "code/pageBuilder/exportPages/process/build")
+                    path.join(app.paths.workspace, "pageBuilder/exportPages/process/build")
                 )
             }),
             environment: {
@@ -189,7 +189,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             description: "Handle import page queue process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "code/pageBuilder/importPages/process/build")
+                    path.join(app.paths.workspace, "pageBuilder/importPages/process/build")
                 )
             }),
             environment: {
@@ -213,7 +213,7 @@ function createImportPagesResources(app: PulumiApp, params: PageBuilderParams) {
             description: "Handle import page queue create workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "code/pageBuilder/importPages/create/build")
+                    path.join(app.paths.workspace, "pageBuilder/importPages/create/build")
                 )
             }),
             environment: {

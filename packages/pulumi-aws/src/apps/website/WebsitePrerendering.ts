@@ -109,7 +109,7 @@ function createRenderSubscriber(
             description: "Subscribes to render events on event bus",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "code/prerendering/subscribe/build")
+                    path.join(app.paths.workspace, "prerendering/subscribe/build")
                 )
             }),
             vpcConfig: app.getModule(VpcConfig).functionVpcConfig
@@ -191,7 +191,7 @@ function createRenderer(
             description: "Renders pages and stores output in an S3 bucket of choice.",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "code/prerendering/render/build")
+                    path.join(app.paths.workspace, "prerendering/render/build")
                 )
             }),
             vpcConfig: app.getModule(VpcConfig).functionVpcConfig
@@ -245,7 +245,7 @@ function createFlushService(
             description: "Subscribes to flush events on event bus",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.paths.workspace, "code/prerendering/flush/build")
+                    path.join(app.paths.workspace, "prerendering/flush/build")
                 )
             }),
             vpcConfig: app.getModule(VpcConfig).functionVpcConfig

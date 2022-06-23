@@ -171,7 +171,7 @@ export const ElasticSearch = createAppModule({
                 description: "Process DynamoDB Stream.",
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive(
-                        path.join(app.paths.workspace, "code/dynamoToElastic/build")
+                        path.join(app.paths.workspace, "dynamoToElastic/build")
                     )
                 }),
                 vpcConfig: vpc

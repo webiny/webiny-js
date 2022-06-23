@@ -10640,7 +10640,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-aws@^5.28.0, @webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
+"@webiny/api-prerendering-service-aws@^5.26.0, @webiny/api-prerendering-service-aws@^5.28.0, @webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws"
   dependencies:
@@ -10665,7 +10665,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service-so-ddb@^5.28.0, @webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
+"@webiny/api-prerendering-service-so-ddb@^5.26.0, @webiny/api-prerendering-service-so-ddb@^5.28.0, @webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb"
   dependencies:
@@ -10692,7 +10692,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-prerendering-service@^5.28.0, @webiny/api-prerendering-service@workspace:packages/api-prerendering-service":
+"@webiny/api-prerendering-service@^5.26.0, @webiny/api-prerendering-service@^5.28.0, @webiny/api-prerendering-service@workspace:packages/api-prerendering-service":
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service@workspace:packages/api-prerendering-service"
   dependencies:
@@ -12397,7 +12397,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.28.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.26.0, @webiny/cli@^5.28.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -12576,7 +12576,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-aws@^5.25.0, @webiny/handler-aws@^5.28.0, @webiny/handler-aws@workspace:packages/handler-aws":
+"@webiny/handler-aws@^5.25.0, @webiny/handler-aws@^5.26.0, @webiny/handler-aws@^5.28.0, @webiny/handler-aws@workspace:packages/handler-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
@@ -12800,7 +12800,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.28.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.26.0, @webiny/project-utils@^5.28.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -13616,9 +13616,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"admin@workspace:apps/admin/code":
+"admin@workspace:apps/admin":
   version: 0.0.0-use.local
-  resolution: "admin@workspace:apps/admin/code"
+  resolution: "admin@workspace:apps/admin"
   dependencies:
     "@editorjs/delimiter": ^1.2.0
     "@editorjs/list": ^1.6.0
@@ -14072,9 +14072,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"api-apw-scheduler-execute-action@workspace:apps/api/code/apw/executeAction":
+"api-apw-scheduler-execute-action@workspace:apps/api/apw/executeAction":
   version: 0.0.0-use.local
-  resolution: "api-apw-scheduler-execute-action@workspace:apps/api/code/apw/executeAction"
+  resolution: "api-apw-scheduler-execute-action@workspace:apps/api/apw/executeAction"
   dependencies:
     "@webiny/api-apw": ^5.28.0
     "@webiny/api-apw-scheduler-so-ddb": ^5.28.0
@@ -14084,9 +14084,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-apw-scheduler-schedule-action@workspace:apps/api/code/apw/scheduleAction":
+"api-apw-scheduler-schedule-action@workspace:apps/api/apw/scheduleAction":
   version: 0.0.0-use.local
-  resolution: "api-apw-scheduler-schedule-action@workspace:apps/api/code/apw/scheduleAction"
+  resolution: "api-apw-scheduler-schedule-action@workspace:apps/api/apw/scheduleAction"
   dependencies:
     "@aws-sdk/client-cloudwatch-events": latest
     "@webiny/api-apw": ^5.28.0
@@ -14097,9 +14097,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-file-manager-download@workspace:apps/api/code/fileManager/download":
+"api-file-manager-download@workspace:apps/api/fileManager/download":
   version: 0.0.0-use.local
-  resolution: "api-file-manager-download@workspace:apps/api/code/fileManager/download"
+  resolution: "api-file-manager-download@workspace:apps/api/fileManager/download"
   dependencies:
     "@webiny/api-file-manager": ^5.28.0
     "@webiny/cli": ^5.28.0
@@ -14108,9 +14108,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-file-manager-manage@workspace:apps/api/code/fileManager/manage":
+"api-file-manager-manage@workspace:apps/api/fileManager/manage":
   version: 0.0.0-use.local
-  resolution: "api-file-manager-manage@workspace:apps/api/code/fileManager/manage"
+  resolution: "api-file-manager-manage@workspace:apps/api/fileManager/manage"
   dependencies:
     "@webiny/api-file-manager": ^5.28.0
     "@webiny/cli": ^5.28.0
@@ -14119,9 +14119,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-file-manager-transform@workspace:apps/api/code/fileManager/transform":
+"api-file-manager-transform@workspace:apps/api/fileManager/transform":
   version: 0.0.0-use.local
-  resolution: "api-file-manager-transform@workspace:apps/api/code/fileManager/transform"
+  resolution: "api-file-manager-transform@workspace:apps/api/fileManager/transform"
   dependencies:
     "@webiny/api-file-manager": ^5.28.0
     "@webiny/cli": ^5.28.0
@@ -14130,9 +14130,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-graphql@workspace:apps/api/code/graphql":
+"api-graphql@workspace:apps/api/graphql":
   version: 0.0.0-use.local
-  resolution: "api-graphql@workspace:apps/api/code/graphql"
+  resolution: "api-graphql@workspace:apps/api/graphql"
   dependencies:
     "@webiny/api-admin-users-cognito": ^5.28.0
     "@webiny/api-admin-users-cognito-so-ddb": ^5.28.0
@@ -14175,9 +14175,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-headless-cms@workspace:apps/api/code/headlessCMS":
+"api-headless-cms@workspace:apps/api/headlessCMS":
   version: 0.0.0-use.local
-  resolution: "api-headless-cms@workspace:apps/api/code/headlessCMS"
+  resolution: "api-headless-cms@workspace:apps/api/headlessCMS"
   dependencies:
     "@webiny/api-headless-cms": ^5.28.0
     "@webiny/api-headless-cms-ddb": ^5.28.0
@@ -14202,9 +14202,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-export-pages-combine@workspace:apps/api/code/pageBuilder/exportPages/combine":
+"api-page-builder-export-pages-combine@workspace:apps/api/pageBuilder/exportPages/combine":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-export-pages-combine@workspace:apps/api/code/pageBuilder/exportPages/combine"
+  resolution: "api-page-builder-export-pages-combine@workspace:apps/api/pageBuilder/exportPages/combine"
   dependencies:
     "@webiny/api-i18n": ^5.28.0
     "@webiny/api-i18n-content": ^5.28.0
@@ -14226,9 +14226,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-export-pages-process@workspace:apps/api/code/pageBuilder/exportPages/process":
+"api-page-builder-export-pages-process@workspace:apps/api/pageBuilder/exportPages/process":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-export-pages-process@workspace:apps/api/code/pageBuilder/exportPages/process"
+  resolution: "api-page-builder-export-pages-process@workspace:apps/api/pageBuilder/exportPages/process"
   dependencies:
     "@webiny/api-i18n": ^5.28.0
     "@webiny/api-i18n-content": ^5.28.0
@@ -14250,9 +14250,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-import-pages-create@workspace:apps/api/code/pageBuilder/importPages/create":
+"api-page-builder-import-pages-create@workspace:apps/api/pageBuilder/importPages/create":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-import-pages-create@workspace:apps/api/code/pageBuilder/importPages/create"
+  resolution: "api-page-builder-import-pages-create@workspace:apps/api/pageBuilder/importPages/create"
   dependencies:
     "@webiny/api-i18n": ^5.28.0
     "@webiny/api-i18n-content": ^5.28.0
@@ -14274,9 +14274,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-import-pages-process@workspace:apps/api/code/pageBuilder/importPages/process":
+"api-page-builder-import-pages-process@workspace:apps/api/pageBuilder/importPages/process":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-import-pages-process@workspace:apps/api/code/pageBuilder/importPages/process"
+  resolution: "api-page-builder-import-pages-process@workspace:apps/api/pageBuilder/importPages/process"
   dependencies:
     "@webiny/api-file-manager": ^5.28.0
     "@webiny/api-file-manager-ddb": ^5.28.0
@@ -14301,9 +14301,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"api-page-builder-update-settings@workspace:apps/api/code/pageBuilder/updateSettings":
+"api-page-builder-update-settings@workspace:apps/api/pageBuilder/updateSettings":
   version: 0.0.0-use.local
-  resolution: "api-page-builder-update-settings@workspace:apps/api/code/pageBuilder/updateSettings"
+  resolution: "api-page-builder-update-settings@workspace:apps/api/pageBuilder/updateSettings"
   dependencies:
     "@webiny/api-page-builder": ^5.28.0
     "@webiny/api-page-builder-so-ddb": ^5.28.0
@@ -39265,9 +39265,48 @@ __metadata:
   languageName: node
   linkType: hard
 
-"website@workspace:apps/website/code":
+"website-prerendering-service-flush@workspace:apps/website/prerendering/flush":
   version: 0.0.0-use.local
-  resolution: "website@workspace:apps/website/code"
+  resolution: "website-prerendering-service-flush@workspace:apps/website/prerendering/flush"
+  dependencies:
+    "@webiny/api-prerendering-service": ^5.26.0
+    "@webiny/api-prerendering-service-aws": ^5.26.0
+    "@webiny/api-prerendering-service-so-ddb": ^5.26.0
+    "@webiny/cli": ^5.26.0
+    "@webiny/handler-aws": ^5.26.0
+    "@webiny/project-utils": ^5.26.0
+  languageName: unknown
+  linkType: soft
+
+"website-prerendering-service-render@workspace:apps/website/prerendering/render":
+  version: 0.0.0-use.local
+  resolution: "website-prerendering-service-render@workspace:apps/website/prerendering/render"
+  dependencies:
+    "@webiny/api-prerendering-service": ^5.26.0
+    "@webiny/api-prerendering-service-aws": ^5.26.0
+    "@webiny/api-prerendering-service-so-ddb": ^5.26.0
+    "@webiny/cli": ^5.26.0
+    "@webiny/handler-aws": ^5.26.0
+    "@webiny/project-utils": ^5.26.0
+  languageName: unknown
+  linkType: soft
+
+"website-prerendering-service-subscribe@workspace:apps/website/prerendering/subscribe":
+  version: 0.0.0-use.local
+  resolution: "website-prerendering-service-subscribe@workspace:apps/website/prerendering/subscribe"
+  dependencies:
+    "@webiny/api-prerendering-service": ^5.26.0
+    "@webiny/api-prerendering-service-aws": ^5.26.0
+    "@webiny/api-prerendering-service-so-ddb": ^5.26.0
+    "@webiny/cli": ^5.26.0
+    "@webiny/handler-aws": ^5.26.0
+    "@webiny/project-utils": ^5.26.0
+  languageName: unknown
+  linkType: soft
+
+"website@workspace:apps/website":
+  version: 0.0.0-use.local
+  resolution: "website@workspace:apps/website"
   dependencies:
     "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5

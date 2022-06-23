@@ -68,7 +68,7 @@ const setupApwContext = (params: CreateApwContextParams) =>
             getPermission,
             storageOperations: createStorageOperations({
                 /**
-                 * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/code/graphql)
+                 * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
                  */
                 cms: context.cms,
                 /**
