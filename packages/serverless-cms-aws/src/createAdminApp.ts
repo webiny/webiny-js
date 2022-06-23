@@ -1,18 +1,8 @@
-import { PulumiAppParamCallback } from "@webiny/pulumi";
-import { createAdminPulumiApp, CustomDomainParams } from "@webiny/pulumi-aws";
+import { createAdminPulumiApp, CreateAdminPulumiAppParams } from "@webiny/pulumi-aws";
 import { uploadAppToS3 } from "./admin/plugins";
 import { PluginCollection } from "@webiny/plugins/types";
 
-export interface CreateAdminAppParams {
-    /** Custom domain configuration */
-    domain?: PulumiAppParamCallback<CustomDomainParams>;
-
-    /**
-     * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
-     * or add additional ones into the mix.
-     */
-    pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
-
+export interface CreateAdminAppParams extends CreateAdminPulumiAppParams {
     plugins?: PluginCollection;
 }
 

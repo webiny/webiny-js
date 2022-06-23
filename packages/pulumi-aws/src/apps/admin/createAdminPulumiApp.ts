@@ -5,7 +5,7 @@ import { tagResources } from "~/utils";
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
-export interface CreateAdminAppParams {
+export interface CreateAdminPulumiAppParams {
     /** Custom domain configuration */
     domain?: PulumiAppParamCallback<CustomDomainParams>;
 
@@ -13,11 +13,11 @@ export interface CreateAdminAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void | Promise<void>;
 }
 
-export const createAdminPulumiApp = (projectAppParams: CreateAdminAppParams) => {
-    const app = createPulumiApp({
+export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParams) => {
+    return createPulumiApp({
         name: "admin",
         path: "apps/admin",
         config: projectAppParams,
@@ -77,16 +77,14 @@ export const createAdminPulumiApp = (projectAppParams: CreateAdminAppParams) => 
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
 
+            if (projectAppParams.pulumi) {
+                await projectAppParams.pulumi(app as ReturnType<typeof createAdminPulumiApp>);
+            }
+
             return {
                 ...bucket,
                 cloudfront
             };
         }
     });
-
-    if (projectAppParams.pulumi) {
-        projectAppParams.pulumi(app);
-    }
-
-    return app;
 };

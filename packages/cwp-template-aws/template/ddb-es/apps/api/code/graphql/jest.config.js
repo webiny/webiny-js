@@ -1,4 +1,4 @@
-const base = require("../../../jest.config.base");
+const base = require("../../../../jest.config.base");
 const { log } = require("@webiny/cli/utils");
 const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 
@@ -24,6 +24,7 @@ if (TEST_TYPE !== "unit") {
             // `apps/api/pulumi/dev/index.ts` file and assign them here.
             AWS_REGION: stackOutput.region,
             DB_TABLE: stackOutput.dynamoDbTable,
+            DB_TABLE_ELASTICSEARCH: stackOutput.dynamoDbElasticsearchTable,
             API_URL: stackOutput.apiUrl,
 
             // Can be of use while writing tests, for example to distinguish test data from non-test data.

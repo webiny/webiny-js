@@ -8,7 +8,7 @@ import { CoreOutput, VpcConfig } from "../common";
 import { tagResources } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
-export interface CreateWebsiteAppParams {
+export interface CreateWebsitePulumiAppParams {
     /** Custom domain configuration */
     domains?: PulumiAppParamCallback<CustomDomainParams>;
 
@@ -22,11 +22,11 @@ export interface CreateWebsiteAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void | Promise<void>;
 }
 
-export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams = {}) => {
-    const app = createPulumiApp({
+export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppParams = {}) => {
+    return createPulumiApp({
         name: "website",
         path: "apps/website",
         config: projectAppParams,
@@ -183,6 +183,10 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams 
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
 
+            if (projectAppParams.pulumi) {
+                await projectAppParams.pulumi(app as ReturnType<typeof createWebsitePulumiApp>);
+            }
+
             return {
                 prerendering,
                 app: {
@@ -196,10 +200,4 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams 
             };
         }
     });
-
-    if (projectAppParams.pulumi) {
-        projectAppParams.pulumi(app);
-    }
-
-    return app;
 };

@@ -7,7 +7,7 @@ import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
 
-export interface CreateCoreAppParams {
+export interface CreateCorePulumiAppParams {
     /**
      * Secures against deleting database by accident.
      * By default enabled in production environments.
@@ -35,19 +35,19 @@ export interface CreateCoreAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createCorePulumiApp>) => void;
+    pulumi?: (app: ReturnType<typeof createCorePulumiApp>) => void | Promise<void>;
 }
 
 export interface CoreAppLegacyConfig {
     useEmailAsUsername?: boolean;
 }
 
-export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) {
-    const app = createPulumiApp({
+export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
+    return createPulumiApp({
         name: "core",
         path: "apps/core",
         config: projectAppParams,
-        program: app => {
+        program: async app => {
             const protect = app.getParam(projectAppParams.protect) || app.params.run.env === "prod";
             const legacyConfig = app.getParam(projectAppParams.legacy) || {};
 
@@ -92,6 +92,10 @@ export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) 
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
 
+            if (projectAppParams.pulumi) {
+                await projectAppParams.pulumi(app as ReturnType<typeof createCorePulumiApp>);
+            }
+
             return {
                 dynamoDbTable,
                 vpc,
@@ -102,10 +106,4 @@ export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) 
             };
         }
     });
-
-    if (projectAppParams.pulumi) {
-        projectAppParams.pulumi(app);
-    }
-
-    return app;
 }

@@ -1,5 +1,5 @@
-import { PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
-import { createApiPulumiApp, CustomDomainParams } from "@webiny/pulumi-aws";
+import { PulumiAppParam } from "@webiny/pulumi";
+import { createApiPulumiApp, CreateApiPulumiAppParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
 import {
     generateDdbHandlers,
@@ -8,27 +8,12 @@ import {
     injectWcpTelemetryClientCode
 } from "./api/plugins";
 
-export interface CreateApiAppParams {
-    /**
-     * Enables or disables VPC for the API.
-     * For VPC to work you also have to enable it in the Core application.
-     */
-    vpc?: PulumiAppParam<boolean>;
-
-    /** Custom domain configuration */
-    domain?: PulumiAppParamCallback<CustomDomainParams>;
-
+export interface CreateApiAppParams extends CreateApiPulumiAppParams {
     /**
      * Enables ElasticSearch infrastructure.
      * Note that it requires also changes in application code.
      */
     elasticSearch?: PulumiAppParam<boolean>;
-
-    /**
-     * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
-     * or add additional ones into the mix.
-     */
-    pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
 
     plugins?: PluginCollection;
 }

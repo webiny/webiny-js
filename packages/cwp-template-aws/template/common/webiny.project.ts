@@ -12,10 +12,6 @@ import cliScaffoldReactApp from "@webiny/cli-plugin-scaffold-react-app";
 import cliScaffoldReactComponent from "@webiny/cli-plugin-scaffold-react-component";
 import cliScaffoldCiCd from "@webiny/cli-plugin-scaffold-ci";
 
-// Admin Area and Website CLI plugins.
-import adminPlugins from "./apps/admin/cli";
-import websitePlugins from "./apps/website/cli";
-
 export default {
     template: "[TEMPLATE_VERSION]",
     name: "[PROJECT_NAME]",
@@ -33,11 +29,7 @@ export default {
             cliScaffoldAdminModule(),
             cliScaffoldReactApp(),
             cliScaffoldReactComponent(),
-            cliScaffoldCiCd(),
-
-            // Admin Area and Website CLI plugins.
-            adminPlugins,
-            websitePlugins
+            cliScaffoldCiCd()
         ]
     }
 };
