@@ -97,7 +97,7 @@ describe("page full URL test", () => {
         await handler({
             data: {
                 name: "test 1",
-                websiteUrl: "https://www\.test\.com/",
+                websiteUrl: "https://www.test.com/",
                 websitePreviewUrl: "https://preview.test.com/",
                 prerendering: {
                     app: {
