@@ -321,7 +321,7 @@ jobs:
 
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy apps/api --env dev
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
@@ -571,7 +571,7 @@ jobs:
 
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy apps/api --env dev
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
