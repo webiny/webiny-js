@@ -18076,6 +18076,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"core-dynamo-to-elastic@workspace:apps/core/dynamoToElastic":
+  version: 0.0.0-use.local
+  resolution: "core-dynamo-to-elastic@workspace:apps/core/dynamoToElastic"
+  dependencies:
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.28.0
+    "@webiny/api-elasticsearch": ^5.28.0
+    "@webiny/cli": ^5.28.0
+    "@webiny/handler-aws": ^5.28.0
+    "@webiny/project-utils": ^5.28.0
+  languageName: unknown
+  linkType: soft
+
 "core-js-compat@npm:^3.18.0, core-js-compat@npm:^3.19.1, core-js-compat@npm:^3.21.0, core-js-compat@npm:^3.22.1":
   version: 3.23.1
   resolution: "core-js-compat@npm:3.23.1"
