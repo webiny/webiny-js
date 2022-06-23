@@ -8,7 +8,7 @@ import { CoreOutput, VpcConfig } from "../common";
 import { tagResources } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
-export interface CreateWebsiteAppParams {
+export interface CreateWebsitePulumiAppParams {
     /** Custom domain configuration */
     domains?: PulumiAppParamCallback<CustomDomainParams>;
 
@@ -25,7 +25,7 @@ export interface CreateWebsiteAppParams {
     pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
 }
 
-export const createWebsitePulumiApp = (projectAppParams: CreateWebsiteAppParams = {}) => {
+export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppParams = {}) => {
     const app = createPulumiApp({
         name: "website",
         path: "apps/website",

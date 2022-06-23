@@ -11,7 +11,7 @@ import { CoreOutput, VpcConfig } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { tagResources } from "~/utils";
 
-export interface CreateApiAppParams {
+export interface CreateApiPulumiAppParams {
     /**
      * Enables or disables VPC for the API.
      * For VPC to work you also have to enable it in the Core application.
@@ -28,7 +28,7 @@ export interface CreateApiAppParams {
     pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void;
 }
 
-export const createApiPulumiApp = (projectAppParams: CreateApiAppParams = {}) => {
+export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
     return createPulumiApp({
         name: "api",
         path: "apps/api",

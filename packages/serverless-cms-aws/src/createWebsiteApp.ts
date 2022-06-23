@@ -1,24 +1,8 @@
-import { PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
-import { createWebsitePulumiApp, CustomDomainParams } from "@webiny/pulumi-aws";
+import { createWebsitePulumiApp, CreateWebsitePulumiAppParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
 import { uploadAppToS3, generateCommonHandlers, renderWebsite } from "./website/plugins";
 
-export interface CreateWebsiteAppParams {
-    /** Custom domain configuration */
-    domains?: PulumiAppParamCallback<CustomDomainParams>;
-
-    /**
-     * Enables or disables VPC for the API.
-     * For VPC to work you also have to enable it in the `core` application.
-     */
-    vpc?: PulumiAppParam<boolean | undefined>;
-
-    /**
-     * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
-     * or add additional ones into the mix.
-     */
-    pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void;
-
+export interface CreateWebsiteAppParams extends CreateWebsitePulumiAppParams {
     plugins?: PluginCollection;
 }
 

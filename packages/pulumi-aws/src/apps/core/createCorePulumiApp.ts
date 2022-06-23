@@ -7,7 +7,7 @@ import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
 
-export interface CreateCoreAppParams {
+export interface CreateCorePulumiAppParams {
     /**
      * Secures against deleting database by accident.
      * By default enabled in production environments.
@@ -42,7 +42,7 @@ export interface CoreAppLegacyConfig {
     useEmailAsUsername?: boolean;
 }
 
-export function createCorePulumiApp(projectAppParams: CreateCoreAppParams = {}) {
+export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams = {}) {
     const app = createPulumiApp({
         name: "core",
         path: "apps/core",

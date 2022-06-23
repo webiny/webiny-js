@@ -5,7 +5,7 @@ import { tagResources } from "~/utils";
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
-export interface CreateAdminAppParams {
+export interface CreateAdminPulumiAppParams {
     /** Custom domain configuration */
     domain?: PulumiAppParamCallback<CustomDomainParams>;
 
@@ -16,7 +16,7 @@ export interface CreateAdminAppParams {
     pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void;
 }
 
-export const createAdminPulumiApp = (projectAppParams: CreateAdminAppParams) => {
+export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParams) => {
     const app = createPulumiApp({
         name: "admin",
         path: "apps/admin",
