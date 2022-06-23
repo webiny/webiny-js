@@ -1,5 +1,5 @@
 import React from "react";
-import { Compose, Plugins } from "@webiny/app-admin";
+import { Compose, MenuItemRenderer, Plugins } from "@webiny/app-admin";
 /**
  * Plugins for "page builder"
  */
@@ -45,6 +45,7 @@ import {
 import { Module } from "~/plugins/Module";
 import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowScope";
 import { DefaultBar } from "~/plugins/editor/defaultBar";
+import { MenuGroupRenderer } from "~/plugins/cms/MenuGroupRenderer";
 
 export const AdvancedPublishingWorkflow: React.FC = () => {
     return (
@@ -72,6 +73,7 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
             />
             <Compose with={EntryRequestReviewHoc} component={EntryRequestReview} />
             <Compose with={EntryRequestChangesHoc} component={EntryRequestChanges} />
+            <Compose with={MenuGroupRenderer} component={MenuItemRenderer} />
             <Plugins>
                 <DefaultBar />
                 <Module />
