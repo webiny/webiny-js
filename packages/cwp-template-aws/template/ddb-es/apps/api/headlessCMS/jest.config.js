@@ -1,4 +1,4 @@
-const base = require("../../../../jest.config.base");
+const base = require("../../../jest.config.base");
 const { log } = require("@webiny/cli/utils");
 const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 
