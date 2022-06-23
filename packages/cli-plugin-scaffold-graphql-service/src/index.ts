@@ -62,9 +62,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                         return (
                             context.localStorage.get(LAST_USED_GQL_API_PLUGINS_PATH) ||
-                            `${getApiProjectApplicationFolder(
-                                context.project
-                            )}${suffixPath}`
+                            `${getApiProjectApplicationFolder(context.project)}${suffixPath}`
                         );
                     },
                     validate: (pluginsFolderPath: string) => {
