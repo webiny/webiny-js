@@ -55,9 +55,9 @@ module.exports.getUser = async () => {
     const pat = getWcpPat();
     if (!pat) {
         throw new Error(
-            `It seems you are not logged in. Please login using the ${log.error.hl(
+            `It seems you are not logged into your WCP project. Please log in using the ${log.error.hl(
                 "yarn webiny login"
-            )} command.`
+            )} command. If you are not using WCP, make sure you don't have an "id" property in your "webiny.project.ts" file.`
         );
     }
 
@@ -90,7 +90,7 @@ module.exports.getUser = async () => {
         );
     } catch {
         throw new Error(
-            `It seems the personal access token is incorrect or does not exist. Please log out and again log in using the ${log.error.hl(
+            `It seems the personal access token is incorrect or does not exist. Please log out and log in again using the ${log.error.hl(
                 "yarn webiny login"
             )} command.`
         );

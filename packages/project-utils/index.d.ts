@@ -67,5 +67,12 @@ interface BuildPackageConfig {
     };
 }
 
+interface BabelConfigParams {
+    path: string;
+    esm?: boolean;
+}
+
 export function createBuildPackage(options: BuildPackageConfig): BuildCommand;
 export function createWatchPackage(options: BuildPackageConfig): BuildCommand;
+export function createBabelConfigForNode(options: BabelConfigParams): BabelConfig;
+export function createBabelConfigForReact(options: BabelConfigParams): BabelConfig;
