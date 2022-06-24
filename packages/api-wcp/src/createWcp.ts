@@ -32,7 +32,7 @@ export const createWcp = async (): Promise<WcpContextObject> => {
 
         const updateSeatsUrl = getWcpApiUrl(
             [
-                "orgs",
+                "/orgs",
                 wcpProjectEnvironment!.org.id,
                 "projects",
                 wcpProjectEnvironment!.project.id,
