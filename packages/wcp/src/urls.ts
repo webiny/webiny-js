@@ -1,4 +1,4 @@
-const DEFAULT_WCP_API_URL = "https://d3mudimnmgk2a9.cloudfront.net";
+const DEFAULT_WCP_API_URL = "https://api.webiny.com";
 const DEFAULT_WCP_APP_URL = "https://app.webiny.com";
 
 export const getWcpApiUrl = (path?: string) => {
