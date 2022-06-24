@@ -2,7 +2,7 @@ const open = require("open");
 const { GraphQLClient } = require("graphql-request");
 const { setProjectId, setWcpPat, sleep } = require("./utils");
 const chalk = require("chalk");
-const { getWcpGraphQlApiUrl, getWcpAppUrl } = require("@webiny/wcp");
+const { getWcpGqlApiUrl, getWcpAppUrl } = require("@webiny/wcp");
 
 // 120 retries * 2000ms interval = 4 minutes until the command returns an error.
 const LOGIN_RETRIES_COUNT = 30;
@@ -74,7 +74,7 @@ module.exports.command = () => ({
                 });
             },
             async ({ debug, debugLevel, pat: patFromParams }) => {
-                const graphQLClient = new GraphQLClient(getWcpGraphQlApiUrl());
+                const graphQLClient = new GraphQLClient(getWcpGqlApiUrl());
 
                 let pat;
 

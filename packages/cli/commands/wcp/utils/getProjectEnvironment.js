@@ -1,6 +1,6 @@
 const { localStorage, log } = require("@webiny/cli/utils");
 const { request } = require("graphql-request");
-const { getWcpGraphQlApiUrl } = require("@webiny/wcp");
+const { getWcpGqlApiUrl } = require("@webiny/wcp");
 
 const ENVIRONMENT_FIELDS = /* GraphQL */ `
     fragment EnvironmentFields on Environment {
@@ -80,7 +80,7 @@ module.exports.getProjectEnvironment = async ({
 
     const headers = { authorization: pat };
     return request(
-        getWcpGraphQlApiUrl(),
+        getWcpGqlApiUrl(),
         GET_ENVIRONMENT,
         {
             orgId,
@@ -94,7 +94,7 @@ module.exports.getProjectEnvironment = async ({
         .then(async response => response.projects.getEnvironment)
         .catch(() => {
             return request(
-                getWcpGraphQlApiUrl(),
+                getWcpGqlApiUrl(),
                 CREATE_ENVIRONMENT,
                 {
                     orgId,
