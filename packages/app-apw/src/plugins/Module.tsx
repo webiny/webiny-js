@@ -25,7 +25,7 @@ export const Module: React.FC = () => {
             <Menu label={"Publishing Workflows"} name={"apw"} icon={<ApwIcon />}>
                 <Menu
                     name={"apw.contentReviews"}
-                    label={"Content reviews"}
+                    label={"Content Reviews"}
                     path={"/apw/content-reviews"}
                 />
                 <Menu
@@ -52,7 +52,7 @@ export const Module: React.FC = () => {
                 render={() => (
                     <SecureRoute permission={"apw"}>
                         <AdminLayout>
-                            <Helmet title={"APW - Content reviews"} />
+                            <Helmet title={"APW - Content Reviews"} />
                             <ContentReviewDashboard />
                         </AdminLayout>
                     </SecureRoute>

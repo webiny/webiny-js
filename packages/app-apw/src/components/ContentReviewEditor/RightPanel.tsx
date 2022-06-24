@@ -17,7 +17,7 @@ const CommentStack = styled(Stack)`
     flex-direction: column;
 `;
 
-export const RightPanel = () => {
+export const RightPanel: React.FC = () => {
     const changeRequestId = useCurrentChangeRequestId();
     const ref = useRef<HTMLDivElement>(null);
 
