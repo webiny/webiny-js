@@ -18,38 +18,52 @@ export const ElasticSearch = createAppModule({
 
         const vpc = app.getModule(CoreVpc, { optional: true });
 
-        const domain = app.addResource(aws.elasticsearch.Domain, {
-            name: domainName,
-            config: {
-                elasticsearchVersion: "7.7",
-                clusterConfig: {
-                    instanceType: "t3.medium.elasticsearch",
-                    instanceCount: 2,
-                    zoneAwarenessEnabled: true,
-                    zoneAwarenessConfig: {
-                        availabilityZoneCount: 2
+        let domain;
+        if (process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME) {
+            // This can be useful for testing purposes in ephemeral environments. More information here:
+            // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+            domain = pulumi.output(
+                aws.elasticsearch.getDomain(
+                    {
+                        domainName: process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME
+                    },
+                    { async: true }
+                )
+            );
+        } else {
+            domain = app.addResource(aws.elasticsearch.Domain, {
+                name: domainName,
+                config: {
+                    elasticsearchVersion: "7.7",
+                    clusterConfig: {
+                        instanceType: "t3.medium.elasticsearch",
+                        instanceCount: 2,
+                        zoneAwarenessEnabled: true,
+                        zoneAwarenessConfig: {
+                            availabilityZoneCount: 2
+                        }
+                    },
+                    vpcOptions: vpc
+                        ? {
+                              subnetIds: vpc.subnets.private.map(s => s.output.id),
+                              securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
+                          }
+                        : undefined,
+                    ebsOptions: {
+                        ebsEnabled: true,
+                        volumeSize: 10,
+                        volumeType: "gp2"
+                    },
+                    advancedOptions: {
+                        "rest.action.multi.allow_explicit_index": "true"
+                    },
+                    snapshotOptions: {
+                        automatedSnapshotStartHour: 23
                     }
                 },
-                vpcOptions: vpc
-                    ? {
-                          subnetIds: vpc.subnets.private.map(s => s.output.id),
-                          securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
-                      }
-                    : undefined,
-                ebsOptions: {
-                    ebsEnabled: true,
-                    volumeSize: 10,
-                    volumeType: "gp2"
-                },
-                advancedOptions: {
-                    "rest.action.multi.allow_explicit_index": "true"
-                },
-                snapshotOptions: {
-                    automatedSnapshotStartHour: 23
-                }
-            },
-            opts: { protect: params.protect }
-        });
+                opts: { protect: params.protect }
+            });
+        }
 
         /**
          * Domain policy defines who can access your Elasticsearch Domain.
