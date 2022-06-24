@@ -1,5 +1,11 @@
-const { encrypt } = require("@webiny/wcp");
+const { encrypt, decrypt } = require("@webiny/wcp");
 const { getUser, getProjectEnvironment, updateUserLastActiveOn } = require("./utils");
+
+/**
+ * The two environment variables we set via these hooks are the following:
+ * - WCP_PROJECT_ENVIRONMENT - contains encrypted data about the deployed project environment
+ * - WCP_PROJECT_ENVIRONMENT_API_KEY - for easier access, we also set the API key
+ */
 
 let projectEnvironment;
 
@@ -14,6 +20,15 @@ module.exports = () => [
             }
 
             if (process.env.WCP_PROJECT_ENVIRONMENT) {
+                // If we have WCP_PROJECT_ENVIRONMENT env var, we set the WCP_PROJECT_ENVIRONMENT_API_KEY too.
+                if (!process.env.WCP_PROJECT_ENVIRONMENT_API_KEY) {
+                    const decryptedProjectEnvironment = decrypt(
+                        process.env.WCP_PROJECT_ENVIRONMENT
+                    );
+                    process.env.WCP_PROJECT_ENVIRONMENT_API_KEY =
+                        decryptedProjectEnvironment.apiKey;
+                }
+
                 return;
             }
 
@@ -75,6 +90,7 @@ module.exports = () => [
             };
 
             process.env.WCP_PROJECT_ENVIRONMENT = encrypt(wcpProjectEnvironment);
+            process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = projectEnvironment.apiKey;
         }
     },
     // Within this hook, we're updating user's "last active" field.
