@@ -5,7 +5,7 @@ import {
     PulumiAppResource,
     CreatePulumiAppResourceParams
 } from "./PulumiAppResource";
-import {PulumiRemoteResource} from "~/PulumiRemoteResource";
+import { PulumiRemoteResource } from "~/PulumiRemoteResource";
 
 export interface ResourceHandler {
     (resource: PulumiAppResource<PulumiAppResourceConstructor>): void;

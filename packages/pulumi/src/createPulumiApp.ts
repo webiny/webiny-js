@@ -19,7 +19,7 @@ import {
     PulumiAppParamCallback,
     ResourceHandler
 } from "~/types";
-import {PulumiRemoteResource} from "~/PulumiRemoteResource";
+import { PulumiRemoteResource } from "~/PulumiRemoteResource";
 
 export function createPulumiApp<TResources extends Record<string, unknown>>(
     params: CreatePulumiAppParams<TResources>
