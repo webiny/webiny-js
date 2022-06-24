@@ -18,7 +18,7 @@
     "@pulumi/pulumi": "^3.34.0",
     "decompress": "^4.2.1",
     "download": "^5.0.3",
-    "execa": "^4.0.3",
+    "execa": "^5.0.0",
     "lodash": "^4.17.4",
     "semver": "^7.3.5",
     "tar": "^6.0.5"

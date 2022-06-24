@@ -3,7 +3,7 @@ const { createPulumiCommand } = require("../utils");
 module.exports = createPulumiCommand({
     name: "output",
     createProjectApplicationWorkspace: false,
-    command: async ({ inputs, context, pulumi, projectApplication }) => {
+    command: async ({ inputs, context, pulumi }) => {
         const { env, folder, json } = inputs;
 
         let stackExists = true;
@@ -17,7 +17,6 @@ module.exports = createPulumiCommand({
                     secretsProvider: PULUMI_SECRETS_PROVIDER
                 },
                 execa: {
-                    cwd: projectApplication.paths.workspace,
                     env: {
                         PULUMI_CONFIG_PASSPHRASE
                     }

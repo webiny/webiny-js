@@ -47,7 +47,7 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
                         {
                             Sid: "PermissionForDynamodb",
                             Effect: "Allow",
-                            Action: ["dynamodb:GetItem"],
+                            Action: ["dynamodb:GetItem", "dynamodb:Query"],
                             Resource: [
                                 `arn:aws:dynamodb:${region}:${callerIdentity.accountId}:table/${dynamoDbTable}`,
                                 `arn:aws:dynamodb:${region}:${callerIdentity.accountId}:table/${dynamoDbTable}/*`
