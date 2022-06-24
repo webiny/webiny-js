@@ -1,7 +1,13 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { createAppModule, PulumiApp } from "@webiny/pulumi";
+import {
+    createAppModule,
+    PulumiApp,
+    PulumiAppResource,
+    PulumiAppResourceConstructor,
+    PulumiRemoteResource
+} from "@webiny/pulumi";
 
 import { getAwsAccountId } from "../awsUtils";
 import { CoreVpc } from "./CoreVpc";
@@ -18,84 +24,84 @@ export const ElasticSearch = createAppModule({
 
         const vpc = app.getModule(CoreVpc, { optional: true });
 
-        // TODO: This needs to be implemented in order to be able to use a shared ElasticSearch cluster.
-        // TODO: We need to figure out how to pass something like this via a `app.addResource` call.
-        // if (process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME) {
-        //     // This can be useful for testing purposes in ephemeral environments. More information here:
-        //     // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-        //     domain = pulumi.output(
-        //         aws.elasticsearch.getDomain(
-        //             {
-        //                 domainName: process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME
-        //             },
-        //             { async: true }
-        //         )
-        //     );
-        // } else {
-        //    Regular ElasticSearch deployment.
-        // }
+        // This needs to be implemented in order to be able to use a shared ElasticSearch cluster.
+        let domain:
+            | PulumiAppResource<PulumiAppResourceConstructor<aws.elasticsearch.Domain>>
+            | PulumiRemoteResource<aws.elasticsearch.GetDomainResult>;
 
-        const domain = app.addResource(aws.elasticsearch.Domain, {
-            name: domainName,
-            config: {
-                elasticsearchVersion: "7.7",
-                clusterConfig: {
-                    instanceType: "t3.medium.elasticsearch",
-                    instanceCount: 2,
-                    zoneAwarenessEnabled: true,
-                    zoneAwarenessConfig: {
-                        availabilityZoneCount: 2
+        let domainPolicy;
+
+        if (process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME) {
+            const domainName = String(process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME);
+            // This can be useful for testing purposes in ephemeral environments. More information here:
+            // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+            domain = app.addRemoteResource(domainName, () => {
+                return aws.elasticsearch.getDomain({ domainName }, { async: true });
+            });
+        } else {
+            // Regular ElasticSearch deployment.
+            domain = app.addResource(aws.elasticsearch.Domain, {
+                name: domainName,
+                config: {
+                    elasticsearchVersion: "7.7",
+                    clusterConfig: {
+                        instanceType: "t3.medium.elasticsearch",
+                        instanceCount: 2,
+                        zoneAwarenessEnabled: true,
+                        zoneAwarenessConfig: {
+                            availabilityZoneCount: 2
+                        }
+                    },
+                    vpcOptions: vpc
+                        ? {
+                              subnetIds: vpc.subnets.private.map(s => s.output.id),
+                              securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
+                          }
+                        : undefined,
+                    ebsOptions: {
+                        ebsEnabled: true,
+                        volumeSize: 10,
+                        volumeType: "gp2"
+                    },
+                    advancedOptions: {
+                        "rest.action.multi.allow_explicit_index": "true"
+                    },
+                    snapshotOptions: {
+                        automatedSnapshotStartHour: 23
                     }
                 },
-                vpcOptions: vpc
-                    ? {
-                          subnetIds: vpc.subnets.private.map(s => s.output.id),
-                          securityGroupIds: [vpc.vpc.output.defaultSecurityGroupId]
-                      }
-                    : undefined,
-                ebsOptions: {
-                    ebsEnabled: true,
-                    volumeSize: 10,
-                    volumeType: "gp2"
-                },
-                advancedOptions: {
-                    "rest.action.multi.allow_explicit_index": "true"
-                },
-                snapshotOptions: {
-                    automatedSnapshotStartHour: 23
-                }
-            },
-            opts: { protect: params.protect }
-        });
+                opts: { protect: params.protect }
+            });
 
-        /**
-         * Domain policy defines who can access your Elasticsearch Domain.
-         * For details on Elasticsearch security, read the official documentation:
-         * https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/security.html
-         */
-        const domainPolicy = app.addResource(aws.elasticsearch.DomainPolicy, {
-            name: `${domainName}-policy`,
-            config: {
-                domainName: domain.output.domainName,
-                accessPolicies: {
-                    Version: "2012-10-17",
-                    Statement: [
-                        /**
-                         * Allow requests signed with current account
-                         */
-                        {
-                            Effect: "Allow",
-                            Principal: {
-                                AWS: accountId
-                            },
-                            Action: "es:*",
-                            Resource: pulumi.interpolate`${domain.output.arn}/*`
-                        }
-                    ]
-                }
-            },
-            opts: { protect: params.protect }
-        });
+            /**
+             * Domain policy defines who can access your Elasticsearch Domain.
+             * For details on Elasticsearch security, read the official documentation:
+             * https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/security.html
+             */
+            domainPolicy = app.addResource(aws.elasticsearch.DomainPolicy, {
+                name: `${domainName}-policy`,
+                config: {
+                    domainName: domain.output.domainName,
+                    accessPolicies: {
+                        Version: "2012-10-17",
+                        Statement: [
+                            /**
+                             * Allow requests signed with current account
+                             */
+                            {
+                                Effect: "Allow",
+                                Principal: {
+                                    AWS: accountId
+                                },
+                                Action: "es:*",
+                                Resource: pulumi.interpolate`${domain.output.arn}/*`
+                            }
+                        ]
+                    }
+                },
+                opts: { protect: params.protect }
+            });
+        }
 
         /**
          * Create a table for Elasticsearch records. All ES records are stored in this table to dramatically improve
@@ -235,7 +241,7 @@ export const ElasticSearch = createAppModule({
 
 function getDynamoDbToElasticLambdaPolicy(
     app: PulumiApp,
-    domain: pulumi.Output<aws.elasticsearch.Domain>
+    domain: pulumi.Output<aws.elasticsearch.Domain | aws.elasticsearch.GetDomainResult>
 ) {
     return app.addResource(aws.iam.Policy, {
         name: "DynamoDbToElasticLambdaPolicy-updated",

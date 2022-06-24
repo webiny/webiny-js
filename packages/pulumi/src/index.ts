@@ -1,4 +1,5 @@
 export * from "./createPulumiApp";
 export * from "./PulumiAppModule";
 export * from "./PulumiAppResource";
+export * from "./PulumiRemoteResource";
 export * from "./types";
