@@ -16,14 +16,6 @@ module.exports = [
         next: ".gitattributes"
     },
     {
-        prev: "example.babel.node.js",
-        next: ".babel.node.js"
-    },
-    {
-        prev: "example.babel.react.js",
-        next: ".babel.react.js"
-    },
-    {
         prev: "example.prettierrc.js",
         next: ".prettierrc.js"
     },
