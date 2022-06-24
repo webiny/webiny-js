@@ -1,7 +1,8 @@
-import { getWcpProjectLicense, getWcpAppUrl, WCP_FEATURE_LABEL } from "@webiny/wcp";
+import { getWcpProjectLicense, getWcpAppUrl, getWcpApiUrl, WCP_FEATURE_LABEL } from "@webiny/wcp";
 import WError from "@webiny/error";
 import { WcpContextObject, CachedWcpProjectLicense } from "./types";
 import { getWcpProjectLicenseCacheKey, getWcpProjectEnvironment } from "./utils";
+import fetch from "node-fetch";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
 
@@ -23,6 +24,28 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             });
         }
     }
+
+    const updateSeats = async (operation: "increment" | "decrement"): Promise<void> => {
+        if (!wcpProjectEnvironment) {
+            return;
+        }
+
+        const updateSeatsUrl = getWcpApiUrl(
+            [
+                "orgs",
+                wcpProjectEnvironment!.org.id,
+                "projects",
+                wcpProjectEnvironment!.project.id,
+                "package/seats"
+            ].join("/")
+        );
+
+        await fetch(updateSeatsUrl, {
+            method: "POST",
+            headers: { authorization: wcpProjectEnvironment.apiKey },
+            body: JSON.stringify({ operation })
+        });
+    };
 
     return {
         getProjectEnvironment: () => {
@@ -48,6 +71,12 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             }
 
             throw new WError(message, "WCP_CANNOT_USE_FEATURE", { wcpFeatureId });
+        },
+        async incrementSeats() {
+            await updateSeats("increment");
+        },
+        async decrementSeats() {
+            await updateSeats("decrement");
         }
     } as WcpContextObject;
 };
