@@ -30,6 +30,9 @@ export interface DecryptedWcpProjectLicense {
             advancedPublishingWorkflow: {
                 enabled: boolean;
             };
+            advancedAccessControlLayer: {
+                enabled: boolean;
+            };
         };
     };
 }
