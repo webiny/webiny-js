@@ -22,6 +22,7 @@ module.exports = function ({ path }, presets = []) {
         },
         moduleDirectories: ["node_modules"],
         moduleNameMapper: {
+            "~tests/(.*)": `${path}/__tests__/$1`,
             "~/(.*)": `${path}/src/$1`
         },
         modulePathIgnorePatterns: [],
