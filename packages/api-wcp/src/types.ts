@@ -11,6 +11,8 @@ export interface WcpContextObject {
     getProjectEnvironment: () => WcpProjectEnvironment | null;
     canUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => boolean;
     ensureCanUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => void;
+    incrementSeats: () => Promise<void>;
+    decrementSeats: () => Promise<void>;
 }
 
 export interface CachedWcpProjectLicense {
