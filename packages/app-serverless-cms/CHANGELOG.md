@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* **app-serverless-cms:** remove APW ([b50e10b](https://github.com/webiny/webiny-js/commit/b50e10b9cd47e4e4545188f204685ad076448637))
+* update TS configs ([d07fa82](https://github.com/webiny/webiny-js/commit/d07fa82b00e564744454e4a28714638b0541ec33))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/app-serverless-cms
