@@ -16,12 +16,30 @@ export interface ElasticSearchParams {
     protect: boolean;
 }
 
+function getDevClusterConfig(): aws.types.input.elasticsearch.DomainClusterConfig {
+    return {
+        instanceType: "t3.small.elasticsearch"
+    };
+}
+
+function getProdClusterConfig(): aws.types.input.elasticsearch.DomainClusterConfig {
+    return {
+        // For production deployments, we create 2 instances and configure multi-AZ.
+        instanceType: "t3.medium.elasticsearch",
+        instanceCount: 2,
+        zoneAwarenessEnabled: true,
+        zoneAwarenessConfig: {
+            availabilityZoneCount: 2
+        }
+    };
+}
+
 export const ElasticSearch = createAppModule({
     name: "ElasticSearch",
     config(app, params: ElasticSearchParams) {
         const domainName = "webiny-js";
         const accountId = getAwsAccountId(app);
-
+        const prod = app.params.run.env === "prod";
         const vpc = app.getModule(CoreVpc, { optional: true });
 
         // This needs to be implemented in order to be able to use a shared ElasticSearch cluster.
@@ -43,15 +61,8 @@ export const ElasticSearch = createAppModule({
             domain = app.addResource(aws.elasticsearch.Domain, {
                 name: domainName,
                 config: {
-                    elasticsearchVersion: "7.7",
-                    clusterConfig: {
-                        instanceType: "t3.medium.elasticsearch",
-                        instanceCount: 2,
-                        zoneAwarenessEnabled: true,
-                        zoneAwarenessConfig: {
-                            availabilityZoneCount: 2
-                        }
-                    },
+                    elasticsearchVersion: "7.10",
+                    clusterConfig: prod ? getDevClusterConfig() : getProdClusterConfig(),
                     vpcOptions: vpc
                         ? {
                               subnetIds: vpc.subnets.private.map(s => s.output.id),
