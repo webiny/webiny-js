@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+
+### Features
+
+* **pulumi-aws:** add an AWS OpenSearch module ([88d6cf2](https://github.com/webiny/webiny-js/commit/88d6cf2edb11f10b51f0c54c9cf61e004d0d54de))
+* **pulumi-aws:** add production features to ElasticSearch module ([8e7f6ab](https://github.com/webiny/webiny-js/commit/8e7f6aba84704f0ede2540314c5b965f81bdbdc9))
+
+
+
+
+
 # [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
 
 
