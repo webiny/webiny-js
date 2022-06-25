@@ -6,7 +6,7 @@ import {
     PulumiApp,
     PulumiAppResource,
     PulumiAppResourceConstructor,
-    PulumiRemoteResource
+    PulumiAppRemoteResource
 } from "@webiny/pulumi";
 
 import { getAwsAccountId } from "../awsUtils";
@@ -27,7 +27,7 @@ export const ElasticSearch = createAppModule({
         // This needs to be implemented in order to be able to use a shared ElasticSearch cluster.
         let domain:
             | PulumiAppResource<PulumiAppResourceConstructor<aws.elasticsearch.Domain>>
-            | PulumiRemoteResource<aws.elasticsearch.GetDomainResult>;
+            | PulumiAppRemoteResource<aws.elasticsearch.GetDomainResult>;
 
         let domainPolicy;
 

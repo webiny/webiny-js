@@ -5,7 +5,7 @@ import {
     PulumiAppResource,
     CreatePulumiAppResourceParams
 } from "./PulumiAppResource";
-import { PulumiRemoteResource } from "~/PulumiRemoteResource";
+import { PulumiAppRemoteResource } from "~/PulumiAppRemoteResource";
 
 export interface ResourceHandler {
     (resource: PulumiAppResource<PulumiAppResourceConstructor>): void;
@@ -52,7 +52,7 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
         params: CreatePulumiAppResourceParams<T>
     ): PulumiAppResource<T>;
 
-    addRemoteResource<T>(name: string, getter: () => Promise<T>): PulumiRemoteResource<T>;
+    addRemoteResource<T>(name: string, getter: () => Promise<T>): PulumiAppRemoteResource<T>;
 
     addOutput<T>(name: string, output: T): void;
     addOutputs(outputs: Record<string, unknown>): void;
