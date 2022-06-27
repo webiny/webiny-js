@@ -254,11 +254,13 @@ interface CreateContentReviewModelDefinitionParams {
     reviewerModelId: string;
 }
 
+export const CONTENT_REVIEW_MODEL_ID = "apwContentReviewModelDefinition";
+
 export const createContentReviewModelDefinition = ({
     reviewerModelId
 }: CreateContentReviewModelDefinitionParams): WorkflowModelDefinition => ({
     name: "APW - Content Review",
-    modelId: "apwContentReviewModelDefinition",
+    modelId: CONTENT_REVIEW_MODEL_ID,
     titleFieldId: "content",
     layout: [
         ["contentReview_content"],

@@ -42,10 +42,12 @@ const stepField = () =>
         ]
     });
 
+export const CHANGE_REQUEST_MODEL_ID = "apwChangeRequestModelDefinition";
+
 export const createChangeRequestModelDefinition = (): WorkflowModelDefinition => {
     return {
         name: "APW - Change Request",
-        modelId: "apwChangeRequestModelDefinition",
+        modelId: CHANGE_REQUEST_MODEL_ID,
         titleFieldId: "changeRequest_title",
         layout: [["changeRequest_body"], ["changeRequest_title"]],
         fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()],

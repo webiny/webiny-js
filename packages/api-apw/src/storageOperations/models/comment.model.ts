@@ -46,12 +46,14 @@ interface CreateCommentModelDefinitionParams {
     modelId: string;
 }
 
+export const COMMENT_MODEL_ID = "apwCommentModelDefinition";
+
 export const createCommentModelDefinition = ({
     modelId
 }: CreateCommentModelDefinitionParams): WorkflowModelDefinition => {
     return {
         name: "APW - Comment",
-        modelId: "apwCommentModelDefinition",
+        modelId: COMMENT_MODEL_ID,
         titleFieldId: "displayName",
         layout: [["comment_body"], ["comment_displayName"]],
         fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()],

@@ -108,13 +108,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
         name: "Root",
         parent: null
     };
-    const {
-        permissions,
-        identity,
-        plugins = [],
-        setupTenancyAndSecurityGraphQL,
-        createHeadlessCmsApp
-    } = params;
+    const { permissions, identity, plugins = [], createHeadlessCmsApp } = params;
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
@@ -138,6 +132,10 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
                         ...(context?.http || {}),
                         request: {
                             ...(context?.http?.request || {}),
+                            headers: {
+                                ...(context?.http?.request?.headers || {}),
+                                ["x-tenant"]: "root"
+                            },
                             path: {
                                 ...(context?.http?.request?.path || {}),
                                 parameters: {
@@ -151,7 +149,6 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
             } as ContextPlugin<ApwContext>,
             ...ops.plugins,
             ...createTenancyAndSecurity({
-                setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
                 identity
             }),

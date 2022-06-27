@@ -26,7 +26,7 @@ describe("Workflow assignment to a PB Page", () => {
     });
 
     const login = async () => {
-        await securityIdentity.login();
+        return await securityIdentity.login();
     };
 
     const setupReviewer = async () => {
@@ -34,7 +34,9 @@ describe("Workflow assignment to a PB Page", () => {
 
         await until(
             () => reviewerGQL.listReviewersQuery({}).then(([data]) => data),
-            (response: any) => response.data.apw.listReviewers.data.length === 1,
+            (response: any) => {
+                return response.data.apw.listReviewers.data.length === 1;
+            },
             {
                 name: "Wait for listReviewers"
             }

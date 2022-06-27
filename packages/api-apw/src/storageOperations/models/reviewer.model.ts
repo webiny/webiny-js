@@ -25,10 +25,12 @@ const typeField = () =>
         validation: [{ message: "Value is required.", name: "required" }]
     });
 
+export const REVIEWER_MODEL_ID = "apwReviewerModelDefinition";
+
 export const createReviewerModelDefinition = (): WorkflowModelDefinition => {
     return {
         name: "APW - Reviewer",
-        modelId: "apwReviewerModelDefinition",
+        modelId: REVIEWER_MODEL_ID,
         titleFieldId: "displayName",
         layout: [["reviewer_id"], ["reviewer_displayName"]],
         fields: [idField(), displayNameField(), typeField()],

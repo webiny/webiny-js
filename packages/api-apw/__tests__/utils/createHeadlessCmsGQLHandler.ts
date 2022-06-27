@@ -70,7 +70,6 @@ export interface CreateHeadlessCmsAppParams {
 }
 
 export interface CreateHeadlessCmsGQLHandlerParams {
-    setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
@@ -108,13 +107,7 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
         name: "Root",
         parent: null
     };
-    const {
-        permissions,
-        identity,
-        plugins = [],
-        setupTenancyAndSecurityGraphQL,
-        createHeadlessCmsApp
-    } = params;
+    const { permissions, identity, plugins = [], createHeadlessCmsApp } = params;
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
@@ -136,6 +129,10 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
                         ...(context?.http || {}),
                         request: {
                             ...(context?.http?.request || {}),
+                            headers: {
+                                ...(context?.http?.request?.headers || {}),
+                                ["x-tenant"]: "root"
+                            },
                             path: {
                                 ...(context?.http?.request?.path || {}),
                                 parameters: {
@@ -149,7 +146,6 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
             } as ContextPlugin<ApwContext>,
             ...ops.plugins,
             ...createTenancyAndSecurity({
-                setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
                 identity
             }),

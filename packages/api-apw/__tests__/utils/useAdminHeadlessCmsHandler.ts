@@ -13,7 +13,6 @@ export const useAdminHeadlessCmsHandler = (
 ) => {
     return createHeadlessCmsGQLHandler({
         ...params,
-        setupTenancyAndSecurityGraphQL: true,
         plugins: (params.plugins || []).concat([
             graphQLHandlerPlugins(),
             createAdminHeadlessCmsGraphQL()
