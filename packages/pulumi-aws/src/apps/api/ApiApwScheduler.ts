@@ -1,8 +1,8 @@
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
-import { StorageOutput } from "../common";
+import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
+import { CoreOutput } from "../common";
 import { getCommonLambdaEnvVariables } from "../lambdaUtils";
 
 interface ScheduleActionParams {
@@ -17,7 +17,7 @@ const EVENT_RULE_TARGET = `${LAMBDA_NAME_PREFIX}-event-rule-target`;
 
 export type ApiApwScheduler = PulumiAppModule<typeof ApiApwScheduler>;
 
-export const ApiApwScheduler = defineAppModule({
+export const ApiApwScheduler = createAppModule({
     name: "ApiApwScheduler",
     config(app: PulumiApp, params: ScheduleActionParams) {
         const executeAction = createExecuteActionLambda(app, params);
@@ -110,12 +110,12 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
             description: "Handle execute action workflow in apw scheduler",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.ctx.appDir, "code/apw/executeAction/build")
+                    path.join(app.paths.workspace, "apw/executeAction/build")
                 )
             }),
             environment: {
                 variables: {
-                    ...getCommonLambdaEnvVariables(app),
+                    ...getCommonLambdaEnvVariables(),
                     ...params.env
                 }
             }
@@ -130,7 +130,7 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
 }
 
 function createExecuteActionLambdaPolicy(app: PulumiApp) {
-    const storage = app.getModule(StorageOutput);
+    const core = app.getModule(CoreOutput);
 
     return app.addResource(aws.iam.Policy, {
         name: "ApwSchedulerExecuteActionLambdaPolicy",
@@ -150,8 +150,8 @@ function createExecuteActionLambdaPolicy(app: PulumiApp) {
                         Effect: "Allow",
                         Action: ["dynamodb:Query", "dynamodb:GetItem", "dynamodb:DeleteItem"],
                         Resource: [
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}/*`
                         ]
                     }
                 ]
@@ -212,12 +212,12 @@ function createScheduleActionLambda(
             description: "Handle schedule action workflow in apw scheduler",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    path.join(app.ctx.appDir, "code/apw/scheduleAction/build")
+                    path.join(app.paths.workspace, "apw/scheduleAction/build")
                 )
             }),
             environment: {
                 variables: {
-                    ...getCommonLambdaEnvVariables(app),
+                    ...getCommonLambdaEnvVariables(),
                     ...params.env,
                     APW_SCHEDULER_EXECUTE_ACTION_HANDLER: executeLambda.arn
                     // RULE_NAME: this.eventRule.name.apply(name => name),
@@ -235,7 +235,7 @@ function createScheduleActionLambda(
 }
 
 function createScheduleActionLambdaPolicy(app: PulumiApp) {
-    const storage = app.getModule(StorageOutput);
+    const core = app.getModule(CoreOutput);
 
     return app.addResource(aws.iam.Policy, {
         name: "ApwSchedulerScheduleActionLambdaPolicy",
@@ -261,8 +261,8 @@ function createScheduleActionLambdaPolicy(app: PulumiApp) {
                             "dynamodb:DeleteItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}`,
-                            pulumi.interpolate`${storage.primaryDynamodbTableArn}/*`
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}`,
+                            pulumi.interpolate`${core.primaryDynamodbTableArn}/*`
                         ]
                     },
                     {

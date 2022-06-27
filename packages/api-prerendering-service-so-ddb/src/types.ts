@@ -13,8 +13,9 @@ export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     RENDER = "PrerenderingServiceRender",
+    SETTINGS = "PrerenderingServiceSettings",
     QUEUE_JOB = "PrerenderingServiceQueueJob",
-    TAG_URL_LINK = "PrerenderingServiceTagUrlLink"
+    TAG_PATH_LINK = "PrerenderingServiceTagPathLink"
 }
 
 export interface PrerenderingServiceFactoryParams {
@@ -23,7 +24,7 @@ export interface PrerenderingServiceFactoryParams {
     attributes?: Record<ENTITIES, Attributes>;
 }
 
-export type Entities = "render" | "queueJob" | "tagUrlLink";
+export type Entities = "render" | "queueJob" | "tagPathLink";
 
 export interface PrerenderingServiceStorageOperations
     extends BasePrerenderingServiceStorageOperations {
@@ -37,4 +38,10 @@ export interface PrerenderingServiceFactory {
 
 export interface TableModifier {
     (table: TableConstructor): TableConstructor;
+}
+
+export interface DataContainer<T> {
+    PK: string;
+    SK: string;
+    data: T;
 }

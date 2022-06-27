@@ -13,6 +13,7 @@
   "author": "Webiny LTD",
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-wcp": "^5.28.0",
     "@webiny/error": "^5.28.0",
     "@webiny/handler": "^5.28.0",
     "@webiny/handler-db": "^5.28.0",

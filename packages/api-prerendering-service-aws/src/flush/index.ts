@@ -1,50 +1,28 @@
 import { FlushHookPlugin } from "@webiny/api-prerendering-service/flush/types";
 import CloudFront from "aws-sdk/clients/cloudfront";
-import url from "url";
-import { Args, Configuration } from "~/types";
-
-interface AfterFlushParams {
-    log: (...args: string[]) => void;
-    render: {
-        args: Args;
-        configuration: Configuration;
-    };
-}
 
 // This plugin will issue a cache invalidation request to CloudFront, every time a page has been deleted. This is
 // mostly important when a user unpublishes a new page, and we want to make the page immediately publicly available.
-export default () => {
+export default (): FlushHookPlugin => {
     return {
         type: "ps-flush-hook",
-        afterFlush: async ({ log, render }: AfterFlushParams) => {
+        async afterFlush({ log, render, settings }) {
             if (!render) {
                 log("Skipping afterFlush because no render was provided.");
                 return;
             }
 
-            const { args, configuration } = render;
             // Let's create a cache invalidation request.
             log("Trying to send a CloudFront cache invalidation request...");
 
-            let distributionId = args?.configuration?.meta?.cloudfront?.distributionId;
+            const distributionId = settings.cloudfrontId;
             if (!distributionId) {
-                distributionId = configuration?.meta?.cloudfront?.distributionId;
-            }
-
-            if (!distributionId) {
-                log(`Exiting... CloudFront "distributionId" not provided.`);
+                log(`Exiting... PS settings do not contain a "cloudfrontId".`);
                 return;
             }
 
             log("Trying to get the path that needs to be invalidated...");
-            let path: string | undefined = args.path;
-            if (!path) {
-                log(`Path wasn't passed via "args.path", trying to extract it from "args.url"...`);
-                const parsed = url.parse(args.url as string);
-                if (parsed && parsed.pathname) {
-                    path = parsed.pathname;
-                }
-            }
+            let path = render.path;
 
             if (!path) {
                 log(`Aborting the cache invalidation attempt... "path" not detected.`);
@@ -81,5 +59,5 @@ export default () => {
 
             console.log(`Cache invalidation request (path "${path}") successfully issued.`);
         }
-    } as FlushHookPlugin;
+    };
 };

@@ -34,8 +34,7 @@ describe("Settings Test", () => {
                 pageBuilder: {
                     getSettings: {
                         data: null,
-                        error: null,
-                        id: "T#root#L#en-US#PB#SETTINGS"
+                        error: null
                     }
                 }
             }
@@ -47,12 +46,6 @@ describe("Settings Test", () => {
                 name: "test 1",
                 websiteUrl: "https://www.test.com/",
                 websitePreviewUrl: "https://preview.test.com/",
-                prerendering: {
-                    app: {
-                        url: "https://www.app.com/"
-                    },
-                    storage: { name: "storage-name" }
-                },
                 social: {
                     facebook: "https://www.facebook.com/",
                     instagram: "https://www.instagram.com/",
@@ -73,12 +66,6 @@ describe("Settings Test", () => {
                             name: "test 1",
                             websiteUrl: "https://www.test.com",
                             websitePreviewUrl: "https://preview.test.com",
-                            prerendering: {
-                                app: {
-                                    url: "https://www.app.com"
-                                },
-                                storage: { name: "storage-name" }
-                            },
                             social: {
                                 instagram: "https://www.instagram.com/",
                                 facebook: "https://www.facebook.com/",
@@ -89,8 +76,7 @@ describe("Settings Test", () => {
                                 }
                             }
                         },
-                        error: null,
-                        id: "T#root#L#en-US#PB#SETTINGS"
+                        error: null
                     }
                 }
             }
@@ -106,12 +92,6 @@ describe("Settings Test", () => {
                             name: "test 1",
                             websiteUrl: "https://www.test.com",
                             websitePreviewUrl: "https://preview.test.com",
-                            prerendering: {
-                                app: {
-                                    url: "https://www.app.com"
-                                },
-                                storage: { name: "storage-name" }
-                            },
                             social: {
                                 instagram: "https://www.instagram.com/",
                                 facebook: "https://www.facebook.com/",
@@ -122,8 +102,7 @@ describe("Settings Test", () => {
                                 }
                             }
                         },
-                        error: null,
-                        id: "T#root#L#en-US#PB#SETTINGS"
+                        error: null
                     }
                 }
             }
@@ -152,7 +131,6 @@ describe("Settings Test", () => {
                 data: {
                     pageBuilder: {
                         getSettings: {
-                            id: "T#root#L#en-US#PB#SETTINGS",
                             data: null,
                             error: null
                         }
@@ -166,8 +144,10 @@ describe("Settings Test", () => {
                 data: {
                     pageBuilder: {
                         getDefaultSettings: {
-                            id: "PB#SETTINGS",
-                            data: null,
+                            data: {
+                                websitePreviewUrl: "https://www.test.com",
+                                websiteUrl: "https://www.test.com"
+                            },
                             error: null
                         }
                     }
@@ -181,12 +161,6 @@ describe("Settings Test", () => {
                 name: "test 1",
                 websiteUrl: "https://www.test.com/",
                 websitePreviewUrl: "https://preview.test.com/",
-                prerendering: {
-                    app: {
-                        url: "https://www.app.com/"
-                    },
-                    storage: { name: "storage-name" }
-                },
                 social: {
                     facebook: "https://www.facebook.com/",
                     instagram: "https://www.instagram.com/",
@@ -205,33 +179,10 @@ describe("Settings Test", () => {
                     pageBuilder: {
                         getDefaultSettings: {
                             data: {
-                                name: "test 1",
-                                pages: {
-                                    home: null,
-                                    notFound: null
-                                },
-                                prerendering: {
-                                    app: {
-                                        url: "https://www.app.com"
-                                    },
-                                    storage: {
-                                        name: "storage-name"
-                                    }
-                                },
-                                social: {
-                                    facebook: "https://www.facebook.com/",
-                                    image: {
-                                        id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
-                                    },
-                                    instagram: "https://www.instagram.com/",
-                                    twitter: "https://www.twitter.com/"
-                                },
-                                websitePreviewUrl: "https://preview.test.com",
+                                websitePreviewUrl: "https://www.test.com",
                                 websiteUrl: "https://www.test.com"
                             },
-                            error: null,
-                            id: "PB#SETTINGS"
+                            error: null
                         }
                     }
                 }
@@ -245,12 +196,6 @@ describe("Settings Test", () => {
                 name: "test 1-UPDATED",
                 websiteUrl: "https://www.test.com/-UPDATED",
                 websitePreviewUrl: "https://preview.test.com/-UPDATED",
-                prerendering: {
-                    app: {
-                        url: "https://www.app.com/-UPDATED"
-                    },
-                    storage: { name: "storage-name-UPDATED" }
-                },
                 social: {
                     facebook: "https://www.facebook.com/-UPDATED",
                     instagram: "https://www.instagram.com/-UPDATED",
@@ -269,33 +214,10 @@ describe("Settings Test", () => {
                     pageBuilder: {
                         getDefaultSettings: {
                             data: {
-                                name: "test 1",
-                                pages: {
-                                    home: null,
-                                    notFound: null
-                                },
-                                prerendering: {
-                                    app: {
-                                        url: "https://www.app.com"
-                                    },
-                                    storage: {
-                                        name: "storage-name"
-                                    }
-                                },
-                                social: {
-                                    facebook: "https://www.facebook.com/",
-                                    image: {
-                                        id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                                        src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
-                                    },
-                                    instagram: "https://www.instagram.com/",
-                                    twitter: "https://www.twitter.com/"
-                                },
-                                websitePreviewUrl: "https://preview.test.com",
+                                websitePreviewUrl: "https://www.test.com",
                                 websiteUrl: "https://www.test.com"
                             },
-                            error: null,
-                            id: "PB#SETTINGS"
+                            error: null
                         }
                     }
                 }
@@ -319,7 +241,6 @@ describe("Settings Test", () => {
                 data: {
                     pageBuilder: {
                         updateSettings: {
-                            id: "T#root#L#en-US#PB#SETTINGS",
                             data: null,
                             error: {
                                 code: "NOT_FOUND",
@@ -347,7 +268,6 @@ describe("Settings Test", () => {
                 data: {
                     pageBuilder: {
                         updateSettings: {
-                            id: "T#root#L#en-US#PB#SETTINGS",
                             data: {
                                 pages: {
                                     home: pid
@@ -365,7 +285,6 @@ describe("Settings Test", () => {
                 data: {
                     pageBuilder: {
                         getSettings: {
-                            id: "T#root#L#en-US#PB#SETTINGS",
                             data: {
                                 pages: {
                                     home: pid
@@ -401,7 +320,6 @@ describe("Settings Test", () => {
                 data: {
                     pageBuilder: {
                         getSettings: {
-                            id: "T#root#L#en-US#PB#SETTINGS",
                             data: {
                                 pages: {
                                     home: pid,
@@ -426,7 +344,6 @@ describe("Settings Test", () => {
                 data: {
                     pageBuilder: {
                         updateSettings: {
-                            id: "T#root#L#en-US#PB#SETTINGS",
                             data: null,
                             error: {
                                 code: "CANNOT_UNSET_SPECIAL_PAGE",
@@ -445,7 +362,6 @@ describe("Settings Test", () => {
                 data: {
                     pageBuilder: {
                         getSettings: {
-                            id: "T#root#L#en-US#PB#SETTINGS",
                             data: {
                                 pages: {
                                     home: pid,

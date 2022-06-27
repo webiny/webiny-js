@@ -1,0 +1,4 @@
+name: {PROJECT_ID}
+runtime: nodejs
+description: {PROJECT_DESCRIPTION}
+main: pulumi/

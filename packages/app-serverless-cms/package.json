@@ -25,6 +25,7 @@
     "@webiny/app-security": "^5.28.0",
     "@webiny/app-security-access-management": "^5.28.0",
     "@webiny/app-tenancy": "^5.28.0",
+    "@webiny/app-tenant-manager": "^5.28.0",
     "@webiny/plugins": "^5.28.0",
     "apollo-cache": "^1.3.5",
     "apollo-client": "^2.6.10",

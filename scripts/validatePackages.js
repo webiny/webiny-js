@@ -8,7 +8,7 @@ const { blue, red } = require("chalk");
  */
 (async () => {
     console.log("Validating packages...");
-    const packages = getPackages().filter(p => !p.includes("api/") && !p.includes("apps/"));
+    const packages = getPackages().filter(p => !p.includes("apps/"));
     const errors = [];
 
     for (let i = 0; i < packages.length; i++) {

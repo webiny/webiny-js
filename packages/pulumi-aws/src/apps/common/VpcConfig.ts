@@ -1,16 +1,16 @@
 import * as aws from "@pulumi/aws";
 
-import { defineAppModule } from "@webiny/pulumi-sdk";
-import { StorageOutput } from "./StorageOutput";
+import { createAppModule } from "@webiny/pulumi";
+import { CoreOutput } from "./CoreOutput";
 
 export interface VpcParams {
     enabled: boolean | undefined;
 }
 
-export const VpcConfig = defineAppModule({
+export const VpcConfig = createAppModule({
     name: "VpcConfig",
     config(app, params: VpcParams) {
-        return app.getModule(StorageOutput).apply(storage => {
+        return app.getModule(CoreOutput).apply(core => {
             const functionVpcConfig: aws.types.input.lambda.FunctionVpcConfig = {
                 subnetIds: [],
                 securityGroupIds: []
@@ -19,9 +19,9 @@ export const VpcConfig = defineAppModule({
             const enabled = params.enabled !== false;
 
             if (enabled) {
-                // If VPC is not manually disabled we extract details from storage.
-                functionVpcConfig.subnetIds = storage.vpcPrivateSubnetIds || [];
-                functionVpcConfig.securityGroupIds = storage.vpcSecurityGroupIds || [];
+                // If VPC is not manually disabled we extract details from core.
+                functionVpcConfig.subnetIds = core.vpcPrivateSubnetIds || [];
+                functionVpcConfig.securityGroupIds = core.vpcSecurityGroupIds || [];
             }
 
             return {

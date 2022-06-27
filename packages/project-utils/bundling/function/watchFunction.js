@@ -1,3 +1,5 @@
+const { getProjectApplication } = require("@webiny/cli/utils");
+
 module.exports = async options => {
     if (!options) {
         options = {};
@@ -7,11 +9,19 @@ module.exports = async options => {
     }
     const webpack = require("webpack");
 
-    const { overrides } = options;
+    const { overrides, cwd } = options;
+
+    let projectApplication;
+    try {
+        projectApplication = getProjectApplication({ cwd });
+    } catch {
+        // No need to do anything.
+    }
 
     // Load base webpack config
     let webpackConfig = require("./webpack.config")({
         production: false,
+        projectApplication,
         ...options
     });
 

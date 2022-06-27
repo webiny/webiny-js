@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, Fragment, useState } from "react";
 import { default as localStorage } from "store";
 import { plugins } from "@webiny/plugins";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
-import { config as appConfig } from "@webiny/app/config";
+import { useWcp } from "@webiny/app-admin";
 
 export interface Tenant {
     id: string;
@@ -41,6 +41,7 @@ const getInitialTenant = (): string | null => {
 
 export const TenancyProvider: React.FC = props => {
     const [currentTenant, setTenant] = useState(getInitialTenant);
+    const { canUseFeature } = useWcp();
 
     const changeTenant = useCallback(
         (tenant: string): void => {
@@ -67,10 +68,7 @@ export const TenancyProvider: React.FC = props => {
         () => ({
             tenant: currentTenant,
             setTenant: changeTenant,
-            isMultiTenant: appConfig.getKey(
-                "WEBINY_MULTI_TENANCY",
-                process.env.REACT_APP_WEBINY_MULTI_TENANCY === "true"
-            )
+            isMultiTenant: canUseFeature("multiTenancy")
         }),
         [currentTenant]
     );

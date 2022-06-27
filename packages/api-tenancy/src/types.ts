@@ -2,6 +2,7 @@ import { Context } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { Topic } from "@webiny/pubsub/types";
+import { WcpContext } from "@webiny/api-wcp/types";
 
 export interface TenantDomain {
     fqdn: string;
@@ -19,6 +20,8 @@ export interface Tenant {
     settings: TenantSettings;
     parent: string | null;
     webinyVersion?: string;
+    createdOn: string;
+    savedOn: string;
 }
 
 export interface Tenancy {
@@ -37,7 +40,7 @@ export interface Tenancy {
     install(): Promise<void>;
     getRootTenant(): Promise<Tenant>;
     getTenantById<TTenant extends Tenant = Tenant>(id: string): Promise<TTenant>;
-    listTenants<TTenant extends Tenant = Tenant>(params: ListTenantsParams): Promise<TTenant[]>;
+    listTenants<TTenant extends Tenant = Tenant>(params?: ListTenantsParams): Promise<TTenant[]>;
     createTenant<TTenant extends Tenant = Tenant>(data: CreateTenantInput): Promise<TTenant>;
     updateTenant<TTenant extends Tenant = Tenant>(
         id: string,
@@ -46,7 +49,7 @@ export interface Tenancy {
     deleteTenant(id: string): Promise<boolean>;
 }
 
-export interface TenancyContext extends Context, HttpContext, DbContext {
+export interface TenancyContext extends Context, HttpContext, DbContext, WcpContext {
     tenancy: Tenancy;
 }
 
@@ -60,12 +63,12 @@ export interface CreateTenantInput {
 }
 
 export interface ListTenantsParams {
-    parent: string;
+    parent?: string;
 }
 
 export interface TenancyStorageOperations {
     getTenantsByIds<TTenant extends Tenant = Tenant>(ids: readonly string[]): Promise<TTenant[]>;
-    listTenants<TTenant extends Tenant = Tenant>(params: ListTenantsParams): Promise<TTenant[]>;
+    listTenants<TTenant extends Tenant = Tenant>(params?: ListTenantsParams): Promise<TTenant[]>;
     createTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant>;
     updateTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant>;
     deleteTenant(id: string): Promise<void>;

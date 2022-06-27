@@ -1,3 +1,4 @@
+import { createWcpContext } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import pageBuilderPlugins from "../../src/updateSettings";
@@ -17,6 +18,7 @@ export default (params: Params = {}) => {
     });
     const handler = createHandler(
         ...ops.plugins,
+        createWcpContext(),
         graphqlHandler(),
         ...createTenancyAndSecurity(),
         new ContextPlugin<PbContext>(async context => {

@@ -1,3 +1,4 @@
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import richTextFieldPlugin from "./mocks/richTextFieldPlugin";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDdbEsPlugins from "~/index";
@@ -112,6 +113,8 @@ export default (params?: UseGqlHandlerParams) => {
     const tenant = { id: "root", name: "Root", parent: null };
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
+        createWcpContext(),
+        createWcpGraphQL(),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({

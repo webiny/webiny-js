@@ -23,6 +23,7 @@ import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient as defaultApolloClientFactory } from "./apolloClientFactory";
 import apolloLinks from "./apolloLinks";
 import { createViewCompositionProvider } from "@webiny/app-admin/base/providers/ViewCompositionProvider";
+import { TenantManager } from "@webiny/app-tenant-manager";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -49,6 +50,7 @@ const App = (props: AdminProps) => {
             <PageBuilder />
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
+            <TenantManager />
             {props.children}
         </BaseAdmin>
     );

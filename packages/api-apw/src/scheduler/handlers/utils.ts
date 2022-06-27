@@ -132,7 +132,7 @@ export const getApwSettings = async (): Promise<ApwSettings> => {
         TableName: process.env.DB_TABLE as string,
         Key: {
             PK: `APW#SETTINGS`,
-            SK: variant || "A"
+            SK: variant || "default"
         }
     };
 

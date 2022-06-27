@@ -69,7 +69,7 @@ const setupApwContext = (params: CreateApwContextParams) =>
             getPermission,
             storageOperations: createStorageOperations({
                 /**
-                 * TODO: We need to figure out a way to pass "cms" from outside (e.g. api/code/graphql)
+                 * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
                  */
                 cms: context.cms,
                 /**
@@ -95,19 +95,32 @@ const setupApwHeadlessCms = () => {
     });
 };
 
-export const createApwPageBuilderContext = (params: CreateApwContextParams) => [
-    extendPbPageSettingsSchema(),
-    setupApwContext(params),
-    setupApwPageBuilder(),
-    setupApwHeadlessCms(),
-    apwContentPagePlugins(),
-    apwHooks(),
-    createCustomAuth(params)
-];
+export const createApwPageBuilderContext = (params: CreateApwContextParams) => {
+    return new ContextPlugin<ApwContext>(async context => {
+        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
+            return;
+        }
 
-export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => [
-    setupApwContext(params),
-    setupApwHeadlessCms(),
-    apwHooks(),
-    createCustomAuth(params)
-];
+        await setupApwContext(params).apply(context);
+        await setupApwPageBuilder().apply(context);
+        await setupApwHeadlessCms().apply(context);
+        await apwContentPagePlugins().apply(context);
+        await apwHooks().apply(context);
+        await createCustomAuth(params).apply(context);
+
+        context.plugins.register(extendPbPageSettingsSchema());
+    });
+};
+
+export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => {
+    return new ContextPlugin<ApwContext>(async context => {
+        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
+            return;
+        }
+
+        await setupApwContext(params).apply(context);
+        await setupApwHeadlessCms().apply(context);
+        await apwHooks().apply(context);
+        await createCustomAuth(params).apply(context);
+    });
+};
