@@ -22,20 +22,14 @@ export const createRenderEntity = (params: CreateRenderEntityParams): Entity<any
             TYPE: {
                 type: "string"
             },
-            namespace: {
+            GSI1_PK: {
                 type: "string"
             },
-            url: {
+            GSI1_SK: {
                 type: "string"
             },
-            args: {
+            data: {
                 type: "map"
-            },
-            configuration: {
-                type: "map"
-            },
-            files: {
-                type: "list"
             },
             ...(attributes || {})
         }

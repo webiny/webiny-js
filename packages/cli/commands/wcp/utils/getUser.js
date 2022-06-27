@@ -1,6 +1,7 @@
 const { log } = require("@webiny/cli/utils");
 const { request } = require("graphql-request");
 const { getWcpPat } = require("./getWcpPat");
+const { getWcpGqlApiUrl } = require("@webiny/wcp");
 
 const GET_CURRENT_USER = /* GraphQL */ `
     query GetUser {
@@ -54,26 +55,25 @@ module.exports.getUser = async () => {
     const pat = getWcpPat();
     if (!pat) {
         throw new Error(
-            `It seems you are not logged in. Please login using the ${log.error.hl(
+            `It seems you are not logged into your WCP project. Please log in using the ${log.error.hl(
                 "yarn webiny login"
-            )} command.`
+            )} command. If you are not using WCP, make sure you don't have an "id" property in your "webiny.project.ts" file.`
         );
     }
 
     try {
-        const { WCP_GRAPHQL_API_URL } = require(".");
         const headers = { authorization: pat };
-        user = await request(WCP_GRAPHQL_API_URL, GET_CURRENT_USER, {}, headers).then(
+        user = await request(getWcpGqlApiUrl(), GET_CURRENT_USER, {}, headers).then(
             async response => {
                 const user = response.users.getCurrentUser;
 
-                const orgs = await request(WCP_GRAPHQL_API_URL, LIST_ORGS, {}, headers).then(
+                const orgs = await request(getWcpGqlApiUrl(), LIST_ORGS, {}, headers).then(
                     async response => {
                         const orgs = response.orgs.listOrgs.data;
                         for (let i = 0; i < orgs.length; i++) {
                             const org = orgs[i];
                             org.projects = await request(
-                                WCP_GRAPHQL_API_URL,
+                                getWcpGqlApiUrl(),
                                 LIST_PROJECTS,
                                 { orgId: org.id },
                                 headers
@@ -90,7 +90,7 @@ module.exports.getUser = async () => {
         );
     } catch {
         throw new Error(
-            `It seems the personal access token is incorrect or does not exist. Please log out and again log in using the ${log.error.hl(
+            `It seems the personal access token is incorrect or does not exist. Please log out and log in again using the ${log.error.hl(
                 "yarn webiny login"
             )} command.`
         );

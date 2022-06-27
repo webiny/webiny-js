@@ -6,11 +6,8 @@ const mocks = {
             id: index,
             args: {
                 render: {
-                    configuration: {
-                        db: {
-                            namespace: "root"
-                        }
-                    },
+                    tenant: "root",
+                    locale: "en-US",
                     tag: {
                         value: `main-menu-${index}`,
                         key: "pb-menu"

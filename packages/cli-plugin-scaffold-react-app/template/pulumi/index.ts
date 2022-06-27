@@ -1,4 +1,4 @@
-import { tagResources } from "@webiny/pulumi-sdk";
+import { tagResources } from "@webiny/pulumi-aws";
 
 /**
  * In order to host the React application, we deploy two cloud infrastructure resources:

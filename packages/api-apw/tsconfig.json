@@ -2,72 +2,29 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    {
-      "path": "../api-headless-cms-ddb"
-    },
-    {
-      "path": "../api-headless-cms"
-    },
-    {
-      "path": "../api-i18n"
-    },
-    {
-      "path": "../api-i18n-ddb"
-    },
-    {
-      "path": "../api-page-builder"
-    },
-    {
-      "path": "../api-page-builder-so-ddb"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-tenancy"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-logs"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../pubsub"
-    },
-    {
-      "path": "../api-security-so-ddb"
-    },
-    {
-      "path": "../api-tenancy-so-ddb"
-    },
-    {
-      "path": "../handler-args"
-    },
-    {
-      "path": "../handler-client"
-    },
-    {
-      "path": "../validation"
-    }
+    { "path": "../api-headless-cms" },
+    { "path": "../api-i18n" },
+    { "path": "../api-i18n-ddb" },
+    { "path": "../api-page-builder" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../api-wcp" },
+    { "path": "../db-dynamodb" },
+    { "path": "../error" },
+    { "path": "../handler" },
+    { "path": "../handler-args" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-client" },
+    { "path": "../handler-db" },
+    { "path": "../handler-graphql" },
+    { "path": "../handler-logs" },
+    { "path": "../plugins" },
+    { "path": "../pubsub" },
+    { "path": "../validation" },
+    { "path": "../api-headless-cms-ddb" },
+    { "path": "../api-page-builder-so-ddb" },
+    { "path": "../api-security-so-ddb" },
+    { "path": "../api-tenancy-so-ddb" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -77,38 +34,46 @@
       "~/*": ["./src/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],
-      "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
       "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../api-page-builder/src"],
-      "@webiny/api-page-builder-so-ddb/*": ["../api-page-builder-so-ddb/src/*"],
-      "@webiny/api-page-builder-so-ddb": ["../api-page-builder-so-ddb/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-args/*": ["../handler-args/src/*"],
+      "@webiny/handler-args": ["../handler-args/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/handler-client/*": ["../handler-client/src/*"],
+      "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
-      "@webiny/handler-logs/*": ["../handler-logs/src/*"],
-      "@webiny/handler-logs": ["../handler-logs/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/handler-logs/*": ["../handler-logs/src/*"],
+      "@webiny/handler-logs": ["../handler-logs/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/pubsub/*": ["../pubsub/src/*"],
       "@webiny/pubsub": ["../pubsub/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],
+      "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
+      "@webiny/api-page-builder-so-ddb/*": ["../api-page-builder-so-ddb/src/*"],
+      "@webiny/api-page-builder-so-ddb": ["../api-page-builder-so-ddb/src"],
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
       "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],

@@ -1,11 +1,11 @@
 import * as aws from "@pulumi/aws";
-import { defineAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi-sdk";
+import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 
 import { ApiGateway } from "./ApiGateway";
 
 export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 
-export const ApiCloudfront = defineAppModule({
+export const ApiCloudfront = createAppModule({
     name: "ApiCloudfront",
     config(app: PulumiApp) {
         const gateway = app.getModule(ApiGateway);

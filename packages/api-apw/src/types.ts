@@ -24,6 +24,7 @@ import { Topic } from "@webiny/pubsub/types";
 import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types";
 import HandlerClient from "@webiny/handler-client/HandlerClient";
 import { PluginsContainer } from "@webiny/plugins";
+import { WcpContextObject } from "@webiny/api-wcp/types";
 
 export interface ApwCmsEntry extends BaseCmsEntry {
     title: string;
@@ -489,6 +490,7 @@ export interface AdvancedPublishingWorkflow {
 export interface ApwContext extends Context, CmsContext {
     apw: AdvancedPublishingWorkflow;
     pageBuilder: PageBuilderContextObject;
+    wcp: WcpContextObject;
     scheduleAction: ScheduleActionContext["scheduleAction"];
 }
 

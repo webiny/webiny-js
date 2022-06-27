@@ -40,6 +40,7 @@
     "@types/md5": "^2.3.2",
     "@webiny/api-security-so-ddb": "^5.25.0",
     "@webiny/api-tenancy-so-ddb": "^5.25.0",
+    "@webiny/api-wcp": "^5.28.0",
     "@webiny/cli": "^5.28.0",
     "@webiny/handler-aws": "^5.25.0",
     "@webiny/handler-http": "^5.25.0",

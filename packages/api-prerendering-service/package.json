@@ -22,7 +22,6 @@
     "@webiny/handler-client": "^5.28.0",
     "@webiny/plugins": "^5.28.0",
     "chrome-aws-lambda": "^5.5.0",
-    "dot-prop": "^6.0.1",
     "lodash": "^4.17.20",
     "mdbid": "^1.0.0",
     "object-hash": "^2.1.1",

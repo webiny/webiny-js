@@ -1,3 +1,4 @@
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createPageBuilderContext, createPageBuilderGraphQL } from "~/graphql";
@@ -73,6 +74,8 @@ export default ({ permissions, identity, plugins, storageOperationPlugins }: Par
     const handler = createHandler(
         ...ops.plugins,
         // TODO figure out a way to load these automatically
+        createWcpContext(),
+        createWcpGraphQL(),
         fileManagerDdbPlugins(),
         graphqlHandler(),
         ...createTenancyAndSecurity({ permissions, identity }),

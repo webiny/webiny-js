@@ -24,6 +24,7 @@
     "@webiny/api-page-builder": "^5.28.0",
     "@webiny/api-security": "^5.28.0",
     "@webiny/api-tenancy": "^5.28.0",
+    "@webiny/api-wcp": "^5.28.0",
     "@webiny/db-dynamodb": "^5.28.0",
     "@webiny/error": "^5.28.0",
     "@webiny/handler": "^5.28.0",

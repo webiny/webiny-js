@@ -26,7 +26,7 @@ const execa = require("execa");
     console.log(
         `Alternatively, to deploy a single project application, run ${green(
             "yarn webiny deploy {folder} --env {env}"
-        )} command, for example: ${green("yarn webiny deploy api --env dev")}.`
+        )} command, for example: ${green("yarn webiny deploy apps/api --env dev")}.`
     );
 
     console.log(

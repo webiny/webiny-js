@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const getPackages = require("get-yarn-workspaces");
 const { argv } = require("yargs");
 
@@ -32,7 +32,7 @@ const args = {
     if (args.preview === false) {
         for (let i = 0; i < packagesWithoutPackageJson.length; i++) {
             const pkg = packagesWithoutPackageJson[i];
-            fs.rmdirSync(pkg, { recursive: true });
+            await fs.remove(pkg);
         }
 
         console.log("Empty package folders deleted.");

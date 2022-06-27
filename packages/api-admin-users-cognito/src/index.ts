@@ -36,7 +36,21 @@ export default ({ storageOperations }: Config) => {
                 storageOperations,
                 getTenant,
                 getPermission,
-                getIdentity
+                getIdentity,
+                incrementWcpSeats: async () => {
+                    if (!context.wcp) {
+                        return;
+                    }
+
+                    await context.wcp.incrementSeats();
+                },
+                decrementWcpSeats: async () => {
+                    if (!context.wcp) {
+                        return;
+                    }
+
+                    await context.wcp.decrementSeats();
+                }
             });
 
             subscribeToEvents(context);

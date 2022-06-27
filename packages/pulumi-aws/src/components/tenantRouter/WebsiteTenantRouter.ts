@@ -31,10 +31,12 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
     constructor(name: string, config: Config = {}, opts = {}) {
         super("webiny:aws:WebsiteTenantRouter", name, {}, opts);
 
-        const { region, dynamoDbTable } = getStackOutput({
-            folder: config.apiFolder || "api",
-            env: config.apiEnv || String(process.env.WEBINY_ENV)
-        });
+        const { region, dynamoDbTable } = getStackOutput<{ region: string; dynamoDbTable: string }>(
+            {
+                folder: config.apiFolder || "api",
+                env: config.apiEnv || String(process.env.WEBINY_ENV)
+            }
+        );
 
         const inlinePolicies = Promise.all([aws.getCallerIdentity({})]).then(([callerIdentity]) => [
             {
@@ -45,7 +47,7 @@ export class WebsiteTenantRouter extends pulumi.ComponentResource {
                         {
                             Sid: "PermissionForDynamodb",
                             Effect: "Allow",
-                            Action: ["dynamodb:GetItem"],
+                            Action: ["dynamodb:GetItem", "dynamodb:Query"],
                             Resource: [
                                 `arn:aws:dynamodb:${region}:${callerIdentity.accountId}:table/${dynamoDbTable}`,
                                 `arn:aws:dynamodb:${region}:${callerIdentity.accountId}:table/${dynamoDbTable}/*`

@@ -1,10 +1,5 @@
 import * as aws from "@pulumi/aws";
-import { PulumiInputValue } from "../types";
-import { PulumiApp } from "@webiny/pulumi-sdk";
-
-type OriginConfig = PulumiInputValue<
-    PulumiInputValue<aws.cloudfront.DistributionArgs["origins"]>[number]
->;
+import { PulumiApp } from "@webiny/pulumi";
 
 export function createPublicAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
@@ -14,12 +9,12 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
             forceDestroy: true,
             website: {
                 indexDocument: "index.html",
-                errorDocument: "index.html"
+                errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
         }
     });
 
-    const origin: OriginConfig = {
+    const origin: aws.types.input.cloudfront.DistributionOrigin = {
         originId: bucket.output.arn,
         domainName: bucket.output.websiteEndpoint,
         customOriginConfig: {
@@ -54,7 +49,7 @@ export function createPrivateAppBucket(app: PulumiApp, name: string) {
         config: {}
     });
 
-    const origin: OriginConfig = {
+    const origin: aws.types.input.cloudfront.DistributionOrigin = {
         originId: bucket.output.arn,
         domainName: bucket.output.bucketDomainName,
         s3OriginConfig: {

@@ -12,7 +12,8 @@
     { "path": "../plugins" },
     { "path": "../pubsub" },
     { "path": "../validation" },
-    { "path": "../api-tenancy-so-ddb" }
+    { "path": "../api-tenancy-so-ddb" },
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -41,7 +42,9 @@
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"]
     },
     "baseUrl": "."
   }

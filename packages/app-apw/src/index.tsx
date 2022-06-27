@@ -1,5 +1,5 @@
 import React from "react";
-import { Compose, MenuItemRenderer, Plugins } from "@webiny/app-admin";
+import { Compose, MenuItemRenderer, Plugins, useWcp } from "@webiny/app-admin";
 /**
  * Plugins for "page builder"
  */
@@ -48,6 +48,10 @@ import { DefaultBar } from "~/plugins/editor/defaultBar";
 import { MenuGroupRenderer } from "~/plugins/cms/MenuGroupRenderer";
 
 export const AdvancedPublishingWorkflow: React.FC = () => {
+    const { canUseFeature } = useWcp();
+    if (!canUseFeature("advancedPublishingWorkflow")) {
+        return null;
+    }
     return (
         <>
             <Compose with={PublishRevisionHoc} component={PagePublishRevision} />

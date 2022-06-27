@@ -7,7 +7,6 @@ import { PbPageData } from "~/types";
 
 const DATA_FIELDS = /* GraphQL */ `
     {
-        id
         data {
             websiteUrl
             websitePreviewUrl
@@ -44,7 +43,12 @@ export const GET_SETTINGS = gql`
     query PbGetSettings {
         pageBuilder {
             getSettings ${DATA_FIELDS}
-            getDefaultSettings ${DATA_FIELDS}
+            getDefaultSettings {
+                data {
+                    websiteUrl
+                    websitePreviewUrl
+                }
+            }
         }
     }
 `;

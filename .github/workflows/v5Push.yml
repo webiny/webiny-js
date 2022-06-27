@@ -304,10 +304,6 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
 
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: xyz/test-project
-        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
-
       - name: Create project-files artifact
         uses: actions/upload-artifact@v2
         with:
@@ -319,9 +315,13 @@ jobs:
             !xyz/test-project/**/node_modules/**/*
             !xyz/test-project/.yarn/cache/**/*
 
+      - name: Deploy Core
+        working-directory: xyz/test-project
+        run: yarn webiny deploy apps/core --env dev
+
       - name: Deploy API
         working-directory: xyz/test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy apps/api --env dev
 
       - name: Deploy Admin Area
         working-directory: xyz/test-project
@@ -551,10 +551,6 @@ jobs:
 #        working-directory: xyz/test-project
 #        run: yarn webiny --version
 #
-#      - name: Reduce prerendering service's process-queue schedule
-#        working-directory: xyz/test-project
-#        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
-#
 #      - name: Create project-files artifact
 #        uses: actions/upload-artifact@v2
 #        with:
@@ -566,9 +562,13 @@ jobs:
 #            !xyz/test-project/**/node_modules/**/*
 #            !xyz/test-project/.yarn/cache/**/*
 #
+#      - name: Deploy Core
+#        working-directory: xyz/test-project
+#        run: yarn webiny deploy apps/core --env dev
+#
 #      - name: Deploy API
 #        working-directory: xyz/test-project
-#        run: yarn webiny deploy api --env dev
+#        run: yarn webiny deploy apps/api --env dev
 #
 #      - name: Deploy Admin Area
 #        working-directory: xyz/test-project

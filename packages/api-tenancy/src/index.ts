@@ -4,16 +4,26 @@ import { TenancyContext, TenancyStorageOperations } from "./types";
 import { createTenancy } from "./createTenancy";
 import graphql from "./graphql/full.gql";
 import baseGraphQLTypes from "./graphql/types.gql";
+import { createWcpContext } from "@webiny/api-wcp";
 
 interface TenancyPluginsParams {
     storageOperations: TenancyStorageOperations;
+}
+
+async function applyBackwardsCompatibility(context: TenancyContext) {
+    if (!context.wcp) {
+        // This can happen in projects created prior to 5.29.0 release.
+        await createWcpContext().apply(context);
+    }
 }
 
 export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams) => {
     return new ContextPlugin<TenancyContext>(async context => {
         let tenantId = "root";
 
-        const multiTenancy = process.env.WEBINY_MULTI_TENANCY === "true";
+        await applyBackwardsCompatibility(context);
+
+        const multiTenancy = context.wcp.canUseFeature("multiTenancy");
 
         if (multiTenancy) {
             const { headers = {}, method } = context.http.request;
@@ -45,4 +55,4 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
     });
 };
 
-export const createTenancyGraphQL = () => graphql;
+export const createTenancyGraphQL = () => [graphql];

@@ -1,6 +1,7 @@
 /**
  * We use @ts-ignore because __getStorageOperationsPlugins and __getStorageOperationsPlugins are attached from other projects directly to JEST context.
  */
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
@@ -29,6 +30,8 @@ export default (params: UseGqlHandlerParams = {}) => {
     }
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
+        createWcpContext(),
+        createWcpGraphQL(),
         storageOperations(),
         ...createTenancyAndSecurity(),
         graphqlHandler(),

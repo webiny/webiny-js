@@ -2,19 +2,17 @@ import lodashGet from "lodash/get";
 import { ContextPlugin } from "@webiny/handler";
 import { PbContext } from "~/graphql/types";
 
-const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
-
 export default () => {
-    return new ContextPlugin<PbContext>(async context => {
+    return new ContextPlugin<PbContext>(async ({ pageBuilder }) => {
         /**
          * After a page was published, we need to render the page.
          */
-        context.pageBuilder.onAfterPagePublish.subscribe(async params => {
+        pageBuilder.onAfterPagePublish.subscribe(async params => {
             const { page, publishedPage } = params;
             /**
              * First, let's load settings.
              */
-            const settings = await context.pageBuilder.getCurrentSettings();
+            const settings = await pageBuilder.getCurrentSettings();
             const notFoundPageId = lodashGet(settings, "pages.notFound");
 
             const promises = [];
@@ -23,12 +21,7 @@ export default () => {
              * Render regular page (not-found page has special treatment; see further below)
              */
             if (page.pid !== notFoundPageId) {
-                promises.push(
-                    context.pageBuilder.prerendering.render({
-                        context,
-                        paths: [{ path: page.path }]
-                    })
-                );
+                promises.push(pageBuilder.prerendering.render({ paths: [{ path: page.path }] }));
             }
 
             const homePageId = lodashGet(settings, "pages.home");
@@ -36,54 +29,30 @@ export default () => {
              * If we just published a page that is set as current homepage, let's rerender the "/" path as well.
              */
             if (homePageId === page.pid) {
-                promises.push(
-                    context.pageBuilder.prerendering.render({
-                        context,
-                        paths: [{ path: "/" }]
-                    })
-                );
+                promises.push(pageBuilder.prerendering.render({ paths: [{ path: "/" }] }));
             }
             /**
-             * Finally, if we just published a page that is set as current not-found page, let's do
-             * two versions of it: one goes in the system-level `_NOT_FOUND_PAGE_` folder, and another
-             * one goes in the folder defined bu the page slug.
+             * Finally, if we just published a page that is set as current not-found page, add a `notFoundPage` boolean.
              */
             if (notFoundPageId === page.pid) {
                 promises.push(
-                    context.pageBuilder.prerendering.render({
-                        context,
+                    pageBuilder.prerendering.render({
                         paths: [
                             {
                                 path: page.path,
-                                configuration: {
-                                    meta: {
-                                        notFoundPage: true
-                                    },
-                                    storage: { folder: NOT_FOUND_FOLDER }
-                                }
-                            },
-                            {
-                                path: page.path,
-                                configuration: {
-                                    meta: {
-                                        notFoundPage: true
-                                    }
-                                }
+                                tags: [{ key: "notFoundPage", value: true }]
                             }
                         ]
                     })
                 );
             }
             /**
-             * If we had a published page and the URL on which it was published is different than
-             * the URL of the just published page, then let's flush the page on old URL.
+             * If we had a published page and the URL on which it was published is different from
+             * the URL of the page that was just published, then let's flush the page on old URL.
              */
             if (publishedPage && publishedPage.path !== page.path) {
                 promises.push(
-                    context.pageBuilder.prerendering.flush({
-                        context,
-                        paths: [{ path: publishedPage.path }]
-                    })
+                    pageBuilder.prerendering.flush({ paths: [{ path: publishedPage.path }] })
                 );
             }
 
