@@ -33,6 +33,7 @@
     "@webiny/api-security-so-ddb": "^5.28.0",
     "@webiny/api-tenancy": "^5.28.0",
     "@webiny/api-tenancy-so-ddb": "^5.28.0",
+    "@webiny/api-wcp": "^5.28.0",
     "@webiny/cli": "^5.28.0",
     "@webiny/handler": "^5.28.0",
     "@webiny/handler-aws": "^5.28.0",

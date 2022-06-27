@@ -1,13 +1,13 @@
-import { RenderUrlPostHtmlParams } from "~/render/types";
 import { NodeAPI } from "posthtml";
+import { getIsNotFoundPage } from "../utils";
+import { RenderUrlPostHtmlParams } from "~/render/types";
 
 export default (args: Pick<RenderUrlPostHtmlParams, "args">) => async (tree: NodeAPI) => {
-    const meta = args?.args?.args?.configuration?.meta;
-    if (!meta || !meta.notFoundPage) {
+    const render = args?.args?.args;
+
+    if (!getIsNotFoundPage(render)) {
         return;
     }
-
-    const path = args?.args?.args?.path;
 
     console.log("Injecting not-found page path (__PS_NOT_FOUND_PAGE__) into HTML.");
 
@@ -15,7 +15,7 @@ export default (args: Pick<RenderUrlPostHtmlParams, "args">) => async (tree: Nod
         if (!node.content) {
             node.content = [];
         }
-        node.content.push(`<script>window.__PS_NOT_FOUND_PAGE__ = "${path}";</script>`);
+        node.content.push(`<script>window.__PS_NOT_FOUND_PAGE__ = "${render?.path}";</script>`);
         return node;
     });
 };

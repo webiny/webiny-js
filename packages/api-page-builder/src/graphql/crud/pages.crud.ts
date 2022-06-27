@@ -1377,10 +1377,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
         },
         prerendering: {
             flush: async (args: FlushParams) => {
-                return args.context.pageBuilder.getPrerenderingHandlers().flush(args);
+                return context.pageBuilder.getPrerenderingHandlers().flush(args);
             },
             render: async (args: RenderParams) => {
-                return args.context.pageBuilder.getPrerenderingHandlers().render(args);
+                return context.pageBuilder.getPrerenderingHandlers().render(args);
             }
         }
     };

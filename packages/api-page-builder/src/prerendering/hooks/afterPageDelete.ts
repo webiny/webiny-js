@@ -2,8 +2,8 @@ import { PbContext } from "~/graphql/types";
 import { ContextPlugin } from "@webiny/handler";
 
 export default () => {
-    return new ContextPlugin<PbContext>(async context => {
-        context.pageBuilder.onAfterPageDelete.subscribe(async params => {
+    return new ContextPlugin<PbContext>(async ({ pageBuilder }) => {
+        pageBuilder.onAfterPageDelete.subscribe(async params => {
             const { page, publishedPage } = params;
             /**
              * Published pages have this record.
@@ -13,8 +13,7 @@ export default () => {
             }
 
             if (page.version === 1) {
-                return context.pageBuilder.prerendering.flush({
-                    context,
+                return pageBuilder.prerendering.flush({
                     paths: [{ path: publishedPage.path }]
                 });
             }
@@ -24,8 +23,7 @@ export default () => {
              */
             const isPublished = publishedPage.id === page.id;
             if (isPublished) {
-                return context.pageBuilder.prerendering.flush({
-                    context,
+                return pageBuilder.prerendering.flush({
                     paths: [{ path: publishedPage.path }]
                 });
             }

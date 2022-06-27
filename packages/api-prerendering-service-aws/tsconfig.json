@@ -6,8 +6,7 @@
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-args" },
-    { "path": "../handler-client" },
-    { "path": "../plugins" }
+    { "path": "../handler-client" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,9 +23,7 @@
       "@webiny/handler-args/*": ["../handler-args/src/*"],
       "@webiny/handler-args": ["../handler-args/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
-      "@webiny/handler-client": ["../handler-client/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/handler-client": ["../handler-client/src"]
     },
     "baseUrl": "."
   }

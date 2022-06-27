@@ -1,3 +1,4 @@
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import path from "path";
 import fs from "fs";
 import { createHandler } from "@webiny/handler-aws";
@@ -81,6 +82,8 @@ export default (params: UseGqlHandlerParams = {}) => {
 
     const handler = createHandler(
         ...plugins,
+        createWcpContext(),
+        createWcpGraphQL(),
         graphqlHandlerPlugins(),
         ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
         i18nContext(),

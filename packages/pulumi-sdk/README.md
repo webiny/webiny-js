@@ -74,16 +74,3 @@ if (isPreview) {
   await toConsole();
 }
 ```
-
-### Development
-
-#### Updating versions
-Currently, versions of the Pulumi code are hard-coded. For example, the version of Pulumi CLI we're currently downloading is set to `2.16.2`, the AWS plugin `3.22.0`. We define these in a couple of places:
-
-1. In `src/index.ts`, check `AWS_PLUGIN_VERSION`.
-2. In `src/downloadBinaries.ts`, check `PULUMI_VERSION`.
-3. Finally, in `package.json`, we have the `@pulumi/aws` and `@pulumi/pulumi` in `dependencies`.
-
-When updating versions, make sure the versions in `package.json` and in files mentioned in `1` and `2`, are synced.
-
-And of course, once you change the version, please test with current dev repo at least. Everything should still be deployable from scratch. 

@@ -15,7 +15,8 @@ import {
     updateScaffoldsIndexFile,
     formatCode
 } from "@webiny/cli-plugin-scaffold/utils";
-
+import { getApiProjectApplicationFolder } from "@webiny/cli/utils";
+import { projectHasCodeFolders } from "./utils";
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
@@ -37,11 +38,22 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             "Creates a new Admin Area module and extends your GraphQL API with\n  supporting CRUD query and mutation operations." +
             (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
         questions: ({ context }) => {
+            const projectWithCodeFolders = projectHasCodeFolders(context.project.root);
+            let gqlSuffixPath = "/graphql/src/plugins";
+            if (projectWithCodeFolders) {
+                gqlSuffixPath = "/code" + gqlSuffixPath;
+            }
+
+            let adminPath = `apps/admin/src/plugins`;
+            if (projectWithCodeFolders) {
+                adminPath = `apps/admin/code/src/plugins`;
+            }
+
             return [
                 {
                     name: "graphqlPluginsFolderPath",
                     message: "Enter GraphQL API plugins folder path:",
-                    default: `api/code/graphql/src/plugins`,
+                    default: `${getApiProjectApplicationFolder(context.project)}${gqlSuffixPath}`,
                     validate: (location: string) => {
                         if (location.length < 2) {
                             return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
@@ -53,7 +65,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "adminPluginsFolderPath",
                     message: "Enter Admin Area plugins folder path:",
-                    default: `apps/admin/code/src/plugins`,
+                    default: adminPath,
                     validate: (location: string) => {
                         if (location.length < 2) {
                             return `Please enter Admin Area ${chalk.cyan("plugins")} folder path.`;
@@ -299,7 +311,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             await formatCode(["**/*.ts", "**/*.tsx"], { cwd: adminNewCodePath });
         },
-        onSuccess: async () => {
+        onSuccess: async ({ context }) => {
             console.log();
             console.log(
                 `${chalk.green(
@@ -309,9 +321,17 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             console.log();
             console.log(chalk.bold("Next Steps"));
 
+            const projectWithCodeFolders = projectHasCodeFolders(context.project.root);
+            let suffixPath = "/graphql";
+            if (projectWithCodeFolders) {
+                suffixPath = "/code" + suffixPath;
+            }
+
             console.log(
                 `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
-                    "yarn webiny watch api/code/graphql --env dev"
+                    `yarn webiny watch ${getApiProjectApplicationFolder(
+                        context.project
+                    )}${suffixPath} --env dev`
                 )} command`
             );
 

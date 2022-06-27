@@ -11,33 +11,34 @@ import { validateContentReview } from "./validateContentReview";
 import { validateComment } from "./validateComment";
 import { isInstallationPending } from "../utils";
 
-export default () => [
+export default () =>
     /**
      * Hook into CMS events and execute business logic.
      */
     new ContextPlugin<ApwContext>(async context => {
-        if (isInstallationPending(context)) {
+        const { security, apw, tenancy, i18n } = context;
+
+        if (isInstallationPending({ tenancy, i18n })) {
             return;
         }
 
-        validateContentReview(context);
+        validateContentReview({ apw });
 
-        validateChangeRequest(context);
+        validateChangeRequest({ apw });
 
-        validateComment(context);
+        validateComment({ apw });
 
-        createReviewerFromIdentity(context);
+        createReviewerFromIdentity({ security, apw });
 
         initializeContentReviewSteps(context);
 
-        updatePendingChangeRequestsCount(context);
+        updatePendingChangeRequestsCount({ apw });
 
-        updateTotalCommentsCount(context);
+        updateTotalCommentsCount({ apw });
 
-        updateLatestCommentId(context);
+        updateLatestCommentId({ apw });
 
-        deleteCommentsAfterChangeRequest(context);
+        deleteCommentsAfterChangeRequest({ apw });
 
-        deleteChangeRequestsWithContentReview(context);
-    })
-];
+        deleteChangeRequestsWithContentReview({ apw });
+    });

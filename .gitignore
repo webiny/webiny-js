@@ -28,6 +28,7 @@ cypress/screenshots/*
 .pulumi
 Pulumi.*
 !Pulumi.yaml
+!Pulumi.ts
 pbInstalation.zip
 globalConfig.json
 .graphqlconfig

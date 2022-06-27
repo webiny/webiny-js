@@ -4,7 +4,7 @@ import { createTenancy } from "~/createTenancy";
 describe(`Test "Tenancy" install`, () => {
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
-    let tenancy: Tenancy = null;
+    let tenancy: Tenancy;
 
     beforeEach(async () => {
         tenancy = await createTenancy({
@@ -36,6 +36,8 @@ describe(`Test "Tenancy" install`, () => {
             description: "The top-level Webiny tenant.",
             webinyVersion: process.env.WEBINY_VERSION,
             parent: null,
+            createdOn: expect.any(String),
+            savedOn: expect.any(String),
             status: "active",
             settings: {
                 domains: []

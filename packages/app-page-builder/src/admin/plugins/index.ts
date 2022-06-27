@@ -4,7 +4,6 @@ import previewContent from "./pageDetails/previewContent";
 import pageRevisions from "./pageDetails/pageRevisions";
 import menuItems from "./menuItems";
 import globalSearch from "./globalSearch";
-import settings from "./settings";
 import routes from "./routes";
 import installation from "./installation";
 import permissionRenderer from "./permissionRenderer";
@@ -16,7 +15,6 @@ export default () => [
     pageRevisions,
     menuItems,
     globalSearch,
-    settings,
     routes,
     installation,
     permissionRenderer

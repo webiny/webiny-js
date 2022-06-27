@@ -473,7 +473,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                             // We only need the `id` of the newly created page.
                             await context.pageBuilder.prerendering.render({
-                                context,
                                 paths: [{ path: page.path }]
                             });
 

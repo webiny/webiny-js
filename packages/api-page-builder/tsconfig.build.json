@@ -8,6 +8,7 @@
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-upgrade/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-args/tsconfig.build.json" },
@@ -22,7 +23,8 @@
     { "path": "../api-file-manager-ddb/tsconfig.build.json" },
     { "path": "../api-i18n-ddb/tsconfig.build.json" },
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
-    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" }
+    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
+    { "path": "../api-wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

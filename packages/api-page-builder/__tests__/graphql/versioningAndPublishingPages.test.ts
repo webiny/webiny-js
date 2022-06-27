@@ -552,7 +552,7 @@ describe("versioning and publishing pages", () => {
                             },
                             status: "published",
                             title: "Untitled",
-                            url: "/pages-test",
+                            url: "https://www.test.com/pages-test",
                             version: 1
                         },
                         error: null

@@ -1,10 +1,11 @@
-import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { PageBuilderStorageOperations, PbContext, Settings } from "~/types";
+import { migrate, putDefaultSettings, SettingsInput } from "./migration/migrate";
 
 export interface HandlerArgs {
     data: Settings;
+    migrate?: boolean;
 }
 
 interface HandlerResponseError {
@@ -14,10 +15,16 @@ interface HandlerResponseError {
 }
 
 export interface HandlerResponse {
-    data: Settings | null;
+    data: boolean;
     error: HandlerResponseError | null;
 }
 
+function createSettings(data: Settings): SettingsInput {
+    return {
+        ...data.prerendering,
+        websiteUrl: data.websiteUrl
+    };
+}
 /**
  * Updates system default settings, for all tenants and all locales. Of course, these values can later be overridden
  * via the settings UI in the Admin app. But it's with these settings that every new tenant / locale will start off.
@@ -36,58 +43,31 @@ export default (
             try {
                 const { invocationArgs: args } = context;
 
-                const settingsParams: { type: string; tenant: false; locale: false } = {
-                    type: "default",
-                    tenant: false,
-                    locale: false
-                };
+                // In 5.29.0, we need to migrate data for Prerendering Service and Tenants
+                if (process.env.NODE_ENV !== "test") {
+                    const executed = await migrate(
+                        storageOperations,
+                        createSettings(args.data),
+                        args.migrate === true
+                    );
 
-                let original = await storageOperations.settings.get({
-                    where: settingsParams
-                });
-
-                if (!original) {
-                    const input: any = settingsParams;
-                    await storageOperations.settings.create({
-                        input,
-                        settings: {
-                            ...input
-                        }
-                    });
-                    original = {
-                        ...input
-                    };
+                    if (executed) {
+                        return {
+                            data: true,
+                            error: null
+                        };
+                    }
                 }
 
-                const defaultSettingModel = new DefaultSettingsModel();
-                defaultSettingModel.populate(original).populate(args.data);
+                await putDefaultSettings(storageOperations, createSettings(args.data));
 
-                await defaultSettingModel.validate();
-
-                const updateSettingsData = await defaultSettingModel.toJSON();
-
-                const settings: Settings = {
-                    ...original,
-                    ...updateSettingsData,
-                    ...settingsParams
-                };
-
-                await storageOperations.settings.update({
-                    input: updateSettingsData,
-                    original: original as Settings,
-                    settings
-                });
-
-                delete settings.locale;
-                delete settings.tenant;
-                delete (settings as any).type;
                 return {
-                    data: settings,
+                    data: true,
                     error: null
                 };
             } catch (ex) {
                 return {
-                    data: null,
+                    data: false,
                     error: {
                         message: ex.message,
                         code: ex.code || "UNKNOWN",
