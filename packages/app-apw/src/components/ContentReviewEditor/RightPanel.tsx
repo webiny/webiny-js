@@ -26,11 +26,13 @@ export const RightPanel: React.FC = () => {
      * so that the latest comment is always visible.
      */
     const scrollToLatestComment = () => {
-        if (ref && ref.current) {
-            if (typeof ref.current.scrollIntoView === "function") {
-                ref.current.scrollIntoView({ behavior: "smooth", block: "end" });
-            }
+        if (!ref.current || typeof ref.current.scrollIntoView !== "function") {
+            return;
         }
+        ref.current.scrollIntoView({
+            behavior: "smooth",
+            block: "end"
+        });
     };
 
     if (!changeRequestId) {

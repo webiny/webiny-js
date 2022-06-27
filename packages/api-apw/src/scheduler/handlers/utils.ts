@@ -89,7 +89,7 @@ export const encodeToken = ({ id, tenant, locale }: EncodeTokenParams) => {
 
 export const TOKEN_PREFIX = "apw-";
 
-export const decodeToken = (token: string): EncodeTokenParams => {
+export const decodeToken = (token: string): Partial<EncodeTokenParams> => {
     const auth = token.slice(TOKEN_PREFIX.length);
     const [id, tenant, locale] = auth.split("__");
 
