@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+
+### Bug Fixes
+
+* convert `run` back to sync method ([c32d008](https://github.com/webiny/webiny-js/commit/c32d008e50e781ebb12493d5270afc98c6f82767))
+* **serverless-cms-aws:** replace require with import [no ci] ([880abcf](https://github.com/webiny/webiny-js/commit/880abcfb159a82518e8f0023d2b54ee414d88983))
+
+
+
+
+
 # [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
 
 
