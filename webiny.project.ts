@@ -1,5 +1,6 @@
 // @ts-nocheck
 export default {
+    id: "adrian/test",
     // Uncomment this to test WCP-related functionality.
     // id: "webiny/webiny-js",
     name: "webiny-js",
