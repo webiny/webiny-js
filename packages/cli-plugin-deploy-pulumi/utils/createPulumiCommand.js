@@ -40,7 +40,6 @@ const createPulumiCommand = ({
             cwd: path.join(cwd, inputs.folder)
         });
 
-
         // If needed, let's create a project application workspace.
         if (createProjectApplicationWorkspaceParam !== false) {
             if (projectApplication.type === "v5-workspaces") {
