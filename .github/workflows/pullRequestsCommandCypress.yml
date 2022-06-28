@@ -8,8 +8,8 @@ env:
 name: Pull Requests Command - Cypress
 
 jobs:
-  check_comments:
-    name: Check comments for /test
+  check_comment:
+    name: Check comment for /cypress
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request }}
     steps:
@@ -31,7 +31,7 @@ jobs:
           body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/adrians5j/test-repo/actions/runs/${{ github.run_id }}). :sparkles:"
 
   e2e-wby-cms-ddb-init:
-    needs: check_comments
+    needs: check_comment
     name: E2E (DDB) - Init
     runs-on: ubuntu-latest
     outputs:
@@ -284,7 +284,7 @@ jobs:
 
   e2e-wby-cms-ddb-es-init:
     name: E2E (DDB+ES) - Init
-    needs: check_comments
+    needs: check_comment
     runs-on: ubuntu-latest
     outputs:
       day: ${{ steps.get-day.outputs.day }}
