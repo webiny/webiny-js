@@ -25,10 +25,7 @@ jobs:
         run: echo "The command was '${{ steps.command.outputs.command-name }}' with arguments '${{ steps.command.outputs.command-arguments }}'"
 
       - name: test event
-        run: echo node --eval "console.log(${{ github.event }})"
-
-      - name: test event
-        run: echo '${{ toJSON(github) }}'
+        run: echo "${{ toJSON(github) }}"
 
 #  e2e-wby-cms-ddb-init:
 #    name: E2E (DDB) - Init
