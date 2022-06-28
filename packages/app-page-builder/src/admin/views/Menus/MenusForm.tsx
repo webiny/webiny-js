@@ -188,12 +188,20 @@ const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
                             </Cell>
                             <Cell span={6}>
                                 <Bind name="slug" validators={validation.create("required")}>
-                                    <Input disabled={data.createdOn} label={t`Slug`} data-testid="pb.menu.create.slug" />
+                                    <Input
+                                        disabled={data.createdOn}
+                                        label={t`Slug`}
+                                        data-testid="pb.menu.create.slug"
+                                    />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="description">
-                                    <Input rows={5} label={t`Description`} data-testid="pb.menu.create.description"/>
+                                    <Input
+                                        rows={5}
+                                        label={t`Description`}
+                                        data-testid="pb.menu.create.description"
+                                    />
                                 </Bind>
                             </Cell>
                         </Grid>

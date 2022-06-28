@@ -329,6 +329,7 @@ export class MultiAutoComplete extends React.Component<
                                     item,
                                     className: classNames(itemClassNames)
                                 })}
+                                data-testid="pb.menu.tags.autocomplete.li"
                             >
                                 {renderItem.call(this, item, index)}
                             </li>
@@ -414,6 +415,7 @@ export class MultiAutoComplete extends React.Component<
                                 className={style.pagination.searchInput}
                                 placeholder={"Search selected..."}
                                 value={this.state.multipleSelectionSearch}
+                                data-testid="pb.pagination.search"
                                 onChange={value => {
                                     this.setMultipleSelectionSearch(value);
                                     this.setMultipleSelectionPage(value ? 1 : 0);
@@ -462,6 +464,7 @@ export class MultiAutoComplete extends React.Component<
                                             </ListItemGraphic>
                                             <Input
                                                 value={this.state.reorderFormValue}
+                                                data-testid="pb.pagination.input"
                                                 onKeyDown={(e: any) => {
                                                     const key = e.key;
                                                     if (key !== "Escape" && key !== "Enter") {

@@ -27,9 +27,11 @@ context("Menus Module", () => {
         cy.findByTestId("data-list-new-record-button").click();
 
         // Test "Page List".
-        cy.findByText(/\+ Add Menu Item/i).click();
-        cy.findByText("Page list").click();
-        cy.findByLabelText("Title").type(`Page List ${id}`);
+        cy.get("[data-testid='pb.menu.create.items.button'] > button").click();
+        cy.getByTestId("pb.menu.create.items.button").within(() => {
+            cy.findByText("Page list").click();
+            cy.findByLabelText("Title").type(`Page List ${id}`);
+        })
         cy.findByText(/Save Menu Item/i)
             .click()
             .wait(200);
