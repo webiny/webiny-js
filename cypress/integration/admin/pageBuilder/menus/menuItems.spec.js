@@ -31,7 +31,7 @@ context("Menus Module", () => {
         cy.getByTestId("pb.menu.create.items.button").within(() => {
             cy.findByText("Page list").click();
             cy.findByLabelText("Title").type(`Page List ${id}`);
-        })
+        });
         cy.findByText(/Save Menu Item/i)
             .click()
             .wait(200);

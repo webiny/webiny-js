@@ -43,7 +43,10 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="category" validators={validation.create("required")}>
-                                    <CategoriesAutocomplete label="Category" data-testid="pb.menu.new.listitem.title"/>
+                                    <CategoriesAutocomplete
+                                        label="Category"
+                                        data-testid="pb.menu.new.listitem.title"
+                                    />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -54,7 +57,10 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                     defaultValue={"publishedOn"}
                                     validators={validation.create("required")}
                                 >
-                                    <Select label="Sort by..." data-testid="pb.menu.new.listitem.title">
+                                    <Select
+                                        label="Sort by..."
+                                        data-testid="pb.menu.new.listitem.title"
+                                    >
                                         <option value="publishedOn">Published on</option>
                                         <option value="title">Title</option>
                                     </Select>
@@ -68,7 +74,10 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                     defaultValue={"desc"}
                                     validators={validation.create("required")}
                                 >
-                                    <Select label="Sort direction..." data-testid="pb.menu.new.listitem.title">
+                                    <Select
+                                        label="Sort direction..."
+                                        data-testid="pb.menu.new.listitem.title"
+                                    >
                                         <option value="asc">Ascending</option>
                                         <option value="desc">Descending</option>
                                     </Select>
@@ -90,7 +99,10 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                         defaultValue={"all"}
                                         validators={validation.create("required")}
                                     >
-                                        <Select label="Tags rule..." data-testid="pb.menu.new.listitem.title">
+                                        <Select
+                                            label="Tags rule..."
+                                            data-testid="pb.menu.new.listitem.title"
+                                        >
                                             <option value="all">Must include all tags</option>
                                             <option value="any">
                                                 Must include any of the tags
@@ -102,7 +114,12 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <ButtonSecondary onClick={onCancel} data-testid="pb.menu.new.listitem.button.cancel">Cancel</ButtonSecondary>
+                                <ButtonSecondary
+                                    onClick={onCancel}
+                                    data-testid="pb.menu.new.listitem.button.cancel"
+                                >
+                                    Cancel
+                                </ButtonSecondary>
                                 <ButtonPrimary
                                     onClick={ev => {
                                         submit(ev);

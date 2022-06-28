@@ -30,6 +30,7 @@ export class InputElement extends FormFieldElement {
                 afterChange={(value: string, form) => this.onAfterChange(value, form)}
             >
                 <Input
+                    data-testid={`input-element-${this.getLabel(props)}`}
                     label={this.getLabel(props)}
                     placeholder={this.getPlaceholder(props)}
                     disabled={this.getIsDisabled(props)}
