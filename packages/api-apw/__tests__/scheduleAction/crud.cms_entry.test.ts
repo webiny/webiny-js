@@ -411,5 +411,6 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
          * Let's create one schedule action item.
          */
         expect(ex).toBeInstanceOf(Error);
+        expect(ex?.message).toEqual("Validation failed.");
     });
 });
