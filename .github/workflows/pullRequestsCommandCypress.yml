@@ -8,14 +8,13 @@ env:
 name: Pull Requests Command - Issue Comments
 jobs:
   check_comments:
-    name: Check comments for /test
+    name: Check comments for /cy
     runs-on: ubuntu-latest
     steps:
-      - name: Check for Command
-        id: command
+      - id: cy
         uses: xt0rted/slash-command-action@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GH_TOKEN }}
           command: cy
           reaction: "true"
           reaction-type: "eyes"
