@@ -14,17 +14,20 @@ const getIsoStringTillMinutes = (datetime: string): string => {
     return datetime.slice(0, datetime.lastIndexOf(TIME_SEPARATOR));
 };
 
+const MODEL_ID = "testModelId";
+
 const EXPECTED_APW_SCHEDULED_ACTION_DATA = expect.objectContaining({
     datetime: expect.stringMatching(/^20/),
-    type: "page",
-    action: "publish",
-    entryId: expect.any(String)
+    type: ApwContentTypes.CMS_ENTRY,
+    action: ApwScheduleActionTypes.PUBLISH,
+    entryId: expect.any(String),
+    modelId: MODEL_ID
 });
 
-describe("Schedule action CRUD Test", () => {
+describe("Schedule action CRUD Test - CMS Entry type", () => {
     const { handler } = useHandler();
 
-    test("Should able to create, update, list, get and delete  schedule action items", async () => {
+    test("Should able to create, update, list, get and delete schedule action items", async () => {
         const context = await handler();
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -33,8 +36,9 @@ describe("Schedule action CRUD Test", () => {
         const scheduledAction = await scheduleActionCrud.create({
             datetime: new Date().toISOString(),
             action: ApwScheduleActionTypes.PUBLISH,
-            type: ApwContentTypes.PAGE,
-            entryId: "62303be79cfe6e0009d8d9cf#0001"
+            type: ApwContentTypes.CMS_ENTRY,
+            entryId: "62303be79cfe6e0009d8d9cf#0001",
+            modelId: MODEL_ID
         });
         expect(scheduledAction).toEqual({
             id: expect.any(String),
@@ -101,8 +105,9 @@ describe("Schedule action CRUD Test", () => {
         const updateItemResult = await scheduleActionCrud.update(scheduledAction.id, {
             datetime: new Date().toISOString(),
             action: ApwScheduleActionTypes.UNPUBLISH,
-            type: ApwContentTypes.PAGE,
-            entryId: "62303be79cfe6e0009d8d9cf#0001"
+            type: ApwContentTypes.CMS_ENTRY,
+            entryId: "62303be79cfe6e0009d8d9cf#0001",
+            modelId: MODEL_ID
         });
         expect(updateItemResult).toEqual({
             id: expect.any(String),
@@ -152,8 +157,9 @@ describe("Schedule action CRUD Test", () => {
             const scheduledAction = await scheduleActionCrud.create({
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
-                type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001"
+                type: ApwContentTypes.CMS_ENTRY,
+                entryId: "62303be79cfe6e0009d8d9cf#0001",
+                modelId: MODEL_ID
             });
             scheduledActions.push(scheduledAction);
         }
@@ -240,8 +246,9 @@ describe("Schedule action CRUD Test", () => {
             const scheduledAction = await scheduleActionCrud.create({
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
-                type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001"
+                type: ApwContentTypes.CMS_ENTRY,
+                entryId: "62303be79cfe6e0009d8d9cf#0001",
+                modelId: MODEL_ID
             });
             scheduledActions.push(scheduledAction);
         }
@@ -309,8 +316,9 @@ describe("Schedule action CRUD Test", () => {
             const scheduledAction = await scheduleActionCrud.create({
                 datetime: new Date(now).toISOString(),
                 action: ApwScheduleActionTypes.PUBLISH,
-                type: ApwContentTypes.PAGE,
-                entryId: "62303be79cfe6e0009d8d9cf#0001"
+                type: ApwContentTypes.CMS_ENTRY,
+                entryId: "62303be79cfe6e0009d8d9cf#0001",
+                modelId: MODEL_ID
             });
             scheduledActions.push(scheduledAction);
         }
@@ -381,5 +389,27 @@ describe("Schedule action CRUD Test", () => {
          */
         const currentTaskNoTasks = await scheduleActionCrud.getCurrentTask();
         expect(currentTaskNoTasks).toBe(null);
+    });
+
+    test("Validation should fail when modelId is not sent", async () => {
+        const context = await handler();
+        const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
+
+        let ex: Error | null = null;
+
+        try {
+            await scheduleActionCrud.create({
+                datetime: new Date().toISOString(),
+                action: ApwScheduleActionTypes.PUBLISH,
+                type: ApwContentTypes.CMS_ENTRY,
+                entryId: "62303be79cfe6e0009d8d9cf#0001"
+            });
+        } catch (er) {
+            ex = er;
+        }
+        /**
+         * Let's create one schedule action item.
+         */
+        expect(ex).toBeInstanceOf(Error);
     });
 });

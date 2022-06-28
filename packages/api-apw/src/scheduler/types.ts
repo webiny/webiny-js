@@ -97,7 +97,7 @@ export interface ApwScheduleActionData {
     entryId: string;
     /**
      * We will add modelId to the data for now.
-     * TODO extract in separate package
+     * TODO extract in separate package?
      */
     modelId?: string;
 }

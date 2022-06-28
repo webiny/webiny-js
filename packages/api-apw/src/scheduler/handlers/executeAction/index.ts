@@ -86,55 +86,55 @@ const executeActionLambda = ({
             /**
              * Execute all actions.
              */
-            if (items && items.length) {
-                log(`Found ${items.length} actions.`);
-                for (let i = 0; i < items.length; i++) {
-                    const item = items[i];
-                    log(
-                        `Performing mutation "${item.data.action}" on "${item.data.type}" at "${item.data.datetime}"`
+            if (!items || items.length === 0) {
+                return;
+            }
+            log(`Found ${items.length} actions.`);
+            for (const item of items) {
+                log(
+                    `Performing mutation "${item.data.action}" on "${item.data.type}" at "${item.data.datetime}"`
+                );
+
+                const plugin = getApplicationGraphQLPlugin(item.data);
+                if (!plugin) {
+                    console.error(
+                        `There is no plugin to determine GraphQL endpoint and mutations for type "${item.data.type}".`
                     );
-
-                    const plugin = getApplicationGraphQLPlugin(item.data);
-                    if (!plugin) {
-                        console.error(
-                            `There is no plugin to determine GraphQL endpoint and mutations for type "${item.data.type}".`
-                        );
-                        console.log(JSON.stringify(item));
-                        continue;
-                    }
-
-                    const name = plugin.getArn(apwSettings);
-
-                    const body = plugin.getGraphQLBody(item.data);
-
-                    if (!body) {
-                        console.error(
-                            `There is no GraphQL body defined, in the Plugin, for type "${item.data.type}".`
-                        );
-                        console.log(JSON.stringify(item));
-                        continue;
-                    }
-
-                    // Perform the actual action call.
-                    const response = await context.handlerClient.invoke({
-                        name,
-                        payload: {
-                            httpMethod: "POST",
-                            headers: {
-                                Authorization: encodeToken({
-                                    id: item.id,
-                                    locale: item.locale,
-                                    tenant: item.tenant
-                                })
-                            },
-                            body: JSON.stringify(body)
-                        },
-                        await: true
-                    });
-                    console.log(JSON.stringify({ body: response.body }, null, 2));
-
-                    // TODO: Maybe update the status like error in original item in DB.
+                    console.log(JSON.stringify(item));
+                    continue;
                 }
+
+                const name = plugin.getArn(apwSettings);
+
+                const body = plugin.getGraphQLBody(item.data);
+
+                if (!body) {
+                    console.error(
+                        `There is no GraphQL body defined, in the Plugin, for type "${item.data.type}".`
+                    );
+                    console.log(JSON.stringify(item));
+                    continue;
+                }
+
+                // Perform the actual action call.
+                const response = await context.handlerClient.invoke({
+                    name,
+                    payload: {
+                        httpMethod: "POST",
+                        headers: {
+                            Authorization: encodeToken({
+                                id: item.id,
+                                locale: item.locale,
+                                tenant: item.tenant
+                            })
+                        },
+                        body: JSON.stringify(body)
+                    },
+                    await: true
+                });
+                console.log(JSON.stringify({ body: response.body }, null, 2));
+
+                // TODO: Maybe update the status like error in original item in DB.
             }
         } catch (e) {
             log("[HANDLER_EXECUTE_ACTION] Error => ", e);
