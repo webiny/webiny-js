@@ -99,14 +99,10 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                                         defaultValue={"all"}
                                         validators={validation.create("required")}
                                     >
-<<<<<<< HEAD
                                         <Select
                                             label="Tags rule..."
                                             data-testid="pb.menu.new.listitem.tagsrule"
                                         >
-=======
-                                        <Select label="Tags rule..." data-testid="pb.menu.new.listitem.title">
->>>>>>> 97ca9a637f (fix(cypress): pb menu items tests)
                                             <option value="all">Must include all tags</option>
                                             <option value="any">
                                                 Must include any of the tags
@@ -118,16 +114,12 @@ const LinkForm: React.FC<LinkFormProps> = ({ data, onSubmit, onCancel }) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-<<<<<<< HEAD
                                 <ButtonSecondary
                                     onClick={onCancel}
                                     data-testid="pb.menu.new.listitem.button.cancel"
                                 >
                                     Cancel
                                 </ButtonSecondary>
-=======
-                                <ButtonSecondary onClick={onCancel} data-testid="pb.menu.new.listitem.button.cancel">Cancel</ButtonSecondary>
->>>>>>> 97ca9a637f (fix(cypress): pb menu items tests)
                                 <ButtonPrimary
                                     onClick={ev => {
                                         submit(ev);
