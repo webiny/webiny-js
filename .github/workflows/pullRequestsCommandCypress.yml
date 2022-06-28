@@ -28,7 +28,7 @@ jobs:
         run: echo node --eval "console.log(${{ github.event }})"
 
       - name: test event
-        run: echo node --eval "console.log(${{ github.event.pull_request }})"
+        run: echo toJSON(${{ github.event}}))
 
 #  e2e-wby-cms-ddb-init:
 #    name: E2E (DDB) - Init
