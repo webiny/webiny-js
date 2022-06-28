@@ -34,7 +34,6 @@ export default (params: Params = {}) => {
                 };
             }
         } as ContextPlugin<ApwContext>,
-
         ...createTenancyAndSecurity(),
         graphqlHandler(),
         {

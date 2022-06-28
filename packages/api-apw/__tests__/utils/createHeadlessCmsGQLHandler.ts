@@ -61,7 +61,7 @@ import {
     contentEntryGetQueryFactory,
     contentEntryUpdateMutationFactory
 } from "./graphql/cms.entry";
-import { contextTenant, contextCommon } from "./context";
+import { contextSecurity, contextCommon } from "./context";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -125,7 +125,7 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
                 identity
             }),
-            contextTenant({ tenant, identity }),
+            contextSecurity({ tenant, identity }),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),

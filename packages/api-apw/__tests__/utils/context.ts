@@ -61,7 +61,7 @@ interface ContextTenantParams {
     tenant: Pick<Tenant, "id" | "name" | "parent">;
     identity?: SecurityIdentity;
 }
-export const contextTenant = ({
+export const contextSecurity = ({
     tenant,
     identity
 }: ContextTenantParams): ContextPlugin<ApwContext>[] => {

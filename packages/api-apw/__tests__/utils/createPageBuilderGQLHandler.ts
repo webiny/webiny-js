@@ -61,7 +61,7 @@ import {
     LIST_CHANGES_REQUESTED_QUERY,
     UPDATE_CHANGE_REQUEST_MUTATION
 } from "./graphql/changeRequest";
-import { contextCommon, contextTenant } from "./context";
+import { contextCommon, contextSecurity } from "./context";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -128,7 +128,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
                 identity
             }),
-            contextTenant({ tenant, identity }),
+            contextSecurity({ tenant, identity }),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
