@@ -1,21 +1,16 @@
 on: issue_comment
-
-env:
-  NODE_OPTIONS: --max_old_space_size=4096
-  AWS_REGION: eu-central-1
-  BUILD_OVERRIDES: '{"tsConfig":{"compilerOptions":{"skipLibCheck":true}}}'
-
-name: Pull Requests Command - Issue Comments
+name: Issue Comments
 jobs:
   check_comments:
-    name: Check comments for /cy
+    name: Check comments for /test
     runs-on: ubuntu-latest
     steps:
-      - id: cy
+      - name: Check for Command
+        id: command
         uses: xt0rted/slash-command-action@v1
         with:
-          repo-token: ${{ secrets.GH_TOKEN }}
-          command: cy
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          command: test
           reaction: "true"
           reaction-type: "eyes"
           allow-edits: "false"
