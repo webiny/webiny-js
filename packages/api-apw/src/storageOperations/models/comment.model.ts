@@ -57,6 +57,7 @@ export const createCommentModelDefinition = ({
         titleFieldId: "displayName",
         layout: [["comment_body"], ["comment_displayName"]],
         fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()],
-        description: ""
+        description: "",
+        isPrivate: true
     };
 };

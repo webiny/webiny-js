@@ -49,6 +49,7 @@ export const createReviewerModelDefinition = (): WorkflowModelDefinition => {
         titleFieldId: "displayName",
         layout: [["reviewer_id"], ["reviewer_displayName"]],
         fields: [idField(), displayNameField(), typeField()],
-        description: ""
+        description: "",
+        isPrivate: true
     };
 };

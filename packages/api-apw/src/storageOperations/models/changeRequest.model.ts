@@ -51,6 +51,7 @@ export const createChangeRequestModelDefinition = (): WorkflowModelDefinition =>
         titleFieldId: "changeRequest_title",
         layout: [["changeRequest_body"], ["changeRequest_title"]],
         fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()],
-        description: ""
+        description: "",
+        isPrivate: true
     };
 };

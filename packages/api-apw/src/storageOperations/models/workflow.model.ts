@@ -240,5 +240,6 @@ export const createWorkflowModelDefinition = ({
             ])
         ]),
         applicationField()
-    ]
+    ],
+    isPrivate: true
 });
