@@ -6,7 +6,12 @@ const idField = () =>
         label: "Identity Id",
         type: "text",
         parent: "reviewer",
-        validation: [{ message: "Value is required.", name: "required" }]
+        validation: [
+            {
+                message: "`identityId` field value is required in reviewer.",
+                name: "required"
+            }
+        ]
     });
 
 const displayNameField = () =>
@@ -14,7 +19,12 @@ const displayNameField = () =>
         label: "Display Name",
         type: "text",
         parent: "reviewer",
-        validation: [{ message: "Value is required.", name: "required" }]
+        validation: [
+            {
+                message: "`displayName` field value is required in reviewer.",
+                name: "required"
+            }
+        ]
     });
 
 const typeField = () =>
@@ -22,7 +32,12 @@ const typeField = () =>
         label: "Type",
         type: "text",
         parent: "reviewer",
-        validation: [{ message: "Value is required.", name: "required" }]
+        validation: [
+            {
+                message: "`type` field value is required in reviewer.",
+                name: "required"
+            }
+        ]
     });
 
 export const REVIEWER_MODEL_ID = "apwReviewerModelDefinition";

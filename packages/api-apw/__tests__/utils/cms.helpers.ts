@@ -26,24 +26,69 @@ const createModelData = (
                 fieldId: "name",
                 label: "Name",
                 type: "text",
-                settings: {}
+                settings: {},
+                validation: [
+                    {
+                        name: "required",
+                        message: "`name` field is required."
+                    }
+                ]
             },
             {
                 id: "sku",
                 fieldId: "sku",
                 label: "SKU",
                 type: "number",
-                settings: {}
+                settings: {},
+                validation: [
+                    {
+                        name: "required",
+                        message: "`sku` field is required."
+                    }
+                ]
             },
             {
                 id: "description",
                 fieldId: "description",
                 label: "Description",
                 type: "long-text",
-                settings: {}
+                settings: {},
+                validation: [
+                    {
+                        name: "required",
+                        message: "`description` field is required."
+                    },
+                    {
+                        name: "minLength",
+                        settings: {
+                            value: 10
+                        },
+                        message: "`description` field min length is 10."
+                    },
+                    {
+                        name: "maxLength",
+                        settings: {
+                            value: 200
+                        },
+                        message: "`description` field max length is 200."
+                    }
+                ]
+            },
+            {
+                id: "body",
+                fieldId: "body",
+                label: "Body",
+                type: "rich-text",
+                settings: {},
+                validation: [
+                    {
+                        name: "required",
+                        message: "`body` field is required."
+                    }
+                ]
             }
         ],
-        layout: [["name"], ["sku"], ["description"]],
+        layout: [["name"], ["sku"], ["description"], ["body"]],
         titleFieldId: "name"
     };
 };
@@ -55,7 +100,17 @@ const createEntryData = () => {
         description: `
                 This is a description of a Webiny product.
                 We are doing this to test the Advanced Publishing Workflow on the CMS Entries.
-            `
+            `,
+        body: [
+            {
+                type: "h1",
+                content: "Title in the content"
+            },
+            {
+                type: "p",
+                content: "Lorem ipsum text which tells us something."
+            }
+        ]
     };
 };
 
@@ -104,15 +159,18 @@ const setupContentModel = async (handler: any, group: CmsGroup) => {
 };
 
 const setupContentEntry = async (handler: any, model: CmsModel) => {
+    const data = createEntryData();
     const [response] = await handler.createContentEntryMutation(model, {
-        data: createEntryData()
+        data: {
+            ...data
+        }
     });
 
     expect(response).toEqual({
         data: {
             createProduct: {
                 data: {
-                    ...createEntryData(),
+                    ...data,
                     id: expect.any(String),
                     entryId: expect.any(String),
                     meta: {

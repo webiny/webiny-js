@@ -9,7 +9,7 @@ const titleField = () =>
         parent: "workflow",
         validation: [
             {
-                message: "Value is required.",
+                message: "`title` field value is required in workflow.",
                 name: "required"
             }
         ]
@@ -33,8 +33,8 @@ export const stepTitleField = () =>
         parent: "workflow steps",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`title` field value is required in workflow steps.",
+                name: "required"
             }
         ]
     });
@@ -64,7 +64,7 @@ export const stepTypeField = () =>
         validation: [
             {
                 name: "required",
-                message: "Value is required."
+                message: "`type` field value is required in workflow steps."
             }
         ]
     });
@@ -76,8 +76,8 @@ export const stepIdField = () =>
         parent: "workflow steps",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`id` field value is required in workflow steps.",
+                name: "required"
             }
         ]
     });
@@ -123,8 +123,8 @@ const scopeTypeField = () =>
         type: "text",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`type` field value is required in workflow scope.",
+                name: "required"
             }
         ],
         predefinedValues: {
@@ -192,8 +192,8 @@ const applicationField = () =>
         label: "App",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`app` field value is required in workflow.",
+                name: "required"
             }
         ],
         predefinedValues: {

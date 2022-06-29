@@ -29,8 +29,8 @@ const stepField = () =>
         parent: "comment",
         validation: [
             {
-                name: "required",
-                message: "Value is required"
+                message: "`step` field value is required in comment.",
+                name: "required"
             }
         ]
     });

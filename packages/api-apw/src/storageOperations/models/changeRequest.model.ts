@@ -36,8 +36,8 @@ const stepField = () =>
         parent: "changeRequest",
         validation: [
             {
-                name: "required",
-                message: "Value is required"
+                message: "`step` field value is required in changeRequest.",
+                name: "required"
             }
         ]
     });
