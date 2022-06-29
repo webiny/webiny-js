@@ -37,7 +37,7 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@webiny/cli": "^5.29.0",
-    "jest": "^26.6.3",
+    "jest": "^28.1.0",
     "jest-dynalite": "^3.2.0",
     "jsonpack": "^1.1.5",
     "rimraf": "^3.0.2",
