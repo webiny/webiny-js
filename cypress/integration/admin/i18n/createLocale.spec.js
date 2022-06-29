@@ -28,7 +28,7 @@ context("I18N app", () => {
             cy.findByText(/en-US/i).should("exist");
         });
         // Select newly created locale from selector
-        cy.findByTestId("app-i18n-content.menu").click();
+        cy.findByTestId("app-i18n-content.menu----------------------------------").click();
         cy.findAllByTestId(`app-i18n-content.menu-item.de-DE`).should("exist");
         cy.findAllByTestId(`app-i18n-content.menu-item.de-DE`).click();
         // Loading should be completed
