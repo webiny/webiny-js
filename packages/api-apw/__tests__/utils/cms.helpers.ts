@@ -207,6 +207,7 @@ const setupEntry = async (handler: any) => {
             name: entry.name,
             sku: entry.sku,
             description: entry.description,
+            body: entry.body,
             meta: entry.meta
         }
     };
