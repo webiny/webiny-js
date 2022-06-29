@@ -89,6 +89,7 @@ jobs:
 
       - name: Checkout Pull Request
         run: hub pr checkout ${{ github.event.issue.number }}
+        working-directory: next
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -253,6 +254,7 @@ jobs:
 
       - name: Checkout Pull Request
         run: hub pr checkout ${{ github.event.issue.number }}
+        working-directory: next
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -353,6 +355,7 @@ jobs:
           path: next
 
       - name: Checkout Pull Request
+        working-directory: next
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -520,6 +523,7 @@ jobs:
           path: next
 
       - name: Checkout Pull Request
+        working-directory: next
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
