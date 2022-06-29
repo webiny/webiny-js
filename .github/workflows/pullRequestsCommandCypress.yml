@@ -28,7 +28,7 @@ jobs:
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.issue.number }}
-          body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/adrians5j/test-repo/actions/runs/${{ github.run_id }}). :sparkles:"
+          body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"
 
   e2e-wby-cms-ddb-init:
     needs: check_comment
