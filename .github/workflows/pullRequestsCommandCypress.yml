@@ -229,7 +229,7 @@ jobs:
 
   e2e-wby-cms-ddb-cypress-tests:
     name: ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node }})
-    needs: [e2e-wby-cms-ddb-project-setup]
+    needs: [e2e-wby-cms-ddb-init, e2e-wby-cms-ddb-project-setup]
     strategy:
       fail-fast: false
       matrix:
