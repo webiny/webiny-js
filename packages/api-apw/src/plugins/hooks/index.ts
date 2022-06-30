@@ -11,11 +11,11 @@ import { validateContentReview } from "./validateContentReview";
 import { validateComment } from "./validateComment";
 import { isInstallationPending } from "../utils";
 
-export default () => [
+export default () => {
     /**
      * Hook into CMS events and execute business logic.
      */
-    new ContextPlugin<ApwContext>(async context => {
+    return new ContextPlugin<ApwContext>(async context => {
         if (isInstallationPending(context)) {
             return;
         }
@@ -39,5 +39,5 @@ export default () => [
         deleteCommentsAfterChangeRequest(context);
 
         deleteChangeRequestsWithContentReview(context);
-    })
-];
+    });
+};
