@@ -34,7 +34,7 @@ module.exports = function ({ path }, presets = []) {
                 diagnostics: false
             }
         },
-        setupFilesAfterEnv: [__dirname + '/jest.config.base.setup.js'],
+        setupFilesAfterEnv: [__dirname + "/jest.config.base.setup.js"],
         collectCoverage: false,
         collectCoverageFrom: ["packages/**/*.{ts,tsx,js,jsx}"],
         coverageReporters: ["html"]
