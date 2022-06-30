@@ -1,6 +1,6 @@
 import {
+    DefaultSettings,
     DefaultSettingsCrudOptions,
-    Settings,
     SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
     SettingsStorageOperationsGetParams,
@@ -9,26 +9,6 @@ import {
 import { Entity } from "dynamodb-toolbox";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import WebinyError from "@webiny/error";
-
-const extractFromStorage = (settings: Settings): Settings => {
-    return {
-        ...settings,
-        tenant: !settings.tenant ? false : settings.tenant,
-        locale: !settings.locale ? false : settings.locale
-    };
-};
-
-interface StorageSettings extends Omit<Settings, "locale" | "tenant"> {
-    tenant: string | null;
-    locale: string | null;
-}
-const prepareForStorage = (settings: Settings): StorageSettings => {
-    return {
-        ...settings,
-        tenant: !settings.tenant ? null : settings.tenant,
-        locale: !settings.locale ? null : settings.locale
-    };
-};
 
 /**
  * Because it is a possibility that tenant and locale are set as false (for the global settings) we must take
@@ -83,8 +63,35 @@ export interface CreateSettingsStorageOperationsParams {
 export const createSettingsStorageOperations = ({
     entity
 }: CreateSettingsStorageOperationsParams): SettingsStorageOperations => {
+    const getDefaults = async (): Promise<DefaultSettings | null> => {
+        const keys = {
+            PK: "PS#SETTINGS",
+            SK: "default"
+        };
+
+        try {
+            const result = await entity.get(keys);
+            if (!result || !result.Item) {
+                return null;
+            }
+
+            const { appUrl, deliveryUrl } = result.Item.data;
+
+            return { websiteUrl: deliveryUrl, websitePreviewUrl: appUrl };
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not load default settings record.",
+                ex.code || "DEFAULT_SETTINGS_GET_ERROR",
+                {
+                    keys
+                }
+            );
+        }
+    };
+
     const get = async (params: SettingsStorageOperationsGetParams) => {
         const { where } = params;
+
         const keys = {
             PK: createPartitionKey(where),
             SK: createSortKey(where)
@@ -94,9 +101,7 @@ export const createSettingsStorageOperations = ({
             if (!result || !result.Item) {
                 return null;
             }
-            const settings = cleanupItem(entity, result.Item);
-
-            return extractFromStorage(settings);
+            return cleanupItem(entity, result.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load settings record.",
@@ -116,7 +121,7 @@ export const createSettingsStorageOperations = ({
         };
         try {
             await entity.put({
-                ...prepareForStorage(settings),
+                ...settings,
                 TYPE: createType(),
                 ...keys
             });
@@ -142,7 +147,7 @@ export const createSettingsStorageOperations = ({
         };
         try {
             await entity.put({
-                ...prepareForStorage(settings),
+                ...settings,
                 TYPE: createType(),
                 ...keys
             });
@@ -169,6 +174,7 @@ export const createSettingsStorageOperations = ({
 
     return {
         get,
+        getDefaults,
         create,
         update,
         createCacheKey

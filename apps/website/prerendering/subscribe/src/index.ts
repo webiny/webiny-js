@@ -10,7 +10,6 @@ const documentClient = new DocumentClient({
 
 export const handler = createHandler(
     subscribePlugins({
-        sqsQueueUrl: String(process.env.SQS_QUEUE),
         storageOperations: createPrerenderingServiceStorageOperations({
             table(table) {
                 return {

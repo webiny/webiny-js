@@ -22,6 +22,7 @@ module.exports = function ({ path }, presets = []) {
         },
         moduleDirectories: ["node_modules"],
         moduleNameMapper: {
+            "~tests/(.*)": `${path}/__tests__/$1`,
             "~/(.*)": `${path}/src/$1`
         },
         modulePathIgnorePatterns: [],
@@ -44,7 +45,7 @@ process.env.DB_TABLE_ELASTICSEARCH = "ElasticsearchStream";
 process.env.WEBINY_VERSION = version;
 process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
-const createDynaliteTables = () => {
+const createDynaliteTables = (options = {}) => {
     return {
         tables: [
             {
@@ -75,7 +76,8 @@ const createDynaliteTables = () => {
                             WriteCapacityUnits: 1
                         }
                     }
-                ]
+                ],
+                data: options.data || []
             },
             {
                 TableName: process.env.DB_TABLE_ELASTICSEARCH,

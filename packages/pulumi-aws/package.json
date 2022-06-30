@@ -1,12 +1,11 @@
 {
   "name": "@webiny/pulumi-aws",
-  "version": "5.28.0",
-  "main": "index.ts",
+  "version": "5.29.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A set of custom Pulumi components for Webiny, to use with AWS.",
+  "description": "A set of Pulumi apps that deploy Webiny CMS into Amazon Web Services (AWS).",
   "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
@@ -14,11 +13,10 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^4.10.0",
-    "@pulumi/pulumi": "^3.25.0",
-    "@webiny/cli-plugin-deploy-pulumi": "^5.28.0",
-    "@webiny/pulumi-sdk": "^5.28.0",
-    "chalk": "^4.1.0"
+    "@pulumi/aws": "^5.8.0",
+    "@pulumi/pulumi": "^3.34.0",
+    "@webiny/cli-plugin-deploy-pulumi": "^5.29.0",
+    "@webiny/pulumi": "^5.29.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
@@ -26,11 +24,13 @@
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
     "@babel/runtime": "^7.16.3",
-    "@webiny/api-page-builder": "^5.28.0",
-    "@webiny/aws-layers": "^5.28.0",
-    "@webiny/cli": "^5.28.0",
-    "@webiny/project-utils": "^5.28.0",
+    "@webiny/api-page-builder": "^5.29.0",
+    "@webiny/aws-layers": "^5.29.0",
+    "@webiny/cli": "^5.29.0",
+    "@webiny/project-utils": "^5.29.0",
     "chalk": "^4.1.0",
+    "lodash": "^4.5.0",
+    "mime": "2.5.2",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.5.5"

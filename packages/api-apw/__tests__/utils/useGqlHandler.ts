@@ -1,5 +1,6 @@
 import { getIntrospectionQuery } from "graphql";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { createHandler } from "@webiny/handler-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
@@ -135,6 +136,8 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
 
     const handler = createHandler({
         plugins: [
+            createWcpContext(),
+            createWcpGraphQL(),
             {
                 type: "context",
                 name: "context-path-parameters",

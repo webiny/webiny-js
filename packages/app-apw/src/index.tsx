@@ -1,5 +1,5 @@
 import React from "react";
-import { Compose, Plugins } from "@webiny/app-admin";
+import { Compose, Plugins, useWcp } from "@webiny/app-admin";
 /**
  * Plugins for "page builder"
  */
@@ -26,7 +26,12 @@ import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/compone
 import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowScope";
 import { DefaultBar } from "~/plugins/editor/defaultBar";
 
-export const AdvancedPublishingWorkflow: React.FC = () => {
+export const AdvancedPublishingWorkflow = () => {
+    const { canUseFeature } = useWcp();
+    if (!canUseFeature("advancedPublishingWorkflow")) {
+        return null;
+    }
+
     return (
         <>
             <Compose with={PublishRevisionHoc} component={PublishRevision} />

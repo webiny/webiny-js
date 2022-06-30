@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* bring back `loadEnvVariables` ([3f4451c](https://github.com/webiny/webiny-js/commit/3f4451cde7fda4673a97ccd564f82786a17e1b4f))
+* comment out staged deployments-related code ([658f5ea](https://github.com/webiny/webiny-js/commit/658f5eae864261984aa0fc010f5d8d77cac18292))
+* disable `createProjectApplicationWorkspace` ([13e0b9f](https://github.com/webiny/webiny-js/commit/13e0b9f5646688e4d8f514e29c6ae3662dad0ca1))
+* disable `createProjectApplicationWorkspace` ([6a17008](https://github.com/webiny/webiny-js/commit/6a1700819f4b4692e3e6e91ac9df43a5bff157b2))
+* ensure before deploy is invoked before Pulumi ([99fbee1](https://github.com/webiny/webiny-js/commit/99fbee1c391a9914a84602013d46ec26dd52306b))
+* move `api` into `apps` folder ([0e9da03](https://github.com/webiny/webiny-js/commit/0e9da03426f5743e88273f6831dd5ba1fd6807aa))
+* move `storageMigrate` to `pulumi-app-aws` package ([47e6eec](https://github.com/webiny/webiny-js/commit/47e6eec972fa940733759d54154da23bcdee0f97))
+* only create ws for deploy (without --no-build) ([92d3298](https://github.com/webiny/webiny-js/commit/92d329835e7e73788516db7a8fe5d3bf9cbc9a3e))
+* remove `cwd` setting ([805ab5f](https://github.com/webiny/webiny-js/commit/805ab5fea3950e3778a183b213a8396408b6567e))
+* remove console.log call ([f425602](https://github.com/webiny/webiny-js/commit/f425602bd531ff98fccc940f95270c665b6a4009))
+* remove cwd argument when calling execa ([d3abc4a](https://github.com/webiny/webiny-js/commit/d3abc4a771c396fb8726dad390838884186bf7f8))
+* remove hooks, not needed atm ([5933ef3](https://github.com/webiny/webiny-js/commit/5933ef39e3806bd1a6e63de1de36979e8723d27b))
+* remove old `stackName` ([9307998](https://github.com/webiny/webiny-js/commit/930799826aecdadb41cee402fae0fe778c37df4b))
+* remove old `stackName` ([e4a36bd](https://github.com/webiny/webiny-js/commit/e4a36bd0db8de1cc6c20e8442496d8b8b9e2c936))
+* remove TS config (seems no need for it) ([c9e4e36](https://github.com/webiny/webiny-js/commit/c9e4e364ee7a7bbb7f8f938aca74a6fb6d3ad789))
+* rename `storage` to `core` ([74ccae4](https://github.com/webiny/webiny-js/commit/74ccae49bcc7b5a2262da8f18752ee9460e83e70))
+* require getDuration from command params ([02bd7a6](https://github.com/webiny/webiny-js/commit/02bd7a63882bcd41f37d05cd40997dd6dce88059))
+* wrap Pulumi commands with `createPulumiCommand` ([44e1cef](https://github.com/webiny/webiny-js/commit/44e1cef0dc88528e6d3fcb348d420ca4d9c00fe2))
+
+
+### Features
+
+* introduce new project app type - `v5-workspaces` ([888a533](https://github.com/webiny/webiny-js/commit/888a5339b8c2c355f3629fbd50590024d2837c84))
+* simplify project structure ([4f3a75b](https://github.com/webiny/webiny-js/commit/4f3a75b0b1028e42689b7ea69a3e25925b7b3689))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

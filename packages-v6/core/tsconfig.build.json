@@ -1,19 +1,15 @@
 {
   "extends": "../../tsconfig.build.json",
-  "compilerOptions": {
-    "noEmit": false,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "rootDir": "./src",
-    "outDir": "./lib/types",
-    "declarationDir": "./lib/types",
-    "baseUrl": ".",
-    "skipLibCheck": true
-  },
-  "exclude": ["./src/artifacts/admin/template"],
-  "include": ["./src"],
+  "include": ["src"],
   "references": [
-    { "path": "../pulumi-sdk/tsconfig.build.json" },
-    { "path": "../../packages/plugins/tsconfig.build.json" }
-  ]
+    { "path": "../../packages/plugins/tsconfig.build.json" },
+    { "path": "../pulumi-sdk/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"] },
+    "baseUrl": "."
+  }
 }

@@ -66,11 +66,6 @@ const PageBuilderMenu: React.FC = () => {
                             label={"Website"}
                             path={"/settings/page-builder/website"}
                         />
-                        <Menu
-                            name={"settings.pageBuilder.prerendering"}
-                            label={"Prerendering"}
-                            path={"/settings/page-builder/prerendering"}
-                        />
                     </Menu>
                 </Menu>
             </HasPermission>

@@ -18,13 +18,17 @@ interface AdminUsersConfig {
     getPermission(name: string): Promise<SecurityPermission | null>;
     getTenant(): string;
     storageOperations: AdminUsersStorageOperations;
+    incrementWcpSeats: () => Promise<void>;
+    decrementWcpSeats: () => Promise<void>;
 }
 
 export const createAdminUsers = ({
     storageOperations,
     getPermission,
     getTenant,
-    getIdentity
+    getIdentity,
+    incrementWcpSeats,
+    decrementWcpSeats
 }: AdminUsersConfig): AdminUsers => {
     const loaders = createUserLoaders({ getTenant, storageOperations });
 
@@ -94,31 +98,41 @@ export const createAdminUsers = ({
             };
 
             let result;
-            await this.onUserBeforeCreate.publish({ user, inputData: data });
-            /**
-             * Always delete `password` from the user data!
-             */
-            delete (user as any)["password"];
-            try {
-                result = await storageOperations.createUser({ user });
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not create user.",
-                    code: "CREATE_USER_ERROR",
-                    data: { user: result || user }
-                });
-            }
-            try {
-                await this.onUserAfterCreate.publish({ user: result, inputData: data });
-            } catch (err) {
-                console.log("@webiny/api-admin-users-cognito/src/createAdminUsers.ts");
-                // Not sure if we care about errors in `onAfterCreate`.
-                // Maybe add an `onCreateError` event for potential cleanup operations?
-                // For now, just log it.
-                console.log(err);
-            }
 
-            loaders.getUser.clear(result.id).prime(result.id, result);
+            // Notify WCP about the created user.
+            await incrementWcpSeats();
+
+            try {
+                await this.onUserBeforeCreate.publish({ user, inputData: data });
+                /**
+                 * Always delete `password` from the user data!
+                 */
+                delete (user as any)["password"];
+                try {
+                    result = await storageOperations.createUser({ user });
+                } catch (err) {
+                    throw WebinyError.from(err, {
+                        message: "Could not create user.",
+                        code: "CREATE_USER_ERROR",
+                        data: { user: result || user }
+                    });
+                }
+                try {
+                    await this.onUserAfterCreate.publish({ user: result, inputData: data });
+                } catch (err) {
+                    console.log("@webiny/api-admin-users-cognito/src/createAdminUsers.ts");
+                    // Not sure if we care about errors in `onAfterCreate`.
+                    // Maybe add an `onCreateError` event for potential cleanup operations?
+                    // For now, just log it.
+                    console.log(err);
+                }
+
+                loaders.getUser.clear(result.id).prime(result.id, result);
+            } catch (e) {
+                // If something failed, let's undo the previous incrementWcpSeats call.
+                await decrementWcpSeats();
+                throw e;
+            }
 
             return result;
         },
@@ -140,6 +154,10 @@ export const createAdminUsers = ({
                 await this.onUserBeforeDelete.publish({ user });
                 await storageOperations.deleteUser({ user });
                 loaders.clearLoadersCache([{ tenant: getTenant(), id }]);
+
+                // Notify WCP about the deleted user.
+                await decrementWcpSeats();
+
                 await this.onUserAfterDelete.publish({ user });
             } catch (err) {
                 throw WebinyError.from(err, {

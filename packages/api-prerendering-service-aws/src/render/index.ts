@@ -1,43 +1,23 @@
 import { RenderHookPlugin } from "@webiny/api-prerendering-service/render/types";
 import CloudFront from "aws-sdk/clients/cloudfront";
-import url from "url";
-import { Args, Configuration } from "~/types";
-
-interface AfterRenderParams {
-    configuration: Configuration;
-    args: Args;
-}
 
 // This plugin will issue a cache invalidation request to CloudFront, every time a page has been rendered. This is
 // mostly important when a user publishes a new page, and we want to make the page immediately publicly available.
-export default () => {
+export default (): RenderHookPlugin => {
     return {
         type: "ps-render-hook",
-        afterRender: async ({ configuration, args }: AfterRenderParams) => {
+        async afterRender({ log, render, settings }) {
             // Let's create a cache invalidation request.
             console.log("Trying to send a CloudFront cache invalidation request...");
 
-            let distributionId = args?.configuration?.meta?.cloudfront?.distributionId;
+            const distributionId = settings.cloudfrontId;
             if (!distributionId) {
-                distributionId = configuration?.meta?.cloudfront?.distributionId;
-            }
-
-            if (!distributionId) {
-                console.log(`Exiting... CloudFront "distributionId" not provided.`);
+                log(`Exiting... PS settings do not contain a "cloudfrontId".`);
                 return;
             }
 
             console.log("Trying to get the path that needs to be invalidated...");
-            let path = args.path;
-            if (!path) {
-                console.log(
-                    `Path wasn't passed via "args.path", trying to extract it from "args.url"...`
-                );
-                const parsed = url.parse(args.url as string);
-                if (parsed && parsed.pathname) {
-                    path = parsed.pathname;
-                }
-            }
+            let path = render.path;
 
             if (!path) {
                 console.log(`Aborting the cache invalidation attempt... "path" not detected.`);
@@ -77,5 +57,5 @@ export default () => {
 
             console.log(`Cache invalidation request (path "${path}") successfully issued.`);
         }
-    } as RenderHookPlugin;
+    };
 };

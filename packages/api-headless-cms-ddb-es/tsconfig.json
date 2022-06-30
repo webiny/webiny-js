@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
+    { "path": "../api-elasticsearch" },
     { "path": "../api-headless-cms" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
@@ -10,8 +11,7 @@
     { "path": "../handler-db" },
     { "path": "../plugins" },
     { "path": "../utils" },
-    { "path": "../api-dynamodb-to-elasticsearch" },
-    { "path": "../api-elasticsearch" }
+    { "path": "../api-dynamodb-to-elasticsearch" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -19,6 +19,8 @@
     "declarationDir": "./dist",
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
+      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
@@ -36,9 +38,7 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
-      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
-      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
-      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"]
+      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"]
     },
     "baseUrl": "."
   }

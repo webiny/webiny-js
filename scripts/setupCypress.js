@@ -44,7 +44,7 @@ const args = {
     const cypressConfig = await loadJson.sync(cypressConfigPath);
 
     const apiOutput = getStackOutput({
-        folder: "api",
+        folder: "apps/api",
         env: args.env,
         cwd: args.projectFolder
     });

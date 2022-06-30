@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* add `"@webiny/api-wcp": "latest"` ([b4d4afa](https://github.com/webiny/webiny-js/commit/b4d4afaaa6aa1bf693938227d4dc7555432784be))
+* add new line ([94cb85e](https://github.com/webiny/webiny-js/commit/94cb85e3ba8a920ec707bc6bcf22f8cb8892ac49))
+* clean workspaces ([3a7567b](https://github.com/webiny/webiny-js/commit/3a7567bc6eaf3123fd07e0dbff86eaf10cbb0dd3))
+* correct paths ([0fb5791](https://github.com/webiny/webiny-js/commit/0fb5791fe64b981f613166984b8fcbb577607a75))
+* correct paths ([45922f9](https://github.com/webiny/webiny-js/commit/45922f96085e9a75338e6c4dbeae68ac67a7ec9b))
+* correct paths ([6f353f6](https://github.com/webiny/webiny-js/commit/6f353f6d9ecd9a32f9c4b23bef9444ca954c4b4e))
+* correct paths ([35d2d17](https://github.com/webiny/webiny-js/commit/35d2d177c8af8b77731df903165c6b55546254ec))
+* do not rely on env var to determine if MT is enabled ([d7a60d7](https://github.com/webiny/webiny-js/commit/d7a60d7cb591473a2952927dc2852636fab19bac))
+* move `api` into `apps` folder ([0e9da03](https://github.com/webiny/webiny-js/commit/0e9da03426f5743e88273f6831dd5ba1fd6807aa))
+* move `api` into `apps` folder ([d77cbd2](https://github.com/webiny/webiny-js/commit/d77cbd279f8f2f1870521dc6605803ed6ec21099))
+* move apps to `apps` folder ([ee33241](https://github.com/webiny/webiny-js/commit/ee3324171e8b2023b8bda3ef880c2c5e0349a40e))
+* remove apw ([8ce198a](https://github.com/webiny/webiny-js/commit/8ce198a460f86382a1b409c8db7ba467c07ff702))
+* remove CLI plugins ([c272370](https://github.com/webiny/webiny-js/commit/c2723709a207230f24eed48fc60fc99d48c22317))
+* remove custom dev-related scaffolds ([e7660b8](https://github.com/webiny/webiny-js/commit/e7660b8f550f4c2f62e45dde1b553b751c097bf8))
+* rename `pulumi-app` to `pulumi` ([42f1d4f](https://github.com/webiny/webiny-js/commit/42f1d4f37ede9d68b437fbe09e2125670a579c82))
+* rename `storage` to `core` ([74ccae4](https://github.com/webiny/webiny-js/commit/74ccae49bcc7b5a2262da8f18752ee9460e83e70))
+* update `webiny deploy` command ([3fabf08](https://github.com/webiny/webiny-js/commit/3fabf08d8fa6e4ae9d1f02e787c3c767ec8fbc4c))
+* update app file ([676021b](https://github.com/webiny/webiny-js/commit/676021b43fef445b422f23c5638e510139c1e4f1))
+* update deps ([7924391](https://github.com/webiny/webiny-js/commit/79243916b79ff87455b5ea5e607060abae4b9745))
+* update deps ([0a46f52](https://github.com/webiny/webiny-js/commit/0a46f52548b863c88322fa917514ea94ea7a0f40))
+* update execa across all packages ([01189c5](https://github.com/webiny/webiny-js/commit/01189c595521c69f31aba85692d15622d842b231))
+* update imports ([bcd5ffd](https://github.com/webiny/webiny-js/commit/bcd5ffdf5a94f73e71a6c632e0f4df2a2d28f76d))
+* update info command ([75c51c3](https://github.com/webiny/webiny-js/commit/75c51c399b9a952904da9552d003fddf306921f7))
+* wrap into `String` ([6c9c5fe](https://github.com/webiny/webiny-js/commit/6c9c5fe6247503bcbac7983ae1c8bf36d71f1e59))
+
+
+### Features
+
+* remove `code` folder ([4930ac1](https://github.com/webiny/webiny-js/commit/4930ac1baf61de25635a8a02589e3bd28bf49556))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

@@ -24,12 +24,10 @@ export const handler = createHandler(
             }
         },
         storageOperations: createPrerenderingServiceStorageOperations({
-            table(table) {
-                return {
-                    ...table,
-                    name: String(process.env.DB_TABLE)
-                };
-            },
+            table: table => ({
+                ...table,
+                name: String(process.env.DB_TABLE)
+            }),
             documentClient
         })
     }),

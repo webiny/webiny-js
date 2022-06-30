@@ -69,7 +69,7 @@ const setupApwContext = (params: CreateApwContextParams) =>
             getPermission,
             storageOperations: createStorageOperations({
                 /**
-                 * TODO: We need to figure out a way to pass "cms" from outside (e.g. api/code/graphql)
+                 * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
                  */
                 cms: context.cms,
                 /**
@@ -95,10 +95,17 @@ const setupApwContext = (params: CreateApwContextParams) =>
         });
     });
 
-export default (params: CreateApwContextParams) => [
-    extendPbPageSettingsSchema(),
-    setupApwContext(params),
-    apwContentPagePlugins(),
-    apwHooks(),
-    createCustomAuth(params)
-];
+export default (params: CreateApwContextParams) => {
+    return new ContextPlugin(async (context: ApwContext) => {
+        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
+            return;
+        }
+
+        await setupApwContext(params).apply(context);
+        await apwContentPagePlugins().apply(context);
+        await apwHooks().apply(context);
+        await createCustomAuth(params).apply(context);
+
+        context.plugins.register(extendPbPageSettingsSchema());
+    });
+};

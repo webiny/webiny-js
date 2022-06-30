@@ -1,5 +1,8 @@
 // @ts-nocheck
 export default {
+    id: "adrian/test",
+    // Uncomment this to test WCP-related functionality.
+    // id: "webiny/webiny-js",
     name: "webiny-js",
     cli: {
         // No need to track anything when developing Webiny.
@@ -16,13 +19,8 @@ export default {
                     import("@webiny/cli-plugin-deploy-pulumi"),
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
-                    import("@webiny/cli-plugin-scaffold-full-stack-app"),
-                    import("@webiny/cli-plugin-scaffold-graphql-api"),
                     import("@webiny/cli-plugin-scaffold-graphql-service"),
-                    import("@webiny/cli-plugin-scaffold-admin-app-module"),
-                    import("@webiny/cli-plugin-scaffold-react-app"),
-                    import("@webiny/cli-plugin-scaffold-react-component"),
-                    import("@webiny/cli-plugin-scaffold-ci")
+                    import("@webiny/cli-plugin-scaffold-admin-app-module")
                 ]);
 
                 return modules
