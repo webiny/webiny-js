@@ -26,8 +26,4 @@ export const applyDefaults = () => {
         const pkg = readJsonSync(findUp.sync("package.json") as string);
         process.env.REACT_APP_WEBINY_VERSION = pkg.version;
     }
-
-    if ("WEBINY_MULTI_TENANCY" in process.env) {
-        process.env.REACT_APP_WEBINY_MULTI_TENANCY = process.env.WEBINY_MULTI_TENANCY;
-    }
 };

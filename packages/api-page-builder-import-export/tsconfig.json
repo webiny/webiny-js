@@ -18,6 +18,7 @@
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy" },
     { "path": "../api-tenancy-so-ddb" },
+    { "path": "../api-wcp" },
     { "path": "../db" }
   ],
   "compilerOptions": {
@@ -58,6 +59,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"]
     },

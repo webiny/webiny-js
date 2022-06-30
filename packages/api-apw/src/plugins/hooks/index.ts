@@ -11,7 +11,7 @@ import { validateContentReview } from "./validateContentReview";
 import { validateComment } from "./validateComment";
 import { isInstallationPending } from "../utils";
 
-export default () => [
+export default () =>
     /**
      * Hook into CMS events and execute business logic.
      */
@@ -41,5 +41,4 @@ export default () => [
         deleteCommentsAfterChangeRequest({ apw });
 
         deleteChangeRequestsWithContentReview({ apw });
-    })
-];
+    });

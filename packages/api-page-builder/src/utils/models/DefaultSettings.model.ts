@@ -29,21 +29,6 @@ export default withFields({
     websitePreviewUrl: onSet(trimTrailingSlashes)(string({ validation: "url,maxLength:500" })),
     favicon: object({}),
     logo: object({}),
-    prerendering: fields({
-        instanceOf: withFields({
-            app: fields({
-                instanceOf: withFields({
-                    url: onSet(trimTrailingSlashes)(string({ validation: "url" }))
-                })()
-            }),
-            storage: fields({
-                instanceOf: withFields({
-                    name: string({ validation: "maxLength:500" })
-                })()
-            }),
-            meta: object()
-        })()
-    }),
     social: fields({
         value: {},
         instanceOf: withFields({

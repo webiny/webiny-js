@@ -1,10 +1,5 @@
-import { TagUrlLink } from "~/types";
+import { TagPathLink } from "~/types";
 
-export default function ({ namespace, url, key, value }): TagUrlLink {
-    return {
-        namespace,
-        value,
-        url,
-        key
-    };
+export default function (tag: TagPathLink): TagPathLink {
+    return tag;
 }

@@ -24,11 +24,9 @@ declare namespace NodeJS {
         WEBINY_ENV?: string;
         REACT_APP_DEBUG?: "true" | "false" | string;
         AWS_REGION?: string;
-        WEBINY_MULTI_TENANCY?: string;
         REACT_APP_WEBINY_VERSION?: string;
         REACT_APP_GRAPHQL_API_URL?: string;
         REACT_APP_API_URL?: string;
-        REACT_APP_WEBINY_MULTI_TENANCY?: "true" | "false" | string;
         REACT_APP_USER_POOL_REGION?: string;
         REACT_APP_USER_POOL_ID?: string;
         REACT_APP_USER_POOL_WEB_CLIENT_ID?: string;

@@ -12,6 +12,10 @@ module.exports.applyDefaults = () => {
         telemetry = isEnabled();
     }
 
+    if (config.id) {
+        process.env.REACT_APP_WCP_PROJECT_ID = config.id;
+    }
+
     if (!("REACT_APP_USER_ID" in process.env)) {
         process.env.REACT_APP_USER_ID = globalConfig.get("id");
     }
@@ -28,6 +32,7 @@ module.exports.applyDefaults = () => {
         process.env.REACT_APP_WEBINY_VERSION = version;
     }
 
+    // This variable is for backwards compatibility with projects created prior to 5.29.0 release.
     if ("WEBINY_MULTI_TENANCY" in process.env) {
         process.env.REACT_APP_WEBINY_MULTI_TENANCY = process.env.WEBINY_MULTI_TENANCY;
     }

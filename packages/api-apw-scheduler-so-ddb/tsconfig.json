@@ -5,17 +5,13 @@
     { "path": "../api-apw" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
+    { "path": "../plugins" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-db" },
-    { "path": "../handler-graphql" },
-    {
-      "path": "../cli"
-    },
-    { "path": "../project-utils" },
-    { "path": "../plugins" }
+    { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -29,6 +25,8 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
@@ -40,9 +38,7 @@
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
     },
     "baseUrl": "."
   }

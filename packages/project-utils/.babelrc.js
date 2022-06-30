@@ -1,1 +1,1 @@
-module.exports = require("../../.babel.node")({ path: __dirname });
+module.exports = require("./packages").createBabelConfigForNode({ path: __dirname });

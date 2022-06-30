@@ -1,7 +1,7 @@
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
-import { queryAll } from "@webiny/db-dynamodb/utils/query";
+import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
 import { createTenantEntity } from "~/definitions/tenantEntity";
@@ -23,7 +23,7 @@ interface TenantDomainRecord {
 const reservedFields = ["PK", "SK", "index", "data"];
 
 const isReserved = (name: string): void => {
-    if (reservedFields.includes(name) === false) {
+    if (!reservedFields.includes(name)) {
         return;
     }
     throw new WebinyError(`Attribute name "${name}" is not allowed.`, "ATTRIBUTE_NOT_ALLOWED", {
@@ -151,16 +151,25 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             return cleanupItems(entities.tenants, tenants);
         },
 
-        async listTenants<TTenant extends Tenant = Tenant>({
-            parent
-        }: ListTenantsParams): Promise<TTenant[]> {
+        async listTenants<TTenant extends Tenant = Tenant>(
+            params: ListTenantsParams = {}
+        ): Promise<TTenant[]> {
+            const { parent } = params;
+
+            const options: QueryAllParams["options"] = {
+                index: "GSI1"
+            };
+
+            if (parent) {
+                options.beginsWith = `T#${parent}#`;
+            } else {
+                options.gt = " ";
+            }
+
             const tenants = await queryAll<TTenant>({
                 entity: entities.tenants,
-                partitionKey: `T#${parent}`,
-                options: {
-                    index: "GSI1",
-                    beginsWith: "T#"
-                }
+                partitionKey: `TENANTS`,
+                options
             });
 
             return cleanupItems(entities.tenants, tenants);
@@ -170,12 +179,14 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             const keys = {
                 PK: `T#${data.id}`,
                 SK: "A",
-                GSI1_PK: data.parent ? `T#${data.parent}` : undefined,
-                GSI1_SK: data.parent ? `T#${data.id}` : undefined
+                GSI1_PK: "TENANTS",
+                GSI1_SK: `T#${data.parent}#${data.createdOn}`
             };
 
             try {
-                const items: any[] = [entities.tenants.putBatch({ ...keys, ...data })];
+                const items: any[] = [
+                    entities.tenants.putBatch({ TYPE: "tenancy.tenant", ...keys, ...data })
+                ];
                 const newDomains = createNewDomainsRecords(data);
 
                 newDomains.forEach(record => {
@@ -203,8 +214,8 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             const keys = {
                 PK: tenantPK,
                 SK: "A",
-                GSI1_PK: data.parent ? `T#${data.parent}` : undefined,
-                GSI1_SK: data.parent ? `T#${data.id}` : undefined
+                GSI1_PK: "TENANTS",
+                GSI1_SK: `T#${data.parent}#${data.createdOn}`
             };
 
             const items: any[] = [entities.tenants.putBatch({ ...keys, ...data })];

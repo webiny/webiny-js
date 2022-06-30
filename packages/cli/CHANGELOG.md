@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* add comment ([c135622](https://github.com/webiny/webiny-js/commit/c135622f8b57c11099003a6cdd46df0a2143c82b))
+* ensure `WCP_PROJECT_ENVIRONMENT_API_KEY` env var ([857a9fd](https://github.com/webiny/webiny-js/commit/857a9fd1994e7723f2265b46ea14c61cbfc8d253))
+* if `WCP_PROJECT_ENVIRONMENT` is present, do not load env ([8c16540](https://github.com/webiny/webiny-js/commit/8c165407fcaf681c9bd99c8d42b6cfecf4c7ce99))
+* move `api` into `apps` folder ([0e9da03](https://github.com/webiny/webiny-js/commit/0e9da03426f5743e88273f6831dd5ba1fd6807aa))
+* only retrieve user if needed ([af4605d](https://github.com/webiny/webiny-js/commit/af4605d3cd24ac44bfb28951ce844b797c7f6b6d))
+* project must be activated in order for WCP interaction to happen ([10d3da5](https://github.com/webiny/webiny-js/commit/10d3da5766a1bf063ccc73f6a33e0b29658d74bc))
+* remove JSON.stringify ([ec44664](https://github.com/webiny/webiny-js/commit/ec446648e1972916769476baf72d5aa6ba004a0a))
+* remove unused code ([d64de94](https://github.com/webiny/webiny-js/commit/d64de94f38dd1f4e4b4df43defa27011b554fc96))
+* rename `getWcpGraphQlApiUrl` to `getWcpGqlApiUrl` ([d18bfad](https://github.com/webiny/webiny-js/commit/d18bfada9a6b512781fbbdb55f95f6e518f9ff7f))
+* rename name of hook ([0ff7b91](https://github.com/webiny/webiny-js/commit/0ff7b91f4cb5321ac9d64b6bc8412a70b8a435c7))
+* update dependencies ([9c28fe9](https://github.com/webiny/webiny-js/commit/9c28fe9625b4d61fbe4137124c36f15022c79db3))
+* update execa across all packages ([01189c5](https://github.com/webiny/webiny-js/commit/01189c595521c69f31aba85692d15622d842b231))
+* use fs-extra and synchronize dep version ([48a0605](https://github.com/webiny/webiny-js/commit/48a0605f8cc8487c81bd52f7b7db7308e5cbda04))
+
+
+### Features
+
+* introduce `createProjectApplicationWorkspace` function ([1cb7279](https://github.com/webiny/webiny-js/commit/1cb7279dab83f91a960484d7d1b1f012c9629026))
+* introduce licensing functionality and updates ([f314b00](https://github.com/webiny/webiny-js/commit/f314b007882c21a9808581de6bc8e55d3b7ed448))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/cli

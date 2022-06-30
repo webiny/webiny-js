@@ -52,7 +52,7 @@ jobs:
 
       # 2. Destroy short-lived environment.
       - name: Destroy API project application
-        run: yarn webiny destroy api --env pr${{ github.event.pull_request.number }}
+        run: yarn webiny destroy apps/api --env pr${{ github.event.pull_request.number }}
 
       - name: Destroy Admin Area project application
         run: yarn webiny destroy apps/admin --env pr${{ github.event.pull_request.number }}

@@ -3,7 +3,6 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [],
   "compilerOptions": {
-    "module": "ESNext",
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",

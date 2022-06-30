@@ -1,21 +1,24 @@
 import os from "os";
 import execa from "execa";
 import * as path from "path";
+import fs from "fs-extra";
 import { merge, kebabCase, set } from "lodash";
 import downloadBinaries from "./downloadBinaries";
 
 type Command = string | string[];
-interface PulumiArgs {
+
+export interface PulumiArgs {
     [key: string]: string | boolean;
 }
-interface ExecaArgs {
+
+export interface ExecaArgs {
     env?: {
         [key: string]: string | undefined;
     };
     [key: string]: any;
 }
 
-interface Options {
+export interface Options {
     args?: PulumiArgs;
     execa?: ExecaArgs;
     beforePulumiInstall?: () => any;
@@ -27,15 +30,16 @@ interface Options {
     pulumiFolder?: string;
 }
 
-interface RunArgs {
+export interface RunArgs {
     command: Command;
+
     args?: PulumiArgs;
     execa?: ExecaArgs;
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
 }
 
-interface InstallArgs {
+export interface InstallArgs {
     beforePulumiInstall?: () => any;
     afterPulumiInstall?: () => any;
 }
@@ -61,6 +65,8 @@ export class Pulumi {
     }
 
     run(rawArgs: RunArgs) {
+        this.ensureAwsPluginIsInstalled();
+
         const args = merge({}, this.options, rawArgs);
 
         if (!Array.isArray(args.command)) {
@@ -132,16 +138,38 @@ export class Pulumi {
         );
 
         if (installed) {
-            const { version } = require("@pulumi/aws/package.json");
-            await execa(this.pulumiBinaryPath, ["plugin", "install", "resource", "aws", version], {
+            this.ensureAwsPluginIsInstalled();
+        }
+
+        return installed;
+    }
+
+    ensureAwsPluginIsInstalled() {
+        const { version } = require("@pulumi/aws/package.json");
+
+        const pluginExists = fs.pathExistsSync(
+            path.join(
+                this.pulumiFolder,
+                "plugins",
+                `resource-aws-${version}`,
+                "pulumi-resource-aws"
+            )
+        );
+
+        if (pluginExists) {
+            return;
+        }
+
+        return execa.sync(
+            this.pulumiBinaryPath,
+            ["plugin", "install", "resource", "aws", version],
+            {
                 stdio: "inherit",
                 env: {
                     PULUMI_HOME: this.pulumiFolder,
                     PULUMI_SKIP_UPDATE_CHECK: "true"
                 }
-            });
-        }
-
-        return installed;
+            }
+        );
     }
 }

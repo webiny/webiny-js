@@ -1,6 +1,8 @@
+const fs = require("fs");
 const { green } = require("chalk");
 const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-const { sendEvent } = require("@webiny/cli/utils");
+const { sendEvent, getApiProjectApplicationFolder } = require("@webiny/cli/utils");
+const path = require("path");
 const execa = require("execa");
 const sleep = require("../utils/sleep");
 
@@ -28,20 +30,32 @@ const deploy = (stack, env, inputs) =>
 module.exports = async (inputs, context) => {
     const { env = "dev" } = inputs;
 
-    // 0. Let's just make sure Pulumi is installed. But, let skip installation starting internally.
+    // 1. By calling the install manually here, we get to know if the installation was initiated or not.
     const pulumi = await getPulumi({ install: false });
 
-    // 0.1 Calling the install manually here, we get to know if the installation was initiated or not.
     const installed = await pulumi.install();
 
     // If we just installed Pulumi, let's add a new line.
     installed && console.log();
 
-    // 1. Get exports from `website` stack, for `args.env` environment.
-    const apiOutput = getStackOutput({ folder: "api", env });
-    const adminOutput = getStackOutput({ folder: "apps/admin", env });
-    const websiteOutput = getStackOutput({ folder: "apps/website", env });
-    const isFirstDeployment = !apiOutput && !adminOutput && !websiteOutput;
+    // 2. Check if first deployment.
+
+    // 2.1 Check the location of `api` project application (can be `api` or `apps/api`).
+    const apiFolder = getApiProjectApplicationFolder(context.project);
+
+    // 2.2 We want to be backwards compatible. That's why we need to take into
+    // consideration that some projects do not have the `core` application.
+    const hasCore = fs.existsSync(path.join(context.project.root, "apps", "core"));
+
+    // If we have at least `core` output or `api` output,
+    // then we can be sure this is not the first deployment.
+    let isFirstDeployment;
+    if (hasCore) {
+        isFirstDeployment = !getStackOutput({ folder: "apps/core", env });
+    } else {
+        isFirstDeployment = !getStackOutput({ folder: apiFolder, env });
+    }
+
     if (isFirstDeployment) {
         context.info(
             `This is your first time deploying the project (${green(
@@ -52,15 +66,27 @@ module.exports = async (inputs, context) => {
         await sleep();
     }
 
+    // 3. Start deploying apps one-by-one.
+
     try {
         await sendEvent({ event: "project-deploy-start" });
 
-        // Deploying `api` project application.
-        isFirstDeployment && console.log();
-        context.info(`Deploying ${green("api")} project application...`);
+        // Deploying `core` project application.
+        if (hasCore) {
+            isFirstDeployment && console.log();
+            context.info(`Deploying ${green("core")} project application...`);
 
-        await deploy("api", env, inputs);
-        context.success(`${green("api")} project application was deployed successfully!`);
+            await deploy("apps/core", env, inputs);
+            context.success(`${green("core")} project application was deployed successfully!`);
+            isFirstDeployment && (await sleep(2000));
+        }
+
+        // Deploying `api` project application.
+        console.log();
+        context.info(`Deploying ${green(apiFolder)} project application...`);
+
+        await deploy(apiFolder, env, inputs);
+        context.success(`${green(apiFolder)} project application was deployed successfully!`);
         isFirstDeployment && (await sleep(2000));
 
         // Deploying `apps/admin` project application.
@@ -93,7 +119,7 @@ module.exports = async (inputs, context) => {
     }
 
     const outputs = {
-        api: getStackOutput({ folder: "api", env }),
+        api: getStackOutput({ folder: apiFolder, env }),
         apps: {
             admin: getStackOutput({ folder: "apps/admin", env }),
             site: getStackOutput({ folder: "apps/website", env })

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/preset-aws",
-  "version": "5.28.0",
+  "version": "5.29.0",
   "types": "./lib/types/index.d.ts",
   "exports": {
     ".": {
@@ -10,7 +10,7 @@
     }
   },
   "dependencies": {
-    "@webiny/core": "^5.28.0"
+    "@webiny/core": "^5.29.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.0",

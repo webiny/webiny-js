@@ -18,6 +18,7 @@
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
+    { "path": "../api-wcp/tsconfig.build.json" },
     { "path": "../db/tsconfig.build.json" }
   ],
   "compilerOptions": {

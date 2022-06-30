@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/cli2",
-  "version": "5.28.0",
+  "version": "5.29.0",
   "sideEffects": false,
   "bin": {
     "wby": "./src/bin.js"
@@ -11,7 +11,7 @@
     "build": "yarn wby build package"
   },
   "dependencies": {
-    "@webiny/core": "^5.28.0",
+    "@webiny/core": "^5.29.0",
     "execa": "^5.1.1",
     "load-json-file": "^6.2.0",
     "ts-morph": "^14.0.0",

@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/pulumi-sdk
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+
+### Bug Fixes
+
+* convert `run` back to sync method ([c32d008](https://github.com/webiny/webiny-js/commit/c32d008e50e781ebb12493d5270afc98c6f82767))
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/pulumi-sdk
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* add Pulumi.ts ([365aa34](https://github.com/webiny/webiny-js/commit/365aa34eaafff66d190ed371ea7f07ce3cbd2775))
+* clean `pulumi-sdk` package ([67fec3d](https://github.com/webiny/webiny-js/commit/67fec3df0e68c839ed05bb9add7f3ca5d8f5558f))
+* improve env vars handling ([ee7f4dd](https://github.com/webiny/webiny-js/commit/ee7f4dd72c37c1934b67a2965c76cd3db4831f3f))
+* remove redundant files ([bc8e469](https://github.com/webiny/webiny-js/commit/bc8e469404be29a39d237b6620e07692f3d36770))
+* update deps ([383700b](https://github.com/webiny/webiny-js/commit/383700b5784c89dac73470839a9d8658768d66dd))
+* update deps ([13fd74c](https://github.com/webiny/webiny-js/commit/13fd74c24afaeb0fa98851e928d798fc7312a272))
+* update execa across all packages ([01189c5](https://github.com/webiny/webiny-js/commit/01189c595521c69f31aba85692d15622d842b231))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/pulumi-sdk

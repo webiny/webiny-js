@@ -1,1 +1,1 @@
-module.exports = require("PATH/.babel.node")({ path: __dirname });
+module.exports = require("@webiny/project-utils").createBabelConfigForNode({ path: __dirname });

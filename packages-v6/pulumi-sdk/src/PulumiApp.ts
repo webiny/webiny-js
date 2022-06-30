@@ -101,8 +101,14 @@ export class PulumiApp {
         return module;
     }
 
-    public addHandler(handler: () => Promise<void> | void) {
-        this.handlers.push(handler);
+    public addHandler<T>(handler: () => Promise<T> | T) {
+        const promise = new Promise<T>(resolve => {
+            this.handlers.push(async () => {
+                resolve(await handler());
+            });
+        });
+
+        return pulumi.output(promise);
     }
 
     public getModule<TConfig, TModule>(def: PulumiAppModuleDefinition<TModule, TConfig>): TModule;

@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* remove old files ([3c7ef2c](https://github.com/webiny/webiny-js/commit/3c7ef2c3f1f94d71e3e260d080f5ab9dfb43fd0d))
+* rename `pulumi-app` to `pulumi` ([42f1d4f](https://github.com/webiny/webiny-js/commit/42f1d4f37ede9d68b437fbe09e2125670a579c82))
+* update imports ([bcd5ffd](https://github.com/webiny/webiny-js/commit/bcd5ffdf5a94f73e71a6c632e0f4df2a2d28f76d))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app

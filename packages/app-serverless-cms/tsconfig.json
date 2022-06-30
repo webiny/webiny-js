@@ -16,6 +16,7 @@
     { "path": "../app-security" },
     { "path": "../app-security-access-management" },
     { "path": "../app-tenancy" },
+    { "path": "../app-tenant-manager" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -52,6 +53,8 @@
       "@webiny/app-security-access-management": ["../app-security-access-management/src"],
       "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
       "@webiny/app-tenancy": ["../app-tenancy/src"],
+      "@webiny/app-tenant-manager/*": ["../app-tenant-manager/src/*"],
+      "@webiny/app-tenant-manager": ["../app-tenant-manager/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

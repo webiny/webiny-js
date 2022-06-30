@@ -1,25 +1,16 @@
-import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
-import {
-    Args as BaseHandlerArgs,
-    Args as BaseArgs,
-    Configuration as BaseConfiguration
-} from "~/types";
+import { RenderEvent, PrerenderingSettings, Render } from "~/types";
 
-export type Configuration = BaseConfiguration;
-export type Args = BaseArgs;
-
-export type HandlerArgs = Args | Args[];
-export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {
-    //
-}
-export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
+export type HandlerArgs = RenderEvent | RenderEvent[];
+export interface HandlerContext extends Context, ArgsContext<HandlerArgs> {}
 
 export type HookCallbackFunction = (args: {
     context: HandlerContext;
-    configuration: Configuration;
-    args: Args;
+    log: (...args: string[]) => void;
+    render: Omit<Render, "files">;
+    settings: PrerenderingSettings;
 }) => void | Promise<void>;
 
 export interface RenderHookPlugin extends Plugin {
@@ -49,8 +40,7 @@ export interface RenderResult {
  */
 export interface RenderUrlCallableParams {
     context: HandlerContext;
-    args: BaseHandlerArgs;
-    configuration: Configuration;
+    args: RenderEvent;
 }
 /**
  * @internal
@@ -64,7 +54,7 @@ export interface RenderUrlParams extends RenderUrlCallableParams {
 export interface RenderUrlPostHtmlParams {
     render: RenderResult;
     args: RenderUrlParams;
-    url: string;
+    path: string;
     id: string;
     ts: number;
 }

@@ -8,6 +8,7 @@
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../api-upgrade" },
+    { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-args" },
@@ -22,7 +23,8 @@
     { "path": "../api-file-manager-ddb" },
     { "path": "../api-i18n-ddb" },
     { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy-so-ddb" }
+    { "path": "../api-tenancy-so-ddb" },
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -42,6 +44,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
       "@webiny/api-upgrade": ["../api-upgrade/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -71,7 +75,9 @@
       "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
       "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
       "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"]
+      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"]
     },
     "baseUrl": "."
   }

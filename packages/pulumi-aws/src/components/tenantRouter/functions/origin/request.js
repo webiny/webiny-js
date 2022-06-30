@@ -36,34 +36,73 @@ function sanitizeRequestURI(uri) {
     return ["", ...parts, "index.html"].join("/");
 }
 
-async function handleOriginRequest(request) {
-    const requestedDomain = request.headers.host[0].value;
-    const originDomain = request.origin.custom.domainName;
-
-    // Find tenant by domain. This record is stored to the DB using the Tenant Manager app.
+async function getTenantIdByDomain(domain) {
     const params = {
         TableName: DB_TABLE_NAME,
         Key: {
-            PK: `DOMAIN#${requestedDomain}`,
+            PK: `DOMAIN#${domain}`,
             SK: "A"
         }
     };
     const { Item } = await documentClient.get(params).promise();
 
-    if (Item) {
+    return Item ? Item.tenant : undefined;
+}
+
+/**
+ * Check if "root" tenant has at least one child tenant.
+ */
+async function hasMultipleTenants() {
+    const { Count } = await documentClient
+        .query({
+            TableName: DB_TABLE_NAME,
+            IndexName: "GSI1",
+            Limit: 1,
+            Select: "COUNT",
+            KeyConditionExpression: "GSI1_PK = :GSI1_PK and begins_with(GSI1_SK, :GSI1_SK)",
+            ExpressionAttributeValues: {
+                ":GSI1_PK": "TENANTS",
+                ":GSI1_SK": "T#root#"
+            }
+        })
+        .promise();
+
+    return Count > 0;
+}
+
+async function handleOriginRequest(request) {
+    const requestedDomain = request.headers.host[0].value;
+    const originDomain = request.origin.custom.domainName;
+
+    let tenant;
+    if (await hasMultipleTenants()) {
+        // Find tenant by domain. This record is stored to the DB using the Tenant Manager app.
+        console.log(`Multiple tenants are present; loading by domain...`);
+        tenant = await getTenantIdByDomain(requestedDomain);
+    } else {
+        console.log(`Only one tenant is present; falling back to "root".`);
+        // If the system only has one tenant, we don't need to map by domain at all.
+        tenant = "root";
+    }
+
+    if (tenant) {
         const uri = sanitizeRequestURI(request.uri);
 
         // To be on the safe side, make sure the requested uri doesn't already include the tenant ID.
-        if (uri.startsWith(`/${Item.tenant}/`)) {
+        if (uri.startsWith(`/${tenant}/`)) {
             request.uri = uri;
         } else {
             // Prepend the tenant ID, to point to the correct S3 bucket folder.
-            request.uri = `/${Item.tenant}${uri}`;
+            request.uri = `/${tenant}${uri}`;
         }
 
         console.log(`Rewriting request from "${uri}" to "${request.uri}"`);
     } else {
         console.log(`Failed to find a tenant for domain "${requestedDomain}"`);
+        return {
+            status: 400,
+            statusDescription: "Unable to map tenant. Check your tenant to domain mapping."
+        };
     }
 
     // At this point, the value of the `Host` header is set to the custom domain.

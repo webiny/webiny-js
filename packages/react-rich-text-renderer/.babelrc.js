@@ -1,4 +1,4 @@
-const defaults = require("../../.babel.react")({
+const defaults = require("@webiny/project-utils").createBabelConfigForReact({
     path: __dirname
 });
 
