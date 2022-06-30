@@ -40,11 +40,35 @@ export const createWcp = async (): Promise<WcpContextObject> => {
             ].join("/")
         );
 
-        await fetch(updateSeatsUrl, {
+        const response = await fetch(updateSeatsUrl, {
             method: "POST",
             headers: { authorization: wcpProjectEnvironment.apiKey },
             body: JSON.stringify({ operation })
         });
+
+        if (response.ok) {
+            return;
+        }
+
+        try {
+            const json = await response.json();
+            console.error(
+                `An error occurred while trying to ${operation} user seats.`,
+                response.status,
+                response.statusText,
+                response.json
+            );
+            throw new Error(json.message);
+        } catch (e) {
+            console.error(
+                `An error occurred while trying to ${operation} user seats.`,
+                response.status,
+                response.statusText
+            );
+            throw new Error(
+                `An error occurred while trying to ${operation} user seats. Please check logs for more info.`
+            );
+        }
     };
 
     return {

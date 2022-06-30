@@ -92,7 +92,8 @@ context("Headless CMS - Content Models CRUD", () => {
             // c) Add required validator
             cy.findByTestId("cms.editor.field-validator.required").within(() => {
                 cy.findByLabelText("Enabled").check();
-                cy.findByLabelText("Message").clear().type("Title is required.");
+                cy.findByLabelText("Message").clear().type("Title is required.").blur();
+                cy.wait(200);
             });
             // d) Save field
             cy.findByText("Save Field").click();
