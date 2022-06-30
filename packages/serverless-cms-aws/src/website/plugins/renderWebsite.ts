@@ -1,6 +1,6 @@
 import EventBridgeClient from "aws-sdk/clients/eventbridge";
 import { CliContext } from "@webiny/cli/types";
-const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
+import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
 /**
  * On every deployment of the Website project application, this plugin ensures all pages created
