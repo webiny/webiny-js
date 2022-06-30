@@ -123,7 +123,7 @@ import { createStoragePulumiApp } from "@webiny/pulumi-aws";
 export = async () => {
   const coreApp = createCoreApp();
 
-  return coreApp.runProgram();
+  return coreApp.run();
 };
 ```
 
@@ -208,7 +208,7 @@ import { createApiPulumiApp } from "@webiny/pulumi-aws";
 export = async () => {
   const apiApp = createApiApp();
 
-  return apiApp.runProgram();
+  return apiApp.run();
 };
 ```
 
@@ -248,7 +248,7 @@ import { createAdminPulumiApp } from "@webiny/pulumi-aws";
 export = async () => {
   const adminApp = createAdminApp();
 
-  return adminApp.runProgram();
+  return adminApp.run();
 };
 ```
 
@@ -323,6 +323,6 @@ import { createWebsitePulumiApp } from "@webiny/pulumi-aws";
 export = async () => {
   const websiteApp = createWebsiteApp();
 
-  return websiteApp.runProgram();
+  return websiteApp.run();
 };
 ```

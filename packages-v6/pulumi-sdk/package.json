@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/pulumi-sdk-v6",
-  "version": "5.28.0",
+  "version": "5.29.0",
   "types": "./lib/types/index.d.ts",
   "exports": {
     ".": {
@@ -40,7 +40,7 @@
     "@babel/runtime": "^7.17.2",
     "@types/lodash": "^4.14.178",
     "@types/node": "^10.0.0",
-    "@webiny/project-utils": "^5.28.0",
+    "@webiny/project-utils": "^5.29.0",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
   },

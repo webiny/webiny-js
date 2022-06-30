@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/app-tenant-manager
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/app-tenant-manager
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/app-tenant-manager
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* **app-tenant-manager:** enforce single instance of tenant manager component ([902d2bd](https://github.com/webiny/webiny-js/commit/902d2bdaa53fb7fe82eaf5ded25ee9273edf48bf))
+* **app-wcp:** add backwards compatibility for multi-tenancy ([ddc56b5](https://github.com/webiny/webiny-js/commit/ddc56b5655f245cba37fb118e89474c80ddcea16))
+* do not render anything if the app cannot be accessed ([ebbf52b](https://github.com/webiny/webiny-js/commit/ebbf52b961fc363a02fb0f5e94d12c48daa23a10))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/app-tenant-manager

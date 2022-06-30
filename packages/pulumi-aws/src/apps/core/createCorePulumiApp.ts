@@ -48,14 +48,15 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
         path: "apps/core",
         config: projectAppParams,
         program: async app => {
-            const protect = app.getParam(projectAppParams.protect) || app.params.run.env === "prod";
+            const prod = app.params.run.env === "prod";
+            const protect = app.getParam(projectAppParams.protect) || prod;
             const legacyConfig = app.getParam(projectAppParams.legacy) || {};
 
             // Setup DynamoDB table
             const dynamoDbTable = app.addModule(CoreDynamo, { protect });
 
             // Setup VPC
-            const vpcEnabled = app.getParam(projectAppParams?.vpc) || app.params.run.env === "prod";
+            const vpcEnabled = app.getParam(projectAppParams?.vpc) || prod;
             const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
 
             // Setup Cognito

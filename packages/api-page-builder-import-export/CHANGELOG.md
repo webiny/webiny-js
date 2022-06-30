@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/api-page-builder-import-export
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/api-page-builder-import-export
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/api-page-builder-import-export
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* add WCP context ([4e77094](https://github.com/webiny/webiny-js/commit/4e770941ae8939dae926bcbaee12c53c5db88f8b))
+* update deps ([e49cadd](https://github.com/webiny/webiny-js/commit/e49cadd0cc89111b77b2f317daaf03bfa278199c))
+* use fs-extra and synchronize dep version ([48a0605](https://github.com/webiny/webiny-js/commit/48a0605f8cc8487c81bd52f7b7db7308e5cbda04))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/api-page-builder-import-export

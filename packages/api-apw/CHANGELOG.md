@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/api-apw
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/api-apw
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/api-apw
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* **api-apw:** change SK to 'default' ([6d575a2](https://github.com/webiny/webiny-js/commit/6d575a27013c48d13e3925d2a81406a6eefe85a9))
+* add WCP plugins ([d53054c](https://github.com/webiny/webiny-js/commit/d53054c24245efd274b9c3916df10b56cd263bef))
+* move `api` into `apps` folder ([0e9da03](https://github.com/webiny/webiny-js/commit/0e9da03426f5743e88273f6831dd5ba1fd6807aa))
+* regenerate TS configs ([b551150](https://github.com/webiny/webiny-js/commit/b5511502b5d690c33988c9e3f6c147bf5f6516d4))
+
+
+### Features
+
+* add WCP check ([259ae4e](https://github.com/webiny/webiny-js/commit/259ae4e4d5ca5d874872473c4f09dbf0a2e6ebb8))
+* add WCP-checks to APW ([f2e96f9](https://github.com/webiny/webiny-js/commit/f2e96f9dd2eaa44ce15db726c07fec5fbbe4eb9f))
+* remove `code` folder ([4930ac1](https://github.com/webiny/webiny-js/commit/4930ac1baf61de25635a8a02589e3bd28bf49556))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/api-apw

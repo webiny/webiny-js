@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.29.0](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.2...v5.29.0) (2022-06-28)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.29.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.1...v5.29.0-beta.2) (2022-06-27)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.29.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.29.0-beta.0...v5.29.0-beta.1) (2022-06-25)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.29.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.28.0...v5.29.0-beta.0) (2022-06-25)
+
+
+### Bug Fixes
+
+* remove prerendering settings from PB settings ([869ea4a](https://github.com/webiny/webiny-js/commit/869ea4a44a28d2ed1a6bf27f84d0b9a3b4a941e8))
+* **pb-settings:** use PS#SETTINGS record for default website URLs ([da1dde3](https://github.com/webiny/webiny-js/commit/da1dde30cbd155c5695a772d7f1024a96e20fb85))
+* add WCP context ([c36b588](https://github.com/webiny/webiny-js/commit/c36b5885b06b7454891436b2ad77a21f2065364c))
+* update deps ([6286b21](https://github.com/webiny/webiny-js/commit/6286b21721d369f5e474f3f5a834cda9a76505e8))
+* update TS configs ([dadd1da](https://github.com/webiny/webiny-js/commit/dadd1dae6ab0230dedf8f544b4de84104781f3e0))
+* use fs-extra and synchronize dep version ([48a0605](https://github.com/webiny/webiny-js/commit/48a0605f8cc8487c81bd52f7b7db7308e5cbda04))
+* **prerendering:** update to work with event-driven prerendering ([3c8c470](https://github.com/webiny/webiny-js/commit/3c8c4701ad1c9bd4d248a2b62efbb494ddce65a6))
+
+
+### Features
+
+* simplify prerendering internals and data structure ([#2478](https://github.com/webiny/webiny-js/issues/2478)) ([91b4cd2](https://github.com/webiny/webiny-js/commit/91b4cd2590993624136e5b9b82ae534a83933fee))
+
+
+
+
+
 # [5.28.0](https://github.com/webiny/webiny-js/compare/v5.28.0-beta.0...v5.28.0) (2022-06-07)
 
 **Note:** Version bump only for package @webiny/api-page-builder
