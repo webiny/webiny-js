@@ -86,6 +86,7 @@
     "inquirer-checkbox-plus-prompt": "^1.0.1",
     "inquirer-maxlength-input-prompt": "^1.0.0",
     "jest": "^28.1.0",
+    "jest-environment-jsdom": "^28.1.2",
     "jest-extended": "^0.11.5",
     "lerna": "3.22.1",
     "lint-staged": "^7.2.2",
