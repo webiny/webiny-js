@@ -64,8 +64,8 @@ export class Pulumi {
         this.pulumiBinaryPath = path.join(this.pulumiFolder, "pulumi");
     }
 
-    async run(rawArgs: RunArgs) {
-        await this.ensureAwsPluginIsInstalled();
+    run(rawArgs: RunArgs) {
+        this.ensureAwsPluginIsInstalled();
 
         const args = merge({}, this.options, rawArgs);
 
@@ -138,16 +138,16 @@ export class Pulumi {
         );
 
         if (installed) {
-            await this.ensureAwsPluginIsInstalled();
+            this.ensureAwsPluginIsInstalled();
         }
 
         return installed;
     }
 
-    async ensureAwsPluginIsInstalled() {
+    ensureAwsPluginIsInstalled() {
         const { version } = require("@pulumi/aws/package.json");
 
-        const pluginExists = await fs.pathExists(
+        const pluginExists = fs.pathExistsSync(
             path.join(
                 this.pulumiFolder,
                 "plugins",
@@ -160,12 +160,16 @@ export class Pulumi {
             return;
         }
 
-        await execa(this.pulumiBinaryPath, ["plugin", "install", "resource", "aws", version], {
-            stdio: "inherit",
-            env: {
-                PULUMI_HOME: this.pulumiFolder,
-                PULUMI_SKIP_UPDATE_CHECK: "true"
+        return execa.sync(
+            this.pulumiBinaryPath,
+            ["plugin", "install", "resource", "aws", version],
+            {
+                stdio: "inherit",
+                env: {
+                    PULUMI_HOME: this.pulumiFolder,
+                    PULUMI_SKIP_UPDATE_CHECK: "true"
+                }
             }
-        });
+        );
     }
 }
