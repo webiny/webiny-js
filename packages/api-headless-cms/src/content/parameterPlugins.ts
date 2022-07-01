@@ -14,12 +14,7 @@ const createRequestPlugin = () => {
         /**
          * If any of the properties is not defined, just ignore this plugin
          */
-        if (
-            !context.http ||
-            !context.http.request ||
-            !context.http.request.path ||
-            !context.http.request.path.parameters
-        ) {
+        if (!context.http?.request?.path?.parameters) {
             return null;
         }
 
@@ -51,22 +46,23 @@ const createRequestPlugin = () => {
 
 const createManualPlugin = (params: CreateParametersPluginsParams): CmsParametersPlugin => {
     return new CmsParametersPlugin(async () => {
+        const { endpointType: type, locale } = params;
         /**
          * if both of parameters are not existing, just skip this plugin.
          */
-        if (!params.endpointType && !params.locale) {
+        if (!type && !locale) {
             return null;
-        } else if (!params.endpointType) {
+        } else if (!type) {
             throw new WebinyError(
-                `There is defined locale CMS parameter but no endpointType.`,
+                `There is defined "locale" CMS parameter but no "endpointType".`,
                 "MALFORMED_ENDPOINT_TYPE",
                 {
                     ...params
                 }
             );
-        } else if (!params.locale) {
+        } else if (!locale) {
             throw new WebinyError(
-                `There is defined endpointType CMS parameter but no locale.`,
+                `There is defined "endpointType" CMS parameter but no "locale".`,
                 "MALFORMED_LOCALE_TYPE",
                 {
                     ...params
@@ -75,8 +71,8 @@ const createManualPlugin = (params: CreateParametersPluginsParams): CmsParameter
         }
 
         return {
-            type: params.endpointType,
-            locale: params.locale
+            type,
+            locale
         };
     });
 };
