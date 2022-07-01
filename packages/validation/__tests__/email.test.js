@@ -2,7 +2,7 @@ import { validation, ValidationError } from "../src";
 
 describe("email test", () => {
     it("should not get triggered if an empty value was set", async () => {
-        await expect(validation.validate(null, "123")).resolves.toBe(true);
+        await expect(validation.validate(null, "email")).resolves.toBe(true);
     });
 
     it("should fail - a number was sent", async () => {
