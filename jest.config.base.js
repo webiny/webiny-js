@@ -1,4 +1,4 @@
-const { basename } = require("path");
+const { basename, join } = require("path");
 const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 const { version } = require("@webiny/cli/package.json");
@@ -12,7 +12,7 @@ module.exports = function ({ path }, presets = []) {
         type = `.${process.env.TEST_TYPE}`;
     }
 
-    return merge.recursive({}, tsPreset, ...presets, {
+    const merged = merge.recursive({ setupFilesAfterEnv: [] }, tsPreset, ...presets, {
         name: name,
         displayName: name,
         modulePaths: [`${path}/src`],
@@ -34,11 +34,17 @@ module.exports = function ({ path }, presets = []) {
                 diagnostics: false
             }
         },
-        setupFilesAfterEnv: [__dirname + "/jest.config.base.setup.js"],
         collectCoverage: false,
         collectCoverageFrom: ["packages/**/*.{ts,tsx,js,jsx}"],
         coverageReporters: ["html"]
     });
+
+    merged.setupFilesAfterEnv = [
+        join(__dirname, "jest.config.base.setup.js"),
+        ...merged.setupFilesAfterEnv
+    ];
+
+    return merged;
 };
 
 process.env.DB_TABLE = "DynamoDB";
