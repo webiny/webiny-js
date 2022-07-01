@@ -18,13 +18,14 @@ context(
             cy.get(`input[value="Untitled"]`).clear().type(pageTitle1).blur();
             cy.findByText("Page title updated successfully!");
             // Publish page
-            cy.findByText("Publish").click();
+            cy.findByTestId("pb.editor.header.publish.button").click();
             cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
-                cy.findByText(/Confirm/i).click();
+                cy.findByTestId("confirmationdialog-confirm-action").click();
             });
         });
 
         it(`Step 2: Check page title in preview`, () => {
+            cy.visit("/page-builder/pages");
             cy.waitUntil(
                 () =>
                     cy
@@ -66,11 +67,12 @@ context(
             // Publish page
             cy.findByText("Publish changes").click();
             cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
-                cy.findByText(/Confirm/i).click();
+                cy.findByTestId("confirmationdialog-confirm-action").click();
             });
         });
 
         it(`Step 4: Check updated page title in page preview`, () => {
+            cy.visit("/page-builder/pages");
             return cy.pbListPages({ limit: 1, search: { query: pageTitle2 } }).then(([page]) => {
                 const { path } = page;
                 cy.visit(`${Cypress.env("WEBSITE_URL")}${path}`);
@@ -80,6 +82,7 @@ context(
         });
 
         it(`Step 5: Delete page immediately`, () => {
+            cy.visit("/page-builder/pages");
             return cy.pbListPages({ limit: 1, search: { query: pageTitle2 } }).then(([page]) => {
                 const { id } = page;
                 // Delete page by deleting first revision

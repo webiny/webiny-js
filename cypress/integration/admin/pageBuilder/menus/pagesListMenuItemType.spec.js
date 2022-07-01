@@ -39,33 +39,35 @@ describe("Menus Module", () => {
         cy.wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText("Main Menu").click();
+            cy.wait(500);
         });
 
         // Test "Page List".
-        cy.findByText(/\+ Add Menu Item/i).click();
+        cy.findByTestId("pb.menu.add.addmenuitem").click();
         cy.findByText("Page list").click();
-        cy.findByLabelText("Title").type(`added-menu-${id}`);
-        cy.findByText(/Save Menu Item/i)
-            .click()
-            .wait(200);
+        cy.findByTestId("pb.page.list.menu.item.form").within(() => {
+            cy.findByTestId("pb.menu.new.listitem.title.grid").within(() => {
+                cy.findByTestId("pb.menu.new.listitem.title").type(`added-menu-${id}`);
+            });
+        });
+        cy.findByTestId("pb.menu.new.listitem.button.save").click().wait(200);
         cy.findByText("Value is required.").should("exist");
-        cy.findByLabelText("Category").type(`Static`);
-        cy.findByText("Static").click();
-        cy.findByText("Sort by...").prev().select("Title");
-        cy.findByText("Sort direction...").prev().select("Descending");
+        cy.findByTestId("pb.menu.new.listitem.category").type(`Static`);
+        cy.findByTestId("pb.menu.new.listitem.sortby").select("Title");
+        cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Descending");
 
-        cy.findByLabelText("Tags").type(`page-${id}-`);
+        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
         cy.findByText(`page-${id}-0`).click();
 
-        cy.findByLabelText("Tags").type(`page-${id}-`);
+        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
         cy.findByText(`page-${id}-1`).click();
 
-        cy.findByLabelText("Tags").type(`some-custom-tag`);
+        cy.findByTestId("pb.menu.new.listitem.tags").type(`some-custom-tag`);
         cy.findByText(`some-custom-tag`).click();
-        cy.findByText("Tags rule...").prev().select("Must include any of the tags");
+        cy.findByTestId("pb.menu.new.listitem.tagsrule").select("Must include any of the tags");
 
-        cy.findByText(/Save Menu Item/i).click();
-        cy.findByText("Save menu").click();
+        cy.findByTestId("pb.menu.new.listitem.button.save").click();
+        cy.findByTestId("pb.menu.save.button").click();
         cy.findByText("Menu saved successfully.");
     });
 
@@ -97,11 +99,11 @@ describe("Menus Module", () => {
             cy.findByTestId("pb-edit-icon-button").click();
         });
 
-        cy.findByText("Sort direction...").prev().select("Ascending");
-        cy.findByLabelText("Title").clear().type(`added-menu-${idEdited}`);
+        cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Ascending");
+        cy.findByTestId("pb.menu.new.listitem.title").clear().type(`added-menu-${idEdited}`);
 
-        cy.findByText(/Save Menu Item/i).click();
-        cy.findByText("Save menu").click();
+        cy.findByTestId("pb.menu.new.listitem.button.save").click();
+        cy.findByTestId("pb.menu.save.button").click();
         cy.findByText("Menu saved successfully.").should("exist");
     });
 
@@ -133,7 +135,7 @@ describe("Menus Module", () => {
             cy.findByTestId("pb-delete-icon-button").click();
         });
 
-        cy.findByText("Save menu").click();
+        cy.findByTestId("pb.menu.save.button").click();
         cy.findByText("Menu saved successfully.").should("exist");
     });
 
