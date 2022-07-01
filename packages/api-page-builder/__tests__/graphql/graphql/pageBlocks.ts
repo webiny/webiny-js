@@ -45,9 +45,9 @@ export const UPDATE_PAGE_BLOCK = /* GraphQL */ `
 `;
 
 export const LIST_PAGE_BLOCKS = /* GraphQL */ `
-    query ListPageBlocks {
+    query ListPageBlocks($where: PbListPageBlocksWhereInput) {
         pageBuilder {
-            listPageBlocks {
+            listPageBlocks(where: $where) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

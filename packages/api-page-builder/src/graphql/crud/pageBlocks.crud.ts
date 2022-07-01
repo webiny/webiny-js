@@ -120,12 +120,20 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
             return pageBlock;
         },
 
-        async listPageBlocks(params) {
+        async listPageBlocks(this: PageBuilderContextObject, params) {
             const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                 rwd: "r"
             });
 
             const { sort, where } = params || {};
+
+            if (where?.blockCategory) {
+                const blockCategory = await this.getBlockCategory(where.blockCategory);
+
+                if (!blockCategory) {
+                    throw new NotFoundError(`Block Category not found.`);
+                }
+            }
 
             const listParams: PageBlockStorageOperationsListParams = {
                 where: {

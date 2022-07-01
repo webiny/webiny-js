@@ -62,9 +62,9 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
                     return context.pageBuilder.getPageBlock(args.id);
                 });
             },
-            listPageBlocks: async (_, __, context) => {
+            listPageBlocks: async (_, args: any, context) => {
                 return resolve(() => {
-                    return context.pageBuilder.listPageBlocks();
+                    return context.pageBuilder.listPageBlocks(args);
                 });
             }
         },
