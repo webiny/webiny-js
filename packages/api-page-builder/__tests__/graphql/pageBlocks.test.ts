@@ -439,7 +439,7 @@ describe("Page Blocks Test", () => {
                         error: {
                             code: "NOT_FOUND",
                             data: null,
-                            message: "Block category not found."
+                            message: "Block Category not found."
                         }
                     }
                 }
