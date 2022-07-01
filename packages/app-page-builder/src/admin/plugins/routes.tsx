@@ -123,7 +123,7 @@ const plugins: RoutePlugin[] = [
                 render={() => (
                     <SecureRoute permission={ROLE_PB_BLOCK}>
                         <AdminLayout>
-                            <Helmet title={"Page Builder - Page Blocks"} />
+                            <Helmet title={"Blocks"} />
                             <PageBlocks />
                         </AdminLayout>
                     </SecureRoute>

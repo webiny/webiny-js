@@ -109,7 +109,7 @@ const BlocksByCategoriesDataList = () => {
 
     return (
         <DataList
-            title={t`Page Blocks`}
+            title={t`Blocks`}
             loading={Boolean(loading)}
             data={categoryList}
             search={
