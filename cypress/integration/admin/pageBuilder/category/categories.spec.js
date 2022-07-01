@@ -8,22 +8,22 @@ context("Categories Module", () => {
         cy.visit("/page-builder/categories");
         cy.findByTestId("data-list-new-record-button").click();
 
-        cy.findByLabelText("Name").type(`Cool Category ${id}`);
-        cy.findByText("Save category").click();
+        cy.findByTestId("pb.category.new.form.name").type(`Cool Category ${id}`);
+        cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findAllByText("Value is required.").should("exist").should("have.length", 2);
-        cy.findByLabelText("URL").type(`Some URL`);
-        cy.findByText("Save category").click();
+        cy.findByTestId("pb.category.new.form.url").type(`Some URL`);
+        cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findByText("Value is required.").should("exist");
-        cy.findByLabelText("Slug").type(`cool-category-${id}`);
-        cy.findByText("Save category").click();
+        cy.findByTestId("pb.category.new.form.slug").type(`cool-category-${id}`);
+        cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findByText("Value is required.").should("not.exist");
         cy.findByText("Category URL must begin and end with a forward slash (`/`)").should("exist");
-        cy.findByLabelText("URL").clear().type(`/some-url-for-category-${id}/`);
-        cy.findByText("Save category").click();
+        cy.findByTestId("pb.category.new.form.url").clear().type(`/some-url-for-category-${id}/`);
+        cy.findByTestId("pb.category.new.form.button.save").click();
         cy.findByText("Category URL must begin and end with a forward slash (`/`)").should(
             "not.exist"
         );
-        cy.findByText("Save category").click();
+        cy.findByTestId("pb.category.new.form.button.save").click();
 
         cy.wait(500);
         cy.findByText("Category saved successfully.").should("exist");
@@ -34,7 +34,7 @@ context("Categories Module", () => {
             cy.findByText(`/some-url-for-category-${id}/`).should("exist");
 
             cy.findByText(`Cool Category ${id}`)
-                .parent("div")
+                .parent("li")
                 .within(() => {
                     cy.get("button").click({ force: true });
                 });
@@ -43,7 +43,7 @@ context("Categories Module", () => {
         cy.get('[role="alertdialog"] :visible').within(() => {
             cy.contains("Are you sure you want to continue?")
                 .next()
-                .within(() => cy.findByText("Confirm").click());
+                .within(() => cy.findAllByTestId("dialog-accept").next().click());
         });
 
         cy.findByText(`Category "cool-category-${id}" deleted.`).should("exist");
