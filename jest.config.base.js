@@ -13,13 +13,13 @@ module.exports = function ({ path }, presets = []) {
     }
 
     const merged = merge.recursive({ setupFilesAfterEnv: [] }, tsPreset, ...presets, {
-        name: name,
         displayName: name,
         modulePaths: [`${path}/src`],
         testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],
         transform: {
-            "^.+\\.(ts|tsx)$": "ts-jest"
+            "^.+\\.[jt]sx?$": "ts-jest"
         },
+        transformIgnorePatterns: ["/node_modules/(?!(nanoid)/)"],
         moduleDirectories: ["node_modules"],
         moduleNameMapper: {
             "~tests/(.*)": `${path}/__tests__/$1`,
@@ -43,6 +43,11 @@ module.exports = function ({ path }, presets = []) {
         join(__dirname, "jest.config.base.setup.js"),
         ...merged.setupFilesAfterEnv
     ];
+
+    // IMPORTANT!
+    // We need to delete the following keys to let our rules be the only ones applied.
+    delete merged.transform["^.+\\.jsx?$"];
+    delete merged.transform["^.+\\.tsx?$"];
 
     return merged;
 };
