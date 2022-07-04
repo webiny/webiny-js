@@ -48,6 +48,12 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
         path: "apps/core",
         config: projectAppParams,
         program: async app => {
+            if (projectAppParams.pulumi) {
+                app.addHandler(() => {
+                    return projectAppParams.pulumi!(app as ReturnType<typeof createCorePulumiApp>);
+                });
+            }
+
             const prod = app.params.run.env === "prod";
             const protect = app.getParam(projectAppParams.protect) || prod;
             const legacyConfig = app.getParam(projectAppParams.legacy) || {};
@@ -92,10 +98,6 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
-
-            if (projectAppParams.pulumi) {
-                await projectAppParams.pulumi(app as ReturnType<typeof createCorePulumiApp>);
-            }
 
             return {
                 dynamoDbTable,

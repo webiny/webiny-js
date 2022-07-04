@@ -31,6 +31,14 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
         path: "apps/website",
         config: projectAppParams,
         program: async app => {
+            if (projectAppParams.pulumi) {
+                app.addHandler(() => {
+                    return projectAppParams.pulumi!(
+                        app as ReturnType<typeof createWebsitePulumiApp>
+                    );
+                });
+            }
+
             // Register core output as a module available for all other modules
             const core = app.addModule(CoreOutput);
 
@@ -183,10 +191,6 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
-
-            if (projectAppParams.pulumi) {
-                await projectAppParams.pulumi(app as ReturnType<typeof createWebsitePulumiApp>);
-            }
 
             return {
                 prerendering,

@@ -22,6 +22,12 @@ export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParam
         path: "apps/admin",
         config: projectAppParams,
         program: async app => {
+            if (projectAppParams.pulumi) {
+                app.addHandler(() => {
+                    return projectAppParams.pulumi!(app as ReturnType<typeof createAdminPulumiApp>);
+                });
+            }
+
             const bucket = createPublicAppBucket(app, "admin-app");
 
             const cloudfront = app.addResource(aws.cloudfront.Distribution, {
@@ -76,10 +82,6 @@ export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParam
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
-
-            if (projectAppParams.pulumi) {
-                await projectAppParams.pulumi(app as ReturnType<typeof createAdminPulumiApp>);
-            }
 
             return {
                 ...bucket,
