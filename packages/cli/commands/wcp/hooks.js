@@ -14,39 +14,39 @@ module.exports = () => [
         type: "hook-before-deploy",
         name: "hook-before-deploy-environment-get-environment",
         async hook(args, context) {
-            // If the project isn't activated, do nothing.
-            if (!context.project.config.id) {
-                return;
-            }
+            const apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
+            if (apiKey) {
+                projectEnvironment = await getProjectEnvironment({ apiKey });
+            } else {
+                // If the project isn't activated, do nothing.
+                const wcpProjectId = context.project.config.id || process.env.WCP_PROJECT_ID;
+                if (!wcpProjectId) {
+                    return;
+                }
 
-            if (process.env.WCP_PROJECT_ENVIRONMENT) {
-                // If we have WCP_PROJECT_ENVIRONMENT env var, we set the WCP_PROJECT_ENVIRONMENT_API_KEY too.
-                if (!process.env.WCP_PROJECT_ENVIRONMENT_API_KEY) {
+                // For development purposes, we allow setting the WCP_PROJECT_ENVIRONMENT env var directly.
+                // TODO: discuss this, do we really want to have this feature? Maybe we can remove it?
+                if (process.env.WCP_PROJECT_ENVIRONMENT) {
+                    // If we have WCP_PROJECT_ENVIRONMENT env var, we set the WCP_PROJECT_ENVIRONMENT_API_KEY too.
                     const decryptedProjectEnvironment = decrypt(
                         process.env.WCP_PROJECT_ENVIRONMENT
                     );
                     process.env.WCP_PROJECT_ENVIRONMENT_API_KEY =
                         decryptedProjectEnvironment.apiKey;
+
+                    return;
                 }
 
-                return;
-            }
+                // The `id` has the orgId/projectId structure, for example `my-org-x/my-project-y`.
+                const [orgId, projectId] = wcpProjectId.split("/");
 
-            // The `id` has the orgId/projectId structure, for example `my-org-x/my-project-y`.
-            const orgProject = context.project.config.id;
-            const [orgId, projectId] = orgProject.split("/");
+                const isValidId = orgId && projectId;
+                if (!isValidId) {
+                    throw new Error(
+                        `It seems the project ID, specified in "webiny.project.ts" file, is invalid.`
+                    );
+                }
 
-            const isValidId = orgId && projectId;
-            if (!isValidId) {
-                throw new Error(
-                    `It seems the project ID, specified in "webiny.project.ts" file, is invalid.`
-                );
-            }
-
-            const apiKey = process.env.WCP_PROJECT_ENVIRONMENT_API_KEY;
-            if (apiKey) {
-                projectEnvironment = await getProjectEnvironment({ apiKey });
-            } else {
                 // If there is no API key, that means we need to retrieve the currently logged-in user.
                 const user = await getUser();
                 const project = user.projects.find(item => item.id === projectId);
