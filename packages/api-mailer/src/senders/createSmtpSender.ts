@@ -9,6 +9,7 @@ import SMTPTransport, { Options } from "nodemailer/lib/smtp-transport";
 import { createDummySender, DummySender } from "~/senders/createDummySender";
 
 export type SmtpSenderConfig = Options;
+
 export interface SmtpSender extends MailerSender {
     transporter: Transporter<SMTPTransport.SentMessageInfo>;
 }
@@ -25,33 +26,31 @@ const variables: SmtpSenderVariables = {
 };
 
 export const createSmtpSender = (config?: SmtpSenderConfig): SmtpSender | DummySender => {
-    const host = variables.host;
-    const user = variables.user;
-    const pass = variables.password;
-
-    if (!host) {
+    /**
+     * If we have environment variables, use those as config.
+     */
+    if (variables.host && variables.user && variables.password) {
+        if (config) {
+            throw new WebinyError({
+                message: `Cannot use both config and environment variables to setup the nodemailer.`,
+                code: "SMTP_SENDER_INIT_ERROR"
+            });
+        }
+        config = {
+            host: variables.host,
+            auth: {
+                user: variables.user,
+                pass: variables.password
+            }
+        };
+    } else if (!config) {
         console.log(
-            "There is no WEBINY_MAILER_HOST environment variable defined. Using dummy sender."
-        );
-        return createDummySender();
-    } else if (!user) {
-        console.log(
-            "There is no WEBINY_MAILER_USER environment variable defined. Using dummy sender."
-        );
-        return createDummySender();
-    } else if (!pass) {
-        console.log(
-            "There is no WEBINY_MAILER_PASSWORD environment variable defined. Using dummy sender."
+            "There is no config or required environment variables defined. Using dummy sender."
         );
         return createDummySender();
     }
     const transporter = nodemailer.createTransport({
-        ...(config || {}),
-        host,
-        auth: {
-            user,
-            pass
-        }
+        ...config
     });
 
     return {

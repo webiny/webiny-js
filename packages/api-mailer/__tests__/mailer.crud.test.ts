@@ -99,11 +99,7 @@ describe("Mailer crud", () => {
     });
 
     it(`should throw error before sending because of missing "to"`, async () => {
-        const mailer = createDummySender();
-
         const context = await createContext();
-
-        context.mailer.setSender(mailer);
 
         const params: MailerContextObjectSendParams = {
             data: {
@@ -133,11 +129,11 @@ describe("Mailer crud", () => {
     });
 
     it(`should throw error before sending because of missing "from"`, async () => {
-        const mailer = createDummySender();
+        const sender = createDummySender();
 
         const context = await createContext();
 
-        context.mailer.setSender(mailer);
+        context.mailer.setSender(sender);
 
         const params: MailerContextObjectSendParams = {
             data: {
@@ -167,11 +163,11 @@ describe("Mailer crud", () => {
     });
 
     it(`should throw error before sending because of missing "subject"`, async () => {
-        const mailer = createDummySender();
+        const sender = createDummySender();
 
         const context = await createContext();
 
-        context.mailer.setSender(mailer);
+        context.mailer.setSender(sender);
 
         const params: MailerContextObjectSendParams = {
             data: {
@@ -201,11 +197,11 @@ describe("Mailer crud", () => {
     });
 
     it(`should throw error before sending because of missing "text"`, async () => {
-        const mailer = createDummySender();
+        const sender = createDummySender();
 
         const context = await createContext();
 
-        context.mailer.setSender(mailer);
+        context.mailer.setSender(sender);
 
         const params: MailerContextObjectSendParams = {
             data: {
