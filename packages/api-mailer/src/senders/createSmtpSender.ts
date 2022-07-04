@@ -5,31 +5,16 @@
 import { MailerSender } from "~/types";
 import WebinyError from "@webiny/error";
 import nodemailer, { Transporter } from "nodemailer";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
+import SMTPTransport, { Options } from "nodemailer/lib/smtp-transport";
 
-export interface SmtpSenderConfig {
-    from?: string;
-    replyTo?: string;
-    url: string;
-    username: string;
-    password: string;
-}
+export type SmtpSenderConfig = Options;
 export interface SmtpSender extends MailerSender {
     transporter: Transporter<SMTPTransport.SentMessageInfo>;
 }
 
 export const createSmtpSender = (config: SmtpSenderConfig): SmtpSender => {
     const transporter = nodemailer.createTransport({
-        replyTo: config.replyTo,
-        from: config.from,
-        url: config.url,
-        auth:
-            config.username && config.password
-                ? {
-                      user: config.username,
-                      pass: config.password
-                  }
-                : undefined
+        ...config
     });
 
     return {
