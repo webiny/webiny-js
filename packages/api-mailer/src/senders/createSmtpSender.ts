@@ -20,7 +20,7 @@ export const createSmtpSender = (config: SmtpSenderConfig): SmtpSender => {
     return {
         transporter,
         send: async params => {
-            const { replyTo, body, to, bcc, cc, from, subject } = params;
+            const { replyTo, text, html, to, bcc, cc, from, subject } = params;
 
             try {
                 const result = await transporter.sendMail({
@@ -28,7 +28,8 @@ export const createSmtpSender = (config: SmtpSenderConfig): SmtpSender => {
                     bcc,
                     cc,
                     from,
-                    html: body,
+                    text,
+                    html,
                     to,
                     subject
                 });

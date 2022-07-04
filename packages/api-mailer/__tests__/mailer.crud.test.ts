@@ -6,7 +6,8 @@ import WebinyError from "@webiny/error";
 const singleTo = "to@localhost";
 const from = "from@localhost";
 const subject = "Some dummy subject";
-const body = "Some dummy body";
+const text = "Some dummy body";
+const html = "<p>Some dummy body</p>";
 
 describe("Mailer crud", () => {
     it("should send e-mail via dummy built-in sender", async () => {
@@ -21,7 +22,8 @@ describe("Mailer crud", () => {
                 to: singleTo,
                 from,
                 subject,
-                body
+                text,
+                html
             }
         };
 
@@ -37,7 +39,8 @@ describe("Mailer crud", () => {
                 to: singleTo,
                 from,
                 subject,
-                body
+                text,
+                html
             }
         ]);
     });
@@ -54,7 +57,8 @@ describe("Mailer crud", () => {
                 to: singleTo,
                 from,
                 subject,
-                body
+                text,
+                html
             }
         };
 

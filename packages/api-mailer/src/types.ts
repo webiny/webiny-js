@@ -47,7 +47,8 @@ export interface MailerSenderParams {
     to: string | string[];
     from: string;
     subject: string;
-    body: string;
+    text: string;
+    html?: string;
     replyTo?: string;
     cc?: string | string[];
     bcc?: string | string[];
