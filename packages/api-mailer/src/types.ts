@@ -11,7 +11,7 @@ export interface MailerContext extends Context {
 }
 
 export interface MailerConfig<T extends MailerSender = MailerSender> {
-    sender: T;
+    sender?: T;
 }
 
 /**
