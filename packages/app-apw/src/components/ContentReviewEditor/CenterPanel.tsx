@@ -28,6 +28,7 @@ const ChangeRequestList = styled(List)`
 
 const CreateChangeRequestBox = styled(Box)`
     width: 100%;
+    min-height: 80px;
     display: flex;
     justify-content: center;
     border-bottom: 1px solid var(--mdc-theme-background);

@@ -89,7 +89,7 @@ export const encodeToken = ({ id, tenant, locale }: EncodeTokenParams) => {
 
 export const TOKEN_PREFIX = "apw-";
 
-export const decodeToken = (token: string): EncodeTokenParams => {
+export const decodeToken = (token: string): Partial<EncodeTokenParams> => {
     const auth = token.slice(TOKEN_PREFIX.length);
     const [id, tenant, locale] = auth.split("__");
 
@@ -121,6 +121,7 @@ export const basePlugins = () => [
  */
 export interface ApwSettings {
     mainGraphqlFunctionArn: string;
+    cmsGraphqlFunctionArn: string;
     eventRuleName: string;
     eventTargetId: string;
 }
@@ -140,6 +141,7 @@ export const getApwSettings = async (): Promise<ApwSettings> => {
 
     return {
         mainGraphqlFunctionArn: Item ? Item["mainGraphqlFunctionArn"] : "mainGraphqlFunctionArn",
+        cmsGraphqlFunctionArn: Item ? Item["cmsGraphqlFunctionArn"] : "cmsGraphqlFunctionArn",
         eventRuleName: Item ? Item["eventRuleName"] : "eventRuleName",
         eventTargetId: Item ? Item["eventTargetId"] : "eventTargetId"
     };

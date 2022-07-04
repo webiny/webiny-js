@@ -31,7 +31,7 @@ describe("Reviewer crud test", () => {
 
     it("should be able to hook on to after login", async () => {
         const [response] = await securityIdentity.login();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 security: {
                     login: {
@@ -154,7 +154,7 @@ describe("Reviewer crud test", () => {
 
     it("should not create more than one entry due to multiple login", async () => {
         const [response] = await securityIdentity.login();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 security: {
                     login: {
@@ -264,7 +264,7 @@ describe("Reviewer crud test", () => {
 
     it(`should update "displayName" after login if identity has been updated`, async () => {
         const [response] = await securityIdentityRoot.login();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 security: {
                     login: {

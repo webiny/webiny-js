@@ -12,7 +12,6 @@ export const useContentHeadlessCmsHandler = (
 ) => {
     return createHeadlessCmsGQLHandler({
         ...params,
-        setupTenancyAndSecurityGraphQL: true,
         plugins: (params.plugins || []).concat([createContentHeadlessCmsGraphQL()]),
         createHeadlessCmsApp: createContentHeadlessCmsContext
     });

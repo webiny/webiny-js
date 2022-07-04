@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
 
 import { CmsContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
@@ -56,13 +56,23 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     context.security.disableAuthorization();
                     const models = await context.cms.listModels();
                     context.security.enableAuthorization();
-                    return models.filter(m => m.group.id === group.id);
+                    return models.filter(model => {
+                        if (model.isPrivate === true) {
+                            return false;
+                        }
+                        return model.group.id === group.id;
+                    });
                 },
                 totalContentModels: async (group, _, context) => {
                     context.security.disableAuthorization();
                     const models = await context.cms.listModels();
                     context.security.enableAuthorization();
-                    return models.filter(m => m.group === group.id).length;
+                    return models.filter(model => {
+                        if (model.isPrivate === true) {
+                            return false;
+                        }
+                        return model.group === group.id;
+                    }).length;
                 },
                 plugin: async (group, _, context: CmsContext): Promise<boolean> => {
                     return context.plugins
@@ -74,16 +84,19 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 getContentModelGroup: async (_, args: any, context) => {
                     try {
                         const { id } = args;
-                        const model = await context.cms.getGroup(id);
-                        return new Response(model);
+                        const group = await context.cms.getGroup(id);
+                        if (group?.isPrivate) {
+                            throw new NotFoundError(`Cms Group "${id}" was not found!`);
+                        }
+                        return new Response(group);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
                 },
                 listContentModelGroups: async (_, __, context) => {
                     try {
-                        const models = await context.cms.listGroups();
-                        return new Response(models);
+                        const groups = await context.cms.listGroups();
+                        return new Response(groups.filter(group => group.isPrivate !== true));
                     } catch (e) {
                         return new ErrorResponse(e);
                     }

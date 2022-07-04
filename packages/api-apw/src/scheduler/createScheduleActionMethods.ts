@@ -10,24 +10,45 @@ import mdbid from "mdbid";
 import { string, withFields } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import {
+    ApwContentTypes,
+    ApwScheduleAction,
     ApwScheduleActionCrud,
     ApwScheduleActionData,
+    ApwScheduleActionTypes,
     CreateScheduleActionParams
 } from "~/scheduler/types";
 
-const CreateDataModel = withFields({
-    datetime: string({
-        validation: validation.create(`required`)
-    }),
-    type: string({
-        validation: validation.create(`required,in:page:cms_entry`)
-    }),
-    action: string({
-        validation: validation.create(`required,in:publish:unpublish`)
-    }),
-    entryId: string({
-        validation: validation.create(`required`)
-    })
+const CreateDataModel = withFields((instance: any) => {
+    return {
+        datetime: string({
+            validation: validation.create(`required`)
+        }),
+        type: string({
+            validation: validation.create(
+                `required,in:${ApwContentTypes.PAGE}:${ApwContentTypes.CMS_ENTRY}`
+            )
+        }),
+        action: string({
+            validation: validation.create(
+                `required,in:${ApwScheduleActionTypes.PUBLISH}:${ApwScheduleActionTypes.UNPUBLISH}`
+            )
+        }),
+        entryId: string({
+            validation: validation.create(`required`)
+        }),
+        modelId: string({
+            validation: (value: string) => {
+                if (instance.type !== ApwContentTypes.CMS_ENTRY) {
+                    return true;
+                } else if (!!value) {
+                    return true;
+                }
+                throw new Error(
+                    `There is no modelId defined when type is "${ApwContentTypes.CMS_ENTRY}"`
+                );
+            }
+        })
+    };
 })();
 
 interface GetTenantAndLocaleResult {
@@ -77,7 +98,7 @@ export function createScheduleActionMethods({
 
             const data: ApwScheduleActionData = await createDataModel.toJSON();
 
-            const scheduleAction = {
+            const scheduleAction: ApwScheduleAction = {
                 ...getTenantAndLocale(),
                 data,
                 id,

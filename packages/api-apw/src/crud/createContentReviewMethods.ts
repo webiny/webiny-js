@@ -356,33 +356,35 @@ export function createContentReviewMethods(
 
             /**
              * If datetime is present it means we're scheduling this action.
+             * And if not, we are publishing immediately.
              */
-            if (datetime) {
-                const data: ApwScheduleActionData = {
-                    action: ApwScheduleActionTypes.PUBLISH,
-                    type: content.type,
-                    entryId: content.id,
-                    datetime
-                };
-                const scheduledActionId = await this.scheduleAction(data);
-                /**
-                 * Update scheduled related meta data.
-                 */
-                await this.update(id, {
-                    content: {
-                        ...content,
-                        scheduledOn: datetime,
-                        scheduledBy: identity.id,
-                        scheduledActionId
-                    }
-                });
+            if (!datetime) {
+                const contentPublisher = getContentPublisher(content.type);
+
+                await contentPublisher(content.id, content.settings);
 
                 return true;
             }
 
-            const contentPublisher = getContentPublisher(content.type);
-
-            await contentPublisher(content.id, content.settings);
+            const data: ApwScheduleActionData = {
+                action: ApwScheduleActionTypes.PUBLISH,
+                type: content.type,
+                entryId: content.id,
+                modelId: content.settings?.modelId,
+                datetime
+            };
+            const scheduledActionId = await this.scheduleAction(data);
+            /**
+             * Update scheduled related meta data.
+             */
+            await this.update(id, {
+                content: {
+                    ...content,
+                    scheduledOn: datetime,
+                    scheduledBy: identity.id,
+                    scheduledActionId
+                }
+            });
 
             return true;
         },
@@ -405,32 +407,34 @@ export function createContentReviewMethods(
 
             /**
              * If datetime is present it means we're scheduling this action.
+             * If not, we are unpublishing immediately.
              */
-            if (datetime) {
-                const scheduledActionId = await this.scheduleAction({
-                    action: ApwScheduleActionTypes.UNPUBLISH,
-                    type: content.type,
-                    entryId: content.id,
-                    datetime
-                });
-                /**
-                 * Update scheduled related meta data.
-                 */
-                await this.update(id, {
-                    content: {
-                        ...content,
-                        scheduledOn: datetime,
-                        scheduledBy: identity.id,
-                        scheduledActionId
-                    }
-                });
+            if (!datetime) {
+                const contentUnPublisher = getContentUnPublisher(content.type);
+
+                await contentUnPublisher(content.id, content.settings);
 
                 return true;
             }
 
-            const contentUnPublisher = getContentUnPublisher(content.type);
-
-            await contentUnPublisher(content.id, content.settings);
+            const scheduledActionId = await this.scheduleAction({
+                action: ApwScheduleActionTypes.UNPUBLISH,
+                type: content.type,
+                entryId: content.id,
+                modelId: content.settings?.modelId,
+                datetime
+            });
+            /**
+             * Update scheduled related meta data.
+             */
+            await this.update(id, {
+                content: {
+                    ...content,
+                    scheduledOn: datetime,
+                    scheduledBy: identity.id,
+                    scheduledActionId
+                }
+            });
 
             return true;
         },

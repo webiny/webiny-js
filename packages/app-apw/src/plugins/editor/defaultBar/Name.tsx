@@ -23,9 +23,8 @@ const OpenInNewButton = styled(IconButton)`
 const getContentUrl = (content: ApwContentReviewContent): string => {
     if (content.type === ApwContentTypes.PAGE) {
         return `/page-builder/pages?id=${encodeURIComponent(content.id)}`;
-    }
-    if (content.type === ApwContentTypes.CMS_ENTRY) {
-        return `cms/content-entries/${content.settings.modelId}?id=${encodeURIComponent(
+    } else if (content.type === ApwContentTypes.CMS_ENTRY) {
+        return `/cms/content-entries/${content.settings.modelId}?id=${encodeURIComponent(
             content.id
         )}`;
     }
