@@ -22,7 +22,7 @@ export const generateSchemaPlugins = async (
 
     // Load model data
     context.security.disableAuthorization();
-    const models = await cms.listModels();
+    const models = (await cms.listModels()).filter(model => model.isPrivate !== true);
     context.security.enableAuthorization();
 
     const schemas = getSchemaFromFieldPlugins({ models, fieldTypePlugins, type: cms.type });

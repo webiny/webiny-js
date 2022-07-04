@@ -314,5 +314,6 @@ export const createContentReviewModelDefinition = ({
         ]),
         latestCommentId()
     ],
-    description: ""
+    description: "",
+    isPrivate: true
 });
