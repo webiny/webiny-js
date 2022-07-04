@@ -42,7 +42,7 @@ export const createSmtpSender = (config: SmtpSenderConfig): SmtpSender => {
 
                 throw new WebinyError({
                     message:
-                        "nodemailer.sendMail did not result a messageId property. Something went wrong...",
+                        "nodemailer.sendMail does not have a messageId in the result. Something went wrong...",
                     code: "MAILER_ERROR",
                     data: {
                         ...result
