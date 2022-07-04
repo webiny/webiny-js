@@ -2,7 +2,7 @@ import { MailerConfig, MailerContext } from "~/types";
 import { createMailer } from "~/index";
 import { Context, ContextPlugin } from "@webiny/handler";
 
-export const createContext = async (config: MailerConfig): Promise<MailerContext> => {
+export const createContext = async (config?: MailerConfig): Promise<MailerContext> => {
     const context = new Context({
         WEBINY_VERSION: process.env.WEBINY_VERSION || "unknown",
         plugins: createMailer(config)

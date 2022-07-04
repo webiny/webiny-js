@@ -1,6 +1,6 @@
 import { MailerSender, MailerSenderParams } from "~/types";
 
-interface DummySender extends MailerSender {
+export interface DummySender extends MailerSender {
     getAllSent: () => MailerSenderParams[];
 }
 export const createDummySender = (): DummySender => {

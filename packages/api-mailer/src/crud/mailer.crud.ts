@@ -2,22 +2,17 @@ import {
     MailerConfig,
     MailerContextObject,
     MailerSender,
+    MailerSenderSetterParams,
     OnAfterMailerSendParams,
     OnBeforeMailerSendParams,
     OnErrorMailerParams
 } from "~/types";
-import { createDummySender } from "~/senders/createDummySender";
 import { createTopic } from "@webiny/pubsub";
 import { attachOnBeforeSend } from "~/crud/mailer/onBeforeSend";
+import WebinyError from "@webiny/error";
 
-export const createMailerCrud = (config: MailerConfig): MailerContextObject => {
-    /**
-     * Let's log that we are creating a dummy sender - user should know that mails are actually not being sent.
-     */
-    if (!config.sender && process.env.DEBUG === "true") {
-        console.log("Creating dummy sender as none was sent on init.");
-    }
-    const sender: MailerSender = config.sender || createDummySender();
+export const createMailerCrud = (config?: MailerConfig): MailerContextObject => {
+    let mailerSender: MailerSenderSetterParams | undefined = config?.sender;
     /**
      * We define possible events to be hooked into.
      */
@@ -31,11 +26,45 @@ export const createMailerCrud = (config: MailerConfig): MailerContextObject => {
         onBeforeSend
     });
 
+    let mailerSenderInitialized: MailerSender | undefined;
+
+    const getSender = async <T extends MailerSender = MailerSender>(): Promise<T> => {
+        if (mailerSenderInitialized) {
+            return mailerSenderInitialized as T;
+        } else if (!mailerSender) {
+            throw new WebinyError({
+                message: "Mailer sender is not set.",
+                code: "MAILER_SENDER_NOT_SET_ERROR"
+            });
+        } else if (typeof mailerSender === "function") {
+            try {
+                mailerSenderInitialized = await mailerSender();
+
+                return mailerSenderInitialized as T;
+            } catch (ex) {
+                throw new WebinyError({
+                    message: "Error while getting mailer sender.",
+                    code: "MAILER_SENDER_ERROR",
+                    data: {
+                        error: ex
+                    }
+                });
+            }
+        }
+        mailerSenderInitialized = mailerSender;
+        return mailerSenderInitialized as T;
+    };
+
     return {
         onBeforeSend,
         onAfterSend,
         onError,
+        getSender,
+        setSender: target => {
+            mailerSender = target;
+        },
         send: async ({ data }) => {
+            const sender = await getSender();
             try {
                 await onBeforeSend.publish({
                     data

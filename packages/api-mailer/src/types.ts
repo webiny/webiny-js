@@ -4,10 +4,19 @@ import { Topic } from "@webiny/pubsub/types";
 export interface MailerContextObjectSendParams {
     data: MailerSenderParams;
 }
+
+export type MailerSenderSetterParams = MailerSender | (() => Promise<MailerSender>);
+
+export interface MailerSenderSetter {
+    (mailer: MailerSenderSetterParams): void;
+}
+
 export interface MailerContextObject {
     onBeforeSend: Topic<OnBeforeMailerSendParams>;
     onAfterSend: Topic<OnAfterMailerSendParams>;
     onError: Topic<OnErrorMailerParams>;
+    setSender: MailerSenderSetter;
+    getSender: <T extends MailerSender = MailerSender>() => Promise<T>;
     send: <T>(params: MailerContextObjectSendParams) => Promise<MailerSenderSendResponse<T>>;
 }
 export interface MailerContext extends Context {
