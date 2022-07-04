@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql";
 import { CmsContext } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
@@ -10,6 +10,13 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             getContentModel: async (_: unknown, args: any, context) => {
                 try {
                     const model = await context.cms.getModel(args.modelId);
+                    if (model?.isPrivate === true) {
+                        if (!model) {
+                            throw new NotFoundError(
+                                `Content model "${args.modelId}" was not found!`
+                            );
+                        }
+                    }
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -17,8 +24,8 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             },
             listContentModels: async (_: unknown, __: unknown, context: CmsContext) => {
                 try {
-                    const model = await context.cms.listModels();
-                    return new Response(model);
+                    const models = await context.cms.listModels();
+                    return new Response(models.filter(model => model.isPrivate !== true));
                 } catch (e) {
                     return new ErrorResponse(e);
                 }

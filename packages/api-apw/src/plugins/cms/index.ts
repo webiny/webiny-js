@@ -5,7 +5,7 @@ import { linkWorkflowToEntry } from "~/plugins/cms/linkWorkflowToEntry";
 import { triggerContentReview } from "~/plugins/cms/triggerContentReview";
 import { updateContentReviewStatus } from "~/plugins/cms/updateContentReviewStatus";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import { Security } from "@webiny/api-security/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryApwSettingsGetterPlugin } from "~/plugins/cms/CmsEntryApwSettingsGetterPlugin";
 
@@ -13,7 +13,7 @@ interface ApwCmsHooksParams {
     apw: AdvancedPublishingWorkflow;
     cms: HeadlessCms;
     plugins: PluginsContainer;
-    getIdentity: () => SecurityIdentity;
+    security: Security;
 }
 export const apwCmsHooks = (params: ApwCmsHooksParams) => {
     /**

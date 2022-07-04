@@ -410,6 +410,12 @@ export interface CmsModel {
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
+    /**
+     * Is model private?
+     * This is meant to be used for some internal models - will not be visible in the schema.
+     * Only available for the plugin constructed models.
+     */
+    isPrivate?: boolean;
 }
 
 /**
@@ -853,6 +859,12 @@ export interface CmsGroup {
      * Which Webiny version was this record stored with.
      */
     webinyVersion: string;
+    /**
+     * Is group private?
+     * This is meant to be used for some internal groups - will not be visible in the schema.
+     * Only available for the plugin constructed groups.
+     */
+    isPrivate?: boolean;
 }
 
 /**

@@ -1,5 +1,5 @@
 import React from "react";
-import { Compose, Plugins, useWcp } from "@webiny/app-admin";
+import { Compose, MenuItemRenderer, Plugins, useWcp } from "@webiny/app-admin";
 /**
  * Plugins for "page builder"
  */
@@ -13,32 +13,52 @@ import {
     PageRequestReviewHoc,
     PageRevisionListItemGraphicHoc
 } from "./plugins/pageBuilder/PublishPageHocs";
-// TODO: Fix this import so that we can import it from root level maybe
-import PublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
+/**
+ * TODO: Fix this import so that we can import it from root level maybe
+ */
+import PagePublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
 import { PublishPageMenuOption } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
 import { PublishPageButtonComposable } from "@webiny/app-page-builder/editor/plugins/defaultBar/components/PublishPageButton";
-import RequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
-import RequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
+import PageRequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
+import PageRequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
 import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
-import { Module } from "~/plugins/Module";
 import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
+/**
+ * Plugins for "Headless CMS"
+ */
+import { ApwOnEntryDelete } from "~/plugins/cms/ApwOnEntryDelete";
+import { ApwOnEntryPublish } from "~/plugins/cms/ApwOnEntryPublish";
+import { SaveAndPublishButton as HeadlessCmsEntrySaveAndPublishButton } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/saveAndPublishContent/SaveAndPublishContent";
+import { PublishEntryRevisionListItem } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/PublishEntryRevisionListItem";
+import { RequestReview as EntryRequestReview } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/requestReview/RequestReview";
+import { RequestChanges as EntryRequestChanges } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/header/requestChanges/RequestChanges";
 import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
+import {
+    EntryRequestChangesHoc,
+    EntryRequestReviewHoc,
+    EntryRevisionListItemGraphicHoc,
+    PublishEntryButtonHoc
+} from "~/plugins/cms/PublishEntryHocs";
+/**
+ *
+ */
+import { Module } from "~/plugins/Module";
 import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowScope";
 import { DefaultBar } from "~/plugins/editor/defaultBar";
+import { MenuGroupRenderer } from "~/plugins/cms/MenuGroupRenderer";
 
-export const AdvancedPublishingWorkflow = () => {
+export const AdvancedPublishingWorkflow: React.FC = () => {
     const { canUseFeature } = useWcp();
     if (!canUseFeature("advancedPublishingWorkflow")) {
         return null;
     }
-
     return (
         <>
-            <Compose with={PublishRevisionHoc} component={PublishRevision} />
+            <Compose with={PublishRevisionHoc} component={PagePublishRevision} />
             <Compose with={PublishPageMenuOptionHoc} component={PublishPageMenuOption} />
             <Compose with={PublishPageButtonHoc} component={PublishPageButtonComposable} />
-            <Compose with={PageRequestReviewHoc} component={RequestReview} />
-            <Compose with={PageRequestChangesHoc} component={RequestChanges} />
+            <Compose with={PageRequestReviewHoc} component={PageRequestReview} />
+            <Compose with={PageRequestChangesHoc} component={PageRequestChanges} />
             <Compose
                 with={PageRevisionListItemGraphicHoc}
                 component={PageRevisionListItemGraphic}
@@ -47,11 +67,24 @@ export const AdvancedPublishingWorkflow = () => {
                 with={[ApwPageBuilderWorkflowScope, ApwHeadlessCmsWorkflowScope]}
                 component={WorkflowScope}
             />
+            <Compose
+                with={PublishEntryButtonHoc}
+                component={HeadlessCmsEntrySaveAndPublishButton}
+            />
+            <Compose
+                with={EntryRevisionListItemGraphicHoc}
+                component={PublishEntryRevisionListItem}
+            />
+            <Compose with={EntryRequestReviewHoc} component={EntryRequestReview} />
+            <Compose with={EntryRequestChangesHoc} component={EntryRequestChanges} />
+            <Compose with={MenuGroupRenderer} component={MenuItemRenderer} />
             <Plugins>
                 <DefaultBar />
                 <Module />
                 <ApwOnPublish />
                 <ApwOnPageDelete />
+                <ApwOnEntryDelete />
+                <ApwOnEntryPublish />
             </Plugins>
         </>
     );

@@ -8,8 +8,8 @@ import {
     PageWithWorkflow,
     WorkflowScopeTypes
 } from "~/types";
-import { ApwPageBuilderMethods } from ".";
 import { workflowByCreatedOnDesc, workflowByPrecedenceDesc } from "~/plugins/utils";
+import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 
 const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow) => {
     const application = workflow.app;
@@ -143,7 +143,9 @@ export const getPagesDiff = (
     };
 };
 
-interface UpdatePageSettingsParams extends Pick<ApwPageBuilderMethods, "getPage" | "updatePage"> {
+interface UpdatePageSettingsParams {
+    getPage: PageBuilderContextObject["getPage"];
+    updatePage: PageBuilderContextObject["updatePage"];
     uniquePageId: string;
     getNewSettings: (settings: PageWithWorkflow["settings"]) => PageWithWorkflow["settings"];
 }

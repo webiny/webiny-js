@@ -9,7 +9,7 @@ import {
     PublishContentMutationVariables,
     UnPublishContentMutationResponse,
     UnPublishContentMutationVariables,
-    DeleteContentReviewMutationResponse,
+    DeleteApwContentReviewMutationResponse,
     DeleteApwContentReviewMutationVariables
 } from "~/graphql/contentReview.gql";
 import { useContentReviewId } from "~/hooks/useContentReviewId";
@@ -73,7 +73,7 @@ export const usePublishContent = (): UsePublishContentResult => {
     });
 
     const [deleteScheduledAction] = useMutation<
-        DeleteContentReviewMutationResponse,
+        DeleteApwContentReviewMutationResponse,
         DeleteApwContentReviewMutationVariables
     >(DELETE_SCHEDULED_ACTION_MUTATION, {
         refetchQueries: [

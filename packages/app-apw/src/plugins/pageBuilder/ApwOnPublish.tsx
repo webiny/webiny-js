@@ -11,14 +11,14 @@ import {
     CreateContentReviewMutationResponse,
     CreateApwContentReviewMutationVariables
 } from "~/graphql/contentReview.gql";
-import { IS_REVIEW_REQUIRED_QUERY } from "./graphql";
+import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
 import { routePaths } from "~/utils";
 
 const t = i18n.ns("app-apw/page-builder/dialog");
 
 type CreateContentReviewInput = Pick<ApwContentReviewContent, "id" | "type">;
 
-export const ApwOnPublish = () => {
+export const ApwOnPublish: React.FC = () => {
     const pageBuilder = useAdminPageBuilder();
     const [input, setInput] = useState<CreateContentReviewInput | null>(null);
     const client = useApolloClient();

@@ -49,10 +49,9 @@ const BrandImpl: HigherOrderComponent = Brand => {
         );
     };
 };
-// TODO @ts-refactor
-const NavigationProvider = (Component: React.FC<any>): React.FC => {
-    // TODO @ts-refactor
-    return function NavigationProvider(props: any) {
+
+const NavigationProvider = (Component: React.FC): React.FC => {
+    return function NavigationProvider(props) {
         const [visible, setVisible] = useState(false);
 
         const context = useMemo(() => ({ visible, setVisible }), [visible]);
@@ -130,16 +129,13 @@ const SortedMenuItems: HigherOrderComponent<MenuItemsProps> = MenuItems => {
         return <MenuItems menuItems={[...menuItems].sort(menuSorter)} />;
     };
 };
-/**
- * TODO @ts-refactor @pavel
- * Remove all any and see what happens.
- */
+
 export const Navigation: React.FC = () => {
     return (
         <Fragment>
             <Provider hoc={NavigationProvider} />
             <Compose component={NavigationSpec} with={NavigationImpl} />
-            <Compose component={MenuItems as any} with={SortedMenuItems as any} />
+            <Compose component={MenuItems} with={SortedMenuItems} />
             <Compose component={BrandSpec} with={BrandImpl} />
             <Compose
                 component={MenuItemRenderer}

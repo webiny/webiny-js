@@ -23,6 +23,7 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types";
 import HandlerClient from "@webiny/handler-client/HandlerClient";
+import { PluginsContainer } from "@webiny/plugins";
 import { WcpContextObject } from "@webiny/api-wcp/types";
 
 export interface ApwCmsEntry extends BaseCmsEntry {
@@ -301,6 +302,11 @@ export interface ApwScheduleActionData {
     type: ApwContentTypes;
     datetime: string;
     entryId: string;
+    /**
+     * We will add modelId to the data for now.
+     * TODO extract in separate package?
+     */
+    modelId?: string;
 }
 
 export interface ApwContentReviewContent {
@@ -434,7 +440,7 @@ export interface ApwContentReviewCrud
 
     isReviewRequired(data: ApwContentReviewContent): Promise<{
         isReviewRequired: boolean;
-        contentReviewId?: string;
+        contentReviewId?: string | null;
     }>;
 
     publishContent(id: string, datetime?: string): Promise<Boolean>;
@@ -507,6 +513,7 @@ export interface CreateApwParams {
     storageOperations: ApwStorageOperations;
     scheduler: ApwScheduleActionCrud;
     handlerClient: HandlerClient;
+    plugins: PluginsContainer;
 }
 
 interface StorageOperationsGetReviewerParams {
@@ -938,7 +945,7 @@ export interface OnAfterWorkflowDeleteTopicParams {
 
 export type WorkflowModelDefinition = Pick<
     CmsModel,
-    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields"
+    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields" | "isPrivate"
 >;
 
 /**

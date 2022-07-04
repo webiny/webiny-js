@@ -4,6 +4,7 @@ import {
     assignWorkflowToEntry,
     getEntryTitle,
     hasEntries,
+    isAwpModel,
     updateEntryMeta
 } from "~/plugins/cms/utils";
 import { HeadlessCms } from "@webiny/api-headless-cms/types";
@@ -20,15 +21,20 @@ interface LinkWorkflowToEntryParams {
 export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
     const { apw, cms } = params;
 
-    cms.onBeforeEntryCreate.subscribe(async ({ entry }) => {
+    cms.onBeforeEntryCreate.subscribe(async ({ entry, model }) => {
+        if (isAwpModel(model)) {
+            return;
+        }
         await assignWorkflowToEntry({
             apw,
             entry
         });
     });
 
-    cms.onBeforeEntryCreateRevision.subscribe(async params => {
-        const { entry, original } = params;
+    cms.onBeforeEntryCreateRevision.subscribe(async ({ entry, original, model }) => {
+        if (isAwpModel(model)) {
+            return;
+        }
         /**
          * If the previous revision(original) already had the "contentReviewId",
          * we need to unlink it so that new "contentReview" can be request for the new revision.
@@ -55,8 +61,10 @@ export const linkWorkflowToEntry = (params: LinkWorkflowToEntryParams) => {
         });
     });
 
-    cms.onBeforeEntryUpdate.subscribe(async params => {
-        const { entry, original, model } = params;
+    cms.onBeforeEntryUpdate.subscribe(async ({ entry, original, model }) => {
+        if (isAwpModel(model)) {
+            return;
+        }
         const prevApwWorkflowId = original.meta?.apw?.workflowId;
         const currentApwWorkflowId = entry.meta?.apw?.workflowId;
         /**

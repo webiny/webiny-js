@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { mocks as changeRequestMock, richTextMock } from "./mocks/changeRequest";
 import { createSetupForPageContentReview } from "../utils/helpers";
 
@@ -7,7 +7,7 @@ describe(`Total comments count test`, () => {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
     const {

@@ -29,8 +29,8 @@ const stepField = () =>
         parent: "comment",
         validation: [
             {
-                name: "required",
-                message: "Value is required"
+                message: "`step` field value is required in comment.",
+                name: "required"
             }
         ]
     });
@@ -46,15 +46,18 @@ interface CreateCommentModelDefinitionParams {
     modelId: string;
 }
 
+export const COMMENT_MODEL_ID = "apwCommentModelDefinition";
+
 export const createCommentModelDefinition = ({
     modelId
 }: CreateCommentModelDefinitionParams): WorkflowModelDefinition => {
     return {
         name: "APW - Comment",
-        modelId: "apwCommentModelDefinition",
+        modelId: COMMENT_MODEL_ID,
         titleFieldId: "displayName",
         layout: [["comment_body"], ["comment_displayName"]],
         fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()],
-        description: ""
+        description: "",
+        isPrivate: true
     };
 };

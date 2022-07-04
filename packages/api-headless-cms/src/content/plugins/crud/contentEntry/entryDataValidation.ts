@@ -154,7 +154,10 @@ export const validateModelEntryData = async (params: ValidateModelEntryDataParam
             model,
             validatorList,
             field,
-            data,
+            data: {
+                ...(entry?.values || {}),
+                ...data
+            },
             context,
             entry
         });

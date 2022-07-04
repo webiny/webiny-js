@@ -1,7 +1,8 @@
 import lodashSet from "lodash/set";
 import { ApwContentReviewStepStatus, ApwContext } from "~/types";
-import { getContentReviewStepInitialStatus, getContentApwSettingsPlugin } from "~/plugins/utils";
+import { getContentReviewStepInitialStatus } from "~/plugins/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { getContentApwSettingsPlugin } from "~/utils/contentApwSettingsPlugin";
 
 export const initializeContentReviewSteps = ({ apw, plugins }: ApwContext) => {
     apw.contentReview.onBeforeContentReviewCreate.subscribe(async ({ input }) => {

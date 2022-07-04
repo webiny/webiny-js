@@ -78,34 +78,49 @@ const setupApwContext = (params: CreateApwContextParams) =>
                 getCmsContext: () => context
             }),
             scheduler,
-            handlerClient
-        });
-
-        apwPageBuilderHooks({
-            pageBuilder: context.pageBuilder,
-            apw: context.apw,
-            plugins: context.plugins,
-            getIdentity
-        });
-        apwCmsHooks({
-            cms: context.cms,
-            apw: context.apw,
-            plugins: context.plugins,
-            getIdentity
+            handlerClient,
+            plugins: context.plugins
         });
     });
 
-export default (params: CreateApwContextParams) => {
-    return new ContextPlugin(async (context: ApwContext) => {
+const setupApwPageBuilder = () => {
+    return new ContextPlugin<ApwContext>(async context => {
+        apwPageBuilderHooks(context);
+    });
+};
+
+const setupApwHeadlessCms = () => {
+    return new ContextPlugin<ApwContext>(async context => {
+        apwCmsHooks(context);
+    });
+};
+
+export const createApwPageBuilderContext = (params: CreateApwContextParams) => {
+    return new ContextPlugin<ApwContext>(async context => {
         if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
             return;
         }
 
         await setupApwContext(params).apply(context);
+        await setupApwPageBuilder().apply(context);
+        await setupApwHeadlessCms().apply(context);
         await apwContentPagePlugins().apply(context);
         await apwHooks().apply(context);
         await createCustomAuth(params).apply(context);
 
         context.plugins.register(extendPbPageSettingsSchema());
+    });
+};
+
+export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => {
+    return new ContextPlugin<ApwContext>(async context => {
+        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
+            return;
+        }
+
+        await setupApwContext(params).apply(context);
+        await setupApwHeadlessCms().apply(context);
+        await apwHooks().apply(context);
+        await createCustomAuth(params).apply(context);
     });
 };

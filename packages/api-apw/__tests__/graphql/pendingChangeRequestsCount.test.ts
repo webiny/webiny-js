@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
 import { createSetupForPageContentReview } from "../utils/helpers";
 import { ApwContentReview, PageWithWorkflow } from "~/types";
@@ -8,7 +8,7 @@ describe(`Pending change requests count test`, () => {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
     const {

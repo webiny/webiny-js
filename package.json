@@ -224,5 +224,5 @@
     "yargs": "^17.3.1",
     "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd"
   },
-  "packageManager": "yarn@3.1.0"
+  "packageManager": "yarn@3.2.1"
 }
