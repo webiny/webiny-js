@@ -1,5 +1,13 @@
-import { MailerConfig, MailerContextObject, MailerSender } from "~/types";
+import {
+    MailerConfig,
+    MailerContextObject,
+    MailerSender,
+    OnAfterMailerSendParams,
+    OnBeforeMailerSendParams,
+    OnErrorMailerParams
+} from "~/types";
 import { createDummySender } from "~/senders/createDummySender";
+import { createTopic } from "@webiny/pubsub";
 
 export const createMailerCrud = (config: MailerConfig): MailerContextObject => {
     /**
@@ -10,23 +18,40 @@ export const createMailerCrud = (config: MailerConfig): MailerContextObject => {
     }
     const sender: MailerSender = config.sender || createDummySender();
 
+    const onBeforeSend = createTopic<OnBeforeMailerSendParams>();
+    const onAfterSend = createTopic<OnAfterMailerSendParams>();
+    const onError = createTopic<OnErrorMailerParams>();
+
     return {
+        onBeforeSend,
+        onAfterSend,
+        onError,
         send: async ({ data }) => {
             try {
+                await onBeforeSend.publish({
+                    data
+                });
                 const response = await sender.send(data);
+                await onAfterSend.publish({
+                    data
+                });
 
                 return {
                     result: response.result,
                     error: response.error
                 };
             } catch (ex) {
+                await onError.publish({
+                    error: ex,
+                    data
+                });
                 return {
                     result: null,
                     error: {
                         message: ex.message,
                         code: ex.code,
                         data: {
-                            ...data,
+                            data,
                             ...ex.data
                         }
                     }

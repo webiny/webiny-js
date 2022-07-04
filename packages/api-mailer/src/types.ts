@@ -1,9 +1,13 @@
 import { Context } from "@webiny/handler/types";
+import { Topic } from "@webiny/pubsub/types";
 
 export interface MailerContextObjectSendParams {
     data: MailerSenderParams;
 }
 export interface MailerContextObject {
+    onBeforeSend: Topic<OnBeforeMailerSendParams>;
+    onAfterSend: Topic<OnAfterMailerSendParams>;
+    onError: Topic<OnErrorMailerParams>;
     send: <T>(params: MailerContextObjectSendParams) => Promise<MailerSenderSendResponse<T>>;
 }
 export interface MailerContext extends Context {
@@ -12,6 +16,17 @@ export interface MailerContext extends Context {
 
 export interface MailerConfig<T extends MailerSender = MailerSender> {
     sender?: T;
+}
+
+export interface OnBeforeMailerSendParams {
+    data: MailerSenderParams;
+}
+export interface OnAfterMailerSendParams {
+    data: MailerSenderParams;
+}
+export interface OnErrorMailerParams {
+    error: Error;
+    data: MailerSenderParams;
 }
 
 /**
