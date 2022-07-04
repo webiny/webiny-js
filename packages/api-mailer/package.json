@@ -18,13 +18,15 @@
     "@webiny/error": "^5.29.0",
     "@webiny/handler": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
-    "@webiny/pubsub": "^5.29.0"
+    "@webiny/pubsub": "^5.29.0",
+    "nodemailer": "^6.7.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
+    "@types/nodemailer": "^6.4.4",
     "@webiny/cli": "^5.29.0",
     "@webiny/project-utils": "^5.29.0",
     "jest": "^26.6.3",

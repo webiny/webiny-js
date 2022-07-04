@@ -8582,6 +8582,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nodemailer@npm:^6.4.4":
+  version: 6.4.4
+  resolution: "@types/nodemailer@npm:6.4.4"
+  dependencies:
+    "@types/node": "*"
+  checksum: 16ed1bad2cd8471fd3b026471e234da33ba3b65935dc44b31be3145eff7bdb067eb4d08ec4b41d23339b988075299abc1a0c0fe77b99f04ca235827bca95af81
+  languageName: node
+  linkType: hard
+
 "@types/normalize-package-data@npm:^2.4.0":
   version: 2.4.1
   resolution: "@types/normalize-package-data@npm:2.4.1"
@@ -10237,6 +10246,7 @@ __metadata:
     "@babel/preset-env": ^7.16.4
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
+    "@types/nodemailer": ^6.4.4
     "@webiny/cli": ^5.29.0
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
@@ -10244,6 +10254,7 @@ __metadata:
     "@webiny/project-utils": ^5.29.0
     "@webiny/pubsub": ^5.29.0
     jest: ^26.6.3
+    nodemailer: ^6.7.6
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.5.5
@@ -29495,6 +29506,13 @@ __metadata:
   version: 2.0.5
   resolution: "node-releases@npm:2.0.5"
   checksum: e85d949addd19f8827f32569d2be5751e7812ccf6cc47879d49f79b5234ff4982225e39a3929315f96370823b070640fb04d79fc0ddec8b515a969a03493a42f
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^6.7.6":
+  version: 6.7.6
+  resolution: "nodemailer@npm:6.7.6"
+  checksum: 60f59e6525656b95506092c0928c40e3b2997588b220c897515f1614c23c76318a4a71c96e1a83900f43153fab8baabfe7e9558608fafd3f74c9c5c634732731
   languageName: node
   linkType: hard
 
