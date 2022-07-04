@@ -30,6 +30,7 @@ export default function getFileTypePlugin(
         }
         if (types.find(t => minimatch(file.type, t))) {
             plugin = fileTypePlugins[i];
+            break;
         }
     }
 
