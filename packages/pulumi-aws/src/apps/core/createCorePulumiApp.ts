@@ -7,6 +7,8 @@ import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
 
+export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
+
 export interface CreateCorePulumiAppParams {
     /**
      * Secures against deleting database by accident.
@@ -35,7 +37,7 @@ export interface CreateCorePulumiAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createCorePulumiApp>) => void | Promise<void>;
+    pulumi?: (app: CorePulumiApp) => void | Promise<void>;
 }
 
 export interface CoreAppLegacyConfig {
@@ -52,7 +54,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             // By doing this, we're ensuring user's adjustments are not applied to late.
             if (projectAppParams.pulumi) {
                 app.addHandler(() => {
-                    return projectAppParams.pulumi!(app as ReturnType<typeof createCorePulumiApp>);
+                    return projectAppParams.pulumi!(app as CorePulumiApp);
                 });
             }
 
