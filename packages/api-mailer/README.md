@@ -76,9 +76,9 @@ export const handler = createHandler({
 });
 ```
 
-Note that setMailer method supports both setting the variable of MailerMailer type or an async function which returns MailerMailer variable type.
+Note that `setMailer` method supports both setting the variable of `Mailer` type or an async `Mailer` factory.
 
-Example of context plugin which sets mailer via async function:
+Example of context plugin which sets mailer via factory:
 
 ```typescript
 const plugin = new ContextPlugin<MailerContext>(async(context) => {
