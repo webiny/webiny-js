@@ -11,8 +11,14 @@ import { createTopic } from "@webiny/pubsub";
 import { attachOnBeforeSend } from "~/crud/mailer/onBeforeSend";
 import WebinyError from "@webiny/error";
 
+const createDefaultSender = async () => {
+    return import("~/senders/createSmtpSender").then(module => {
+        return module.createSmtpSender();
+    });
+};
+
 export const createMailerCrud = (config?: MailerConfig): MailerContextObject => {
-    let mailerSender: MailerSenderSetterParams | undefined = config?.sender;
+    let mailerSender: MailerSenderSetterParams | undefined = config?.sender || createDefaultSender;
     /**
      * We define possible events to be hooked into.
      */
@@ -61,6 +67,7 @@ export const createMailerCrud = (config?: MailerConfig): MailerContextObject => 
         onError,
         getSender,
         setSender: target => {
+            mailerSenderInitialized = undefined;
             mailerSender = target;
         },
         send: async ({ data }) => {

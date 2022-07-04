@@ -1,7 +1,6 @@
 import { createContext } from "./createContext";
 import { MailerContextObjectSendParams } from "~/types";
 import { createDummySender, DummySender } from "~/senders/createDummySender";
-import WebinyError from "@webiny/error";
 
 const to = ["to@test.com"];
 const cc = ["cc@test.com"];
@@ -13,36 +12,6 @@ const text = "Some dummy body";
 const html = "<p>Some dummy body</p>";
 
 describe("Mailer crud", () => {
-    it("should throw error when no mailer defined", async () => {
-        const context = await createContext();
-
-        const params: MailerContextObjectSendParams = {
-            data: {
-                to,
-                cc,
-                bcc,
-                from,
-                replyTo,
-                subject,
-                text,
-                html
-            }
-        };
-
-        let error: Error | undefined;
-        try {
-            await context.mailer.send(params);
-        } catch (ex) {
-            error = ex;
-        }
-
-        expect(error).toBeInstanceOf(WebinyError);
-        expect(error).toMatchObject({
-            message: "Mailer sender is not set.",
-            code: "MAILER_SENDER_NOT_SET_ERROR"
-        });
-    });
-
     it("should set dummy sender via factory and send e-mail", async () => {
         const context = await createContext();
 
