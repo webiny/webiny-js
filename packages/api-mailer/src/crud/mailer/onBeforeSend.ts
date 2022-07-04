@@ -1,12 +1,12 @@
 import { Topic } from "@webiny/pubsub/types";
-import { MailerSenderParams, OnBeforeMailerSendParams } from "~/types";
+import { MailerSendData, OnBeforeMailerSendParams } from "~/types";
 import joi from "joi";
 import WebinyError from "@webiny/error";
 
 const requiredString = joi.string().required();
 const requiredEmail = requiredString.email();
 
-const schema = joi.object<MailerSenderParams>({
+const schema = joi.object<MailerSendData>({
     to: joi.array().items(requiredEmail).required(),
     from: requiredEmail,
     subject: requiredString.max(1024),
@@ -24,7 +24,7 @@ export const attachOnBeforeSend = (params: AttachOnBeforeSendParams) => {
     const { onBeforeSend } = params;
 
     onBeforeSend.subscribe(async ({ data: input }) => {
-        let result: joi.ValidationResult<MailerSenderParams>;
+        let result: joi.ValidationResult<MailerSendData>;
         try {
             result = await schema.validate(input);
 

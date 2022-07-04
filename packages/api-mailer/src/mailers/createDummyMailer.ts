@@ -1,10 +1,10 @@
-import { MailerSender, MailerSenderParams } from "~/types";
+import { Mailer, MailerSendData } from "~/types";
 
-export interface DummySender extends MailerSender {
-    getAllSent: () => MailerSenderParams[];
+export interface DummyMailer extends Mailer {
+    getAllSent: () => MailerSendData[];
 }
-export const createDummySender = (): DummySender => {
-    const sent: MailerSenderParams[] = [];
+export const createDummyMailer = (): DummyMailer => {
+    const sent: MailerSendData[] = [];
 
     return {
         send: async params => {

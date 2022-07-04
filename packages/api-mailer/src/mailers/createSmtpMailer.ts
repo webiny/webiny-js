@@ -2,30 +2,30 @@
  * Nodemailer docs
  * https://nodemailer.com/about/
  */
-import { MailerSender } from "~/types";
+import { Mailer } from "~/types";
 import WebinyError from "@webiny/error";
 import nodemailer, { Transporter } from "nodemailer";
 import SMTPTransport, { Options } from "nodemailer/lib/smtp-transport";
-import { createDummySender, DummySender } from "~/senders/createDummySender";
+import { createDummyMailer, DummyMailer } from "~/mailers/createDummyMailer";
 
-export type SmtpSenderConfig = Options;
+export type SmtpMailerConfig = Options;
 
-export interface SmtpSender extends MailerSender {
+export interface SmtpMailer extends Mailer {
     transporter: Transporter<SMTPTransport.SentMessageInfo>;
 }
 
-interface SmtpSenderVariables {
+interface SmtpMailerEnvironmentVariables {
     host?: string;
     user?: string;
     password?: string;
 }
-const variables: SmtpSenderVariables = {
+const variables: SmtpMailerEnvironmentVariables = {
     host: process.env.WEBINY_MAILER_HOST,
     user: process.env.WEBINY_MAILER_USER,
     password: process.env.WEBINY_MAILER_PASSWORD
 };
 
-export const createSmtpSender = (config?: SmtpSenderConfig): SmtpSender | DummySender => {
+export const createSmtpMailer = (config?: SmtpMailerConfig): SmtpMailer | DummyMailer => {
     /**
      * If we have environment variables, use those as config.
      */
@@ -33,7 +33,7 @@ export const createSmtpSender = (config?: SmtpSenderConfig): SmtpSender | DummyS
         if (config) {
             throw new WebinyError({
                 message: `Cannot use both config and environment variables to setup the nodemailer.`,
-                code: "SMTP_SENDER_INIT_ERROR"
+                code: "SMTP_MAILER_INIT_ERROR"
             });
         }
         config = {
@@ -45,9 +45,9 @@ export const createSmtpSender = (config?: SmtpSenderConfig): SmtpSender | DummyS
         };
     } else if (!config) {
         console.log(
-            "There is no config or required environment variables defined. Using dummy sender."
+            "There is no config or required environment variables defined. Using dummy mailer."
         );
-        return createDummySender();
+        return createDummyMailer();
     }
     const transporter = nodemailer.createTransport({
         ...config

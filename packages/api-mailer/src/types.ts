@@ -2,46 +2,46 @@ import { Context } from "@webiny/handler/types";
 import { Topic } from "@webiny/pubsub/types";
 
 export interface MailerContextObjectSendParams {
-    data: MailerSenderParams;
+    data: MailerSendData;
 }
 
-export type MailerSenderSetterParams = MailerSender | (() => Promise<MailerSender>);
+export type MailerSetterParams = Mailer | (() => Promise<Mailer>);
 
-export interface MailerSenderSetter {
-    (mailer: MailerSenderSetterParams): void;
+export interface MailerSetter {
+    (mailer: MailerSetterParams): void;
 }
 
 export interface MailerContextObject {
     onBeforeSend: Topic<OnBeforeMailerSendParams>;
     onAfterSend: Topic<OnAfterMailerSendParams>;
     onError: Topic<OnErrorMailerParams>;
-    setSender: MailerSenderSetter;
-    getSender: <T extends MailerSender = MailerSender>() => Promise<T>;
-    send: <T>(params: MailerContextObjectSendParams) => Promise<MailerSenderSendResponse<T>>;
+    setMailer: MailerSetter;
+    getMailer: <T extends Mailer = Mailer>() => Promise<T>;
+    send: <T>(params: MailerContextObjectSendParams) => Promise<MailerSendResponse<T>>;
 }
 export interface MailerContext extends Context {
     mailer: MailerContextObject;
 }
 
-export interface MailerConfig<T extends MailerSender = MailerSender> {
-    sender?: T;
+export interface MailerConfig<T extends Mailer = Mailer> {
+    mailer?: T;
 }
 
 export interface OnBeforeMailerSendParams {
-    data: MailerSenderParams;
+    data: MailerSendData;
 }
 export interface OnAfterMailerSendParams {
-    data: MailerSenderParams;
+    data: MailerSendData;
 }
 export interface OnErrorMailerParams {
     error: Error;
-    data: MailerSenderParams;
+    data: MailerSendData;
 }
 
 /**
- * Interface to implement the actual mail sender.
+ * Interface to implement the actual mailer.
  */
-export interface MailerSenderSendResponse<T = any> {
+export interface MailerSendResponse<T = any> {
     result: T | null;
     error: {
         message: string;
@@ -52,7 +52,7 @@ export interface MailerSenderSendResponse<T = any> {
     } | null;
 }
 
-export interface MailerSenderParams {
+export interface MailerSendData {
     to: string[];
     from: string;
     subject: string;
@@ -62,6 +62,6 @@ export interface MailerSenderParams {
     cc?: string[];
     bcc?: string[];
 }
-export interface MailerSender<T = any> {
-    send: (params: MailerSenderParams) => Promise<MailerSenderSendResponse<T>>;
+export interface Mailer<T = any> {
+    send: (params: MailerSendData) => Promise<MailerSendResponse<T>>;
 }

@@ -1,8 +1,8 @@
 import {
     MailerConfig,
     MailerContextObject,
-    MailerSender,
-    MailerSenderSetterParams,
+    Mailer,
+    MailerSetterParams,
     OnAfterMailerSendParams,
     OnBeforeMailerSendParams,
     OnErrorMailerParams
@@ -11,14 +11,14 @@ import { createTopic } from "@webiny/pubsub";
 import { attachOnBeforeSend } from "~/crud/mailer/onBeforeSend";
 import WebinyError from "@webiny/error";
 
-const createDefaultSender = async () => {
-    return import("~/senders/createSmtpSender").then(module => {
-        return module.createSmtpSender();
+const createDefaultMailer = async () => {
+    return import("~/mailers/createSmtpMailer").then(module => {
+        return module.createSmtpMailer();
     });
 };
 
 export const createMailerCrud = (config?: MailerConfig): MailerContextObject => {
-    let mailerSender: MailerSenderSetterParams | undefined = config?.sender || createDefaultSender;
+    let defaultMailer: MailerSetterParams | undefined = config?.mailer || createDefaultMailer;
     /**
      * We define possible events to be hooked into.
      */
@@ -32,51 +32,51 @@ export const createMailerCrud = (config?: MailerConfig): MailerContextObject => 
         onBeforeSend
     });
 
-    let mailerSenderInitialized: MailerSender | undefined;
+    let initializedMailer: Mailer | undefined;
 
-    const getSender = async <T extends MailerSender = MailerSender>(): Promise<T> => {
-        if (mailerSenderInitialized) {
-            return mailerSenderInitialized as T;
-        } else if (!mailerSender) {
+    const getMailer = async <T extends Mailer = Mailer>(): Promise<T> => {
+        if (initializedMailer) {
+            return initializedMailer as T;
+        } else if (!defaultMailer) {
             throw new WebinyError({
-                message: "Mailer sender is not set.",
-                code: "MAILER_SENDER_NOT_SET_ERROR"
+                message: "Mailer is not set.",
+                code: "MAILER_NOT_SET_ERROR"
             });
-        } else if (typeof mailerSender === "function") {
+        } else if (typeof defaultMailer === "function") {
             try {
-                mailerSenderInitialized = await mailerSender();
+                initializedMailer = await defaultMailer();
 
-                return mailerSenderInitialized as T;
+                return initializedMailer as T;
             } catch (ex) {
                 throw new WebinyError({
-                    message: "Error while getting mailer sender.",
-                    code: "MAILER_SENDER_ERROR",
+                    message: "Error while getting mailer.",
+                    code: "MAILER_ERROR",
                     data: {
                         error: ex
                     }
                 });
             }
         }
-        mailerSenderInitialized = mailerSender;
-        return mailerSenderInitialized as T;
+        initializedMailer = defaultMailer;
+        return initializedMailer as T;
     };
 
     return {
         onBeforeSend,
         onAfterSend,
         onError,
-        getSender,
-        setSender: target => {
-            mailerSenderInitialized = undefined;
-            mailerSender = target;
+        getMailer,
+        setMailer: target => {
+            initializedMailer = undefined;
+            defaultMailer = target;
         },
         send: async ({ data }) => {
-            const sender = await getSender();
+            const mailer = await getMailer();
             try {
                 await onBeforeSend.publish({
                     data
                 });
-                const response = await sender.send(data);
+                const response = await mailer.send(data);
                 await onAfterSend.publish({
                     data
                 });

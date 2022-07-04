@@ -11,22 +11,22 @@ yarn add @webiny/api-mailer
 ```
 
 
-## Built-in Senders
-We have a couple of built-in e-mail senders:
+## Built-in Mailers
+We have a couple of built-in e-mail mailers:
 
-### Dummy Sender
-A sender which pretends to be sending e-mails. Used for testing as a backup in case no other sender is configured or defined.
+### Dummy Mailer
+A mailer which pretends to be sending e-mails. Used for testing as a backup in case no other mailer is configured or defined.
 ```typescript
-import {createDummySender} from "@webiny/api-mailer";
+import {createDummyMailer} from "@webiny/api-mailer";
 
-context.mailer.setSender(async() => {
-    return createDummySender();
+context.mailer.setMailer(async() => {
+    return createDummyMailer();
 });
 
 ```
 
-### SMTP Sender
-A sender which sends e-mails via the defined SMTP credentials. In the background it uses [nodemailer](https://github.com/nodemailer/nodemailer) library to send the e-mails.
+### SMTP Mailer
+A mailer which sends e-mails via the defined SMTP credentials. In the background it uses [nodemailer](https://github.com/nodemailer/nodemailer) library to send the e-mails.
 
 #### Basic Configuration
 The configuration is done via the environment variables:
@@ -35,40 +35,40 @@ WEBINY_MAILER_HOST=smtp.localhost.test
 WEBINY_MAILER_USER=root
 WEBINY_MAILER_PASSWORD=password
 ```
-If any of these variables is not defined, sender will default to the dummy sender.
+If any of these variables is not defined, mailer will default to the dummy mailer.
 
 #### Advanced Configuration
-The advanced configuration is done by creating your own SMTP sender with custom config. You can still use our `createSmtpSender` method, you just need to pass the custom configuration.
+The advanced configuration is done by creating your own SMTP mailer with custom config. You can still use our `createSmtpMailer` method, you just need to pass the custom configuration.
 
-Here is an example on how to configure custom sender.
+Here is an example on how to configure custom mailer.
 ```typescript
 
-import {createSmtpSender, SmtpSenderConfig} from "@webiny/api-mailer";
+import {createSmtpMailer, SmtpMailerConfig} from "@webiny/api-mailer";
 import {MailerContext} from "@webiny/api-mailer/types";
 
 /**
- * First we configure the STMP sender.
+ * First we configure the STMP mailer.
  */
-const config: SmtpSenderConfig = {
+const config: SmtpMailerConfig = {
     host: "smtp.localhost.test",
     auth: {
         user: "root",
         pass: "password"
     }
 }
-const sender = createSmtpSender(config);
+const mailer = createSmtpMailer(config);
 
 /**
- * ... then you need to set the sender to your application
+ * ... then you need to set the mailer to your application
  */
 
 export const handler = createHandler({
     plugins: [
         ...plugins,
         createMailer(),
-        // after createMailer() method we can set new sender
+        // after createMailer() method we can set new mailer
         new ContextPlugin<MailerContext>(async(context) => {
-            context.mailer.setSender(sender);
+            context.mailer.setMailer(mailer);
         }),
         ...more_plugins
     ],
@@ -76,15 +76,15 @@ export const handler = createHandler({
 });
 ```
 
-Note that setSender method supports both setting the variable of MailerSender type or an async function which returns MailerSender variable type.
+Note that setMailer method supports both setting the variable of MailerMailer type or an async function which returns MailerMailer variable type.
 
-Example of context plugin which sets sender via async function:
+Example of context plugin which sets mailer via async function:
 
 ```typescript
 const plugin = new ContextPlugin<MailerContext>(async(context) => {
-    context.mailer.setSender(async() => {
-        return import("./pathToSomeSender").then((createSender) => {
-            return createSender();
+    context.mailer.setMailer(async() => {
+        return import("./pathToSomeMailer").then((createMailer) => {
+            return createMailer();
         });
     });
 });
