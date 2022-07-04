@@ -1,10 +1,12 @@
 import { createContext } from "./createContext";
 import { MailerContextObjectSendParams } from "~/types";
 import { createDummySender } from "~/senders/createDummySender";
-import WebinyError from "@webiny/error";
 
-const singleTo = "to@localhost";
-const from = "from@localhost";
+const to = ["to@test.com"];
+const cc = ["cc@test.com"];
+const bcc = ["bcc@test.com"];
+const from = "from@test.com";
+const replyTo = "replyTo@test.com";
 const subject = "Some dummy subject";
 const text = "Some dummy body";
 const html = "<p>Some dummy body</p>";
@@ -19,8 +21,11 @@ describe("Mailer crud", () => {
 
         const params: MailerContextObjectSendParams = {
             data: {
-                to: singleTo,
+                to,
+                cc,
+                bcc,
                 from,
+                replyTo,
                 subject,
                 text,
                 html
@@ -36,8 +41,11 @@ describe("Mailer crud", () => {
 
         expect(sender.getAllSent()).toEqual([
             {
-                to: singleTo,
+                to,
+                cc,
+                bcc,
                 from,
+                replyTo,
                 subject,
                 text,
                 html
@@ -45,7 +53,7 @@ describe("Mailer crud", () => {
         ]);
     });
 
-    it("should throw error before sending", async () => {
+    it(`should throw error before sending because of missing "to"`, async () => {
         const sender = createDummySender();
 
         const context = await createContext({
@@ -54,31 +62,126 @@ describe("Mailer crud", () => {
 
         const params: MailerContextObjectSendParams = {
             data: {
-                to: singleTo,
+                to: [""],
+                cc,
+                bcc,
                 from,
+                replyTo,
                 subject,
                 text,
                 html
             }
         };
 
-        context.mailer.onBeforeSend.subscribe(async () => {
-            throw new WebinyError({
-                message: "Could not verify mail.",
-                code: "MAIL_VERIFICATION_ERROR",
+        const result = await context.mailer.send(params);
+
+        expect(result).toMatchObject({
+            result: null,
+            error: {
+                message: "Error while validating e-mail params.",
+                code: "VALIDATION_ERROR",
                 data: {
-                    ...params
+                    data: params.data
                 }
-            });
+            }
         });
+    });
+
+    it(`should throw error before sending because of missing "from"`, async () => {
+        const sender = createDummySender();
+
+        const context = await createContext({
+            sender
+        });
+
+        const params: MailerContextObjectSendParams = {
+            data: {
+                to,
+                cc,
+                bcc,
+                from: "",
+                replyTo,
+                subject,
+                text,
+                html
+            }
+        };
 
         const result = await context.mailer.send(params);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             result: null,
             error: {
-                message: "Could not verify mail.",
-                code: "MAIL_VERIFICATION_ERROR",
+                message: "Error while validating e-mail params.",
+                code: "VALIDATION_ERROR",
+                data: {
+                    data: params.data
+                }
+            }
+        });
+    });
+
+    it(`should throw error before sending because of missing "subject"`, async () => {
+        const sender = createDummySender();
+
+        const context = await createContext({
+            sender
+        });
+
+        const params: MailerContextObjectSendParams = {
+            data: {
+                to,
+                cc,
+                bcc,
+                from,
+                replyTo,
+                subject: "",
+                text,
+                html
+            }
+        };
+
+        const result = await context.mailer.send(params);
+
+        expect(result).toMatchObject({
+            result: null,
+            error: {
+                message: "Error while validating e-mail params.",
+                code: "VALIDATION_ERROR",
+                data: {
+                    data: params.data
+                }
+            }
+        });
+    });
+
+    it(`should throw error before sending because of missing "text"`, async () => {
+        const sender = createDummySender();
+
+        const context = await createContext({
+            sender
+        });
+
+        const params: MailerContextObjectSendParams = {
+            data: {
+                to,
+                cc,
+                bcc,
+                from,
+                replyTo,
+                subject,
+                text: "",
+                html
+            }
+        };
+
+        const result = await context.mailer.send(params);
+
+        expect(result).toMatchObject({
+            result: null,
+            error: {
+                message: "Error while validating e-mail params.",
+                code: "VALIDATION_ERROR",
                 data: {
                     data: params.data
                 }

@@ -44,14 +44,14 @@ export interface MailerSenderSendResponse<T = any> {
 }
 
 export interface MailerSenderParams {
-    to: string | string[];
+    to: string[];
     from: string;
     subject: string;
     text: string;
     html?: string;
     replyTo?: string;
-    cc?: string | string[];
-    bcc?: string | string[];
+    cc?: string[];
+    bcc?: string[];
 }
 export interface MailerSender<T = any> {
     send: (params: MailerSenderParams) => Promise<MailerSenderSendResponse<T>>;

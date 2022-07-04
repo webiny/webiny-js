@@ -8,6 +8,7 @@ import {
 } from "~/types";
 import { createDummySender } from "~/senders/createDummySender";
 import { createTopic } from "@webiny/pubsub";
+import { attachOnBeforeSend } from "~/crud/mailer/onBeforeSend";
 
 export const createMailerCrud = (config: MailerConfig): MailerContextObject => {
     /**
@@ -17,10 +18,18 @@ export const createMailerCrud = (config: MailerConfig): MailerContextObject => {
         console.log("Creating dummy sender as none was sent on init.");
     }
     const sender: MailerSender = config.sender || createDummySender();
-
+    /**
+     * We define possible events to be hooked into.
+     */
     const onBeforeSend = createTopic<OnBeforeMailerSendParams>();
     const onAfterSend = createTopic<OnAfterMailerSendParams>();
     const onError = createTopic<OnErrorMailerParams>();
+    /**
+     * We attach our default ones.
+     */
+    attachOnBeforeSend({
+        onBeforeSend
+    });
 
     return {
         onBeforeSend,
