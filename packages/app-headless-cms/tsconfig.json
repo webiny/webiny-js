@@ -12,6 +12,7 @@
     { "path": "../form" },
     { "path": "../plugins" },
     { "path": "../react-router" },
+    { "path": "../react-composition" },
     { "path": "../ui" },
     { "path": "../utils" },
     { "path": "../validation" }
@@ -42,6 +43,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],

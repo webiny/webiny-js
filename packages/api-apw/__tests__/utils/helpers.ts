@@ -1,7 +1,7 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
-import workflowMocks from "../graphql/mocks/workflows";
+import workflowMocks, { CreateWorkflowParams } from "../graphql/mocks/workflows";
 import { Category } from "@webiny/api-page-builder/types";
-import { ApwWorkflow } from "~/types";
+import { ApwWorkflow, ApwWorkflowApplications } from "~/types";
 
 export { until } from "@webiny/project-utils/testing/helpers/until";
 export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
@@ -118,16 +118,21 @@ const setupPage = async (gqlHandler: any) => {
     return createPageResponse.data.pageBuilder.createPage.data;
 };
 
-const setupWorkflow = async (gqlHandler: any): Promise<ApwWorkflow> => {
+export const setupDefaultWorkflow = async (
+    gqlHandler: any,
+    workflowParams: CreateWorkflowParams
+): Promise<ApwWorkflow> => {
     const reviewer = await setupReviewer(gqlHandler);
     const [createWorkflowResponse] = await gqlHandler.createWorkflowMutation({
-        data: workflowMocks.createWorkflowWithThreeSteps({}, [reviewer])
+        data: workflowMocks.createWorkflowWithThreeSteps(workflowParams, [reviewer])
     });
     return createWorkflowResponse.data.apw.createWorkflow.data;
 };
 
-export const createSetupForContentReview = async (gqlHandler: any) => {
-    const workflow = await setupWorkflow(gqlHandler);
+export const createSetupForPageContentReview = async (gqlHandler: any) => {
+    const workflow = await setupDefaultWorkflow(gqlHandler, {
+        app: ApwWorkflowApplications.PB
+    });
 
     await gqlHandler.until(
         () => gqlHandler.listWorkflowsQuery({}).then(([data]: any) => data),
@@ -149,8 +154,8 @@ export const createSetupForContentReview = async (gqlHandler: any) => {
     };
 };
 
-export const createContentReviewSetup = async (gqlHandler: any) => {
-    const { page } = await createSetupForContentReview(gqlHandler);
+export const createPageContentReviewSetup = async (gqlHandler: any) => {
+    const { page } = await createSetupForPageContentReview(gqlHandler);
     /*
      Create a content review entry.
     */

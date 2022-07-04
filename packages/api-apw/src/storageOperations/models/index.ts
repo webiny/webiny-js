@@ -45,7 +45,8 @@ export const createApwModels = (context: CmsContext) => {
         slug: "apw",
         name: "APW",
         description: "Group for Advanced Publishing Workflow",
-        icon: "fas/star"
+        icon: "fas/star",
+        isPrivate: true
     });
 
     /**

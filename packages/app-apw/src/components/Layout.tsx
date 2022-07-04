@@ -163,7 +163,7 @@ interface StackProps extends StyledBoxProps {
     className?: string;
 }
 
-export const Stack = ({ children, space, ...props }: StackProps) => {
+export const Stack: React.FC<StackProps> = ({ children, space, ...props }) => {
     return (
         <Box {...props}>
             {React.Children.map(children, (child, index) => {

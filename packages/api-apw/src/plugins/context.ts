@@ -3,7 +3,7 @@ import WebinyError from "@webiny/error";
 import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContext } from "~/types";
-import { createApw } from "~/createApw";
+import { createApw } from "~/crud";
 import { apwPageBuilderHooks } from "./pageBuilder";
 import { createStorageOperations } from "~/storageOperations";
 import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
@@ -15,6 +15,7 @@ import { createCustomAuth } from "~/scheduler/handlers/executeAction/security";
 import { isInstallationPending } from "./utils";
 import { extendPbPageSettingsSchema } from "~/plugins/pageBuilder/extendPbPageSettingsSchema";
 import { apwContentPagePlugins } from "~/plugins/pageBuilder/apwContentPagePlugins";
+import { apwCmsHooks } from "~/plugins/cms";
 
 const setupApwContext = (params: CreateApwContextParams) =>
     new ContextPlugin<ApwContext>(async context => {
@@ -77,23 +78,49 @@ const setupApwContext = (params: CreateApwContextParams) =>
                 getCmsContext: () => context
             }),
             scheduler,
-            handlerClient
+            handlerClient,
+            plugins: context.plugins
         });
-
-        apwPageBuilderHooks({ pageBuilder: context.pageBuilder, apw: context.apw, getIdentity });
     });
 
-export default (params: CreateApwContextParams) => {
-    return new ContextPlugin(async (context: ApwContext) => {
+const setupApwPageBuilder = () => {
+    return new ContextPlugin<ApwContext>(async context => {
+        apwPageBuilderHooks(context);
+    });
+};
+
+const setupApwHeadlessCms = () => {
+    return new ContextPlugin<ApwContext>(async context => {
+        apwCmsHooks(context);
+    });
+};
+
+export const createApwPageBuilderContext = (params: CreateApwContextParams) => {
+    return new ContextPlugin<ApwContext>(async context => {
         if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
             return;
         }
 
         await setupApwContext(params).apply(context);
+        await setupApwPageBuilder().apply(context);
+        await setupApwHeadlessCms().apply(context);
         await apwContentPagePlugins().apply(context);
         await apwHooks().apply(context);
         await createCustomAuth(params).apply(context);
 
         context.plugins.register(extendPbPageSettingsSchema());
+    });
+};
+
+export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => {
+    return new ContextPlugin<ApwContext>(async context => {
+        if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
+            return;
+        }
+
+        await setupApwContext(params).apply(context);
+        await setupApwHeadlessCms().apply(context);
+        await apwHooks().apply(context);
+        await createCustomAuth(params).apply(context);
     });
 };

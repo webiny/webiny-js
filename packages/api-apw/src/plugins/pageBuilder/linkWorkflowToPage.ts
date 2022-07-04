@@ -1,10 +1,10 @@
 import get from "lodash/get";
 import set from "lodash/set";
 import {
-    LifeCycleHookCallbackParams,
     ApwOnBeforePageCreateTopicParams,
     ApwOnBeforePageCreateFromTopicParams,
-    ApwOnBeforePageUpdateTopicParams
+    ApwOnBeforePageUpdateTopicParams,
+    AdvancedPublishingWorkflow
 } from "~/types";
 import {
     getPagesDiff,
@@ -13,58 +13,46 @@ import {
     shouldUpdatePages,
     assignWorkflowToPage
 } from "./utils";
-import { ApwPageBuilderMethods } from "~/plugins/pageBuilder/index";
+import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 
-interface LinkWorkflowToPageParams
-    extends Pick<LifeCycleHookCallbackParams, "apw">,
-        Pick<
-            ApwPageBuilderMethods,
-            | "getPage"
-            | "updatePage"
-            | "onBeforePageCreate"
-            | "onBeforePageCreateFrom"
-            | "onBeforePageUpdate"
-        > {}
+interface LinkWorkflowToPageParams {
+    apw: AdvancedPublishingWorkflow;
+    pageBuilder: PageBuilderContextObject;
+}
 
 export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
-    const {
-        apw,
-        getPage,
-        updatePage,
-        onBeforePageCreate,
-        onBeforePageCreateFrom,
-        onBeforePageUpdate
-    } = params;
+    const { apw, pageBuilder } = params;
 
-    // TODO: @ashutosh move PB specific code into "api-apw-page-builder" package
-    onBeforePageCreate.subscribe<ApwOnBeforePageCreateTopicParams>(async ({ page }) => {
+    pageBuilder.onBeforePageCreate.subscribe<ApwOnBeforePageCreateTopicParams>(async ({ page }) => {
         await assignWorkflowToPage({ listWorkflow: apw.workflow.list, page });
     });
-    onBeforePageCreateFrom.subscribe<ApwOnBeforePageCreateFromTopicParams>(async params => {
-        const { page, original } = params;
-        /**
-         * If the previous revision(original) already had the "contentReviewId",
-         * we need to unlink it so that new "contentReview" can be request for the new revision.
-         */
-        const previousContentReviewId = get(original, "settings.apw.contentReviewId");
-        if (previousContentReviewId) {
-            page.settings.apw.contentReviewId = null;
-        }
+    pageBuilder.onBeforePageCreateFrom.subscribe<ApwOnBeforePageCreateFromTopicParams>(
+        async params => {
+            const { page, original } = params;
+            /**
+             * If the previous revision(original) already had the "contentReviewId",
+             * we need to unlink it so that new "contentReview" can be request for the new revision.
+             */
+            const previousContentReviewId = get(original, "settings.apw.contentReviewId");
+            if (previousContentReviewId) {
+                page.settings.apw.contentReviewId = null;
+            }
 
-        /**
-         * If the previous revision(original) already had the "workflowId",
-         * we don't need to do anything we'll just let it be copied over.
-         */
-        const previousWorkflowId = get(original, "settings.apw.workflowId");
-        if (previousWorkflowId) {
-            return;
+            /**
+             * If the previous revision(original) already had the "workflowId",
+             * we don't need to do anything we'll just let it be copied over.
+             */
+            const previousWorkflowId = get(original, "settings.apw.workflowId");
+            if (previousWorkflowId) {
+                return;
+            }
+            /**
+             * Lookup and assign "workflowId".
+             */
+            await assignWorkflowToPage({ listWorkflow: apw.workflow.list, page });
         }
-        /**
-         * Lookup and assign "workflowId".
-         */
-        await assignWorkflowToPage({ listWorkflow: apw.workflow.list, page });
-    });
-    onBeforePageUpdate.subscribe<ApwOnBeforePageUpdateTopicParams>(async params => {
+    );
+    pageBuilder.onBeforePageUpdate.subscribe<ApwOnBeforePageUpdateTopicParams>(async params => {
         const { page, original } = params;
         const prevApwWorkflowId = get(original, "settings.apw");
         const currentApwWorkflowId = get(page, "settings.apw");
@@ -103,8 +91,8 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
 
         for (const pid of pages) {
             await updatePageSettings({
-                getPage,
-                updatePage,
+                getPage: pageBuilder.getPage,
+                updatePage: pageBuilder.updatePage,
                 uniquePageId: pid,
                 getNewSettings: settings => {
                     return set(settings, "apw.workflowId", workflow.id);
@@ -132,8 +120,8 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
         const { removedPages, addedPages } = getPagesDiff(currentPages, previousPages);
         for (const pid of addedPages) {
             await updatePageSettings({
-                getPage,
-                updatePage,
+                getPage: pageBuilder.getPage,
+                updatePage: pageBuilder.updatePage,
                 uniquePageId: pid,
                 getNewSettings: settings => {
                     return set(settings, "apw.workflowId", workflow.id);
@@ -142,8 +130,8 @@ export const linkWorkflowToPage = (params: LinkWorkflowToPageParams) => {
         }
         for (const pid of removedPages) {
             await updatePageSettings({
-                getPage,
-                updatePage,
+                getPage: pageBuilder.getPage,
+                updatePage: pageBuilder.updatePage,
                 uniquePageId: pid,
                 getNewSettings: settings => {
                     return set(settings, "apw.workflowId", null);

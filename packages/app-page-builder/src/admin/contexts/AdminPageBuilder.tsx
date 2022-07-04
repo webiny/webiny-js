@@ -2,8 +2,8 @@ import React, { useMemo, useRef } from "react";
 import ApolloClient from "apollo-client";
 import { useApolloClient, MutationHookOptions } from "@apollo/react-hooks";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { AsyncProcessor, composeAsync } from "./compose";
 import { PageBuilderContextValue } from "~/contexts/PageBuilder";
+import { AsyncProcessor, composeAsync } from "@webiny/utils";
 
 export const AdminPageBuilderContext = React.createContext<AdminPageBuilderContextValue>(
     {} as AdminPageBuilderContextValue

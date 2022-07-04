@@ -1,5 +1,5 @@
 import { ApwWorkflowApplications, ApwWorkflowStepTypes } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import mocks from "./mocks/workflows";
 
 describe("Workflow crud test", () => {
@@ -16,7 +16,7 @@ describe("Workflow crud test", () => {
         securityIdentity,
         reviewer: reviewerGQL,
         until
-    } = useContentGqlHandler({
+    } = usePageBuilderHandler({
         ...options
     });
 
@@ -50,7 +50,12 @@ describe("Workflow crud test", () => {
         /*
          * Create a new workflow entry.
          */
-        const workflowData = mocks.createWorkflow({}, [reviewer]);
+        const workflowData = mocks.createWorkflow(
+            {
+                app: ApwWorkflowApplications.PB
+            },
+            [reviewer]
+        );
         const [createWorkflowResponse] = await createWorkflowMutation({
             data: workflowData
         });
@@ -359,7 +364,9 @@ describe("Workflow crud test", () => {
          *  Should only return workflows for "pageBuilder" app.
          */
         const [listPBWorkflowsResponse] = await listWorkflowsQuery({
-            where: { app: "pageBuilder" }
+            where: {
+                app: ApwWorkflowApplications.PB
+            }
         });
         expect(listPBWorkflowsResponse).toEqual({
             data: {

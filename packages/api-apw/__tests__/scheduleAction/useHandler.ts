@@ -4,7 +4,9 @@ import { createScheduler } from "~/scheduler";
 import { ContextPlugin } from "@webiny/handler";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { SecurityPermission } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import { createPermissions } from "../utils/helpers";
+import { ApwContext } from "~/types";
 
 interface Params {
     plugins?: any;
@@ -16,6 +18,22 @@ export default (params: Params = {}) => {
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
     const handler = createHandler(
+        {
+            type: "context",
+            name: "context-header",
+            apply(context) {
+                context.http = {
+                    ...(context?.http || {}),
+                    request: {
+                        ...(context?.http?.request || {}),
+                        headers: {
+                            ...(context?.http?.request?.headers || {}),
+                            ["x-tenant"]: "root"
+                        }
+                    }
+                };
+            }
+        } as ContextPlugin<ApwContext>,
         ...createTenancyAndSecurity(),
         graphqlHandler(),
         {
@@ -55,7 +73,9 @@ export default (params: Params = {}) => {
                         description: "",
                         settings: {
                             domains: []
-                        }
+                        },
+                        createdOn: new Date().toISOString(),
+                        savedOn: new Date().toISOString()
                     };
                 },
                 getLocale: () => {
@@ -67,11 +87,12 @@ export default (params: Params = {}) => {
                     }
                     return [{ name: "*" }] as unknown as SecurityPermission;
                 },
-                getIdentity: () => {
+                getIdentity: (): SecurityIdentity => {
                     return {
                         id: "12345678",
                         type: "admin",
-                        displayName: "John Doe"
+                        displayName: "John Doe",
+                        permissions: createPermissions().concat({ name: "pb.*" })
                     };
                 }
             });

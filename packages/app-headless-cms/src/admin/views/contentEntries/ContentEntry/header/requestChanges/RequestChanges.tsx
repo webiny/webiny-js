@@ -7,10 +7,11 @@ import { ReactComponent as RequestChangesIcon } from "./rule-24px.svg";
 import usePermission from "~/admin/hooks/usePermission";
 import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevision";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
+import { makeComposable } from "@webiny/react-composition";
 
 const t = i18n.ns("app-headless-cms/admin/content-details/header/request-review");
 
-const RequestChanges = () => {
+const RequestChangesComponent: React.FC = () => {
     const { entry } = useContentEntry();
     const { requestChanges } = useRevision({ revision: entry });
     const { canRequestChange } = usePermission();
@@ -46,4 +47,4 @@ const RequestChanges = () => {
     );
 };
 
-export default RequestChanges;
+export const RequestChanges = makeComposable("RequestChanges", RequestChangesComponent);

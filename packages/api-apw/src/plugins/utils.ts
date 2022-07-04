@@ -10,8 +10,10 @@ import {
     ApwContentReviewStepStatus,
     ApwContext,
     ApwReviewerCrud,
+    ApwWorkflow,
     ApwWorkflowStep,
-    ApwWorkflowStepTypes
+    ApwWorkflowStepTypes,
+    WorkflowScopeTypes
 } from "~/types";
 
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -47,7 +49,7 @@ export const getValue = (object: Record<string, any>, key: string) => {
 export const getContentReviewStepInitialStatus = (
     workflowSteps: ApwWorkflowStep[],
     index: number,
-    previousStepStatus: ApwContentReviewStepStatus
+    previousStepStatus?: ApwContentReviewStepStatus
 ): ApwContentReviewStepStatus => {
     /**
      * Always set first step 'active' by default.
@@ -172,4 +174,27 @@ export const isInstallationPending = ({ tenancy, i18n }: CheckInstallationParams
     }
 
     return !i18n.getContentLocale();
+};
+
+const WORKFLOW_PRECEDENCE = {
+    [WorkflowScopeTypes.DEFAULT]: 0,
+    [WorkflowScopeTypes.CUSTOM]: 1
+};
+
+export const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
+    const scoreA = WORKFLOW_PRECEDENCE[a.scope.type];
+    const scoreB = WORKFLOW_PRECEDENCE[b.scope.type];
+    /**
+     * In descending order of workflow precedence.
+     */
+    return scoreB - scoreA;
+};
+
+export const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
+    const createdOnA = get(a, "createdOn");
+    const createdOnB = get(b, "createdOn");
+    /**
+     * In descending order of workflow createdOn i.e. the most recent one first.
+     */
+    return new Date(createdOnB).getTime() - new Date(createdOnA).getTime();
 };
