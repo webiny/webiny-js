@@ -75,6 +75,9 @@ describe("Cms Entry Publishing Workflow", () => {
         const [updateEntryResponse] = await updateContentEntryMutation(model, {
             revision: entry.id,
             data: {
+                sku: entry.sku,
+                description: entry.description,
+                body: entry.body,
                 name: updatedProductName
             }
         });
@@ -148,6 +151,7 @@ describe("Cms Entry Publishing Workflow", () => {
                         entryId: entry.entryId,
                         name: updatedProductName,
                         sku: entry.sku,
+                        body: entry.body,
                         description: entry.description,
                         meta: {
                             data: {
@@ -364,6 +368,9 @@ describe("Cms Entry Publishing Workflow", () => {
         const [updateProductResponse] = await updateContentEntryMutation(model, {
             revision: entry.id,
             data: {
+                sku: entry.sku,
+                description: entry.description,
+                body: entry.body,
                 name: updatedProductName
             }
         });

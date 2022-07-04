@@ -4,7 +4,7 @@ import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { createHandler } from "@webiny/handler-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
@@ -61,9 +61,7 @@ import {
     LIST_CHANGES_REQUESTED_QUERY,
     UPDATE_CHANGE_REQUEST_MUTATION
 } from "./graphql/changeRequest";
-import { TestContext } from "../types";
-import { ContextPlugin } from "@webiny/handler";
-import { ApwContext } from "~/types";
+import { contextCommon, contextSecurity } from "./context";
 
 export interface CreateHeadlessCmsAppParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -108,13 +106,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
         name: "Root",
         parent: null
     };
-    const {
-        permissions,
-        identity,
-        plugins = [],
-        setupTenancyAndSecurityGraphQL,
-        createHeadlessCmsApp
-    } = params;
+    const { permissions, identity, plugins = [], createHeadlessCmsApp } = params;
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
@@ -130,60 +122,13 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
         plugins: [
             createWcpContext(),
             createWcpGraphQL(),
-            {
-                type: "context",
-                name: "context-path-parameters",
-                apply(context) {
-                    context.http = {
-                        ...(context?.http || {}),
-                        request: {
-                            ...(context?.http?.request || {}),
-                            path: {
-                                ...(context?.http?.request?.path || {}),
-                                parameters: {
-                                    ...(context?.http?.request?.path?.parameters || {}),
-                                    key: params.path
-                                }
-                            }
-                        }
-                    };
-                }
-            } as ContextPlugin<ApwContext>,
+            contextCommon(params),
             ...ops.plugins,
             ...createTenancyAndSecurity({
-                setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: [...createPermissions(permissions), { name: "pb.*" }],
                 identity
             }),
-            {
-                type: "context",
-                name: "context-security-tenant",
-                apply(context: TestContext) {
-                    context.security.getApiKeyByToken = async (
-                        token: string
-                    ): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
-                        }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            tenant: tenant.id,
-                            permissions: identity?.["permissions"] || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
-                        };
-                    };
-                }
-            },
+            contextSecurity({ tenant, identity }),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),

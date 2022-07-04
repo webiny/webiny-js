@@ -2,6 +2,14 @@ import { ContextPlugin } from "@webiny/handler";
 import { CmsContext } from "~/types";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 
+/**
+ * In case version header is enabled via the env vars, add it to expectancy.
+ */
+const versionHeaders: Record<string, any> = {};
+if (process.env.WEBINY_ENABLE_VERSION_HEADER === "true") {
+    versionHeaders["x-webiny-version"] = expect.any(String);
+}
+
 describe("HTTP Options request", () => {
     const manageOpts = {
         path: "manage/en-US",
@@ -25,6 +33,7 @@ describe("HTTP Options request", () => {
             {
                 body: "",
                 headers: {
+                    ...versionHeaders,
                     "Access-Control-Allow-Headers": "*",
                     "Access-Control-Allow-Methods": "OPTIONS,POST",
                     "Access-Control-Allow-Origin": "*",
