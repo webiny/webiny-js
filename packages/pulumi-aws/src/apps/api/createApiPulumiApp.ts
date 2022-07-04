@@ -34,6 +34,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
+            // Overrides must be applied via a handler, registered at the very start of the program.
+            // By doing this, we're ensuring user's adjustments are not applied to late.
             if (projectAppParams.pulumi) {
                 app.addHandler(() => {
                     return projectAppParams.pulumi!(app as ReturnType<typeof createApiPulumiApp>);

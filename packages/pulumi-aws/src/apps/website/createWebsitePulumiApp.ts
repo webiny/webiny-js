@@ -31,6 +31,8 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
         path: "apps/website",
         config: projectAppParams,
         program: async app => {
+            // Overrides must be applied via a handler, registered at the very start of the program.
+            // By doing this, we're ensuring user's adjustments are not applied to late.
             if (projectAppParams.pulumi) {
                 app.addHandler(() => {
                     return projectAppParams.pulumi!(
