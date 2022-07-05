@@ -35,6 +35,7 @@
     "@webiny/error": "^5.29.0",
     "@webiny/form": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
+    "@webiny/react-composition": "^5.29.0",
     "@webiny/react-router": "^5.29.0",
     "@webiny/ui": "^5.29.0",
     "@webiny/utils": "^5.29.0",

@@ -364,7 +364,7 @@ const Search: React.FC<DataListProps> = props => {
 };
 
 export const DataList: React.FC<DataListProps> = props => {
-    let render = null;
+    let render: React.ReactNode | null = null;
 
     if (props.loading) {
         render = props.loader;

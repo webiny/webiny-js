@@ -7,8 +7,8 @@ import {
     ApwContentReviewCrud,
     ApwContentReviewStatus,
     ApwContentReviewStepStatus,
-    ApwContentTypes,
     ApwReviewerCrud,
+    ApwScheduleActionData,
     ApwWorkflowStepTypes,
     CreateApwParams,
     OnAfterContentReviewCreateTopicParams,
@@ -33,12 +33,15 @@ import {
     getPendingRequiredSteps,
     INITIAL_CONTENT_REVIEW_CONTENT_SCHEDULE_META
 } from "./utils";
+import { getContentApwSettingsPlugin } from "~/utils/contentApwSettingsPlugin";
+import { PluginsContainer } from "@webiny/plugins";
 
 export interface CreateContentReviewMethodsParams extends CreateApwParams {
     getReviewer: ApwReviewerCrud["get"];
     getContentGetter: AdvancedPublishingWorkflow["getContentGetter"];
     getContentPublisher: AdvancedPublishingWorkflow["getContentPublisher"];
     getContentUnPublisher: AdvancedPublishingWorkflow["getContentUnPublisher"];
+    plugins: PluginsContainer;
 }
 
 export function createContentReviewMethods(
@@ -54,7 +57,8 @@ export function createContentReviewMethods(
         scheduler,
         handlerClient,
         getTenant,
-        getLocale
+        getLocale,
+        plugins
     } = params;
 
     const onBeforeContentReviewCreate = createTopic<OnBeforeContentReviewCreateTopicParams>();
@@ -312,17 +316,21 @@ export function createContentReviewMethods(
             const content = await contentGetter(data.id, data.settings);
 
             let isReviewRequired = false;
-            let contentReviewId = null;
+            let contentReviewId: string | null = null;
 
-            if (data.type === ApwContentTypes.PAGE) {
-                contentReviewId = get(content, "settings.apw.contentReviewId");
+            const contentApwSettingsPlugin = getContentApwSettingsPlugin({
+                plugins,
+                type: data.type
+            });
 
-                const workflowId = get(content, "settings.apw.workflowId");
-
+            if (contentApwSettingsPlugin) {
+                contentReviewId = contentApwSettingsPlugin.getContentReviewId(content);
+                const workflowId = contentApwSettingsPlugin.getWorkflowId(content);
                 if (workflowId) {
                     isReviewRequired = true;
                 }
             }
+
             return {
                 isReviewRequired,
                 contentReviewId
@@ -348,32 +356,35 @@ export function createContentReviewMethods(
 
             /**
              * If datetime is present it means we're scheduling this action.
+             * And if not, we are publishing immediately.
              */
-            if (datetime) {
-                const scheduledActionId = await this.scheduleAction({
-                    action: ApwScheduleActionTypes.PUBLISH,
-                    type: content.type,
-                    entryId: content.id,
-                    datetime
-                });
-                /**
-                 * Update scheduled related meta data.
-                 */
-                await this.update(id, {
-                    content: {
-                        ...content,
-                        scheduledOn: datetime,
-                        scheduledBy: identity.id,
-                        scheduledActionId
-                    }
-                });
+            if (!datetime) {
+                const contentPublisher = getContentPublisher(content.type);
+
+                await contentPublisher(content.id, content.settings);
 
                 return true;
             }
 
-            const contentPublisher = getContentPublisher(content.type);
-
-            await contentPublisher(content.id, content.settings);
+            const data: ApwScheduleActionData = {
+                action: ApwScheduleActionTypes.PUBLISH,
+                type: content.type,
+                entryId: content.id,
+                modelId: content.settings?.modelId,
+                datetime
+            };
+            const scheduledActionId = await this.scheduleAction(data);
+            /**
+             * Update scheduled related meta data.
+             */
+            await this.update(id, {
+                content: {
+                    ...content,
+                    scheduledOn: datetime,
+                    scheduledBy: identity.id,
+                    scheduledActionId
+                }
+            });
 
             return true;
         },
@@ -396,32 +407,34 @@ export function createContentReviewMethods(
 
             /**
              * If datetime is present it means we're scheduling this action.
+             * If not, we are unpublishing immediately.
              */
-            if (datetime) {
-                const scheduledActionId = await this.scheduleAction({
-                    action: ApwScheduleActionTypes.UNPUBLISH,
-                    type: content.type,
-                    entryId: content.id,
-                    datetime
-                });
-                /**
-                 * Update scheduled related meta data.
-                 */
-                await this.update(id, {
-                    content: {
-                        ...content,
-                        scheduledOn: datetime,
-                        scheduledBy: identity.id,
-                        scheduledActionId
-                    }
-                });
+            if (!datetime) {
+                const contentUnPublisher = getContentUnPublisher(content.type);
+
+                await contentUnPublisher(content.id, content.settings);
 
                 return true;
             }
 
-            const contentUnPublisher = getContentUnPublisher(content.type);
-
-            await contentUnPublisher(content.id, content.settings);
+            const scheduledActionId = await this.scheduleAction({
+                action: ApwScheduleActionTypes.UNPUBLISH,
+                type: content.type,
+                entryId: content.id,
+                modelId: content.settings?.modelId,
+                datetime
+            });
+            /**
+             * Update scheduled related meta data.
+             */
+            await this.update(id, {
+                content: {
+                    ...content,
+                    scheduledOn: datetime,
+                    scheduledBy: identity.id,
+                    scheduledActionId
+                }
+            });
 
             return true;
         },

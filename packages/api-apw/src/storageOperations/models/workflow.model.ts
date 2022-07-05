@@ -9,7 +9,7 @@ const titleField = () =>
         parent: "workflow",
         validation: [
             {
-                message: "Value is required.",
+                message: "`title` field value is required in workflow.",
                 name: "required"
             }
         ]
@@ -33,8 +33,8 @@ export const stepTitleField = () =>
         parent: "workflow steps",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`title` field value is required in workflow steps.",
+                name: "required"
             }
         ]
     });
@@ -64,7 +64,7 @@ export const stepTypeField = () =>
         validation: [
             {
                 name: "required",
-                message: "Value is required."
+                message: "`type` field value is required in workflow steps."
             }
         ]
     });
@@ -76,8 +76,8 @@ export const stepIdField = () =>
         parent: "workflow steps",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`id` field value is required in workflow steps.",
+                name: "required"
             }
         ]
     });
@@ -123,8 +123,8 @@ const scopeTypeField = () =>
         type: "text",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`type` field value is required in workflow scope.",
+                name: "required"
             }
         ],
         predefinedValues: {
@@ -135,7 +135,7 @@ const scopeTypeField = () =>
                     label: "Default  - Catch all scope that applies to all content that's being published."
                 },
                 {
-                    value: "pb",
+                    value: "pageBuilder",
                     label: "Page category (Page Builder only) - The workflow will apply to all pages inside specific categories."
                 },
                 {
@@ -179,7 +179,7 @@ const scopeDataCmsModels = () =>
     });
 const scopeDataCmsEntries = () =>
     createModelField({
-        label: "Category",
+        label: "Entries",
         parent: "workflow scope data",
         type: "text",
         multipleValues: true
@@ -192,8 +192,8 @@ const applicationField = () =>
         label: "App",
         validation: [
             {
-                name: "required",
-                message: "Value is required."
+                message: "`app` field value is required in workflow.",
+                name: "required"
             }
         ],
         predefinedValues: {
@@ -209,6 +209,8 @@ interface CreateWorkflowModelDefinitionParams {
     reviewerModelId: string;
 }
 
+export const WORKFLOW_MODEL_ID = "apwWorkflowModelDefinition";
+
 export const createWorkflowModelDefinition = ({
     reviewerModelId
 }: CreateWorkflowModelDefinitionParams): WorkflowModelDefinition => ({
@@ -216,7 +218,7 @@ export const createWorkflowModelDefinition = ({
     /**
      * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.
      */
-    modelId: "apwWorkflowModelDefinition",
+    modelId: WORKFLOW_MODEL_ID,
     layout: [["workflow_title"], ["workflow_steps"], ["workflow_scope"], ["workflow_app"]],
     titleFieldId: "title",
     description: "",
@@ -238,5 +240,6 @@ export const createWorkflowModelDefinition = ({
             ])
         ]),
         applicationField()
-    ]
+    ],
+    isPrivate: true
 });

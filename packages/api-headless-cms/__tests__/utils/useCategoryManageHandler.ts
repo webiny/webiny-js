@@ -27,6 +27,7 @@ const categoryFields = `
                 version
             }
         }
+        data
     }
     # user defined fields
     title

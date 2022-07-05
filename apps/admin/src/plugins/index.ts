@@ -2,7 +2,6 @@ import { plugins } from "@webiny/plugins";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
-// import apwPlugins from "./apw";
 import theme from "theme";
 
 // Imports plugins created via scaffolding utilities.
@@ -29,9 +28,4 @@ plugins.register([
      * Plugins created via scaffolding utilities.
      */
     scaffoldsPlugins()
-    /**
-     * Advanced Publishing Workflow app.
-     * IMPORTANT: These plugins must be moved into the <ApwAdmin/> and registered there!
-     */
-    // apwPlugins
 ]);

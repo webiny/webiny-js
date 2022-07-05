@@ -410,6 +410,12 @@ export interface CmsModel {
      * The version of Webiny which this record was stored with.
      */
     webinyVersion: string;
+    /**
+     * Is model private?
+     * This is meant to be used for some internal models - will not be visible in the schema.
+     * Only available for the plugin constructed models.
+     */
+    isPrivate?: boolean;
 }
 
 /**
@@ -853,6 +859,12 @@ export interface CmsGroup {
      * Which Webiny version was this record stored with.
      */
     webinyVersion: string;
+    /**
+     * Is group private?
+     * This is meant to be used for some internal groups - will not be visible in the schema.
+     * Only available for the plugin constructed groups.
+     */
+    isPrivate?: boolean;
 }
 
 /**
@@ -1240,7 +1252,20 @@ export interface CmsEntry {
      *
      * @see CmsModelField
      */
-    values: Record<string, any>;
+    values: {
+        [key: string]: any;
+    };
+    /**
+     * Settings for the given entry.
+     *
+     * Introduced with Advanced Publishing Workflow - will be always inserted after this PR is merged.
+     * Be aware that when accessing properties in it on old systems - it will break if not checked first.
+     *
+     * Available only on the Manage API in entry GraphQL type meta.data property.
+     */
+    meta?: {
+        [key: string]: any;
+    };
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -1747,7 +1772,12 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: (model: CmsModel, id: string, input: UpdateCmsEntryInput) => Promise<CmsEntry>;
+    updateEntry: (
+        model: CmsModel,
+        id: string,
+        input: UpdateCmsEntryInput,
+        meta?: Record<string, any>
+    ) => Promise<CmsEntry>;
     /**
      * Method that republishes entry with given identifier.
      * @internal

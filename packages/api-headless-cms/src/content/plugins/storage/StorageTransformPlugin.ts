@@ -19,6 +19,7 @@ export interface FromStorageParams<T> {
 }
 
 export interface StorageTransformPluginParams<T, R> {
+    name?: string;
     fieldType: string;
     toStorage: (params: ToStorageParams<T>) => Promise<R>;
     fromStorage: (params: FromStorageParams<R>) => Promise<T>;
@@ -33,6 +34,7 @@ export class StorageTransformPlugin<T = any, R = any> extends Plugin {
 
     public constructor(config: StorageTransformPluginParams<T, R>) {
         super();
+        this.name = config.name;
         this.config = config;
     }
 

@@ -30,7 +30,7 @@ export default () =>
 
         createReviewerFromIdentity({ security, apw });
 
-        initializeContentReviewSteps({ apw });
+        initializeContentReviewSteps(context);
 
         updatePendingChangeRequestsCount({ apw });
 

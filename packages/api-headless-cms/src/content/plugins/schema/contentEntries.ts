@@ -352,59 +352,6 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                         context,
                         type: "exact"
                     });
-                    // const models = await context.cms.listModels();
-                    //
-                    // const modelsMap = models.reduce((collection, model) => {
-                    //     collection[model.modelId] = model;
-                    //     return collection;
-                    // }, {} as Record<string, CmsModel>);
-                    //
-                    // const argsEntries = args.entries as Pick<CmsEntry, "id" | "modelId">[];
-                    //
-                    // const entriesByModel = argsEntries.reduce((collection, ref) => {
-                    //     if (!collection[ref.modelId]) {
-                    //         collection[ref.modelId] = [];
-                    //     } else if (collection[ref.modelId].includes(ref.id)) {
-                    //         return collection;
-                    //     }
-                    //     collection[ref.modelId].push(ref.id);
-                    //     return collection;
-                    // }, {} as EntriesByModel);
-                    //
-                    // const getters: Promise<CmsEntry[]>[] = Object.keys(entriesByModel).map(
-                    //     async modelId => {
-                    //         return context.cms.getEntriesByIds(
-                    //             modelsMap[modelId],
-                    //             entriesByModel[modelId]
-                    //         );
-                    //     }
-                    // );
-                    //
-                    // if (getters.length === 0) {
-                    //     return new Response([]);
-                    // }
-                    //
-                    // const results = await Promise.all(getters);
-                    //
-                    // const entries = results.reduce((collection, items) => {
-                    //     return collection.concat(
-                    //         items.map(item => {
-                    //             const model = modelsMap[item.modelId];
-                    //
-                    //             return {
-                    //                 id: item.id,
-                    //                 model: {
-                    //                     modelId: model.modelId,
-                    //                     name: model.name
-                    //                 },
-                    //                 status: item.status,
-                    //                 title: getEntryTitle(model, item)
-                    //             };
-                    //         })
-                    //     );
-                    // }, [] as any[]);
-                    //
-                    // return new Response(entries);
                 },
                 async getLatestContentEntries(_, args: any, context) {
                     return getContentEntries({

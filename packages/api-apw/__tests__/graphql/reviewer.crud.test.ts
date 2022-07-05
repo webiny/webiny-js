@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 import { defaultIdentity } from "../utils/defaultIdentity";
 
 const identityRoot = { id: "root", displayName: "root", type: "admin" };
@@ -9,18 +9,18 @@ describe("Reviewer crud test", () => {
         path: "manage/en-US"
     };
 
-    const { securityIdentity, reviewer, until } = useContentGqlHandler({
+    const { securityIdentity, reviewer, until } = usePageBuilderHandler({
         ...options,
         plugins: [defaultIdentity()]
     });
 
-    const { securityIdentity: securityIdentityRoot } = useContentGqlHandler({
+    const { securityIdentity: securityIdentityRoot } = usePageBuilderHandler({
         ...options,
         plugins: [defaultIdentity()],
         identity: identityRoot
     });
 
-    const { securityIdentity: securityIdentityRootUpdated } = useContentGqlHandler({
+    const { securityIdentity: securityIdentityRootUpdated } = usePageBuilderHandler({
         ...options,
         plugins: [defaultIdentity()],
         identity: {
@@ -31,7 +31,7 @@ describe("Reviewer crud test", () => {
 
     it("should be able to hook on to after login", async () => {
         const [response] = await securityIdentity.login();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 security: {
                     login: {
@@ -154,7 +154,7 @@ describe("Reviewer crud test", () => {
 
     it("should not create more than one entry due to multiple login", async () => {
         const [response] = await securityIdentity.login();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 security: {
                     login: {
@@ -264,7 +264,7 @@ describe("Reviewer crud test", () => {
 
     it(`should update "displayName" after login if identity has been updated`, async () => {
         const [response] = await securityIdentityRoot.login();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 security: {
                     login: {

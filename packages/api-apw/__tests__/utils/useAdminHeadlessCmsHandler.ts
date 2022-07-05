@@ -1,16 +1,18 @@
-import { GQLHandlerCallableParams, useGqlHandler } from "./useGqlHandler";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import {
     createAdminHeadlessCmsContext,
     createAdminHeadlessCmsGraphQL
 } from "@webiny/api-headless-cms";
+import {
+    createHeadlessCmsGQLHandler,
+    CreateHeadlessCmsGQLHandlerParams
+} from "./createHeadlessCmsGQLHandler";
 
-export const useContentGqlHandler = (
-    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
+export const useAdminHeadlessCmsHandler = (
+    params: Omit<CreateHeadlessCmsGQLHandlerParams, "createHeadlessCmsApp">
 ) => {
-    return useGqlHandler({
+    return createHeadlessCmsGQLHandler({
         ...params,
-        setupTenancyAndSecurityGraphQL: true,
         plugins: (params.plugins || []).concat([
             graphQLHandlerPlugins(),
             createAdminHeadlessCmsGraphQL()

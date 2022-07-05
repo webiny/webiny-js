@@ -8,31 +8,8 @@ import {
     PageWithWorkflow,
     WorkflowScopeTypes
 } from "~/types";
-import { ApwPageBuilderMethods } from ".";
-
-const WORKFLOW_PRECEDENCE = {
-    [WorkflowScopeTypes.DEFAULT]: 0,
-    [WorkflowScopeTypes.PB]: 1,
-    [WorkflowScopeTypes.CMS]: 1
-};
-
-const workflowByPrecedenceDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
-    const scoreA = WORKFLOW_PRECEDENCE[a.scope.type];
-    const scoreB = WORKFLOW_PRECEDENCE[b.scope.type];
-    /**
-     * In descending order of workflow precedence.
-     */
-    return scoreB - scoreA;
-};
-
-const workflowByCreatedOnDesc = (a: ApwWorkflow, b: ApwWorkflow) => {
-    const createdOnA = get(a, "createdOn");
-    const createdOnB = get(b, "createdOn");
-    /**
-     * In descending order of workflow createdOn i.e. the most recent one first.
-     */
-    return new Date(createdOnB).getTime() - new Date(createdOnA).getTime();
-};
+import { workflowByCreatedOnDesc, workflowByPrecedenceDesc } from "~/plugins/utils";
+import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 
 const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow) => {
     const application = workflow.app;
@@ -44,9 +21,7 @@ const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow) => 
 
     if (scopeType === WorkflowScopeTypes.DEFAULT) {
         return true;
-    }
-
-    if (scopeType === WorkflowScopeTypes.PB) {
+    } else if (scopeType === WorkflowScopeTypes.CUSTOM) {
         const categories = get(workflow, "scope.data.categories");
 
         if (Array.isArray(categories) && categories.includes(page.category)) {
@@ -57,9 +32,11 @@ const isWorkflowApplicable = (page: PageWithWorkflow, workflow: ApwWorkflow) => 
         if (Array.isArray(pages) && pages.includes(page.pid)) {
             return true;
         }
+        return false;
     }
-
-    return false;
+    throw new WebinyError(`Unknown scope type "${scopeType}".`, "UNKNOWN_SCOPE_TYPE", {
+        workflow
+    });
 };
 
 interface AssignWorkflowToPageParams {
@@ -76,7 +53,9 @@ export const assignWorkflowToPage = async ({ listWorkflow, page }: AssignWorkflo
          * List all workflows for app pageBuilder
          */
         const [entries] = await listWorkflow({
-            where: { app: ApwWorkflowApplications.PB }
+            where: {
+                app: ApwWorkflowApplications.PB
+            }
         });
 
         /*
@@ -110,7 +89,7 @@ export const hasPages = (workflow: ApwWorkflow): Boolean => {
     const { app, scope } = workflow;
     return (
         app === ApwWorkflowApplications.PB &&
-        scope.type === WorkflowScopeTypes.PB &&
+        scope.type === WorkflowScopeTypes.CUSTOM &&
         scope.data &&
         Array.isArray(scope.data.pages)
     );
@@ -121,9 +100,9 @@ export const shouldUpdatePages = (
     prevScope: ApwWorkflowScope
 ): Boolean => {
     /**
-     * Bail out early if the scope was not "PB".
+     * Bail out early if the scope is not "CUSTOM" - at that point all pages should be updated.
      */
-    if (prevScope.type !== WorkflowScopeTypes.PB) {
+    if (prevScope.type !== WorkflowScopeTypes.CUSTOM) {
         return true;
     }
     const prevScopePages: string[] = get(prevScope, "data.pages");
@@ -164,7 +143,9 @@ export const getPagesDiff = (
     };
 };
 
-interface UpdatePageSettingsParams extends Pick<ApwPageBuilderMethods, "getPage" | "updatePage"> {
+interface UpdatePageSettingsParams {
+    getPage: PageBuilderContextObject["getPage"];
+    updatePage: PageBuilderContextObject["updatePage"];
     uniquePageId: string;
     getNewSettings: (settings: PageWithWorkflow["settings"]) => PageWithWorkflow["settings"];
 }

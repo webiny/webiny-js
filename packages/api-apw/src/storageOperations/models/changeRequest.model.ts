@@ -36,19 +36,22 @@ const stepField = () =>
         parent: "changeRequest",
         validation: [
             {
-                name: "required",
-                message: "Value is required"
+                message: "`step` field value is required in changeRequest.",
+                name: "required"
             }
         ]
     });
 
+export const CHANGE_REQUEST_MODEL_ID = "apwChangeRequestModelDefinition";
+
 export const createChangeRequestModelDefinition = (): WorkflowModelDefinition => {
     return {
         name: "APW - Change Request",
-        modelId: "apwChangeRequestModelDefinition",
+        modelId: CHANGE_REQUEST_MODEL_ID,
         titleFieldId: "changeRequest_title",
         layout: [["changeRequest_body"], ["changeRequest_title"]],
         fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()],
-        description: ""
+        description: "",
+        isPrivate: true
     };
 };
