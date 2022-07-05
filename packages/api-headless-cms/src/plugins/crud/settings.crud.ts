@@ -58,7 +58,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): CmsSetting
                     tenant: getTenant().id,
                     locale: getLocale().code
                 });
-                if (!settings || !settings.contentModelLastChange) {
+                if (!settings?.contentModelLastChange) {
                     return new Date();
                 }
                 return settings.contentModelLastChange;

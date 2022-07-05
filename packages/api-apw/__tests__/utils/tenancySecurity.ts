@@ -37,6 +37,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
         }),
         createTenancyGraphQL(),
         createSecurityContext({
+            verifyIdentityToTenantLink: false,
             storageOperations: securityStorageOperations({
                 documentClient,
                 table: process.env.DB_TABLE

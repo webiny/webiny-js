@@ -66,7 +66,7 @@
     "@webiny/api-wcp": "^5.29.0",
     "@webiny/cli": "^5.29.0",
     "@webiny/project-utils": "^5.29.0",
-    "jest": "^26.6.3",
+    "jest": "^28.1.0",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.12",
     "typescript": "4.5.5"

@@ -1,4 +1,4 @@
-const { basename } = require("path");
+const { basename, join } = require("path");
 const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 const { version } = require("@webiny/cli/package.json");
@@ -12,14 +12,14 @@ module.exports = function ({ path }, presets = []) {
         type = `.${process.env.TEST_TYPE}`;
     }
 
-    return merge.recursive({}, tsPreset, ...presets, {
-        name: name,
+    const merged = merge.recursive({ setupFilesAfterEnv: [] }, tsPreset, ...presets, {
         displayName: name,
         modulePaths: [`${path}/src`],
         testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],
         transform: {
-            "^.+\\.(ts|tsx)$": "ts-jest"
+            "^.+\\.[jt]sx?$": "ts-jest"
         },
+        transformIgnorePatterns: ["/node_modules/(?!(nanoid)/)"],
         moduleDirectories: ["node_modules"],
         moduleNameMapper: {
             "~tests/(.*)": `${path}/__tests__/$1`,
@@ -38,6 +38,18 @@ module.exports = function ({ path }, presets = []) {
         collectCoverageFrom: ["packages/**/*.{ts,tsx,js,jsx}"],
         coverageReporters: ["html"]
     });
+
+    merged.setupFilesAfterEnv = [
+        join(__dirname, "jest.config.base.setup.js"),
+        ...merged.setupFilesAfterEnv
+    ];
+
+    // IMPORTANT!
+    // We need to delete the following keys to let our rules be the only ones applied.
+    delete merged.transform["^.+\\.jsx?$"];
+    delete merged.transform["^.+\\.tsx?$"];
+
+    return merged;
 };
 
 process.env.DB_TABLE = "DynamoDB";

@@ -55,7 +55,7 @@
     "@webiny/project-utils": "^5.29.0",
     "get-yarn-workspaces": "^1.0.2",
     "graphql": "^15.7.2",
-    "jest": "^26.6.3",
+    "jest": "^28.1.0",
     "mdbid": "^1.0.0",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",

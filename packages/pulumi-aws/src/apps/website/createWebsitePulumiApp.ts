@@ -8,6 +8,8 @@ import { CoreOutput, VpcConfig } from "../common";
 import { tagResources } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
+export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
+
 export interface CreateWebsitePulumiAppParams {
     /** Custom domain configuration */
     domains?: PulumiAppParamCallback<CustomDomainParams>;
@@ -22,7 +24,7 @@ export interface CreateWebsitePulumiAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createWebsitePulumiApp>) => void | Promise<void>;
+    pulumi?: (app: WebsitePulumiApp) => void | Promise<void>;
 }
 
 export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppParams = {}) => {
@@ -31,6 +33,14 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
         path: "apps/website",
         config: projectAppParams,
         program: async app => {
+            // Overrides must be applied via a handler, registered at the very start of the program.
+            // By doing this, we're ensuring user's adjustments are not applied to late.
+            if (projectAppParams.pulumi) {
+                app.addHandler(() => {
+                    return projectAppParams.pulumi!(app as WebsitePulumiApp);
+                });
+            }
+
             // Register core output as a module available for all other modules
             const core = app.addModule(CoreOutput);
 
@@ -183,10 +193,6 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
-
-            if (projectAppParams.pulumi) {
-                await projectAppParams.pulumi(app as ReturnType<typeof createWebsitePulumiApp>);
-            }
 
             return {
                 prerendering,

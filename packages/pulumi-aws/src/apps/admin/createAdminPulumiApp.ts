@@ -5,6 +5,8 @@ import { tagResources } from "~/utils";
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 
+export type AdminPulumiApp = ReturnType<typeof createAdminPulumiApp>;
+
 export interface CreateAdminPulumiAppParams {
     /** Custom domain configuration */
     domain?: PulumiAppParamCallback<CustomDomainParams>;
@@ -13,7 +15,7 @@ export interface CreateAdminPulumiAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createAdminPulumiApp>) => void | Promise<void>;
+    pulumi?: (app: AdminPulumiApp) => void | Promise<void>;
 }
 
 export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParams) => {
@@ -22,6 +24,14 @@ export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParam
         path: "apps/admin",
         config: projectAppParams,
         program: async app => {
+            // Overrides must be applied via a handler, registered at the very start of the program.
+            // By doing this, we're ensuring user's adjustments are not applied to late.
+            if (projectAppParams.pulumi) {
+                app.addHandler(() => {
+                    return projectAppParams.pulumi!(app as AdminPulumiApp);
+                });
+            }
+
             const bucket = createPublicAppBucket(app, "admin-app");
 
             const cloudfront = app.addResource(aws.cloudfront.Distribution, {
@@ -76,10 +86,6 @@ export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParam
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
-
-            if (projectAppParams.pulumi) {
-                await projectAppParams.pulumi(app as ReturnType<typeof createAdminPulumiApp>);
-            }
 
             return {
                 ...bucket,
