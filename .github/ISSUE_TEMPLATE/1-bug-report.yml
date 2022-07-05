@@ -5,7 +5,7 @@ body:
     attributes:
       value: |
         Thank you for reporting an issue.
-        Please fill in as much of the form below as you're able.
+        Please fill in as much of the form below as you're able to.
   - type: input
     attributes:
       label: Version
