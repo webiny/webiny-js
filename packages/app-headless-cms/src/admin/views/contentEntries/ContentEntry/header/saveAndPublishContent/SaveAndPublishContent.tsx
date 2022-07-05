@@ -46,7 +46,12 @@ const SaveAndPublishButtonComponent: React.FC = () => {
     }
 
     return (
-        <ButtonPrimary className={buttonStyles} onClick={onPublishClick} disabled={loading} data-testid="cms-content-save-publish-content-button">
+        <ButtonPrimary
+            className={buttonStyles}
+            onClick={onPublishClick}
+            disabled={loading}
+            data-testid="cms-content-save-publish-content-button"
+        >
             {t`Save & Publish`}
         </ButtonPrimary>
     );
