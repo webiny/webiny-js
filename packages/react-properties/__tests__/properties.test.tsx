@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React, { useCallback } from "react";
 import { render } from "@testing-library/react";
 import { Properties, Property, useParentProperty, toObject } from "~/index";

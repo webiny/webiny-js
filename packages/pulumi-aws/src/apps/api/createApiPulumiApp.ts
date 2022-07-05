@@ -11,6 +11,8 @@ import { CoreOutput, VpcConfig } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { tagResources } from "~/utils";
 
+export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
+
 export interface CreateApiPulumiAppParams {
     /**
      * Enables or disables VPC for the API.
@@ -25,7 +27,7 @@ export interface CreateApiPulumiAppParams {
      * Provides a way to adjust existing Pulumi code (cloud infrastructure resources)
      * or add additional ones into the mix.
      */
-    pulumi?: (app: ReturnType<typeof createApiPulumiApp>) => void | Promise<void>;
+    pulumi?: (app: ApiPulumiApp) => void | Promise<void>;
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
@@ -34,6 +36,14 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
+            // Overrides must be applied via a handler, registered at the very start of the program.
+            // By doing this, we're ensuring user's adjustments are not applied to late.
+            if (projectAppParams.pulumi) {
+                app.addHandler(() => {
+                    return projectAppParams.pulumi!(app as ApiPulumiApp);
+                });
+            }
+
             // Enables logs forwarding.
             // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
             const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
@@ -158,10 +168,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 WbyProjectName: String(process.env["WEBINY_PROJECT_NAME"]),
                 WbyEnvironment: String(process.env["WEBINY_ENV"])
             });
-
-            if (projectAppParams.pulumi) {
-                await projectAppParams.pulumi(app as ReturnType<typeof createApiPulumiApp>);
-            }
 
             return {
                 fileManager,
