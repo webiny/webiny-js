@@ -1,38 +1,34 @@
-import { AdvancedPublishingWorkflow } from "~/types";
+import { ApwContext } from "~/types";
 import { apwEntryPlugins } from "~/plugins/cms/apwEntryPlugins";
 import { linkContentReviewToEntry } from "~/plugins/cms/linkContentReviewToEntry";
 import { linkWorkflowToEntry } from "~/plugins/cms/linkWorkflowToEntry";
 import { triggerContentReview } from "~/plugins/cms/triggerContentReview";
 import { updateContentReviewStatus } from "~/plugins/cms/updateContentReviewStatus";
-import { HeadlessCms } from "@webiny/api-headless-cms/types";
-import { Security } from "@webiny/api-security/types";
-import { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryApwSettingsGetterPlugin } from "~/plugins/cms/CmsEntryApwSettingsGetterPlugin";
+import { createContentReviewModelFields } from "~/plugins/cms/contentReviewModelFields";
 
-interface ApwCmsHooksParams {
-    apw: AdvancedPublishingWorkflow;
-    cms: HeadlessCms;
-    plugins: PluginsContainer;
-    security: Security;
-}
-export const apwCmsHooks = (params: ApwCmsHooksParams) => {
+export const apwCmsHooks = (context: ApwContext) => {
     /**
      * We do not need to assign anything if no apw or cms in the context.
      * This might happen on options request.
      */
-    if (!params.apw || !params.cms) {
+    if (!context.apw || !context.cms) {
         return;
     }
 
-    params.plugins.register(new CmsEntryApwSettingsGetterPlugin());
+    context.plugins.register(new CmsEntryApwSettingsGetterPlugin());
 
-    apwEntryPlugins(params);
+    apwEntryPlugins(context);
 
-    linkContentReviewToEntry(params);
+    linkContentReviewToEntry(context);
 
-    linkWorkflowToEntry(params);
+    linkWorkflowToEntry(context);
 
-    triggerContentReview(params);
+    triggerContentReview(context);
 
-    updateContentReviewStatus(params);
+    updateContentReviewStatus(context);
+    /**
+     * Add fields that will help with filtering.
+     */
+    createContentReviewModelFields(context);
 };

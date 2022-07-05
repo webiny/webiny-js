@@ -172,7 +172,7 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
             status: ApwContentReviewStatus
             title: String
             title_contains: String
-            app_type: ApwContentReviewContentTypes
+            appType: ApwContentReviewContentTypes
         }
 
         type ApwProvideSignOffResponse {

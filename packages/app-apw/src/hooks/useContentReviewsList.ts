@@ -72,7 +72,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     const where = {
         status: status === "all" ? undefined : status,
         title_contains: title ? title : undefined,
-        app_type: type && type !== "all" ? type : undefined
+        appType: type && type !== "all" ? type : undefined
     };
 
     const {
@@ -84,7 +84,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         {
             variables: {
                 where,
-                sort: [sort as string]
+                sort: sort ? [sort] : undefined
             },
             /**
              * We're using "network-only" fetchPolicy here because, we need to update the cache result for this query after creating a content review,
