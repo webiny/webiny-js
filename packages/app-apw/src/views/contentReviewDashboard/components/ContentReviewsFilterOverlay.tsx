@@ -2,7 +2,7 @@ import React from "react";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { DataListModalOverlay } from "@webiny/ui/List";
-import { ApwContentReviewStatus } from "~/types";
+import { ApwContentReviewStatus, ApwContentTypes } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist/modal");
@@ -15,10 +15,13 @@ interface ContentReviewsFilterModalProps {
     sort: string | null;
     setSort: (value: any) => void;
     sorters: { label: string; value: string }[];
+    type: ApwContentTypes | "all";
+    setType: (value: ApwContentTypes | "all") => void;
+    types: { label: string; value: string }[];
 }
 
 export const ContentReviewsFilterModal = (props: ContentReviewsFilterModalProps) => {
-    const { status, setStatus, sort, setSort, sorters } = props;
+    const { status, setStatus, sort, setSort, sorters, types, type, setType } = props;
 
     return (
         <DataListModalOverlay>
@@ -49,6 +52,22 @@ export const ContentReviewsFilterModal = (props: ContentReviewsFilterModalProps)
                         description={t`Sort reviews by.`}
                     >
                         {sorters.map(({ label, value }) => {
+                            return (
+                                <option key={label} value={value}>
+                                    {label}
+                                </option>
+                            );
+                        })}
+                    </Select>
+                </Cell>
+                <Cell span={12}>
+                    <Select
+                        value={type}
+                        onChange={setType}
+                        label={t`Content type`}
+                        description={t`Show only selected content type.`}
+                    >
+                        {types.map(({ label, value }) => {
                             return (
                                 <option key={label} value={value}>
                                     {label}

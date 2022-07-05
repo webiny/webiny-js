@@ -7,7 +7,12 @@ import {
     ListContentReviewsQueryResponse,
     ListContentReviewsQueryVariables
 } from "~/graphql/contentReview.gql";
-import { ApwContentReview, ApwContentReviewListItem, ApwContentReviewStatus } from "~/types";
+import {
+    ApwContentReview,
+    ApwContentReviewListItem,
+    ApwContentReviewStatus,
+    ApwContentTypes
+} from "~/types";
 
 const BASE_URL = "/apw/content-reviews";
 
@@ -31,6 +36,8 @@ interface UseContentReviewsListHook {
         fetchMore: () => Promise<void>;
         fetchMoreLoading: boolean;
         setFilter: (filter: string) => void;
+        type: ApwContentTypes | "all";
+        setType: (value: ApwContentTypes | "all") => void;
         sort: string | null;
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
@@ -46,6 +53,7 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
     const [title, setTitle] = useState<string>("");
     const [sort, setSort] = useState<string | null>(defaultSorter);
     const [status, setStatus] = useState<ApwContentReviewStatus | "all">("all");
+    const [type, setType] = useState<ApwContentTypes | "all">("all");
     const navigate = useNavigate();
 
     const [lastLoadedCursor, setLastLoadedCursor] = useState<string | null>(null);
@@ -63,7 +71,8 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
 
     const where = {
         status: status === "all" ? undefined : status,
-        title_contains: title ? title : undefined
+        title_contains: title ? title : undefined,
+        app_type: type && type !== "all" ? type : undefined
     };
 
     const {
@@ -145,6 +154,8 @@ export const useContentReviewsList: UseContentReviewsListHook = (config: Config)
         setFilter,
         fetchMore,
         fetchMoreLoading,
+        type,
+        setType,
         sort,
         setSort,
         serializeSorters,

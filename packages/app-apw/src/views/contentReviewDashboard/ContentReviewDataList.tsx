@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import { DataList, List, DataListModalOverlayAction, ListItem } from "@webiny/ui/List";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
-import { ApwContentReviewListItem } from "~/types";
+import { ApwContentReviewListItem, ApwContentTypes } from "~/types";
 import { ContentReviewListItem } from "./components/ContentReviewItem";
 import { useContentReviewsList } from "~/hooks/useContentReviewsList";
 import { ContentReviewsFilterModal } from "./components/ContentReviewsFilterOverlay";
@@ -39,6 +39,21 @@ const SORTERS = [
     }
 ];
 
+const TYPES = [
+    {
+        label: t`All`,
+        value: "all"
+    },
+    {
+        label: t`Page`,
+        value: ApwContentTypes.PAGE
+    },
+    {
+        label: t`CMS Entry`,
+        value: ApwContentTypes.CMS_ENTRY
+    }
+];
+
 const InlineLoaderWrapper = styled("div")({
     position: "absolute",
     bottom: 0,
@@ -57,6 +72,8 @@ export const ContentReviewDataList: React.FC = () => {
         loading,
         editContentReview,
         fetchMoreLoading,
+        type,
+        setType,
         sort,
         setSort,
         status,
@@ -96,6 +113,9 @@ export const ContentReviewDataList: React.FC = () => {
                     setStatus={setStatus}
                     sort={sort}
                     setSort={setSort}
+                    type={type}
+                    types={TYPES}
+                    setType={setType}
                     sorters={SORTERS}
                 />
             }
