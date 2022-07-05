@@ -5,10 +5,6 @@ export const apwContentPagePlugins = () =>
     new ContextPlugin<ApwContext>(async context => {
         const { apw, pageBuilder } = context;
 
-        if (!apw) {
-            return;
-        }
-
         apw.addContentGetter(ApwContentTypes.PAGE, async id => {
             return pageBuilder.getPage<PageWithWorkflow>(id);
         });

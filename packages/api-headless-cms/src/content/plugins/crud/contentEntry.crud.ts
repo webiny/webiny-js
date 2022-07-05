@@ -55,6 +55,7 @@ import { assignAfterEntryDelete } from "~/content/plugins/crud/contentEntry/afte
 import { referenceFieldsMapping } from "./contentEntry/referenceFieldsMapping";
 import { PluginsContainer } from "@webiny/plugins";
 import { Tenant } from "@webiny/api-tenancy/types";
+import lodashMerge from "lodash/merge";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -133,6 +134,22 @@ const cleanUpdatedInputData = (
         acc[field.fieldId] = input[field.fieldId];
         return acc;
     }, {} as CreateCmsEntryInput);
+};
+/**
+ * This method takes original entry meta and new input.
+ * When new meta is merged onto the existing one, everything that has undefined or null value is removed.
+ */
+const createEntryMeta = (input?: Record<string, any>, original?: Record<string, any>) => {
+    const meta = lodashMerge(original || {}, input || {});
+
+    for (const key in meta) {
+        if (meta[key] !== undefined || meta[key] !== null) {
+            continue;
+        }
+        delete meta[key];
+    }
+
+    return meta;
 };
 
 interface DeleteEntryParams {
@@ -721,7 +738,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 );
             }
         },
-        updateEntry: async (model, id, inputData) => {
+        updateEntry: async (model, id, inputData, metaInput) => {
             const permission = await checkEntryPermissions({ rwd: "w" });
             await utils.checkModelAccess(context, model);
 
@@ -780,14 +797,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 input: initialValues,
                 validateEntries: false
             });
-
+            /**
+             * If users wants to remove a key from meta values, they need to send meta key with the null value.
+             */
+            const meta = createEntryMeta(metaInput, originalEntry.meta);
             /**
              * We always send the full entry to the hooks and storage operations update.
              */
             const entry: CmsEntry = {
                 ...originalEntry,
                 savedOn: new Date().toISOString(),
-                values
+                values,
+                meta
             };
 
             let storageEntry: CmsStorageEntry | null = null;

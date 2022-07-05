@@ -92,6 +92,19 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
 
     const handler = createHandler({
         plugins: [
+            {
+                type: "context",
+                name: "context-tenant-header",
+                async apply(context) {
+                    context.http.request = {
+                        ...context.http.request,
+                        headers: {
+                            ...(context.http.request?.headers || {}),
+                            ["x-tenant"]: context.http.request?.headers?.["x-tenant"] || "root"
+                        }
+                    };
+                }
+            } as ContextPlugin<TestContext>,
             createWcpContext(),
             ...ops.plugins,
             ...createTenancyAndSecurity({
@@ -102,7 +115,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             {
                 type: "context",
                 name: "context-security-tenant",
-                apply(context) {
+                async apply(context) {
                     context.security.getApiKeyByToken = async (
                         token: string
                     ): Promise<ApiKey | null> => {
@@ -132,7 +145,7 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
             {
                 type: "context",
                 name: "context-path-parameters",
-                apply(context) {
+                async apply(context) {
                     context.http = {
                         ...(context?.http || {}),
                         request: {
@@ -178,6 +191,8 @@ export const useGqlHandler = (params: GQLHandlerCallableParams) => {
         sleep,
         handler,
         invoke,
+        tenant,
+        identity,
         storageOperations: ops.storageOperations,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });

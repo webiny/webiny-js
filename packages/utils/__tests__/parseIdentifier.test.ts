@@ -1,7 +1,9 @@
-import { parseIdentifier } from "~/parseIdentifier";
+import { parseIdentifier, ParseIdentifierResult } from "~/parseIdentifier";
+
+type Input = [string, ParseIdentifierResult];
 
 describe("parse identifier", () => {
-    const inputs = [
+    const inputs: Input[] = [
         [
             "aaaaa",
             {
@@ -39,7 +41,7 @@ describe("parse identifier", () => {
         ]
     ];
 
-    test.each(inputs)(`must parse identifier from "%s"`, (identifier: string, expected: any) => {
+    test.each(inputs)(`must parse identifier from "%s"`, (identifier, expected) => {
         const result = parseIdentifier(identifier);
 
         expect(result).toEqual(expected);

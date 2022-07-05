@@ -1,6 +1,6 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { ApwContentReviewStepStatus } from "~/types";
-import { createSetupForContentReview } from "../utils/helpers";
+import { createSetupForPageContentReview } from "../utils/helpers";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 describe("Content Review crud test", () => {
     const options = {
@@ -9,11 +9,11 @@ describe("Content Review crud test", () => {
 
     const identityRoot = { id: "root", displayName: "root", type: "admin" };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
 
-    const rootGqlHandler = useContentGqlHandler({
+    const rootGqlHandler = usePageBuilderHandler({
         ...options,
         identity: identityRoot
     });
@@ -27,7 +27,7 @@ describe("Content Review crud test", () => {
     } = gqlHandler;
 
     const setup = async () => {
-        return createSetupForContentReview(gqlHandler);
+        return createSetupForPageContentReview(gqlHandler);
     };
 
     const expectedContent = {

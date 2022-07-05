@@ -1,6 +1,6 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { mocks as changeRequestMock } from "./mocks/changeRequest";
-import { createContentReviewSetup } from "../utils/helpers";
+import { createPageContentReviewSetup } from "../utils/helpers";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 const richTextMock = [
     {
@@ -57,7 +57,7 @@ describe("Comment crud test", () => {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
 
@@ -72,7 +72,7 @@ describe("Comment crud test", () => {
     } = gqlHandler;
 
     const setupChangeRequest = async () => {
-        const { contentReview } = await createContentReviewSetup(gqlHandler);
+        const { contentReview } = await createPageContentReviewSetup(gqlHandler);
         const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
          * Create a new entry.
