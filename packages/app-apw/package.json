@@ -1,7 +1,6 @@
 {
   "name": "@webiny/app-apw",
   "version": "5.29.0",
-  "private": true,
   "main": "index.js",
   "repository": {
     "type": "git",
