@@ -30,6 +30,11 @@ import { createStorageOperations as createHeadlessCmsStorageOperations } from "@
 import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
+/**
+ * APW
+ */
+import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
+import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -84,6 +89,10 @@ export const handler = createHandler({
             })
         }),
         createAdminHeadlessCmsGraphQL(),
+        createApwGraphQL(),
+        createApwPageBuilderContext({
+            storageOperations: createApwSaStorageOperations({ documentClient })
+        }),
         scaffoldsPlugins()
     ],
     http: { debug }
