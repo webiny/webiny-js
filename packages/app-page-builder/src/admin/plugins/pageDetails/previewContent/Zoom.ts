@@ -42,7 +42,7 @@ class Zoom extends React.Component<ZoomProps, ZoomState> {
         store.unobserve(this.watchId);
     }
 
-    private readonly setZoomLevel = (zoom: number): void => {
+    private readonly setZoomLevel = (zoom = 1): void => {
         store.set(LOCAL_STORAGE_KEY, zoom);
     };
 
