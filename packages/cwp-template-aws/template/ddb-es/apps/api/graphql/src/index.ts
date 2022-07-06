@@ -33,6 +33,11 @@ import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
+/**
+ * APW
+ */
+import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
+import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -97,8 +102,12 @@ export const handler = createHandler({
             })
         }),
         createAdminHeadlessCmsGraphQL(),
-        scaffoldsPlugins(),
-        elasticsearchDataGzipCompression()
+        elasticsearchDataGzipCompression(),
+        createApwGraphQL(),
+        createApwPageBuilderContext({
+            storageOperations: createApwSaStorageOperations({ documentClient })
+        }),
+        scaffoldsPlugins()
     ],
     http: { debug }
 });
