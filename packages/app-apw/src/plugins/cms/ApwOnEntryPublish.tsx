@@ -74,7 +74,7 @@ export const ApwOnEntryPublish: React.FC = () => {
 
     useEffect(() => {
         return onEntryRevisionPublish(next => async params => {
-            const { id, entry } = params;
+            const { id, entry, client } = params;
             const inputData = {
                 id: id || entry.id,
                 type: ApwContentTypes.CMS_ENTRY,

@@ -10,10 +10,6 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
-    // CmsEntryDeleteMutationResponse,
-    // CmsEntryDeleteMutationVariables,
-    // CmsEntryPublishMutationResponse,
-    // CmsEntryPublishMutationVariables,
     CmsEntryRequestChangesMutationResponse,
     CmsEntryRequestChangesMutationVariables,
     CmsEntryRequestReviewMutationResponse,
@@ -66,18 +62,9 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
     const client = useApolloClient();
     const { modelId } = contentModel;
 
-    const {
-        CREATE_REVISION,
-        // DELETE_REVISION,
-        // PUBLISH_REVISION,
-        UNPUBLISH_REVISION,
-        REQUEST_REVIEW,
-        REQUEST_CHANGES
-    } = useMemo(() => {
+    const { CREATE_REVISION, UNPUBLISH_REVISION, REQUEST_REVIEW, REQUEST_CHANGES } = useMemo(() => {
         return {
             CREATE_REVISION: GQL.createCreateFromMutation(contentModel),
-            DELETE_REVISION: GQL.createDeleteMutation(contentModel),
-            // PUBLISH_REVISION: GQL.createPublishMutation(contentModel),
             UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel),
             REQUEST_REVIEW: GQL.createRequestReviewMutation(contentModel),
             REQUEST_CHANGES: GQL.createRequestChangesMutation(contentModel)
@@ -185,51 +172,6 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         `/cms/content-entries/${modelId}?id=` +
                             encodeURIComponent(targetRevision.id)
                     );
-
-                    // await client.mutate<
-                    //     CmsEntryDeleteMutationResponse,
-                    //     CmsEntryDeleteMutationVariables
-                    // >({
-                    //     mutation: DELETE_REVISION,
-                    //     variables: {
-                    //         revision: id || revision.id
-                    //     },
-                    //     update: (cache, result) => {
-                    //         if (!result || !result.data) {
-                    //             showSnackbar(
-                    //                 `Missing result in update callback on Delete Mutation.`
-                    //             );
-                    //             return;
-                    //         }
-                    //         const { error } = result.data.content;
-                    //         if (error) {
-                    //             showSnackbar(error.message);
-                    //             return;
-                    //         }
-                    //
-                    //         // We have other revisions, update entry's cache
-                    //         const revisions = GQLCache.removeRevisionFromEntryCache(
-                    //             contentModel,
-                    //             cache,
-                    //             revision
-                    //         );
-                    //
-                    //         if (revision.id !== entry.id) {
-                    //             return;
-                    //         }
-                    //         GQLCache.updateLatestRevisionInListCache(
-                    //             contentModel,
-                    //             cache,
-                    //             revisions[0],
-                    //             listQueryVariables
-                    //         );
-                    //         // Redirect to the first revision in the list of all entry revisions.
-                    //         history.push(
-                    //             `/cms/content-entries/${modelId}?id=` +
-                    //                 encodeURIComponent(revisions[0].id)
-                    //         );
-                    //     }
-                    // });
                 },
             publishRevision:
                 ({ entry }): PublishRevisionHandler =>
@@ -256,43 +198,6 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             Successfully published revision <strong>#{entry.meta.version}</strong>!
                         </span>
                     );
-
-                    // await client.mutate<
-                    //     CmsEntryPublishMutationResponse,
-                    //     CmsEntryPublishMutationVariables
-                    // >({
-                    //     mutation: PUBLISH_REVISION,
-                    //     variables: {
-                    //         revision: id || revision.id
-                    //     },
-                    //     update(cache, result) {
-                    //         if (!result || !result.data) {
-                    //             showSnackbar(`Missing result in update callback on Publish Mutation.`);
-                    //             return;
-                    //         }
-                    //         const { data: published, error } = result.data.content;
-                    //         if (error) {
-                    //             showSnackbar(error.message);
-                    //             return;
-                    //         } else if (!published) {
-                    //             showSnackbar("Missing published data on Publish Mutation Response.");
-                    //             return;
-                    //         }
-                    //
-                    //         GQLCache.unpublishPreviouslyPublishedRevision(
-                    //             contentModel,
-                    //             cache,
-                    //             published.id
-                    //         );
-                    //
-                    //         showSnackbar(
-                    //             <span>
-                    //                 Successfully published revision{" "}
-                    //                 <strong>#{published.meta.version}</strong>!
-                    //             </span>
-                    //         );
-                    //     }
-                    // });
                 },
             unpublishRevision:
                 (): UnpublishRevisionHandler =>

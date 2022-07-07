@@ -27,6 +27,7 @@ export interface OnEntryPublishResponse {
     options: PublishEntryOptions;
     // TODO: Maybe a different input and output type for compose.
     error?: EntryError | null;
+    locale: string;
     client: ApolloClient<any>;
     listQueryVariables: ListQueryVariables;
 }
@@ -115,11 +116,12 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
     const value: CmsContext = {
         getApolloClient,
         createApolloClient: props.createApolloClient,
-        apolloClient: apolloClientsCache[currentLocale],
+        apolloClient: getApolloClient(currentLocale),
         publishEntryRevision: async params => {
             return await composeAsync([...onEntryRevisionPublish.current].reverse())({
+                locale: currentLocale,
                 ...params,
-                client: apolloClientsCache[currentLocale],
+                client: getApolloClient(currentLocale),
                 options: params.options || {}
             });
         },
@@ -132,8 +134,9 @@ export const CmsProvider: React.FC<CmsProviderProps> = props => {
         },
         deleteEntry: async params => {
             return await composeAsync([...onEntryDelete.current].reverse())({
+                locale: currentLocale,
                 ...params,
-                client: apolloClientsCache[currentLocale],
+                client: getApolloClient(currentLocale),
                 options: params.options || {}
             });
         },

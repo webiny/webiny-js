@@ -7,9 +7,9 @@ import {
     createDeleteMutation
 } from "~/admin/graphql/contentEntries";
 import { DocumentNode } from "graphql";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { OnEntryDeleteResponse } from "~/admin/contexts/Cms";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
+import { parseIdentifier } from "@webiny/utils";
 
 interface Mutations {
     [key: string]: DocumentNode;
@@ -26,7 +26,6 @@ const createMutationKey = (params: CreateMutationKeyParams): string => {
 };
 
 const OnEntryDelete: React.FC = () => {
-    const { getCurrentLocale } = useI18N();
     const { onEntryDelete } = useCms();
 
     const mutations = useRef<Mutations>({});
@@ -42,21 +41,11 @@ const OnEntryDelete: React.FC = () => {
     const handleOnDelete = async ({
         entry,
         model,
-        client,
         id,
-        listQueryVariables = {}
+        client,
+        listQueryVariables = {},
+        locale
     }: OnEntryDeleteResponse) => {
-        const locale = getCurrentLocale();
-        if (!locale) {
-            const error: CmsErrorResponse = {
-                message: "Missing locale.",
-                code: "MISSING_LOCALE",
-                data: {}
-            };
-            return {
-                error
-            };
-        }
         const mutation = getMutation(model, locale);
 
         const response = await client.mutate<
@@ -87,9 +76,10 @@ const OnEntryDelete: React.FC = () => {
         }
         /**
          * TODO figure out how to do this in a smart way.
-         * If there is no hash in the ID, we are deleting whole entry.
+         * If there is no version in the ID, we are deleting whole entry.
          */
-        if (id.match("#") === null) {
+        const { version } = parseIdentifier(id);
+        if (version === null) {
             GQLCache.removeEntryFromListCache(model, client.cache, entry, listQueryVariables);
             return {
                 data: true,

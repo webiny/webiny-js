@@ -15,6 +15,7 @@ import {
     convertReferenceEntriesToOptionCollection,
     convertReferenceEntryToOption
 } from "./helpers";
+import { parseIdentifier } from "@webiny/utils";
 
 interface UseReferenceHookArgs {
     bind: BindComponentRenderProp;
@@ -37,7 +38,8 @@ const getValueHash = (value: any): string | null => {
     } else if (value.entryId) {
         return value.entryId;
     }
-    return value.id.split("#").shift();
+    const { id } = parseIdentifier(value.id);
+    return id;
 };
 
 export const useReference: UseReferenceHook = ({ bind, field }) => {
