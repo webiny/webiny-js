@@ -15,26 +15,37 @@ export default function getFileTypePlugin(
     const fileTypePlugins = [
         ...plugins.byType<AdminFileManagerFileTypePlugin>("admin-file-manager-file-type"),
         ...plugins.byType<FileManagerFileTypePlugin>(FileManagerFileTypePlugin.type)
-    ];
+    ]
+    // make it unique
+    .filter((value, index, self) => self.indexOf(value) === index);
 
-    /**
-     * TODO: if we are searching last available plugin, we can refactor this.
-     * TODO: check out @pavel
-     */
-    let plugin = null;
-    for (let i = 0; i < fileTypePlugins.length; i++) {
-        // We don't want to include the global wildcard in this check.
-        const types = fileTypePlugins[i].types;
-        if (!types) {
-            continue;
+    // group by types, but only one plugin per group. it does not make any sence to have more plugins per type
+    // first in wins!
+    const byTypes = fileTypePlugins.reduce((acc, plugin) => {
+        plugin.types.forEach((type) => acc[type] = acc[type] || plugin);
+        return acc;
+    }, {});
+
+    // sort bye type. but sort it by priority. more * lower prio, less * higher prio
+    const regExMatch = /\*/g;
+    const types = Object.keys(byTypes).sort((a, b) => {
+        const countA = (a.match(regExMatch) || []).length;
+        const countB = (b.match(regExMatch) || []).length;
+        if (countB > countA) {
+            return -1;
         }
-        if (types.find(t => minimatch(file.type, t))) {
-            plugin = fileTypePlugins[i];
-            break;
+        else if (countB < countA) {
+            return 1;
         }
-    }
+        return 0;
+    });
 
-    invariant(plugin, `Missing plugin to handle "${file.type}"!`);
+    // find first matching type
+    const type = types.find((type) => minimatch(file.type, type));
 
-    return plugin;
+    // nothing found
+    invariant(type, `Missing plugin to handle "${file.type}"!`);
+
+    // return the plugin
+    return byTypes[type];
 }
