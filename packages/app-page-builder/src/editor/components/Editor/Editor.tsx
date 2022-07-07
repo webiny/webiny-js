@@ -2,15 +2,9 @@ import React, { useEffect } from "react";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useEventActionHandler } from "../../hooks/useEventActionHandler";
-import { EventActionHandler, PbEditorEventActionPlugin } from "../../../types";
-import {
-    rootElementAtom,
-    PageAtomType,
-    revisionsAtom,
-    RevisionsAtomType,
-    uiAtom
-} from "../../recoil/modules";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { EventActionHandler, PbEditorEventActionPlugin } from "~/types";
+import { rootElementAtom, uiAtom } from "../../recoil/modules";
+import { useRecoilValue } from "recoil";
 import { DndProvider } from "react-dnd";
 import { useKeyHandler } from "../../hooks/useKeyHandler";
 import { plugins } from "@webiny/plugins";
@@ -69,16 +63,11 @@ const triggerActionButtonClick = (name: string): void => {
     element.click();
 };
 
-interface EditorPropsType {
-    page: PageAtomType;
-    revisions: RevisionsAtomType;
-}
-export const Editor: React.FC<EditorPropsType> = ({ revisions }) => {
+export const Editor: React.FC = () => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { isDragging, isResizing } = useRecoilValue(uiAtom);
 
-    const setRevisionsAtomValue = useSetRecoilState(revisionsAtom);
     const rootElementId = useRecoilValue(rootElementAtom);
 
     const firstRender = React.useRef<boolean>(true);
@@ -95,7 +84,6 @@ export const Editor: React.FC<EditorPropsType> = ({ revisions }) => {
         });
         registeredPlugins.current = registerPlugins(eventActionHandler);
 
-        setRevisionsAtomValue(revisions);
         return () => {
             removeKeyHandler("mod+z");
             removeKeyHandler("mod+shift+z");
