@@ -6,7 +6,6 @@ import {
     createPublishMutation
 } from "~/admin/graphql/contentEntries";
 import { CmsErrorResponse, CmsModel } from "~/types";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useCms } from "~/admin/hooks";
 import { OnEntryPublishResponse } from "~/admin/contexts/Cms";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
@@ -26,7 +25,6 @@ const createMutationKey = (params: CreateMutationKeyParams): string => {
 };
 
 const OnEntryPublish: React.FC = () => {
-    const { getCurrentLocale } = useI18N();
     const { onEntryRevisionPublish } = useCms();
 
     const mutations = useRef<Mutations>({});
@@ -42,18 +40,7 @@ const OnEntryPublish: React.FC = () => {
         [mutations.current]
     );
 
-    const handleOnPublish = async ({ model, client, id }: OnEntryPublishResponse) => {
-        const locale = getCurrentLocale();
-        if (!locale) {
-            const error: CmsErrorResponse = {
-                message: "Missing locale.",
-                code: "MISSING_LOCALE",
-                data: {}
-            };
-            return {
-                error
-            };
-        }
+    const handleOnPublish = async ({ model, id, client, locale }: OnEntryPublishResponse) => {
         const mutation = getMutation(model, locale);
 
         const response = await client.mutate<
@@ -63,6 +50,13 @@ const OnEntryPublish: React.FC = () => {
             mutation,
             variables: {
                 revision: id
+            },
+            update: (cache, result) => {
+                const content = result.data?.content;
+                if (!content || !content.data || content.error) {
+                    return;
+                }
+                GQLCache.unpublishPreviouslyPublishedRevision(model, cache, id);
             }
         });
 
@@ -82,8 +76,6 @@ const OnEntryPublish: React.FC = () => {
                 error
             };
         }
-
-        GQLCache.unpublishPreviouslyPublishedRevision(model, client.cache, id);
 
         return {
             data: true,

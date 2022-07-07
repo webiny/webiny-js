@@ -11,13 +11,11 @@ import { ApwContentTypes } from "~/types";
 import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { FetchResult } from "apollo-link";
-import { useApolloClient } from "@apollo/react-hooks";
 
 const t = i18n.ns("app-apw/cms/dialog");
 
 export const ApwOnEntryDelete: React.FC = () => {
     const { onEntryDelete } = useCms();
-    const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation: showDeleteReviewConfirmation } = useConfirmationDialog({
@@ -33,7 +31,7 @@ export const ApwOnEntryDelete: React.FC = () => {
 
     useEffect(() => {
         return onEntryDelete(next => async params => {
-            const { entry } = params;
+            const { entry, client } = params;
             const input = {
                 id: entry.id,
                 type: ApwContentTypes.CMS_ENTRY,
