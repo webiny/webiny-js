@@ -24,6 +24,7 @@ import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import dotProp from "dot-prop-immutable";
 import { PbErrorResponse } from "~/types";
 import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
+import { createStateInitializer } from "~/editor/recoil/createStateInitializer";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -144,7 +145,7 @@ const Editor: React.FC = () => {
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
             <LoadData>
-                <PbEditor page={page as PageWithContent} revisions={revisions} />
+                <PbEditor initializeState={createStateInitializer(page, revisions)} />
             </LoadData>
         </React.Suspense>
     );
