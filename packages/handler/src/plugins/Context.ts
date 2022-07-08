@@ -52,8 +52,11 @@ export class Context implements ContextInterface {
             const target = initialTargets[key] as keyof this;
             /**
              * If property already exists, there is no need to wait for it, so we just continue the loop.
+             * Also, if target is not a string, skip this property as it will fail to convert properly during the runtime.
              */
             if (this[target]) {
+                continue;
+            } else if (typeof target !== "string") {
                 continue;
             }
             /**
@@ -73,7 +76,7 @@ export class Context implements ContextInterface {
                      * WWhen the property is set, we will go through all the waiters and, if any of them include currently set property, act on it.
                      */
                     for (const waiter of this.waiters) {
-                        if (waiter.targets.includes(target as string) === false) {
+                        if (waiter.targets.includes(target) === false) {
                             continue;
                         }
                         /**

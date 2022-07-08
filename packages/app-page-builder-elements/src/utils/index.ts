@@ -50,7 +50,11 @@ export const assignStyles: AssignStylesCallback = (args: {
                 if (!assignTo[breakpoint.mediaQuery]) {
                     assignTo[breakpoint.mediaQuery] = {};
                 }
-                Object.assign(assignTo[breakpoint.mediaQuery], styles[breakpointName]);
+                /**
+                 * We must cast because it breaks on TS 4.7.4.
+                 * Object is not undefined, so it is safe.
+                 */
+                Object.assign(assignTo[breakpoint.mediaQuery] as CSSObject, styles[breakpointName]);
             }
         }
     } else {
