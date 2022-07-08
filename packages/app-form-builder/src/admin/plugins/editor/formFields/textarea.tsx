@@ -49,7 +49,7 @@ const plugin: FbBuilderFieldPlugin = {
                         <Bind name={"settings.rows"}>
                             <Input
                                 type={"number"}
-                                label={"Textarea rows"}
+                                label={"Text area rows"}
                                 description={"Default value (optional)"}
                             />
                         </Bind>
