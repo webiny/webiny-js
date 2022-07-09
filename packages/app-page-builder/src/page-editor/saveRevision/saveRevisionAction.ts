@@ -4,7 +4,7 @@ import lodashDebounce from "lodash/debounce";
 import { SaveRevisionActionArgsType } from "./types";
 import { ToggleSaveRevisionStateActionEvent } from "./event";
 import { EventActionCallable } from "~/types";
-import { PageAtomType } from "../../modules";
+import { PageAtomType } from "~/editor/recoil/modules";
 
 interface PageRevisionType extends Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> {
     category: string;

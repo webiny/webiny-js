@@ -15,9 +15,7 @@ import { plugins } from "@webiny/plugins";
 import {
     rootElementAtom,
     elementsAtom,
-    pageAtom,
     pluginsAtom,
-    revisionsAtom,
     sidebarAtom,
     uiAtom,
     elementByIdSelector,
@@ -25,10 +23,8 @@ import {
     highlightElementAtom,
     SidebarAtomType,
     RootElementAtom,
-    PageAtomType,
     PluginsAtomType,
-    UiAtomType,
-    RevisionsAtomType
+    UiAtomType
 } from "../recoil/modules";
 
 import { PbState } from "../recoil/modules/types";
@@ -131,7 +127,7 @@ export interface EventActionHandlerProviderProps {
     saveCallablesResults?: Array<SaveCallableResults>;
 }
 
-export const EventActionHandlerProvider: React.FC<EventActionHandlerProviderProps> = makeComposable(
+export const EventActionHandlerProvider = makeComposable<EventActionHandlerProviderProps>(
     "EventActionHandlerProvider",
     ({ children, ...props }) => {
         const apolloClient = useApolloClient();
@@ -139,19 +135,15 @@ export const EventActionHandlerProvider: React.FC<EventActionHandlerProviderProp
         const setHighlightElementAtomValue = useSetRecoilState(highlightElementAtom);
         const [sidebarAtomValue, setSidebarAtomValue] = useRecoilState(sidebarAtom);
         const rootElementAtomValue = useRecoilValue(rootElementAtom);
-        const [pageAtomValue, setPageAtomValue] = useRecoilState(pageAtom);
         const [pluginsAtomValue, setPluginsAtomValue] = useRecoilState(pluginsAtom);
         const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
-        const revisionsAtomValue = useRecoilValue(revisionsAtom);
         const snapshot = useRecoilSnapshot();
 
         const eventActionHandlerRef = useRef<EventActionHandler>();
         const sidebarAtomValueRef = useRef<SidebarAtomType>();
         const rootElementAtomValueRef = useRef<RootElementAtom>();
-        const pageAtomValueRef = useRef<PageAtomType>();
         const pluginsAtomValueRef = useRef<PluginsAtomType>();
         const uiAtomValueRef = useRef<UiAtomType>();
-        const revisionsAtomValueRef = useRef<RevisionsAtomType>();
         const snapshotRef = useRef<Snapshot>();
         const eventElements = useRef<Record<string, PbEditorElement>>({});
         const snapshotsHistory = useRef<SnapshotHistory>({
@@ -167,19 +159,10 @@ export const EventActionHandlerProvider: React.FC<EventActionHandlerProviderProp
         useEffect(() => {
             sidebarAtomValueRef.current = sidebarAtomValue;
             rootElementAtomValueRef.current = rootElementAtomValue;
-            pageAtomValueRef.current = pageAtomValue;
             pluginsAtomValueRef.current = pluginsAtomValue;
             uiAtomValueRef.current = uiAtomValue;
-            revisionsAtomValueRef.current = revisionsAtomValue;
             snapshotRef.current = snapshot;
-        }, [
-            sidebarAtomValue,
-            rootElementAtomValue,
-            pageAtomValue,
-            pluginsAtomValue,
-            uiAtomValue,
-            revisionsAtomValue
-        ]);
+        }, [sidebarAtomValue, rootElementAtomValue, pluginsAtomValue, uiAtomValue]);
 
         const registry = useRef<RegistryType>(new Map());
 
@@ -286,10 +269,8 @@ export const EventActionHandlerProvider: React.FC<EventActionHandlerProviderProp
                 return {
                     sidebar: sidebarAtomValueRef.current as SidebarAtomType,
                     rootElement: rootElementAtomValueRef.current as RootElementAtom,
-                    page: pageAtomValueRef.current as PageAtomType,
                     plugins: pluginsAtomValueRef.current as PluginsAtomType,
                     ui: uiAtomValueRef.current as UiAtomType,
-                    revisions: revisionsAtomValueRef.current as RevisionsAtomType,
                     getElementById,
                     getElementTree,
                     ...state
@@ -300,7 +281,7 @@ export const EventActionHandlerProvider: React.FC<EventActionHandlerProviderProp
 
         const getCallableState = useMemo(() => {
             return composeSync([...(props.getCallableState || []), defaultGetCallableState]);
-        }, [props.getCallableState]);
+        }, []);
 
         const createStateHistorySnapshot = (): void => {
             if (snapshotsHistory.current.busy === true) {
@@ -335,10 +316,6 @@ export const EventActionHandlerProvider: React.FC<EventActionHandlerProviderProp
 
                     if (state.plugins) {
                         setPluginsAtomValue(state.plugins);
-                    }
-
-                    if (state.page) {
-                        setPageAtomValue(state.page);
                     }
 
                     if (state.hasOwnProperty("activeElement")) {

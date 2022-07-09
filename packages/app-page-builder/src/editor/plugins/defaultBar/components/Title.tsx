@@ -1,6 +1,6 @@
 import React, { useState, useCallback, SyntheticEvent } from "react";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { UpdatePageRevisionActionEvent } from "../../../recoil/actions";
+import { UpdateDocumentActionEvent } from "../../../recoil/actions";
 import { pageAtom, PageAtomType } from "../../../recoil/modules";
 import { useRecoilValue } from "recoil";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -51,8 +51,9 @@ const Title: React.FC = () => {
 
     const updatePage = (data: Partial<PageAtomType>) => {
         handler.trigger(
-            new UpdatePageRevisionActionEvent({
-                page: data,
+            new UpdateDocumentActionEvent({
+                history: false,
+                document: data,
                 onFinish: () => {
                     showSnackbar(`Page title updated successfully!`);
                 }

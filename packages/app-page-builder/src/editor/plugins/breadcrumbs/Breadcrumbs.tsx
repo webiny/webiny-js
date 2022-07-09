@@ -83,7 +83,7 @@ const Breadcrumbs: React.FC = () => {
                     elementByIdSelector(element.parent)
                 )) as PbEditorElement;
             }
-            setItems(list.reverse());
+            setItems(list.reverse().slice(1));
         },
         [snapshot]
     );

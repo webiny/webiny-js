@@ -24,7 +24,10 @@ import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import dotProp from "dot-prop-immutable";
 import { PbErrorResponse } from "~/types";
 import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
-import { createStateInitializer } from "~/editor/recoil/createStateInitializer";
+import { createStateInitializer } from "./createStateInitializer";
+import { EditorConfig } from "~/editor";
+import { EventActionPlugins } from "./EventActionPlugins";
+import { EventActionHandlerPlugin } from "./EventActionHandlerPlugin";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -143,11 +146,20 @@ const Editor: React.FC = () => {
     }, [pageId]);
 
     return (
-        <React.Suspense fallback={<EditorLoadingScreen />}>
-            <LoadData>
-                <PbEditor initializeState={createStateInitializer(page, revisions)} />
-            </LoadData>
-        </React.Suspense>
+        <>
+            <EventActionHandlerPlugin />
+            <React.Suspense fallback={<EditorLoadingScreen />}>
+                <LoadData>
+                    <>
+                        <PbEditor initializeState={createStateInitializer(page, revisions)} />
+                        {/* Editor has several built-in event action handlers. Using EditorConfig, we can add custom actions. */}
+                        <EditorConfig>
+                            <EventActionPlugins />
+                        </EditorConfig>
+                    </>
+                </LoadData>
+            </React.Suspense>
+        </>
     );
 };
 

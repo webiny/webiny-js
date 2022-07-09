@@ -4,10 +4,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { pageAtom } from "~/editor/recoil/modules";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
-import {
-    DeactivatePluginActionEvent,
-    UpdatePageRevisionActionEvent
-} from "~/editor/recoil/actions";
+import { DeactivatePluginActionEvent, UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 
 export type UsePageSettings = ReturnType<typeof usePageSettings>;
 
@@ -29,9 +26,10 @@ export function usePageSettings() {
 
     const savePage = useCallback(pageValue => {
         eventActionHandler.trigger(
-            new UpdatePageRevisionActionEvent({
+            new UpdateDocumentActionEvent({
+                document: pageValue,
                 debounce: false,
-                page: pageValue,
+                history: false,
                 onFinish: () => {
                     showSnackbar("Settings saved!");
                     closeSettings();
