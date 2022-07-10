@@ -25,9 +25,7 @@ import dotProp from "dot-prop-immutable";
 import { PbErrorResponse } from "~/types";
 import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
 import { createStateInitializer } from "./createStateInitializer";
-import { EditorConfig } from "~/editor";
-import { EventActionPlugins } from "./EventActionPlugins";
-import { EventActionHandlerPlugin } from "./EventActionHandlerPlugin";
+import { PageEditorConfig } from "./config/PageEditorConfig";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -146,20 +144,12 @@ const Editor: React.FC = () => {
     }, [pageId]);
 
     return (
-        <>
-            <EventActionHandlerPlugin />
-            <React.Suspense fallback={<EditorLoadingScreen />}>
-                <LoadData>
-                    <>
-                        <PbEditor initializeState={createStateInitializer(page, revisions)} />
-                        {/* Editor has several built-in event action handlers. Using EditorConfig, we can add custom actions. */}
-                        <EditorConfig>
-                            <EventActionPlugins />
-                        </EditorConfig>
-                    </>
-                </LoadData>
-            </React.Suspense>
-        </>
+        <React.Suspense fallback={<EditorLoadingScreen />}>
+            <PageEditorConfig />
+            <LoadData>
+                <PbEditor initializeState={createStateInitializer(page, revisions)} />
+            </LoadData>
+        </React.Suspense>
     );
 };
 

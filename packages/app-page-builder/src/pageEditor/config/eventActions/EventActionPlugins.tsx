@@ -1,5 +1,6 @@
+import React, { useEffect } from "react";
+import { EditorConfig } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { useEffect } from "react";
 import {
     saveRevisionAction,
     SaveRevisionActionEvent,
@@ -9,7 +10,7 @@ import {
 import { updatePageAction } from "./updatePageAction";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 
-export const EventActionPlugins = () => {
+const EventActionHandlers = () => {
     const eventActionHandler = useEventActionHandler();
 
     useEffect(() => {
@@ -35,4 +36,12 @@ export const EventActionPlugins = () => {
         };
     }, []);
     return null;
+};
+
+export const EventActionPlugins = () => {
+    return (
+        <EditorConfig>
+            <EventActionHandlers />
+        </EditorConfig>
+    );
 };

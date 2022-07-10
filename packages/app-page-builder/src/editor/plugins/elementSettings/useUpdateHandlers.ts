@@ -12,7 +12,8 @@ export type PostModifyElementArgs = {
     element: PbEditorElement;
     newElement: PbEditorElement;
 };
-type UpdateHandlersPropsType = UpdateElementActionArgsType & {
+type UpdateHandlersPropsType = Omit<UpdateElementActionArgsType, "history"> & {
+    history?: boolean;
     element: PbEditorElement;
     dataNamespace: string;
     postModifyElement?: (args: PostModifyElementArgs) => void;

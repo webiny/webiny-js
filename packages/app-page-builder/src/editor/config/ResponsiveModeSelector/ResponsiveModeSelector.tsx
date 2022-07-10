@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { useRecoilState } from "recoil";
 import { css } from "emotion";
 import classNames from "classnames";
 import { plugins } from "@webiny/plugins";
@@ -7,10 +6,11 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { PbEditorResponsiveModePlugin } from "~/types";
-import { uiAtom, setDisplayModeMutation } from "../../../recoil/modules";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import { isPerBreakpointStylesObject } from "@webiny/app-page-builder-elements/utils";
+import { useUI } from "~/editor/hooks/useUI";
+import { setDisplayModeMutation } from "~/editor/recoil/modules";
 
 const classes = {
     wrapper: css({
@@ -85,21 +85,22 @@ const classes = {
     })
 };
 
-const EditorResponsiveBar: React.FC = () => {
-    const [{ displayMode, pagePreviewDimension }, setUiAtomValue] = useRecoilState(uiAtom);
+export const ResponsiveModeSelector: React.FC = () => {
+    const [{ displayMode, pagePreviewDimension }, setUiValue] = useUI();
     const {
         responsiveDisplayMode: { setDisplayMode }
     } = usePageBuilder();
+
     const setEditorMode = useCallback(
         displayMode => {
-            setUiAtomValue(prev => setDisplayModeMutation(prev, displayMode));
+            setUiValue(prev => setDisplayModeMutation(prev, displayMode));
             /**
              * We are updating the "displayMode" in PageBuilder context.
              * Because "ElementRoot" needs its value to apply "visibility" element style setting.
              */
             setDisplayMode(displayMode);
         },
-        [uiAtom]
+        [displayMode]
     );
 
     const editorModes = useMemo(
@@ -187,5 +188,3 @@ const EditorResponsiveBar: React.FC = () => {
         </div>
     );
 };
-
-export default EditorResponsiveBar;

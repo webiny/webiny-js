@@ -1,16 +1,14 @@
 import React, { useEffect } from "react";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useEventActionHandler } from "../../hooks/useEventActionHandler";
 import { EventActionHandler, PbEditorEventActionPlugin } from "~/types";
 import { rootElementAtom, uiAtom } from "../../recoil/modules";
 import { useRecoilValue } from "recoil";
-import { DndProvider } from "react-dnd";
 import { useKeyHandler } from "../../hooks/useKeyHandler";
 import { plugins } from "@webiny/plugins";
 import "./Editor.scss";
 // Components
-import EditorBar from "./Bar";
+import { EditorBar } from "~/editor";
 import EditorToolbar from "./Toolbar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
@@ -105,15 +103,13 @@ export const Editor: React.FC = () => {
         "pb-editor-resizing": isResizing
     };
     return (
-        <DndProvider backend={HTML5Backend}>
-            <div className={classSet(classes)}>
-                <EditorBar />
-                <EditorToolbar />
-                <EditorContent />
-                <EditorSideBar />
-                <Dialogs />
-                <DragPreview />
-            </div>
-        </DndProvider>
+        <div className={classSet(classes)}>
+            <EditorBar />
+            <EditorToolbar />
+            <EditorContent />
+            <EditorSideBar />
+            <Dialogs />
+            <DragPreview />
+        </div>
     );
 };

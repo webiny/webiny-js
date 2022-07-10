@@ -9,7 +9,7 @@ import { EditorPluginsLoader } from "../components/EditorPluginsLoader";
 import Categories from "../views/Categories/Categories";
 import Menus from "../views/Menus/Menus";
 import Pages from "../views/Pages/Pages";
-import Editor from "~/page-editor/Editor";
+import Editor from "~/pageEditor/Editor";
 
 const ROLE_PB_CATEGORY = "pb.category";
 const ROLE_PB_MENUS = "pb.menu";
