@@ -1,7 +1,6 @@
 import React, { ComponentType, ReactElement, ReactNode } from "react";
 import { DragObjectWithTypeWithTarget } from "./editor/components/Droppable";
 import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
-import { PluginsAtomType } from "./editor/recoil/modules";
 import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
@@ -370,11 +369,6 @@ export type PbPageElementPagesListComponentPlugin = Plugin & {
     component: ComponentType<any>;
 };
 
-export type PbAddonRenderPlugin = Plugin & {
-    type: "addon-render";
-    component: ReactElement;
-};
-
 export interface PbDocumentElementPluginRenderProps {
     [key: string]: any;
 }
@@ -538,42 +532,6 @@ export type PbIcon = {
 export type PbIconsPlugin = Plugin & {
     type: "pb-icons";
     getIcons(): PbIcon[];
-};
-
-export type PbEditorBarPluginShouldRenderProps = {
-    plugins: PluginsAtomType;
-    activeElement: any;
-};
-
-export type PbEditorBarPlugin = Plugin & {
-    type: "pb-editor-bar";
-    shouldRender(props: PbEditorBarPluginShouldRenderProps): boolean;
-    render(): ReactElement;
-};
-
-export type PbEditorContentPlugin = Plugin & {
-    type: "pb-editor-content";
-    render(): ReactElement;
-};
-
-export type PbEditorDefaultBarLeftPlugin = Plugin & {
-    type: "pb-editor-default-bar-left";
-    render(): ReactElement;
-};
-
-export type PbEditorDefaultBarCenterPlugin = Plugin & {
-    type: "pb-editor-default-bar-center";
-    render(): ReactElement;
-};
-
-export type PbEditorDefaultBarRightPlugin = Plugin & {
-    type: "pb-editor-default-bar-right";
-    render(): ReactElement;
-};
-
-export type PbEditorDefaultBarRightPageOptionsPlugin = Plugin & {
-    type: "pb-editor-default-bar-right-page-options";
-    render(): ReactElement;
 };
 
 export type PbEditorToolbarTopPlugin = Plugin & {

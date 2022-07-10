@@ -18,8 +18,8 @@ export const AddPageSettingsButton: HigherOrderComponent = RightSection => {
     return function AddTitle(props) {
         return (
             <RightSection>
-                {props.children}
                 <PageSettingsButton />
+                {props.children}
             </RightSection>
         );
     };

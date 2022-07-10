@@ -23,7 +23,7 @@ const BORDER_SETTINGS_COUNT = 4;
 const BorderSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
-    const element = useActiveElement() as PbEditorElement;
+    const [element] = useActiveElement<PbEditorElement>();
     const { displayMode, config } = useDisplayMode();
 
     const fallbackValue = useMemo(() => {

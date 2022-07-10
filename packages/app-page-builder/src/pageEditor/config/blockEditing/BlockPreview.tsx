@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ButtonFloating, IconButton } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
-import { ReactComponent as AddIcon } from "../../assets/icons/add.svg";
+import { ReactComponent as AddIcon } from "~/editor/assets/icons/add.svg";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { CircularProgress } from "@webiny/ui/Progress";

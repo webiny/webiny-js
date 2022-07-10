@@ -1,18 +1,17 @@
 import React from "react";
-import { pageAtom, PageAtomType } from "../../../recoil/modules";
 import { MenuItem } from "@webiny/ui/Menu";
-import { useConfigureWebsiteUrlDialog } from "../../../../admin/hooks/useConfigureWebsiteUrl";
-import { usePageBuilderSettings } from "../../../../admin/hooks/usePageBuilderSettings";
-import { useSiteStatus } from "../../../../admin/hooks/useSiteStatus";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as PreviewIcon } from "../../../../admin/assets/visibility.svg";
-import { useRecoilValue } from "recoil";
+import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
+import { usePage } from "~/pageEditor/hooks/usePage";
+import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
+import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
 
 const openTarget = window.Cypress ? "_self" : "_blank";
 
-const PreviewPageButton: React.FC = () => {
-    const page = useRecoilValue(pageAtom) as Required<PageAtomType>;
+export const PreviewPageButton: React.FC = () => {
+    const [page] = usePage();
     const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
@@ -21,11 +20,17 @@ const PreviewPageButton: React.FC = () => {
         refreshSiteStatus
     );
 
+    const pageData = {
+        id: page.id,
+        status: page.status,
+        path: page.path
+    };
+
     return (
         <MenuItem
             onClick={() => {
                 if (isSiteRunning) {
-                    window.open(getPageUrl(page, true), openTarget, "noopener");
+                    window.open(getPageUrl(pageData, true), openTarget, "noopener");
                 } else {
                     showConfigureWebsiteUrlDialog();
                 }
@@ -39,5 +44,3 @@ const PreviewPageButton: React.FC = () => {
         </MenuItem>
     );
 };
-
-export default PreviewPageButton;

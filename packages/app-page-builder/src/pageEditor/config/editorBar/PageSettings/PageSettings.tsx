@@ -1,7 +1,7 @@
 import React from "react";
 import { HigherOrderComponent } from "@webiny/app-admin";
 import { UIViewComponent } from "@webiny/app-admin/ui/UIView";
-import { pageSettingsStateAtom } from "~/pageEditor/config/editorBar/PageSettings/state";
+import { pageSettingsStateAtom } from "./state";
 import { useRecoilValue } from "recoil";
 
 /* For the time being, we're importing from the base editor, to not break things for existing users. */

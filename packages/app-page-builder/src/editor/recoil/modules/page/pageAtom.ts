@@ -15,8 +15,8 @@ export interface PageAtomType {
     id: string;
     title?: string;
     pid?: string;
-    path?: string;
-    status?: string;
+    path: string;
+    status: string;
     settings?: {
         general?: {
             layout?: string;
@@ -45,6 +45,7 @@ export const pageAtom = atom<PageAtomType>({
         createdBy: {
             id: null
         },
-        status: undefined
+        path: "",
+        status: ""
     }
 });

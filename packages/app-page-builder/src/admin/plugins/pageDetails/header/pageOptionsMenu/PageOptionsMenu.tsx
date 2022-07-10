@@ -92,7 +92,7 @@ const PageOptionsMenu: React.FC<PageOptionsMenuProps> = props => {
 
             <SecureView permission={"pb.settings"}>
                 <MenuItem
-                    className={classNames({ disabled: isSpecialPage(page, "home") })}
+                    className={classNames({ disabled: isSpecialPage(page.pid, "home") })}
                     onClick={() => {
                         showConfirmation(async () => {
                             if (!page.locked) {

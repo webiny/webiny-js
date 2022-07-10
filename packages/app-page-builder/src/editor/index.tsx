@@ -1,3 +1,13 @@
+/**
+ * This file contains the base framework for building page editor variations.
+ * Currently, we have 2 editors:
+ * - page editor
+ * - block editor
+ *
+ * This framework provides the basic mechanics, like d&d elements, element settings, toolbars, etc.
+ * Other things, like loading/saving data to and from the GraphQL API, toolbar elements, etc. need
+ * to be provided using the composition API, <EditorConfig> component, and `initializeState` prop.
+ */
 import React from "react";
 import { Editor as EditorComponent } from "./components/Editor";
 import { EditorConfigApply, EditorConfig } from "./components/Editor/EditorConfig";
@@ -9,6 +19,7 @@ import { DndProvider } from "react-dnd";
 
 export { EditorConfig };
 export * from "./components/Editor/EditorBar";
+export * from "./components/Editor/EditorContent";
 
 interface EditorPropsType {
     initializeState: RecoilRootProps["initializeState"];

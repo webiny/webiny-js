@@ -73,9 +73,9 @@ const AddRevisionSelector: HigherOrderComponent = RightSection => {
     return function AddRevisionSelector(props) {
         return (
             <RightSection>
-                {props.children}
                 <Revisions />
                 <EditorBar.Divider />
+                {props.children}
             </RightSection>
         );
     };

@@ -1,35 +1,35 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { DeactivatePluginActionEvent, UpdateElementActionEvent } from "../../recoil/actions";
-import { createBlockElements } from "../../helpers";
-import { useEventActionHandler } from "../../hooks/useEventActionHandler";
 import { useMutation } from "@apollo/react-hooks";
-import { useKeyHandler } from "../../hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { DelayedOnChange } from "../../components/DelayedOnChange";
 import { Typography } from "@webiny/ui/Typography";
-
-import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg";
+import { ReactComponent as SearchIcon } from "~/editor/assets/icons/search.svg";
 import {
     SimpleForm,
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
-import createBlockPlugin from "../../../admin/utils/createBlockPlugin";
+import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
 import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
 import EditBlockDialog from "./EditBlockDialog";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
 import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin, PbEditorElement } from "~/types";
-import { elementWithChildrenByIdSelector, rootElementAtom } from "../../recoil/modules";
+import { elementWithChildrenByIdSelector, rootElementAtom } from "~/editor/recoil/modules";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
+import { UpdateElementActionEvent } from "~/editor/recoil/actions";
+import { createBlockElements } from "~/editor/helpers";
+import { DelayedOnChange } from "~/editor/components/DelayedOnChange";
+import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
     type: "pb-editor-block-category",
@@ -61,6 +61,7 @@ const sortBlocks = (blocks: PbEditorBlockPlugin[]): PbEditorBlockPlugin[] => {
 };
 
 const SearchBar = () => {
+    const [, setBlocksBrowserState] = useRecoilState(blocksBrowserStateAtom);
     const rootElementId = useRecoilValue(rootElementAtom);
     const content = useRecoilValue(
         elementWithChildrenByIdSelector(rootElementId)
@@ -88,11 +89,7 @@ const SearchBar = () => {
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
     const deactivatePlugin = () => {
-        eventActionHandler.trigger(
-            new DeactivatePluginActionEvent({
-                name: "pb-editor-search-blocks-bar"
-            })
-        );
+        setBlocksBrowserState(false);
     };
 
     useEffect(() => {

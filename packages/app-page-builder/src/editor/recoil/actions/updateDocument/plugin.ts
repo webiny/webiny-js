@@ -8,8 +8,7 @@ const fireUpdateDocumentEvent: EventActionCallable<UpdateElementActionArgsType> 
     _meta,
     args
 ) => {
-    // @ts-ignore
-    const { debounce, onFinish, history } = args;
+    const { debounce, onFinish, history } = args!;
 
     return {
         actions: [new UpdateDocumentActionEvent({ debounce, onFinish, history })]
@@ -23,6 +22,14 @@ export default (): PbEditorEventActionPlugin[] => {
             name: "pb-editor-event-action-update-element-document",
             onEditorMount: handler => {
                 return handler.on(UpdateElementActionEvent, fireUpdateDocumentEvent);
+            }
+        },
+        {
+            type: "pb-editor-event-action-plugin",
+            name: "pb-editor-event-action-update-document-dummy",
+            onEditorMount: handler => {
+                // Add a dummy event action handler, to avoid throwing errors.
+                return handler.on(UpdateDocumentActionEvent, () => ({ actions: [] }));
             }
         }
     ];

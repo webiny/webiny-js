@@ -1,14 +1,14 @@
 import React from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { keyframes } from "emotion";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { useEventActionHandler } from "../../hooks/useEventActionHandler";
-import { ReactComponent as AddIcon } from "../../assets/icons/add.svg";
-import { TogglePluginActionEvent } from "../../recoil/actions";
-import { uiAtom } from "../../recoil/modules";
-import { elementsInContentTotalSelector } from "../../recoil/modules/page/selectors/elementsInContentTotalSelector";
+import { ReactComponent as AddIcon } from "~/editor/assets/icons/add.svg";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
+// TODO: move this selector into a hook or, at the very least, into this plugin
+import { elementsInContentTotalSelector } from "~/editor/recoil/modules/page/selectors/elementsInContentTotalSelector";
+import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
 
 const pulse = keyframes`
   0% {
@@ -58,20 +58,18 @@ const AddBlockContent = styled<"div", { displayMode: string }>("div")(({ display
 }));
 
 const AddContent: React.FC = () => {
-    const { displayMode } = useRecoilValue(uiAtom);
+    const { displayMode } = useDisplayMode();
     const totalElements = useRecoilValue(elementsInContentTotalSelector);
-    const eventActionHandler = useEventActionHandler();
+    const [, setBlocksBrowserState] = useRecoilState(blocksBrowserStateAtom);
+
+    const onClickHandler = () => {
+        setBlocksBrowserState(true);
+    };
+
     if (totalElements) {
         return null;
     }
 
-    const onClickHandler = () => {
-        eventActionHandler.trigger(
-            new TogglePluginActionEvent({
-                name: "pb-editor-search-blocks-bar"
-            })
-        );
-    };
     return (
         <AddBlockContainer data-type={"container"} displayMode={displayMode}>
             <Elevation z={4} className={"elevation"}>

@@ -5,13 +5,7 @@ import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
 import { Elevation } from "@webiny/ui/Elevation";
-import {
-    PbEditorContentPlugin,
-    PbPageLayout,
-    PbPageLayoutPlugin,
-    PbEditorElement,
-    PbTheme
-} from "~/types";
+import { PbPageLayout, PbPageLayoutPlugin, PbEditorElement, PbTheme } from "~/types";
 import {
     isPluginActiveSelector,
     layoutSelector,
@@ -23,6 +17,7 @@ import {
 
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import Element from "../Element";
+import { EditorContent } from "~/editor";
 
 const BREADCRUMB_HEIGHT = 33;
 interface ContentContainerParams {
@@ -109,7 +104,6 @@ const Content: React.FC = () => {
     }, []);
 
     const { theme } = usePageBuilder();
-    const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
 
     const layouts = React.useMemo((): PbPageLayout[] => {
         const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
@@ -128,9 +122,7 @@ const Content: React.FC = () => {
                     displayMode
                 )} webiny-pb-media-query--${kebabCase(displayMode)}`}
             >
-                {pluginsByType.map(plugin =>
-                    React.cloneElement(plugin.render(), { key: plugin.name })
-                )}
+                <EditorContent />
                 <BaseContainer ref={pagePreviewRef} className={"webiny-pb-editor-content-preview"}>
                     {renderContent(themeLayout || null, rootElement, renderLayout)}
                 </BaseContainer>

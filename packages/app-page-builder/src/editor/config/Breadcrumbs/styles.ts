@@ -1,5 +1,5 @@
 import { css } from "emotion";
-import { COLORS } from "../elementSettings/components/StyledComponents";
+import { COLORS } from "~/editor/plugins/elementSettings/components/StyledComponents";
 
 export const breadcrumbs = css({
     display: "flex",

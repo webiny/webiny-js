@@ -1,18 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilCallback, useRecoilSnapshot } from "recoil";
+import { Compose, HigherOrderComponent } from "@webiny/app-admin";
 import { PbEditorElement } from "~/types";
 import { breadcrumbs } from "./styles";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useHighlightElement } from "~/editor/hooks/useHighlightElement";
 import { elementByIdSelector, elementsAtom, ElementsAtomType } from "~/editor/recoil/modules";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
+import { EditorContent } from "~/editor";
 
 type ItemsState = Pick<ElementsAtomType, "id" | "type">;
 
 const Breadcrumbs: React.FC = () => {
     const [items, setItems] = useState<ItemsState[]>([]);
     const [, setActiveElementId] = useActiveElementId();
-    const element = useActiveElement();
+    const [element] = useActiveElement();
     const [highlightedElement, setHighlightElement] = useHighlightElement();
     const snapshot = useRecoilSnapshot();
     const lazyHighlight = useRecoilCallback(
@@ -118,4 +120,18 @@ const Breadcrumbs: React.FC = () => {
         </ul>
     );
 };
-export default React.memo(Breadcrumbs);
+
+const AddBreadcrumbs: HigherOrderComponent = PrevContent => {
+    return function AddBreadcrumbs() {
+        return (
+            <>
+                <PrevContent />
+                <Breadcrumbs />
+            </>
+        );
+    };
+};
+
+export const BreadcrumbsPlugin = () => {
+    return <Compose component={EditorContent} with={AddBreadcrumbs} />;
+};

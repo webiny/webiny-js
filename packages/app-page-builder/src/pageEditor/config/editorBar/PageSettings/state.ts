@@ -1,8 +1,8 @@
 import { atom } from "recoil";
 
-export type PageSettingsState = boolean | undefined;
+export type PageSettingsState = boolean;
 
 export const pageSettingsStateAtom = atom<PageSettingsState>({
-    key: "v2.pageSettingsStateAtom",
+    key: "pageSettingsStateAtom",
     default: false
 });

@@ -17,6 +17,7 @@ import EditorSideBar from "./EditorSideBar";
 
 type PluginRegistryType = Map<string, () => void>;
 
+// TODO: replace this with the new <EditorConfig> component
 const registerPlugins = (handler: EventActionHandler): PluginRegistryType => {
     const registry = new Map();
     const editorEventActionPlugins = plugins.byType<PbEditorEventActionPlugin>(

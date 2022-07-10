@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { useEventActionHandler } from "../../hooks/useEventActionHandler";
-import { TogglePluginActionEvent } from "../../recoil/actions";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { ReactComponent as AddIcon } from "../../assets/icons/add.svg";
+import { ReactComponent as AddIcon } from "~/editor/assets/icons/add.svg";
+import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
+import { useRecoilState } from "recoil";
 
 const SIDEBAR_WIDTH = 300;
 const BottomRight = styled("div")({
@@ -14,15 +14,12 @@ const BottomRight = styled("div")({
 });
 
 const AddBlock: React.FC = () => {
-    const handler = useEventActionHandler();
+    const [, setBlocksBrowserState] = useRecoilState(blocksBrowserStateAtom);
 
     const onClickHandler = () => {
-        handler.trigger(
-            new TogglePluginActionEvent({
-                name: "pb-editor-search-blocks-bar"
-            })
-        );
+        setBlocksBrowserState(true);
     };
+
     return (
         <BottomRight>
             <ButtonFloating onClick={onClickHandler} icon={<AddIcon />} />
