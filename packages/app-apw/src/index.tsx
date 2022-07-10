@@ -18,7 +18,7 @@ import {
  */
 import PagePublishRevision from "@webiny/app-page-builder/admin/plugins/pageDetails/header/publishRevision/PublishRevision";
 import { PublishPageMenuOption } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PublishPageMenuOption";
-import { PublishPageButtonComposable } from "@webiny/app-page-builder/editor/plugins/defaultBar/components/PublishPageButton";
+import { PublishPageButton } from "@webiny/app-page-builder/pageEditor";
 import PageRequestReview from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestReview/RequestReview";
 import PageRequestChanges from "@webiny/app-page-builder/admin/plugins/pageDetails/header/requestChanges/RequestChanges";
 import { PageRevisionListItemGraphic } from "@webiny/app-page-builder/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
@@ -56,7 +56,7 @@ export const AdvancedPublishingWorkflow: React.FC = () => {
         <>
             <Compose with={PublishRevisionHoc} component={PagePublishRevision} />
             <Compose with={PublishPageMenuOptionHoc} component={PublishPageMenuOption} />
-            <Compose with={PublishPageButtonHoc} component={PublishPageButtonComposable} />
+            <Compose with={PublishPageButtonHoc} component={PublishPageButton} />
             <Compose with={PageRequestReviewHoc} component={PageRequestReview} />
             <Compose with={PageRequestChangesHoc} component={PageRequestChanges} />
             <Compose
