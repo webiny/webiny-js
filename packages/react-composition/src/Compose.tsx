@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { HigherOrderComponent, useComposition } from "./Context";
 
-export interface ComposableFC<TProps> extends React.FC<TProps> {
+export interface ComposableFC<TProps = unknown> extends React.FC<TProps> {
     original: React.FC<TProps>;
     originalName: string;
 }
