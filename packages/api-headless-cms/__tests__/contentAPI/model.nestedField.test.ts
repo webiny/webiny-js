@@ -1,5 +1,5 @@
 import { CmsGroup } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { emptyObjectFields } from "./mocks/emptyObjectFields";
 
 describe("Model - nested field", () => {
@@ -10,7 +10,7 @@ describe("Model - nested field", () => {
         listContentModelsQuery,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     let contentModelGroup: CmsGroup;
 

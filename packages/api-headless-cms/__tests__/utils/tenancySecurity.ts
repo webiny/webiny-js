@@ -1,4 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Plugin } from "@webiny/plugins/Plugin";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
@@ -24,7 +25,11 @@ interface Config {
     identity?: SecurityIdentity | null;
 }
 
-export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }: Config) => {
+export const createTenancyAndSecurity = ({
+    setupGraphQL,
+    permissions,
+    identity
+}: Config): Plugin[] => {
     return [
         createTenancyContext({
             storageOperations: tenancyStorageOperations({
@@ -77,5 +82,5 @@ export const createTenancyAndSecurity = ({ setupGraphQL, permissions, identity }
 
             return context.security.authenticate("");
         })
-    ].filter(Boolean);
+    ].filter(Boolean) as Plugin[];
 };

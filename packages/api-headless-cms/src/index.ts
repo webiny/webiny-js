@@ -1,28 +1,27 @@
-import { createGraphQLPlugin } from "~/plugins/graphql";
-import { createAdminCruds, CreateAdminCrudsParams } from "~/plugins/crud";
-import context from "~/plugins/context";
-import upgrades from "~/plugins/upgrades";
-import contextSetup from "~/content/contextSetup";
-import modelManager from "~/content/plugins/modelManager";
-import { createContentCruds, CreateContentCrudsParams } from "~/content/plugins/crud";
-import fieldTypePlugins from "~/content/plugins/graphqlFields";
-import validatorsPlugins from "~/content/plugins/validators";
-import defaultStoragePlugin from "~/content/plugins/storage/default";
-import objectStoragePlugin from "~/content/plugins/storage/object";
+import { createGraphQL as baseCreateGraphQL, CreateGraphQLParams } from "~/graphql";
+import { createUpgrades } from "~/upgrades";
+import modelManager from "~/modelManager";
+import { createCrud, CrudParams } from "~/crud";
+import { createGraphQLFields } from "~/graphqlFields";
+import validatorsPlugins from "~/validators";
+import defaultStoragePlugin from "~/storage/default";
+import objectStoragePlugin from "~/storage/object";
 import {
-    CreateGraphQLHandlerOptions,
-    graphQLHandlerFactory
-} from "~/content/graphQLHandlerFactory";
-import { StorageTransformPlugin } from "~/content/plugins/storage/StorageTransformPlugin";
-import { createParametersPlugins, CreateParametersPluginsParams } from "~/content/parameterPlugins";
-import { CmsParametersPlugin } from "~/content/plugins/CmsParametersPlugin";
-import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
-import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
+    createContextParameterPlugin,
+    createHeaderParameterPlugin,
+    createPathParameterPlugin
+} from "~/parameters";
 import { ContextPlugin } from "@webiny/handler";
 import { CmsContext } from "~/types";
 import { getWebinyVersionHeaders } from "@webiny/utils";
+import { createContextPlugin } from "~/context";
+import {
+    entryFieldFromStorageTransform,
+    entryFromStorageTransform,
+    entryToStorageTransform
+} from "./utils/entryStorage";
 
-export type AdminContextParams = CreateAdminCrudsParams;
+// export type AdminContextParams = CreateAdminCrudsParams;
 
 const DEFAULT_HEADERS: Record<string, string> = {
     "Access-Control-Allow-Origin": "*",
@@ -59,35 +58,40 @@ const breakOptionsRequestContextPlugin = (): ContextPlugin<CmsContext> => {
     return plugin;
 };
 
-export const createAdminHeadlessCmsContext = (params: AdminContextParams) => {
-    return [breakOptionsRequestContextPlugin(), context(), createAdminCruds(params), upgrades()];
+export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
+export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
+    return baseCreateGraphQL(params);
 };
 
-export const createAdminHeadlessCmsGraphQL = () => {
-    return createGraphQLPlugin();
-};
-
-export interface ContentContextParams
-    extends CreateContentCrudsParams,
-        CreateParametersPluginsParams {}
-export const createContentHeadlessCmsContext = (params: ContentContextParams) => {
+export type ContentContextParams = CrudParams;
+export const createHeadlessCmsContext = (params: ContentContextParams) => {
     return [
         breakOptionsRequestContextPlugin(),
-        createParametersPlugins(params),
-        contextSetup(),
+        /**
+         *
+         */
+        createPathParameterPlugin(),
+        createContextParameterPlugin(),
+        createHeaderParameterPlugin(),
+        /**
+         * Context for all Lambdas - everything is loaded now.
+         */
+        createContextPlugin(),
         modelManager(),
-        createContentCruds(params),
-        fieldTypePlugins(),
+        /**
+         *
+         */
+        createCrud(params),
+        createGraphQLFields(),
         validatorsPlugins(),
         defaultStoragePlugin(),
-        objectStoragePlugin()
-        // new InternalAuthenticationPlugin("read-api-key"),
-        // new InternalAuthorizationPlugin("read-api-key")
+        objectStoragePlugin(),
+        createUpgrades()
     ];
 };
-export type ContentGraphQLParams = CreateGraphQLHandlerOptions;
-export const createContentHeadlessCmsGraphQL = (params?: ContentGraphQLParams) => {
-    return graphQLHandlerFactory(params);
-};
-
-export { StorageTransformPlugin, CmsParametersPlugin, CmsGroupPlugin, CmsModelPlugin };
+export * from "~/graphqlFields";
+export * from "~/plugins/CmsParametersPlugin";
+export * from "~/plugins/CmsGroupPlugin";
+export * from "~/plugins/CmsModelPlugin";
+export * from "~/plugins/StorageTransformPlugin";
+export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };

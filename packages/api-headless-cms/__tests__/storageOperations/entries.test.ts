@@ -4,8 +4,8 @@ import {
     deletePersonModel,
     PersonEntriesResult
 } from "./helpers";
-import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 import { CmsModel, HeadlessCmsStorageOperations } from "~/types";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 
 jest.setTimeout(60000);
 
@@ -43,7 +43,7 @@ const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void>
 };
 
 describe("Entries storage operations", () => {
-    const { storageOperations, until } = useAdminGqlHandler({
+    const { storageOperations, until } = useGraphQLHandler({
         path: "manage/en-US"
     });
 
