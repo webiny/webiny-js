@@ -48,7 +48,7 @@ const AppearanceTab: React.FC<AppearanceTabProps> = props => {
             form.setValue("renderer.name", renderPlugins[0].renderer.rendererName);
             return;
         }
-        console.log(`No renderers for field ${field.fieldId} found.`, field);
+        console.info(`No renderers for field ${field.fieldId} found.`, field);
     });
 
     if (renderPlugins.length === 0) {

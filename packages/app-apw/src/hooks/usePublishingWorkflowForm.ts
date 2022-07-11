@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useMemo, Dispatch, SetStateAction } from "react";
 import isEmpty from "lodash/isEmpty";
 import { useNavigate } from "@webiny/react-router";
 import get from "lodash/get";
@@ -19,15 +19,21 @@ import {
 } from "~/graphql/workflow.gql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { ApwWorkflowScopeTypes } from "~/types";
+import {
+    ApwWorkflow,
+    ApwWorkflowApplications,
+    ApwWorkflowScopeTypes,
+    ApwWorkflowStep,
+    ApwWorkflowStepTypes
+} from "~/types";
 import { getNanoid } from "~/utils";
 import { useQuery as useRouterQuery } from "~/hooks/useQuery";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form");
 
-const initialStepData = {
+const initialStepData: ApwWorkflowStep = {
     title: "",
-    type: "",
+    type: ApwWorkflowStepTypes.MANDATORY_BLOCKING,
     reviewers: []
 };
 
@@ -36,18 +42,21 @@ export const getInitialStepData = () => ({
     id: getNanoid()
 });
 
-const newFormData = {
-    title: "Untitled",
-    steps: [getInitialStepData()],
-    scope: {
-        type: ApwWorkflowScopeTypes.PB,
-        data: {
-            pages: [],
-            categories: [],
-            entries: [],
-            models: []
+const createNewFormData = (app: ApwWorkflowApplications): Partial<ApwWorkflow> => {
+    return {
+        app,
+        title: "Untitled",
+        steps: [getInitialStepData()],
+        scope: {
+            type: ApwWorkflowScopeTypes.DEFAULT,
+            data: {
+                pages: [],
+                categories: [],
+                entries: [],
+                models: []
+            }
         }
-    }
+    };
 };
 
 const CREATE_MUTATION_FIELDS = ["title", "steps", "scope", "app"];
@@ -55,17 +64,23 @@ const UPDATE_MUTATION_FIELDS = ["title", "steps", "scope"];
 
 const BASE_URL = "/apw/publishing-workflows";
 
+interface CreatePublishingWorkflowCallable {
+    (app: ApwWorkflowApplications): void;
+}
+
+interface UsePublishingWorkflowFormHookValue {
+    workflow: Partial<ApwWorkflow>;
+    setWorkflow: Dispatch<SetStateAction<Partial<ApwWorkflow>>>;
+    loading: boolean;
+    showEmptyView: boolean;
+    createPublishingWorkflow: CreatePublishingWorkflowCallable;
+    cancelEditing: () => void;
+    onSubmit: (formData: any) => Promise<void>;
+    isDirty: boolean;
+    setIsDirty: (value: boolean) => void;
+}
 export type UsePublishingWorkflowFormHook = {
-    (): {
-        workflow: Record<string, any>;
-        loading: boolean;
-        showEmptyView: boolean;
-        createPublishingWorkflow: () => void;
-        cancelEditing: () => void;
-        onSubmit: (formData: any) => Promise<void>;
-        isDirty: boolean;
-        setIsDirty: (value: boolean) => void;
-    };
+    (): UsePublishingWorkflowFormHookValue;
 };
 
 export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
@@ -74,6 +89,7 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const query = useRouterQuery();
     const currentWorkflowId = query.get("id");
+    const [workflow, setWorkflow] = useState<Partial<ApwWorkflow>>({});
 
     /**
      * Reset "isDirty" flag whenever "currentWorkflowId" changes.
@@ -84,21 +100,29 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
         }
     }, [currentWorkflowId]);
 
-    const newEntry = query.get("new") === "true";
+    const newEntry = useMemo(() => {
+        return query.get("new") === "true";
+    }, [query.get("new")]);
 
     const app = useCurrentApp();
+
+    useEffect(() => {
+        setWorkflow({});
+    }, [app]);
 
     const getQuery = useQuery<GetWorkflowQueryResponse, GetWorkflowQueryVariables>(
         GET_WORKFLOW_QUERY,
         {
             variables: { id: currentWorkflowId as string },
             skip: !currentWorkflowId,
-            onCompleted: data => {
-                const error = get(data, "apw.getWorkflow.error");
-                if (error) {
-                    navigate(BASE_URL);
-                    showSnackbar(error.message);
+            onCompleted: response => {
+                setWorkflow(get(response, "apw.getWorkflow.data", {}));
+                const error = get(response, "apw.getWorkflow.error");
+                if (!error) {
+                    return;
                 }
+                navigate(BASE_URL);
+                showSnackbar(error.message);
             }
         }
     );
@@ -154,16 +178,18 @@ export const usePublishingWorkflowForm: UsePublishingWorkflowFormHook = () => {
         [currentWorkflowId, app]
     );
 
-    const workflow = getQuery.data ? getQuery.data.apw.getWorkflow.data : {};
-
     const showEmptyView = !newEntry && !loading && isEmpty(workflow);
 
-    const createPublishingWorkflow = useCallback(() => navigate(BASE_URL + "?new=true"), []);
+    const createPublishingWorkflow: CreatePublishingWorkflowCallable = useCallback(
+        target => navigate(BASE_URL + `?new=true&app=${target}`),
+        []
+    );
 
     const cancelEditing = useCallback(() => navigate(BASE_URL), []);
 
     return {
-        workflow: isEmpty(workflow) ? newFormData : workflow,
+        workflow: isEmpty(workflow) ? createNewFormData(app) : workflow,
+        setWorkflow,
         loading,
         showEmptyView,
         createPublishingWorkflow,

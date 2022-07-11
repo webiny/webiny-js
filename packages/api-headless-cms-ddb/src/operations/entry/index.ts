@@ -630,7 +630,7 @@ export const createEntriesStorageOperations = (
             fields: modelFields
         });
 
-        const start = parseInt(decodeCursor(after) || "0") || 0;
+        const start = parseInt((decodeCursor(after) as string) || "0") || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         const slicedItems = sortedItems.slice(start, end);

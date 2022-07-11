@@ -2,14 +2,39 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../app" },
-    { "path": "../app-admin" },
-    { "path": "../app-page-builder" },
-    { "path": "../app-security" },
-    { "path": "../form" },
-    { "path": "../react-router" },
-    { "path": "../ui" },
-    { "path": "../validation" }
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-page-builder"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../app-i18n"
+    },
+    {
+      "path": "../app-headless-cms"
+    },
+    {
+      "path": "../plugins"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -32,7 +57,13 @@
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
+      "@webiny/app-i18n": ["../app-i18n/src"],
+      "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
+      "@webiny/app-headless-cms": ["../app-headless-cms/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

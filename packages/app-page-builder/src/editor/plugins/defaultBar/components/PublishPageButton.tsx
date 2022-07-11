@@ -72,7 +72,7 @@ const PublishPageButton: React.FC<PublishPageButtonProps> = props => {
 
 export const PublishPageButtonComposable = makeComposable("PublishPageButton", PublishPageButton);
 
-const DefaultPublishPageButton = () => {
+const DefaultPublishPageButton: React.FC = () => {
     const page = useRecoilValue(pageAtom);
     return <PublishPageButtonComposable page={page} />;
 };

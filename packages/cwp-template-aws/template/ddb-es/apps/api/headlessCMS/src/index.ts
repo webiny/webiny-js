@@ -15,6 +15,11 @@ import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/cont
 import logsPlugins from "@webiny/handler-logs";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
+/**
+ * APW
+ */
+import { createApwHeadlessCmsContext } from "@webiny/api-apw";
+import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -51,6 +56,10 @@ export const handler = createHandler({
                 modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins(),
                 plugins: [elasticsearchDataGzipCompression()]
             })
+        }),
+        createContentHeadlessCmsGraphQL({ debug }),
+        createApwHeadlessCmsContext({
+            storageOperations: createApwSaStorageOperations({ documentClient })
         }),
         scaffoldsPlugins()
     ],

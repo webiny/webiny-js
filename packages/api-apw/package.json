@@ -1,7 +1,6 @@
 {
   "name": "@webiny/api-apw",
   "version": "5.29.0",
-  "private": true,
   "keywords": [
     "apw:base"
   ],
@@ -61,7 +60,7 @@
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",
     "ttypescript": "^1.5.12",
-    "typescript": "4.5.5"
+    "typescript": "4.7.4"
   },
   "publishConfig": {
     "access": "public",

@@ -64,6 +64,10 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             """
             revisions: [${mTypeName}]
             title: String
+            """
+            Custom meta data stored in the root of the entry object.
+            """
+            data: JSON
         }
         
                     

@@ -1,11 +1,19 @@
-import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import {
+    CmsContext,
+    CmsEntry as BaseCmsEntry,
+    CmsModel,
+    BeforeEntryPublishTopicParams,
+    AfterEntryPublishTopicParams,
+    AfterEntryUnpublishTopicParams
+} from "@webiny/api-headless-cms/types";
 import {
     Page,
     OnBeforePageCreateTopicParams,
     OnBeforePageCreateFromTopicParams,
     OnBeforePageUpdateTopicParams,
     OnBeforePagePublishTopicParams,
-    OnBeforePageRequestReviewTopicParams
+    OnBeforePageRequestReviewTopicParams,
+    PageSettings
 } from "@webiny/api-page-builder/types";
 import { Context } from "@webiny/handler/types";
 import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
@@ -15,7 +23,18 @@ import { Tenant } from "@webiny/api-tenancy/types";
 import { Topic } from "@webiny/pubsub/types";
 import { ApwScheduleActionCrud, ScheduleActionContext } from "~/scheduler/types";
 import HandlerClient from "@webiny/handler-client/HandlerClient";
+import { PluginsContainer } from "@webiny/plugins";
 import { WcpContextObject } from "@webiny/api-wcp/types";
+
+export interface ApwCmsEntry extends BaseCmsEntry {
+    title: string;
+    meta: {
+        apw?: {
+            contentReviewId?: string | null;
+            workflowId?: string | null;
+        };
+    };
+}
 
 export interface ApwFile {
     id: string;
@@ -69,13 +88,14 @@ export enum ApwContentTypes {
     CMS_ENTRY = "cms_entry"
 }
 
-export interface PageWithWorkflow extends Page {
-    settings: Page["settings"] & {
-        apw: {
-            workflowId: string;
-            contentReviewId: string | null;
-        };
+export interface PageSettingsWithWorkflow extends PageSettings {
+    apw: {
+        workflowId: string;
+        contentReviewId: string | null;
     };
+}
+export interface PageWithWorkflow extends Page {
+    settings: PageSettingsWithWorkflow;
 }
 
 export type ApwOnBeforePageCreateTopicParams = OnBeforePageCreateTopicParams<PageWithWorkflow>;
@@ -92,8 +112,7 @@ export type ApwOnBeforePageRequestReviewTopicParams =
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
-    PB = "pb",
-    CMS = "cms"
+    CUSTOM = "custom"
 }
 
 export enum ApwContentReviewStepStatus {
@@ -182,13 +201,17 @@ export interface ApwWorkflow extends ApwBaseFields {
     app: ApwWorkflowApplications;
 }
 
+interface ApwWorkflowScopeCmsEntry {
+    id: string;
+    modelId: string;
+}
 export interface ApwWorkflowScope {
     type: WorkflowScopeTypes;
     data: {
         categories?: string[];
         pages?: string[];
         models?: string[];
-        entries?: string[];
+        entries?: ApwWorkflowScopeCmsEntry[];
     };
 }
 
@@ -279,6 +302,11 @@ export interface ApwScheduleActionData {
     type: ApwContentTypes;
     datetime: string;
     entryId: string;
+    /**
+     * We will add modelId to the data for now.
+     * TODO extract in separate package?
+     */
+    modelId?: string;
 }
 
 export interface ApwContentReviewContent {
@@ -412,7 +440,7 @@ export interface ApwContentReviewCrud
 
     isReviewRequired(data: ApwContentReviewContent): Promise<{
         isReviewRequired: boolean;
-        contentReviewId?: string;
+        contentReviewId?: string | null;
     }>;
 
     publishContent(id: string, datetime?: string): Promise<Boolean>;
@@ -437,7 +465,7 @@ export interface ApwContentReviewCrud
 export type ContentGetter = (
     id: string,
     settings: { modelId?: string }
-) => Promise<PageWithWorkflow | (CmsEntry & { title: string }) | null>;
+) => Promise<PageWithWorkflow | ApwCmsEntry | null>;
 
 export type ContentPublisher = (
     id: string,
@@ -485,6 +513,7 @@ export interface CreateApwParams {
     storageOperations: ApwStorageOperations;
     scheduler: ApwScheduleActionCrud;
     handlerClient: HandlerClient;
+    plugins: PluginsContainer;
 }
 
 interface StorageOperationsGetReviewerParams {
@@ -916,5 +945,21 @@ export interface OnAfterWorkflowDeleteTopicParams {
 
 export type WorkflowModelDefinition = Pick<
     CmsModel,
-    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields"
+    "name" | "modelId" | "layout" | "titleFieldId" | "description" | "fields" | "isPrivate"
 >;
+
+/**
+ * Headless CMS
+ */
+export interface OnBeforeCmsEntryPublishTopicParams
+    extends Omit<BeforeEntryPublishTopicParams, "entry"> {
+    entry: ApwCmsEntry;
+}
+export interface OnAfterCmsEntryPublishTopicParams
+    extends Omit<AfterEntryPublishTopicParams, "entry"> {
+    entry: ApwCmsEntry;
+}
+export interface OnAfterCmsEntryUnpublishTopicParams
+    extends Omit<AfterEntryUnpublishTopicParams, "entry"> {
+    entry: ApwCmsEntry;
+}

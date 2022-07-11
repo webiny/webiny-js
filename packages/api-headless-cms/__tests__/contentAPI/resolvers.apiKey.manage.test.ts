@@ -167,7 +167,8 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Vegetables"
+                            title: "Vegetables",
+                            data: {}
                         }
                     },
                     error: null
@@ -223,7 +224,8 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Vegetables"
+                            title: "Vegetables",
+                            data: {}
                         }
                     },
                     error: null
@@ -274,7 +276,8 @@ describe("MANAGE - resolvers - api key", () => {
                             ],
                             status: "draft",
                             version: 1,
-                            title: "Green vegetables"
+                            title: "Green vegetables",
+                            data: {}
                         }
                     },
                     error: null
@@ -324,7 +327,8 @@ describe("MANAGE - resolvers - api key", () => {
                                 ],
                                 status: "draft",
                                 version: 1,
-                                title: updatedCategory.title
+                                title: updatedCategory.title,
+                                data: {}
                             }
                         }
                     ],

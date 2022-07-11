@@ -1,12 +1,12 @@
-import { createSetupForContentReview } from "../utils/helpers";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { createSetupForPageContentReview } from "../utils/helpers";
+import { usePageBuilderHandler } from "../utils/usePageBuilderHandler";
 
 describe("Content Review assignment to a PB Page", () => {
     const options = {
         path: "manage/en-US"
     };
 
-    const gqlHandler = useContentGqlHandler({
+    const gqlHandler = usePageBuilderHandler({
         ...options
     });
 
@@ -18,7 +18,7 @@ describe("Content Review assignment to a PB Page", () => {
     } = gqlHandler;
 
     const setup = async () => {
-        return createSetupForContentReview(gqlHandler);
+        return createSetupForPageContentReview(gqlHandler);
     };
 
     test(`Page should have a "contentReview" assigned to it`, async () => {

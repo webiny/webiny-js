@@ -13,7 +13,7 @@ import {
 } from "~/graphql/workflow.gql";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
-import { ApwWorkflow } from "~/types";
+import { ApwWorkflow, ApwWorkflowApplications } from "~/types";
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/data-list");
 
@@ -36,13 +36,13 @@ interface UsePublishingWorkflowsListHook {
         loading: boolean;
         workflows: Array<ApwWorkflow>;
         currentWorkflowId: string | null;
-        createPublishingWorkflow: (app: string) => void;
+        createPublishingWorkflow: (app: ApwWorkflowApplications) => void;
         filter: string;
         setFilter: (filter: string) => void;
         sort: string;
         setSort: (sort: string) => void;
         serializeSorters: (data: Record<string, string>) => string;
-        editPublishingWorkflow: (id: string, app: string) => void;
+        editPublishingWorkflow: (id: string) => void;
         deletePublishingWorkflow: (id: string) => void;
     };
 }
@@ -72,22 +72,27 @@ export const usePublishingWorkflowsList: UsePublishingWorkflowsListHook = (confi
     const workflows = data ? data.apw.listWorkflows.data : [];
 
     const createPublishingWorkflow = useCallback(
-        app => navigate(`${BASE_URL}?new=true&app=${app}`),
+        (app: ApwWorkflowApplications) => navigate(`${BASE_URL}?new=true&app=${app}`),
         []
     );
 
-    const editPublishingWorkflow = useCallback((id, app) => {
-        navigate(`${BASE_URL}?id=${encodeURIComponent(id)}&app=${app}`);
+    const editPublishingWorkflow = useCallback((id: string) => {
+        navigate(`${BASE_URL}?id=${encodeURIComponent(id)}`);
     }, []);
 
     const deletePublishingWorkflow = useCallback(
-        id => {
+        (id: string) => {
             showConfirmation(async () => {
-                const response = await deleteWorkflow({ variables: { id } });
+                const response = await deleteWorkflow({
+                    variables: {
+                        id
+                    }
+                });
 
                 const error = get(response, "data.apw.deleteWorkflow.error");
                 if (error) {
-                    return showSnackbar(error.message);
+                    showSnackbar(error.message);
+                    return;
                 }
 
                 showSnackbar(t`Workflow "{id}" deleted.`({ id }));

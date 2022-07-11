@@ -95,6 +95,11 @@ export interface ApwScheduleActionData {
     type: ApwContentTypes;
     datetime: string;
     entryId: string;
+    /**
+     * We will add modelId to the data for now.
+     * TODO extract in separate package?
+     */
+    modelId?: string;
 }
 
 export enum InvocationTypes {

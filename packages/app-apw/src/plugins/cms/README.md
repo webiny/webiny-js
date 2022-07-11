@@ -59,4 +59,6 @@ One can follow a similar approach when building the APW integration for CMS. A g
 from [pageBuilder](../pageBuilder) and make it work for CMS with slight adjustment to handle how CMS works.
 
 
+## Make the package type agnostic
 
+Currently, everything is hardcoded. So make it possible to add new functionality via plugins or Compose API.

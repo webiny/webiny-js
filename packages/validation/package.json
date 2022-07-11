@@ -31,7 +31,7 @@
     "merge": "^1.2.1",
     "rimraf": "^3.0.2",
     "ttypescript": "^1.5.13",
-    "typescript": "4.5.5"
+    "typescript": "4.7.4"
   },
   "publishConfig": {
     "access": "public",

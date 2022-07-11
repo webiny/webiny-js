@@ -12,8 +12,9 @@ module.exports.applyDefaults = () => {
         telemetry = isEnabled();
     }
 
-    if (config.id) {
-        process.env.REACT_APP_WCP_PROJECT_ID = config.id;
+    const wcpProjectId = config.id || process.env.WCP_PROJECT_ID;
+    if (wcpProjectId) {
+        process.env.REACT_APP_WCP_PROJECT_ID = wcpProjectId;
     }
 
     if (!("REACT_APP_USER_ID" in process.env)) {

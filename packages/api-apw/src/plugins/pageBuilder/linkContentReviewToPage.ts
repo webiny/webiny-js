@@ -1,24 +1,25 @@
 import set from "lodash/set";
 import get from "lodash/get";
 import Error from "@webiny/error";
-import { ApwContentTypes } from "~/types";
+import { AdvancedPublishingWorkflow, ApwContentTypes } from "~/types";
 import { updatePageSettings } from "./utils";
-import { ApwPageBuilderMethods, ApwPageBuilderPluginsParams } from ".";
+import { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 
-interface LinkContentReviewToPageParams
-    extends Pick<ApwPageBuilderPluginsParams, "apw">,
-        Pick<ApwPageBuilderMethods, "getPage" | "updatePage" | "onBeforePageDelete"> {}
+interface LinkContentReviewToPageParams {
+    apw: AdvancedPublishingWorkflow;
+    pageBuilder: PageBuilderContextObject;
+}
 
 export const linkContentReviewToPage = (params: LinkContentReviewToPageParams) => {
-    const { getPage, updatePage, apw, onBeforePageDelete } = params;
+    const { apw, pageBuilder } = params;
 
     apw.contentReview.onAfterContentReviewCreate.subscribe(async ({ contentReview }) => {
         const { content } = contentReview;
 
         if (content.type === ApwContentTypes.PAGE) {
             await updatePageSettings({
-                getPage,
-                updatePage,
+                getPage: pageBuilder.getPage,
+                updatePage: pageBuilder.updatePage,
                 uniquePageId: content.id,
                 getNewSettings: settings => {
                     return set(settings, "apw.contentReviewId", contentReview.id);
@@ -32,8 +33,8 @@ export const linkContentReviewToPage = (params: LinkContentReviewToPageParams) =
 
         if (content.type === ApwContentTypes.PAGE) {
             await updatePageSettings({
-                getPage,
-                updatePage,
+                getPage: pageBuilder.getPage,
+                updatePage: pageBuilder.updatePage,
                 uniquePageId: content.id,
                 getNewSettings: settings => {
                     return set(settings, "apw.contentReviewId", null);
@@ -42,7 +43,7 @@ export const linkContentReviewToPage = (params: LinkContentReviewToPageParams) =
         }
     });
 
-    onBeforePageDelete.subscribe(async ({ page }) => {
+    pageBuilder.onBeforePageDelete.subscribe(async ({ page }) => {
         const contentReviewId = get(page, "settings.apw.contentReviewId");
         if (!contentReviewId) {
             return;

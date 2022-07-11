@@ -17,8 +17,7 @@ export interface CreatedBy {
 
 export enum ApwWorkflowScopeTypes {
     DEFAULT = "default",
-    PB = "pb",
-    CMS = "cms"
+    CUSTOM = "custom"
 }
 
 export enum ApwContentReviewStepStatus {
@@ -156,4 +155,17 @@ export interface ApwWorkflow extends BaseFields {
     steps: ApwWorkflowStep[];
     scope: ApwWorkflowScope;
     app: ApwWorkflowApplications;
+}
+
+export interface CmsModel {
+    name: string;
+    modelId: string;
+}
+export interface CmsEntry {
+    entryId: string;
+    title: string;
+    model: {
+        modelId: string;
+        name: string;
+    };
 }

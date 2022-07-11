@@ -179,7 +179,9 @@ module.exports.command = () => ({
                     `${chalk.green("✔")} You've successfully logged in to Webiny Control Panel.`
                 );
 
-                let projectInitialized = Boolean(context.project.config.id);
+                let projectInitialized = Boolean(
+                    context.project.config.id || process.env.WCP_PROJECT_ID
+                );
 
                 // If we have `orgId` and `projectId` in PAT's meta data, let's immediately activate the project.
                 if (pat.meta && pat.meta.orgId && pat.meta.projectId) {
