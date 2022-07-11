@@ -20,6 +20,7 @@ import { DndProvider } from "react-dnd";
 export { EditorConfig };
 export * from "./components/Editor/EditorBar";
 export * from "./components/Editor/EditorContent";
+export { EditorSidebarTab, EditorSidebarTabProps } from "./components/Editor/EditorSideBar";
 
 interface EditorPropsType {
     initializeState: RecoilRootProps["initializeState"];
