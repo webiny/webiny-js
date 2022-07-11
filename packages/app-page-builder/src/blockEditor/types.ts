@@ -5,4 +5,7 @@ export interface BlockEditorEventActionCallableState {
     block: BlockAtomType;
 }
 
-export type BlockEventActionCallable<TArgs> = EventActionCallable<TArgs, BlockEditorEventActionCallableState>;
+export type BlockEventActionCallable<TArgs> = EventActionCallable<
+    TArgs,
+    BlockEditorEventActionCallableState
+>;

@@ -5,4 +5,7 @@ export interface PageEditorEventActionCallableState {
     page: PageAtomType;
 }
 
-export type PageEventActionCallable<TArgs> = EventActionCallable<TArgs, PageEditorEventActionCallableState>;
+export type PageEventActionCallable<TArgs> = EventActionCallable<
+    TArgs,
+    PageEditorEventActionCallableState
+>;

@@ -22,7 +22,6 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
     meta,
     args = {}
 ) => {
-
     // TODO: make sure the API call is not sent if the data was not changed since the last invocation of this event.
     // See `pageEditor` for an example and feel free to copy that same logic over here.
 

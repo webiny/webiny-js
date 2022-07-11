@@ -50,9 +50,6 @@ export const deleteElementAction: EventActionCallable<DeleteElementActionArgsTyp
             activeElement: null,
             highlightElement: null
         },
-        actions: [
-            new UpdateDocumentActionEvent(),
-            new UpdateElementTreeActionEvent()
-        ]
+        actions: [new UpdateDocumentActionEvent(), new UpdateElementTreeActionEvent()]
     };
 };
