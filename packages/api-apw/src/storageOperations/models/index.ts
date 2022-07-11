@@ -1,6 +1,6 @@
 import contentModelPluginFactory from "./contentModelPluginFactory";
 import WebinyError from "@webiny/error";
-import { CmsGroupPlugin } from "@webiny/api-headless-cms/content/plugins/CmsGroupPlugin";
+import { CmsGroupPlugin } from "@webiny/api-headless-cms";
 import { createWorkflowModelDefinition } from "./workflow.model";
 import { createContentReviewModelDefinition } from "./contentReview.model";
 import { createReviewerModelDefinition } from "./reviewer.model";

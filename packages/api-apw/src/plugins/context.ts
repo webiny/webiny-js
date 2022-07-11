@@ -1,6 +1,6 @@
 import apwHooks from "./hooks";
 import WebinyError from "@webiny/error";
-import { createContentHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContext } from "~/types";
 import { createApw } from "~/crud";
@@ -25,7 +25,7 @@ const setupApwContext = (params: CreateApwContextParams) =>
             return;
         }
 
-        const contentHeadlessCmsContextPlugins = createContentHeadlessCmsContext({
+        const contentHeadlessCmsContextPlugins = createHeadlessCmsContext({
             storageOperations: context.cms.storageOperations
         });
         /**

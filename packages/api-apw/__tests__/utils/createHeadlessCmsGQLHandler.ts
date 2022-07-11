@@ -17,7 +17,7 @@ import {
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwHeadlessCmsContext, createApwGraphQL } from "~/index";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
+import { createGraphQLFields } from "@webiny/api-headless-cms";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
@@ -113,7 +113,7 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
     const headlessCmsApp = createHeadlessCmsApp({
         storageOperations: createHeadlessCmsStorageOperations({
             documentClient,
-            modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+            modelFieldToGraphQLPlugins: createGraphQLFields()
         })
     });
 
