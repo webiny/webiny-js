@@ -25,8 +25,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsPropsType> = ({ element }) => {
             .byType<PbEditorPageElementAdvancedSettingsPlugin>(
                 "pb-editor-page-element-advanced-settings"
             )
-            .filter(pl => pl.elementType === element.type || pl.elementType === "all");
-    }, [element.type]);
+            .filter(pl => pl.elementType === type || pl.elementType === "all");
+    }, [type]);
 
     const onSubmit = (formData: FormData) => {
         const newFormData = advancedSettingsPlugin.reduce((formData, pl) => {
