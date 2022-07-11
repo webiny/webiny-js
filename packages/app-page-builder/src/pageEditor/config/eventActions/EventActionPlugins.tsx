@@ -9,9 +9,10 @@ import {
 } from "./saveRevision";
 import { updatePageAction } from "./updatePageAction";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
+import { PageEditorEventActionCallableState } from "~/pageEditor/types";
 
 const EventActionHandlers = () => {
-    const eventActionHandler = useEventActionHandler();
+    const eventActionHandler = useEventActionHandler<PageEditorEventActionCallableState>();
 
     useEffect(() => {
         const offSaveRevisionAction = eventActionHandler.on(

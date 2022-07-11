@@ -1,15 +1,14 @@
 import { RecoilRootProps } from "recoil";
+import { elementsAtom, rootElementAtom } from "~/editor/recoil/modules";
+import { flattenElements } from "~/editor/helpers";
+import omit from "lodash/omit";
 import {
-    elementsAtom,
     pageAtom,
     PageAtomType,
     PageWithContent,
     revisionsAtom,
-    RevisionsAtomType,
-    rootElementAtom
-} from "~/editor/recoil/modules";
-import { flattenElements } from "~/editor/helpers";
-import omit from "lodash/omit";
+    RevisionsAtomType
+} from "~/pageEditor/state";
 
 export const createStateInitializer = (
     page: PageWithContent | null,

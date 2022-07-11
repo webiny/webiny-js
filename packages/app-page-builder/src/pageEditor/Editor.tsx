@@ -23,7 +23,7 @@ import createElementPlugin from "~/admin/utils/createElementPlugin";
 import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import dotProp from "dot-prop-immutable";
 import { PbErrorResponse } from "~/types";
-import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
+import { PageWithContent, RevisionsAtomType } from "~/pageEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
 import { PageEditorConfig } from "./config/PageEditorConfig";
 
@@ -46,7 +46,7 @@ const extractPageErrorData = (data: any): any => {
     return getPageData.error || {};
 };
 
-const Editor: React.FC = () => {
+export const PageEditor: React.FC = () => {
     const client = useApolloClient();
     const { history, params } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -152,5 +152,3 @@ const Editor: React.FC = () => {
         </React.Suspense>
     );
 };
-
-export default Editor;

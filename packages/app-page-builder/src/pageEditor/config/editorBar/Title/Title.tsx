@@ -14,7 +14,7 @@ import {
 } from "./Styled";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { usePage } from "~/pageEditor/hooks/usePage";
-import { PageAtomType } from "~/editor/recoil/modules";
+import { PageAtomType } from "~/pageEditor/state";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { EditorBar } from "~/editor";
 

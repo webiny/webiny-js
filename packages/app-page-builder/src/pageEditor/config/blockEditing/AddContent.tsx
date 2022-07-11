@@ -6,8 +6,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonFloating } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "~/editor/assets/icons/add.svg";
 import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
-// TODO: move this selector into a hook or, at the very least, into this plugin
-import { elementsInContentTotalSelector } from "~/editor/recoil/modules/page/selectors/elementsInContentTotalSelector";
+import { elementsInContentTotalSelector } from "~/pageEditor/state";
 import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
 
 const pulse = keyframes`

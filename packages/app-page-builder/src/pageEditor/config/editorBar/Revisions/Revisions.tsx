@@ -6,8 +6,8 @@ import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as DownButton } from "./round-arrow_drop_down-24px.svg";
-import { useRevisions } from "~/editor/hooks/useRevisions";
-import { RevisionItemAtomType } from "~/editor/recoil/modules";
+import { useRevisions } from "~/pageEditor/hooks/useRevisions";
+import { RevisionItemAtomType } from "~/pageEditor/state";
 import { Compose, HigherOrderComponent } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 

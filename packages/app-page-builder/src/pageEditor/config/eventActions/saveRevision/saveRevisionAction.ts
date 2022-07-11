@@ -3,8 +3,8 @@ import lodashIsEqual from "lodash/isEqual";
 import lodashDebounce from "lodash/debounce";
 import { SaveRevisionActionArgsType } from "./types";
 import { ToggleSaveRevisionStateActionEvent } from "./event";
-import { EventActionCallable } from "~/types";
-import { PageAtomType } from "~/editor/recoil/modules";
+import { PageAtomType } from "~/pageEditor/state";
+import { PageEventActionCallable } from "~/pageEditor/types";
 
 interface PageRevisionType extends Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> {
     category: string;
@@ -26,7 +26,7 @@ const triggerOnFinish = (args?: SaveRevisionActionArgsType): void => {
 // TODO @ts-refactor not worth it
 let debouncedSave: any = null;
 
-export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType> = async (
+export const saveRevisionAction: PageEventActionCallable<SaveRevisionActionArgsType> = async (
     state,
     meta,
     args = {}

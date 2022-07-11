@@ -1,5 +1,5 @@
 import { useRecoilState } from "recoil";
-import { revisionsAtom } from "~/editor/recoil/modules";
+import { revisionsAtom } from "../state";
 
 export function useRevisions() {
     return useRecoilState(revisionsAtom);

@@ -1,38 +1,43 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Compose, HigherOrderComponent } from "@webiny/app-admin";
 import {
     EventActionHandlerProvider,
     EventActionHandlerProviderProps,
-    GetCallableState,
-    SaveCallableResults
+    GetCallableState
 } from "~/editor/contexts/EventActionHandlerProvider";
-import { pageAtom, PageAtomType, revisionsAtom, RevisionsAtomType } from "~/editor/recoil/modules";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { usePage } from "~/pageEditor/hooks/usePage";
+import { useRevisions } from "~/pageEditor/hooks/useRevisions";
+import { PageAtomType, RevisionsAtomType } from "~/pageEditor/state";
+import { PageEditorEventActionCallableState } from "~/pageEditor/types";
 
-const PbEventActionHandlerHOC: HigherOrderComponent<
-    EventActionHandlerProviderProps
-> = Component => {
+type ProviderProps = EventActionHandlerProviderProps<PageEditorEventActionCallableState>;
+
+const PbEventActionHandlerHOC: HigherOrderComponent<ProviderProps> = Component => {
     return function PbEventActionHandlerProvider(props) {
         const pageAtomValueRef = useRef<PageAtomType>();
         const revisionsAtomValueRef = useRef<RevisionsAtomType>();
-        const [pageAtomValue, setPageAtomValue] = useRecoilState(pageAtom);
-        const revisionsAtomValue = useRecoilValue(revisionsAtom);
+        const [pageAtomValue, setPageAtomValue] = usePage();
+        const [revisionsAtomValue] = useRevisions();
 
         useEffect(() => {
             pageAtomValueRef.current = pageAtomValue;
             revisionsAtomValueRef.current = revisionsAtomValue;
         }, [pageAtomValue, revisionsAtomValue]);
 
-        const saveCallablesResults: SaveCallableResults = useCallback(
-            next =>
-                ({ state, history = true }) => {
-                    const res = next({ state, history });
-                    if (res.state.page) {
-                        setPageAtomValue(res.state.page);
-                    }
+        const saveCallablesResults: ProviderProps["saveCallablesResults"] = useMemo(
+            () => [
+                ...(props.saveCallablesResults || []),
+                next => {
+                    return ({ state, history = true }) => {
+                        const res = next({ state, history });
+                        if (res.state.page) {
+                            setPageAtomValue(res.state.page);
+                        }
 
-                    return { state, history };
-                },
+                        return { state, history };
+                    };
+                }
+            ],
             []
         );
 
@@ -50,7 +55,7 @@ const PbEventActionHandlerHOC: HigherOrderComponent<
             <Component
                 {...props}
                 getCallableState={[...(props.getCallableState || []), getCallableState]}
-                saveCallablesResults={[...(props.saveCallablesResults || []), saveCallablesResults]}
+                saveCallablesResults={saveCallablesResults}
             />
         );
     };

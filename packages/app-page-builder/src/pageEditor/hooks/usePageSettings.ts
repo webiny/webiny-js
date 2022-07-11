@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { pageAtom } from "~/editor/recoil/modules";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { pageSettingsStateAtom } from "~/pageEditor/config/editorBar/PageSettings/state";
+import { usePage } from "~/pageEditor/hooks/usePage";
 
 export type UsePageSettings = ReturnType<typeof usePageSettings>;
 
 export function usePageSettings() {
     const [activeSection, setActiveSection] = useState<string | null>(null);
     const eventActionHandler = useEventActionHandler();
-    const pageData = useRecoilValue(pageAtom);
+    const [pageData] = usePage();
     const [, setSettingsState] = useRecoilState(pageSettingsStateAtom);
 
     const { showSnackbar } = useSnackbar();

@@ -1,13 +1,11 @@
 import { SaveRevisionActionEvent } from "./saveRevision";
-import { EventActionCallable } from "~/types";
 import { UpdateDocumentActionArgsType } from "~/editor/recoil/actions/updateDocument/types";
-import { PageAtomType } from "~/editor/recoil/modules";
+import { PageAtomType } from "~/pageEditor/state";
+import { PageEventActionCallable } from "~/pageEditor/types";
 
-export const updatePageAction: EventActionCallable<UpdateDocumentActionArgsType<PageAtomType>> = (
-    state,
-    _,
-    args
-) => {
+export const updatePageAction: PageEventActionCallable<
+    UpdateDocumentActionArgsType<PageAtomType>
+> = (state, _, args) => {
     return {
         state: {
             page: {

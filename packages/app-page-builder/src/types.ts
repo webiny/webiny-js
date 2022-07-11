@@ -689,15 +689,16 @@ export type PbRenderElementPluginArgs = {
 };
 
 // ============== EVENT ACTION HANDLER ================= //
-export interface EventActionHandlerCallableState extends PbState {
+// TODO: at some point, convert this into an interface, and use module augmentation to add new properties.
+export type EventActionHandlerCallableState<TState = PbState> = PbState<TState> & {
     getElementById(id: string): Promise<PbEditorElement>;
     getElementTree(element?: PbEditorElement): Promise<any>;
-}
+};
 
-export interface EventActionHandler {
+export interface EventActionHandler<TCallableState = unknown> {
     on(
         target: EventActionHandlerTarget,
-        callable: EventActionCallable
+        callable: EventActionCallable<any, TCallableState>
     ): EventActionHandlerUnregister;
     trigger<T extends EventActionHandlerCallableArgs>(
         ev: EventAction<T>
@@ -727,8 +728,8 @@ export interface EventActionHandlerConfig {
     maxEventActionsNesting: number;
 }
 
-export interface EventActionHandlerActionCallableResponse {
-    state?: Partial<EventActionHandlerCallableState>;
+export interface EventActionHandlerActionCallableResponse<TState = unknown> {
+    state?: Partial<EventActionHandlerCallableState<TState>>;
     actions: BaseEventAction[];
 }
 
@@ -740,10 +741,13 @@ export interface EventActionHandlerCallableArgs {
     [key: string]: any;
 }
 
-export interface EventActionCallable<T extends EventActionHandlerCallableArgs = any> {
-    (state: EventActionHandlerCallableState, meta: EventActionHandlerMeta, args?: T):
-        | EventActionHandlerActionCallableResponse
-        | Promise<EventActionHandlerActionCallableResponse>;
+export interface EventActionCallable<
+    TArgs extends EventActionHandlerCallableArgs = any,
+    TState = PbState
+> {
+    (state: EventActionHandlerCallableState<TState>, meta: EventActionHandlerMeta, args?: TArgs):
+        | EventActionHandlerActionCallableResponse<TState>
+        | Promise<EventActionHandlerActionCallableResponse<TState>>;
 }
 
 /**
