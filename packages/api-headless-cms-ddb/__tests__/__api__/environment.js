@@ -3,8 +3,7 @@ const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 
-const modelFieldToGraphQLPlugins =
-    require("@webiny/api-headless-cms/content/plugins/graphqlFields").default;
+const modelFieldToGraphQLPlugins = require("@webiny/api-headless-cms/graphqlFields").default;
 /**
  * For this to work it must load plugins that have already been built
  */
