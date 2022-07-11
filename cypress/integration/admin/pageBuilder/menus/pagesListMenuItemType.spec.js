@@ -53,17 +53,30 @@ describe("Menus Module", () => {
         cy.findByTestId("pb.menu.new.listitem.button.save").click().wait(200);
         cy.findByText("Value is required.").should("exist");
         cy.findByTestId("pb.menu.new.listitem.category").type(`Static`);
+        cy.get("[role='listbox'] > [role='option']").click();
+
         cy.findByTestId("pb.menu.new.listitem.sortby").select("Title");
         cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Descending");
 
-        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
-        cy.findByText(`page-${id}-0`).click();
+        // cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
+        // cy.findByText(`page-${id}-0`).click();
+
+        // cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
+        // cy.findByText(`page-${id}-1`).click();
 
         cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
-        cy.findByText(`page-${id}-1`).click();
 
-        cy.findByTestId("pb.menu.new.listitem.tags").type(`some-custom-tag`);
-        cy.findByText(`some-custom-tag`).click();
+        cy.get("[role='listbox'] > [role='option']").click();
+
+        cy.findByTestId("pb.menu.new.listitem.tags")
+            .type(`page-${id}-`)
+            .type("{downArrow}")
+            .click();
+
+        cy.findByTestId("pb.menu.new.listitem.tags")
+            .type(`some-custom-tag`)
+            .type("{downArrow}")
+            .click();
         cy.findByTestId("pb.menu.new.listitem.tagsrule").select("Must include any of the tags");
 
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
@@ -94,6 +107,8 @@ describe("Menus Module", () => {
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(`Main Menu`).click({ force: true });
         });
+
+        cy.wait(500);
 
         cy.findByTestId(`pb-menu-item-render-added-menu-${id}`).within(() => {
             cy.findByTestId("pb-edit-icon-button").click();

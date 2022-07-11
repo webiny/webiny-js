@@ -329,7 +329,6 @@ export class MultiAutoComplete extends React.Component<
                                     item,
                                     className: classNames(itemClassNames)
                                 })}
-                                data-testid="pb.menu.tags.autocomplete.li"
                             >
                                 {renderItem.call(this, item, index)}
                             </li>

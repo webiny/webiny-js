@@ -51,9 +51,13 @@ context(
             cy.visit("/page-builder/pages");
             // Select page
             cy.findByTestId("default-data-list").within(() => {
-                cy.findByText(pageTitle1)
-                    .trigger("mouseover") // This is needed for click to work in CI
-                    .click({ force: true });
+                cy.get("li")
+                    .first()
+                    .within(() => {
+                        cy.findByText(pageTitle1)
+                            .trigger("mouseover") // This is needed for click to work in CI
+                            .click({ force: true });
+                    });
             });
             // Create new revision
             cy.findByTestId("pb-page-details").within(() => {
@@ -65,7 +69,7 @@ context(
             cy.get(`input[value="${pageTitle1}"]`).clear().type(pageTitle2).blur();
             cy.findByText("Page title updated successfully!");
             // Publish page
-            cy.findByText("Publish changes").click();
+            cy.findByTestId("pb.editor.header.publish.button").click();
             cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
                 cy.findByTestId("confirmationdialog-confirm-action").click();
             });
