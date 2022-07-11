@@ -1,11 +1,12 @@
-import { UpdateElementTreeActionEvent, SaveRevisionActionEvent } from "..";
+import { UpdateElementTreeActionEvent } from "..";
 import { EventActionCallable } from "~/types";
 import { flattenElements } from "~/editor/helpers";
 import { UpdateElementActionArgsType } from "./types";
+import { UpdateDocumentActionEvent } from "~/editor/recoil/actions/updateDocument";
 
 export const updateElementAction: EventActionCallable<UpdateElementActionArgsType> = (
-    _,
-    { client },
+    _state,
+    _meta,
     args
 ) => {
     if (!args) {
@@ -13,16 +14,14 @@ export const updateElementAction: EventActionCallable<UpdateElementActionArgsTyp
             actions: []
         };
     }
-    const { element, history, triggerUpdateElementTree, debounce, onFinish } = args;
+
+    const { element, triggerUpdateElementTree, onFinish, debounce, history } = args;
     const actions = [];
-    if (history === true) {
-        if (!client) {
-            throw new Error(
-                "You cannot save revision while updating if you do not pass client arg."
-            );
-        }
-        actions.push(new SaveRevisionActionEvent({ debounce, onFinish }));
+
+    if (history) {
+        actions.push(new UpdateDocumentActionEvent({ onFinish, debounce, history }));
     }
+
     // Add "UpdateElementTreeActionEvent" to actions.
     if (triggerUpdateElementTree) {
         actions.push(new UpdateElementTreeActionEvent());

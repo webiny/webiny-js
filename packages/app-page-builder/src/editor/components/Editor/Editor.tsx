@@ -1,22 +1,14 @@
 import React, { useEffect } from "react";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useEventActionHandler } from "../../hooks/useEventActionHandler";
-import { EventActionHandler, PbEditorEventActionPlugin } from "../../../types";
-import {
-    rootElementAtom,
-    PageAtomType,
-    revisionsAtom,
-    RevisionsAtomType,
-    uiAtom
-} from "../../recoil/modules";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { DndProvider } from "react-dnd";
+import { EventActionHandler, PbEditorEventActionPlugin } from "~/types";
+import { rootElementAtom, uiAtom } from "../../recoil/modules";
+import { useRecoilValue } from "recoil";
 import { useKeyHandler } from "../../hooks/useKeyHandler";
 import { plugins } from "@webiny/plugins";
 import "./Editor.scss";
 // Components
-import EditorBar from "./Bar";
+import { EditorBar } from "~/editor";
 import EditorToolbar from "./Toolbar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
@@ -25,6 +17,7 @@ import EditorSideBar from "./EditorSideBar";
 
 type PluginRegistryType = Map<string, () => void>;
 
+// TODO: replace this with the new <EditorConfig> component
 const registerPlugins = (handler: EventActionHandler): PluginRegistryType => {
     const registry = new Map();
     const editorEventActionPlugins = plugins.byType<PbEditorEventActionPlugin>(
@@ -69,16 +62,11 @@ const triggerActionButtonClick = (name: string): void => {
     element.click();
 };
 
-interface EditorPropsType {
-    page: PageAtomType;
-    revisions: RevisionsAtomType;
-}
-export const Editor: React.FC<EditorPropsType> = ({ revisions }) => {
+export const Editor: React.FC = () => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { isDragging, isResizing } = useRecoilValue(uiAtom);
 
-    const setRevisionsAtomValue = useSetRecoilState(revisionsAtom);
     const rootElementId = useRecoilValue(rootElementAtom);
 
     const firstRender = React.useRef<boolean>(true);
@@ -95,7 +83,6 @@ export const Editor: React.FC<EditorPropsType> = ({ revisions }) => {
         });
         registeredPlugins.current = registerPlugins(eventActionHandler);
 
-        setRevisionsAtomValue(revisions);
         return () => {
             removeKeyHandler("mod+z");
             removeKeyHandler("mod+shift+z");
@@ -117,15 +104,13 @@ export const Editor: React.FC<EditorPropsType> = ({ revisions }) => {
         "pb-editor-resizing": isResizing
     };
     return (
-        <DndProvider backend={HTML5Backend}>
-            <div className={classSet(classes)}>
-                <EditorBar />
-                <EditorToolbar />
-                <EditorContent />
-                <EditorSideBar />
-                <Dialogs />
-                <DragPreview />
-            </div>
-        </DndProvider>
+        <div className={classSet(classes)}>
+            <EditorBar />
+            <EditorToolbar />
+            <EditorContent />
+            <EditorSideBar />
+            <Dialogs />
+            <DragPreview />
+        </div>
     );
 };
