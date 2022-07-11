@@ -5,7 +5,7 @@ context("I18N app", () => {
         cy.visit("/i18n/locales");
         // Delete new locale
         cy.findByTestId("default-data-list").within(() => {
-            cy.get("div")
+            cy.get("li")
                 .first()
                 .within(() => {
                     cy.findByTestId("default-data-list.delete").click({ force: true });

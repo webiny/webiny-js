@@ -28,7 +28,7 @@ context("Menus Module", () => {
 
         // Test "Page List".
         cy.get("[data-testid='pb.menu.create.items.button'] > button").click();
-        cy.getByTestId("pb.menu.create.items.button").within(() => {
+        cy.findByTestId("pb.menu.create.items.button").within(() => {
             cy.findByText("Page list").click();
             cy.findByLabelText("Title").type(`Page List ${id}`);
         });
