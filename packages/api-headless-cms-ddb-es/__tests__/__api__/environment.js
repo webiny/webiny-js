@@ -16,8 +16,7 @@ const {
     createElasticsearchClient
 } = require("@webiny/project-utils/testing/elasticsearch/createClient");
 
-const modelFieldToGraphQLPlugins =
-    require("@webiny/api-headless-cms/content/plugins/graphqlFields").default;
+const modelFieldToGraphQLPlugins = require("@webiny/api-headless-cms/graphqlFields").default;
 /**
  * For this to work it must load plugins that have already been built
  */

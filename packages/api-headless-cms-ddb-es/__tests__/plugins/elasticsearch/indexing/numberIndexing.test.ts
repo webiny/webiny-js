@@ -1,9 +1,10 @@
 import numberIndexing from "~/elasticsearch/indexing/numberIndexing";
+import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 describe("numberIndexing", () => {
-    const plugin = numberIndexing();
+    const plugin = numberIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
 
-    const numbers = [
+    const numbers: any[] = [
         [1, 1],
         [4382, 4382],
         [3924032, 3924032],
@@ -27,7 +28,7 @@ describe("numberIndexing", () => {
 
         expect(result.value).toEqual(expected);
     });
-    const strings = [
+    const strings: any[] = [
         ["1", 1],
         ["4382", 4382],
         ["3924032", 3924032],

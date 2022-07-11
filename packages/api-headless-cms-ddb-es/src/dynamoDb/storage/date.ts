@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { StorageTransformPlugin } from "@webiny/api-headless-cms/content/plugins/storage/StorageTransformPlugin";
+import { StorageTransformPlugin } from "@webiny/api-headless-cms";
 
 const excludeTypes = ["time", "dateTimeWithTimezone"];
 
