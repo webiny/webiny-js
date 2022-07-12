@@ -17,14 +17,18 @@ import {
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwHeadlessCmsContext, createApwGraphQL } from "~/index";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
+import {
+    createGraphQLFields,
+    createHeadlessCmsContext,
+    createHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
-import { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 import {
     CREATE_CONTENT_REVIEW_MUTATION,
     DELETE_CONTENT_REVIEW_MUTATION,
@@ -63,17 +67,12 @@ import {
 } from "./graphql/cms.entry";
 import { contextSecurity, contextCommon } from "./context";
 
-export interface CreateHeadlessCmsAppParams {
-    storageOperations: HeadlessCmsStorageOperations;
-}
-
 export interface CreateHeadlessCmsGQLHandlerParams {
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
-    createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
 
 export interface InvokeParams {
@@ -105,15 +104,15 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
         name: "Root",
         parent: null
     };
-    const { permissions, identity, plugins = [], createHeadlessCmsApp } = params;
+    const { permissions, identity, plugins = [] } = params;
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
      */
-    const headlessCmsApp = createHeadlessCmsApp({
+    const headlessCmsApp = createHeadlessCmsContext({
         storageOperations: createHeadlessCmsStorageOperations({
             documentClient,
-            modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+            modelFieldToGraphQLPlugins: createGraphQLFields()
         })
     });
 
@@ -132,6 +131,7 @@ export const createHeadlessCmsGQLHandler = (params: CreateHeadlessCmsGQLHandlerP
             i18nDynamoDbStorageOperations(),
             mockLocalesPlugins(),
             ...headlessCmsApp,
+            createHeadlessCmsGraphQL(),
             createApwHeadlessCmsContext({
                 storageOperations: ops.storageOperations
             }),

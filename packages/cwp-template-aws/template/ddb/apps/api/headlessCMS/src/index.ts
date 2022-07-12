@@ -8,11 +8,11 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import securityPlugins from "./security";
 import {
-    createContentHeadlessCmsContext,
-    createContentHeadlessCmsGraphQL
+    createGraphQLFields,
+    createHeadlessCmsGraphQL,
+    createHeadlessCmsContext
 } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import logsPlugins from "@webiny/handler-logs";
 /**
  * APW
@@ -42,13 +42,13 @@ export const handler = createHandler({
         securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        createContentHeadlessCmsContext({
+        createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
-                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+                modelFieldToGraphQLPlugins: createGraphQLFields()
             })
         }),
-        createContentHeadlessCmsGraphQL({ debug }),
+        createHeadlessCmsGraphQL({ debug }),
         createApwHeadlessCmsContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),

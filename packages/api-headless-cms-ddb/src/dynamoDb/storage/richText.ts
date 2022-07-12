@@ -1,6 +1,6 @@
 import jsonpack from "jsonpack";
 import WebinyError from "@webiny/error";
-import { StorageTransformPlugin } from "@webiny/api-headless-cms/content/plugins/storage/StorageTransformPlugin";
+import { StorageTransformPlugin } from "@webiny/api-headless-cms";
 
 /**
  * Remove when jsonpack gets PR with a fix merged

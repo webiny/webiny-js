@@ -1,6 +1,6 @@
 import { CmsModel, CmsGroup } from "~/types";
 import models from "./mocks/contentModels";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { useBugManageHandler } from "../utils/useBugManageHandler";
 
 describe("predefined values", () => {
@@ -10,7 +10,7 @@ describe("predefined values", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     const setupContentModelGroup = async (): Promise<CmsGroup> => {
         const [createCMG] = await createContentModelGroupMutation({

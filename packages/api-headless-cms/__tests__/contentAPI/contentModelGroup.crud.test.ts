@@ -1,6 +1,6 @@
 import { identity } from "../utils/helpers";
-import { toSlug } from "~/utils";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { toSlug } from "~/utils/toSlug";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
@@ -60,7 +60,7 @@ describe("Cms Group crud test", () => {
         createContentModelGroupMutation,
         updateContentModelGroupMutation,
         deleteContentModelGroupMutation
-    } = useContentGqlHandler({ path: "manage/en-us" });
+    } = useGraphQLHandler({ path: "manage/en-us" });
 
     test("content model group create, read, update, delete and list all at once", async () => {
         const updatedContentModelGroups = [];
@@ -366,7 +366,7 @@ describe("Cms Group crud test", () => {
         }
 
         // Create listGroups query with permission for only specific groups
-        const { listContentModelGroupsQuery: listGroups } = useContentGqlHandler({
+        const { listContentModelGroupsQuery: listGroups } = useGraphQLHandler({
             path: "manage/en-us",
             permissions: createPermissions([groups[0]])
         });

@@ -3,8 +3,7 @@ const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 
-const modelFieldToGraphQLPlugins =
-    require("@webiny/api-headless-cms/content/plugins/graphqlFields").default;
+const { createGraphQLFields } = require("@webiny/api-headless-cms");
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -48,7 +47,7 @@ class CmsTestEnvironment extends NodeEnvironment {
                     const { plugins: testPlugins = [] } = params;
                     return createStorageOperations({
                         documentClient,
-                        modelFieldToGraphQLPlugins: modelFieldToGraphQLPlugins(),
+                        modelFieldToGraphQLPlugins: createGraphQLFields(),
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
                         plugins: testPlugins
                     });

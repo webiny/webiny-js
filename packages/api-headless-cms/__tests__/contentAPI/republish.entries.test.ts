@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -24,7 +24,7 @@ describe("Republish entries", () => {
         updateContentModelMutation,
         createContentModelGroupMutation,
         until
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     const { createCategory, publishCategory, republishCategory } =
         useCategoryManageHandler(manageOpts);
