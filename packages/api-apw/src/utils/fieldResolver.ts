@@ -1,6 +1,6 @@
 import pick from "lodash/pick";
 import { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
-import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms/content/plugins/utils/entryStorage";
+import { entryFieldFromStorageTransform } from "@webiny/api-headless-cms";
 import { ApwBaseFields } from "~/types";
 
 interface Transformer {

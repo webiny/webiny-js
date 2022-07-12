@@ -1,17 +1,19 @@
-import cmsFieldTypePlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
+import { createGraphQLFields } from "@webiny/api-headless-cms";
 import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing";
 import objectIndexing from "~/elasticsearch/indexing/objectIndexing";
 import elasticsearchIndexingPlugins from "~/elasticsearch/indexing";
+import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 const indexingPlugins = elasticsearchIndexingPlugins();
-const fieldTypePlugins = cmsFieldTypePlugins();
+const fieldTypePlugins = createGraphQLFields();
 
 const getFieldIndexPlugin = (fieldType: string) => {
     return indexingPlugins.find(pl => pl.fieldType === fieldType) || defaultIndexingPlugin();
 };
 
 const getFieldTypePlugin = (fieldType: string) => {
-    return fieldTypePlugins.find(pl => pl.fieldType === fieldType);
+    return fieldTypePlugins.find(pl => pl.fieldType === fieldType) as CmsModelFieldToGraphQLPlugin;
 };
 
 const objectField = {
@@ -123,7 +125,7 @@ const expectedRawValue = {
 
 describe("objectIndexing", () => {
     test("toIndex should recursively transform an object", () => {
-        const plugin = objectIndexing();
+        const plugin = objectIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.toIndex({
             value: input,
             rawValue: input,
@@ -139,7 +141,7 @@ describe("objectIndexing", () => {
     });
 
     test("fromIndex should recursively transform an object", () => {
-        const plugin = objectIndexing();
+        const plugin = objectIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.fromIndex({
             value: expectedValue,
             rawValue: expectedRawValue,

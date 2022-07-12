@@ -1,5 +1,5 @@
 import { CmsGroup } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -44,7 +44,7 @@ describe("READ - resolvers - api key", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     beforeEach(async () => {
         const [createCMG] = await createContentModelGroupMutation({

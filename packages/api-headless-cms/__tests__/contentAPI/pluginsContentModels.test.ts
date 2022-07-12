@@ -1,7 +1,7 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { until } from "./../utils/helpers";
 import { CmsGroup, CmsModel } from "~/types";
-import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
+import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 
 const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
@@ -118,7 +118,7 @@ const GET_PRODUCT = /* GraphQL */ `
 `;
 
 describe("content model plugins", () => {
-    const { storageOperations } = useContentGqlHandler({
+    const { storageOperations } = useGraphQLHandler({
         path: "manage/en-US"
     });
 
@@ -145,7 +145,7 @@ describe("content model plugins", () => {
             createContentModelGroupMutation,
             updateContentModelMutation,
             deleteContentModelMutation
-        } = useContentGqlHandler({
+        } = useGraphQLHandler({
             path: "manage/en-US",
             plugins: [contentModelPlugin]
         });
@@ -242,7 +242,7 @@ describe("content model plugins", () => {
     });
 
     test("content model must be returned in the content models list and get queries", async () => {
-        const { listContentModelsQuery, getContentModelQuery } = useContentGqlHandler({
+        const { listContentModelsQuery, getContentModelQuery } = useGraphQLHandler({
             path: "manage/en-US",
             plugins: [contentModelPlugin]
         });
@@ -389,7 +389,7 @@ describe("content model plugins", () => {
     });
 
     test("must be able to perform basic CRUD operations with content models registered via plugin", async () => {
-        const { invoke } = useContentGqlHandler({
+        const { invoke } = useGraphQLHandler({
             path: "manage/en-US",
             plugins: [contentModelPlugin]
         });
@@ -577,7 +577,7 @@ describe("content model plugins", () => {
             createContentModelMutation,
             createContentModelGroupMutation,
             listContentModelsQuery
-        } = useContentGqlHandler({
+        } = useGraphQLHandler({
             path: "manage/en-US",
             plugins: [contentModelPlugin]
         });

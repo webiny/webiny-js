@@ -1,7 +1,7 @@
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { assignEntryEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 
 describe("contentEntryHooks", () => {
@@ -12,7 +12,7 @@ describe("contentEntryHooks", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     const setupContentModel = async (model?: CmsModel) => {
         if (!model) {

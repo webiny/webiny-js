@@ -1,5 +1,5 @@
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { useFruitReadHandler } from "../utils/useFruitReadHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -66,7 +66,7 @@ describe("filtering", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const mainManager = useContentGqlHandler(manageOpts);
+    const mainManager = useGraphQLHandler(manageOpts);
 
     const { until, createFruit, publishFruit } = useFruitManageHandler({
         ...manageOpts

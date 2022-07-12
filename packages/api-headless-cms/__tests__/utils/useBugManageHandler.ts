@@ -1,5 +1,4 @@
-import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableParams } from "./useGqlHandler";
+import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
 
 const bugFields = `
     id
@@ -140,10 +139,8 @@ const unpublishBugMutation = /* GraphQL */ `
     }
 `;
 
-export const useBugManageHandler = (
-    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
-) => {
-    const contentHandler = useContentGqlHandler(params);
+export const useBugManageHandler = (params: GraphQLHandlerParams) => {
+    const contentHandler = useGraphQLHandler(params);
 
     return {
         ...contentHandler,
