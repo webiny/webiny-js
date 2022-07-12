@@ -79,13 +79,13 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        createHeadlessCmsGraphQL(),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 modelFieldToGraphQLPlugins: createGraphQLFields()
             })
         }),
+        createHeadlessCmsGraphQL(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
