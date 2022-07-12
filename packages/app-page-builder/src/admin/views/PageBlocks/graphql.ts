@@ -1,6 +1,9 @@
 import gql from "graphql-tag";
 
+import { PbPageBlock, PbErrorResponse } from "~/types";
+
 import { PAGE_BLOCK_CATEGORY_BASE_FIELDS } from "~/admin/views/BlockCategories/graphql";
+export { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 
 const PAGE_BLOCK_BASE_FIELDS = `
     id
@@ -42,12 +45,21 @@ export const LIST_PAGE_BLOCKS_AND_CATEGORIES = gql`
         }
     }
 `;
-
+/**
+ * ##############################
+ * List Page Blocks Query
+ */
+export interface ListPageBlocksQueryResponse {
+    pageBuilder: {
+        data?: PbPageBlock[];
+        error?: PbErrorResponse;
+    };
+}
 export interface ListPageBlocksQueryVariables {
     blockCategory: string;
 }
 export const LIST_PAGE_BLOCKS = gql`
-    query ListPageBlocks($blockCategory: String!) {
+    query ListPageBlocks($blockCategory: String) {
         pageBuilder {
             listPageBlocks(where: {blockCategory:$blockCategory}) {
                 data {
@@ -56,6 +68,85 @@ export const LIST_PAGE_BLOCKS = gql`
                 error {
                     code
                     data
+                    message
+                }
+            }
+        }
+    }
+`;
+/**
+ * ###########################
+ * Create Page Block Mutation Response
+ */
+export interface CreatePageBlockMutationResponse {
+    pageBuilder: {
+        pageBlock: {
+            data: PbPageBlock | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface CreatePageBlockMutationVariables {
+    data: PbPageBlock;
+}
+export const CREATE_PAGE_BLOCK = gql`
+    mutation CreatePageBlock($data: PbCreatePageBlockInput!){
+        pageBuilder {
+            pageBlock: createPageBlock(data: $data) {
+                data {
+                    ${PAGE_BLOCK_BASE_FIELDS}
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
+/**
+ * ###########################
+ * Update Page Block Mutation Response
+ */
+export interface UpdatePageBlockMutationResponse {
+    pageBuilder: {
+        pageBlock: {
+            data: PbPageBlock | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+export interface UpdatePageBlockMutationVariables {
+    id: string;
+    data: {
+        name: string;
+        blockCategory: string;
+    };
+}
+export const UPDATE_PAGE_BLOCK = gql`
+    mutation UpdatePageBlock($id: ID!, $data: PbUpdatePageBlockInput!){
+        pageBuilder {
+            pageBlock: updatePageBlock(id: $id, data: $data) {
+                data {
+                    ${PAGE_BLOCK_BASE_FIELDS}
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export const DELETE_PAGE_BLOCK = gql`
+    mutation DeletePageBlock($id: ID!) {
+        pageBuilder {
+            deletePageBlock(id: $id) {
+                error {
+                    code
                     message
                 }
             }
