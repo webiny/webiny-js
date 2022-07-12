@@ -32,9 +32,7 @@ context("Menus Module", () => {
             cy.findByText("Page list").click();
         });
         cy.findByTestId("pb.menu.new.listitem.title").type(`Page List ${id}`);
-        cy.findByTestId("pb.menu.new.listitem.button.save")
-            .click()
-            .wait(200);
+        cy.findByTestId("pb.menu.new.listitem.button.save").click().wait(200);
         cy.findByText("Value is required.").should("exist");
         cy.findByTestId("pb.menu.new.listitem.category").type(`Static`);
         cy.findByText("Static").click();
@@ -52,9 +50,7 @@ context("Menus Module", () => {
             cy.findByText("Page").click();
         });
         cy.findAllByTestId("pb.menu.new.pageitem.title").type(`Single Page Item ${id}`);
-        cy.findByTestId("pb.menu.new.pageitem.button.save").click()
-            .click()
-            .wait(200);
+        cy.findByTestId("pb.menu.new.pageitem.button.save").click().click().wait(200);
         cy.findByText("Value is required.").should("exist");
         cy.findByTestId("pb.menu.new.pageitem.page").type(`Menus`);
         cy.findByText(`Menus-Module-Welcome-${id}`).click();
@@ -67,9 +63,7 @@ context("Menus Module", () => {
         });
         cy.findByTestId("pb.menu.new.link.title").type(`Simple Link Item ${id}`);
         cy.findByTestId("pb.menu.new.link.url").type(`https://123`);
-        cy.findByTestId("pb.menu.new.link.button.save").click()
-            .click()
-            .wait(200);
+        cy.findByTestId("pb.menu.new.link.button.save").click().click().wait(200);
         cy.findByText("Value must be a valid URL.").should("exist");
         cy.findByTestId("pb.menu.new.link.url").clear().type(`https://${id}.com`);
         cy.findByTestId("pb.menu.new.link.button.save").click();
@@ -79,9 +73,7 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.create.items.button").within(() => {
             cy.findByText("Folder").click();
         });
-        cy.findByTestId("pb.menu.new.folder.button.save")
-            .click()
-            .wait(200);
+        cy.findByTestId("pb.menu.new.folder.button.save").click().wait(200);
         cy.findByText("Value is required.").should("exist");
         cy.findByTestId("pb.menu.new.folder.title").type(`Simple Folder Item ${id}`);
         cy.findByTestId("pb.menu.new.folder.button.save").click();
@@ -97,7 +89,7 @@ context("Menus Module", () => {
         cy.findByText(`Single Page Item ${id}`).should("exist");
         cy.findByText(`Simple Link Item ${id}`).should("exist");
         cy.findByText(`Simple Folder Item ${id}`).should("exist");
-        
+
         // Delete Menu
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li")
