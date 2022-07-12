@@ -22,7 +22,7 @@ interface EntryError {
 
 export interface OnEntryPublishResponse {
     model: CmsModel;
-    entry: CmsEditorContentEntry;
+    entry: CmsEditorContentEntry | undefined;
     id: string;
     options: PublishEntryOptions;
     // TODO: Maybe a different input and output type for compose.

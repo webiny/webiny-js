@@ -70,7 +70,7 @@ const OnEntryPublish: React.FC = () => {
                 error
             };
         }
-        const { error } = response.data.content;
+        const { data, error } = response.data.content;
         if (error) {
             return {
                 error
@@ -78,7 +78,7 @@ const OnEntryPublish: React.FC = () => {
         }
 
         return {
-            data: true,
+            entry: data,
             error: null
         };
     };
