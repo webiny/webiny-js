@@ -22,11 +22,7 @@ import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
-import {
-    createHeadlessCmsGraphQL,
-    createHeadlessCmsContext,
-    createGraphQLFields
-} from "@webiny/api-headless-cms";
+import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
@@ -81,8 +77,7 @@ export const handler = createHandler({
         }),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                modelFieldToGraphQLPlugins: createGraphQLFields()
+                documentClient
             })
         }),
         createHeadlessCmsGraphQL(),
