@@ -21,7 +21,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { PbBlockCategory, PbPageBlock } from "~/types";
 import { LIST_PAGE_BLOCKS_AND_CATEGORIES } from "./graphql";
 
-const t = i18n.ns("app-page-builder/admin/categories/data-list");
+const t = i18n.ns("app-page-builder/admin/page-blocks/by-categories-data-list");
 
 interface Sorter {
     label: string;

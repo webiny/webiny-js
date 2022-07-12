@@ -28,7 +28,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { PageBuilderSecurityPermission, PbBlockCategory } from "~/types";
 
-const t = i18n.ns("app-page-builder/admin/categories/data-list");
+const t = i18n.ns("app-page-builder/admin/block-categories/data-list");
 
 interface CreatableItem {
     createdBy?: {
