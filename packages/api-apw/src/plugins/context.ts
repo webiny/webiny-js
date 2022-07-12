@@ -1,12 +1,11 @@
 import apwHooks from "./hooks";
 import WebinyError from "@webiny/error";
-import { createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContext } from "~/types";
 import { createApw } from "~/crud";
 import { apwPageBuilderHooks } from "./pageBuilder";
 import { createStorageOperations } from "~/storageOperations";
-import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
+// import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { CreateApwContextParams } from "~/scheduler/types";
@@ -16,6 +15,7 @@ import { isInstallationPending } from "./utils";
 import { extendPbPageSettingsSchema } from "~/plugins/pageBuilder/extendPbPageSettingsSchema";
 import { apwContentPagePlugins } from "~/plugins/pageBuilder/apwContentPagePlugins";
 import { apwCmsHooks } from "~/plugins/cms";
+import { I18NLocale } from "@webiny/api-i18n/types";
 
 const setupApwContext = (params: CreateApwContextParams) =>
     new ContextPlugin<ApwContext>(async context => {
@@ -24,16 +24,12 @@ const setupApwContext = (params: CreateApwContextParams) =>
         if (isInstallationPending({ tenancy, i18n })) {
             return;
         }
-
-        const contentHeadlessCmsContextPlugins = createHeadlessCmsContext({
-            storageOperations: context.cms.storageOperations
-        });
         /**
          * Register cms plugins required by `api-apw` package.
          */
-        context.plugins.register([createManageCMSPlugin(), ...contentHeadlessCmsContextPlugins]);
+        // context.plugins.register([createManageCMSPlugin()]);
 
-        const getLocale = () => {
+        const getLocale = (): I18NLocale => {
             const locale = i18n.getContentLocale();
             if (!locale) {
                 throw new WebinyError(
