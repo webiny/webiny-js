@@ -27,7 +27,7 @@ context("Menus Module", () => {
         cy.findByTestId("data-list-new-record-button").click();
 
         // Test "Page List".
-        cy.get("[data-testid='pb.menu.create.items.button'] > button").click();
+        cy.findByTestId("pb.menu.create.items.button").children("button").click();
         cy.findByTestId("pb.menu.create.items.button").within(() => {
             cy.findByText("Page list").click();
         });
@@ -47,7 +47,7 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
 
         // Test "Page".
-        cy.get("[data-testid='pb.menu.create.items.button'] > button").click();
+        cy.findByTestId("pb.menu.create.items.button").children("button").click();
         cy.findByTestId("pb.menu.create.items.button").within(() => {
             cy.findByText("Page").click();
         });
@@ -61,7 +61,7 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.new.pageitem.button.save").click();
 
         // Test "Link".
-        cy.get("[data-testid='pb.menu.create.items.button'] > button").click();
+        cy.findByTestId("pb.menu.create.items.button").children("button").click();
         cy.findByTestId("pb.menu.create.items.button").within(() => {
             cy.findByText("Link").click();
         });
@@ -75,7 +75,7 @@ context("Menus Module", () => {
         cy.findByTestId("pb.menu.new.link.button.save").click();
 
         // Test "Folder".
-        cy.get("[data-testid='pb.menu.create.items.button'] > button").click();
+        cy.findByTestId("pb.menu.create.items.button").children("button").click();
         cy.findByTestId("pb.menu.create.items.button").within(() => {
             cy.findByText("Folder").click();
         });
