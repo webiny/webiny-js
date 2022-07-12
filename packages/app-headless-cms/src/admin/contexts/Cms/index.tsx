@@ -52,7 +52,10 @@ export interface OnEntryDeleteResponse extends Omit<OnEntryDeleteRequest, "entry
     entry: CmsEditorContentEntry | undefined;
 }
 
-type OnEntryRevisionPublishSubscriber = AsyncProcessor<OnEntryPublishRequest, OnEntryPublishResponse>;
+type OnEntryRevisionPublishSubscriber = AsyncProcessor<
+    OnEntryPublishRequest,
+    OnEntryPublishResponse
+>;
 type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteRequest, OnEntryDeleteResponse>;
 
 interface PublishEntryRevisionParams {
