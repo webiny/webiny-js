@@ -1,6 +1,7 @@
 import React, {
     createContext,
     forwardRef,
+    PropsWithChildren,
     useCallback,
     useEffect,
     useImperativeHandle,
@@ -11,7 +12,7 @@ import classNames from "classnames";
 import { TabBar, Tab as RmwcTab } from "@rmwc/tabs";
 import { TabProps } from "./Tab";
 
-export interface TabsProps {
+export type TabsProps = PropsWithChildren<{
     /**
      * Append a class name.
      */
@@ -35,7 +36,7 @@ export interface TabsProps {
      * Tab ID for the testing.
      */
     "data-testid"?: string;
-}
+}>;
 
 const disabledStyles: Record<string, string | number> = {
     opacity: 0.5,
@@ -52,10 +53,14 @@ interface TabsContext {
 }
 
 export const TabsContext = createContext<TabsContext | undefined>(undefined);
+
+export interface TabsImperativeApi {
+    switchTab(index: number): void;
+}
 /**
  * Use Tabs component to display a list of choices, once the handler is triggered.
  */
-export const Tabs: React.FC<TabsProps> = forwardRef((props, ref) => {
+export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props, ref) => {
     const [activeTabIndex, setActiveIndex] = useState(0);
     const [tabs, setTabs] = useState<TabItem[]>([]);
 

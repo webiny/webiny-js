@@ -79,7 +79,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
             revision
         });
 
-    const { entry, tabs } = useContentEntry();
+    const { entry, tabsRef } = useContentEntry();
     const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
 
@@ -134,10 +134,10 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                                 <MenuItem
                                     onClick={() => {
                                         editRevision();
-                                        if (!tabs.current) {
+                                        if (!tabsRef.current) {
                                             return;
                                         }
-                                        tabs.current.switchTab(0);
+                                        tabsRef.current.switchTab(0);
                                     }}
                                 >
                                     <ListItemGraphic>

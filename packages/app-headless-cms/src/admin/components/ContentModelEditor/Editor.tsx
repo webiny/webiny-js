@@ -7,7 +7,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
-import { Tab, Tabs } from "@webiny/ui/Tabs";
+import { Tab, Tabs, TabsImperativeApi } from "@webiny/ui/Tabs";
 import { ReactComponent as FormIcon } from "./icons/round-assignment-24px.svg";
 import { FieldsSidebar } from "./FieldsSidebar";
 import { FieldEditor } from "../FieldEditor";
@@ -66,7 +66,7 @@ interface OnChangeParams {
 export const Editor: React.FC = () => {
     const { data, setData, isPristine } = useContentModelEditor();
 
-    const tabsRef = useRef<Tabs | null>(null);
+    const tabsRef = useRef<TabsImperativeApi>();
     const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
 
     const onChange = ({ fields, layout }: OnChangeParams) => {
