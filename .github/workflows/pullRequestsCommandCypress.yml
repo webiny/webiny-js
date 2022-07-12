@@ -22,7 +22,7 @@ jobs:
           reaction: "true"
           reaction-type: "eyes"
           allow-edits: "false"
-          permission-level: admin
+          permission-level: write
 
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v2
