@@ -1,6 +1,6 @@
 import prettier from "prettier";
 import contentModels from "./mocks/contentModels";
-import graphQLFieldPlugins from "~/graphqlFields";
+import { createGraphQLFields } from "~/graphqlFields";
 import categoryManage from "./snapshots/category.manage";
 import productManage from "./snapshots/product.manage";
 import reviewManage from "./snapshots/review.manage";
@@ -8,7 +8,7 @@ import { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createManageSDL } from "~/graphql/schema/createManageSDL";
 
 describe("MANAGE - ContentModel to SDL", () => {
-    const fieldTypePlugins = graphQLFieldPlugins().reduce<
+    const fieldTypePlugins = createGraphQLFields().reduce<
         Record<string, CmsModelFieldToGraphQLPlugin>
     >((acc, pl) => {
         acc[pl.fieldType] = pl;
