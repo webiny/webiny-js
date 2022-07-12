@@ -5,7 +5,6 @@ import { ApwContext } from "~/types";
 import { createApw } from "~/crud";
 import { apwPageBuilderHooks } from "./pageBuilder";
 import { createStorageOperations } from "~/storageOperations";
-// import { createManageCMSPlugin } from "~/plugins/createManageCMSPlugin";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { CreateApwContextParams } from "~/scheduler/types";
@@ -24,10 +23,6 @@ const setupApwContext = (params: CreateApwContextParams) =>
         if (isInstallationPending({ tenancy, i18n })) {
             return;
         }
-        /**
-         * Register cms plugins required by `api-apw` package.
-         */
-        // context.plugins.register([createManageCMSPlugin()]);
 
         const getLocale = (): I18NLocale => {
             const locale = i18n.getContentLocale();
