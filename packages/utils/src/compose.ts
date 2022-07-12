@@ -1,9 +1,9 @@
-export interface NextAsyncProcessor<TInput> {
-    (input: TInput): Promise<TInput>;
+export interface NextAsyncProcessor<TInput, TOutput> {
+    (input: TInput): Promise<TOutput>;
 }
 
-export interface AsyncProcessor<TInput> {
-    (next: NextAsyncProcessor<TInput>): NextAsyncProcessor<TInput>;
+export interface AsyncProcessor<TInput, TOutput = TInput> {
+    (next: NextAsyncProcessor<TInput, TOutput>): NextAsyncProcessor<TInput, TOutput>;
 }
 
 export interface NextSyncProcessor<TInput> {
@@ -14,22 +14,22 @@ export interface SyncProcessor<TInput> {
     (next: NextSyncProcessor<TInput>): NextSyncProcessor<TInput>;
 }
 
-export function composeAsync<TInput = unknown>(
-    functions: Array<AsyncProcessor<TInput>> = []
-): NextAsyncProcessor<TInput> {
-    return (input: TInput): Promise<TInput> => {
+export function composeAsync<TInput = unknown, TOutput = TInput>(
+    functions: Array<AsyncProcessor<TInput, TOutput>> = []
+): NextAsyncProcessor<TInput, TOutput> {
+    return (input: TInput): Promise<TOutput> => {
         if (!functions.length) {
-            return Promise.resolve(input);
+            return Promise.resolve(input as unknown as TOutput);
         }
 
         let index = -1;
 
-        const next: NextAsyncProcessor<TInput> = async input => {
+        const next: NextAsyncProcessor<TInput, TOutput> = async input => {
             index++;
 
             const fn = functions[index];
             if (!fn) {
-                return input;
+                return input as unknown as TOutput;
             }
 
             return fn(next)(input);

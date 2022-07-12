@@ -7,7 +7,7 @@ import {
     createDeleteMutation
 } from "~/admin/graphql/contentEntries";
 import { DocumentNode } from "graphql";
-import { OnEntryDeleteResponse } from "~/admin/contexts/Cms";
+import { OnEntryDeleteRequest } from "~/admin/contexts/Cms";
 import * as GQLCache from "~/admin/views/contentEntries/ContentEntry/cache";
 import { parseIdentifier } from "@webiny/utils";
 
@@ -45,7 +45,7 @@ const OnEntryDelete: React.FC = () => {
         client,
         listQueryVariables = {},
         locale
-    }: OnEntryDeleteResponse) => {
+    }: OnEntryDeleteRequest) => {
         const mutation = getMutation(model, locale);
 
         const response = await client.mutate<
