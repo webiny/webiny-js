@@ -17,7 +17,11 @@ context("Headless CMS - Content Models CRUD", () => {
         cy.findByTestId("cms-new-content-model-modal").within(() => {
             cy.findByText("New Content Model").should("exist");
 
-            cy.findByTestId("cms.newcontentmodeldialog.name").type(`Book - ${uniqueId}`);
+            cy.findByTestId("cms.newcontentmodeldialog.name")
+                .focus()
+                .wait(500)
+                .type(`Book - ${uniqueId}`)
+                .wait(500);
             cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
             cy.findByRole("button", { name: "+ Create Model" }).click();
         });
