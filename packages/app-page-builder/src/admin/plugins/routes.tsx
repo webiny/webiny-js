@@ -92,7 +92,7 @@ const plugins: RoutePlugin[] = [
                 }}
             />
         )
-    }/*,
+    } /*,
     {
         name: "route-pb-block-editor",
         type: "route",
