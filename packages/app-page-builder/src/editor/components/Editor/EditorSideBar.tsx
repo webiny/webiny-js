@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect } from "react";
+import { useRecoilValue, useRecoilState } from "recoil";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { useRecoilValue, useRecoilState } from "recoil";
+import { makeComposable } from "@webiny/app-admin";
 import { Elevation } from "@webiny/ui/Elevation";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
+import { Tabs, Tab, TabProps } from "@webiny/ui/Tabs";
 import {
     elementWithChildrenByIdSelector,
     activeElementAtom,
@@ -65,12 +66,12 @@ const EditorSideBar: React.FC = () => {
     return (
         <Elevation z={1} className={rightSideBar}>
             <Tabs value={sidebarAtomValue.activeTabIndex} updateValue={setActiveTabIndex}>
-                <Tab label={"style"}>
+                <EditorSidebarTab label={"Style"}>
                     <StyleSettingsTabContent element={element} />
-                </Tab>
-                <Tab label={"element"} disabled={!element}>
+                </EditorSidebarTab>
+                <EditorSidebarTab label={"Element"} disabled={!element}>
                     <ElementSettingsTabContent element={element} />
-                </Tab>
+                </EditorSidebarTab>
             </Tabs>
             {sidebarAtomValue.highlightTab && <PanelHighLight />}
         </Elevation>
@@ -78,3 +79,12 @@ const EditorSideBar: React.FC = () => {
 };
 
 export default React.memo(EditorSideBar);
+
+export type EditorSidebarTabProps = TabProps;
+
+export const EditorSidebarTab = makeComposable<EditorSidebarTabProps>(
+    "EditorSidebarTab",
+    ({ children, ...props }) => {
+        return <Tab {...props}>{children}</Tab>;
+    }
+);

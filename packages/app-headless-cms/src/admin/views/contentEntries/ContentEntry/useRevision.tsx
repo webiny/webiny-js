@@ -170,7 +170,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                     // Redirect to the first revision in the list of all entry revisions.
                     history.push(
                         `/cms/content-entries/${modelId}?id=` +
-                            encodeURIComponent(targetRevision.id)
+                            encodeURIComponent(targetRevision!.id)
                     );
                 },
             publishRevision:
@@ -195,7 +195,8 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
                     showSnackbar(
                         <span>
-                            Successfully published revision <strong>#{entry.meta.version}</strong>!
+                            Successfully published revision{" "}
+                            <strong>#{response.entry!.meta.version}</strong>!
                         </span>
                     );
                 },

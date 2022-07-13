@@ -27,6 +27,10 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
         globalState
     );
 
+    const isEditorRoute = ["/page-builder/editor", "/page-builder/block-editor"].some(path =>
+        location.pathname.startsWith(path)
+    );
+
     const loadPlugins = async () => {
         const pbPlugins = plugins.byType<PbPluginsLoader>("pb-plugins-loader");
         // load all editor admin plugins
@@ -56,7 +60,7 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
         }
 
         // If we are on the Editor route, import plugins required to render both editor and preview.
-        if (location.pathname.startsWith("/page-builder/editor") && !loaded.editor) {
+        if (isEditorRoute && !loaded.editor) {
             const renderPlugins = !loaded.render ? await loadRenderPlugins() : [];
             const editorAdminPlugins = await loadEditorPlugins();
             // merge both editor admin and render plugins
@@ -86,7 +90,7 @@ export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ childr
     /**
      * This condition is for editing of the selected page.
      */
-    if (location.pathname.startsWith("/page-builder/editor") && loaded.editor) {
+    if (isEditorRoute && loaded.editor) {
         return children as unknown as React.ReactElement;
     }
 

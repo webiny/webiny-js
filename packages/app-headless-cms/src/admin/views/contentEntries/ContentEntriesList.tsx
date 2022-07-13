@@ -28,6 +28,7 @@ import {
     useContentEntriesViewConfig,
     ContentEntriesViewConfigFilter
 } from "./experiment/ContentEntriesViewConfig";
+import { Link } from "@webiny/react-router";
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
 
@@ -149,7 +150,12 @@ const ContentEntriesList: React.FC = () => {
                     {pluralize(contentModel.name)}
                     <br />
                     <Typography use={"subtitle1"}>
-                        <ModelId>Model ID: {contentModel.modelId}</ModelId>
+                        <ModelId>
+                            Model ID:{" "}
+                            <Link to={`/cms/content-models/${contentModel.modelId}`}>
+                                {contentModel.modelId}
+                            </Link>
+                        </ModelId>
                     </Typography>
                 </span>
             }

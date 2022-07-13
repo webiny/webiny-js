@@ -1,10 +1,9 @@
 import React from "react";
+import { RecoilRootProps } from "recoil";
 import { makeComposable } from "@webiny/app-admin";
-import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
 
 export type EditorProps = {
-    page: PageWithContent;
-    revisions: RevisionsAtomType;
+    initializeState: RecoilRootProps["initializeState"];
 };
 
 export const Editor = makeComposable<EditorProps>("Editor", props => {

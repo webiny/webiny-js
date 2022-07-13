@@ -56,7 +56,7 @@ export const ContentEntry: React.FC = () => {
         showEmptyView,
         canCreate,
         createEntry,
-        setTabsRef,
+        tabsRef,
         setFormRef
     } = useContentEntry();
 
@@ -81,7 +81,7 @@ export const ContentEntry: React.FC = () => {
     return (
         <DetailsContainer>
             <test-id data-testid="cms-content-details">
-                <Tabs ref={tabs => setTabsRef(tabs as Tabs)}>
+                <Tabs ref={tabsRef}>
                     <Tab
                         label={"Content"}
                         disabled={loading}

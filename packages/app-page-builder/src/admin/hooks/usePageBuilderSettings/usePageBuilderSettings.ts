@@ -100,12 +100,12 @@ export function usePageBuilderSettings() {
         return url + "?" + query.filter(Boolean).join("&");
     };
 
-    const isSpecialPage = (page: Pick<PbPageData, "pid">, type: "home" | "notFound"): boolean => {
+    const isSpecialPage = (pageId: string, type: "home" | "notFound"): boolean => {
         if (!settings.pages?.[type]) {
             return false;
         }
 
-        return settings.pages[type] === page.pid;
+        return settings.pages[type] === pageId;
     };
 
     const updateSettingsMutation = useMutation(UPDATE_SETTINGS);
