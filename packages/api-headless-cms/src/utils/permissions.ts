@@ -45,7 +45,7 @@ export const checkPermissions = async <
     check?: { rwd?: string; pw?: string }
 ): Promise<TPermission> => {
     // Check if user is allowed to edit content in current language
-    const contentPermission: any = await context.security.getPermission("content.i18n");
+    const contentPermission = await context.security.getPermission("content.i18n");
 
     if (!contentPermission) {
         throw new NotAuthorizedError({
@@ -58,9 +58,11 @@ export const checkPermissions = async <
     // We need to check this manually as CMS locale comes from the URL and not the default i18n app.
     const code = context.cms.getLocale().code;
 
+    const locales: string[] = contentPermission.locales;
+
     // IMPORTANT: If we have a `contentPermission`, and `locales` key is NOT SET - it means the user has access to all locales.
     // However, if the the `locales` IS SET - check that it contains the required locale.
-    if (Array.isArray(contentPermission.locales) && !contentPermission.locales.includes(code)) {
+    if (Array.isArray(locales) && !locales.includes(code)) {
         throw new NotAuthorizedError({
             data: {
                 reason: `Not allowed to access content in "${code}."`
