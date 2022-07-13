@@ -22,7 +22,6 @@ context("Headless CMS - Content Models CRUD", () => {
                 // waiting seems to improve flakyness of this test
                 .wait(500)
                 .type(`Book - ${uniqueId}`)
-                .blur()
                 .wait(500);
             cy.findByTestId("cms.newcontentmodeldialog.description").type(newModelDescription);
             cy.findByRole("button", { name: "+ Create Model" }).click();
@@ -43,7 +42,11 @@ context("Headless CMS - Content Models CRUD", () => {
             }
         );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
-            cy.findByTestId("cms.editor.field.settings.general.label").focus().type("Title");
+            cy.findByTestId("cms.editor.field.settings.general.label")
+                .focus()
+                .wait(500)
+                .type("Title")
+                .wait(500);
             cy.findByTestId("cms.editor.field.settings.save").click();
         });
         cy.wait(1000);
@@ -53,8 +56,11 @@ context("Headless CMS - Content Models CRUD", () => {
             { force: true }
         );
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
-            cy.findByTestId("cms.editor.field.settings.general.label").focus().type("Edition");
-            cy.wait(500);
+            cy.findByTestId("cms.editor.field.settings.general.label")
+                .focus()
+                .wait(500)
+                .type("Edition")
+                .wait(500);
             cy.findByTestId("cms.editor.field.settings.save").click();
         });
         cy.wait(1000);
