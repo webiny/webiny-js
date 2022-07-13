@@ -35,8 +35,10 @@ story.add(
                                 <Chip trailingIcon icon={<BaselineDoneIcon />}>
                                     Cookies
                                 </Chip>
-                                <Chip icon={<BaselineEmailIcon />} >Cookies</Chip>
-                                <Chip trailingIcon icon={<BaselineDoneIcon />} >Cookies</Chip>
+                                <Chip icon={<BaselineEmailIcon />}>Cookies</Chip>
+                                <Chip trailingIcon icon={<BaselineDoneIcon />}>
+                                    Cookies
+                                </Chip>
                             </Chips>
                         </div>
                     </StorySandboxExample>
