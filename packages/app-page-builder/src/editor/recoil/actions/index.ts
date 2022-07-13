@@ -9,4 +9,3 @@ export * from "./togglePlugin";
 export * from "./updateElement";
 export * from "./updateElementTree";
 export * from "./updateDocument";
-export * from "./plugins";
