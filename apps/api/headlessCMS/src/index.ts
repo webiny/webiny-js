@@ -7,11 +7,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import securityPlugins from "./security";
-import {
-    createHeadlessCmsContext,
-    createHeadlessCmsGraphQL,
-    createGraphQLFields
-} from "@webiny/api-headless-cms";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import logsPlugins from "@webiny/handler-logs";
 /**
@@ -44,8 +40,7 @@ export const handler = createHandler({
         i18nDynamoDbStorageOperations(),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                modelFieldToGraphQLPlugins: createGraphQLFields()
+                documentClient
             })
         }),
         createHeadlessCmsGraphQL({ debug }),

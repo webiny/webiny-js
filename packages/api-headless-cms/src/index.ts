@@ -21,8 +21,6 @@ import {
     entryToStorageTransform
 } from "./utils/entryStorage";
 
-// export type AdminContextParams = CreateAdminCrudsParams;
-
 const DEFAULT_HEADERS: Record<string, string> = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
@@ -60,19 +58,25 @@ const breakOptionsRequestContextPlugin = (): ContextPlugin<CmsContext> => {
 
 export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
-    return baseCreateGraphQL(params);
+    return [
+        breakOptionsRequestContextPlugin(),
+        /**
+         * PathParameter plugins are used to determine the type of the cms endpoint
+         */
+        createPathParameterPlugin(),
+        createHeaderParameterPlugin(),
+        createContextParameterPlugin(),
+        /**
+         * At this point we can create, or not create, CMS GraphQL Schema.
+         */
+        baseCreateGraphQL(params)
+    ];
 };
 
 export type ContentContextParams = CrudParams;
 export const createHeadlessCmsContext = (params: ContentContextParams) => {
     return [
         breakOptionsRequestContextPlugin(),
-        /**
-         *
-         */
-        createPathParameterPlugin(),
-        createContextParameterPlugin(),
-        createHeaderParameterPlugin(),
         /**
          * Context for all Lambdas - everything is loaded now.
          */
@@ -90,8 +94,5 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
     ];
 };
 export * from "~/graphqlFields";
-export * from "~/plugins/CmsParametersPlugin";
-export * from "~/plugins/CmsGroupPlugin";
-export * from "~/plugins/CmsModelPlugin";
-export * from "~/plugins/StorageTransformPlugin";
+export * from "~/plugins";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };

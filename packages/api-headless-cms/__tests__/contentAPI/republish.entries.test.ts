@@ -7,6 +7,8 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import mdbid from "mdbid";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { PluginsContainer } from "@webiny/plugins";
+import { createGraphQLFields } from "~/graphqlFields";
 const cliPackageJson = require("@webiny/cli/package.json");
 const webinyVersion = cliPackageJson.version;
 
@@ -360,6 +362,12 @@ describe("Republish entries", () => {
         const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
 
         const { storageOperations } = useCategoryManageHandler(manageOpts);
+
+        if (storageOperations.beforeInit) {
+            await storageOperations.beforeInit({
+                plugins: new PluginsContainer(createGraphQLFields())
+            } as any);
+        }
 
         const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",
