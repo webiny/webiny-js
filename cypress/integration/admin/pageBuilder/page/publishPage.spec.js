@@ -22,21 +22,22 @@ context(
             cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
                 cy.findByTestId("confirmationdialog-confirm-action").click();
             });
+        });
+
+        it(`Step 2: Check page title in preview`, () => {
             cy.waitUntil(
-                () =>
+                () => 
                     cy
                         .pbListPages({
                             limit: 1,
                             search: { query: pageTitle1 }
                         })
-                        .then(pages => Array.isArray(pages) && pages.length > 0),
+                        .then(pages => Array.isArray(pages) && pages.length > 0),     
                 {
                     description: `waitUntil page list contains newly created page`
                 }
             );
-        });
 
-        it(`Step 2: Check page title in preview`, () => {
             return cy.pbListPages({ limit: 1, search: { query: pageTitle1 } }).then(([page]) => {
                 const { path } = page;
                 cy.visit(`${Cypress.env("WEBSITE_URL")}${path}`);
