@@ -26,13 +26,13 @@ context(
 
         it(`Step 2: Check page title in preview`, () => {
             cy.waitUntil(
-                () => 
+                () =>
                     cy
                         .pbListPages({
                             limit: 1,
                             search: { query: pageTitle1 }
                         })
-                        .then(pages => Array.isArray(pages) && pages.length > 0),     
+                        .then(pages => Array.isArray(pages) && pages.length > 0),
                 {
                     description: `waitUntil page list contains newly created page`
                 }
