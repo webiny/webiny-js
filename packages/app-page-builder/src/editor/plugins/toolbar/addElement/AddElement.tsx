@@ -1,26 +1,26 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
-import * as Styled from "./StyledComponents";
-import { activePluginParamsByNameSelector } from "../../../recoil/modules";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import {
-    DeactivatePluginActionEvent,
-    DragEndActionEvent,
-    DragStartActionEvent,
-    DropElementActionEvent
-} from "../../../recoil/actions";
-import { DropElementActionArgsType } from "../../../recoil/actions/dropElement/types";
-import Draggable from "../../../components/Draggable";
-import { plugins } from "@webiny/plugins";
-import { usePageBuilder } from "../../../../hooks/usePageBuilder";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { ReactComponent as AddIcon } from "../../../assets/icons/add.svg";
-import { PbEditorPageElementGroupPlugin, PbEditorPageElementPlugin } from "../../../../types";
-import { useKeyHandler } from "../../../hooks/useKeyHandler";
+import * as Styled from "./StyledComponents";
+import { activePluginParamsByNameSelector } from "~/editor/recoil/modules";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import {
+    DeactivatePluginActionEvent,
+    DragEndActionEvent,
+    DragStartActionEvent,
+    DropElementActionEvent
+} from "~/editor/recoil/actions";
+import Draggable from "~/editor/components/Draggable";
+import { plugins } from "@webiny/plugins";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
+import { ReactComponent as AddIcon } from "~/editor/assets/icons/add.svg";
+import { PbEditorPageElementGroupPlugin, PbEditorPageElementPlugin } from "~/types";
+import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
+import { DropElementActionArgsType } from "~/editor/recoil/actions/dropElement/types";
 
 const ADD_ELEMENT = "pb-editor-toolbar-add-element";
 
@@ -45,8 +45,7 @@ const categoriesList = css({
 
 const AddElement: React.FC = () => {
     const handler = useEventActionHandler();
-    const plugin = useRecoilValue(activePluginParamsByNameSelector(ADD_ELEMENT));
-    const { params } = plugin || {};
+    const params = useRecoilValue(activePluginParamsByNameSelector(ADD_ELEMENT));
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
 
     const dragStart = useCallback(() => {
@@ -158,7 +157,7 @@ const AddElement: React.FC = () => {
                 () => {
                     dropElement({
                         source: { type: plugin.elementType } as any,
-                        target: { ...params }
+                        target: params as DropElementActionArgsType["target"]
                     });
                     deactivatePlugin();
                 },
