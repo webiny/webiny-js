@@ -89,7 +89,7 @@ const plugin: GraphQLSchemaPlugin<CmsContext> = {
  */
 export const createSystemSchemaPlugin = (): ContextPlugin<CmsContext> => {
     return new ContextPlugin<CmsContext>(async context => {
-        if (context.cms.type) {
+        if (context.cms?.type) {
             return;
         }
         context.plugins.register(plugin);

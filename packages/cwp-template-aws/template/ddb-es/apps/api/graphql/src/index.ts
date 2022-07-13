@@ -23,11 +23,7 @@ import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
-import {
-    createHeadlessCmsGraphQL,
-    createGraphQLFields,
-    createHeadlessCmsContext
-} from "@webiny/api-headless-cms";
+import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import securityPlugins from "./security";
@@ -97,7 +93,6 @@ export const handler = createHandler({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                modelFieldToGraphQLPlugins: createGraphQLFields(),
                 plugins: [elasticsearchDataGzipCompression()]
             })
         }),
