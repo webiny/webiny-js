@@ -41,8 +41,8 @@ export const createHeaderParameterPlugin = () => {
         }
 
         return {
-            type: headers[HeaderKeys.TYPE],
-            locale: headers[HeaderKeys.LOCALE]
+            type,
+            locale
         };
     });
 };

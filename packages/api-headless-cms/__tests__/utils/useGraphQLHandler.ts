@@ -6,7 +6,13 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import { createPermissions, until, sleep, PermissionsArg } from "./helpers";
+import {
+    createPermissions,
+    until,
+    sleep,
+    PermissionsArg,
+    createDummyPathContextPlugin
+} from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -54,6 +60,7 @@ export interface GraphQLHandlerParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
+    topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path?: string;
@@ -78,7 +85,14 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
         name: "Root",
         parent: null
     };
-    const { permissions, identity, plugins = [], path, setupTenancyAndSecurityGraphQL } = params;
+    const {
+        permissions,
+        identity,
+        plugins = [],
+        topPlugins = [],
+        path,
+        setupTenancyAndSecurityGraphQL
+    } = params;
 
     const app = createHeadlessCmsContext({
         storageOperations: ops.storageOperations
@@ -86,6 +100,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
 
     const handler = createHandler({
         plugins: [
+            topPlugins,
             {
                 type: "context",
                 name: "context-tenant-header",
@@ -136,28 +151,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
                     };
                 }
             } as ContextPlugin<TestContext>,
-            {
-                type: "context",
-                name: "context-path-parameters",
-                async apply(context) {
-                    if (!path) {
-                        return;
-                    }
-                    context.http = {
-                        ...(context?.http || {}),
-                        request: {
-                            ...(context?.http?.request || {}),
-                            path: {
-                                ...(context?.http?.request?.path || {}),
-                                parameters: {
-                                    ...(context?.http?.request?.path?.parameters || {}),
-                                    key: path
-                                }
-                            }
-                        }
-                    };
-                }
-            } as ContextPlugin<TestContext>,
+            createDummyPathContextPlugin(path),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
