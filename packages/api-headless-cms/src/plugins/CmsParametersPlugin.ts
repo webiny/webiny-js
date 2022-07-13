@@ -1,10 +1,10 @@
 import { Plugin } from "@webiny/plugins";
-import { CmsContext } from "~/types";
+import { ApiEndpoint, CmsContext } from "~/types";
 
 /**
  * Type can be null because it might be that Headless CMS context is loaded on a different Lambda where there is no GraphQL Schema generated.
  */
-export type CmsParametersPluginResponseType = "read" | "manage" | "preview" | string | null;
+export type CmsParametersPluginResponseType = ApiEndpoint | null;
 export type CmsParametersPluginResponseLocale = string;
 
 export interface CmsParametersPluginResponse {

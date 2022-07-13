@@ -62,10 +62,11 @@ export const STATUS_UNPUBLISHED = "unpublished";
 export const STATUS_CHANGES_REQUESTED = "changesRequested";
 export const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
+type DefaultValue = boolean | number | string | null;
 /**
  * Used for some fields to convert their values.
  */
-const convertDefaultValue = (field: CmsModelField, value: any): string | number | boolean => {
+const convertDefaultValue = (field: CmsModelField, value: DefaultValue): DefaultValue => {
     switch (field.type) {
         case "boolean":
             return Boolean(value);
@@ -75,7 +76,7 @@ const convertDefaultValue = (field: CmsModelField, value: any): string | number 
             return value;
     }
 };
-const getDefaultValue = (field: CmsModelField): any => {
+const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) | undefined => {
     const { settings, multipleValues } = field;
     if (settings && settings.defaultValue !== undefined) {
         return convertDefaultValue(field, settings.defaultValue);

@@ -24,7 +24,7 @@ export interface HeadlessCms
     /**
      * API type
      */
-    type: ApiEndpoint;
+    type: ApiEndpoint | null;
     /**
      * Requested locale
      */

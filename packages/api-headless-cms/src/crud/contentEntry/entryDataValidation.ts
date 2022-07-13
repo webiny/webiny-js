@@ -22,10 +22,12 @@ interface ValidateArgs {
     entry?: CmsEntry;
 }
 
+type PossibleValue = boolean | number | string | null | undefined;
+
 const validateValue = async (
     args: ValidateArgs,
     fieldValidators: CmsModelFieldValidation[],
-    value: any
+    value: PossibleValue | PossibleValue[]
 ): Promise<string | null> => {
     if (!fieldValidators) {
         return null;
