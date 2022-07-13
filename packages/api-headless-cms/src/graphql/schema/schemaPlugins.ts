@@ -12,6 +12,15 @@ export const generateSchemaPlugins = async (
 ): Promise<GraphQLSchemaPlugin<CmsContext>[]> => {
     const { plugins, cms } = context;
 
+    /**
+     * If type does not exist, we are not generating schema plugins for models.
+     * It should not come to this point, but we check it anyways.
+     */
+    const { type } = cms;
+    if (!type) {
+        return [];
+    }
+
     // Structure plugins for faster access
     const fieldTypePlugins: CmsFieldTypePlugins = plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
@@ -25,7 +34,11 @@ export const generateSchemaPlugins = async (
     const models = (await cms.listModels()).filter(model => model.isPrivate !== true);
     context.security.enableAuthorization();
 
-    const schemas = getSchemaFromFieldPlugins({ models, fieldTypePlugins, type: cms.type });
+    const schemas = getSchemaFromFieldPlugins({
+        models,
+        fieldTypePlugins,
+        type
+    });
 
     const newPlugins: GraphQLSchemaPlugin<CmsContext>[] = [];
     for (const schema of schemas) {
@@ -35,7 +48,7 @@ export const generateSchemaPlugins = async (
     models
         .filter(model => model.fields.length > 0)
         .forEach(model => {
-            switch (cms.type) {
+            switch (type) {
                 case "manage":
                     newPlugins.push(
                         new GraphQLSchemaPlugin({

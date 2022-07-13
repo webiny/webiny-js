@@ -1,6 +1,6 @@
 import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext } from "~/types";
+import { ApiEndpoint, CmsContext } from "~/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -17,9 +17,9 @@ interface SchemaCache {
     key: string;
     schema: GraphQLSchema;
 }
-interface Args {
+interface GetSchemaParams {
     context: CmsContext;
-    type: string;
+    type: ApiEndpoint;
     locale: I18NLocale;
 }
 
@@ -47,13 +47,13 @@ const respond = (http: HttpObject, result: unknown) => {
 };
 const schemaList = new Map<string, SchemaCache>();
 
-const generateCacheKey = async (args: Args): Promise<string> => {
+const generateCacheKey = async (args: GetSchemaParams): Promise<string> => {
     const { context, locale, type } = args;
     const lastModelChange = await context.cms.getModelLastChange();
     return [locale.code, type, lastModelChange.toISOString()].join("#");
 };
 
-const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
+const generateSchema = async (args: GetSchemaParams): Promise<GraphQLSchema> => {
     const { context } = args;
 
     context.plugins.register(await buildSchemaPlugins(context));
@@ -77,16 +77,18 @@ const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
     });
 };
 
-// gets an existing schema or rewrites existing one or creates a completely new one
-// depending on the schemaId created from type and locale parameters
-const getSchema = async (args: Args): Promise<GraphQLSchema> => {
-    const { context, type, locale } = args;
+/**
+ * Gets an existing schema or rewrites existing one or creates a completely new one
+ * depending on the schemaId created from type and locale parameters
+ */
+const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
+    const { context, type, locale } = params;
     const tenantId = context.tenancy.getCurrentTenant().id;
     const id = `${tenantId}#${type}#${locale.code}`;
 
-    const cacheKey = await generateCacheKey(args);
+    const cacheKey = await generateCacheKey(params);
     if (!schemaList.has(id)) {
-        const schema = await generateSchema(args);
+        const schema = await generateSchema(params);
 
         schemaList.set(id, {
             key: cacheKey,
@@ -101,7 +103,7 @@ const getSchema = async (args: Args): Promise<GraphQLSchema> => {
     if (cache.key === cacheKey) {
         return cache.schema;
     }
-    const schema = await generateSchema(args);
+    const schema = await generateSchema(params);
     schemaList.set(id, {
         key: cacheKey,
         schema
@@ -133,7 +135,8 @@ export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): P
             /**
              * Possibly not a CMS request?
              */
-            if (!cms.type || !http || !http.request) {
+            const type = cms?.type;
+            if (!type || !http?.request) {
                 return next();
             }
 
@@ -165,8 +168,8 @@ export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): P
 
             const schema = await getSchema({
                 context,
-                locale: context.cms.getLocale(),
-                type: context.cms.type
+                locale: cms.getLocale(),
+                type
             });
 
             const body: GraphQLRequestBody | GraphQLRequestBody[] = JSON.parse(http.request.body);
