@@ -32,13 +32,13 @@ export const createContextPlugin = () => {
         }
 
         context.cms = {
-            ...((context.cms || {}) as any),
+            ...(context.cms || {}),
             type,
             locale,
             getLocale: () => systemLocale,
             READ: type === "read",
             PREVIEW: type === "preview",
             MANAGE: type === "manage"
-        } as any;
+        };
     });
 };
