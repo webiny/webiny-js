@@ -14,9 +14,6 @@ context("Pages Previewing", () => {
         cy.findByTestId("pb-editor-page-title").click();
         cy.get(`input[value="Untitled"]`).clear().type(pageTitle1).blur();
         cy.findByText("Page title updated successfully!");
-    });
-
-    it(`Step 2: Check page title in preview`, () => {
         cy.waitUntil(
             () =>
                 cy
@@ -29,7 +26,9 @@ context("Pages Previewing", () => {
                 description: `waitUntil page list contains newly created page`
             }
         );
+    });
 
+    it(`Step 2: Check page title in preview`, () => {
         return cy.pbListPages({ limit: 1, search: { query: pageTitle1 } }).then(([page]) => {
             const { path, id } = page;
             cy.visit(

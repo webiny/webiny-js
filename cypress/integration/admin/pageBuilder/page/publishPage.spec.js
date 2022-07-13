@@ -22,10 +22,6 @@ context(
             cy.findByTestId("pb-editor-publish-confirmation-dialog").within(() => {
                 cy.findByTestId("confirmationdialog-confirm-action").click();
             });
-        });
-
-        it(`Step 2: Check page title in preview`, () => {
-            cy.visit("/page-builder/pages");
             cy.waitUntil(
                 () =>
                     cy
@@ -38,7 +34,9 @@ context(
                     description: `waitUntil page list contains newly created page`
                 }
             );
+        });
 
+        it(`Step 2: Check page title in preview`, () => {
             return cy.pbListPages({ limit: 1, search: { query: pageTitle1 } }).then(([page]) => {
                 const { path } = page;
                 cy.visit(`${Cypress.env("WEBSITE_URL")}${path}`);
@@ -76,7 +74,6 @@ context(
         });
 
         it(`Step 4: Check updated page title in page preview`, () => {
-            cy.visit("/page-builder/pages");
             return cy.pbListPages({ limit: 1, search: { query: pageTitle2 } }).then(([page]) => {
                 const { path } = page;
                 cy.visit(`${Cypress.env("WEBSITE_URL")}${path}`);
