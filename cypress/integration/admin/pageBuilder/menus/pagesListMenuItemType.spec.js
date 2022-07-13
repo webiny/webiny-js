@@ -43,8 +43,10 @@ describe("Menus Module", () => {
         });
 
         // Test "Page List".
-        cy.findByTestId("pb.menu.add.addmenuitem").click();
-        cy.findByText("Page list").click();
+        cy.findByTestId("pb.menu.create.items.button").children("button").click();
+        cy.findByTestId("pb.menu.create.items.button").within(() => {
+            cy.findByText("Page list").click();
+        });
         cy.findByTestId("pb.page.list.menu.item.form").within(() => {
             cy.findByTestId("pb.menu.new.listitem.title.grid").within(() => {
                 cy.findByTestId("pb.menu.new.listitem.title").type(`added-menu-${id}`);
@@ -58,15 +60,15 @@ describe("Menus Module", () => {
         cy.findByTestId("pb.menu.new.listitem.sortby").select("Title");
         cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Descending");
 
-        // cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
-        // cy.findByText(`page-${id}-0`).click();
+        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
+        cy.findByText(`page-${id}-0`).click();
 
-        // cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
-        // cy.findByText(`page-${id}-1`).click();
+        cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
+        cy.findByText(`page-${id}-1`).click();
 
         cy.findByTestId("pb.menu.new.listitem.tags").type(`page-${id}-`);
 
-        cy.get("[role='listbox'] > [role='option']").click();
+        cy.get("[role='listbox'] > [role='option']").first().click();
 
         cy.findByTestId("pb.menu.new.listitem.tags")
             .type(`page-${id}-`)
