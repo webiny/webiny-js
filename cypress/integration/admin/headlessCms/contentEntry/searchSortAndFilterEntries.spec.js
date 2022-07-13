@@ -39,7 +39,7 @@ const deleteContentEntry = () => {
     cy.findByTestId("cms.content-form.header.delete").click();
     cy.findByTestId("cms.content-form.header.delete-dialog").within(() => {
         cy.findByText(/Delete content entry/i);
-        cy.findByText(/Confirm/i).click();
+        cy.findByText(/Confirm/i).click({ force: true });
     });
     // Verify
     cy.findByText(/deleted successfully!/i).should("exist");
