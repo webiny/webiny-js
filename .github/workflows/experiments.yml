@@ -2,7 +2,7 @@ name: Experiments
 
 on:
   push:
-    branches: [poc/*, experiment/*, experiments/*, rd/*, r&d/*]
+    branches: [poc/*, experiment/*, experiments/*]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
