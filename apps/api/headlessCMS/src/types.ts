@@ -14,8 +14,8 @@ import { CmsContext } from "@webiny/api-headless-cms/types";
 // Feel free to extend it with additional context interfaces, if needed. Also, please do not change the
 // name of the interface, as existing scaffolding utilities may rely on it during the scaffolding process.
 export interface Context
-    extends HttpContext,
-        ArgsContext,
+    extends Omit<ArgsContext, "invocationArgs">,
+        HttpContext,
         ClientContext,
         TenancyContext,
         SecurityContext,

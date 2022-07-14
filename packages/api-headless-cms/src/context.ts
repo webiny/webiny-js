@@ -26,16 +26,19 @@ export const createContextPlugin = () => {
 
         const { type, locale } = await getParameters(context);
 
-        const systemLocale = context.i18n.getLocale(locale);
-        if (!systemLocale) {
-            throw new WebinyError(`There is no locale "${locale}" in the system.`);
-        }
+        const getLocale = () => {
+            const systemLocale = context.i18n.getLocale(locale);
+            if (!systemLocale) {
+                throw new WebinyError(`There is no locale "${locale}" in the system.`);
+            }
+            return systemLocale;
+        };
 
         context.cms = {
             ...(context.cms || {}),
             type,
             locale,
-            getLocale: () => systemLocale,
+            getLocale,
             READ: type === "read",
             PREVIEW: type === "preview",
             MANAGE: type === "manage"

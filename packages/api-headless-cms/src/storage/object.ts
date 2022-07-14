@@ -38,69 +38,67 @@ const processValue: ProcessValue = async params => {
     );
 };
 
-const plugin = new StorageTransformPlugin({
-    name: "headless-cms.storage-transform.object.default",
-    fieldType: "object",
-    toStorage: async ({ field, value, getStoragePlugin, model, plugins }) => {
-        if (!value) {
-            return null;
+export const createObjectStorageTransform = (): StorageTransformPlugin => {
+    return new StorageTransformPlugin({
+        name: "headless-cms.storage-transform.object.default",
+        fieldType: "object",
+        toStorage: async ({ field, value, getStoragePlugin, model, plugins }) => {
+            if (!value) {
+                return null;
+            }
+
+            const fields = (field.settings?.fields || []) as CmsModelField[];
+
+            if (field.multipleValues) {
+                return await pMap(value as Record<string, any>[], value =>
+                    processValue({
+                        sourceValue: value,
+                        getStoragePlugin,
+                        model,
+                        plugins,
+                        operation: "toStorage",
+                        fields
+                    })
+                );
+            }
+
+            return await processValue({
+                sourceValue: value,
+                getStoragePlugin,
+                model,
+                plugins,
+                operation: "toStorage",
+                fields
+            });
+        },
+        fromStorage: async ({ field, value, getStoragePlugin, plugins, model }) => {
+            if (!value) {
+                return null;
+            }
+
+            const fields = (field.settings?.fields || []) as CmsModelField[];
+
+            if (field.multipleValues) {
+                return pMap(value as Record<string, any>[], value =>
+                    processValue({
+                        sourceValue: value,
+                        getStoragePlugin,
+                        model,
+                        plugins,
+                        operation: "fromStorage",
+                        fields
+                    })
+                );
+            }
+
+            return processValue({
+                sourceValue: value,
+                getStoragePlugin,
+                model,
+                plugins,
+                operation: "fromStorage",
+                fields
+            });
         }
-
-        const fields = (field.settings?.fields || []) as CmsModelField[];
-
-        if (field.multipleValues) {
-            return await pMap(value as Record<string, any>[], value =>
-                processValue({
-                    sourceValue: value,
-                    getStoragePlugin,
-                    model,
-                    plugins,
-                    operation: "toStorage",
-                    fields
-                })
-            );
-        }
-
-        return await processValue({
-            sourceValue: value,
-            getStoragePlugin,
-            model,
-            plugins,
-            operation: "toStorage",
-            fields
-        });
-    },
-    fromStorage: async ({ field, value, getStoragePlugin, plugins, model }) => {
-        if (!value) {
-            return null;
-        }
-
-        const fields = (field.settings?.fields || []) as CmsModelField[];
-
-        if (field.multipleValues) {
-            return pMap(value as Record<string, any>[], value =>
-                processValue({
-                    sourceValue: value,
-                    getStoragePlugin,
-                    model,
-                    plugins,
-                    operation: "fromStorage",
-                    fields
-                })
-            );
-        }
-
-        return processValue({
-            sourceValue: value,
-            getStoragePlugin,
-            model,
-            plugins,
-            operation: "fromStorage",
-            fields
-        });
-    }
-});
-
-export default (): StorageTransformPlugin => {
-    return plugin;
+    });
 };

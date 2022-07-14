@@ -10,7 +10,7 @@ import { object } from "commodo-fields-object";
  */
 // @ts-ignore
 import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
-import idValidation from "./idValidation";
+import { validateId } from "./idValidation";
 
 const requiredShortString = validation.create("required,maxLength:255");
 const shortString = validation.create("maxLength:255");
@@ -24,7 +24,7 @@ export const ContentModelFieldModel = withFields({
     fieldId: flow(
         onSet((value?: string) => value && value.trim()),
         setOnce()
-    )(string({ validation: idValidation })),
+    )(string({ validation: validateId })),
     label: string({ validation: requiredShortString }),
     helpText: string({ validation: shortString }),
     placeholderText: string({ validation: shortString }),
