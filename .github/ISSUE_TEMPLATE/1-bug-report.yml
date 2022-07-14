@@ -1,5 +1,5 @@
 name: "\U0001F41B Bug report"
-description: Report a issue that you have spotted
+description: Report an issue that you have spotted
 body:
   - type: markdown
     attributes:
