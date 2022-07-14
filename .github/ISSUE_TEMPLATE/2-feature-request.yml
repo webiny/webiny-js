@@ -12,7 +12,7 @@ body:
   - type: textarea
     attributes:
       label: Describe the feature's behavior.
-      description: Please describe the desired feature's behavior; what would it do?
+      description: Please describe the desired behaviour.
   - type: textarea
     attributes:
       label: Describe alternatives you've considered.
