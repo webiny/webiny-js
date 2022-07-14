@@ -1,5 +1,4 @@
 import { HttpContext } from "@webiny/handler-http/types";
-import { ArgsContext } from "@webiny/handler-args/types";
 import { ClientContext } from "@webiny/handler-client/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -17,8 +16,7 @@ import { FormBuilderContext } from "@webiny/api-form-builder/types";
 // Feel free to extend it with additional context interfaces, if needed. Also, please do not change the
 // name of the interface, as existing scaffolding utilities may rely on it during the scaffolding process.
 export interface Context
-    extends Omit<ArgsContext, "invocationArgs">,
-        HttpContext,
+    extends HttpContext,
         ClientContext,
         TenancyContext,
         SecurityContext,
