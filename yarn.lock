@@ -11675,7 +11675,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-apw@^5.28.0, @webiny/app-apw@^5.29.0, @webiny/app-apw@workspace:packages/app-apw":
+"@webiny/app-apw@^5.28.0, @webiny/app-apw@workspace:packages/app-apw":
   version: 0.0.0-use.local
   resolution: "@webiny/app-apw@workspace:packages/app-apw"
   dependencies:
@@ -14104,7 +14104,6 @@ __metadata:
     "@types/react": ^16.14.0
     "@webiny/app-admin": ^5.29.0
     "@webiny/app-admin-users-cognito": ^5.29.0
-    "@webiny/app-apw": ^5.29.0
     "@webiny/app-form-builder": ^5.29.0
     "@webiny/app-headless-cms": ^5.29.0
     "@webiny/app-page-builder": ^5.29.0
