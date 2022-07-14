@@ -5,7 +5,7 @@ body:
     attributes:
       value: |
         Thank you for suggesting an idea to make Webiny better.
-        Please fill in as much of the template below as you're able.
+        Please fill in as much of the template below as you're able to.
   - type: textarea
     attributes:
       label: Is your feature request related to a problem? Please describe.
