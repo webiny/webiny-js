@@ -1,7 +1,7 @@
 // @ts-ignore
 import mdbid from "mdbid";
 import { CmsModelFieldInput, CmsGroup, CmsModelField } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -51,7 +51,7 @@ describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
+    const { createContentModelGroupMutation } = useGraphQLHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsGroup;
 
@@ -71,8 +71,8 @@ describe("content model test", () => {
 
     test("base schema should only contain relevant queries and mutations", async () => {
         // create a "read" and "manage" endpoints
-        const readAPI = useContentGqlHandler(readHandlerOpts);
-        const manageAPI = useContentGqlHandler(manageHandlerOpts);
+        const readAPI = useGraphQLHandler(readHandlerOpts);
+        const manageAPI = useGraphQLHandler(manageHandlerOpts);
 
         const [read] = await readAPI.introspect();
         const [manage] = await manageAPI.introspect();
@@ -118,7 +118,7 @@ describe("content model test", () => {
             updateContentModelMutation,
             listContentModelsQuery,
             deleteContentModelMutation
-        } = useContentGqlHandler(manageHandlerOpts);
+        } = useGraphQLHandler(manageHandlerOpts);
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -245,7 +245,7 @@ describe("content model test", () => {
 
     test("delete existing content model", async () => {
         const { createContentModelMutation, deleteContentModelMutation } =
-            useContentGqlHandler(manageHandlerOpts);
+            useGraphQLHandler(manageHandlerOpts);
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -276,7 +276,7 @@ describe("content model test", () => {
             createContentModelMutation,
             updateContentModelMutation,
             deleteContentModelMutation
-        } = useContentGqlHandler(manageHandlerOpts);
+        } = useGraphQLHandler(manageHandlerOpts);
         const { createCategory, until, listCategories } =
             useCategoryManageHandler(manageHandlerOpts);
         const category = models.find(m => m.modelId === "category");
@@ -337,7 +337,7 @@ describe("content model test", () => {
 
     test("get existing content model", async () => {
         const { createContentModelMutation, getContentModelQuery } =
-            useContentGqlHandler(manageHandlerOpts);
+            useGraphQLHandler(manageHandlerOpts);
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -367,7 +367,7 @@ describe("content model test", () => {
     });
 
     test("error when getting non-existing model", async () => {
-        const { getContentModelQuery } = useContentGqlHandler(manageHandlerOpts);
+        const { getContentModelQuery } = useGraphQLHandler(manageHandlerOpts);
         const modelId = "nonExistingId";
         const [response] = await getContentModelQuery({
             modelId
@@ -388,7 +388,7 @@ describe("content model test", () => {
     });
 
     test("error when updating non-existing model", async () => {
-        const { updateContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { updateContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
         const modelId = "nonExistingId";
         const [response] = await updateContentModelMutation({
             modelId,
@@ -414,7 +414,7 @@ describe("content model test", () => {
     });
 
     test("error when deleting non-existing model", async () => {
-        const { deleteContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { deleteContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const modelId = "nonExistingId";
         const [response] = await deleteContentModelMutation({
@@ -437,7 +437,7 @@ describe("content model test", () => {
 
     test("update content model with new fields", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
-            useContentGqlHandler(manageHandlerOpts);
+            useGraphQLHandler(manageHandlerOpts);
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -526,7 +526,7 @@ describe("content model test", () => {
 
     test("error when assigning titleFieldId on non existing field", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
-            useContentGqlHandler(manageHandlerOpts);
+            useGraphQLHandler(manageHandlerOpts);
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -584,7 +584,7 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on create", async () => {
-        const { createContentModelMutation } = useContentGqlHandler({
+        const { createContentModelMutation } = useGraphQLHandler({
             ...manageHandlerOpts,
             plugins: [assignModelEvents()]
         });
@@ -616,12 +616,10 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on create from", async () => {
-        const { createContentModelMutation, createContentModelFromMutation } = useContentGqlHandler(
-            {
-                ...manageHandlerOpts,
-                plugins: [assignModelEvents()]
-            }
-        );
+        const { createContentModelMutation, createContentModelFromMutation } = useGraphQLHandler({
+            ...manageHandlerOpts,
+            plugins: [assignModelEvents()]
+        });
 
         const [createResponse] = await createContentModelMutation({
             data: {
@@ -675,7 +673,7 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on update", async () => {
-        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler({
+        const { createContentModelMutation, updateContentModelMutation } = useGraphQLHandler({
             ...manageHandlerOpts,
             plugins: [assignModelEvents()]
         });
@@ -720,7 +718,7 @@ describe("content model test", () => {
     });
 
     test("should execute hooks on delete", async () => {
-        const { createContentModelMutation, deleteContentModelMutation } = useContentGqlHandler({
+        const { createContentModelMutation, deleteContentModelMutation } = useGraphQLHandler({
             ...manageHandlerOpts,
             plugins: [assignModelEvents()]
         });
@@ -761,7 +759,7 @@ describe("content model test", () => {
 
     test("should refresh the schema when added new field", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
-            useContentGqlHandler(manageHandlerOpts);
+            useGraphQLHandler(manageHandlerOpts);
         const { listBugs } = useBugManageHandler(manageHandlerOpts);
 
         const bugModel = models.find(m => m.modelId === "bug");
@@ -861,7 +859,7 @@ describe("content model test", () => {
     });
 
     test("should list only specific content models", async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const createdContentModels = [];
 
@@ -876,7 +874,7 @@ describe("content model test", () => {
             createdContentModels.push(createResponse.data.createContentModel.data);
         }
 
-        const { listContentModelsQuery: listModels } = useContentGqlHandler({
+        const { listContentModelsQuery: listModels } = useGraphQLHandler({
             ...manageHandlerOpts,
             permissions: createPermissions({ models: [createdContentModels[0].modelId] })
         });
@@ -887,7 +885,7 @@ describe("content model test", () => {
     });
 
     test("error when getting model without specific group permission", async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const createdContentModels = [];
 
@@ -906,7 +904,7 @@ describe("content model test", () => {
             models: [createdContentModels[0].modelId],
             groups: ["some-group-id"]
         });
-        const { getContentModelQuery: getModel } = useContentGqlHandler({
+        const { getContentModelQuery: getModel } = useGraphQLHandler({
             ...manageHandlerOpts,
             permissions
         });
@@ -924,7 +922,7 @@ describe("content model test", () => {
     });
 
     test("should be able to get model with specific group permission", async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const createdContentModels = [];
 
@@ -944,7 +942,7 @@ describe("content model test", () => {
             models: [createdContentModels[0].modelId],
             groups: [contentModelGroup.id]
         });
-        const { getContentModelQuery: getModelB } = useContentGqlHandler({
+        const { getContentModelQuery: getModelB } = useGraphQLHandler({
             ...manageHandlerOpts,
             permissions
         });

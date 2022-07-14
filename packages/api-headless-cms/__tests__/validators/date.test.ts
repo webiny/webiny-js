@@ -1,5 +1,5 @@
-import dateLtePlugin from "~/content/plugins/validators/dateLte";
-import dateGtePlugin from "~/content/plugins/validators/dateGte";
+import dateLtePlugin from "~/validators/dateLte";
+import dateGtePlugin from "~/validators/dateGte";
 import { CmsModelFieldValidation } from "~/types";
 
 const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {

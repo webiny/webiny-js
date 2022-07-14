@@ -5,7 +5,8 @@ import React, {
     useMemo,
     Dispatch,
     SetStateAction,
-    MutableRefObject
+    MutableRefObject,
+    RefObject
 } from "react";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
@@ -14,8 +15,8 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
-import { CmsContentEntryRevision, CmsEditorContentEntry, CmsEditorContentModel } from "~/types";
-import { Tabs } from "@webiny/ui/Tabs";
+import { CmsContentEntryRevision, CmsEditorContentEntry } from "~/types";
+import { TabsImperativeApi } from "@webiny/ui/Tabs";
 import { parseIdentifier } from "@webiny/utils";
 import {
     CmsEntriesListRevisionsQueryResponse,
@@ -30,7 +31,6 @@ interface ContentEntryContextForm {
     submit: (ev: React.SyntheticEvent) => Promise<CmsEditorContentEntry | null>;
 }
 type ContentEntryContextFormRef = MutableRefObject<ContentEntryContextForm>;
-type ContentEntryContextTabsRef = MutableRefObject<Tabs | null>;
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
     entry: CmsEditorContentEntry;
@@ -40,49 +40,11 @@ export interface ContentEntryContext extends ContentEntriesContext {
     setLoading: Dispatch<SetStateAction<boolean>>;
     revisions: CmsContentEntryRevision[];
     refetchContent: () => void;
-    tabs: ContentEntryContextTabsRef;
-    setTabsRef: (tabs: Tabs) => void;
+    tabsRef: RefObject<TabsImperativeApi | undefined>;
     showEmptyView: boolean;
 }
 
-export const Context = React.createContext<ContentEntryContext>({
-    createEntry: () => {
-        return void 0;
-    },
-    entry: null as unknown as CmsEditorContentEntry,
-    form: {
-        current: {
-            submit: async () => {
-                return null;
-            }
-        }
-    },
-    canCreate: false,
-    showEmptyView: false,
-    tabs: {
-        current: null
-    },
-    setTabsRef: () => {
-        return void 0;
-    },
-    refetchContent: () => {
-        return void 0;
-    },
-    revisions: [],
-    setLoading: () => {
-        return void 0;
-    },
-    loading: false,
-    listQueryVariables: {},
-    setListQueryVariables: () => {
-        return void 0;
-    },
-    contentModel: null as unknown as CmsEditorContentModel,
-    sorters: [],
-    setFormRef: () => {
-        return void 0;
-    }
-});
+export const Context = React.createContext<ContentEntryContext | undefined>(undefined);
 
 export interface ContentEntryContextProviderProps extends Partial<UseContentEntryProviderProps> {
     children: React.ReactNode;
@@ -124,7 +86,6 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
             return null;
         }
     });
-    const tabsRef = useRef<Tabs | null>(null);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -145,6 +106,8 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
         entryId = result ? result.id : null;
     }
 
+    const tabsRef = useRef<TabsImperativeApi>();
+
     const { READ_CONTENT } = useMemo(() => {
         return {
             READ_CONTENT: createReadQuery(contentModel)
@@ -162,13 +125,6 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
             formRef.current = form;
         },
         [formRef]
-    );
-
-    const setTabsRef = useCallback(
-        (tabs: Tabs) => {
-            tabsRef.current = tabs;
-        },
-        [tabsRef]
     );
 
     const createEntry = useCallback((): void => {
@@ -221,9 +177,8 @@ export const Provider: React.FC<ContentEntryContextProviderProps> = ({
         refetchContent: getEntry.refetch,
         setFormRef,
         setLoading,
-        setTabsRef,
-        showEmptyView: !newEntry && !loading && isEmpty(entry),
-        tabs: tabsRef
+        tabsRef,
+        showEmptyView: !newEntry && !loading && isEmpty(entry)
     };
 
     return <Context.Provider value={value}>{children}</Context.Provider>;

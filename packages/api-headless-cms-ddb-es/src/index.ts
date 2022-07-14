@@ -21,6 +21,7 @@ import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
 import { elasticsearchFields as cmsEntryElasticsearchFields } from "~/operations/entry/elasticsearchFields";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex";
+import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
     const {
@@ -29,8 +30,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         esTable,
         documentClient,
         elasticsearch,
-        plugins: userPlugins,
-        modelFieldToGraphQLPlugins
+        plugins: userPlugins
     } = params;
 
     const tableInstance = createTable({
@@ -83,7 +83,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Plugins of type CmsModelFieldToGraphQLPlugin.
          */
-        modelFieldToGraphQLPlugins,
         /**
          * Elasticsearch field definitions for the entry record.
          */
@@ -112,13 +111,18 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     return {
         beforeInit: async context => {
-            context.plugins.register([
-                /**
-                 * Field plugins for DynamoDB.
-                 * We must pass them to the base application.
-                 */
-                dynamoDbPlugins()
-            ]);
+            /**
+             * Collect all required plugins from parent context.
+             */
+            const fieldPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
+                "cms-model-field-to-graphql"
+            );
+            plugins.register(fieldPlugins);
+
+            /**
+             * Pass the plugins to the parent context.
+             */
+            context.plugins.register([dynamoDbPlugins()]);
         },
         init: async context => {
             /**

@@ -10742,7 +10742,6 @@ __metadata:
     "@webiny/utils": ^5.29.0
     "@webiny/validation": ^5.29.0
     apollo-graphql: ^0.9.5
-    boolean: ^3.0.2
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
     dot-prop: ^6.0.1
@@ -12165,6 +12164,7 @@ __metadata:
     "@webiny/form": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
+    "@webiny/react-composition": ^5.29.0
     "@webiny/react-router": ^5.29.0
     "@webiny/telemetry": ^5.29.0
     "@webiny/ui": ^5.29.0
@@ -16497,7 +16497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"boolean@npm:^3.0.1, boolean@npm:^3.0.2":
+"boolean@npm:^3.0.1":
   version: 3.2.0
   resolution: "boolean@npm:3.2.0"
   checksum: fb29535b8bf710ef45279677a86d14f5185d604557204abd2ca5fa3fb2a5c80e04d695c8dbf13ab269991977a79bb6c04b048220a6b2a3849853faa94f4a7d77

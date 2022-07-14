@@ -1,11 +1,7 @@
-import React from "react";
-import Background from "./Background";
-import { PbEditorContentPlugin } from "../../../types";
-
-export default {
-    name: "pb-editor-content-background",
-    type: "pb-editor-content",
-    render() {
-        return <Background />;
-    }
-} as PbEditorContentPlugin;
+/**
+ * NOTE: this file exists only to prevent older projects from breaking, if they still use this import path.
+ */
+console.log(
+    `DEPRECATION WARNING: you're importing a path that is no longer used "@webiny/app-page-builder/editor/plugins/background". You should remove this import from your apps.`
+);
+export default [];

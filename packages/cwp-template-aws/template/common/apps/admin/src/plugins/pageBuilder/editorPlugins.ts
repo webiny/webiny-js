@@ -1,5 +1,3 @@
-import contentBackground from "@webiny/app-page-builder/editor/plugins/background";
-import blockEditing from "@webiny/app-page-builder/editor/plugins/blockEditing";
 // Elements
 import document from "@webiny/app-page-builder/editor/plugins/elements/document";
 import block from "@webiny/app-page-builder/editor/plugins/elements/block";
@@ -23,8 +21,6 @@ import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesL
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
 // Icons
 import icons from "@webiny/app-page-builder/editor/plugins/icons";
-// Element actions
-import help from "@webiny/app-page-builder/editor/plugins/elementActions/help";
 // Element groups
 import basicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/basic";
 import layoutGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/layout";
@@ -61,22 +57,14 @@ import action from "@webiny/app-page-builder/editor/plugins/elementSettings/acti
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 import visibility from "@webiny/app-page-builder/editor/plugins/elementSettings/visibility";
-// Default bar
-import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
 // Responsive editor mode
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
 import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSettings";
-// Breadcrumbs
-import breadcrumbs from "@webiny/app-page-builder/editor/plugins/breadcrumbs";
 // default presets for grid
 import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
-// event actions
-import actionPlugins from "@webiny/app-page-builder/editor/recoil/actions/plugins";
 
 export default [
-    contentBackground,
-    blockEditing,
     // Elements
     document(),
     grid(),
@@ -103,8 +91,6 @@ export default [
     ...gridPresets,
     // Icons
     icons,
-    // Element Actions
-    help,
     // Element groups
     basicGroup,
     formGroup,
@@ -140,14 +126,8 @@ export default [
     gridSettings,
     textSettings,
     visibility,
-    // Default bar
-    defaultBarPlugins,
     // Responsive editor mode
     responsiveEditorMode(),
     // Page settings
-    pageSettingsPlugins,
-    // Breadcrumbs
-    breadcrumbs,
-    // action registration
-    actionPlugins()
+    pageSettingsPlugins
 ];

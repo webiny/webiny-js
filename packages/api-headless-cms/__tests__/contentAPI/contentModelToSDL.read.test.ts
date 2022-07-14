@@ -1,6 +1,6 @@
 import prettier from "prettier";
-import graphqlFieldPlugins from "~/content/plugins/graphqlFields";
-import { createReadSDL } from "~/content/plugins/schema/createReadSDL";
+import { createGraphQLFields } from "~/graphqlFields";
+import { createReadSDL } from "~/graphql/schema/createReadSDL";
 import contentModels from "./mocks/contentModels";
 import categorySDL from "./snapshots/category.read";
 import productSDL from "./snapshots/product.read";
@@ -8,7 +8,7 @@ import reviewSDL from "./snapshots/review.read";
 import { CmsModelFieldToGraphQLPlugin } from "~/types";
 
 describe("READ - ContentModel to SDL", () => {
-    const fieldTypePlugins = graphqlFieldPlugins().reduce<
+    const fieldTypePlugins = createGraphQLFields().reduce<
         Record<string, CmsModelFieldToGraphQLPlugin>
     >((acc, pl) => {
         acc[pl.fieldType] = pl;

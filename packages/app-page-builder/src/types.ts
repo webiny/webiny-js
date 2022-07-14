@@ -1,7 +1,6 @@
 import React, { ComponentType, ReactElement, ReactNode } from "react";
 import { DragObjectWithTypeWithTarget } from "./editor/components/Droppable";
 import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
-import { PluginsAtomType } from "./editor/recoil/modules";
 import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
@@ -370,11 +369,6 @@ export type PbPageElementPagesListComponentPlugin = Plugin & {
     component: ComponentType<any>;
 };
 
-export type PbAddonRenderPlugin = Plugin & {
-    type: "addon-render";
-    component: ReactElement;
-};
-
 export interface PbDocumentElementPluginRenderProps {
     [key: string]: any;
 }
@@ -540,42 +534,6 @@ export type PbIconsPlugin = Plugin & {
     getIcons(): PbIcon[];
 };
 
-export type PbEditorBarPluginShouldRenderProps = {
-    plugins: PluginsAtomType;
-    activeElement: any;
-};
-
-export type PbEditorBarPlugin = Plugin & {
-    type: "pb-editor-bar";
-    shouldRender(props: PbEditorBarPluginShouldRenderProps): boolean;
-    render(): ReactElement;
-};
-
-export type PbEditorContentPlugin = Plugin & {
-    type: "pb-editor-content";
-    render(): ReactElement;
-};
-
-export type PbEditorDefaultBarLeftPlugin = Plugin & {
-    type: "pb-editor-default-bar-left";
-    render(): ReactElement;
-};
-
-export type PbEditorDefaultBarCenterPlugin = Plugin & {
-    type: "pb-editor-default-bar-center";
-    render(): ReactElement;
-};
-
-export type PbEditorDefaultBarRightPlugin = Plugin & {
-    type: "pb-editor-default-bar-right";
-    render(): ReactElement;
-};
-
-export type PbEditorDefaultBarRightPageOptionsPlugin = Plugin & {
-    type: "pb-editor-default-bar-right-page-options";
-    render(): ReactElement;
-};
-
 export type PbEditorToolbarTopPlugin = Plugin & {
     type: "pb-editor-toolbar-top";
     renderAction(): ReactElement;
@@ -731,15 +689,16 @@ export type PbRenderElementPluginArgs = {
 };
 
 // ============== EVENT ACTION HANDLER ================= //
-export interface EventActionHandlerCallableState extends PbState {
+// TODO: at some point, convert this into an interface, and use module augmentation to add new properties.
+export type EventActionHandlerCallableState<TState = PbState> = PbState<TState> & {
     getElementById(id: string): Promise<PbEditorElement>;
     getElementTree(element?: PbEditorElement): Promise<any>;
-}
+};
 
-export interface EventActionHandler {
+export interface EventActionHandler<TCallableState = unknown> {
     on(
         target: EventActionHandlerTarget,
-        callable: EventActionCallable
+        callable: EventActionCallable<any, TCallableState>
     ): EventActionHandlerUnregister;
     trigger<T extends EventActionHandlerCallableArgs>(
         ev: EventAction<T>
@@ -769,8 +728,8 @@ export interface EventActionHandlerConfig {
     maxEventActionsNesting: number;
 }
 
-export interface EventActionHandlerActionCallableResponse {
-    state?: Partial<EventActionHandlerCallableState>;
+export interface EventActionHandlerActionCallableResponse<TState = unknown> {
+    state?: Partial<EventActionHandlerCallableState<TState>>;
     actions: BaseEventAction[];
 }
 
@@ -782,10 +741,13 @@ export interface EventActionHandlerCallableArgs {
     [key: string]: any;
 }
 
-export interface EventActionCallable<T extends EventActionHandlerCallableArgs = any> {
-    (state: EventActionHandlerCallableState, meta: EventActionHandlerMeta, args?: T):
-        | EventActionHandlerActionCallableResponse
-        | Promise<EventActionHandlerActionCallableResponse>;
+export interface EventActionCallable<
+    TArgs extends EventActionHandlerCallableArgs = any,
+    TState = PbState
+> {
+    (state: EventActionHandlerCallableState<TState>, meta: EventActionHandlerMeta, args?: TArgs):
+        | EventActionHandlerActionCallableResponse<TState>
+        | Promise<EventActionHandlerActionCallableResponse<TState>>;
 }
 
 /**

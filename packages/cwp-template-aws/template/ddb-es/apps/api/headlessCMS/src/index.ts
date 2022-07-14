@@ -6,12 +6,8 @@ import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import securityPlugins from "./security";
-import {
-    createContentHeadlessCmsContext,
-    createContentHeadlessCmsGraphQL
-} from "@webiny/api-headless-cms";
+import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
-import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import logsPlugins from "@webiny/handler-logs";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch/client";
@@ -46,18 +42,14 @@ export const handler = createHandler({
         securityPlugins({ documentClient }),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
-        createContentHeadlessCmsGraphQL({
-            debug
-        }),
-        createContentHeadlessCmsContext({
+        createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch,
-                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins(),
                 plugins: [elasticsearchDataGzipCompression()]
             })
         }),
-        createContentHeadlessCmsGraphQL({ debug }),
+        createHeadlessCmsGraphQL({ debug }),
         createApwHeadlessCmsContext({
             storageOperations: createApwSaStorageOperations({ documentClient })
         }),

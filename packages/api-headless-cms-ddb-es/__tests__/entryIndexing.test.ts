@@ -1,6 +1,6 @@
 import { PluginsContainer } from "@webiny/plugins";
 import indexingPlugins from "~/elasticsearch/indexing";
-import cmsFieldTypePlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
+import { createGraphQLFields } from "@webiny/api-headless-cms";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
 import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers";
 
@@ -132,7 +132,7 @@ const mockIndexedEntry: Partial<CmsEntry> & Record<string, any> = {
     }
 };
 
-const plugins = new PluginsContainer([...indexingPlugins(), ...cmsFieldTypePlugins()]);
+const plugins = new PluginsContainer([...indexingPlugins(), ...createGraphQLFields()]);
 
 describe("entryIndexing", () => {
     test("should prepare entry for indexing", () => {

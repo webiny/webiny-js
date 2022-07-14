@@ -2,7 +2,7 @@ import { plugins } from "@webiny/plugins";
 import { SplitView } from "@webiny/app-admin/ui/views/SplitView";
 import { ViewElement } from "@webiny/app-admin/ui/elements/ViewElement";
 import { OverlayView } from "@webiny/app-admin/ui/views/OverlayView";
-import { UsePageSettings, usePageSettings } from "~/editor/hooks/usePageSettings";
+import { UsePageSettings, usePageSettings } from "~/pageEditor/hooks/usePageSettings";
 import {
     PageSettingsTabElement,
     PageSettingsTabElementConfig

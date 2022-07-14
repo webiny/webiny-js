@@ -22,12 +22,8 @@ import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
-import {
-    createAdminHeadlessCmsGraphQL,
-    createAdminHeadlessCmsContext
-} from "@webiny/api-headless-cms";
+import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 import { createApwPageBuilderContext, createApwGraphQL } from "@webiny/api-apw";
@@ -79,13 +75,12 @@ export const handler = createHandler({
                 documentClient
             })
         }),
-        createAdminHeadlessCmsGraphQL(),
-        createAdminHeadlessCmsContext({
+        createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+                documentClient
             })
         }),
+        createHeadlessCmsGraphQL(),
         createApwGraphQL(),
         createApwPageBuilderContext({
             storageOperations: createApwSaStorageOperations({ documentClient })

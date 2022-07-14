@@ -15,9 +15,6 @@ const {
 const {
     createElasticsearchClient
 } = require("@webiny/project-utils/testing/elasticsearch/createClient");
-
-const modelFieldToGraphQLPlugins =
-    require("@webiny/api-headless-cms/content/plugins/graphqlFields").default;
 /**
  * For this to work it must load plugins that have already been built
  */
@@ -130,7 +127,6 @@ class CmsTestEnvironment extends NodeEnvironment {
                     return createStorageOperations({
                         documentClient,
                         elasticsearch: elasticsearchClient,
-                        modelFieldToGraphQLPlugins: modelFieldToGraphQLPlugins(),
                         table: table => ({ ...table, name: process.env.DB_TABLE }),
                         esTable: table => ({ ...table, name: process.env.DB_TABLE_ELASTICSEARCH }),
                         plugins: testPlugins.concat([

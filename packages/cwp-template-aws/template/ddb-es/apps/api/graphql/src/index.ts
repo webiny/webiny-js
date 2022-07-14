@@ -23,12 +23,8 @@ import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb-es";
-import {
-    createAdminHeadlessCmsContext,
-    createAdminHeadlessCmsGraphQL
-} from "@webiny/api-headless-cms";
+import { createHeadlessCmsGraphQL, createHeadlessCmsContext } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
-import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
 import elasticsearchDataGzipCompression from "@webiny/api-elasticsearch/plugins/GzipCompression";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
@@ -93,15 +89,14 @@ export const handler = createHandler({
                 elasticsearch: elasticsearchClient
             })
         }),
-        createAdminHeadlessCmsContext({
+        createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
                 elasticsearch: elasticsearchClient,
-                modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins(),
                 plugins: [elasticsearchDataGzipCompression()]
             })
         }),
-        createAdminHeadlessCmsGraphQL(),
+        createHeadlessCmsGraphQL(),
         elasticsearchDataGzipCompression(),
         createApwGraphQL(),
         createApwPageBuilderContext({

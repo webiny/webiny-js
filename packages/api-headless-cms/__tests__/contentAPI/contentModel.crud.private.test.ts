@@ -1,6 +1,6 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsGroupPlugin } from "~/content/plugins/CmsGroupPlugin";
-import { CmsModelPlugin } from "~/content/plugins/CmsModelPlugin";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
+import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
+import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { CmsGroup, CmsModel } from "~/types";
 
 const privateGroup = new CmsGroupPlugin({
@@ -37,7 +37,7 @@ describe("Private Groups and Models", function () {
         listContentModelGroupsQuery,
         createContentModelMutation,
         listContentModelsQuery
-    } = useContentGqlHandler(manageHandlerOpts);
+    } = useGraphQLHandler(manageHandlerOpts);
 
     const createGroup = async (data: Record<string, any>): Promise<CmsGroup> => {
         const [createResponse] = await createContentModelGroupMutation({

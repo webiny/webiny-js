@@ -1,10 +1,10 @@
 import { CmsGroup } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 
 describe("content model test", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
+    const { createContentModelGroupMutation } = useGraphQLHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsGroup;
 
@@ -21,7 +21,7 @@ describe("content model test", () => {
     });
 
     test("should not allow creation of a model with an existing modelId", async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const eventData = {
             name: "Event",
@@ -75,7 +75,7 @@ describe("content model test", () => {
     });
 
     test("should not allow creation of a model with an existing modelId (plural form of it)", async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         const eventData = {
             name: "Event",
@@ -130,7 +130,7 @@ describe("content model test", () => {
     });
 
     test("should not allow creation of a model with an existing modelId (singular form of it)", async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { createContentModelMutation } = useGraphQLHandler(manageHandlerOpts);
 
         await createContentModelMutation({
             data: {

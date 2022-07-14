@@ -20,7 +20,7 @@ interface EntryError {
     data?: Record<string, any>;
 }
 
-export interface OnEntryPublishResponse {
+export interface OnEntryPublishRequest {
     model: CmsModel;
     entry: CmsEditorContentEntry;
     id: string;
@@ -32,10 +32,31 @@ export interface OnEntryPublishResponse {
     listQueryVariables: ListQueryVariables;
 }
 
-export type OnEntryDeleteResponse = OnEntryPublishResponse;
+export interface OnEntryPublishResponse extends Omit<OnEntryPublishRequest, "entry"> {
+    entry: CmsEditorContentEntry | undefined;
+}
 
-type OnEntryRevisionPublishSubscriber = AsyncProcessor<OnEntryPublishResponse>;
-type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteResponse>;
+export interface OnEntryDeleteRequest {
+    model: CmsModel;
+    entry: CmsEditorContentEntry;
+    id: string;
+    options: PublishEntryOptions;
+    // TODO: Maybe a different input and output type for compose.
+    error?: EntryError | null;
+    locale: string;
+    client: ApolloClient<any>;
+    listQueryVariables: ListQueryVariables;
+}
+
+export interface OnEntryDeleteResponse extends Omit<OnEntryDeleteRequest, "entry"> {
+    entry: CmsEditorContentEntry | undefined;
+}
+
+type OnEntryRevisionPublishSubscriber = AsyncProcessor<
+    OnEntryPublishRequest,
+    OnEntryPublishResponse
+>;
+type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteRequest, OnEntryDeleteResponse>;
 
 interface PublishEntryRevisionParams {
     model: CmsModel;

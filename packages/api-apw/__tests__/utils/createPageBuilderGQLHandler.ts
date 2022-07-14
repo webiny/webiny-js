@@ -18,14 +18,13 @@ import {
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createApwPageBuilderContext, createApwGraphQL } from "~/index";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
-import headlessCmsModelFieldToGraphQLPlugins from "@webiny/api-headless-cms/content/plugins/graphqlFields";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 /**
  * Unfortunately at we need to import the api-i18n-ddb package manually
  */
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { getStorageOperations } from "./storageOperations";
-import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import {
     createPageBuilderContext,
     createPageBuilderGraphQL
@@ -63,10 +62,6 @@ import {
 } from "./graphql/changeRequest";
 import { contextCommon, contextSecurity } from "./context";
 
-export interface CreateHeadlessCmsAppParams {
-    storageOperations: HeadlessCmsStorageOperations;
-}
-
 export interface GQLHandlerCallableParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
@@ -74,7 +69,6 @@ export interface GQLHandlerCallableParams {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path: string;
-    createHeadlessCmsApp: (params: CreateHeadlessCmsAppParams) => any[];
 }
 
 export interface InvokeParams {
@@ -106,15 +100,14 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
         name: "Root",
         parent: null
     };
-    const { permissions, identity, plugins = [], createHeadlessCmsApp } = params;
+    const { permissions, identity, plugins = [] } = params;
     /**
      * We're using ddb-only storageOperations here because current jest setup doesn't allow
      * usage of more than one storageOperations at a time with the help of --keyword flag.
      */
-    const headlessCmsApp = createHeadlessCmsApp({
+    const headlessCmsApp = createHeadlessCmsContext({
         storageOperations: createHeadlessCmsStorageOperations({
-            documentClient,
-            modelFieldToGraphQLPlugins: headlessCmsModelFieldToGraphQLPlugins()
+            documentClient
         })
     });
 
@@ -143,6 +136,7 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
                 storageOperations: createPageBuilderStorageOperations({ documentClient })
             }),
             ...headlessCmsApp,
+            createHeadlessCmsGraphQL(),
             createApwPageBuilderContext({
                 storageOperations: ops.storageOperations
             }),
