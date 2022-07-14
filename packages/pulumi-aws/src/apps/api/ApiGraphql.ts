@@ -9,6 +9,8 @@ import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 interface GraphqlParams {
     env: Record<string, any>;
+    apwSchedulerEventRule: pulumi.Output<aws.cloudwatch.EventRule>;
+    apwSchedulerEventTarget: pulumi.Output<aws.cloudwatch.EventTarget>;
 }
 
 export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
@@ -16,6 +18,8 @@ export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
 export const ApiGraphql = createAppModule({
     name: "ApiGraphql",
     config(app: PulumiApp, params: GraphqlParams) {
+        const core = app.getModule(CoreOutput);
+
         const policy = createGraphqlLambdaPolicy(app);
         const role = createLambdaRole(app, {
             name: "api-lambda-role",
@@ -43,6 +47,30 @@ export const ApiGraphql = createAppModule({
                     }
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
+            }
+        });
+
+        /**
+         * Store meta information like "mainGraphqlFunctionArn" in APW settings at deploy time.
+         *
+         * Note: We can't pass "mainGraphqlFunctionArn" as env variable due to circular dependency between
+         * "graphql" lambda and "api-apw-scheduler-execute-action" lambda.
+         */
+        app.addResource(aws.dynamodb.TableItem, {
+            name: "apwSettings",
+            config: {
+                tableName: core.primaryDynamodbTableName,
+                hashKey: core.primaryDynamodbTableHashKey,
+                rangeKey: pulumi
+                    .output(core.primaryDynamodbTableRangeKey)
+                    .apply(key => key || "SK"),
+                item: pulumi.interpolate`{
+              "PK": {"S": "APW#SETTINGS"},
+              "SK": {"S": "${app.params.run.variant || "A"}"},
+              "mainGraphqlFunctionArn": {"S": "${graphql.output.arn}"},
+              "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
+              "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}
+            }`
             }
         });
 
