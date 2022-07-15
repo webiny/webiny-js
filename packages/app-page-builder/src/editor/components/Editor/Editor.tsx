@@ -13,7 +13,7 @@ import EditorToolbar from "./Toolbar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 import Dialogs from "./Dialogs";
-import EditorSideBar from "./EditorSideBar";
+import { EditorSidebar } from "./EditorSidebar";
 
 type PluginRegistryType = Map<string, () => void>;
 
@@ -108,7 +108,7 @@ export const Editor: React.FC = () => {
             <EditorBar />
             <EditorToolbar />
             <EditorContent />
-            <EditorSideBar />
+            <EditorSidebar />
             <Dialogs />
             <DragPreview />
         </div>

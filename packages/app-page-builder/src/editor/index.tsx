@@ -23,7 +23,9 @@ import { PbEditorElement } from "~/types";
 export { EditorConfig };
 export * from "./components/Editor/EditorBar";
 export * from "./components/Editor/EditorContent";
-export { EditorSidebarTab, EditorSidebarTabProps } from "./components/Editor/EditorSideBar";
+export { EditorProvider } from "./contexts/EditorProvider";
+export { EditorSidebarTab, EditorSidebarTabProps } from "./components/Editor/EditorSidebar";
+export { ElementSettingsRenderer } from "./plugins/elementSettings/advanced/ElementSettings";
 
 export interface EditorStateInitializerFactory {
     (): EditorStateInitializer;
