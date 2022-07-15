@@ -1,7 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import {
     CmsModelField,
-    CmsModelFieldToGraphQLPlugin,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
 import { DynamoDBTypes, TableConstructor } from "dynamodb-toolbox/dist/classes/Table";
@@ -54,7 +53,6 @@ export interface TableModifier {
 export interface StorageOperationsFactoryParams {
     documentClient: DocumentClient;
     table?: TableModifier;
-    modelFieldToGraphQLPlugins: CmsModelFieldToGraphQLPlugin[];
     attributes?: Record<ENTITIES, Attributes>;
     plugins?: Plugin[] | Plugin[][];
 }

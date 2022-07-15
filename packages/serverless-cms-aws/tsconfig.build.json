@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../api-apw/tsconfig.build.json" },
+    { "path": "../api-apw-scheduler-so-ddb/tsconfig.build.json" },
     { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
     { "path": "../api-elasticsearch/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },

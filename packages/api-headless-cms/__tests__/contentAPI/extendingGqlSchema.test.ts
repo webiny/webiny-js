@@ -1,4 +1,4 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
 const graphqlSchemaPlugin = new GraphQLSchemaPlugin({
@@ -26,7 +26,7 @@ const graphqlSchemaPlugin = new GraphQLSchemaPlugin({
 
 describe("content model test no field plugin", () => {
     test("prevent content model update if a backend plugin for a field does not exist", async () => {
-        const { invoke } = useContentGqlHandler({
+        const { invoke } = useGraphQLHandler({
             path: "manage/en-US",
             plugins: [graphqlSchemaPlugin]
         });

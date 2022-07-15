@@ -1,5 +1,4 @@
-import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableParams } from "./useGqlHandler";
+import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
 
 const productFields = `
     id
@@ -183,10 +182,8 @@ const unpublishProductMutation = /* GraphQL */ `
     }
 `;
 
-export const useProductManageHandler = (
-    params: Omit<GQLHandlerCallableParams, "createHeadlessCmsApp">
-) => {
-    const contentHandler = useContentGqlHandler(params);
+export const useProductManageHandler = (params: GraphQLHandlerParams) => {
+    const contentHandler = useGraphQLHandler(params);
 
     return {
         ...contentHandler,

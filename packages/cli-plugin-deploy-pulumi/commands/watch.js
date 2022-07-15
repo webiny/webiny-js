@@ -117,8 +117,6 @@ module.exports = async (inputs, context) => {
     }
 
     let output = terminalOutput;
-    if (inputs.output === "browser") {
-    }
 
     switch (inputs.output) {
         case "browser":
@@ -206,11 +204,17 @@ module.exports = async (inputs, context) => {
                 message: chalk.green("Watching cloud infrastructure resources...")
             });
 
-            const buildFoldersGlob = [
-                projectApplication.project.workspace,
-                inputs.folder,
-                "**/build"
-            ].join("/");
+            let buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join("/");
+
+            // For non-workspaces projects, we still want to be watching `**/build/*.js` files located
+            // in user's project (for example `api/graphql/code/build/handler.js`).
+            if (projectApplication.type !== "v5-workspaces") {
+                buildFoldersGlob = [
+                    projectApplication.paths.absolute,
+                    inputs.folder,
+                    "**/build/*.js"
+                ].join("/");
+            }
 
             const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 
@@ -243,7 +247,6 @@ module.exports = async (inputs, context) => {
 
             const pulumi = await getPulumi({ projectApplication });
 
-            // We only watch "code/**/build" and "pulumi" folders.
             const watchCloudInfrastructure = pulumi.run({
                 command: "watch",
                 args: {

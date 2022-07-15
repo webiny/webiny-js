@@ -1,6 +1,7 @@
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
     ApiGateway,
+    ApiApwScheduler,
     ApiCloudfront,
     ApiFileManager,
     ApiGraphql,
@@ -75,6 +76,18 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
             const fileManager = app.addModule(ApiFileManager);
 
+            const apwScheduler = app.addModule(ApiApwScheduler, {
+                primaryDynamodbTableArn: core.primaryDynamodbTableArn,
+
+                env: {
+                    COGNITO_REGION: String(process.env.AWS_REGION),
+                    COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
+                    DB_TABLE: core.primaryDynamodbTableName,
+                    S3_BUCKET: core.fileManagerBucketId,
+                    WEBINY_LOGS_FORWARD_URL
+                }
+            });
+
             const graphql = app.addModule(ApiGraphql, {
                 env: {
                     COGNITO_REGION: String(process.env.AWS_REGION),
@@ -96,7 +109,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
                     WEBINY_LOGS_FORWARD_URL
-                }
+                },
+                apwSchedulerEventRule: apwScheduler.eventRule.output,
+                apwSchedulerEventTarget: apwScheduler.eventTarget.output
             });
 
             const headlessCms = app.addModule(ApiHeadlessCMS, {
@@ -160,6 +175,10 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
+                apwSchedulerScheduleAction: apwScheduler.scheduleAction.lambda.output.arn,
+                apwSchedulerExecuteAction: apwScheduler.executeAction.lambda.output.arn,
+                apwSchedulerEventRule: apwScheduler.eventRule.output.name,
+                apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
             });
@@ -174,7 +193,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 graphql,
                 headlessCms,
                 apiGateway,
-                cloudfront
+                cloudfront,
+                apwScheduler
             };
         }
     });

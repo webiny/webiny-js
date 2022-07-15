@@ -1,5 +1,5 @@
 import { CmsGroup, CmsModel } from "~/types";
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { useGraphQLHandler } from "../utils/useGraphQLHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
@@ -35,7 +35,7 @@ describe("Endpoint access", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    } = useGraphQLHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.

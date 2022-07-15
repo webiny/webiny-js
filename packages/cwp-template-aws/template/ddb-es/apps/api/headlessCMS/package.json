@@ -25,7 +25,6 @@
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",
-    "@webiny/handler-args": "latest",
     "@webiny/handler-client": "latest",
     "@webiny/handler-db": "latest",
     "@webiny/handler-http": "latest",

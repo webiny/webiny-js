@@ -15,8 +15,8 @@
     { "path": "../react-properties" },
     { "path": "../react-router" },
     { "path": "../ui" },
-    { "path": "../validation" },
-    { "path": "../utils" }
+    { "path": "../utils" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -48,10 +48,10 @@
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
-      "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

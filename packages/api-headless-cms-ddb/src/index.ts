@@ -13,15 +13,10 @@ import { createSettingsStorageOperations } from "~/operations/settings";
 import { createGroupsStorageOperations } from "~/operations/group";
 import { createModelsStorageOperations } from "~/operations/model";
 import { createEntriesStorageOperations } from "./operations/entry";
+import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 export const createStorageOperations: StorageOperationsFactory = params => {
-    const {
-        attributes,
-        table,
-        documentClient,
-        plugins: userPlugins,
-        modelFieldToGraphQLPlugins
-    } = params;
+    const { attributes, table, documentClient, plugins: userPlugins } = params;
 
     const tableInstance = createTable({
         table,
@@ -62,10 +57,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
          */
         ...(userPlugins || []),
         /**
-         * Plugins of type CmsModelFieldToGraphQLPlugin.
-         */
-        modelFieldToGraphQLPlugins,
-        /**
          * DynamoDB filter plugins for the where conditions.
          */
         dynamoDbValueFilters(),
@@ -77,13 +68,18 @@ export const createStorageOperations: StorageOperationsFactory = params => {
 
     return {
         beforeInit: async context => {
-            context.plugins.register([
-                /**
-                 * Field plugins for DynamoDB.
-                 * We must pass them to the base application.
-                 */
-                dynamoDbPlugins()
-            ]);
+            /**
+             * Collect all required plugins from parent context.
+             */
+            const fieldPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
+                "cms-model-field-to-graphql"
+            );
+            plugins.register(fieldPlugins);
+
+            /**
+             * Pass the plugins to the parent context.
+             */
+            context.plugins.register([dynamoDbPlugins()]);
         },
         getEntities: () => entities,
         getTable: () => tableInstance,

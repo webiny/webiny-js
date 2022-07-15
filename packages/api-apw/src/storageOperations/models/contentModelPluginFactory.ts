@@ -1,5 +1,5 @@
-import { CmsGroup } from "@webiny/api-headless-cms/content/plugins/CmsGroupPlugin";
-import { CmsModelPlugin } from "@webiny/api-headless-cms/content/plugins/CmsModelPlugin";
+import { CmsGroup } from "@webiny/api-headless-cms";
+import { CmsModelPlugin } from "@webiny/api-headless-cms";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
 type ModelDefinition = Omit<CmsModel, "locale" | "tenant" | "webinyVersion" | "group">;
