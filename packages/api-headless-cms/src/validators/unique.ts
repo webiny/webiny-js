@@ -5,7 +5,7 @@ import { CmsModelFieldValidatorPlugin } from "~/types";
  * Validation if the field value is unique.
  * Be aware of using this in DynamoDB only environment as all records will be loaded to check for the unique value.
  */
-export default (): CmsModelFieldValidatorPlugin => {
+export const createUniqueValidator = (): CmsModelFieldValidatorPlugin => {
     return {
         type: "cms-model-field-validator",
         name: "cms-model-field-validator-unique",

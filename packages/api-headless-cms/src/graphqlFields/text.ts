@@ -15,37 +15,37 @@ const createListFilters = ({ field }: CreateListFiltersParams) => {
     `;
 };
 
-const plugin: CmsModelFieldToGraphQLPlugin = {
-    name: "cms-model-field-to-graphql-text",
-    type: "cms-model-field-to-graphql",
-    fieldType: "text",
-    isSortable: true,
-    isSearchable: true,
-    fullTextSearch: true,
-    read: {
-        createTypeField({ field }) {
-            if (field.multipleValues) {
-                return `${field.fieldId}: [String]`;
+export const createTextField = (): CmsModelFieldToGraphQLPlugin => {
+    return {
+        name: "cms-model-field-to-graphql-text",
+        type: "cms-model-field-to-graphql",
+        fieldType: "text",
+        isSortable: true,
+        isSearchable: true,
+        fullTextSearch: true,
+        read: {
+            createTypeField({ field }) {
+                if (field.multipleValues) {
+                    return `${field.fieldId}: [String]`;
+                }
+                return `${field.fieldId}: String`;
+            },
+            createGetFilters({ field }) {
+                return `${field.fieldId}: String`;
+            },
+            createListFilters
+        },
+        manage: {
+            createListFilters,
+            createTypeField({ field }) {
+                if (field.multipleValues) {
+                    return `${field.fieldId}: [String]`;
+                }
+                return `${field.fieldId}: String`;
+            },
+            createInputField({ field }) {
+                return createGraphQLInputField(field, "String");
             }
-            return `${field.fieldId}: String`;
-        },
-        createGetFilters({ field }) {
-            return `${field.fieldId}: String`;
-        },
-        createListFilters
-    },
-    manage: {
-        createListFilters,
-        createTypeField({ field }) {
-            if (field.multipleValues) {
-                return `${field.fieldId}: [String]`;
-            }
-            return `${field.fieldId}: String`;
-        },
-        createInputField({ field }) {
-            return createGraphQLInputField(field, "String");
         }
-    }
+    };
 };
-
-export default plugin;

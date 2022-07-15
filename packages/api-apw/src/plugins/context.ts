@@ -1,4 +1,4 @@
-import apwHooks from "./hooks";
+import { attachApwHooks } from "./hooks";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { ApwContext } from "~/types";
@@ -90,13 +90,15 @@ export const createApwPageBuilderContext = (params: CreateApwContextParams) => {
     return new ContextPlugin<ApwContext>(async context => {
         if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
             return;
+        } else if (isInstallationPending(context)) {
+            return;
         }
 
         await setupApwContext(params).apply(context);
         await setupApwPageBuilder().apply(context);
         await setupApwHeadlessCms().apply(context);
         await apwContentPagePlugins().apply(context);
-        await apwHooks().apply(context);
+        await attachApwHooks().apply(context);
         await createCustomAuth(params).apply(context);
 
         context.plugins.register(extendPbPageSettingsSchema());
@@ -107,11 +109,13 @@ export const createApwHeadlessCmsContext = (params: CreateApwContextParams) => {
     return new ContextPlugin<ApwContext>(async context => {
         if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
             return;
+        } else if (isInstallationPending(context)) {
+            return;
         }
 
         await setupApwContext(params).apply(context);
         await setupApwHeadlessCms().apply(context);
-        await apwHooks().apply(context);
+        await attachApwHooks().apply(context);
         await createCustomAuth(params).apply(context);
     });
 };

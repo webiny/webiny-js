@@ -14639,7 +14639,6 @@ __metadata:
     "@webiny/cli": ^5.29.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.29.0
     "@webiny/db-dynamodb": ^5.29.0
-    "@webiny/handler-args": ^5.29.0
     "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-client": ^5.29.0
     "@webiny/handler-db": ^5.29.0
@@ -14670,7 +14669,6 @@ __metadata:
     "@webiny/api-wcp": ^5.29.0
     "@webiny/cli": ^5.29.0
     "@webiny/db-dynamodb": ^5.29.0
-    "@webiny/handler-args": ^5.29.0
     "@webiny/handler-aws": ^5.29.0
     "@webiny/handler-client": ^5.29.0
     "@webiny/handler-db": ^5.29.0

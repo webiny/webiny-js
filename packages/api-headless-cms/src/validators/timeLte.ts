@@ -1,7 +1,7 @@
 import { validation } from "@webiny/validation";
 import { CmsModelFieldValidatorPlugin } from "~/types";
 
-export default (): CmsModelFieldValidatorPlugin => ({
+export const createTimeLteValidator = (): CmsModelFieldValidatorPlugin => ({
     type: "cms-model-field-validator",
     name: "cms-model-field-validator-time-lte",
     validator: {

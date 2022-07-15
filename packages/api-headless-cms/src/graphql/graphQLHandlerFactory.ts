@@ -6,7 +6,7 @@ import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security"
 import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
-import buildSchemaPlugins from "./buildSchemaPlugins";
+import { buildSchemaPlugins } from "./buildSchemaPlugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { getWebinyVersionHeaders } from "@webiny/utils";
 import { HttpObject } from "@webiny/handler-http/types";

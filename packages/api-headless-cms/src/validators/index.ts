@@ -1,29 +1,29 @@
-import gte from "./gte";
-import inValidator from "./in";
-import lte from "./lte";
-import maxLength from "./maxLength";
-import minLength from "./minLength";
-import pattern from "./pattern";
-import required from "./required";
-import patternPlugins from "./patternPlugins";
-import dateLte from "./dateLte";
-import dateGte from "./dateGte";
-import timeLte from "./timeLte";
-import timeGte from "./timeGte";
-import unique from "./unique";
+import { createGteValidator } from "./gte";
+import { createInValidator } from "./in";
+import { createLteValidator } from "./lte";
+import { createMaxLengthValidator } from "./maxLength";
+import { createMinLengthValidator } from "./minLength";
+import { createPatternValidator } from "./pattern";
+import { createRequiredValidator } from "./required";
+import { createPatternValidatorPlugins } from "./patternPlugins";
+import { createDateLteValidator } from "./dateLte";
+import { createDateGteValidator } from "./dateGte";
+import { createTimeLteValidator } from "./timeLte";
+import { createTimeGteValidator } from "./timeGte";
+import { createUniqueValidator } from "./unique";
 
-export default () => [
-    gte,
-    inValidator,
-    lte,
-    pattern,
-    required,
-    minLength,
-    maxLength,
-    patternPlugins,
-    dateLte(),
-    dateGte(),
-    timeLte(),
-    timeGte(),
-    unique()
+export const createValidators = () => [
+    createGteValidator(),
+    createInValidator(),
+    createLteValidator(),
+    createMaxLengthValidator(),
+    createMinLengthValidator(),
+    createPatternValidator(),
+    createRequiredValidator(),
+    createPatternValidatorPlugins(),
+    createDateLteValidator(),
+    createDateGteValidator(),
+    createTimeLteValidator(),
+    createTimeGteValidator(),
+    createUniqueValidator()
 ];

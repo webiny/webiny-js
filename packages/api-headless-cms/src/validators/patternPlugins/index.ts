@@ -1,8 +1,18 @@
-import email from "./email";
-import url from "./url";
-import lowerCase from "./lowerCase";
-import upperCase from "./upperCase";
-import lowerCaseSpace from "./lowerCaseSpace";
-import upperCaseSpace from "./upperCaseSpace";
+import { createEmailPatternValidator } from "./email";
+import { createUrlPatternValidator } from "./url";
+import { createLowerCasePatternValidator } from "./lowerCase";
+import { createUpperCasePatternValidator } from "./upperCase";
+import { createLowerCaseSpacePatternValidator } from "./lowerCaseSpace";
+import { createUpperCaseSpacePatternValidator } from "./upperCaseSpace";
+import { CmsModelFieldPatternValidatorPlugin } from "~/types";
 
-export default [email, url, lowerCase, upperCase, lowerCaseSpace, upperCaseSpace];
+export const createPatternValidatorPlugins = (): CmsModelFieldPatternValidatorPlugin[] => {
+    return [
+        createEmailPatternValidator(),
+        createUrlPatternValidator(),
+        createLowerCasePatternValidator(),
+        createUpperCasePatternValidator(),
+        createLowerCaseSpacePatternValidator(),
+        createUpperCaseSpacePatternValidator()
+    ];
+};
