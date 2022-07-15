@@ -1,4 +1,3 @@
-import { UpdateElementTreeActionEvent } from "..";
 import { EventActionCallable } from "~/types";
 import { flattenElements } from "~/editor/helpers";
 import { UpdateElementActionArgsType } from "./types";
@@ -15,16 +14,11 @@ export const updateElementAction: EventActionCallable<UpdateElementActionArgsTyp
         };
     }
 
-    const { element, triggerUpdateElementTree, onFinish, debounce, history } = args;
+    const { element, onFinish, debounce, history } = args;
     const actions = [];
 
     if (history) {
         actions.push(new UpdateDocumentActionEvent({ onFinish, debounce, history }));
-    }
-
-    // Add "UpdateElementTreeActionEvent" to actions.
-    if (triggerUpdateElementTree) {
-        actions.push(new UpdateElementTreeActionEvent());
     }
 
     const flattenedContent = flattenElements(element);

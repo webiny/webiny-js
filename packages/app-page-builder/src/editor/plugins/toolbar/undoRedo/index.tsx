@@ -18,12 +18,10 @@ export const undo: PbEditorToolbarBottomPlugin = {
         const { undo, trigger } = useEventActionHandler();
         const [, setActiveElement] = useActiveElement();
 
-        const onClick = () => {
+        const onClick = async () => {
             undo();
             setActiveElement(null);
-            setTimeout(() => {
-                trigger(new UpdateDocumentActionEvent({ history: false }));
-            }, 100);
+            await trigger(new UpdateDocumentActionEvent({ history: false, debounce: true }));
         };
         return (
             <Action
@@ -43,12 +41,10 @@ export const redo: PbEditorToolbarBottomPlugin = {
         const { redo, trigger } = useEventActionHandler();
         const [, setActiveElement] = useActiveElement();
 
-        const onClick = () => {
+        const onClick = async () => {
             setActiveElement(null);
             redo();
-            setTimeout(() => {
-                trigger(new UpdateDocumentActionEvent({ history: false }));
-            }, 100);
+            await trigger(new UpdateDocumentActionEvent({ history: false, debounce: true }));
         };
 
         return (

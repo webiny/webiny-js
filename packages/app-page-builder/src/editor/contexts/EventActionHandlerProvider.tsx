@@ -42,6 +42,7 @@ import {
     EventActionHandlerCallableState
 } from "~/types";
 import { composeSync, SyncProcessor } from "@webiny/utils/compose";
+import { UpdateElementTreeActionEvent } from "~/editor/recoil/actions";
 
 type ListType = Map<symbol, EventActionCallable>;
 type RegistryType = Map<string, ListType>;
@@ -55,37 +56,7 @@ interface SnapshotHistory {
     isDisabled: boolean;
 }
 
-export const EventActionHandlerContext = createContext<EventActionHandler>({
-    trigger: async () => {
-        return {};
-    },
-    on: () => {
-        return () => {
-            return true;
-        };
-    },
-    redo: () => {
-        return void 0;
-    },
-    enableHistory: () => {
-        return void 0;
-    },
-    undo: () => {
-        return void 0;
-    },
-    startBatch: () => {
-        return void 0;
-    },
-    endBatch: () => {
-        return void 0;
-    },
-    disableHistory: () => {
-        return void 0;
-    },
-    getElementTree: async () => {
-        return null as unknown as PbEditorElement;
-    }
-});
+export const EventActionHandlerContext = createContext<EventActionHandler | undefined>(undefined);
 
 const createConfiguration = (plugins: PbConfigPluginType[]): PbConfigType => {
     return plugins.reduce(
@@ -170,6 +141,12 @@ export const EventActionHandlerProvider = makeComposable<
         createConfiguration(plugins.byType("pb-config"))
     );
 
+    const updateElementTree = () => {
+        setTimeout(() => {
+            eventActionHandlerRef.current!.trigger(new UpdateElementTreeActionEvent());
+        }, 200);
+    };
+
     const updateElements = useRecoilCallback(({ set }) => (elements: PbEditorElement[] = []) => {
         elements.forEach(item => {
             set(elementsAtom(item.id), prevValue => {
@@ -186,6 +163,7 @@ export const EventActionHandlerProvider = makeComposable<
             });
             return item.id;
         });
+        updateElementTree();
     });
 
     const takeSnapshot = useRecoilCallback(({ snapshot }) => () => {
@@ -383,6 +361,7 @@ export const EventActionHandlerProvider = makeComposable<
 
                 goToSnapshot(previousSnapshot);
                 snapshotsHistory.current.busy = false;
+                updateElementTree();
             },
             redo: () => {
                 if (snapshotsHistory.current.busy === true) {
@@ -401,6 +380,7 @@ export const EventActionHandlerProvider = makeComposable<
 
                 goToSnapshot(nextSnapshot);
                 snapshotsHistory.current.busy = false;
+                updateElementTree();
             },
             startBatch: () => {
                 snapshotsHistory.current.isBatching = true;
