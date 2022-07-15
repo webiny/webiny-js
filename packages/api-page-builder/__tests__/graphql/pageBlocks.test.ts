@@ -325,4 +325,125 @@ describe("Page Blocks Test", () => {
             }
         });
     });
+
+    test(`should able to filter "Page Blocks" list by "blockCategory"`, async () => {
+        // Create two block categories and two page blocks
+        await createBlockCategory({
+            data: {
+                slug: "block-category-one",
+                name: "block-category-one-name"
+            }
+        });
+
+        await createBlockCategory({
+            data: {
+                slug: "block-category-two",
+                name: "block-category-two-name"
+            }
+        });
+
+        const [createPageBlockOneResponse] = await createPageBlock({
+            data: {
+                name: `page-block-one-name`,
+                blockCategory: `block-category-one`,
+                preview: { src: `https://test.com/page-block-one-name/src.jpg` },
+                content: { some: `page-block-one-content` }
+            }
+        });
+        const pageBlockOneId = createPageBlockOneResponse.data.pageBuilder.createPageBlock.data.id;
+
+        const [createPageBlockTwoResponse] = await createPageBlock({
+            data: {
+                name: `page-block-two-name`,
+                blockCategory: `block-category-two`,
+                preview: { src: `https://test.com/page-block-two-name/src.jpg` },
+                content: { some: `page-block-two-content` }
+            }
+        });
+        const pageBlockTwoId = createPageBlockTwoResponse.data.pageBuilder.createPageBlock.data.id;
+
+        //Should list all page blocks from first block category
+        const [listFirstCategoryPageBlocksResponse] = await listPageBlocks({
+            where: {
+                blockCategory: "block-category-one"
+            }
+        });
+        expect(listFirstCategoryPageBlocksResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPageBlocks: {
+                        data: [
+                            {
+                                blockCategory: "block-category-one",
+                                content: {
+                                    some: "page-block-one-content"
+                                },
+                                createdBy: defaultIdentity,
+                                createdOn: /^20/,
+                                id: pageBlockOneId,
+                                name: "page-block-one-name",
+                                preview: {
+                                    src: "https://test.com/page-block-one-name/src.jpg"
+                                }
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+
+        //Should list all page blocks from second block category
+        const [listSecondCategoryPageBlocksResponse] = await listPageBlocks({
+            where: {
+                blockCategory: "block-category-two"
+            }
+        });
+        expect(listSecondCategoryPageBlocksResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPageBlocks: {
+                        data: [
+                            {
+                                blockCategory: "block-category-two",
+                                content: {
+                                    some: "page-block-two-content"
+                                },
+                                createdBy: defaultIdentity,
+                                createdOn: /^20/,
+                                id: pageBlockTwoId,
+                                name: "page-block-two-name",
+                                preview: {
+                                    src: "https://test.com/page-block-two-name/src.jpg"
+                                }
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test(`cannot filter "Page Blocks" list by missing "blockCategory"`, async () => {
+        const [listPageBlocksResponse] = await listPageBlocks({
+            where: {
+                blockCategory: "missing-slug"
+            }
+        });
+        expect(listPageBlocksResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPageBlocks: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: "Block Category not found."
+                        }
+                    }
+                }
+            }
+        });
+    });
 });
