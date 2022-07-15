@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "include": ["src", "__tests__"],
   "references": [{ "path": "../react-composition/tsconfig.build.json" }],
   "compilerOptions": {

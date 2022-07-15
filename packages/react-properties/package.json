@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "@webiny/react-properties",
   "version": "5.29.0",
   "main": "index.js",
