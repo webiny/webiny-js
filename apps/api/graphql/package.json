@@ -35,7 +35,6 @@
     "@webiny/api-wcp": "^5.29.0",
     "@webiny/cli": "^5.29.0",
     "@webiny/db-dynamodb": "^5.29.0",
-    "@webiny/handler-args": "^5.29.0",
     "@webiny/handler-aws": "^5.29.0",
     "@webiny/handler-client": "^5.29.0",
     "@webiny/handler-db": "^5.29.0",

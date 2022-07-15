@@ -11,38 +11,38 @@ const createListFilters = ({ field }: CreateListFiltersParams) => {
     `;
 };
 
-const plugin: CmsModelFieldToGraphQLPlugin = {
-    name: "cms-model-field-to-graphql-boolean",
-    type: "cms-model-field-to-graphql",
-    fieldType: "boolean",
-    isSortable: true,
-    isSearchable: true,
-    read: {
-        createListFilters,
-        createGetFilters({ field }) {
-            return `${field.fieldId}: Boolean`;
-        },
-        createTypeField({ field }) {
-            if (field.multipleValues) {
-                return `${field.fieldId}: [Boolean]`;
-            }
+export const createBooleanField = (): CmsModelFieldToGraphQLPlugin => {
+    return {
+        name: "cms-model-field-to-graphql-boolean",
+        type: "cms-model-field-to-graphql",
+        fieldType: "boolean",
+        isSortable: true,
+        isSearchable: true,
+        read: {
+            createListFilters,
+            createGetFilters({ field }) {
+                return `${field.fieldId}: Boolean`;
+            },
+            createTypeField({ field }) {
+                if (field.multipleValues) {
+                    return `${field.fieldId}: [Boolean]`;
+                }
 
-            return `${field.fieldId}: Boolean`;
-        }
-    },
-    manage: {
-        createListFilters,
-        createTypeField({ field }) {
-            if (field.multipleValues) {
-                return field.fieldId + ": [Boolean]";
+                return `${field.fieldId}: Boolean`;
             }
-
-            return field.fieldId + ": Boolean";
         },
-        createInputField({ field }) {
-            return createGraphQLInputField(field, "Boolean");
+        manage: {
+            createListFilters,
+            createTypeField({ field }) {
+                if (field.multipleValues) {
+                    return field.fieldId + ": [Boolean]";
+                }
+
+                return field.fieldId + ": Boolean";
+            },
+            createInputField({ field }) {
+                return createGraphQLInputField(field, "Boolean");
+            }
         }
-    }
+    };
 };
-
-export default plugin;

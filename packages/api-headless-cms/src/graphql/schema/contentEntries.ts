@@ -186,7 +186,9 @@ const getContentEntry = async (
     });
 };
 
-const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+export const createContentEntriesSchema = (
+    context: CmsContext
+): GraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
         return new GraphQLSchemaPlugin({
             typeDefs: "",
@@ -371,5 +373,3 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         }
     });
 };
-
-export default plugin;

@@ -1,21 +1,22 @@
-import text from "./text";
-import longText from "./longText";
-import ref from "./ref";
-import number from "./number";
-import boolean from "./boolean";
-import datetime from "./datetime";
-import richText from "./richText";
-import file from "./file";
-import object from "./object";
+import { createTextField } from "./text";
+import { createLongTextField } from "./longText";
+import { createRefField } from "./ref";
+import { createNumberField } from "./number";
+import { createBooleanField } from "./boolean";
+import { createDateTimeField } from "./datetime";
+import { createRichTextField } from "./richText";
+import { createFileField } from "./file";
+import { createObjectField } from "./object";
+import { CmsModelFieldToGraphQLPlugin } from "~/types";
 
-export const createGraphQLFields = () => [
-    text,
-    ref,
-    number,
-    datetime,
-    boolean,
-    longText,
-    richText,
-    file,
-    object
+export const createGraphQLFields = (): CmsModelFieldToGraphQLPlugin[] => [
+    createTextField(),
+    createRefField(),
+    createNumberField(),
+    createDateTimeField(),
+    createBooleanField(),
+    createLongTextField(),
+    createRichTextField(),
+    createFileField(),
+    createObjectField()
 ];

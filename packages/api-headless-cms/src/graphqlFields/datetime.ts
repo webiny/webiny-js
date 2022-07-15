@@ -32,34 +32,34 @@ const createListFilters = ({ field }: CreateListFiltersParams) => {
     `;
 };
 
-const plugin: CmsModelFieldToGraphQLPlugin = {
-    name: "cms-model-field-to-graphql-datetime",
-    type: "cms-model-field-to-graphql",
-    fieldType: "datetime",
-    isSortable: true,
-    isSearchable: true,
-    read: {
-        createListFilters,
-        createGetFilters({ field }) {
-            return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
-        },
-        createTypeField({ field }) {
-            if (field.multipleValues) {
-                return `${field.fieldId}: [${getFieldGraphQLType(field)}]`;
+export const createDateTimeField = (): CmsModelFieldToGraphQLPlugin => {
+    return {
+        name: "cms-model-field-to-graphql-datetime",
+        type: "cms-model-field-to-graphql",
+        fieldType: "datetime",
+        isSortable: true,
+        isSearchable: true,
+        read: {
+            createListFilters,
+            createGetFilters({ field }) {
+                return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
+            },
+            createTypeField({ field }) {
+                if (field.multipleValues) {
+                    return `${field.fieldId}: [${getFieldGraphQLType(field)}]`;
+                }
+
+                return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
             }
-
-            return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
-        }
-    },
-    manage: {
-        createListFilters,
-        createTypeField({ field }) {
-            return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
         },
-        createInputField({ field }) {
-            return createGraphQLInputField(field, getFieldGraphQLType(field));
+        manage: {
+            createListFilters,
+            createTypeField({ field }) {
+                return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
+            },
+            createInputField({ field }) {
+                return createGraphQLInputField(field, getFieldGraphQLType(field));
+            }
         }
-    }
+    };
 };
-
-export default plugin;

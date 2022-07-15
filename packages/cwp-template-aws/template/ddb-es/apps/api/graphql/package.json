@@ -35,7 +35,6 @@
     "@webiny/api-wcp": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
-    "@webiny/handler-args": "latest",
     "@webiny/handler-aws": "latest",
     "@webiny/handler-client": "latest",
     "@webiny/handler-db": "latest",

@@ -9,4 +9,4 @@ const plugin: ModelManagerPlugin = {
     }
 };
 
-export default () => plugin;
+export const createDefaultModelManager = () => plugin;
