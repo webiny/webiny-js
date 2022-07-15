@@ -10,7 +10,6 @@
     "@types/react": "^16.14.0",
     "@webiny/app-admin": "latest",
     "@webiny/app-admin-users-cognito": "latest",
-    "@webiny/app-apw": "latest",
     "@webiny/app-form-builder": "latest",
     "@webiny/app-headless-cms": "latest",
     "@webiny/app-page-builder": "latest",
