@@ -38,7 +38,7 @@ import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
-const t = i18n.ns("app-page-builder/admin/categories/form");
+const t = i18n.ns("app-page-builder/admin/block-categories/form");
 
 const ButtonWrapper = styled("div")({
     display: "flex",

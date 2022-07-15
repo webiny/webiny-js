@@ -64,6 +64,11 @@ const PageBuilderMenu: React.FC = () => {
                             label={"Categories"}
                             path="/page-builder/block-categories"
                         />
+                        <Menu
+                            name="pageBuilder.blocks.pageBlocks"
+                            label={"Blocks"}
+                            path="/page-builder/page-blocks"
+                        />
                     </HasPermission>
                 </Menu>
             </Menu>

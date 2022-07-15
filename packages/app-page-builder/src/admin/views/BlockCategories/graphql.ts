@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import { PbBlockCategory, PbErrorResponse } from "~/types";
 
-const BASE_FIELDS = `
+export const PAGE_BLOCK_CATEGORY_BASE_FIELDS = `
     slug
     name
     createdOn
@@ -16,7 +16,7 @@ export const LIST_BLOCK_CATEGORIES = gql`
         pageBuilder {
             listBlockCategories {
                 data {
-                    ${BASE_FIELDS}
+                    ${PAGE_BLOCK_CATEGORY_BASE_FIELDS}
                 }
                 error {
                     data
@@ -47,7 +47,7 @@ export const GET_BLOCK_CATEGORY = gql`
         pageBuilder {
             getBlockCategory(slug: $slug){
                 data {
-                    ${BASE_FIELDS}
+                    ${PAGE_BLOCK_CATEGORY_BASE_FIELDS}
                 }
                 error {
                     code
@@ -81,7 +81,7 @@ export const CREATE_BLOCK_CATEGORY = gql`
         pageBuilder {
             blockCategory: createBlockCategory(data: $data) {
                 data {
-                    ${BASE_FIELDS}
+                    ${PAGE_BLOCK_CATEGORY_BASE_FIELDS}
                 }
                 error {
                     code
@@ -117,7 +117,7 @@ export const UPDATE_BLOCK_CATEGORY = gql`
         pageBuilder {
             blockCategory: updateBlockCategory(slug: $slug, data: $data) {
                 data {
-                    ${BASE_FIELDS}
+                    ${PAGE_BLOCK_CATEGORY_BASE_FIELDS}
                 }
                 error {
                     code

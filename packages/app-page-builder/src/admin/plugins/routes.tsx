@@ -11,6 +11,7 @@ import Menus from "../views/Menus/Menus";
 import Pages from "../views/Pages/Pages";
 import Editor from "../views/Pages/Editor";
 import BlockCategories from "../views/BlockCategories/BlockCategories";
+import PageBlocks from "../views/PageBlocks/PageBlocks";
 
 const ROLE_PB_CATEGORY = "pb.category";
 const ROLE_PB_MENUS = "pb.menu";
@@ -106,6 +107,24 @@ const plugins: RoutePlugin[] = [
                         <AdminLayout>
                             <Helmet title={"Page Builder - Block Categories"} />
                             <BlockCategories />
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        name: "route-pb-page-blocks",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/page-builder/page-blocks"
+                render={() => (
+                    <SecureRoute permission={ROLE_PB_BLOCK}>
+                        <AdminLayout>
+                            <Helmet title={"Blocks"} />
+                            <PageBlocks />
                         </AdminLayout>
                     </SecureRoute>
                 )}
