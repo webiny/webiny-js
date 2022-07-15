@@ -117,8 +117,6 @@ module.exports = async (inputs, context) => {
     }
 
     let output = terminalOutput;
-    if (inputs.output === "browser") {
-    }
 
     switch (inputs.output) {
         case "browser":
