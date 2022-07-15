@@ -5,6 +5,7 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-admin-rmwc/tsconfig.build.json" },
+    { "path": "../app-apw/tsconfig.build.json" },
     { "path": "../app-file-manager/tsconfig.build.json" },
     { "path": "../app-file-manager-s3/tsconfig.build.json" },
     { "path": "../app-form-builder/tsconfig.build.json" },

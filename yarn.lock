@@ -10221,7 +10221,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-apw-scheduler-so-ddb@^5.29.0, @webiny/api-apw-scheduler-so-ddb@workspace:packages/api-apw-scheduler-so-ddb":
+"@webiny/api-apw-scheduler-so-ddb@^5.28.0, @webiny/api-apw-scheduler-so-ddb@^5.29.0, @webiny/api-apw-scheduler-so-ddb@workspace:packages/api-apw-scheduler-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-apw-scheduler-so-ddb@workspace:packages/api-apw-scheduler-so-ddb"
   dependencies:
@@ -10252,7 +10252,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-apw@^5.29.0, @webiny/api-apw@workspace:packages/api-apw":
+"@webiny/api-apw@^5.28.0, @webiny/api-apw@^5.29.0, @webiny/api-apw@workspace:packages/api-apw":
   version: 0.0.0-use.local
   resolution: "@webiny/api-apw@workspace:packages/api-apw"
   dependencies:
@@ -11675,7 +11675,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-apw@^5.29.0, @webiny/app-apw@workspace:packages/app-apw":
+"@webiny/app-apw@^5.28.0, @webiny/app-apw@workspace:packages/app-apw":
   version: 0.0.0-use.local
   resolution: "@webiny/app-apw@workspace:packages/app-apw"
   dependencies:
@@ -12311,6 +12311,7 @@ __metadata:
     "@webiny/app": ^5.29.0
     "@webiny/app-admin": ^5.29.0
     "@webiny/app-admin-rmwc": ^5.29.0
+    "@webiny/app-apw": ^5.28.0
     "@webiny/app-file-manager": ^5.29.0
     "@webiny/app-file-manager-s3": ^5.29.0
     "@webiny/app-form-builder": ^5.29.0
@@ -13508,6 +13509,8 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@pulumi/aws": ^5.8.0
     "@pulumi/pulumi": ^3.34.0
+    "@webiny/api-apw": ^5.28.0
+    "@webiny/api-apw-scheduler-so-ddb": ^5.28.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.29.0
     "@webiny/api-elasticsearch": ^5.29.0
     "@webiny/api-file-manager": ^5.29.0
@@ -14101,7 +14104,6 @@ __metadata:
     "@types/react": ^16.14.0
     "@webiny/app-admin": ^5.29.0
     "@webiny/app-admin-users-cognito": ^5.29.0
-    "@webiny/app-apw": ^5.29.0
     "@webiny/app-form-builder": ^5.29.0
     "@webiny/app-headless-cms": ^5.29.0
     "@webiny/app-page-builder": ^5.29.0
