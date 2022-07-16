@@ -64,13 +64,16 @@ const DefaultPublishPageButton: React.FC = () => {
 
 export const PublishPageButton = makeComposable("PublishPageButton", DefaultPublishPageButton);
 
-export const PublishPageButtonPlugin = createComponentPlugin(EditorBar.RightSection, RightSection => {
-    return function AddPublishPageButton(props) {
-        return (
-            <RightSection>
-                <PublishPageButton />
-                {props.children}
-            </RightSection>
-        );
-    };
-});
+export const PublishPageButtonPlugin = createComponentPlugin(
+    EditorBar.RightSection,
+    RightSection => {
+        return function AddPublishPageButton(props) {
+            return (
+                <RightSection>
+                    <PublishPageButton />
+                    {props.children}
+                </RightSection>
+            );
+        };
+    }
+);

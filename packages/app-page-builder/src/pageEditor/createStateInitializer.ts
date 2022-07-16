@@ -6,7 +6,7 @@ import {
     revisionsAtom,
     RevisionsAtomType
 } from "~/pageEditor/state";
-import { EditorStateInitializerFactory } from "~/editor";
+import { EditorStateInitializerFactory } from "~/editor/Editor";
 
 export const createStateInitializer = (
     page: PageWithContent,

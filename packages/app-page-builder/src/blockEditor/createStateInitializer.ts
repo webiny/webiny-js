@@ -1,6 +1,6 @@
 import omit from "lodash/omit";
 import { blockAtom, BlockAtomType, BlockWithContent } from "~/blockEditor/state";
-import { EditorStateInitializerFactory } from "~/editor";
+import { EditorStateInitializerFactory } from "~/editor/Editor";
 
 export const createStateInitializer = (block: BlockWithContent): EditorStateInitializerFactory => {
     return () => ({

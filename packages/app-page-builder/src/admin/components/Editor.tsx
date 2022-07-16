@@ -1,6 +1,6 @@
 import React from "react";
 import { makeComposable } from "@webiny/app-admin";
-import { EditorProps } from "~/editor";
+import { EditorProps } from "~/editor/Editor";
 
 export { EditorProps };
 
