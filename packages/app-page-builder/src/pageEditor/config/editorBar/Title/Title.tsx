@@ -3,7 +3,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { createComponentPlugin } from "@webiny/app-admin";
 import {
     PageMeta,
     PageTitle,
@@ -139,7 +139,7 @@ const Title: React.FC = () => {
     );
 };
 
-const AddTitle: HigherOrderComponent = LeftSection => {
+export const TitlePlugin = createComponentPlugin(EditorBar.LeftSection, LeftSection => {
     return function AddTitle(props) {
         return (
             <LeftSection>
@@ -148,8 +148,4 @@ const AddTitle: HigherOrderComponent = LeftSection => {
             </LeftSection>
         );
     };
-};
-
-export const TitlePlugin = () => {
-    return <Compose component={EditorBar.LeftSection} with={AddTitle} />;
-};
+});

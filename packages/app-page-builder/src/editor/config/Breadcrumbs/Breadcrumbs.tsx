@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilCallback, useRecoilSnapshot } from "recoil";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { createComponentPlugin } from "@webiny/app-admin";
 import { PbEditorElement } from "~/types";
 import { breadcrumbs } from "./styles";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -121,7 +121,7 @@ const Breadcrumbs: React.FC = () => {
     );
 };
 
-const AddBreadcrumbs: HigherOrderComponent = PrevContent => {
+export const BreadcrumbsPlugin = createComponentPlugin(EditorContent, PrevContent => {
     return function AddBreadcrumbs() {
         return (
             <>
@@ -130,8 +130,4 @@ const AddBreadcrumbs: HigherOrderComponent = PrevContent => {
             </>
         );
     };
-};
-
-export const BreadcrumbsPlugin = () => {
-    return <Compose component={EditorContent} with={AddBreadcrumbs} />;
-};
+});

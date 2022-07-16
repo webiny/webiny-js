@@ -1,13 +1,13 @@
 import React from "react";
+import { createComponentPlugin } from "@webiny/app-admin";
+import { useRecoilValue } from "recoil";
 import AddBlock from "./AddBlock";
 import AddContent from "./AddContent";
 import SearchBlocks from "./SearchBlocks";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin/";
-import { EditorBar, EditorContent } from "~/editor";
-import { useRecoilValue } from "recoil";
+import { EditorBar, EditorContent as BaseEditorContent } from "~/editor";
 import { blocksBrowserStateAtom } from "~/pageEditor/config/blockEditing/state";
 
-export const BlockBrowser: HigherOrderComponent = EditorBar => {
+const BlockBrowser = createComponentPlugin(EditorBar, EditorBar => {
     return function PageSettingsOverlay() {
         const isActive = useRecoilValue(blocksBrowserStateAtom);
 
@@ -18,9 +18,9 @@ export const BlockBrowser: HigherOrderComponent = EditorBar => {
             </>
         );
     };
-};
+});
 
-const EditorContentHoc: HigherOrderComponent = PrevContent => {
+const EditorContent = createComponentPlugin(BaseEditorContent, PrevContent => {
     return function EditorContent() {
         return (
             <>
@@ -30,13 +30,13 @@ const EditorContentHoc: HigherOrderComponent = PrevContent => {
             </>
         );
     };
-};
+});
 
 export const BlockEditingPlugin = () => {
     return (
         <>
-            <Compose component={EditorBar} with={BlockBrowser} />
-            <Compose component={EditorContent} with={EditorContentHoc} />
+            <BlockBrowser />
+            <EditorContent />
         </>
     );
 };

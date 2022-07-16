@@ -1,9 +1,10 @@
 import React, { useCallback } from "react";
 import { useRecoilState } from "recoil";
 import { IconButton } from "@webiny/ui/Button";
+import { createComponentPlugin } from "@webiny/app-admin";
 import { ReactComponent as SettingsIcon } from "./settings.svg";
-import { HigherOrderComponent } from "@webiny/app-admin";
 import { pageSettingsStateAtom } from "~/pageEditor/config/editorBar/PageSettings/state";
+import { EditorBar } from "~/editor";
 
 const PageSettingsButton: React.FC = () => {
     const [, setState] = useRecoilState(pageSettingsStateAtom);
@@ -14,8 +15,8 @@ const PageSettingsButton: React.FC = () => {
     return <IconButton onClick={onClickHandler} icon={<SettingsIcon />} />;
 };
 
-export const AddPageSettingsButton: HigherOrderComponent = RightSection => {
-    return function AddTitle(props) {
+export const AddPageSettingsButton = createComponentPlugin(EditorBar.RightSection, RightSection => {
+    return function ComposeRightSection(props) {
         return (
             <RightSection>
                 <PageSettingsButton />
@@ -23,4 +24,4 @@ export const AddPageSettingsButton: HigherOrderComponent = RightSection => {
             </RightSection>
         );
     };
-};
+});

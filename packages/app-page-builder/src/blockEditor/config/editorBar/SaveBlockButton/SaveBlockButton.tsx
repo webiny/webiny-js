@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
-import { useRouter } from "@webiny/react-router";
+import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useRouter } from "@webiny/react-router";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { Compose, HigherOrderComponent, makeComposable } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
@@ -37,7 +37,7 @@ const DefaultSaveBlockButton: React.FC = () => {
 
 export const SaveBlockButton = makeComposable("SaveBlockButton", DefaultSaveBlockButton);
 
-const AddSaveBlockButton: HigherOrderComponent = RightSection => {
+export const SaveBlockButtonPlugin = createComponentPlugin(EditorBar.RightSection, RightSection => {
     return function AddSaveBlockButton(props) {
         return (
             <RightSection>
@@ -46,8 +46,4 @@ const AddSaveBlockButton: HigherOrderComponent = RightSection => {
             </RightSection>
         );
     };
-};
-
-export const SaveBlockButtonPlugin = () => {
-    return <Compose component={EditorBar.RightSection} with={AddSaveBlockButton} />;
-};
+});

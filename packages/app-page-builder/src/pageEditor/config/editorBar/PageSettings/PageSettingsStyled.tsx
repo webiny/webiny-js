@@ -10,18 +10,6 @@ export const listStyle = css({
     }
 });
 
-export const listItem = css({
-    padding: "15px 20px",
-    cursor: "pointer",
-    borderBottom: "1px solid var(--mdc-theme-background)",
-    "&:last-child": {
-        borderBottom: "none"
-    },
-    ".mdc-list-item__graphic": {
-        marginRight: 20
-    }
-});
-
 export const ListItemTitle = styled("div")({
     fontWeight: 600,
     marginBottom: 5
