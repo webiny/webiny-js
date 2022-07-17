@@ -9,17 +9,16 @@ import dragPlugin from "../recoil/actions/drag/plugin";
 import dropElementPlugin from "../recoil/actions/dropElement/plugin";
 import togglePluginPlugin from "../recoil/actions/togglePlugin/plugin";
 import updateElementPlugin from "../recoil/actions/updateElement/plugin";
-import updateDocument from "../recoil/actions/updateDocument/plugin";
 import afterDropElementPlugin from "../recoil/actions/afterDropElement/plugin";
 import moveBlockPlugin from "../recoil/actions/moveBlock/plugin";
 import afterUpdateElementsPlugin from "../recoil/actions/updateElementTree/plugin";
+import elementSettingsPlugin from "../plugins/elementSettings/advanced/plugin";
 
 export const ActionPlugins = memo(() => {
     plugins.register([
         cloneElementPlugin(),
         createElementPlugin(),
         updateElementPlugin(),
-        ...updateDocument(),
         togglePluginPlugin(),
         dropElementPlugin(),
         afterDropElementPlugin(),
@@ -27,7 +26,8 @@ export const ActionPlugins = memo(() => {
         deleteElementPlugin(),
         moveBlockPlugin(),
         afterUpdateElementsPlugin(),
-        ...dragPlugin()
+        ...dragPlugin(),
+        elementSettingsPlugin
     ]);
 
     return null;

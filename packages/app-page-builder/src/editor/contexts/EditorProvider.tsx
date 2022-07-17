@@ -1,12 +1,7 @@
-import React, { createContext } from "react";
+import React from "react";
+import { makeComposable } from "@webiny/app-admin";
 import { EventActionHandlerProvider } from "./EventActionHandlerProvider";
 
-const EditorContext = createContext(null);
-
-export const EditorProvider: React.FC<any> = props => {
-    return (
-        <EventActionHandlerProvider>
-            <EditorContext.Provider {...props}>{props.children}</EditorContext.Provider>
-        </EventActionHandlerProvider>
-    );
-};
+export const EditorProvider = makeComposable("EditorProvider", ({ children }) => {
+    return <EventActionHandlerProvider>{children}</EventActionHandlerProvider>;
+});

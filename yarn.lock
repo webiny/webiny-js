@@ -13433,7 +13433,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/react-properties@workspace:packages/react-properties":
+"@webiny/react-properties@^5.29.0, @webiny/react-properties@workspace:packages/react-properties":
   version: 0.0.0-use.local
   resolution: "@webiny/react-properties@workspace:packages/react-properties"
   dependencies:
@@ -14113,6 +14113,7 @@ __metadata:
     "@webiny/cli-plugin-deploy-pulumi": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
+    "@webiny/react-properties": ^5.29.0
     "@webiny/serverless-cms-aws": ^5.29.0
     core-js: ^3.0.1
     cross-env: ^5.0.2

@@ -77,7 +77,9 @@ export const BlockEditor: React.FC = () => {
         <React.Suspense fallback={<EditorLoadingScreen />}>
             <BlockEditorConfig />
             <LoadData>
-                <PbEditor initializeState={createStateInitializer(block as BlockWithContent)} />
+                <PbEditor
+                    stateInitializerFactory={createStateInitializer(block as BlockWithContent)}
+                />
             </LoadData>
         </React.Suspense>
     );

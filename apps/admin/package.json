@@ -19,6 +19,7 @@
     "@webiny/cli-plugin-deploy-pulumi": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
     "@webiny/project-utils": "^5.29.0",
+    "@webiny/react-properties": "^5.29.0",
     "@webiny/serverless-cms-aws": "^5.29.0",
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
@@ -54,7 +55,9 @@
       "dependencies": [
         "theme",
         "theme-1",
-        "@webiny/cli"
+        "@webiny/app-apw",
+        "@webiny/cli",
+        "@webiny/react-properties"
       ],
       "src": [
         "@okta/okta-signin-widget",

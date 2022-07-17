@@ -1,19 +1,17 @@
 import React, { useCallback, useEffect } from "react";
-import { useRecoilValue, useRecoilState } from "recoil";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { makeComposable } from "@webiny/app-admin";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Tabs, Tab, TabProps } from "@webiny/ui/Tabs";
 import {
-    elementWithChildrenByIdSelector,
-    activeElementAtom,
-    sidebarAtom,
     highlightSidebarTabMutation,
     updateSidebarActiveTabIndexMutation
-} from "../../recoil/modules";
+} from "~/editor/recoil/modules";
 import StyleSettingsTabContent from "./Sidebar/StyleSettingsTabContent";
 import ElementSettingsTabContent from "./Sidebar/ElementSettingsTabContent";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useElementSidebar } from "~/editor/hooks/useElementSidebar";
 
 const rightSideBar = css({
     boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)",
@@ -44,41 +42,40 @@ const PanelHighLight = styled("div")({
     "@keyframes wf-blink-in": { "40%": { opacity: 1 } }
 });
 
-const EditorSideBar: React.FC = () => {
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const [sidebarAtomValue, setSidebarAtomValue] = useRecoilState(sidebarAtom);
+export const EditorSidebar: React.FC = React.memo(() => {
+    const [element] = useActiveElement();
+    const [sidebar, setSidebar] = useElementSidebar();
 
     const setActiveTabIndex = useCallback(index => {
-        setSidebarAtomValue(prev => updateSidebarActiveTabIndexMutation(prev, index));
+        setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, index));
     }, []);
 
-    const unHighlightElementTab = useCallback(() => {
-        setSidebarAtomValue(prev => highlightSidebarTabMutation(prev, false));
+    const unhighlightElementTab = useCallback(() => {
+        setSidebar(prev => highlightSidebarTabMutation(prev, false));
     }, []);
 
     useEffect(() => {
-        if (sidebarAtomValue.highlightTab) {
-            setTimeout(unHighlightElementTab, 1000);
+        if (sidebar.highlightTab) {
+            setTimeout(unhighlightElementTab, 1000);
         }
-    }, [sidebarAtomValue.highlightTab]);
+    }, [sidebar.highlightTab]);
 
     return (
         <Elevation z={1} className={rightSideBar}>
-            <Tabs value={sidebarAtomValue.activeTabIndex} updateValue={setActiveTabIndex}>
+            <Tabs value={sidebar.activeTabIndex} updateValue={setActiveTabIndex}>
                 <EditorSidebarTab label={"Style"}>
-                    <StyleSettingsTabContent element={element} />
+                    <StyleSettingsTabContent />
                 </EditorSidebarTab>
                 <EditorSidebarTab label={"Element"} disabled={!element}>
-                    <ElementSettingsTabContent element={element} />
+                    <ElementSettingsTabContent />
                 </EditorSidebarTab>
             </Tabs>
-            {sidebarAtomValue.highlightTab && <PanelHighLight />}
+            {sidebar.highlightTab && <PanelHighLight />}
         </Elevation>
     );
-};
+});
 
-export default React.memo(EditorSideBar);
+EditorSidebar.displayName = "EditorSidebar";
 
 export type EditorSidebarTabProps = TabProps;
 

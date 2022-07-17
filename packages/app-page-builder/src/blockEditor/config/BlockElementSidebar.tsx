@@ -1,9 +1,9 @@
 import React from "react";
-import { EditorSidebarTab, EditorSidebarTabProps } from "~/editor";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { EditorSidebarTab } from "~/editor";
+import { createComponentPlugin } from "@webiny/app-admin";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 
-const DisableBlockElementTab: HigherOrderComponent<EditorSidebarTabProps> = Tab => {
+export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab, Tab => {
     return function ElementTab({ children, ...props }) {
         const [element] = useActiveElement();
 
@@ -18,8 +18,4 @@ const DisableBlockElementTab: HigherOrderComponent<EditorSidebarTabProps> = Tab 
             </Tab>
         );
     };
-};
-
-export const BlockElementSidebarPlugin = () => {
-    return <Compose component={EditorSidebarTab} with={DisableBlockElementTab} />;
-};
+});

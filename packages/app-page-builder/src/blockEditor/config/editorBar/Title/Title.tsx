@@ -2,7 +2,7 @@ import React, { useState, useCallback, SyntheticEvent } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { createComponentPlugin } from "@webiny/app-admin";
 import { BlockTitle, blockTitleWrapper, TitleInputWrapper, TitleWrapper } from "./Styled";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { BlockAtomType } from "~/blockEditor/state";
@@ -106,7 +106,7 @@ const Title: React.FC = () => {
     );
 };
 
-const AddTitle: HigherOrderComponent = LeftSection => {
+export const TitlePlugin = createComponentPlugin(EditorBar.LeftSection, LeftSection => {
     return function AddTitle(props) {
         return (
             <LeftSection>
@@ -115,8 +115,4 @@ const AddTitle: HigherOrderComponent = LeftSection => {
             </LeftSection>
         );
     };
-};
-
-export const TitlePlugin = () => {
-    return <Compose component={EditorBar.LeftSection} with={AddTitle} />;
-};
+});

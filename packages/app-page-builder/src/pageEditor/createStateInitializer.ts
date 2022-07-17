@@ -1,6 +1,3 @@
-import { RecoilRootProps } from "recoil";
-import { elementsAtom, rootElementAtom } from "~/editor/recoil/modules";
-import { flattenElements } from "~/editor/helpers";
 import omit from "lodash/omit";
 import {
     pageAtom,
@@ -9,29 +6,22 @@ import {
     revisionsAtom,
     RevisionsAtomType
 } from "~/pageEditor/state";
+import { EditorStateInitializerFactory } from "~/editor/Editor";
 
 export const createStateInitializer = (
-    page: PageWithContent | null,
+    page: PageWithContent,
     revisions: RevisionsAtomType
-): RecoilRootProps["initializeState"] => {
-    if (!page) {
-        return () => void 0;
-    }
+): EditorStateInitializerFactory => {
+    return () => ({
+        content: page.content,
+        recoilInitializer({ set }) {
+            /**
+             * We always unset the content because we are not using it via the page atom.
+             */
+            const pageData: PageAtomType = omit(page, ["content"]);
 
-    return ({ set }) => {
-        /* Here we initialize elementsAtom and rootElement if it exists */
-        set(rootElementAtom, page!.content?.id || "");
-
-        const elements = flattenElements(page!.content);
-        Object.keys(elements).forEach(key => {
-            set(elementsAtom(key), elements[key]);
-        });
-        /**
-         * We always unset the content because we are not using it via the page atom.
-         */
-        const pageData: PageAtomType = omit(page, ["content"]);
-
-        set(pageAtom, pageData);
-        set(revisionsAtom, revisions);
-    };
+            set(pageAtom, pageData);
+            set(revisionsAtom, revisions);
+        }
+    });
 };

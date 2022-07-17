@@ -1,16 +1,16 @@
 import React from "react";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin";
-import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
 import { css } from "emotion";
+import { createComponentPlugin } from "@webiny/app-admin";
 import { useRouter } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { EditorBar } from "~/editor";
+import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
 
 const backStyles = css({
     marginLeft: -10
 });
 
-const BackButton: HigherOrderComponent = () => {
+export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () => {
     return function BackButton() {
         const { params, history } = useRouter();
 
@@ -30,8 +30,4 @@ const BackButton: HigherOrderComponent = () => {
             />
         );
     };
-};
-
-export const BackButtonPlugin = () => {
-    return <Compose component={EditorBar.BackButton} with={BackButton} />;
-};
+});

@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { Compose, HigherOrderComponent } from "@webiny/app-admin";
+import { createComponentPlugin } from "@webiny/app-admin";
 import { Menu } from "@webiny/ui/Menu";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
@@ -28,7 +28,7 @@ const PageOptionsMenu: React.FC = () => {
     );
 };
 
-const AddPageOptionsMenu: HigherOrderComponent = RightSection => {
+export const PageOptionsMenuPlugin = createComponentPlugin(EditorBar.RightSection, RightSection => {
     return function AddRevisionSelector(props) {
         return (
             <RightSection>
@@ -37,8 +37,4 @@ const AddPageOptionsMenu: HigherOrderComponent = RightSection => {
             </RightSection>
         );
     };
-};
-
-export const PageOptionsMenuPlugin = () => {
-    return <Compose component={EditorBar.RightSection} with={AddPageOptionsMenu} />;
-};
+});
