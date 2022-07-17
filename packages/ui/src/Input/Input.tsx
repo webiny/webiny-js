@@ -48,14 +48,12 @@ export type InputProps = FormComponentProps &
  * fix label position when autofilled
  * @type {string}
  */
-const webinyInputStyles = css(
-    {},
-    {
-        ".mdc-text-field__input:-webkit-autofill + .mdc-floating-label": {
-            transform: "translateY(-106%) scale(0.75)"
+const webinyInputStyles = css`
+    .mdc-text-field__input:-webkit-autofill + .mdc-floating-label {
+            transform: translateY(-106%) scale(0.75);
         }
     }
-);
+`;
 
 /**
  * Use Input component to store short string values, like first name, last name, e-mail etc.
