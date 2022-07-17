@@ -27,3 +27,6 @@ jobs:
           --max-wait-retries 100
           --access-key-id ${{ env.AWS_ACCESS_KEY_ID }}
           --secret-access-key ${{ env.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Run EventBridge Cleanup
+        run: yarn && node ./.github/workflows/cleanup/cleanupEventBridge.js
