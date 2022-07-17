@@ -6,11 +6,13 @@ import {
     ApiFileManager,
     ApiGraphql,
     ApiHeadlessCMS,
-    ApiPageBuilder
+    ApiPageBuilder,
+    CoreOutput,
+    VpcConfig
 } from "~/apps";
-import { CoreOutput, VpcConfig } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { tagResources } from "~/utils";
+import { withCommonLambdaEnvVariables } from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -32,16 +34,16 @@ export interface CreateApiPulumiAppParams {
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
-    return createPulumiApp({
+    const app = createPulumiApp({
         name: "api",
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
             // Overrides must be applied via a handler, registered at the very start of the program.
-            // By doing this, we're ensuring user's adjustments are not applied to late.
+            // By doing this, we're ensuring user's adjustments are not applied too late.
             if (projectAppParams.pulumi) {
                 app.addHandler(() => {
-                    return projectAppParams.pulumi!(app as ApiPulumiApp);
+                    projectAppParams.pulumi!(app as ApiPulumiApp);
                 });
             }
 
@@ -49,7 +51,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             // https://www.webiny.com/docs/how-to-guides/use-watch-command#enabling-logs-forwarding
             const WEBINY_LOGS_FORWARD_URL = String(process.env.WEBINY_LOGS_FORWARD_URL);
 
-            // Register core output as a module available for all other modules
+            // Register core output as a module available to all the other modules
             const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules
@@ -198,4 +200,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             };
         }
     });
+
+    return withCommonLambdaEnvVariables(app);
 };

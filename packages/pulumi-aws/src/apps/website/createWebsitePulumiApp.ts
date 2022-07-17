@@ -4,8 +4,8 @@ import { createPulumiApp, PulumiAppParamCallback, PulumiAppParam } from "@webiny
 import { createPublicAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import { createPrerenderingService } from "./WebsitePrerendering";
-import { CoreOutput, VpcConfig } from "../common";
-import { tagResources } from "~/utils";
+import { CoreOutput, VpcConfig } from "~/apps";
+import { tagResources, withCommonLambdaEnvVariables } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
@@ -28,7 +28,7 @@ export interface CreateWebsitePulumiAppParams {
 }
 
 export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppParams = {}) => {
-    return createPulumiApp({
+    const app = createPulumiApp({
         name: "website",
         path: "apps/website",
         config: projectAppParams,
@@ -207,4 +207,6 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
             };
         }
     });
+
+    return withCommonLambdaEnvVariables(app);
 };
