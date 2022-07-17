@@ -43,7 +43,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             // By doing this, we're ensuring user's adjustments are not applied too late.
             if (projectAppParams.pulumi) {
                 app.addHandler(() => {
-                    projectAppParams.pulumi!(app as ApiPulumiApp);
+                    return projectAppParams.pulumi!(app as ApiPulumiApp);
                 });
             }
 
