@@ -9,6 +9,7 @@ body:
   - type: textarea
     attributes:
       label: Is your feature request related to a problem? Please describe.
+      description: Please describe the problem you are trying to solve.
   - type: textarea
     attributes:
       label: Describe the feature's behavior.
