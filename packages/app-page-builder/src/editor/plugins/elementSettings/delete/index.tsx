@@ -14,6 +14,7 @@ export default {
                     tooltip={"Delete element"}
                     shortcut={["Backspace", "Delete"]}
                     icon={<DeleteIcon />}
+                    data-testid={"delete-element"}
                 />
             </DeleteAction>
         );

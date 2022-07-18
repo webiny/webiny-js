@@ -40,6 +40,7 @@ export class GeneralSettingsView extends PageSettingsFormView {
                 name: "path",
                 label: "Path",
                 description: `For example: "/about-us". Must contain at least two characters.`,
+                dataTestId: "data-test-path",
                 validators: () => validation.create("required,minLength:2"),
                 beforeChange: toSlug
             })

@@ -12,7 +12,13 @@ const PageSettingsButton: React.FC = () => {
         setState(true);
     }, []);
 
-    return <IconButton onClick={onClickHandler} icon={<SettingsIcon />} />;
+    return (
+        <IconButton
+            onClick={onClickHandler}
+            icon={<SettingsIcon />}
+            data-testid={"page-settings-btn"}
+        />
+    );
 };
 
 export const AddPageSettingsButton = createComponentPlugin(EditorBar.RightSection, RightSection => {

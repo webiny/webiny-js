@@ -34,6 +34,7 @@ export class InputElement extends FormFieldElement {
                     placeholder={this.getPlaceholder(props)}
                     disabled={this.getIsDisabled(props)}
                     description={this.getDescription(props)}
+                    data-testid={this.getDataTestId(props)}
                 />
             </Bind>
         );

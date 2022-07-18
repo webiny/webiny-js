@@ -15,6 +15,7 @@ export interface FormFieldElementConfig<TRenderProps = FormRenderPropParams>
     label?: string | GetterWithProps<string>;
     description?: string | React.ReactElement | GetterWithProps<string | React.ReactElement>;
     placeholder?: string | GetterWithProps<string>;
+    dataTestId?: string | GetterWithProps<string>;
 }
 
 export interface FormFieldElementRenderProps {
@@ -91,6 +92,14 @@ export class FormFieldElement<
         }
 
         return this.config.description as string;
+    }
+
+    public getDataTestId(props?: FormFieldElementRenderProps): string {
+        if (typeof this.config.dataTestId === "function") {
+            return this.config.dataTestId(props as FormFieldElementRenderProps);
+        }
+
+        return this.config.dataTestId as string;
     }
 
     public getPlaceholder(props?: FormFieldElementRenderProps): string {

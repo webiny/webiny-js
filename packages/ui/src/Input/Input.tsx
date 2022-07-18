@@ -4,6 +4,7 @@ import { FormElementMessage } from "~/FormElementMessage";
 import pick from "lodash/pick";
 import { FormComponentProps } from "~/types";
 import { ReactElement } from "react";
+import { toInteger } from "lodash";
 
 export type InputProps = FormComponentProps &
     TextFieldProps & {
@@ -24,6 +25,11 @@ export type InputProps = FormComponentProps &
 
         // Converts input into a text area with given number of rows.
         rows?: number;
+
+        /**
+         * For testing purposes.
+         */
+        "data-testid"?: string;
 
         maxLength?: number;
 
@@ -136,6 +142,7 @@ export class Input extends React.Component<InputProps> {
                     placeholder={(!label && placeholder) || undefined}
                     trailingIcon={trailingIcon}
                     rows={this.props.rows}
+                    data-testid={this.props["data-testid"]}
                 />
 
                 {validationIsValid === false && (

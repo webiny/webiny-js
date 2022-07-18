@@ -57,6 +57,7 @@ const Grid: React.FC<GridPropsType> = ({
             )}
             {...elementAttributes}
             style={gridStyles}
+            data-testid={"grid-section"}
         >
             {(element.elements as PbEditorElement[]).map(child => {
                 return (

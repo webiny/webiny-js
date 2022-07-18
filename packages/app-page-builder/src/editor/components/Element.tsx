@@ -139,6 +139,7 @@ const ElementComponent: React.FC<ElementPropsType> = ({
                     active={isActive || false}
                     style={{ ...defaultStyle, ...transitionStyles[state] }}
                     className={"webiny-pb-page-element-container"}
+                    data-testid={"pb-page-element"}
                 >
                     <div className={["innerWrapper", className].filter(c => c).join(" ")}>
                         <Draggable

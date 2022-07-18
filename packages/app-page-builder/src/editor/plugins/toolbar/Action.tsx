@@ -27,19 +27,14 @@ interface ActionPropsType {
     onClick?: () => any;
     tooltip?: string;
     plugin?: string;
+    "data-testid"?: string;
     /*
      * If set "true", will close all other active plugins of same type.
      * */
     closeOtherInGroup?: boolean;
 }
-const Action: React.FC<ActionPropsType> = ({
-    id,
-    icon,
-    onClick,
-    tooltip,
-    plugin,
-    closeOtherInGroup
-}) => {
+const Action: React.FC<ActionPropsType> = props => {
+    const { id, icon, onClick, tooltip, plugin, closeOtherInGroup } = props;
     const handler = useEventActionHandler();
     const isActive = useRecoilValue(isPluginActiveSelector(plugin as string));
 
@@ -67,6 +62,7 @@ const Action: React.FC<ActionPropsType> = ({
     const iconButton = (
         <IconButton
             id={id}
+            data-testid={props["data-testid"]}
             icon={btnIcon}
             onClick={clickHandler}
             className={isActive ? activeStyle : ""}

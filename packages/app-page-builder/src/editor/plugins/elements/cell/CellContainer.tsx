@@ -99,6 +99,7 @@ const CellContainer: React.FC<CellPropsType> = ({ elementId, isActive }) => {
                             onDrop={source => dropElementAction(source, 0)}
                         >
                             <IconButton
+                                data-testid={"cell-container-add-icon"}
                                 className={addIcon + " addIcon"}
                                 icon={<AddCircleOutline />}
                                 onClick={onAddClick}

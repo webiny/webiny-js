@@ -14,6 +14,7 @@ export default {
                 plugin={this.name}
                 icon={<AddIcon />}
                 closeOtherInGroup={true}
+                data-testid={"add-element"}
             />
         );
     },
