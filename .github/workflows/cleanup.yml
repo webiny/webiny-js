@@ -2,6 +2,8 @@
 name: Cloud infrastructure Cleanup
 
 on:
+  repository_dispatch:
+    types: [ cleanup-infrastructure ]
   schedule:
     - cron: "0 2 * * *" # Every day at 2AM.
 
