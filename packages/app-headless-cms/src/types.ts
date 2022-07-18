@@ -604,6 +604,8 @@ interface BindComponentRenderProp extends BaseBindComponentRenderProp {
     prependValue: (value: any) => void;
     appendValues: (values: any[]) => void;
     removeValue: (index: number) => void;
+    moveValueUp: (index: number) => void;
+    moveValueDown: (index: number) => void;
 }
 
 interface BindComponentProps extends Omit<BaseBindComponentProps, "children" | "name"> {

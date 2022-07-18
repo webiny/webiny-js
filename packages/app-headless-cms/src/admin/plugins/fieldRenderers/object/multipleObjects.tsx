@@ -4,6 +4,8 @@ import { CmsEditorFieldRendererPlugin } from "~/types";
 import DynamicSection from "../DynamicSection";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
+import { ReactComponent as ArrowUp } from "./arrow_drop_up.svg";
+import { ReactComponent as ArrowDown } from "./arrow_drop_down.svg";
 import { IconButton } from "@webiny/ui/Button";
 import { Cell } from "@webiny/ui/Grid";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
@@ -53,10 +55,27 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             title={`${props.field.label} #${index + 1}`}
                             action={
                                 index > 0 ? (
-                                    <IconButton
-                                        icon={<DeleteIcon />}
-                                        onClick={() => bind.field.removeValue(index)}
-                                    />
+                                    <>
+                                        <IconButton
+                                            icon={<ArrowDown />}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                bind.field.moveValueDown(index);
+                                            }}
+                                        />
+                                        <IconButton
+                                            icon={<ArrowUp />}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                bind.field.moveValueUp(index);
+                                            }}
+                                        />
+
+                                        <IconButton
+                                            icon={<DeleteIcon />}
+                                            onClick={() => bind.field.removeValue(index)}
+                                        />
+                                    </>
                                 ) : null
                             }
                             // Open first Accordion by default
