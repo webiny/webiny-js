@@ -44,5 +44,7 @@ declare namespace NodeJS {
         WEBINY_ELASTICSEARCH_INDEX_LOCALE?: "true" | string;
         APW_SCHEDULER_SCHEDULE_ACTION_HANDLER?: string;
         STAGED_ROLLOUTS_VARIANT?: string;
+        ELASTIC_SEARCH_ENDPOINT?: string;
+        EVENT_BUS?: string;
     }
 }
