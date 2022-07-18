@@ -63,10 +63,10 @@ export const EditorSidebar: React.FC = React.memo(() => {
     return (
         <Elevation z={1} className={rightSideBar}>
             <Tabs value={sidebar.activeTabIndex} updateValue={setActiveTabIndex}>
-                <EditorSidebarTab label={"Style"}>
+                <EditorSidebarTab label={"Style"} data-testid={"style-data-test"}>
                     <StyleSettingsTabContent />
                 </EditorSidebarTab>
-                <EditorSidebarTab label={"Element"} disabled={!element}>
+                <EditorSidebarTab label={"Element"} disabled={!element} data-testid={"element-data-test"}>
                     <ElementSettingsTabContent />
                 </EditorSidebarTab>
             </Tabs>

@@ -290,7 +290,7 @@ context("Categories Module", () => {
         cy.findByText('Saved').should('not.be.visible');
     });
 
-    it("should ensure cloning page element works correctly", () => {
+    it.only("should ensure cloning page element works correctly", () => {
         cy.visit("/page-builder/pages");
         cy.get('div.action__container button[data-testid="new-record-button"]').click();
         cy.get('[data-testid="pb-new-page-category-modal"] div.mdc-list-item:last-child').click();
@@ -318,5 +318,9 @@ context("Categories Module", () => {
 
         cy.findByTestId("pb-editor-page-options-menu").click();
         cy.findByTestId('add-element').click();
+        cy.findByTestId('element-data-test').click();
+        cy.findByTestId('clone-element').click();
+        cy.wait(1000);
+        cy.get('div').find('[data-placeholder="Type your text"]').should('have.length', 2)
     });
 });
