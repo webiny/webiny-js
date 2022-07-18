@@ -95,18 +95,19 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
 
             const promise = new Promise<PulumiAppResourceType<T>>(resolve => {
                 app.handlers.push(() => {
+                    app.resourceHandlers.forEach(handler => handler(resource));
+
                     resolve(new resourceConstructor(resource.name, config, opts));
                 });
             });
 
             const resource: PulumiAppResource<T> = {
                 name: params.name,
+                type: resourceConstructor,
                 config: createPulumiAppResourceConfigProxy(config),
                 opts,
                 output: pulumi.output(promise)
             };
-
-            app.resourceHandlers.forEach(handler => handler(resource));
 
             return resource;
         },
