@@ -596,7 +596,7 @@ export type PbEditorBlockPlugin = Plugin & {
     id?: string;
     type: "pb-editor-block";
     title: string;
-    category: string;
+    blockCategory: string;
     tags: string[];
     image: {
         src?: string;
@@ -824,8 +824,15 @@ export interface PbPageBlock {
     id: string;
     name: string;
     blockCategory: string;
-    content: File;
-    preview: File;
+    content: any;
+    preview: {
+        src: string;
+        meta: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+        };
+    };
     createdOn: string;
     createdBy: PbIdentity;
 }

@@ -21,7 +21,7 @@ const t = i18n.ns("app-page-builder/admin/page-blocks/data-list");
 
 const List = styled("div")({
     display: "grid",
-    rowGap: "8px",
+    rowGap: "20px",
     padding: "8px",
     margin: "17px 50px",
     backgroundColor: "white",
@@ -32,16 +32,19 @@ const List = styled("div")({
 const ListItem = styled("div")({
     position: "relative",
     display: "flex",
+    flexDirection: "column",
     alignItems: "end",
     border: "1px solid rgba(212, 212, 212, 0.5)",
     boxShadow:
         "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
-    height: "120px",
-    padding: "24px"
+    minHeight: "70px",
+    padding: "15px"
 });
 
 const ListItemText = styled("span")({
-    textTransform: "uppercase"
+    textTransform: "uppercase",
+    alignSelf: "start",
+    marginTop: "15px"
 });
 
 const Controls = styled("div")({
@@ -169,6 +172,7 @@ const PageBlocksDataList = ({ canEdit, canDelete }: PageBlocksDataListProps) => 
                 {isLoading && <CircularProgress />}
                 {pageBlocksData.map(pageBlock => (
                     <ListItem key={pageBlock.id}>
+                        <img src={pageBlock?.preview?.src} alt={pageBlock.name} />
                         <ListItemText>{pageBlock.name}</ListItemText>
                         <Controls>
                             {canEdit(pageBlock) && (
