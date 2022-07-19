@@ -1,0 +1,44 @@
+{
+  "name": "@webiny/handler-fastify",
+  "version": "5.30.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Our small wrapper around fastify to ease handling of http requests for the system.",
+  "contributors": [
+    "Bruno Zorić <bruno@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.16.3",
+    "@webiny/handler": "^5.29.0",
+    "@webiny/handler-http": "^5.29.0",
+    "@webiny/plugins": "^5.29.0",
+      "@webiny/error": "^5.29.0",
+    "fastify": "^4.2.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-typescript": "^7.16.0",
+    "@webiny/cli": "^5.29.0",
+    "@webiny/project-utils": "^5.29.0",
+    "babel-plugin-lodash": "^3.3.4",
+    "merge": "^1.2.1",
+    "rimraf": "^3.0.2",
+    "ttypescript": "^1.5.13",
+    "typescript": "4.7.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+}
