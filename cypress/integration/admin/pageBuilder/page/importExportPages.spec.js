@@ -1,5 +1,3 @@
-// This test fails on import. It either times out or is unable to input the ZIP file URL. Invetigation required.
-
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false;
   });
