@@ -38,10 +38,10 @@ export const ApiFileManager = createAppModule({
                 }),
                 layers: [getLayerArn("sharp")],
                 environment: {
-                    variables: {
-                        ...getCommonLambdaEnvVariables(),
+                    variables: getCommonLambdaEnvVariables().apply(value => ({
+                        ...value,
                         S3_BUCKET: core.fileManagerBucketId
-                    }
+                    }))
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
@@ -62,10 +62,10 @@ export const ApiFileManager = createAppModule({
                     )
                 }),
                 environment: {
-                    variables: {
-                        ...getCommonLambdaEnvVariables(),
+                    variables: getCommonLambdaEnvVariables().apply(value => ({
+                        ...value,
                         S3_BUCKET: core.fileManagerBucketId
-                    }
+                    }))
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }
@@ -86,11 +86,11 @@ export const ApiFileManager = createAppModule({
                     )
                 }),
                 environment: {
-                    variables: {
-                        ...getCommonLambdaEnvVariables(),
+                    variables: getCommonLambdaEnvVariables().apply(value => ({
+                        ...value,
                         S3_BUCKET: core.fileManagerBucketId,
                         IMAGE_TRANSFORMER_FUNCTION: transform.output.arn
-                    }
+                    }))
                 },
                 vpcConfig: app.getModule(VpcConfig).functionVpcConfig
             }

@@ -103,10 +103,10 @@ function createRenderSubscriber(
             timeout: 30,
             memorySize: 512,
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     DB_TABLE: params.dbTableName
-                }
+                }))
             },
             description: "Subscribes to render events on event bus",
             code: new pulumi.asset.AssetArchive({
@@ -185,10 +185,10 @@ function createRenderer(
             memorySize: 2048,
             layers: [getLayerArn("shelf-io-chrome-aws-lambda-layer")],
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     DB_TABLE: params.dbTableName
-                }
+                }))
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
             code: new pulumi.asset.AssetArchive({
@@ -239,10 +239,10 @@ function createFlushService(
             timeout: 30,
             memorySize: 512,
             environment: {
-                variables: {
-                    ...getCommonLambdaEnvVariables(),
+                variables: getCommonLambdaEnvVariables().apply(value => ({
+                    ...value,
                     DB_TABLE: params.dbTableName
-                }
+                }))
             },
             description: "Subscribes to flush events on event bus",
             code: new pulumi.asset.AssetArchive({
