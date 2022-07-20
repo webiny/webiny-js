@@ -4236,6 +4236,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/aws-lambda@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@fastify/aws-lambda@npm:3.0.0"
+  checksum: 169533884339e328fd95394b620a33c1f7e49d8ef6fd893e2bd5349c48146cd15b067b5e41b696850af1313e07f583695d2b1344f0571e5b336893c344440168
+  languageName: node
+  linkType: hard
+
 "@fastify/deepmerge@npm:^1.0.0":
   version: 1.1.0
   resolution: "@fastify/deepmerge@npm:1.1.0"
@@ -13130,7 +13137,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-fastify@workspace:packages/handler-fastify":
+"@webiny/handler-fastify-aws@workspace:packages/handler-fastify-aws":
+  version: 0.0.0-use.local
+  resolution: "@webiny/handler-fastify-aws@workspace:packages/handler-fastify-aws"
+  dependencies:
+    "@babel/cli": ^7.16.0
+    "@babel/core": ^7.16.0
+    "@babel/preset-env": ^7.16.4
+    "@babel/preset-typescript": ^7.16.0
+    "@babel/runtime": ^7.16.3
+    "@fastify/aws-lambda": ^3.0.0
+    "@webiny/cli": ^5.29.0
+    "@webiny/error": ^5.29.0
+    "@webiny/handler": ^5.29.0
+    "@webiny/handler-fastify": ^5.29.0
+    "@webiny/project-utils": ^5.29.0
+    aws-lambda: ^1.0.7
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.13
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/handler-fastify@^5.29.0, @webiny/handler-fastify@workspace:packages/handler-fastify":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-fastify@workspace:packages/handler-fastify"
   dependencies:
@@ -13140,9 +13169,8 @@ __metadata:
     "@babel/preset-typescript": ^7.16.0
     "@babel/runtime": ^7.16.3
     "@webiny/cli": ^5.29.0
+    "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-args": ^5.29.0
-    "@webiny/handler-client": ^5.29.0
     "@webiny/handler-http": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0

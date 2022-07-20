@@ -1,9 +1,9 @@
 import { createHandler, RoutePlugin } from "~/index";
-import { HandlerPlugin } from "@webiny/handler";
 import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
 import { FastifyContext, RouteTypes } from "~/types";
+import { HandlerPlugin } from "@webiny/handler";
 
-describe("Routes plugin", () => {
+describe("Fastify routes plugin", () => {
     let tracker: LifecycleEventTracker;
 
     beforeEach(() => {

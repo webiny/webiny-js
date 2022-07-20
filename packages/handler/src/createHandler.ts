@@ -1,5 +1,5 @@
 import middleware from "./middleware";
-import { HandlerPlugin } from "~/plugins/HandlerPlugin";
+import { HandlerPlugin, NextCallable } from "~/plugins/HandlerPlugin";
 import { ContextPlugin } from "~/plugins/ContextPlugin";
 import { BeforeHandlerPlugin } from "~/plugins/BeforeHandlerPlugin";
 import { Context } from "~/plugins/Context";
@@ -8,7 +8,7 @@ import { HandlerResultPlugin } from "~/plugins/HandlerResultPlugin";
 import { PluginCollection } from "@webiny/plugins/types";
 
 export default (...plugins: PluginCollection) =>
-    async (...args: string[]) => {
+    async (...args: any[]) => {
         const context = new Context({
             plugins,
             args,
@@ -62,7 +62,7 @@ async function handle(context: Context) {
         const handlers = context.plugins.byType<HandlerPlugin>(HandlerPlugin.type);
         const handler = middleware(
             handlers.map(pl => {
-                return (context: Context, next: Function) => {
+                return (context: Context, next: NextCallable) => {
                     return pl.handle(context, next);
                 };
             })

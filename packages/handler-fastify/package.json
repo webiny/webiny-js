@@ -13,10 +13,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.16.3",
+    "@webiny/error": "^5.29.0",
     "@webiny/handler": "^5.29.0",
     "@webiny/handler-http": "^5.29.0",
     "@webiny/plugins": "^5.29.0",
-      "@webiny/error": "^5.29.0",
     "fastify": "^4.2.1"
   },
   "devDependencies": {

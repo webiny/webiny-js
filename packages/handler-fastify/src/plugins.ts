@@ -1,5 +1,6 @@
-import fastify, { FastifyServerOptions } from "fastify";
 import WebinyError from "@webiny/error";
+import fastify, { FastifyServerOptions } from "fastify";
+import { Plugin } from "@webiny/plugins/Plugin";
 import { ContextPlugin } from "@webiny/handler";
 import { FastifyContext, RouteMethodOptions, RouteTypes } from "~/types";
 import { RoutePlugin } from "~/plugins/RoutePlugin";
@@ -8,9 +9,9 @@ export interface CreateFastifyHandlerParams {
     options?: FastifyServerOptions;
 }
 
-export const createFastifyHandler = (params: CreateFastifyHandlerParams) => {
+export const createFastifyPlugins = (params?: CreateFastifyHandlerParams) => {
     const server = fastify({
-        ...(params.options || {})
+        ...(params?.options || {})
     });
 
     const definedRoutes: Record<RouteTypes, string[]> = {
@@ -49,7 +50,19 @@ export const createFastifyHandler = (params: CreateFastifyHandlerParams) => {
         definedRoutes[type].push(path);
     };
 
-    return new ContextPlugin<FastifyContext>(async context => {
+    const plugins: Plugin[] = [];
+    /**
+     * Context plugin to add fastify server.
+     */
+    const fastifyContextPlugin = new ContextPlugin<FastifyContext>(async context => {
+        context.server = server;
+    });
+
+    plugins.push(fastifyContextPlugin);
+    /**
+     * Context plugin to add routes.
+     */
+    const routesContextPlugin = new ContextPlugin<FastifyContext>(async context => {
         /**
          * This is simplified way of adding new routes.
          * We also check if the route already exists and if it does, is it explicitly overridden.
@@ -59,41 +72,43 @@ export const createFastifyHandler = (params: CreateFastifyHandlerParams) => {
             defined: definedRoutes,
             onPost: (path, handler, options) => {
                 throwOnDefinedRoute("post", path, options);
-                server.post(path, handler);
+                context.server.post(path, handler);
                 addDefinedRoute("post", path);
             },
             onGet: (path, handler, options) => {
                 throwOnDefinedRoute("get", path, options);
-                server.get(path, handler);
+                context.server.get(path, handler);
                 addDefinedRoute("get", path);
             },
             onOptions: (path, handler, options) => {
                 throwOnDefinedRoute("options", path, options);
-                server.options(path, handler);
+                context.server.options(path, handler);
                 addDefinedRoute("options", path);
             },
             onDelete: (path, handler, options) => {
                 throwOnDefinedRoute("delete", path, options);
-                server.delete(path, handler);
+                context.server.delete(path, handler);
                 addDefinedRoute("delete", path);
             },
             onPatch: (path, handler, options) => {
                 throwOnDefinedRoute("patch", path, options);
-                server.patch(path, handler);
+                context.server.patch(path, handler);
                 addDefinedRoute("patch", path);
             },
             onPut: (path, handler, options) => {
                 throwOnDefinedRoute("put", path, options);
-                server.put(path, handler);
+                context.server.put(path, handler);
                 addDefinedRoute("put", path);
             }
         };
-
-        context.server = server;
 
         const routes = context.plugins.byType<RoutePlugin>(RoutePlugin.type);
         for (const route of routes) {
             await route.attach(context);
         }
     });
+
+    plugins.push(routesContextPlugin);
+
+    return plugins;
 };

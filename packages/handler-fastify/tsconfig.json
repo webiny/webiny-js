@@ -3,7 +3,7 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
     { "path": "../handler" },
-    { "path": "../handler-error" },
+    { "path": "../error" },
     { "path": "../handler-http" },
     { "path": "../plugins" }
   ],
@@ -15,8 +15,8 @@
       "~/*": ["./src/*"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-error/*": ["../handler-error/src/*"],
-      "@webiny/handler-error": ["../handler-error/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler-http/*": ["../handler-http/src/*"],
       "@webiny/handler-http": ["../handler-http/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

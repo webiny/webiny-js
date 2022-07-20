@@ -1,23 +1,16 @@
-import { PluginCollection } from "@webiny/plugins/types";
 import { createHandler as createDefaultHandler } from "@webiny/handler";
-// import createHttpHandler from "@webiny/handler-http";
-// import createArgsHandler from "@webiny/handler-args";
-import { createFastifyHandler, CreateFastifyHandlerParams } from "./handler";
+import { createFastifyPlugins, CreateFastifyHandlerParams } from "./plugins";
+import { PluginCollection } from "@webiny/plugins/types";
 
-interface CreateAwsHandlerOptions extends CreateFastifyHandlerParams {
-    plugins: PluginCollection;
+export interface CreateHandlerParams extends CreateFastifyHandlerParams {
+    plugins?: PluginCollection;
 }
-
-interface FastifyHandlerFactory {
-    (params: CreateAwsHandlerOptions): Function;
-}
-
-export const createHandler: FastifyHandlerFactory = params => {
+export const createHandler = (params?: CreateHandlerParams) => {
     return createDefaultHandler([
-        // createArgsHandler(),
-        // createHttpHandler(),
-        createFastifyHandler(params),
-        ...params.plugins
+        ...createFastifyPlugins({
+            options: params?.options || {}
+        }),
+        ...(params?.plugins || [])
     ]);
 };
 

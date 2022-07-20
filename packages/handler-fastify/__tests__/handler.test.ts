@@ -1,6 +1,7 @@
 import { createHandler } from "~/index";
 import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
 import { BeforeHandlerPlugin, ContextPlugin } from "@webiny/handler";
+// import { createHandler as createDefaultHandler } from "@webiny/handler";
 import {
     Context,
     HandlerErrorPlugin,
