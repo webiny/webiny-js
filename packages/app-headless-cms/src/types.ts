@@ -171,6 +171,13 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
     };
 }
 
+export interface CmsEditorFieldRendererProps {
+    field: CmsEditorField;
+    Label: typeof Label;
+    getBind: (index?: number, key?: string) => BindComponent;
+    contentModel: CmsEditorContentModel;
+}
+
 export interface CmsEditorFieldRendererPlugin extends Plugin {
     /**
      * a plugin type
@@ -235,12 +242,7 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
          * }
          * ```
          */
-        render(props: {
-            field: CmsEditorField;
-            Label: typeof Label;
-            getBind: (index?: number, key?: string) => BindComponent;
-            contentModel: CmsEditorContentModel;
-        }): React.ReactNode;
+        render(props: CmsEditorFieldRendererProps): React.ReactNode;
     };
 }
 

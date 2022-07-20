@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
+import shortid from "shortid";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsEditorFieldRendererPlugin, CmsEditorFieldRendererProps } from "~/types";
 import DynamicSection from "../DynamicSection";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
@@ -15,10 +16,89 @@ import {
     fieldsWrapperStyle,
     dynamicSectionTitleStyle,
     dynamicSectionGridStyle,
-    fieldsGridStyle
+    fieldsGridStyle,
+    ItemHighLight,
+    ObjectItem
 } from "./StyledComponents";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
+
+const ObjectsRenderer: React.FC<CmsEditorFieldRendererProps> = props => {
+    const [highlightMap, setHighlightIndex] = useState<{ [key: number]: string }>({});
+    const { field, contentModel } = props;
+
+    return (
+        <DynamicSection
+            {...props}
+            emptyValue={{}}
+            showLabel={false}
+            renderTitle={value => (
+                <Cell span={12} className={dynamicSectionTitleStyle}>
+                    <Typography use={"headline5"}>
+                        {`${field.label} ${value.length ? `(${value.length})` : ""}`}
+                    </Typography>
+                    {field.helpText && <FormElementMessage>{field.helpText}</FormElementMessage>}
+                </Cell>
+            )}
+            gridClassName={dynamicSectionGridStyle}
+        >
+            {({ Bind, bind, index }) => (
+                <ObjectItem>
+                    {highlightMap[index] ? <ItemHighLight key={highlightMap[index]} /> : null}
+                    <Accordion
+                        title={`${props.field.label} #${index + 1}`}
+                        action={
+                            index > 0 ? (
+                                <>
+                                    <IconButton
+                                        icon={<ArrowDown />}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            bind.field.moveValueDown(index);
+                                            setHighlightIndex(map => ({
+                                                ...map,
+                                                [index + 1]: shortid.generate()
+                                            }));
+                                        }}
+                                    />
+                                    <IconButton
+                                        icon={<ArrowUp />}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            bind.field.moveValueUp(index);
+                                            setHighlightIndex(map => ({
+                                                ...map,
+                                                [index - 1]: shortid.generate()
+                                            }));
+                                        }}
+                                    />
+
+                                    <IconButton
+                                        icon={<DeleteIcon />}
+                                        onClick={() => bind.field.removeValue(index)}
+                                    />
+                                </>
+                            ) : null
+                        }
+                        // Open first Accordion by default
+                        defaultValue={index === 0}
+                    >
+                        <Cell span={12} className={fieldsWrapperStyle}>
+                            <Fields
+                                Bind={Bind}
+                                {...bind.index}
+                                contentModel={contentModel}
+                                fields={(field.settings || {}).fields || []}
+                                layout={(field.settings || {}).layout || []}
+                                gridClassName={fieldsGridStyle}
+                            />
+                        </Cell>
+                    </Accordion>
+                </ObjectItem>
+            )}
+        </DynamicSection>
+    );
+};
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -31,70 +111,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return field.type === "object" && !!field.multipleValues;
         },
         render(props) {
-            const { field, contentModel } = props;
-
-            return (
-                <DynamicSection
-                    {...props}
-                    emptyValue={{}}
-                    showLabel={false}
-                    renderTitle={value => (
-                        <Cell span={12} className={dynamicSectionTitleStyle}>
-                            <Typography use={"headline5"}>
-                                {`${field.label} ${value.length ? `(${value.length})` : ""}`}
-                            </Typography>
-                            {field.helpText && (
-                                <FormElementMessage>{field.helpText}</FormElementMessage>
-                            )}
-                        </Cell>
-                    )}
-                    gridClassName={dynamicSectionGridStyle}
-                >
-                    {({ Bind, bind, index }) => (
-                        <Accordion
-                            title={`${props.field.label} #${index + 1}`}
-                            action={
-                                index > 0 ? (
-                                    <>
-                                        <IconButton
-                                            icon={<ArrowDown />}
-                                            onClick={e => {
-                                                e.stopPropagation();
-                                                bind.field.moveValueDown(index);
-                                            }}
-                                        />
-                                        <IconButton
-                                            icon={<ArrowUp />}
-                                            onClick={e => {
-                                                e.stopPropagation();
-                                                bind.field.moveValueUp(index);
-                                            }}
-                                        />
-
-                                        <IconButton
-                                            icon={<DeleteIcon />}
-                                            onClick={() => bind.field.removeValue(index)}
-                                        />
-                                    </>
-                                ) : null
-                            }
-                            // Open first Accordion by default
-                            defaultValue={index === 0}
-                        >
-                            <Cell span={12} className={fieldsWrapperStyle}>
-                                <Fields
-                                    Bind={Bind}
-                                    {...bind.index}
-                                    contentModel={contentModel}
-                                    fields={(field.settings || {}).fields || []}
-                                    layout={(field.settings || {}).layout || []}
-                                    gridClassName={fieldsGridStyle}
-                                />
-                            </Cell>
-                        </Accordion>
-                    )}
-                </DynamicSection>
-            );
+            return <ObjectsRenderer {...props} />;
         }
     }
 };
