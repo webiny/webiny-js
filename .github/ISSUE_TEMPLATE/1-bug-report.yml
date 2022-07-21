@@ -1,4 +1,5 @@
 name: "\U0001F41B Bug report"
+labels: "bug"
 description: Create a report to help us improve
 body:
   - type: markdown
