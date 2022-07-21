@@ -24,7 +24,7 @@ import { useRecoilValue } from "recoil";
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 import createBlockPlugin from "../../../admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
-import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
+import { UPDATE_PAGE_BLOCK, DELETE_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
 import EditBlockDialog from "./EditBlockDialog";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
@@ -72,8 +72,8 @@ const SearchBar = () => {
     const [activeCategory, setActiveCategory] = useState<string>("all");
 
     const [updatePageElementMutation, { loading: updateInProgress }] =
-        useMutation(UPDATE_PAGE_ELEMENT);
-    const [deletePageElementMutation] = useMutation(DELETE_PAGE_ELEMENT);
+        useMutation(UPDATE_PAGE_BLOCK);
+    const [deletePageElementMutation] = useMutation(DELETE_PAGE_BLOCK);
 
     const allCategories = useMemo(
         () => [
@@ -142,7 +142,7 @@ const SearchBar = () => {
                 });
             } else {
                 output = output.filter(item => {
-                    return item.category === activeCategory;
+                    return item.blockCategory === activeCategory;
                 });
             }
         }
@@ -161,7 +161,7 @@ const SearchBar = () => {
         if (category === "all") {
             return allBlocks.length;
         }
-        return allBlocks.filter(pl => pl.category === category).length;
+        return allBlocks.filter(pl => pl.blockCategory === category).length;
     }, []);
 
     const { showSnackbar } = useSnackbar();
@@ -173,7 +173,7 @@ const SearchBar = () => {
             }
         });
 
-        const { error } = response.data.pageBuilder.deletePageElement;
+        const { error } = response.data.pageBuilder.deletePageBlock;
         if (error) {
             showSnackbar(error.message);
             return;
@@ -188,7 +188,7 @@ const SearchBar = () => {
     }, []);
 
     const updateBlock = useCallback(
-        async ({ updateElement, data: { title: name, category } }) => {
+        async ({ updateElement, data: { title: name, blockCategory } }) => {
             if (!editingBlock) {
                 return;
             }
@@ -196,11 +196,11 @@ const SearchBar = () => {
             const response = await updateElement({
                 variables: {
                     id: editingBlock.id,
-                    data: { name, category }
+                    data: { name, blockCategory }
                 }
             });
 
-            const { error, data } = response.data.pageBuilder.updatePageElement;
+            const { error, data } = response.data.pageBuilder.pageBlock;
             if (error) {
                 showSnackbar(error.message);
                 return;

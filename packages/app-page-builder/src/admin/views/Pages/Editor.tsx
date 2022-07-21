@@ -19,11 +19,14 @@ import {
     ListPageElementsQueryResponse,
     ListPageElementsQueryResponseData
 } from "~/admin/graphql/pages";
+import { LIST_PAGE_BLOCKS, ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
+import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import dotProp from "dot-prop-immutable";
-import { PbErrorResponse } from "~/types";
+import { PbErrorResponse, PbPageBlock, PbBlockCategory } from "~/types";
 import { PageWithContent, RevisionsAtomType } from "~/editor/recoil/modules";
+import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -72,11 +75,28 @@ const Editor: React.FC = () => {
                             data: {},
                             elements: []
                         });
-                    } else {
-                        createBlockPlugin({
-                            ...element
-                        });
                     }
+                });
+            });
+        const savedBLocks = client
+            .query<ListPageBlocksQueryResponse>({ query: LIST_PAGE_BLOCKS })
+            .then(({ data }) => {
+                const blocks: PbPageBlock[] = get(data, "pageBuilder.listPageBlocks.data") || [];
+                blocks.forEach(element => {
+                    createBlockPlugin({
+                        ...element
+                    });
+                });
+            });
+        const blockCategories = client
+            .query<ListPageBlocksQueryResponse>({ query: LIST_BLOCK_CATEGORIES })
+            .then(({ data }) => {
+                const blockCategoriesData: PbBlockCategory[] =
+                    get(data, "pageBuilder.listBlockCategories.data") || [];
+                blockCategoriesData.forEach(element => {
+                    createBlockCategoryPlugin({
+                        ...element
+                    });
                 });
             });
 
@@ -133,7 +153,7 @@ const Editor: React.FC = () => {
             });
 
         return React.lazy(() =>
-            Promise.all([savedElements, pageData]).then(() => {
+            Promise.all([savedElements, savedBLocks, blockCategories, pageData]).then(() => {
                 return { default: ({ children }: { children: React.ReactElement }) => children };
             })
         );
