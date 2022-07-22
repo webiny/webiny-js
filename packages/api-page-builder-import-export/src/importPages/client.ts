@@ -20,7 +20,10 @@ export async function invokeHandlerClient<TParams>({
         httpMethod: request.method,
         body: request.body,
         headers: request.headers,
-        cookies: request.cookies
+        /**
+         * Required until type augmentation works correctly.
+         */
+        cookies: (request as any).cookies
     };
     // Invoke handler
     await context.handlerClient.invoke<TParams & any>({
