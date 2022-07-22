@@ -2,7 +2,7 @@ const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
-const { createHandler } = require("@webiny/handler-aws");
+const { createHandler } = require("@webiny/handler-fastify-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
 const { simulateStream } = require("@webiny/project-utils/testing/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
@@ -64,7 +64,12 @@ class CmsTestEnvironment extends NodeEnvironment {
             context.plugins.register([elasticsearchDataGzipCompression()]);
             await elasticsearchClientContext.apply(context);
         });
-        simulateStream(documentClient, createHandler(simulationContext, dynamoToElastic()));
+        simulateStream(
+            documentClient,
+            createHandler({
+                plugins: [simulationContext, dynamoToElastic()]
+            })
+        );
 
         //const onBeforeEntryList = new ContextPlugin(async context => {
         //if (!context.cms) {

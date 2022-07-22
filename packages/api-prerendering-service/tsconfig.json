@@ -7,7 +7,7 @@
     { "path": "../handler-args" },
     { "path": "../handler-client" },
     { "path": "../plugins" },
-    { "path": "../handler-aws" }
+    { "path": "../handler-fastify-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -25,8 +25,8 @@
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/handler-fastify-aws/*": ["../handler-fastify-aws/src/*"],
+      "@webiny/handler-fastify-aws": ["../handler-fastify-aws/src"]
     },
     "baseUrl": "."
   }

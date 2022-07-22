@@ -14,7 +14,7 @@
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../handler" },
-    { "path": "../handler-aws" },
+    { "path": "../handler-fastify-aws" },
     { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
@@ -47,8 +47,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/handler-fastify-aws/*": ["../handler-fastify-aws/src/*"],
+      "@webiny/handler-fastify-aws": ["../handler-fastify-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"]
     },

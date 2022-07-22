@@ -2,7 +2,7 @@ import { getIntrospectionQuery } from "graphql";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -148,8 +148,13 @@ export const createPageBuilderGQLHandler = (params: GQLHandlerCallableParams) =>
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler({
+            path: "/graphql",
             httpMethod,
-            headers,
+            headers: {
+                ["x-tenant"]: "root",
+                ["Content-Type"]: "application/json",
+                ...headers
+            },
             body: JSON.stringify(body),
             ...rest
         });

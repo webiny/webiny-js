@@ -13,7 +13,7 @@ import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 // @ts-ignore
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
@@ -108,39 +108,46 @@ export default (params?: UseGqlHandlerParams) => {
         });
     };
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
+    simulateStream(
+        documentClient,
+        createHandler({
+            plugins: [elasticsearchClientContext, dynamoToElastic()]
+        })
+    );
 
     const tenant = { id: "root", name: "Root", parent: null };
     // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler(
-        createWcpContext(),
-        createWcpGraphQL(),
-        dbPlugins({
-            table: process.env.DB_TABLE,
-            driver: new DynamoDbDriver({
-                documentClient
+    const handler = createHandler({
+        plugins: [
+            createWcpContext(),
+            createWcpGraphQL(),
+            dbPlugins({
+                table: process.env.DB_TABLE,
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
+            }),
+            dynamoDbPlugins(),
+            ...createTenancyAndSecurity({ permissions, identity }),
+            graphqlHandlerPlugins(),
+            i18nContext(),
+            i18nDynamoDbStorageOperations(),
+            mockLocalesPlugins(),
+            elasticsearchClientContext,
+            richTextFieldPlugin(),
+            fileManagerPlugins(),
+            fileManagerDdbEsPlugins(),
+            /**
+             * Mock physical file storage plugin.
+             */
+            new FilePhysicalStoragePlugin({
+                // eslint-disable-next-line
+                upload: async () => {},
+                // eslint-disable-next-line
+                delete: async () => {}
             })
-        }),
-        dynamoDbPlugins(),
-        ...createTenancyAndSecurity({ permissions, identity }),
-        graphqlHandlerPlugins(),
-        i18nContext(),
-        i18nDynamoDbStorageOperations(),
-        mockLocalesPlugins(),
-        elasticsearchClientContext,
-        richTextFieldPlugin(),
-        fileManagerPlugins(),
-        fileManagerDdbEsPlugins(),
-        /**
-         * Mock physical file storage plugin.
-         */
-        new FilePhysicalStoragePlugin({
-            // eslint-disable-next-line
-            upload: async () => {},
-            // eslint-disable-next-line
-            delete: async () => {}
-        })
-    );
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {

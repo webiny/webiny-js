@@ -1,5 +1,5 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import tenantManagerPlugins from "../src";
 import {
@@ -21,14 +21,16 @@ export default (params: UseGqlHandlerParams = {}) => {
     const { plugins: extraPlugins } = params;
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler(
-        createWcpContext(),
-        createWcpGraphQL(),
-        ...createTenancyAndSecurity(),
-        graphqlHandler(),
-        tenantManagerPlugins(),
-        extraPlugins || []
-    );
+    const handler = createHandler({
+        plugins: [
+            createWcpContext(),
+            createWcpGraphQL(),
+            ...createTenancyAndSecurity(),
+            graphqlHandler(),
+            tenantManagerPlugins(),
+            extraPlugins || []
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {

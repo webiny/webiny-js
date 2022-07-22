@@ -6,17 +6,19 @@ import { getStorageOperations } from "../../../../storageOperations";
 export default (...plugins) => {
     const storageOperations = getStorageOperations();
 
-    const handler = createHandler(
-        ...plugins,
-        handlerClient(),
-        queueProcessPlugins({
-            handlers: {
-                render: "handler-client-handler-render-handler",
-                flush: "handler-client-handler-flush-handler"
-            },
-            storageOperations
-        })
-    );
+    const handler = createHandler({
+        plugins: [
+            ...plugins,
+            handlerClient(),
+            queueProcessPlugins({
+                handlers: {
+                    render: "handler-client-handler-render-handler",
+                    flush: "handler-client-handler-flush-handler"
+                },
+                storageOperations
+            })
+        ]
+    });
 
     return { handler, storageOperations };
 };

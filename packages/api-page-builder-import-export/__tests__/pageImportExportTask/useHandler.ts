@@ -1,5 +1,5 @@
 import { createWcpContext } from "@webiny/api-wcp";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import pageImportExportTaskPlugins from "~/graphql/crud/pageImportExportTasks.crud";
 import { ContextPlugin } from "@webiny/handler";
@@ -15,50 +15,52 @@ export default (params: Params = {}) => {
 
     // @ts-ignore
     const { storageOperations } = __getStorageOperations();
-    const handler = createHandler(
-        // storageOperations(),
-        createWcpContext(),
-        ...createTenancyAndSecurity(),
-        graphqlHandler(),
-        {
-            type: "context",
-            apply: (context: PbContext) => {
-                if (context.i18n) {
-                    return;
-                }
-
-                context.i18n = {
-                    // @ts-ignore
-                    ...(context.i18n || ({} as any)),
-                    getContentLocale() {
-                        return { code: "en-US", default: true };
-                    },
-                    getCurrentLocale: () => {
-                        return {
-                            code: "en-US",
-                            default: true,
-                            createdBy: {
-                                id: "admin",
-                                type: "admin",
-                                displayName: "admin"
-                            },
-                            createdOn: new Date().toISOString(),
-                            tenant: "root",
-                            webinyVersion: process.env.WEBINY_VERSION
-                        };
-                    },
-                    checkI18NContentPermission: () => {
-                        return true;
+    const handler = createHandler({
+        plugins: [
+            // storageOperations(),
+            createWcpContext(),
+            ...createTenancyAndSecurity(),
+            graphqlHandler(),
+            {
+                type: "context",
+                apply: (context: PbContext) => {
+                    if (context.i18n) {
+                        return;
                     }
-                };
-            }
-        },
-        new ContextPlugin<PbContext>(context => {
-            context.pageBuilder = {} as any;
-        }),
-        pageImportExportTaskPlugins({ storageOperations }),
-        extraPlugins || []
-    );
+
+                    context.i18n = {
+                        // @ts-ignore
+                        ...(context.i18n || ({} as any)),
+                        getContentLocale() {
+                            return { code: "en-US", default: true };
+                        },
+                        getCurrentLocale: () => {
+                            return {
+                                code: "en-US",
+                                default: true,
+                                createdBy: {
+                                    id: "admin",
+                                    type: "admin",
+                                    displayName: "admin"
+                                },
+                                createdOn: new Date().toISOString(),
+                                tenant: "root",
+                                webinyVersion: process.env.WEBINY_VERSION
+                            };
+                        },
+                        checkI18NContentPermission: () => {
+                            return true;
+                        }
+                    };
+                }
+            },
+            new ContextPlugin<PbContext>(context => {
+                context.pageBuilder = {} as any;
+            }),
+            pageImportExportTaskPlugins({ storageOperations }),
+            extraPlugins || []
+        ]
+    });
 
     return {
         handler

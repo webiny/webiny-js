@@ -15,7 +15,7 @@ export async function invokeHandlerClient<TParams>({
      * Prepare "invocationArgs", we're hacking our wat here.
      * They are necessary to setup the "context.pageBuilder" object among other things in IMPORT_PAGE_FUNCTION
      */
-    const { request } = context.http;
+    const { request } = context;
     const invocationArgs = {
         httpMethod: request.method,
         body: request.body,

@@ -1,7 +1,7 @@
 import { createWcpContext } from "@webiny/api-wcp";
 import { getIntrospectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
@@ -101,19 +101,6 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
     const handler = createHandler({
         plugins: [
             topPlugins,
-            {
-                type: "context",
-                name: "context-tenant-header",
-                async apply(context) {
-                    context.http.request = {
-                        ...context.http.request,
-                        headers: {
-                            ...(context.http.request?.headers || {}),
-                            ["x-tenant"]: context.http.request?.headers?.["x-tenant"] || "root"
-                        }
-                    };
-                }
-            } as ContextPlugin<TestContext>,
             createWcpContext(),
             ...ops.plugins,
             ...createTenancyAndSecurity({
@@ -167,8 +154,13 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams) => {
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
         const response = await handler({
+            path: "/graphql",
             httpMethod,
-            headers,
+            headers: {
+                ["x-tenant"]: "root",
+                ["Content-Type"]: "application/json",
+                ...headers
+            },
             body: JSON.stringify(body),
             ...rest
         });

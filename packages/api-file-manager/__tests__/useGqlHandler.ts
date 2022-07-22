@@ -1,6 +1,6 @@
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createHandler } from "@webiny/handler-aws";
+import { createHandler } from "@webiny/handler-fastify-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
@@ -57,39 +57,49 @@ export default (params: UseGqlHandlerParams = {}) => {
         );
     }
     // Creates the actual handler. Feel free to add additional plugins if needed.
-    const handler = createHandler(
-        createWcpContext(),
-        createWcpGraphQL(),
-        storageOperations(),
-        i18nDynamoDbStorageOperations(),
-        graphqlHandlerPlugins(),
-        ...createTenancyAndSecurity({ permissions, identity }),
-        i18nContext(),
-        mockLocalesPlugins(),
-        filesPlugins(),
-        /**
-         * Mock physical file storage plugin.
-         */
-        new FilePhysicalStoragePlugin({
-            // eslint-disable-next-line
-            upload: async () => {},
-            // eslint-disable-next-line
-            delete: async () => {}
-        }),
-        /**
-         * Make sure we dont have undefined plugins value.
-         */
-        plugins || []
-    );
+    const handler = createHandler({
+        plugins: [
+            createWcpContext(),
+            createWcpGraphQL(),
+            storageOperations(),
+            i18nDynamoDbStorageOperations(),
+            graphqlHandlerPlugins(),
+            ...createTenancyAndSecurity({ permissions, identity }),
+            i18nContext(),
+            mockLocalesPlugins(),
+            filesPlugins(),
+            /**
+             * Mock physical file storage plugin.
+             */
+            new FilePhysicalStoragePlugin({
+                // eslint-disable-next-line
+                upload: async () => {},
+                // eslint-disable-next-line
+                delete: async () => {}
+            }),
+            /**
+             * Make sure we dont have undefined plugins value.
+             */
+            ...(plugins || [])
+        ]
+    });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }: InvokeParams) => {
-        const response = await handler({
-            httpMethod,
-            headers,
-            body: JSON.stringify(body),
-            ...rest
-        });
+        const response = await handler(
+            {
+                path: "/graphql",
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as any,
+            {} as any
+        );
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
