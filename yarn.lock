@@ -11112,9 +11112,8 @@ __metadata:
     "@webiny/cli": ^5.29.0
     "@webiny/db-dynamodb": ^5.29.0
     "@webiny/error": ^5.29.0
+    "@webiny/fastify": ^5.29.0
     "@webiny/handler": ^5.29.0
-    "@webiny/handler-args": ^5.29.0
-    "@webiny/handler-client": ^5.29.0
     "@webiny/handler-db": ^5.29.0
     "@webiny/handler-fastify-aws": ^5.29.0
     "@webiny/handler-graphql": ^5.29.0
@@ -13046,7 +13045,6 @@ __metadata:
     "@webiny/error": ^5.29.0
     "@webiny/handler": ^5.29.0
     "@webiny/handler-client": ^5.29.0
-    "@webiny/handler-http": ^5.29.0
     "@webiny/plugins": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     "@webiny/utils": ^5.29.0
@@ -13186,9 +13184,7 @@ __metadata:
     "@babel/runtime": ^7.16.3
     "@fastify/aws-lambda": ^3.0.0
     "@webiny/cli": ^5.29.0
-    "@webiny/error": ^5.29.0
     "@webiny/fastify": ^5.29.0
-    "@webiny/handler": ^5.29.0
     "@webiny/project-utils": ^5.29.0
     aws-lambda: ^1.0.7
     rimraf: ^3.0.2

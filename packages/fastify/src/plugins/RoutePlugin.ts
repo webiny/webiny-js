@@ -9,6 +9,7 @@ interface RoutePluginCbParams {
     onPatch: RouteMethod;
     onDelete: RouteMethod;
     onOptions: RouteMethod;
+    onAll: RouteMethod;
 }
 interface RoutePluginCb {
     (params: RoutePluginCbParams): void;

@@ -6,45 +6,62 @@ describe("Update Settings Handler Test", () => {
     test("update settings", async () => {
         const result = await handler(
             {
-                path: "/graphql",
+                path: "/",
                 httpMethod: "POST",
                 headers: {
                     ["x-tenant"]: "root",
                     "Content-Type": "application/json"
                 },
-                body: "{}",
-                data: {
-                    name: "test 1",
-                    websiteUrl: "https://www.test.com/",
-                    websitePreviewUrl: "https://preview.test.com/",
-                    prerendering: {
-                        app: {
-                            url: "https://www.app.com/"
+                body: JSON.stringify({
+                    data: {
+                        name: "test 1",
+                        websiteUrl: "https://www.test.com/",
+                        websitePreviewUrl: "https://preview.test.com/",
+                        prerendering: {
+                            app: {
+                                url: "https://www.app.com/"
+                            },
+                            storage: { name: "storage-name" },
+                            meta: {
+                                cloudfront: {
+                                    distributionId: "distributionId"
+                                }
+                            }
                         },
-                        storage: { name: "storage-name" },
-                        meta: {
-                            cloudfront: {
-                                distributionId: "distributionId"
+                        social: {
+                            facebook: "https://www.facebook.com/",
+                            instagram: "https://www.instagram.com/",
+                            twitter: "https://www.twitter.com/",
+                            image: {
+                                id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
+                                src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
                             }
                         }
-                    },
-                    social: {
-                        facebook: "https://www.facebook.com/",
-                        instagram: "https://www.instagram.com/",
-                        twitter: "https://www.twitter.com/",
-                        image: {
-                            id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
-                            src: "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
-                        }
                     }
-                }
+                })
             } as any,
             {} as any
         );
-
+        /**
+         * TODO check if this is correct
+         *
+         * Result was not used anywhere so it did not matter.
+         * Fastify returns response object for the Lambda
+         *
+         */
         expect(result).toEqual({
-            data: true,
-            error: null
+            body: JSON.stringify({
+                data: true,
+                error: null
+            }),
+            headers: {
+                connection: "keep-alive",
+                "content-length": "26",
+                "content-type": "application/json; charset=utf-8",
+                date: expect.any(String)
+            },
+            isBase64Encoded: false,
+            statusCode: 200
         });
     });
 });

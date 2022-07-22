@@ -11,10 +11,9 @@ describe("fastify aws handler routes", () => {
             plugins: [
                 new RoutePlugin(({ onPost }) => {
                     onPost("/webiny", async (_, reply) => {
-                        reply.send({
+                        return reply.send({
                             message
                         });
-                        return reply;
                     });
                 })
             ]
@@ -53,25 +52,23 @@ describe("fastify aws handler routes", () => {
         onPost("/cms/:type(^manage|preview|read$)/:locale", async (request, reply) => {
             const params = request.params as Record<string, any>;
             if (params.type === "read") {
-                reply.send(cmsReadBody);
-                return;
+                return reply.send(cmsReadBody);
             } else if (params.type === "manage") {
-                reply.send(cmsManageBody);
-                return;
+                return reply.send(cmsManageBody);
             }
-            reply.send({
+            return reply.send({
                 message: "ERROR!"
             });
         });
 
         onGet("/graphql", async (_, reply) => {
-            reply.send({
+            return reply.send({
                 graphql: "get"
             });
         });
 
         onOptions("/graphql", async (_, reply) => {
-            reply.send({
+            return reply.send({
                 options: true
             });
         });

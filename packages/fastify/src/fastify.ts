@@ -31,7 +31,8 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         options: [],
         delete: [],
         patch: [],
-        put: []
+        put: [],
+        all: []
     };
 
     const throwOnDefinedRoute = (
@@ -106,6 +107,11 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
             throwOnDefinedRoute("put", path, options);
             app.put(path, handler);
             addDefinedRoute("put", path);
+        },
+        onAll: (path, handler, options) => {
+            throwOnDefinedRoute("all", path, options);
+            app.all(path, handler);
+            addDefinedRoute("all", path);
         }
     };
     const context = new Context({
@@ -171,10 +177,7 @@ export const createFastify = (params?: CreateFastifyHandlerParams) => {
         const result = handler(app.webiny, error);
 
         reply.statusCode = 500;
-        reply.headers(DEFAULT_HEADERS);
-        reply.send(result);
-
-        return reply;
+        return reply.headers(DEFAULT_HEADERS).send(result);
     });
 
     return app;

@@ -36,13 +36,12 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
         new RoutePlugin(async ({ onPost, onOptions, context }) => {
             onOptions("/graphql", async (_, reply) => {
                 reply.statusCode = 204;
-                reply.headers({
-                    ...DEFAULT_HEADERS,
-                    "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
-                });
-                reply.send({});
-
-                return reply;
+                return reply
+                    .headers({
+                        ...DEFAULT_HEADERS,
+                        "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
+                    })
+                    .send({});
             });
             onPost("/graphql", async (request, reply) => {
                 if (!schema) {
@@ -51,12 +50,11 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                 const body = createRequestBody(request.body);
                 const result = await processRequestBody(body, schema, context);
                 reply.statusCode = 200;
-                reply.headers({
-                    ...DEFAULT_HEADERS
-                });
-                reply.send(result);
-
-                return reply;
+                return reply
+                    .headers({
+                        ...DEFAULT_HEADERS
+                    })
+                    .send(result);
             });
         })
     ];

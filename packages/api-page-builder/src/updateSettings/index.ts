@@ -1,7 +1,6 @@
-import { HandlerPlugin } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
-import { PageBuilderStorageOperations, PbContext, Settings } from "~/types";
+import { PageBuilderStorageOperations, Settings } from "~/types";
 import { migrate, putDefaultSettings, SettingsInput } from "./migration/migrate";
+import { RoutePlugin } from "@webiny/fastify";
 
 export interface HandlerArgs {
     data: Settings;
@@ -32,41 +31,38 @@ function createSettings(data: Settings): SettingsInput {
 export interface UpdateSettingsParams {
     storageOperations: PageBuilderStorageOperations;
 }
-export default (
-    params: UpdateSettingsParams
-): HandlerPlugin<PbContext, ArgsContext<HandlerArgs>> => {
+export default (params: UpdateSettingsParams) => {
     const { storageOperations } = params;
 
-    return {
-        type: "handler",
-        async handle(context): Promise<HandlerResponse> {
+    return new RoutePlugin(({ context }) => {
+        context.server.all("*", async (request, reply) => {
             try {
-                const { invocationArgs: args } = context;
+                const { data, migrate: runMigration } = request.body as Record<string, any>;
 
                 // In 5.29.0, we need to migrate data for Prerendering Service and Tenants
                 if (process.env.NODE_ENV !== "test") {
                     const executed = await migrate(
                         storageOperations,
-                        createSettings(args.data),
-                        args.migrate === true
+                        createSettings(data),
+                        runMigration === true
                     );
 
                     if (executed) {
-                        return {
+                        return reply.send({
                             data: true,
                             error: null
-                        };
+                        });
                     }
                 }
 
-                await putDefaultSettings(storageOperations, createSettings(args.data));
+                await putDefaultSettings(storageOperations, createSettings(data));
 
-                return {
+                return reply.send({
                     data: true,
                     error: null
-                };
+                });
             } catch (ex) {
-                return {
+                return reply.send({
                     data: false,
                     error: {
                         message: ex.message,
@@ -75,8 +71,8 @@ export default (
                             ...(ex.data || {})
                         }
                     }
-                };
+                });
             }
-        }
-    };
+        });
+    });
 };

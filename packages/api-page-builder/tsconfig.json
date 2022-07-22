@@ -11,9 +11,8 @@
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../handler" },
-    { "path": "../handler-args" },
+    { "path": "../fastify" },
     { "path": "../handler-fastify-aws" },
-    { "path": "../handler-client" },
     { "path": "../handler-db" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
@@ -24,8 +23,7 @@
     { "path": "../api-i18n-ddb" },
     { "path": "../api-security-so-ddb" },
     { "path": "../api-tenancy-so-ddb" },
-    { "path": "../api-wcp" },
-    { "path": "../handler-fastify-aws" }
+    { "path": "../api-wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -51,12 +49,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-args/*": ["../handler-args/src/*"],
-      "@webiny/handler-args": ["../handler-args/src"],
       "@webiny/handler-fastify-aws/*": ["../handler-fastify-aws/src/*"],
       "@webiny/handler-fastify-aws": ["../handler-fastify-aws/src"],
-      "@webiny/handler-client/*": ["../handler-client/src/*"],
-      "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
@@ -79,8 +73,8 @@
       "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
-      "@webiny/handler-fastify-aws/*": ["../handler-fastify-aws/src/*"],
-      "@webiny/handler-fastify-aws": ["../handler-fastify-aws/src"]
+      "@webiny/fastify/*": ["../fastify/src/*"],
+      "@webiny/fastify": ["../fastify/src"]
     },
     "baseUrl": "."
   }
